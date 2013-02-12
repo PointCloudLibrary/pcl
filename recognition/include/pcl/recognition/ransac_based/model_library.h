@@ -69,7 +69,7 @@ namespace pcl
               user_data_ (user_data)
             {
               octree_.build (points, voxel_size, &normals);
-              aux::vecSet3 (center_of_mass_, 0.0f);
+              aux::set3 (center_of_mass_, 0.0f);
             }
             virtual ~Model (){}
 
@@ -105,12 +105,12 @@ namespace pcl
                 return;
 
               // Reset
-              aux::vecSet3(center_of_mass_, 0.0f);
+              aux::set3(center_of_mass_, 0.0f);
               // Sum up
               for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
-                aux::vecAdd3 (center_of_mass_, (*it)->getData ()->getPoint ());
+                aux::add3 (center_of_mass_, (*it)->getData ()->getPoint ());
               // Divide
-              aux::vecMult3 (center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
+              aux::mult3 (center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
             }
 
           protected:

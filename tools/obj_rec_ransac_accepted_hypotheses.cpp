@@ -67,15 +67,12 @@ using namespace console;
 using namespace recognition;
 using namespace visualization;
 
-class CallbackParameters;
-
-void run (float pair_width, float voxel_size, float max_coplanarity_angle, int num_hypotheses_to_show);
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = NULL);
-void update (CallbackParameters* params);
-void arrayToVtkMatrix (const float* a, vtkMatrix4x4* m);
+bool
+vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst = NULL);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
+//#define _SHOW_SCENE_OPPS_
 //#define _SHOW_OCTREE_NORMALS_
 
 class CallbackParameters
@@ -86,7 +83,8 @@ class CallbackParameters
       viz_ (viz),
       points_ (points),
       normals_ (normals),
-      num_hypotheses_to_show_ (num_hypotheses_to_show)
+      num_hypotheses_to_show_ (num_hypotheses_to_show),
+      show_models_ (true)
     { }
 
     ObjRecRANSAC& objrec_;
@@ -95,47 +93,112 @@ class CallbackParameters
     PointCloud<Normal>& normals_;
     int num_hypotheses_to_show_;
     list<vtkActor*> actors_;
+    bool show_models_;
 };
 
-//===========================================================================================================================================
+//===============================================================================================================================
 
-int
-main (int argc, char** argv)
+bool
+vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst)
 {
-  printf ("\nUsage: ./obj_rec_ransac_accepted_hypotheses <pair_width> <voxel_size> <max_coplanarity_angle> <n_hypotheses_to_show>\n\n");
-
-  const int num_params = 4;
-  float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/, 1/*n_hypotheses_to_show*/};
-  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle", "n_hypotheses_to_show"};
-
-  // Read the user input if any
-  for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
+  size_t len = strlen (file_name);
+  if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
   {
-    parameters[i] = static_cast<float> (atof (argv[i+1]));
-    if ( parameters[i] <= 0.0f )
-    {
-      fprintf(stderr, "ERROR: the %i-th parameter has to be positive and not %f\n", i+1, parameters[i]);
-      return (-1);
-    }
+    fprintf (stderr, "ERROR: we need a .vtk object!\n");
+    return false;
   }
 
-  printf ("The following parameter values will be used:\n");
-  for ( int i = 0 ; i < num_params ; ++i )
-    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
-  cout << endl;
+  // Load the model
+  vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New ();
+  reader->SetFileName (file_name);
+  reader->Update ();
 
-  run (parameters[0], parameters[1], parameters[2], static_cast<int>(parameters[3] + 0.5f));
+  // Get the points
+  vtkPolyData *vtk_poly = reader->GetOutput ();
+  vtkPoints *vtk_points = vtk_poly->GetPoints ();
+  vtkIdType num_points = vtk_points->GetNumberOfPoints ();
+  double p[3];
 
-  return (0);
+  pcl_points.resize (num_points);
+
+  // Shall we copy the file to 'vtk_dst'
+  if ( vtk_dst )
+    vtk_dst->DeepCopy (vtk_poly);
+
+  // Copy the points
+  for ( vtkIdType i = 0 ; i < num_points ; ++i )
+  {
+    vtk_points->GetPoint (i, p);
+    pcl_points[i].x = static_cast<float> (p[0]);
+    pcl_points[i].y = static_cast<float> (p[1]);
+    pcl_points[i].z = static_cast<float> (p[2]);
+  }
+
+  // Check if we have normals
+  vtkDataArray *vtk_normals = vtk_poly->GetPointData ()->GetNormals ();
+  if ( !vtk_normals )
+    return false;
+
+  pcl_normals.resize (num_points);
+  // Copy the normals
+  for ( vtkIdType i = 0 ; i < num_points ; ++i )
+  {
+    vtk_normals->GetTuple (i, p);
+    pcl_normals[i].normal_x = static_cast<float> (p[0]);
+    pcl_normals[i].normal_y = static_cast<float> (p[1]);
+    pcl_normals[i].normal_z = static_cast<float> (p[2]);
+  }
+
+  return true;
 }
 
 //===============================================================================================================================
 
 void
-keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
+showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis* hypo, CallbackParameters* parameters, string frame_name)
 {
-  if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
-    update (static_cast<CallbackParameters*> (params_void));
+  float rot_col[3], x_dir[3], y_dir[3], z_dir[3], origin[3], scale = 2.0f*parameters->objrec_.getPairWidth ();
+  pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
+
+  // Get the origin of the coordinate frame
+  aux::transform (hypo->rigid_transform_, hypo->obj_model_.getCenterOfMass (), origin);
+  coeffs.values[0] = origin[0];
+  coeffs.values[1] = origin[1];
+  coeffs.values[2] = origin[2];
+  // Setup the axes
+  rot_col[0] = hypo->rigid_transform_[0];
+  rot_col[1] = hypo->rigid_transform_[3];
+  rot_col[2] = hypo->rigid_transform_[6];
+  aux::mult3 (rot_col, scale, x_dir);
+  rot_col[0] = hypo->rigid_transform_[1];
+  rot_col[1] = hypo->rigid_transform_[4];
+  rot_col[2] = hypo->rigid_transform_[7];
+  aux::mult3 (rot_col, scale, y_dir);
+  rot_col[0] = hypo->rigid_transform_[2];
+  rot_col[1] = hypo->rigid_transform_[5];
+  rot_col[2] = hypo->rigid_transform_[8];
+  aux::mult3 (rot_col, scale, z_dir);
+
+  // The x-axis
+  coeffs.values[3] = x_dir[0];
+  coeffs.values[4] = x_dir[1];
+  coeffs.values[5] = x_dir[2];
+  parameters->viz_.addLine (coeffs, frame_name + "_x_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, frame_name + "_x_axis");
+
+  // The y-axis
+  coeffs.values[3] = y_dir[0];
+  coeffs.values[4] = y_dir[1];
+  coeffs.values[5] = y_dir[2];
+  parameters->viz_.addLine (coeffs, frame_name + "_y_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, frame_name + "_y_axis");
+
+  // The z-axis
+  coeffs.values[3] = z_dir[0];
+  coeffs.values[4] = z_dir[1];
+  coeffs.values[5] = z_dir[2];
+  parameters->viz_.addLine (coeffs, frame_name + "_z_axis");
+  parameters->viz_.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, frame_name + "_z_axis");
 }
 
 //===============================================================================================================================
@@ -144,6 +207,19 @@ bool
 compareHypotheses (const ObjRecRANSAC::Hypothesis* a, const ObjRecRANSAC::Hypothesis* b)
 {
   return (static_cast<bool> (a->match_confidence_ > b->match_confidence_));
+}
+
+//===============================================================================================================================
+
+void
+arrayToVtkMatrix (const float* a, vtkMatrix4x4* m)
+{
+  // Setup the rotation
+  m->SetElement (0, 0, a[0]); m->SetElement (0, 1, a[1]); m->SetElement (0, 2, a[2]);
+  m->SetElement (1, 0, a[3]); m->SetElement (1, 1, a[4]); m->SetElement (1, 2, a[5]);
+  m->SetElement (2, 0, a[6]); m->SetElement (2, 1, a[7]); m->SetElement (2, 2, a[8]);
+  // Setup the translation
+  m->SetElement (0, 3, a[9]); m->SetElement (1, 3, a[10]); m->SetElement (2, 3, a[11]);
 }
 
 //===============================================================================================================================
@@ -163,6 +239,7 @@ update (CallbackParameters* params)
   params->actors_.clear ();
   params->viz_.removeAllShapes ();
 
+#ifdef _SHOW_SCENE_OPPS_
   // Build the vtk objects visualizing the lines between the opps
   const list<ObjRecRANSAC::OrientedPointPair>& opps = params->objrec_.getSampledOrientedPointPairs ();
   // The opps points
@@ -207,6 +284,7 @@ update (CallbackParameters* params)
   string normals_str_id = "opps normals";
   params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
+#endif
 
   // Now show some of the accepted hypotheses
   vector<ObjRecRANSAC::Hypothesis*> accepted_hypotheses;
@@ -219,6 +297,11 @@ update (CallbackParameters* params)
   // Show the hypotheses
   for ( vector<ObjRecRANSAC::Hypothesis*>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
+    // Visualize the orientation as a tripod
+    char frame_name[128];
+    sprintf (frame_name, "frame_%i", i+1);
+    showHypothesisAsCoordinateFrame (*acc_hypo, params, frame_name);
+
     // Make a copy of the VTK model
     vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
     vtk_model->DeepCopy (static_cast<vtkPolyData*> ((*acc_hypo)->obj_model_.getUserData ()));
@@ -253,19 +336,60 @@ update (CallbackParameters* params)
   // Show the bounds of the octree
   const float* ob = params->objrec_.getSceneOctree ().getBounds ();
   params->viz_.addCube (ob[0], ob[1], ob[2], ob[3], ob[4], ob[5], 1.0, 1.0, 1.0);
+
+#if 0
+  // Compute the angle
+  float angle = static_cast<float> (aux::getRandomInteger (0, 100));
+  angle -= AUX_PI_FLOAT*std::floor (angle/AUX_PI_FLOAT); // angle = angle mod pi
+
+  // Compute the axis
+  Eigen::Matrix<float,3,1> axis;
+  axis(0,0) = static_cast<float> (aux::getRandomInteger (-100, 100));
+  axis(1,0) = static_cast<float> (aux::getRandomInteger (-100, 100));
+  axis(2,0) = static_cast<float> (aux::getRandomInteger (-100, 100));
+  // Normalize the axis
+  float len = std::sqrt (axis(0,0)*axis(0,0) + axis(1,0)*axis(1,0) + axis(2,0)*axis(2,0));
+  axis(0,0) = axis(0,0)/len;
+  axis(1,0) = axis(1,0)/len;
+  axis(2,0) = axis(2,0)/len;
+
+  cout << "Input angle = " << angle << endl;
+  cout << "Input axis = \n" << axis << endl;
+
+  // The eigen axis-angle object
+  Eigen::AngleAxis<float> angle_axis(angle, axis);
+
+  Eigen::Matrix<float,3,3> mat = angle_axis.toRotationMatrix ();
+  float m[9];
+  aux::eigenMatrix3x3ToArray9RowMajor (mat, m);
+
+  // Now compute back the angle and the axis based on eigen
+  float comp_angle, comp_axis[3];
+  aux::rotationMatrixToAxisAngle (m, comp_axis, comp_angle);
+  cout << "\nComputed angle = " << comp_angle << endl;
+  cout << "Computed axis = \n" << comp_axis[0] << "\n" << comp_axis[1] << "\n" << comp_axis[2] << endl;
+#endif
 }
 
 //===============================================================================================================================
 
 void
-arrayToVtkMatrix (const float* a, vtkMatrix4x4* m)
+keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
-  // Setup the rotation
-  m->SetElement (0, 0, a[0]); m->SetElement (0, 1, a[1]); m->SetElement (0, 2, a[2]);
-  m->SetElement (1, 0, a[3]); m->SetElement (1, 1, a[4]); m->SetElement (1, 2, a[5]);
-  m->SetElement (2, 0, a[6]); m->SetElement (2, 1, a[7]); m->SetElement (2, 2, a[8]);
-  // Setup the translation
-  m->SetElement (0, 3, a[9]); m->SetElement (1, 3, a[10]); m->SetElement (2, 3, a[11]);
+  CallbackParameters* params = static_cast<CallbackParameters*> (params_void);
+
+  if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
+    update (params);
+  else if ( event.getKeyCode () == '1' && event.keyUp () )
+  {
+    // Switch models visibility
+    params->show_models_ = !params->show_models_;
+
+    for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
+      (*it)->SetVisibility (static_cast<int> (params->show_models_));
+
+    params->viz_.getRenderWindow ()->Render ();
+  }
 }
 
 //===============================================================================================================================
@@ -331,60 +455,29 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle, int num_hy
   vtk_model->Delete ();
 }
 
-//===============================================================================================================================
+//===========================================================================================================================================
 
-bool
-vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_dst)
+int
+main (int argc, char** argv)
 {
-  size_t len = strlen (file_name);
-  if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
-  {
-    fprintf (stderr, "ERROR: we need a .vtk object!\n");
-    return false;
-  }
+  printf ("\nUsage: ./obj_rec_ransac_accepted_hypotheses <pair_width> <voxel_size> <max_coplanarity_angle> <n_hypotheses_to_show> <show_hypotheses_as_coordinate_frames>\n\n");
 
-  // Load the model
-  vtkSmartPointer<vtkPolyDataReader> reader = vtkSmartPointer<vtkPolyDataReader>::New ();
-  reader->SetFileName (file_name);
-  reader->Update ();
+  const int num_params = 4;
+  float parameters[num_params] = {40.0f/*pair width*/, 5.0f/*voxel size*/, 15.0f/*max co-planarity angle*/, 1/*n_hypotheses_to_show*/};
+  string parameter_names[num_params] = {"pair_width", "voxel_size", "max_coplanarity_angle", "n_hypotheses_to_show"};
 
-  // Get the points
-  vtkPolyData *vtk_poly = reader->GetOutput ();
-  vtkPoints *vtk_points = vtk_poly->GetPoints ();
-  vtkIdType num_points = vtk_points->GetNumberOfPoints ();
-  double p[3];
+  // Read the user input if any
+  for ( int i = 0 ; i < argc-1 && i < num_params ; ++i )
+    parameters[i] = static_cast<float> (atof (argv[i+1]));
 
-  pcl_points.resize (num_points);
+  printf ("The following parameter values will be used:\n");
+  for ( int i = 0 ; i < num_params ; ++i )
+    cout << "  " << parameter_names[i] << " = " << parameters[i] << endl;
+  cout << endl;
 
-  // Shall we copy the file to 'vtk_dst'
-  if ( vtk_dst )
-    vtk_dst->DeepCopy (vtk_poly);
+  run (parameters[0], parameters[1], parameters[2], static_cast<int> (parameters[3] + 0.5f));
 
-  // Copy the points
-  for ( vtkIdType i = 0 ; i < num_points ; ++i )
-  {
-    vtk_points->GetPoint (i, p);
-    pcl_points[i].x = static_cast<float> (p[0]);
-    pcl_points[i].y = static_cast<float> (p[1]);
-    pcl_points[i].z = static_cast<float> (p[2]);
-  }
-
-  // Check if we have normals
-  vtkDataArray *vtk_normals = vtk_poly->GetPointData ()->GetNormals ();
-  if ( !vtk_normals )
-    return false;
-
-  pcl_normals.resize (num_points);
-  // Copy the normals
-  for ( vtkIdType i = 0 ; i < num_points ; ++i )
-  {
-    vtk_normals->GetTuple (i, p);
-    pcl_normals[i].normal_x = static_cast<float> (p[0]);
-    pcl_normals[i].normal_y = static_cast<float> (p[1]);
-    pcl_normals[i].normal_z = static_cast<float> (p[2]);
-  }
-
-  return true;
+  return (0);
 }
 
 //===============================================================================================================================

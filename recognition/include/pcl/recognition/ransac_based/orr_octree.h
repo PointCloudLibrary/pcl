@@ -81,12 +81,12 @@ namespace pcl
             class Data
             {
               public:
-                Data ()
+                Data (void* user_data = NULL)
                 : id_x_ (-1),
                   id_y_ (-1),
                   id_z_ (-1),
                   num_points_(0),
-                  user_data_ (NULL)
+                  user_data_ (user_data)
                 {
                   n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
                 }
@@ -106,7 +106,7 @@ namespace pcl
                   if ( num_points_ < 2 )
                     return;
 
-                  aux::vecMult3 (p_, 1.0f/static_cast<float> (num_points_));
+                  aux::mult3 (p_, 1.0f/static_cast<float> (num_points_));
                   num_points_ = 1;
                 }
 
@@ -161,7 +161,11 @@ namespace pcl
               children_(NULL)
             {}
 
-            virtual~ Node () { this->deleteChildren (); this->deleteData ();}
+            virtual~ Node ()
+            {
+              this->deleteChildren ();
+              this->deleteData ();
+            }
 
             inline void
             setCenter(const float *c) { center_[0] = c[0]; center_[1] = c[1]; center_[2] = c[2];}
@@ -180,7 +184,7 @@ namespace pcl
             computeRadius()
             {
               float v[3] = {0.5f*(bounds_[1]-bounds_[0]), 0.5f*(bounds_[3]-bounds_[2]), 0.5f*(bounds_[5]-bounds_[4])};
-              radius_ = static_cast<float> (aux::vecLength3 (v));
+              radius_ = static_cast<float> (aux::length3 (v));
             }
 
             inline const float*

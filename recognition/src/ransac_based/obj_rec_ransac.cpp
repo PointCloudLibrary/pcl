@@ -268,11 +268,11 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
   int num_done = 0;
 #endif
 
-  ORROctree::Node *translation_space_node, *rot_space_node;
-  float angle_x_axis, angle_y_axis, angle_z_axis, transformed_point[3];
+  ORROctree::Node *com_leaf;
+  float rot_angle, axis_angle[3], transformed_point[3];
   const float *rigid_transform;
   list<RotationSpace*> rot_space_list;
-  int num_after_grouping = 0;
+  RotationSpace* rot_space;
 
   for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
@@ -282,9 +282,9 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
     // First transform the center of mass of the model
     aux::transform (rigid_transform, (*hypo_it)->obj_model_.getCenterOfMass (), transformed_point);
     // Get the leaf 'transformed_point' ends up in
-    translation_space_node = transform_octree_.createLeaf (transformed_point[0], transformed_point[1], transformed_point[2]);
+    com_leaf = transform_octree_.createLeaf (transformed_point[0], transformed_point[1], transformed_point[2]);
 
-    if ( !translation_space_node )
+    if ( !com_leaf )
     {
       printf ("WARNING in 'ObjRecRANSAC::%s()': the transformed center of mass is out of bounds! "
               "Enlarge the scene octree bounds by calling 'setSceneBoundsEnlargementFactor()' with a larger value. "
@@ -292,42 +292,25 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
       continue;
     }
 
-    if ( !translation_space_node->getData () )
+    if ( !com_leaf->getData () )
     {
-      translation_space_node->setData (new ORROctree::Node::Data ());
-      translation_space_node->getData ()->setUserData (new RotationSpace ());
-      rot_space_list.push_back (static_cast<RotationSpace*> (translation_space_node->getData ()->getUserData ()));
+      rot_space = new RotationSpace ();
+      com_leaf->setData (new ORROctree::Node::Data (rot_space));
+      rot_space_list.push_back (rot_space);
     }
+    else // get the existing rotation space
+      rot_space = static_cast<RotationSpace*> (com_leaf->getData ()->getUserData ());
 
-    // Get the octree which discretizes the rotation space
-    ORROctree &rot_octree = (static_cast<RotationSpace*> (translation_space_node->getData ()->getUserData ()))->octree_;
+    // Extract the axis-angle representation from the rotation matrix
+    aux::rotationMatrixToAxisAngle (rigid_transform, axis_angle, rot_angle);
+    // Multiply the axis by the angle to get the final representation
+    aux::mult3 (axis_angle, rot_angle);
 
-    // Compute the angles between each row in the rotation matrix and the canonical x, y and z axes
-    this->computeAxisAnglesOfRotation (rigid_transform, angle_x_axis, angle_y_axis, angle_z_axis);
+    // Now, add the rigid transform to the space representation
+    rot_space->addRigidTransform (&(*hypo_it)->obj_model_, axis_angle, rigid_transform + 9);
 
-    // Use the angles as a key to the octree to see whether there are rotations there or not
-    rot_space_node = rot_octree.createLeaf (angle_x_axis, angle_y_axis, angle_z_axis);
-
-    if ( !rot_space_node )
-    {
-      const float *b = rot_octree.getBounds ();
-      printf ("WARNING in 'ObjRecRANSAC::%s()': the angles (%f, %f, %f) are out of the octree bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
-              __func__, angle_x_axis, angle_y_axis, angle_z_axis, b[0], b[1], b[2], b[3], b[4], b[5]);
-      continue;
-    }
-
-    // If that part of the rotational space is free -> store the current hypothesis as a representative. If no new leaf
-    // was created then just check the next hypothesis, since that part of the transform space already has a representative
-    // hypothesis
-    if ( !rot_space_node->getData () )
-    {
-      rot_space_node->setData (new ORROctree::Node::Data ()); // That's just a dummy data object
-      out.push_back (*hypo_it);
-      ++num_after_grouping;
-    }
-    else
-      // We do not need that hypothesis -> delete it
-      delete *hypo_it;
+    // We do not need that hypothesis -> delete it
+    delete *hypo_it;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
     // Update progress
@@ -340,9 +323,16 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
 #endif
   }
 
-  // Cleanup
-  for ( list<RotationSpace*>::iterator it = rot_space_list.begin () ; it != rot_space_list.end () ; ++it )
-    delete *it;
+  int num_after_grouping = 0;
+
+  // Now group the hypotheses
+  for ( list<RotationSpace*>::iterator rs_it = rot_space_list.begin () ; rs_it != rot_space_list.end () ; ++rs_it )
+  {
+    // Compute the average rigid transform in each full cell of the current rotation space
+    (*rs_it)->computeAverageRigidTransformInCells (out, num_after_grouping);
+    // Delete that rotation space since we do not need it any more
+    delete *rs_it;
+  }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("done\n%i hypotheses after grouping.\n", num_after_grouping); fflush (stdout);
@@ -425,7 +415,7 @@ pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, i
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-	printf("done\n%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
+  printf("done\n%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
 #endif
 }
 

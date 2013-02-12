@@ -40,7 +40,10 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <pcl/common/eigen.h>
+#include <ostream>
 
+#define AUX_PI_FLOAT            3.14159265358979323846f
 #define AUX_HALF_PI             1.57079632679489661923f
 #define AUX_DEG_TO_RADIANS     (3.14159265358979323846f/180.0f)
 
@@ -72,14 +75,32 @@ namespace pcl
 
       /** \brief v[0] = v[1] = v[2] = value */
       template <typename T> void
-      vecSet3 (T v[3], T value)
+      set3 (T v[3], T value)
       {
         v[0] = v[1] = v[2] = value;
       }
 
+      /** \brief a = -a */
+      template <typename T> void
+      copy3 (const T src[3], T dst[3])
+      {
+        dst[0] = src[0];
+        dst[1] = src[1];
+        dst[2] = src[2];
+      }
+
+      /** \brief a = -a */
+      template <typename T> void
+      flip3 (T a[3])
+      {
+        a[0] = -a[0];
+        a[1] = -a[1];
+        a[2] = -a[2];
+      }
+
       /** \brief a += b */
       template <typename T> void
-      vecAdd3 (T a[3], const T b[3])
+      add3 (T a[3], const T b[3])
       {
         a[0] += b[0];
         a[1] += b[1];
@@ -88,7 +109,7 @@ namespace pcl
 
       /** \brief c = a + b */
       template <typename T> void
-      vecSum3 (const T a[3], const T b[3], T c[3])
+      sum3 (const T a[3], const T b[3], T c[3])
       {
         c[0] = a[0] + b[0];
         c[1] = a[1] + b[1];
@@ -97,7 +118,7 @@ namespace pcl
 
       /** \brief c = a - b */
       template <typename T> void
-      vecDiff3 (const T a[3], const T b[3], T c[3])
+      diff3 (const T a[3], const T b[3], T c[3])
       {
         c[0] = a[0] - b[0];
         c[1] = a[1] - b[1];
@@ -105,7 +126,7 @@ namespace pcl
       }
 
       template <typename T> void
-      vecCross3 (const T v1[3], const T v2[3], T out[3])
+      cross3 (const T v1[3], const T v2[3], T out[3])
       {
         out[0] = v1[1]*v2[2] - v1[2]*v2[1];
         out[1] = v1[2]*v2[0] - v1[0]*v2[2];
@@ -114,47 +135,56 @@ namespace pcl
 
       /** \brief Returns the length of v. */
       template <typename T> T
-      vecLength3 (const T v[3])
+      length3 (const T v[3])
       {
-        return (static_cast<T> (sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2])));
+        return (std::sqrt (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]));
       }
 
       /** \brief Returns the Euclidean distance between a and b. */
       template <typename T> T
-      vecDistance3 (const T a[3], const T b[3])
+      distance3 (const T a[3], const T b[3])
       {
         T l[3] = {a[0]-b[0], a[1]-b[1], a[2]-b[2]};
-        return (vecLength3 (l));
+        return (length3 (l));
       }
 
       /** \brief Returns the dot product a*b */
       template <typename T> T
-      vecDot3 (const T a[3], const T b[3])
+      dot3 (const T a[3], const T b[3])
       {
         return (a[0]*b[0] + a[1]*b[1] + a[2]*b[2]);
       }
 
       /** \brief Returns the dot product (x, y, z)*(u, v, w) = x*u + y*v + z*w */
       template <typename T> T
-      vecDot3 (T x, T y, T z, T u, T v, T w)
+      dot3 (T x, T y, T z, T u, T v, T w)
       {
         return (x*u + y*v + z*w);
       }
 
       /** \brief v = scalar*v. */
       template <typename T> void
-      vecMult3 (T v[3], T scalar)
+      mult3 (T* v, T scalar)
       {
         v[0] *= scalar;
         v[1] *= scalar;
         v[2] *= scalar;
       }
 
+      /** \brief out = scalar*v. */
+      template <typename T> void
+      mult3 (const T* v, T scalar, T* out)
+      {
+        out[0] = v[0]*scalar;
+        out[1] = v[1]*scalar;
+        out[2] = v[2]*scalar;
+      }
+
       /** \brief Normalize v */
       template <typename T> void
-      vecNormalize3 (T v[3])
+      normalize3 (T v[3])
       {
-        T inv_len = (static_cast<T> (1.0))/vecLength3 (v);
+        T inv_len = (static_cast<T> (1.0))/aux::length3 (v);
         v[0] *= inv_len;
         v[1] *= inv_len;
         v[2] *= inv_len;
@@ -162,7 +192,7 @@ namespace pcl
 
       /** \brief Returns the square length of v. */
       template <typename T> T
-      vecSqrLength3 (const T v[3])
+      sqrLength3 (const T v[3])
       {
         return (v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
       }
@@ -171,10 +201,18 @@ namespace pcl
       template <typename T> void
       projectOnPlane3 (const T x[3], const T planeNormal[3], T out[3])
       {
-        T dot = vecDot3 (planeNormal, x);
+        T dot = aux::dot3 (planeNormal, x);
         // Project 'x' on the plane normal
         T nproj[3] = {-dot*planeNormal[0], -dot*planeNormal[1], -dot*planeNormal[2]};
-        vecSum3 (x, nproj, out);
+        aux::sum3 (x, nproj, out);
+      }
+
+      /** \brief Sets 'm' to the 3x3 identity matrix. */
+      template <typename T> void
+      identity3x3 (T m[9])
+      {
+        m[0] = m[4] = m[8] = 1.0;
+        m[1] = m[2] = m[3] = m[5] = m[6] = m[7] = 0.0;
       }
 
       /** \brief out = mat*v. 'm' is an 1D array of 9 elements treated as a 3x3 matrix (row major order). */
@@ -224,14 +262,14 @@ namespace pcl
       pointsAreCoplanar (const T p1[3], const T n1[3], const T p2[3], const T n2[3], T max_angle)
       {
         // Compute the angle between 'n1' and 'n2' and compare it with 'max_angle'
-        if ( std::acos (aux::clamp (aux::vecDot3 (n1, n2), -1.0f, 1.0f)) > max_angle )
+        if ( std::acos (aux::clamp (aux::dot3 (n1, n2), -1.0f, 1.0f)) > max_angle )
           return (false);
 
         T cl[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-        vecNormalize3 (cl);
+        aux::normalize3 (cl);
 
         // Compute the angle between 'cl' and 'n1'
-        T tmp_angle = std::acos (aux::clamp (aux::vecDot3 (n1, cl), -1.0f, 1.0f));
+        T tmp_angle = std::acos (aux::clamp (aux::dot3 (n1, cl), -1.0f, 1.0f));
 
         // 'tmp_angle' should not deviate too much from 90 degrees
         if ( std::fabs (tmp_angle - AUX_HALF_PI) > max_angle )
@@ -241,25 +279,87 @@ namespace pcl
         return (true);
       }
 
-      template <typename T> T
-      computeRotationalDifference (const T u[9], const T v[9])
+      /** \brief The method copies the input array 'src' to the eigen matrix 'dst' in row major order.
+        * dst[0] = src(0,0); dst[1] = src(0,1); dst[2] = src(0,2);
+        * dst[3] = src(1,0); dst[4] = src(1,1); dst[5] = src(1,2);
+        * dst[6] = src(2,0); dst[7] = src(2,1); dst[8] = src(2,2);
+        * */
+      template <typename T> void
+      eigenMatrix3x3ToArray9RowMajor (const Eigen::Matrix<T,3,3>& src, T dst[9])
       {
-        // We use local variables for better code readability
-        T min = static_cast<T> (-1.0);
-        T max = static_cast<T> ( 1.0);
-        // The first columns
-        T a = std::acos (aux::clamp(aux::vecDot3 (u[0], u[3], u[6], v[0], v[3], v[6]), min, max));
-        // The second columns
-        T b = std::acos (aux::clamp(aux::vecDot3 (u[1], u[4], u[7], v[1], v[4], v[7]), min, max));
-        // The third columns
-        T c = std::acos (aux::clamp(aux::vecDot3 (u[2], u[5], u[8], v[2], v[5], v[8]), min, max));
-
-        T d = a > b ? a : b;
-
-        return (c > d ? c : d);
+        dst[0] = src(0,0); dst[1] = src(0,1); dst[2] = src(0,2);
+        dst[3] = src(1,0); dst[4] = src(1,1); dst[5] = src(1,2);
+        dst[6] = src(2,0); dst[7] = src(2,1); dst[8] = src(2,2);
       }
-    }
-  }
-}
+
+      /** \brief The method copies the input array 'src' to the eigen matrix 'dst' in row major order.
+        * dst(0,0) = src[0]; dst(0,1) = src[1]; dst(0,2) = src[2];
+        * dst(1,0) = src[3]; dst(1,1) = src[4]; dst(1,2) = src[5];
+        * dst(2,0) = src[6]; dst(2,1) = src[7]; dst(2,2) = src[8];
+        * */
+      template <typename T> void
+      toEigenMatrix3x3RowMajor (const T src[9], Eigen::Matrix<T,3,3>& dst)
+      {
+        dst(0,0) = src[0]; dst(0,1) = src[1]; dst(0,2) = src[2];
+        dst(1,0) = src[3]; dst(1,1) = src[4]; dst(1,2) = src[5];
+        dst(2,0) = src[6]; dst(2,1) = src[7]; dst(2,2) = src[8];
+      }
+
+      /** brief Computes a rotation matrix from the provided input vector 'axis_angle'. The direction of 'axis_angle' is the rotation axis
+        * and its magnitude is the angle of rotation about that axis. 'rotation_matrix' is the output rotation matrix saved in row major order. */
+      template <typename T> void
+      axisAngleToRotationMatrix (const T axis_angle[3], T rotation_matrix[9])
+      {
+        // Get the angle of rotation
+        T angle = aux::length3 (axis_angle);
+        if ( angle == 0.0 )
+        {
+          // Undefined rotation -> set to identity
+          aux::identity3x3 (rotation_matrix);
+          return;
+        }
+
+        // Normalize the input
+        float normalized_axis_angle[3];
+        aux::mult3 (axis_angle, static_cast<T> (1.0)/angle, normalized_axis_angle);
+
+        // The eigen objects
+        Eigen::Matrix<T,3,1> mat_axis(normalized_axis_angle);
+        Eigen::AngleAxis<T> eigen_angle_axis (angle, mat_axis);
+
+        // Save the output
+        aux::eigenMatrix3x3ToArray9RowMajor (eigen_angle_axis.toRotationMatrix (), rotation_matrix);
+      }
+
+      /** brief Extracts the angle-axis representation from 'rotation_matrix', i.e., computes a rotation 'axis' and an 'angle'
+        * of rotation about that axis from the provided input. The output 'angle' is in the range [0, pi] and 'axis' is normalized. */
+      template <typename T> void
+      rotationMatrixToAxisAngle (const T rotation_matrix[9], T axis[3], T& angle)
+      {
+        // The eigen objects
+        Eigen::AngleAxis<T> angle_axis;
+        Eigen::Matrix<T,3,3> rot_mat;
+        // Copy the input matrix to the eigen matrix in row major order
+        aux::toEigenMatrix3x3RowMajor (rotation_matrix, rot_mat);
+
+        // Do the computation
+        angle_axis.fromRotationMatrix (rot_mat);
+
+        // Save the result
+        axis[0] = angle_axis.axis () (0,0);
+        axis[1] = angle_axis.axis () (1,0);
+        axis[2] = angle_axis.axis () (2,0);
+        angle = angle_axis.angle ();
+
+        // Make sure that 'angle' is in the range [0, pi]
+        if ( angle > AUX_PI_FLOAT )
+        {
+          angle = 2.0f*AUX_PI_FLOAT - angle;
+          aux::flip3 (axis);
+        }
+      }
+    } // namespace aux
+  } // namespace recognition
+} // namespace pcl
 
 #endif // AUX_H_

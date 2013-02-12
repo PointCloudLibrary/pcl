@@ -187,7 +187,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
       (*it)->getData ()->computeAveragePoint ();
 
       // Compute the length of the average normal
-      normal_length = aux::vecLength3 ((*it)->getData ()->getNormal ());
+      normal_length = aux::length3 ((*it)->getData ()->getNormal ());
 
       // We are suppose to use normals. However, it could be that all normals in this leaf are "illegal", because,
       // e.g., they were not available in the data set. In this case, remove the leaf from the octree.
@@ -198,7 +198,7 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
       }
       else
       {
-        aux::vecMult3 ((*it)->getData ()->getNormal (), 1.0f/normal_length);
+        aux::mult3 ((*it)->getData ()->getNormal (), 1.0f/normal_length);
         ++it;
       }
     }
@@ -323,7 +323,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
     nodes.pop_back ();
 
     // Check if the sphere intersects the current node
-    if ( fabs (radius - aux::vecDistance3<float> (p, node->getCenter ())) <= node->getRadius () )
+    if ( fabs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
     {
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )
@@ -363,7 +363,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
     nodes.pop_back ();
 
     // Check if the sphere intersects the current node
-    if ( fabs (radius - aux::vecDistance3<float> (p, node->getCenter ())) <= node->getRadius () )
+    if ( fabs (radius - aux::distance3<float> (p, node->getCenter ())) <= node->getRadius () )
     {
       // We have an intersection -> push back the children of the current node
       if ( node->hasChildren () )

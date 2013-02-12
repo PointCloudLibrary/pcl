@@ -143,20 +143,163 @@ namespace pcl
         class RotationSpace
         {
           public:
-    		RotationSpace ()
-    		{
-              // We want to describe each rotation by treating the rows of the rotation matrix as vectors
-              // and saving the angle between the first row and the x-axis, the second row and y-axis and
-              // the third row and z-axis. This space of three angles is discretized and saved in an octree.
-              float min = -(static_cast<float> (M_PI) + 0.000000001f), max = static_cast<float> (M_PI) + 0.000000001f;
-              float b[6] = {min, max, min, max, min, max};
+            class Cell
+            {
+            public:
+              class Entry
+              {
+                public:
+                  Entry ()
+                  : num_transforms_ (0)
+                  {
+                    aux::set3 (axis_angle_, 0.0f);
+                    aux::set3 (translation_, 0.0f);
+                  }
 
-              octree_.build (b, 10.0f*AUX_DEG_TO_RADIANS);
-    		}
+                  Entry (const Entry& src)
+                  : num_transforms_ (src.num_transforms_)
+                  {
+                    aux::copy3 (src.axis_angle_, this->axis_angle_);
+                    aux::copy3 (src.translation_, this->translation_);
+                  }
+
+                  inline void
+                  addRigidTransform (const float axis_angle[3], const float translation[3])
+                  {
+                    aux::add3 (this->axis_angle_, axis_angle);
+                    aux::add3 (this->translation_, translation);
+                    ++num_transforms_;
+                  }
+
+                  inline void
+                  computeAverageRigidTransform ()
+                  {
+                    if ( num_transforms_ < 2 )
+                      return;
+
+                    float factor = 1.0f/static_cast<float> (num_transforms_);
+                    aux::mult3 (this->axis_angle_, factor);
+                    aux::mult3 (this->translation_, factor);
+                    num_transforms_ = 1;
+                  }
+
+                  inline const float*
+                  getAxisAngle () const
+                  {
+                    return (axis_angle_);
+                  }
+
+                  inline const float*
+                  getTranslation () const
+                  {
+                    return (translation_);
+                  }
+
+                public:
+                  float axis_angle_[3], translation_[3];
+                  int num_transforms_;
+              };// class Entry
+
+            public:
+              Cell (){}
+              virtual ~Cell ()
+              {
+                model_to_entry_.clear ();
+              }
+
+              inline void
+              addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
+              {
+                model_to_entry_[model].addRigidTransform (axis_angle, translation);
+              }
+
+              inline void
+              computeAverageRigidTransformInEntries (std::list<ObjRecRANSAC::Hypothesis*>& out, int& hypotheses_counter)
+              {
+                for ( std::map<const ModelLibrary::Model*,Entry>::iterator it = model_to_entry_.begin () ; it != model_to_entry_.end () ; ++it )
+                {
+                  // First, compute the average rigid transform (in the axis-angle representation)
+                  it->second.computeAverageRigidTransform ();
+                  // Now create a new hypothesis
+                  ObjRecRANSAC::Hypothesis* new_hypo = new ObjRecRANSAC::Hypothesis(*it->first);
+                  // Save the average rotation (in matrix form)
+                  aux::axisAngleToRotationMatrix (it->second.getAxisAngle (), new_hypo->rigid_transform_);
+                  // Save the average translation
+                  aux::copy3 (it->second.getTranslation (), new_hypo->rigid_transform_ + 9);
+                  // Save the new hypothesis
+                  out.push_back (new_hypo);
+                }
+                hypotheses_counter += static_cast<int> (model_to_entry_.size ());
+              }
+
+            protected:
+              std::map<const ModelLibrary::Model*,Entry> model_to_entry_;
+            };// class Cell
 
           public:
-            ORROctree octree_;
-        };
+            /** \brief We use the axis-angle representation for rotations. The axis is encoded in the vector
+              * and the angle is its magnitude. This is represented in an octree with bounds [-pi, pi]^3. */
+    		RotationSpace ()
+    		{
+              float min = -(AUX_PI_FLOAT + 0.000000001f), max = AUX_PI_FLOAT + 0.000000001f;
+              float bounds[6] = {min, max, min, max, min, max};
+
+              // Build the voxel structure
+              rot_octree_.build (bounds, 5.0f*AUX_DEG_TO_RADIANS);
+    		}
+
+    		virtual ~RotationSpace ()
+            {
+              for ( std::list<RotationSpace::Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
+                delete *it;
+              full_cells_.clear ();
+            }
+
+    		inline bool
+    		addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
+    		{
+              ORROctree::Node* leaf = rot_octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
+
+              if ( !leaf )
+              {
+                const float *b = rot_octree_.getBounds ();
+                printf ("WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, %f) is "
+                        "out of the rotation space bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
+                        __func__, axis_angle[0], axis_angle[1], axis_angle[2], b[0], b[1], b[2], b[3], b[4], b[5]);
+                return (false);
+              }
+
+              RotationSpace::Cell* rot_cell;
+
+              if ( !leaf->getData () )
+              {
+                rot_cell = new RotationSpace::Cell ();
+                ORROctree::Node::Data* data = new ORROctree::Node::Data (rot_cell);
+                leaf->setData (data);
+                full_cells_.push_back (rot_cell);
+              }
+              else
+                rot_cell = static_cast<RotationSpace::Cell*> (leaf->getData ()->getUserData ());
+
+              // Add the rigid transform to the cell
+              rot_cell->addRigidTransform (model, axis_angle, translation);
+
+              return (true);
+            }
+
+    		/** \brief For each full rotation space cell, the method computes the average rigid transform and creates and pushes back a new
+    		  * hypothesis in 'out'. Increments 'hypotheses_counter' by the number of new created hypotheses. */
+            inline void
+            computeAverageRigidTransformInCells (std::list<ObjRecRANSAC::Hypothesis*>& out, int& hypotheses_counter)
+            {
+              for ( std::list<RotationSpace::Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
+                (*it)->computeAverageRigidTransformInEntries (out, hypotheses_counter);
+            }
+
+          protected:
+            ORROctree rot_octree_;
+            std::list<RotationSpace::Cell*> full_cells_;
+        };// class RotationSpace
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
@@ -358,8 +501,9 @@ namespace pcl
         generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
 
         /** \brief Groups repeating hypotheses in 'hypotheses'. Saves a representative for each group of repeating hypotheses
-          * in 'out'. Returns the number of hypotheses after grouping. WARNING: the method copies the selected representatives
-          * from 'hypotheses' to 'out' and frees the memory occupied by the other hypotheses. */
+          * in 'out'. Returns the number of hypotheses after grouping. WARNING: the method deletes all hypotheses in the
+          * provided input list 'hypotheses' and creates new ones and saves them in 'out'. Do not forget to destroy the memory
+          * each item in 'out' is pointing to! */
         int
         groupHypotheses(std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::list<Hypothesis*>& out);
 
@@ -396,19 +540,19 @@ namespace pcl
           o2[2] = 0.5f*(a2[2] + b2[2]);
 
           // Compute the x-axes
-          aux::vecDiff3 (b1, a1, x1); aux::vecNormalize3 (x1);
-          aux::vecDiff3 (b2, a2, x2); aux::vecNormalize3 (x2);
+          aux::diff3 (b1, a1, x1); aux::normalize3 (x1);
+          aux::diff3 (b2, a2, x2); aux::normalize3 (x2);
           // Compute the y-axes. First y-axis
-          aux::projectOnPlane3 (a1_n, x1, tmp1); aux::vecNormalize3 (tmp1);
-          aux::projectOnPlane3 (b1_n, x1, tmp2); aux::vecNormalize3 (tmp2);
-          aux::vecSum3 (tmp1, tmp2, y1); aux::vecNormalize3 (y1);
+          aux::projectOnPlane3 (a1_n, x1, tmp1); aux::normalize3 (tmp1);
+          aux::projectOnPlane3 (b1_n, x1, tmp2); aux::normalize3 (tmp2);
+          aux::sum3 (tmp1, tmp2, y1); aux::normalize3 (y1);
           // Second y-axis
-          aux::projectOnPlane3 (a2_n, x2, tmp1); aux::vecNormalize3 (tmp1);
-          aux::projectOnPlane3 (b2_n, x2, tmp2); aux::vecNormalize3 (tmp2);
-          aux::vecSum3 (tmp1, tmp2, y2); aux::vecNormalize3 (y2);
+          aux::projectOnPlane3 (a2_n, x2, tmp1); aux::normalize3 (tmp1);
+          aux::projectOnPlane3 (b2_n, x2, tmp2); aux::normalize3 (tmp2);
+          aux::sum3 (tmp1, tmp2, y2); aux::normalize3 (y2);
           // Compute the z-axes
-          aux::vecCross3 (x1, y1, z1);
-          aux::vecCross3 (x2, y2, z2);
+          aux::cross3 (x1, y1, z1);
+          aux::cross3 (x2, y2, z2);
 
           // 1. Invert the matrix [x1|y1|z1] (note that x1, y1, and z1 are treated as columns!)
           invFrame1[0][0] = x1[0]; invFrame1[0][1] = x1[1]; invFrame1[0][2] = x1[2];
@@ -471,11 +615,11 @@ namespace pcl
         {
           // Get the line from p1 to p2
           float cl[3] = {p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]};
-          aux::vecNormalize3 (cl);
+          aux::normalize3 (cl);
 
-          signature[0] = std::acos (aux::clamp (aux::vecDot3 (n1,cl), -1.0f, 1.0f)); cl[0] = -cl[0]; cl[1] = -cl[1]; cl[2] = -cl[2];
-          signature[1] = std::acos (aux::clamp (aux::vecDot3 (n2,cl), -1.0f, 1.0f));
-          signature[2] = std::acos (aux::clamp (aux::vecDot3 (n1,n2), -1.0f, 1.0f));
+          signature[0] = std::acos (aux::clamp (aux::dot3 (n1,cl), -1.0f, 1.0f)); cl[0] = -cl[0]; cl[1] = -cl[1]; cl[2] = -cl[2];
+          signature[1] = std::acos (aux::clamp (aux::dot3 (n2,cl), -1.0f, 1.0f));
+          signature[2] = std::acos (aux::clamp (aux::dot3 (n1,n2), -1.0f, 1.0f));
         }
 
       protected:
