@@ -702,6 +702,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     const std::string &rgb_pclzf_file = rgb_pclzf_files_[idx];
     pcl::io::LZFRGB24ImageReader rgb;
     pcl::io::LZFBayer8ImageReader bayer;
+    pcl::io::LZFYUV422ImageReader yuv;
     pcl::io::LZFDepth16ImageReader depth;
     if (manual_intrinsics_)
     {
@@ -715,12 +716,14 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       cx = principal_point_x_;
       cy = principal_point_y_;
       rgb.setParameters (manual_params); 
+      yuv.setParameters (manual_params); 
       bayer.setParameters (manual_params); 
       depth.setParameters (manual_params); 
     }
     else
     {
       rgb.readParameters (xml_file);
+      yuv.readParameters (xml_file);
       bayer.readParameters (xml_file);
       depth.readParameters (xml_file);
       // update intrinsics
@@ -733,7 +736,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     }
     cloud_color.is_dense = false;
     if (!rgb.read (rgb_pclzf_file, cloud_color))
-      bayer.read (rgb_pclzf_file, cloud_color);
+      if (!yuv.read (rgb_pclzf_file, cloud_color))
+        bayer.read (rgb_pclzf_file, cloud_color);
     depth.read (depth_pclzf_file, cloud_color);
     // handle timestamps
     uint64_t timestamp;
