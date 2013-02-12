@@ -46,6 +46,7 @@
 
 #include <boost/function.hpp>
 #include <boost/shared_array.hpp>
+#define BOOST_PARAMETER_MAX_ARITY 7
 #include <boost/signals2.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/algorithm/string.hpp>
