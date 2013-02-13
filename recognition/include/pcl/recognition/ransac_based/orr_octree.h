@@ -128,6 +128,14 @@ namespace pcl
                 inline void
                 set3dId (int x, int y, int z){ id_x_ = x; id_y_ = y; id_z_ = z;}
 
+                inline void
+                get3dId (int id[3]) const
+                {
+                  id[0] = id_x_;
+                  id[1] = id_y_;
+                  id[2] = id_z_;
+                }
+
                 inline int
                 get3dIdX () const {return id_x_;}
 
@@ -294,6 +302,20 @@ namespace pcl
             if ( z >= c[2] ) id |= 1;
 
             node = node->getChild (id);
+          }
+
+          if ( !node->getData () )
+          {
+            Node::Data* data = new Node::Data ();
+            // Compute the 3d integer id of the leaf
+            // Compute the 3d integer id of the leaf
+            data->set3dId(
+              static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
+              static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
+              static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_));
+            // Save the data
+            node->setData (data);
+            full_leaves_.push_back (node);
           }
 
           return (node);

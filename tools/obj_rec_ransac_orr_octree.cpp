@@ -295,6 +295,19 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
 
 //===============================================================================================================================
 
+void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
+{
+  // Define the cube representing the leaf
+  const float *b = node->getBounds ();
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
+  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
+  cube->Update ();
+
+  additive_octree->AddInput (cube->GetOutput ());
+}
+
+//===============================================================================================================================
+
 void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_only)
 {
   vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
@@ -357,19 +370,6 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   octree_actor->GetProperty ()->SetLineWidth (1);
   octree_actor->GetProperty ()->SetRepresentationToWireframe ();
   renderer->AddActor(octree_actor);
-}
-
-//===============================================================================================================================
-
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
-{
-  // Define the cube representing the leaf
-  const float *b = node->getBounds ();
-  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
-  cube->Update ();
-
-  additive_octree->AddInput (cube->GetOutput ());
 }
 
 //===============================================================================================================================

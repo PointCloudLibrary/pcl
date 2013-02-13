@@ -158,19 +158,6 @@ pcl::recognition::ORROctree::build (const PointCloudIn& points, float voxel_size
     }
 
     // Now, that we have the right leaf -> fill it
-    if ( !node->getData() )
-    {
-      Node::Data* data = new Node::Data ();
-      // Compute the 3d integer id of the leaf
-      data->set3dId(
-        static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
-        static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
-        static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_));
-      // Save the data
-      node->setData (data);
-      full_leaves_.push_back (node);
-    }
-
     node->getData ()->addToPoint (points[i].x, points[i].y, points[i].z);
     if ( normals )
       node->getData ()->addToNormal (normals->at(i).normal_x, normals->at(i).normal_y, normals->at(i).normal_z);

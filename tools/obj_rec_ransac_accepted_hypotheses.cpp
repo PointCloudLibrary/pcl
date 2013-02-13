@@ -72,6 +72,7 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
+//#define _SHOW_TRANSFORM_OCTREE_
 //#define _SHOW_SCENE_OPPS_
 //#define _SHOW_OCTREE_NORMALS_
 
@@ -92,9 +93,55 @@ class CallbackParameters
     PointCloud<PointXYZ>& points_;
     PointCloud<Normal>& normals_;
     int num_hypotheses_to_show_;
-    list<vtkActor*> actors_;
+    list<vtkActor*> actors_, model_actors_;
     bool show_models_;
 };
+
+//===============================================================================================================================
+
+void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
+{
+  // Define the cube representing the leaf
+  const float *b = node->getBounds ();
+  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
+  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
+  cube->Update ();
+
+  additive_octree->AddInput (cube->GetOutput ());
+}
+
+//===============================================================================================================================
+
+void show_octree (const ORROctree* octree, PCLVisualizer& viz, list<vtkActor*>& actors)
+{
+  vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
+  vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
+
+  cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
+
+  const vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
+  for ( vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
+    // Add it to the other cubes
+    node_to_cube (*it, append);
+
+  // Save the result
+  append->Update();
+  vtk_octree->DeepCopy (append->GetOutput ());
+
+  // Add to the visualizer
+  vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
+  vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
+  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+  mapper->SetInput(vtk_octree);
+  octree_actor->SetMapper(mapper);
+
+  // Set the appearance & add to the renderer
+  octree_actor->GetProperty ()->SetColor (1.0, 1.0, 1.0);
+  octree_actor->GetProperty ()->SetLineWidth (1);
+  octree_actor->GetProperty ()->SetRepresentationToWireframe ();
+  renderer->AddActor(octree_actor);
+  actors.push_back (octree_actor);
+}
 
 //===============================================================================================================================
 
@@ -237,6 +284,11 @@ update (CallbackParameters* params)
   for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
     renderer->RemoveActor (*it);
   params->actors_.clear ();
+
+  for ( list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
+    renderer->RemoveActor (*it);
+  params->model_actors_.clear ();
+
   params->viz_.removeAllShapes ();
 
 #ifdef _SHOW_SCENE_OPPS_
@@ -327,13 +379,24 @@ update (CallbackParameters* params)
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);
     renderer->AddActor(vtk_actor);
-    params->actors_.push_back (vtk_actor);
+    params->model_actors_.push_back (vtk_actor);
 
     // Compose the model's id
-    cout << (*acc_hypo)->obj_model_.getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << endl;
+    cout << (*acc_hypo)->obj_model_.getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << ";  ";
+    printf ("t_id = [%i, %i, %i], rot_id = [%i, %i, %i]\n",
+      (*acc_hypo)->t_3dId_[0],
+      (*acc_hypo)->t_3dId_[1],
+      (*acc_hypo)->t_3dId_[2],
+      (*acc_hypo)->rot_3dId_[0],
+      (*acc_hypo)->rot_3dId_[1],
+      (*acc_hypo)->rot_3dId_[2]);
   }
 
-  // Show the bounds of the octree
+#ifdef _SHOW_TRANSFORM_OCTREE_
+  show_octree (&params->objrec_.getTransformOctree (), params->viz_, params->actors_);
+#endif
+
+  // Show the bounds of the scene octree
   const float* ob = params->objrec_.getSceneOctree ().getBounds ();
   params->viz_.addCube (ob[0], ob[1], ob[2], ob[3], ob[4], ob[5], 1.0, 1.0, 1.0);
 
@@ -385,7 +448,7 @@ keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
     // Switch models visibility
     params->show_models_ = !params->show_models_;
 
-    for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
+    for ( list<vtkActor*>::iterator it = params->model_actors_.begin () ; it != params->model_actors_.end () ; ++it )
       (*it)->SetVisibility (static_cast<int> (params->show_models_));
 
     params->viz_.getRenderWindow ()->Render ();

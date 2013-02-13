@@ -80,7 +80,7 @@ namespace pcl
         v[0] = v[1] = v[2] = value;
       }
 
-      /** \brief a = -a */
+      /** \brief dst = src */
       template <typename T> void
       copy3 (const T src[3], T dst[3])
       {

@@ -292,11 +292,14 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
       continue;
     }
 
-    if ( !com_leaf->getData () )
+    if ( !com_leaf->getData ()->getUserData () )
     {
       rot_space = new RotationSpace ();
-      com_leaf->setData (new ORROctree::Node::Data (rot_space));
+      com_leaf->getData ()->setUserData (rot_space);
       rot_space_list.push_back (rot_space);
+#ifdef OBJ_REC_RANSAC_TEST
+      com_leaf->getData ()->get3dId (rot_space->t_3dId_);
+#endif
     }
     else // get the existing rotation space
       rot_space = static_cast<RotationSpace*> (com_leaf->getData ()->getUserData ());

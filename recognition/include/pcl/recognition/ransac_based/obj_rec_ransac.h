@@ -51,7 +51,7 @@
 #include <list>
 
 #define OBJ_REC_RANSAC_VERBOSE
-#define ORR_USE_OCTREE_TRANSFORM_BUCKETING
+#define OBJ_REC_RANSAC_TEST
 
 namespace pcl
 {
@@ -138,6 +138,9 @@ namespace pcl
             float match_confidence_;
             const ModelLibrary::Model& obj_model_;
             std::set<int> explained_pixels_;
+#ifdef OBJ_REC_RANSAC_TEST
+            int rot_3dId_[3], t_3dId_[3];
+#endif
     	};
 
         class RotationSpace
@@ -228,9 +231,18 @@ namespace pcl
                   aux::copy3 (it->second.getTranslation (), new_hypo->rigid_transform_ + 9);
                   // Save the new hypothesis
                   out.push_back (new_hypo);
+#ifdef OBJ_REC_RANSAC_TEST
+                  aux::copy3(t_3dId_, new_hypo->t_3dId_);
+                  aux::copy3(rot_3dId_, new_hypo->rot_3dId_);
+#endif
                 }
                 hypotheses_counter += static_cast<int> (model_to_entry_.size ());
               }
+
+#ifdef OBJ_REC_RANSAC_TEST
+            public:
+              int rot_3dId_[3], t_3dId_[3];
+#endif
 
             protected:
               std::map<const ModelLibrary::Model*,Entry> model_to_entry_;
@@ -245,7 +257,7 @@ namespace pcl
               float bounds[6] = {min, max, min, max, min, max};
 
               // Build the voxel structure
-              rot_octree_.build (bounds, 5.0f*AUX_DEG_TO_RADIANS);
+              rot_octree_.build (bounds, 6.0f*AUX_DEG_TO_RADIANS);
     		}
 
     		virtual ~RotationSpace ()
@@ -258,9 +270,9 @@ namespace pcl
     		inline bool
     		addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
     		{
-              ORROctree::Node* leaf = rot_octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
+              ORROctree::Node* rot_leaf = rot_octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
 
-              if ( !leaf )
+              if ( !rot_leaf )
               {
                 const float *b = rot_octree_.getBounds ();
                 printf ("WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, %f) is "
@@ -271,15 +283,18 @@ namespace pcl
 
               RotationSpace::Cell* rot_cell;
 
-              if ( !leaf->getData () )
+              if ( !rot_leaf->getData ()->getUserData () )
               {
                 rot_cell = new RotationSpace::Cell ();
-                ORROctree::Node::Data* data = new ORROctree::Node::Data (rot_cell);
-                leaf->setData (data);
+                rot_leaf->getData ()->setUserData (rot_cell);
                 full_cells_.push_back (rot_cell);
+#ifdef OBJ_REC_RANSAC_TEST
+                rot_leaf->getData ()->get3dId (rot_cell->rot_3dId_);
+                aux::copy3(t_3dId_, rot_cell->t_3dId_);
+#endif
               }
               else
-                rot_cell = static_cast<RotationSpace::Cell*> (leaf->getData ()->getUserData ());
+                rot_cell = static_cast<RotationSpace::Cell*> (rot_leaf->getData ()->getUserData ());
 
               // Add the rigid transform to the cell
               rot_cell->addRigidTransform (model, axis_angle, translation);
@@ -299,6 +314,10 @@ namespace pcl
           protected:
             ORROctree rot_octree_;
             std::list<RotationSpace::Cell*> full_cells_;
+#ifdef OBJ_REC_RANSAC_TEST
+          public:
+            int t_3dId_[3];
+#endif
         };// class RotationSpace
 
       public:
@@ -326,9 +345,7 @@ namespace pcl
           scene_octree_.clear ();
           scene_octree_proj_.clear ();
           sampled_oriented_point_pairs_.clear ();
-#ifdef ORR_USE_OCTREE_TRANSFORM_BUCKETING
           transform_octree_.clear ();
-#endif
         }
 
         /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
@@ -459,6 +476,12 @@ namespace pcl
           return (scene_octree_);
         }
 
+        inline const ORROctree&
+        getTransformOctree () const
+        {
+          return (transform_octree_);
+        }
+
         inline float
         getPairWidth () const
         {
@@ -566,42 +589,6 @@ namespace pcl
           rigid_transform[9]  = o2[0] - Ro1[0];
           rigid_transform[10] = o2[1] - Ro1[1];
           rigid_transform[11] = o2[2] - Ro1[2];
-        }
-
-        inline void
-        computeAxisAnglesOfRotation (const float* rotation, float& angle_x_axis, float& angle_y_axis, float& angle_z_axis) const
-        {
-          // Compute the absolute value of the angles
-          angle_x_axis = std::acos (aux::clamp (rotation[0], -1.0f, 1.0f)); // Angle between the first row and the x-axis
-          angle_y_axis = std::acos (aux::clamp (rotation[4], -1.0f, 1.0f)); // Angle between the second row and the y-axis
-          angle_z_axis = std::acos (aux::clamp (rotation[8], -1.0f, 1.0f)); // Angle between the third row and the z-axis
-
-          // Determine the sign of the angle with the x-axis
-          if ( rotation[1] < 0.0f )
-            angle_x_axis = -angle_x_axis;
-          else if ( rotation[1] == 0.0f )
-          {
-            if ( rotation[2] < 0.0f )
-              angle_x_axis = -angle_x_axis;
-          }
-
-          // Determine the sign of the angle with the y-axis
-          if ( rotation[5] < 0.0f )
-            angle_y_axis = -angle_y_axis;
-          else if ( rotation[5] == 0.0f )
-          {
-            if ( rotation[3] < 0.0f )
-              angle_y_axis = -angle_y_axis;
-          }
-
-          // Determine the sign of the angle with the z-axis
-          if ( rotation[6] < 0.0f )
-            angle_z_axis = -angle_z_axis;
-          else if ( rotation[6] == 0.0f )
-          {
-            if ( rotation[7] < 0.0f )
-              angle_z_axis = -angle_z_axis;
-          }
         }
 
         /** \brief Computes the signature of the oriented point pair ((p1, n1), (p2, n2)) consisting of the angles between
