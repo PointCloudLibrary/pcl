@@ -112,7 +112,7 @@ pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size
 }
 
 void
-pcl::PLYReader::amendFloatProperty (const std::string& old_name, const std::string& new_name)
+pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
 {
   std::vector< ::sensor_msgs::PointField>::reverse_iterator finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
@@ -120,6 +120,8 @@ pcl::PLYReader::amendFloatProperty (const std::string& old_name, const std::stri
       break;
   assert (finder != cloud_->fields.rend ());
   finder->name = new_name;
+  if (new_datatype > 0 && new_datatype != finder->datatype)
+    finder->datatype = new_datatype;
 }
 
 void
@@ -220,7 +222,7 @@ namespace pcl
       }
       else if (property_name == "alpha")
       {
-        amendFloatProperty ("rgb", "rgba");
+        amendProperty ("rgb", "rgba", sensor_msgs::PointField::UINT32);
         return boost::bind (&pcl::PLYReader::vertexAlphaCallback, this, _1);
       }
       else if (property_name == "intensity")
@@ -329,26 +331,26 @@ pcl::PLYReader::vertexColorCallback (const std::string& color_name, pcl::io::ply
     int32_t rgb = r << 16 | g << 8 | b;
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
             &rgb,
-            sizeof (int32_t));
-    vertex_offset_before_ += static_cast<int> (sizeof (int32_t));
+            sizeof (pcl::io::ply::float32));
+    vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
   }
 }
 
 void
 pcl::PLYReader::vertexAlphaCallback (pcl::io::ply::uint8 alpha)
 {
-  int32_t a (alpha);
+  static uint32_t a, rgba;
+  a = uint32_t (alpha);
   // get anscient rgb value and store it in rgba
-  int32_t rgba;
-  memcpy (&rgba,
-          &cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+  memcpy (&rgba, 
+          &cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
           sizeof (pcl::io::ply::float32));
-  // shift left and append alpha
-  rgba = rgba << 8 | a;
+  // append alpha
+  rgba = rgba | a << 24;
   // put rgba back
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_],
-          &rgba,
-          sizeof (int32_t));
+  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + rgb_offset_before_], 
+          &rgba, 
+          sizeof (uint32_t));
 }
 
 void
@@ -784,7 +786,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
           }
           case sensor_msgs::PointField::UINT32:
           {
-            if (cloud.fields[d].name.find ("rgb") == std::string::npos)
+            if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
               unsigned int value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
@@ -797,12 +799,8 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
               int r = color.r;
               int g = color.g;
               int b = color.b;
-              fs << r << " " << g << " " << b;
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                int a = color.a;
-                fs << " " << a;
-              }
+              int a = color.a;
+              fs << r << " " << g << " " << b << " " << a;
             }
             break;
           }
@@ -822,11 +820,6 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
               int g = color.g;
               int b = color.b;
               fs << r << " " << g << " " << b;
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                int a = color.a;
-                fs << " " << a;
-              }
             }
             break;
           }
@@ -932,7 +925,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
           }
           case sensor_msgs::PointField::UINT32:
           {
-            if (cloud.fields[d].name.find ("rgb") == std::string::npos)
+            if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
               unsigned int value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned int)], sizeof (unsigned int));
@@ -945,12 +938,8 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               int r = color.r;
               int g = color.g;
               int b = color.b;
-              line << r << " " << g << " " << b;
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                int a = color.a;
-                line << " " << a;
-              }
+              int a = color.a;
+              line << r << " " << g << " " << b << " " << a;
             }
             break;
           }
@@ -976,11 +965,6 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
               int g = color.g;
               int b = color.b;
               line << r << " " << g << " " << b;
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                int a = color.a;
-                line << " " << a;
-              }
             }
             break;
           }
@@ -1164,7 +1148,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
           }
           case sensor_msgs::PointField::UINT32:
           {
-            if (cloud.fields[d].name.find ("rgb") == std::string::npos)
+            if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
               unsigned int value;
               memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned int)], sizeof (unsigned int));
@@ -1177,14 +1161,11 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
               unsigned char r = color.r;
               unsigned char g = color.g;
               unsigned char b = color.b;
+              unsigned char a = color.a;
               fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                unsigned char a = color.a;
-                fpout.write (reinterpret_cast<const char*> (&a), sizeof (unsigned char));
-              }
+              fpout.write (reinterpret_cast<const char*> (&a), sizeof (unsigned char));
             }
             break;
           }
@@ -1206,11 +1187,6 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
               fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
               fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
-              if (cloud.fields[d].name.find ("rgba") != std::string::npos)
-              {
-                unsigned char a = color.a;
-                fpout.write (reinterpret_cast<const char*> (&a), sizeof (unsigned char));
-              }
             }
             break;
           }

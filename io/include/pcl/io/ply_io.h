@@ -415,7 +415,7 @@ namespace pcl
         * param[in] new_name property new name
         */
       void
-      amendFloatProperty (const std::string& old_name, const std::string& new_name);
+      amendProperty (const std::string& old_name, const std::string& new_name, uint8_t datatype = 0);
 
       /** Append an unsigned int property to the cloud fields.
         * param[in] name property name
