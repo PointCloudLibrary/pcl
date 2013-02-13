@@ -1382,19 +1382,20 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         //   break;
         ++xyz;
       }
-      else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name.find ("rgb") != std::string::npos)
+      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && 
+                (mesh.cloud.fields[d].name == "rgb"))
+
       {
         pcl::RGB color;
-        if(rgba_index != -1)
-        {
-          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
-        }
-        else
-        {
-          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-          fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
-        }
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+        fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
+      }
+      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::UINT32) &&
+               (mesh.cloud.fields[d].name == "rgba"))
+      {
+        pcl::RGB color;
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        fs << int (color.r) << " " << int (color.g) << " " << int (color.b) << " " << int (color.a);
       }
       fs << " ";
     }
@@ -1510,31 +1511,25 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
         //   break;
         ++xyz;
       }
-      else if (mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32 && mesh.cloud.fields[d].name.find ("rgb") != std::string::npos)
+      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && 
+                (mesh.cloud.fields[d].name == "rgb"))
+
       {
         pcl::RGB color;
-        if(rgba_index != -1)
-        {
-          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (float)], sizeof (RGB));
-          unsigned char r = color.r;
-          unsigned char g = color.g;
-          unsigned char b = color.b;
-          fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
-          fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
-          fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
-          unsigned char a = color.a;
-          fpout.write (reinterpret_cast<const char*> (&a), sizeof (unsigned char));
-        }
-        else
-        {
-          memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
-          unsigned char r = color.r;
-          unsigned char g = color.g;
-          unsigned char b = color.b;
-          fpout.write (reinterpret_cast<const char*> (&r), sizeof (unsigned char));
-          fpout.write (reinterpret_cast<const char*> (&g), sizeof (unsigned char));
-          fpout.write (reinterpret_cast<const char*> (&b), sizeof (unsigned char));
-        }
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
+        fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+        fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+        fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
+      }
+      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::UINT32) &&
+               (mesh.cloud.fields[d].name == "rgba"))
+      {
+        pcl::RGB color;
+        memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgba_index].offset + c * sizeof (uint32_t)], sizeof (RGB));
+        fpout.write (reinterpret_cast<const char*> (&color.r), sizeof (unsigned char));
+        fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
+        fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
+        fpout.write (reinterpret_cast<const char*> (&color.a), sizeof (unsigned char));
       }
     }
     if (xyz != 3)
