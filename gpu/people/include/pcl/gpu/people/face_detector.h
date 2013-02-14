@@ -69,23 +69,23 @@ namespace pcl
           NCVStatus
           loadFromXML2(const std::string                   &filename,
                        HaarClassifierCascadeDescriptor     &haar,
-                       std::vector<HaarStage64>            &haarStages,
+                       std::vector<HaarStage64>            &haar_stages,
                        std::vector<HaarClassifierNode128>  &haarClassifierNodes,
-                       std::vector<HaarFeature64>          &haarFeatures);
+                       std::vector<HaarFeature64>          &haar_features);
 
           static NCVStatus
           loadFromNVBIN(const std::string &filename,
                         HaarClassifierCascadeDescriptor &haar,
-                        std::vector<HaarStage64> &haarStages,
+                        std::vector<HaarStage64> &haar_stages,
                         std::vector<HaarClassifierNode128> &haarClassifierNodes,
-                        std::vector<HaarFeature64> &haarFeatures);
+                        std::vector<HaarFeature64> &haar_features);
 
           NCVStatus
           ncvHaarLoadFromFile_host(const std::string &filename,
                                    HaarClassifierCascadeDescriptor &haar,
-                                   NCVVector<HaarStage64> &h_HaarStages,
-                                   NCVVector<HaarClassifierNode128> &h_HaarNodes,
-                                   NCVVector<HaarFeature64> &h_HaarFeatures);
+                                   NCVVector<HaarStage64> &h_haar_stages,
+                                   NCVVector<HaarClassifierNode128> &h_haar_nodes,
+                                   NCVVector<HaarFeature64> &h_haar_features);
 
           NCVStatus
           ncvHaarGetClassifierSize(const std::string &filename, Ncv32u &numStages,
@@ -95,13 +95,13 @@ namespace pcl
           NCVprocess(pcl::PointCloud<pcl::RGB>&           cloud_in,
                      pcl::PointCloud<pcl::Intensity32u>&  cloud_out,
                      HaarClassifierCascadeDescriptor      &haar,
-                     NCVVector<HaarStage64>               &d_haarStages,
-                     NCVVector<HaarClassifierNode128>     &d_haarNodes,
-                     NCVVector<HaarFeature64>             &d_haarFeatures,
-                     NCVVector<HaarStage64>               &h_haarStages,
-                     INCVMemAllocator                     &gpuAllocator,
-                     INCVMemAllocator                     &cpuAllocator,
-                     cudaDeviceProp                       &devProp,
+                     NCVVector<HaarStage64>               &d_haar_stages,
+                     NCVVector<HaarClassifierNode128>     &d_haar_nodes,
+                     NCVVector<HaarFeature64>             &d_haar_features,
+                     NCVVector<HaarStage64>               &h_haar_stages,
+                     INCVMemAllocator                     &gpu_allocator,
+                     INCVMemAllocator                     &cpu_allocator,
+                     cudaDeviceProp                       &device_properties,
                      Ncv32u                               width=640,
                      Ncv32u                               height=480,
                      NcvBool                              bFilterRects=false,
