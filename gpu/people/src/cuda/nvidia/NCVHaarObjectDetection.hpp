@@ -303,12 +303,9 @@ NCV_CT_ASSERT(sizeof(HaarClassifierNodeDescriptor32) == 4);
 NCV_CT_ASSERT(sizeof(HaarClassifierNode128) == 16);
 NCV_CT_ASSERT(sizeof(HaarStage64) == 8);
 
-//=============================================================================
-//
-// Classifier cascade descriptor
-//
-//==============================================================================
-
+/**
+ * \brief Classifier cascade descriptor
+ */
 struct HaarClassifierCascadeDescriptor
 {
     Ncv32u NumStages;

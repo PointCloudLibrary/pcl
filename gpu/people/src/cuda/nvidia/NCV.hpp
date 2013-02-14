@@ -38,8 +38,8 @@
  * Ported to PCL by Koen Buys : Attention Work in progress!
  */
 
-#ifndef _ncv_hpp_
-#define _ncv_hpp_
+#ifndef PCL_GPU_PEOPLE__NCV_HPP_
+#define PCL_GPU_PEOPLE__NCV_HPP_
 
 #if (defined WIN32 || defined _WIN32 || defined WINCE) && defined CVAPI_EXPORTS
     #define NCV_EXPORTS __declspec(dllexport)
@@ -270,7 +270,7 @@ NCV_EXPORTS void ncvSetDebugOutputHandler(NCVDebugOutputHandler* func);
     } while (0)
 
 /**
-* Return-codes for status notification, errors and warnings
+* \brief Return-codes for status notification, errors and warnings
 */
 enum
 {
@@ -976,4 +976,4 @@ NCV_EXPORTS NCVStatus ncvDrawRects_32u_device(Ncv32u *d_dst, Ncv32u dstStride, N
     NCVMatrixAlloc<type> name(alloc, width, height); \
     ncvAssertReturn(name.isMemAllocated(), err);
 
-#endif // _ncv_hpp_
+#endif // PCL_GPU_PEOPLE__NCV_HPP_

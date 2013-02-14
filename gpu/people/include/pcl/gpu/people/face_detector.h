@@ -184,14 +184,14 @@ namespace pcl
           NCVVectorAlloc<HaarFeature64>*          haar_features_dev_;
           NCVVectorAlloc<HaarFeature64>*          haar_features_host_;
 
-          INCVMemAllocator*                   gpu_allocator_;
-          INCVMemAllocator*                   cpu_allocator_;
+          INCVMemAllocator*                       gpu_allocator_;
+          INCVMemAllocator*                       cpu_allocator_;
 
-          NCVMemStackAllocator*               gpu_stack_allocator_;
-          NCVMemStackAllocator*               cpu_stack_allocator_;
+          NCVMemStackAllocator*                   gpu_stack_allocator_;
+          NCVMemStackAllocator*                   cpu_stack_allocator_;
 
-          NCVMemStackAllocator*               gpu_counter_;
-          NCVMemStackAllocator*               cpu_counter_;
+          NCVMemStackAllocator*                   gpu_counter_;
+          NCVMemStackAllocator*                   cpu_counter_;
 
       };
     }

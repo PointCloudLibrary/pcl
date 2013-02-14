@@ -84,9 +84,9 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                                              std::vector<HaarClassifierNode128>  &haarClassifierNodes,
                                              std::vector<HaarFeature64>          &haarFeatures)
 {
-  NCVStatus ncvStat;
-  // Read in the property tree
-  ptree pt;
+  NCVStatus ncvStat;      // TODO remove this type
+
+  boost::property_tree::ptree pt;
 
   haar.NumStages = 0;
   haar.NumClassifierRootNodes = 0;
@@ -94,8 +94,6 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   haar.NumFeatures = 0;
   haar.ClassifierSize.width = 0;
   haar.ClassifierSize.height = 0;
-  haar.bNeedsTiltedII = false;
-  haar.bHasStumpsOnly = false;
 
   try   // Fetch error loading the file
   {
@@ -119,9 +117,10 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
   haar.bHasStumpsOnly = true;
   haar.bNeedsTiltedII = false;
-  Ncv32u curMaxTreeDepth;
 
-  std::vector<HaarClassifierNode128> h_TmpClassifierNotRootNodes;
+  Ncv32u cur_max_tree_depth;
+
+  std::vector<HaarClassifierNode128> host_temp_classifier_not_root_nodes;
   haarStages.resize(0);
   haarClassifierNodes.resize(0);
   haarFeatures.resize(0);
@@ -130,43 +129,44 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   {
     int level1 = 0;     // For debug output only
     /// LEVEL1 (opencv_storage)
-    BOOST_FOREACH(const ptree::value_type &v, pt)
+    BOOST_FOREACH(const ptree::value_type &top_node, pt)
     {
-      if(!strcmp(v.first.c_str(), "opencv_storage"))      // Else NCV_HAAR_XML_LOADING_EXCEPTION
+      if(!strcmp(top_node.first.c_str(), "opencv_storage"))      // Else NCV_HAAR_XML_LOADING_EXCEPTION
       {
-        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 1, node %d, first : %s\n", level1, v.first.c_str());
+        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 1, XMLnode %d, first : %s\n", level1, top_node.first.c_str());
 
         int level2 = 0;
-        ptree pt2 = v.second;
+        boost::property_tree::ptree pt2 = top_node.second;
 
         /// LEVEL2 (haarcascade)
         BOOST_FOREACH(const ptree::value_type &w, pt2)
         {
-          if(!strcmp(w.second.get("<xmlattr>.type_id","").c_str(), "opencv-haar-classifier"))    // Else NCV_HAAR_XML_LOADING_EXCEPTION
+          if(!strcmp(w.second.get("<xmlattr>.type_id","").c_str(), "opencv-haar-classifier"))                      // Else NCV_HAAR_XML_LOADING_EXCEPTION
           {
-            PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2, node %d, first : %s\n", level2, w.first.c_str());
+            PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2, XMLnode %d, first : %s\n", level2, w.first.c_str());
 
-            std::string size  = w.second.get<std::string>("size");
-            std::cout << "loadFromXML2: level 2 : size string: " << size << std::endl;
-            std::istringstream l( size );
-            int size1 = 0, size2 = 0;
-            l >> std::skipws >> size1 >> size2;
-            if ( !l || size1 <= 0 || size2 <= 0 )
-              PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2 : size format error\n"); //  format error: line doesn't start with an int.
+            // Parse the size field, giving the classifier patch size
+            std::string size_string  = w.second.get<std::string>("size");                                         // data field contains both width and height so we put it in string first
+            std::cout << "loadFromXML2: level 2 : size string: " << size_string << std::endl;
+            std::istringstream l( size_string );
+            l >> std::skipws >> haar.ClassifierSize.width >> haar.ClassifierSize.height;
+            if ( !l || haar.ClassifierSize.width <= 0 || haar.ClassifierSize.height <= 0 )
+            {
+              PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 2 : size node format error\n");   //  format error: line doesn't start with an int.
+              return (NCV_HAAR_XML_LOADING_EXCEPTION);
+            }
             else
-              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", size1, size2);
-            haar.ClassifierSize.width = size1; haar.ClassifierSize.height = size2;
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level2 : size int1 %d, int2 %d\n", haar.ClassifierSize.width, haar.ClassifierSize.height);
 
             int level3 = 0;
             /// LEVEL3 (Stages)
             BOOST_FOREACH(const ptree::value_type &stage, w.second.get_child("stages"))
             {
-              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3, node %d, first : %s\n", level3, stage.first.c_str());
-              level3++;
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3, XMLnode %d, first : %s\n", level3, stage.first.c_str());
 
               HaarStage64 curStage;
               curStage.setStartClassifierRootNodeOffset(haarClassifierNodes.size());
-              Ncv32u tmpNumClassifierRootNodes = 0;
+              Ncv32u tmp_num_classifier_root_nodes = 0;
 
               float stage_threshold = stage.second.get<float>("stage_threshold");
               int parent = stage.second.get<int>("parent");
@@ -174,14 +174,13 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
               curStage.setStageThreshold(stage_threshold);
 
-              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3 stage_threshold %f, parent %d, next %d", stage_threshold, parent, next);
+              PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 3 stage_threshold %f, parent %d, next %d\n", stage_threshold, parent, next);
 
               int level4 = 0;
               /// LEVEL4 (Trees)
               BOOST_FOREACH(const ptree::value_type &tree, stage.second.get_child("trees"))
               {
-                PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 4, node %d, first : %s\n", level4, tree.first.c_str());
-                level4++;
+                PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 4, XMLnode %d, first : %s\n", level4, tree.first.c_str());
                 Ncv32u nodeId = 0;
 
                 int level5 = 0;
@@ -191,11 +190,11 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                 BOOST_FOREACH(const ptree::value_type &root_node, root)
                 {
                   PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 5, node %d, first : %s\n", level5, root_node.first.c_str());
-                  level5++;
-                  HaarClassifierNode128 curNode;
 
                   if(!strcmp(root_node.first.c_str(), "_"))
                   {
+                    HaarClassifierNode128 curNode;
+
                     float node_threshold = root_node.second.get<float>("threshold");
                     float left_val = root_node.second.get<float>("left_val");         // TODO Test if left node is available! see Nvidia code for solution
                     float right_val = root_node.second.get<float>("right_val");
@@ -255,58 +254,69 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     {
                         //root node
                         haarClassifierNodes.push_back(curNode);
-                        curMaxTreeDepth = 1;
+                        cur_max_tree_depth = 1;
                     }
                     else
                     {
                         //other node
-                        h_TmpClassifierNotRootNodes.push_back(curNode);
-                        curMaxTreeDepth++;
+                        host_temp_classifier_not_root_nodes.push_back(curNode);
+                        cur_max_tree_depth++;
                     }
                     nodeId++;
                   }
                   else
                     PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : Found fifth level node that is atypical : %s\n", root_node.first.c_str());
+                  level5++;
                 }
-                tmpNumClassifierRootNodes++;
+                tmp_num_classifier_root_nodes++;
+                level4++;
               }
-              curStage.setNumClassifierRootNodes(tmpNumClassifierRootNodes);
+
+              curStage.setNumClassifierRootNodes(tmp_num_classifier_root_nodes);
               haarStages.push_back(curStage);
+
+              // TODO make this DEBUG later on
+              PCL_INFO("[pcl::gpu::people::FaceDetector::loadFromXML2] : (I) : level 3 stage %d loaded with %d Root Nodes, %f Threshold, %d Root Node Offset", haarStages.size(), tmp_num_classifier_root_nodes, curStage.getStartClassifierRootNodeOffset());
+
+              level3++;
             }
           }
-          else
+          else   // Probably we stumbled upon a comment at this level or somebody adjusted the XML file
             PCL_WARN("loadFromXML2: Found second level node that is atypical : %s\n", w.first.c_str());
         }
+        level2++;
       }
       else
-        PCL_WARN("loadFromXML2: Found first level node that is atypical : %s\n", v.first.c_str());
+      {
+        PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : Found first level node that is atypical : %s\n", top_node.first.c_str());
+        return (NCV_HAAR_XML_LOADING_EXCEPTION);
+      }
       level1++;
     }
   }
   catch(boost::exception const&  exb)
   {
     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content with boost exception\n");
-    return NCV_HAAR_XML_LOADING_EXCEPTION;
+    return (NCV_HAAR_XML_LOADING_EXCEPTION);
   }
   catch (std::exception const&  ex)
   {
     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content with std exception %s\n", ex.what());
-    return NCV_HAAR_XML_LOADING_EXCEPTION;
+    return (NCV_HAAR_XML_LOADING_EXCEPTION);
   }
   catch (...)
   {
     PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : Unable to process content\n");
-    return NCV_HAAR_XML_LOADING_EXCEPTION;
+    return (NCV_HAAR_XML_LOADING_EXCEPTION);
   }
 
   //fill in cascade stats
   haar.NumStages = haarStages.size();
   haar.NumClassifierRootNodes = haarClassifierNodes.size();
-  haar.NumClassifierTotalNodes = haar.NumClassifierRootNodes + h_TmpClassifierNotRootNodes.size();
+  haar.NumClassifierTotalNodes = haar.NumClassifierRootNodes + host_temp_classifier_not_root_nodes.size();
   haar.NumFeatures = haarFeatures.size();
 
-  /* FIXME
-
+  /* TODO FIXME this part doesn't work yet
   //merge root and leaf nodes in one classifiers array
   Ncv32u offsetRoot = haarClassifierNodes.size();
   for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
@@ -327,30 +337,28 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
       }
       haarClassifierNodes[i].setRightNodeDesc(nodeRight);
   }
-  for (Ncv32u i=0; i<h_TmpClassifierNotRootNodes.size(); i++)
+  for (Ncv32u i=0; i<host_temp_classifier_not_root_nodes.size(); i++)
   {
-      HaarClassifierNodeDescriptor32 nodeLeft = h_TmpClassifierNotRootNodes[i].getLeftNodeDesc();
+      HaarClassifierNodeDescriptor32 nodeLeft = host_temp_classifier_not_root_nodes[i].getLeftNodeDesc();
       if (!nodeLeft.isLeaf())
       {
           Ncv32u newOffset = nodeLeft.getNextNodeOffset() + offsetRoot;
           nodeLeft.create(newOffset);
       }
-      h_TmpClassifierNotRootNodes[i].setLeftNodeDesc(nodeLeft);
+      host_temp_classifier_not_root_nodes[i].setLeftNodeDesc(nodeLeft);
 
-      HaarClassifierNodeDescriptor32 nodeRight = h_TmpClassifierNotRootNodes[i].getRightNodeDesc();
+      HaarClassifierNodeDescriptor32 nodeRight = host_temp_classifier_not_root_nodes[i].getRightNodeDesc();
       if (!nodeRight.isLeaf())
       {
           Ncv32u newOffset = nodeRight.getNextNodeOffset() + offsetRoot;
           nodeRight.create(newOffset);
       }
-      h_TmpClassifierNotRootNodes[i].setRightNodeDesc(nodeRight);
+      host_temp_classifier_not_root_nodes[i].setRightNodeDesc(nodeRight);
 
-      haarClassifierNodes.push_back(h_TmpClassifierNotRootNodes[i]);
+      haarClassifierNodes.push_back(host_temp_classifier_not_root_nodes[i]);
   }
-
   */
-
-  return NCV_SUCCESS;
+  return (NCV_SUCCESS);
 }
 
 /**
