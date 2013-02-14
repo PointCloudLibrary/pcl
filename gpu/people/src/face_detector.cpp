@@ -77,6 +77,9 @@ pcl::gpu::people::FaceDetector::FaceDetector(int cols, int rows)
 
 }
 
+/**
+ * \brief This loads the Haar description file from a XML file format
+ */
 NCVStatus
 pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                   &filename,
                                              HaarClassifierCascadeDescriptor     &haar,
@@ -197,7 +200,9 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
 
                     float node_threshold = root_node.second.get<float>("threshold");
                     float left_val = root_node.second.get<float>("left_val");         // TODO Test if left node is available! see Nvidia code for solution
+                    bool left_val_available = true;                                   // TODO set correctly
                     float right_val = root_node.second.get<float>("right_val");
+                    bool right_val_available = true;                                  // TODO set correctly
                     bool tilted = root_node.second.get<bool>("feature.tilted");
 
                     current_node.setThreshold(node_threshold);
@@ -238,17 +243,18 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                         HaarFeature64 current_feature;
                         ncv_return_status = current_feature.setRect(rectangle_u, rectangle_v, rectangle_width, rectangle_height, haar.ClassifierSize.width, haar.ClassifierSize.height);
                         current_feature.setWeight(rectWeight);
-                        //ncvAssertReturn(NCV_SUCCESS == ncv_return_status, ncv_return_status); TODO
+                        PCL_ASSERT_NCVSTAT(ncv_return_status);
                         haarFeatures.push_back(current_feature);
                         feature_identifier++;
                       }
                     }
 
-                    HaarFeatureDescriptor32 tmpFeatureDesc;
-                    // FIXME
-                    //ncv_return_status = tmpFeatureDesc.create(haar.bNeedsTiltedII, feature_identifier, haarFeatures.size() - feature_identifier);
+                    HaarFeatureDescriptor32 temp_feature_descriptor;
+                    ncv_return_status = temp_feature_descriptor.create(haar.bNeedsTiltedII, left_val_available, right_val_available, feature_identifier, haarFeatures.size() - feature_identifier);
+
+                    //ncv_return_status = temp_feature_descriptor.create(haar.bNeedsTiltedII, feature_identifier, haarFeatures.size() - feature_identifier);
                     ncvAssertReturn(NCV_SUCCESS == ncv_return_status, ncv_return_status);
-                    current_node.setFeatureDesc(tmpFeatureDesc);
+                    current_node.setFeatureDesc(temp_feature_descriptor);
 
                     if (!node_identifier)
                     {
@@ -318,48 +324,48 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
   haar.NumClassifierTotalNodes = haar.NumClassifierRootNodes + host_temp_classifier_not_root_nodes.size();
   haar.NumFeatures = haarFeatures.size();
 
-  /* TODO FIXME this part doesn't work yet
-  //merge root and leaf nodes in one classifiers array
-  Ncv32u offsetRoot = haarClassifierNodes.size();
+  //merge root and leaf nodes in one classifiers array, leaf nodes are sorted behind the root nodes
+  Ncv32u offset_root = haarClassifierNodes.size();
+
   for (Ncv32u i=0; i<haarClassifierNodes.size(); i++)
   {
       HaarClassifierNodeDescriptor32 node_left = haarClassifierNodes[i].getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
-          Ncv32u newOffset = node_left.getNextNodeOffset() + offsetRoot;
-          node_left.create(newOffset);
+          Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
+          node_left.create(new_offset);
       }
       haarClassifierNodes[i].setLeftNodeDesc(node_left);
 
       HaarClassifierNodeDescriptor32 node_right = haarClassifierNodes[i].getRightNodeDesc();
       if (!node_right.isLeaf())
       {
-          Ncv32u newOffset = node_right.getNextNodeOffset() + offsetRoot;
-          node_right.create(newOffset);
+          Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
+          node_right.create(new_offset);
       }
       haarClassifierNodes[i].setRightNodeDesc(node_right);
   }
+
   for (Ncv32u i=0; i<host_temp_classifier_not_root_nodes.size(); i++)
   {
       HaarClassifierNodeDescriptor32 node_left = host_temp_classifier_not_root_nodes[i].getLeftNodeDesc();
       if (!node_left.isLeaf())
       {
-          Ncv32u newOffset = node_left.getNextNodeOffset() + offsetRoot;
-          node_left.create(newOffset);
+          Ncv32u new_offset = node_left.getNextNodeOffset() + offset_root;
+          node_left.create(new_offset);
       }
       host_temp_classifier_not_root_nodes[i].setLeftNodeDesc(node_left);
 
       HaarClassifierNodeDescriptor32 node_right = host_temp_classifier_not_root_nodes[i].getRightNodeDesc();
       if (!node_right.isLeaf())
       {
-          Ncv32u newOffset = node_right.getNextNodeOffset() + offsetRoot;
-          node_right.create(newOffset);
+          Ncv32u new_offset = node_right.getNextNodeOffset() + offset_root;
+          node_right.create(new_offset);
       }
       host_temp_classifier_not_root_nodes[i].setRightNodeDesc(node_right);
 
       haarClassifierNodes.push_back(host_temp_classifier_not_root_nodes[i]);
   }
-  */
   return (NCV_SUCCESS);
 }
 
