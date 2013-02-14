@@ -213,7 +213,7 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     current_node.setRightNodeDesc(node_right);
 
                     haar.bNeedsTiltedII = (tilted != 0);
-                    Ncv32u featureId = 0;
+                    Ncv32u feature_identifier = 0;
 
                     /// LEVEL6 (Rects)
                     BOOST_FOREACH(const ptree::value_type &rect, root_node.second.get_child("feature.rects"))
@@ -223,30 +223,30 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                       std::string r = rect.second.data();
 
                       std::istringstream re( r );
-                      int rectX = 0, rectY = 0, rectWidth = 0, rectHeight =0;
+                      int rectangle_u = 0, rectangle_v = 0, rectangle_width = 0, rectangle_height =0;
                       float rectWeight = 0;
-                      re >> std::skipws >> rectX >> rectY >> rectWidth >> rectHeight >> rectWeight;
+                      re >> std::skipws >> rectangle_u >> rectangle_v >> rectangle_width >> rectangle_height >> rectWeight;
 
                       if ( !re )
                       {
                         //  format error: line doesn't start with an int.
-                        PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : level 6 : size format error\n");
+                        PCL_WARN("[pcl::gpu::people::FaceDetector::loadFromXML2] : (W) : level 6 : rect format error\n");
                       }
                       else
                       {
-                        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 6 : rectX %d, rectY %d, rectW %d, rectH %d, rectWeight %f\n", rectX, rectY, rectWidth, rectHeight, rectWeight);
-                        HaarFeature64 curFeature;
-                        ncv_return_status = curFeature.setRect(rectX, rectY, rectWidth, rectHeight, haar.ClassifierSize.width, haar.ClassifierSize.height);
-                        curFeature.setWeight(rectWeight);
+                        PCL_DEBUG("[pcl::gpu::people::FaceDetector::loadFromXML2] : (D) : level 6 : rectangle_u %d, rectangle_v %d, rectW %d, rectH %d, rectWeight %f\n", rectangle_u, rectangle_v, rectangle_width, rectangle_height, rectWeight);
+                        HaarFeature64 current_feature;
+                        ncv_return_status = current_feature.setRect(rectangle_u, rectangle_v, rectangle_width, rectangle_height, haar.ClassifierSize.width, haar.ClassifierSize.height);
+                        current_feature.setWeight(rectWeight);
                         //ncvAssertReturn(NCV_SUCCESS == ncv_return_status, ncv_return_status); TODO
-                        haarFeatures.push_back(curFeature);
-                        featureId++;
+                        haarFeatures.push_back(current_feature);
+                        feature_identifier++;
                       }
                     }
 
                     HaarFeatureDescriptor32 tmpFeatureDesc;
                     // FIXME
-                    //ncv_return_status = tmpFeatureDesc.create(haar.bNeedsTiltedII, featureId, haarFeatures.size() - featureId);
+                    //ncv_return_status = tmpFeatureDesc.create(haar.bNeedsTiltedII, feature_identifier, haarFeatures.size() - feature_identifier);
                     ncvAssertReturn(NCV_SUCCESS == ncv_return_status, ncv_return_status);
                     current_node.setFeatureDesc(tmpFeatureDesc);
 
@@ -260,6 +260,8 @@ pcl::gpu::people::FaceDetector::loadFromXML2(const std::string                  
                     {
                         //other node
                         host_temp_classifier_not_root_nodes.push_back(current_node);
+                        // TODO replace with PCL_DEBUG in the future
+                        PCL_INFO("[pcl::gpu::people::FaceDetector::loadFromXML2] : (I) : Found non root node number %d", host_temp_classifier_not_root_nodes.size());
                         cur_max_tree_depth++;
                     }
                     node_identifier++;
