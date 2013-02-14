@@ -208,7 +208,7 @@ showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis* hypo, CallbackParamet
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
 
   // Get the origin of the coordinate frame
-  aux::transform (hypo->rigid_transform_, hypo->obj_model_.getCenterOfMass (), origin);
+  aux::transform (hypo->rigid_transform_, hypo->obj_model_->getCenterOfMass (), origin);
   coeffs.values[0] = origin[0];
   coeffs.values[1] = origin[1];
   coeffs.values[2] = origin[2];
@@ -356,7 +356,7 @@ update (CallbackParameters* params)
 
     // Make a copy of the VTK model
     vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
-    vtk_model->DeepCopy (static_cast<vtkPolyData*> ((*acc_hypo)->obj_model_.getUserData ()));
+    vtk_model->DeepCopy (static_cast<vtkPolyData*> ((*acc_hypo)->obj_model_->getUserData ()));
 
     // Setup the matrix
     vtkSmartPointer<vtkMatrix4x4> vtk_mat = vtkSmartPointer<vtkMatrix4x4>::New ();
@@ -382,7 +382,7 @@ update (CallbackParameters* params)
     params->model_actors_.push_back (vtk_actor);
 
     // Compose the model's id
-    cout << (*acc_hypo)->obj_model_.getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << ";  ";
+    cout << (*acc_hypo)->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << ";  ";
     printf ("t_id = [%i, %i, %i], rot_id = [%i, %i, %i]\n",
       (*acc_hypo)->t_3dId_[0],
       (*acc_hypo)->t_3dId_[1],

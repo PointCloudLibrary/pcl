@@ -127,16 +127,42 @@ namespace pcl
     	class Hypothesis
     	{
           public:
-            Hypothesis (const ModelLibrary::Model& obj_model)
+            Hypothesis (const ModelLibrary::Model* obj_model = NULL)
              : match_confidence_ (-1.0f),
                obj_model_ (obj_model)
             {}
+
+            Hypothesis (const Hypothesis& src)
+            : match_confidence_  (src.match_confidence_),
+              obj_model_  (src.obj_model_),
+              explained_pixels_ (src.explained_pixels_)
+            {
+              memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
+#ifdef OBJ_REC_RANSAC_TEST
+              memcpy (this->rot_3dId_, src.rot_3dId_, 3*sizeof (int));
+              memcpy (this->t_3dId_, src.t_3dId_, 3*sizeof (int));
+#endif
+            }
+
             virtual ~Hypothesis (){}
+
+            void
+            copy (const Hypothesis& src)
+            {
+              memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
+              this->match_confidence_  = src.match_confidence_;
+              this->obj_model_  = src.obj_model_;
+              this->explained_pixels_ = src.explained_pixels_;
+#ifdef OBJ_REC_RANSAC_TEST
+              memcpy (this->rot_3dId_, src.rot_3dId_, 3*sizeof (int));
+              memcpy (this->t_3dId_, src.t_3dId_, 3*sizeof (int));
+#endif
+            }
 
           public:
             float rigid_transform_[12];
             float match_confidence_;
-            const ModelLibrary::Model& obj_model_;
+            const ModelLibrary::Model* obj_model_;
             std::set<int> explained_pixels_;
 #ifdef OBJ_REC_RANSAC_TEST
             int rot_3dId_[3], t_3dId_[3];
@@ -175,15 +201,23 @@ namespace pcl
                   }
 
                   inline void
-                  computeAverageRigidTransform ()
+                  computeAverageRigidTransform (float *rigid_transform = NULL)
                   {
-                    if ( num_transforms_ < 2 )
-                      return;
+                    if ( num_transforms_ >= 2 )
+                    {
+                      float factor = 1.0f/static_cast<float> (num_transforms_);
+                      aux::mult3 (axis_angle_, factor);
+                      aux::mult3 (translation_, factor);
+                      num_transforms_ = 1;
+                    }
 
-                    float factor = 1.0f/static_cast<float> (num_transforms_);
-                    aux::mult3 (this->axis_angle_, factor);
-                    aux::mult3 (this->translation_, factor);
-                    num_transforms_ = 1;
+                    if ( rigid_transform )
+                    {
+                      // Save the rotation (in matrix form)
+                      aux::axisAngleToRotationMatrix (axis_angle_, rigid_transform);
+                      // Save the translation
+                      aux::copy3 (translation_, rigid_transform + 9);
+                    }
                   }
 
                   inline const float*
@@ -224,7 +258,7 @@ namespace pcl
                   // First, compute the average rigid transform (in the axis-angle representation)
                   it->second.computeAverageRigidTransform ();
                   // Now create a new hypothesis
-                  ObjRecRANSAC::Hypothesis* new_hypo = new ObjRecRANSAC::Hypothesis(*it->first);
+                  ObjRecRANSAC::Hypothesis* new_hypo = new ObjRecRANSAC::Hypothesis(it->first);
                   // Save the average rotation (in matrix form)
                   aux::axisAngleToRotationMatrix (it->second.getAxisAngle (), new_hypo->rigid_transform_);
                   // Save the average translation
@@ -244,20 +278,20 @@ namespace pcl
               int rot_3dId_[3], t_3dId_[3];
 #endif
 
-            protected:
+            public:
               std::map<const ModelLibrary::Model*,Entry> model_to_entry_;
             };// class Cell
 
           public:
             /** \brief We use the axis-angle representation for rotations. The axis is encoded in the vector
               * and the angle is its magnitude. This is represented in an octree with bounds [-pi, pi]^3. */
-    		RotationSpace ()
+    		RotationSpace (float discretization)
     		{
               float min = -(AUX_PI_FLOAT + 0.000000001f), max = AUX_PI_FLOAT + 0.000000001f;
               float bounds[6] = {min, max, min, max, min, max};
 
               // Build the voxel structure
-              rot_octree_.build (bounds, 6.0f*AUX_DEG_TO_RADIANS);
+              rot_octree_.build (bounds, discretization);
     		}
 
     		virtual ~RotationSpace ()
@@ -265,6 +299,12 @@ namespace pcl
               for ( std::list<RotationSpace::Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
                 delete *it;
               full_cells_.clear ();
+            }
+
+            inline std::list<RotationSpace::Cell*>&
+            getFullCells ()
+            {
+              return (full_cells_);
             }
 
     		inline bool
@@ -533,6 +573,41 @@ namespace pcl
         void
         testHypotheses (std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
 
+        inline void
+        testHypothesis (Hypothesis* hypothesis, float& match, int& penalty)
+        {
+          match = 0.0;
+          penalty = 0;
+
+          // For better code readability
+          const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
+          const float* rigid_transform = hypothesis->rigid_transform_;
+          ORROctreeZProjection::Pixel* pixel;
+          float transformed_point[3];
+
+          // The match/penalty loop
+          for ( std::vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
+          {
+            // Transform the model point with the current rigid transform
+            aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
+
+            // Get the pixel 'transformed_point' lies in
+            pixel = scene_octree_proj_.getPixel (transformed_point);
+            // Check if we have a valid pixel
+            if ( pixel == NULL )
+              continue;
+
+            if ( transformed_point[2] < pixel->z1_ ) // The transformed model point overshadows a pixel -> penalize the hypothesis
+              ++penalty;
+            else if ( transformed_point[2] <= pixel->z2_ ) // The point is OK
+            {
+              ++match;
+              // 'hypo_it' explains 'pixel' => insert the pixel's id in the id set of 'hypo_it'
+              hypothesis->explained_pixels_.insert (pixel->id_);
+            }
+          }
+        }
+
         void
         buildConflictGraph (std::vector<Hypothesis*>& hypotheses, ORRGraph& graph);
 
@@ -614,6 +689,7 @@ namespace pcl
         float pair_width_;
         float voxel_size_;
         float transform_octree_voxel_size_;
+        float rotation_discretization_;
         float abs_zdist_thresh_;
         float relative_obj_size_;
         float visibility_;
