@@ -1,5 +1,5 @@
 set(SUBSYS_NAME people)
-set(SUBSYS_DESC "Point cloud recognition library")
+set(SUBSYS_DESC "Point cloud people library")
 set(SUBSYS_DEPS common kdtree search features sample_consensus filters io visualization geometry segmentation octree)
 
 if(NOT VTK_FOUND)
@@ -27,17 +27,17 @@ if(build)
         include/pcl/${SUBSYS_NAME}/person_classifier.h
         include/pcl/${SUBSYS_NAME}/person_cluster.h
         )
-        
-    set(impl_incs 
+
+    set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/ground_based_people_detection_app.hpp
         include/pcl/${SUBSYS_NAME}/impl/head_based_subcluster.hpp
-	include/pcl/${SUBSYS_NAME}/impl/height_map_2d.hpp
-	include/pcl/${SUBSYS_NAME}/impl/person_cluster.hpp
+        include/pcl/${SUBSYS_NAME}/impl/height_map_2d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/person_cluster.hpp
         )
-  
+
     set(srcs
         src/person_classifier.cpp
-	src/hog.cpp        
+        src/hog.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
