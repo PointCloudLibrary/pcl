@@ -20,6 +20,45 @@ PointCloud2Vector3d (pcl::PointCloud<Point>::Ptr cloud, pcl::on_nurbs::vector_ve
   }
 }
 
+void
+visualizeCurve (ON_NurbsCurve &curve, ON_NurbsSurface &surface, pcl::visualization::PCLVisualizer &viewer)
+{
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr curve_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
+
+  pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve, surface, curve_cloud, 4);
+  for (std::size_t i = 0; i < curve_cloud->size () - 1; i++)
+  {
+    pcl::PointXYZRGB &p1 = curve_cloud->at (i);
+    pcl::PointXYZRGB &p2 = curve_cloud->at (i + 1);
+    std::ostringstream os;
+    os << "line" << i;
+    viewer.removeShape (os.str ());
+    viewer.addLine<pcl::PointXYZRGB> (p1, p2, 1.0, 0.0, 0.0, os.str ());
+  }
+
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr curve_cps (new pcl::PointCloud<pcl::PointXYZRGB>);
+  for (int i = 0; i < curve.CVCount (); i++)
+  {
+    ON_3dPoint p1;
+    curve.GetCV (i, p1);
+
+    double pnt[3];
+    surface.Evaluate (p1.x, p1.y, 0, 3, pnt);
+    pcl::PointXYZRGB p2;
+    p2.x = float (pnt[0]);
+    p2.y = float (pnt[1]);
+    p2.z = float (pnt[2]);
+
+    p2.r = 255;
+    p2.g = 0;
+    p2.b = 0;
+
+    curve_cps->push_back (p2);
+  }
+  viewer.removePointCloud ("cloud_cps");
+  viewer.addPointCloud (curve_cps, "cloud_cps");
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -34,7 +73,7 @@ main (int argc, char *argv[])
   pcd_file = argv[1];
 
   unsigned order (3);
-  unsigned refinement (5);
+  unsigned refinement (4);
   unsigned iterations (10);
   unsigned mesh_resolution (64);
 
@@ -97,18 +136,12 @@ main (int argc, char *argv[])
 
   // ############################################################################
   // fit NURBS curve
-  printf ("  boundary fitting ...\n");
-
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr curve_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
-
   pcl::on_nurbs::FittingCurve2dAPDM::FitParameter curve_params;
   curve_params.addCPsAccuracy = 3e-2;
   curve_params.addCPsIteration = 3;
   curve_params.maxCPs = 200;
-  curve_params.fitMaxError = 3e-2;
-  curve_params.fitAvgError = 1e-4;
-  curve_params.fitMaxSteps = 20;
-  curve_params.refinement = 2;
+  curve_params.accuracy = 1e-3;
+  curve_params.iterations = 10000;
 
   curve_params.param.closest_point_resolution = 0;
   curve_params.param.closest_point_weight = 1.0;
@@ -124,22 +157,11 @@ main (int argc, char *argv[])
   ON_NurbsCurve curve_nurbs = pcl::on_nurbs::FittingCurve2dAPDM::initNurbsCurve2D (order, curve_data.interior);
 
   pcl::on_nurbs::FittingCurve2dASDM curve_fit (&curve_data, curve_nurbs);
-  //  curve_fit.setQuiet (false);
+//  curve_fit.setQuiet (false);
 
+  // ############################### FITTING ###############################
   curve_fit.fitting (curve_params);
-
-  //   visualisation
-  printf ("  visualize curve ...\n");
-  pcl::on_nurbs::Triangulation::convertCurve2PointCloud (curve_fit.m_nurbs, fit.m_nurbs, curve_cloud, 4);
-  viewer.addPointCloud (curve_cloud);
-  for (std::size_t i = 0; i < curve_cloud->size () - 1; i++)
-  {
-    pcl::PointXYZRGB &p1 = curve_cloud->at (i);
-    pcl::PointXYZRGB &p2 = curve_cloud->at (i + 1);
-    std::ostringstream os;
-    os << "line" << i;
-    viewer.addLine<pcl::PointXYZRGB> (p1, p2, 1.0, 0.0, 0.0, os.str ());
-  }
+  visualizeCurve (curve_fit.m_nurbs, fit.m_nurbs, viewer);
 
   // ############################################################################
   // triangulation of trimmed surface

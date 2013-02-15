@@ -103,8 +103,8 @@ main (int argc, char *argv[])
 
   Eigen::Vector2d fix1 (0.1, 0.1);
   Eigen::Vector2d fix2 (1.0, 0.0);
-  fit.addControlPointConstraint (0, fix1, 100.0);
-  fit.addControlPointConstraint (curve.CVCount () - 1, fix2, 100.0);
+//  fit.addControlPointConstraint (0, fix1, 100.0);
+//  fit.addControlPointConstraint (curve.CVCount () - 1, fix2, 100.0);
 
   fit.solve ();
 

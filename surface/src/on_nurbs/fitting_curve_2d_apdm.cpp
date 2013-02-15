@@ -119,42 +119,22 @@ FittingCurve2dAPDM::fitting (FitParameter &param)
   double avgerr (DBL_MAX);
   double maxerr (DBL_MAX);
   bool stop (false);
-  for (unsigned j = 0; j < param.fitMaxSteps && !stop; j++)
+  for (unsigned j = 0; j < param.iterations && !stop; j++)
   {
-    if (2 * m_nurbs.CVCount () > m_data->interior.size ())
-    {
-      break;
-    }
-    else if (j > 0 && j <= param.refinement)
-    {
-      refine ();
-    }
-    else if (j > param.refinement + 1)
-    {
-      if (!(j % param.addCPsIteration) && (m_nurbs.CVCount () < param.maxCPs))
-        addCPsOnClosestPointViolation (param.addCPsAccuracy);
-    }
+    if (2 * m_nurbs.CVCount () < m_data->interior.size ())
+      if (!(j % param.addCPsIteration))
+        if (m_nurbs.CVCount () < param.maxCPs)
+          addCPsOnClosestPointViolation (param.addCPsAccuracy);
 
     assemble (param.param);
 
-    std::size_t s = m_data->closest_points_error.size ();
-    avgerr = 0.0;
-    maxerr = 0.0;
-    for (unsigned i = 0; i < s; i++)
-    {
-      double &e = m_data->closest_points_error[i];
-      avgerr += (e / static_cast<double> (s));
-      if (e > maxerr)
-      {
-        maxerr = e;
-      }
-    }
-    maxerr = sqrt (maxerr);
+    double cps_diff = solve ();
 
-    if (j > param.refinement)
-      stop = (param.fitMaxError > maxerr && param.fitAvgError > avgerr);
+    if (!m_quiet)
+      printf ("[FittingCurve2dAPDM::fitting] accuracy: %f / %f\n", cps_diff, param.accuracy);
 
-    solve ();
+    if (cps_diff < param.accuracy)
+      stop = true;
   }
 }
 
@@ -218,7 +198,7 @@ FittingCurve2dAPDM::updateCurve (double damp)
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
 
   double cps_diff (0.0);
-  double cps_diff_max (0.0);
+  //  double cps_diff_max (0.0);
 
   for (int j = 0; j < ncp; j++)
   {
@@ -229,10 +209,10 @@ FittingCurve2dAPDM::updateCurve (double damp)
     double x = m_solver.x (j, 0);
     double y = m_solver.x (j, 1);
 
-    cps_diff = sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
+    cps_diff += sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
-    if (cps_diff > cps_diff_max)
-      cps_diff_max = cps_diff;
+    //    if (cps_diff > cps_diff_max)
+    //      cps_diff_max = cps_diff;
 
     ON_3dPoint cp;
     cp.x = cp_prev.x + damp * (x - cp_prev.x);
@@ -250,7 +230,7 @@ FittingCurve2dAPDM::updateCurve (double damp)
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
 
-  return cps_diff_max;
+  return cps_diff / ncp;
 }
 
 void
@@ -423,12 +403,12 @@ FittingCurve2dAPDM::addPointConstraint (const double &param, const Eigen::Vector
 
   row++;
 
-  delete [] N;
+  delete[] N;
 }
 
 void
 FittingCurve2dAPDM::addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements,
-                                       double wConcav)
+                                           double wConcav)
 {
   int cp_red = (m_nurbs.m_order - 2);
   int ncp = (m_nurbs.m_cv_count - 2 * cp_red);
@@ -754,7 +734,7 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
 
 void
 FittingCurve2dAPDM::assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
-                                       unsigned samples_per_element, unsigned &row)
+                                           unsigned samples_per_element, unsigned &row)
 {
   m_data->closest_points.clear ();
   m_data->closest_points_param.clear ();
@@ -820,8 +800,8 @@ FittingCurve2dAPDM::assembleClosestPoints (const std::vector<double> &elements, 
 
 double
 FittingCurve2dAPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, const double &hint,
-                                double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
-                                double accuracy, bool quiet)
+                                    double &error, Eigen::Vector2d &p, Eigen::Vector2d &t, double rScale, int maxSteps,
+                                    double accuracy, bool quiet)
 {
   if (nurbs.Order () == 2)
     return inverseMappingO2 (nurbs, pt, error, p, t);
@@ -888,7 +868,8 @@ FittingCurve2dAPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vec
   if (!quiet)
   {
     printf ("[FittingCurve2dAPDM::inverseMapping] Warning: Method did not converge (%e %d).\n", accuracy, maxSteps);
-    printf ("[FittingCurve2dAPDM::inverseMapping] hint: %f current: %f delta: %f error: %f\n", hint, current, delta, error);
+    printf ("[FittingCurve2dAPDM::inverseMapping] hint: %f current: %f delta: %f error: %f\n", hint, current, delta,
+            error);
   }
 
   return current;
@@ -896,7 +877,7 @@ FittingCurve2dAPDM::inverseMapping (const ON_NurbsCurve &nurbs, const Eigen::Vec
 
 double
 FittingCurve2dAPDM::inverseMappingO2 (const ON_NurbsCurve &nurbs, const Eigen::Vector2d &pt, double &error,
-                                  Eigen::Vector2d &p, Eigen::Vector2d &t)
+                                      Eigen::Vector2d &p, Eigen::Vector2d &t)
 {
   if (nurbs.Order () != 2)
     printf ("[FittingCurve2dAPDM::inverseMappingO2] Error, order not 2 (polynomial degree 1)\n");
@@ -1093,7 +1074,7 @@ FittingCurve2dAPDM::findClosestElementMidPoint (const ON_NurbsCurve &nurbs, cons
     }
   }
 
-  if(d_shortest_hint < d_shortest_elem)
+  if (d_shortest_hint < d_shortest_elem)
     return hint;
   else
     return param;

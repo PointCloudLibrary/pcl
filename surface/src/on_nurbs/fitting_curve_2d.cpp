@@ -182,7 +182,6 @@ FittingCurve2d::updateCurve (double damp)
   int ncp = m_nurbs.CVCount ();
 
   double cps_diff (0.0);
-  double cps_diff_max (0.0);
 
   for (int j = 0; j < ncp; j++)
   {
@@ -192,9 +191,7 @@ FittingCurve2d::updateCurve (double damp)
     double x = m_solver.x (j, 0);
     double y = m_solver.x (j, 1);
 
-    cps_diff = sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
-    if (cps_diff > cps_diff_max)
-      cps_diff_max = cps_diff;
+    cps_diff += sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
     ON_3dPoint cp;
     cp.x = cp_prev.x + damp * (x - cp_prev.x);
@@ -204,7 +201,7 @@ FittingCurve2d::updateCurve (double damp)
     m_nurbs.SetCV (j, cp);
   }
 
-  return cps_diff_max;
+  return cps_diff / ncp;
 }
 
 void

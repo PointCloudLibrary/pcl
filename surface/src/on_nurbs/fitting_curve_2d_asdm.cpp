@@ -114,13 +114,11 @@ FittingCurve2dASDM::updateCurve (double damp)
 
   double cps_diff (0.0);
 
-  // TODO this implementation rotates the control points, look up fitting_curve_2d_apdm for correct implementation
-
   for (int j = 0; j < ncp; j++)
   {
 
     ON_3dPoint cp_prev;
-    m_nurbs.GetCV (j + cp_red, cp_prev);
+    m_nurbs.GetCV (j, cp_prev);
 
     double x = m_solver.x (2 * j + 0, 0);
     double y = m_solver.x (2 * j + 1, 0);
@@ -132,19 +130,16 @@ FittingCurve2dASDM::updateCurve (double damp)
     cp.y = cp_prev.y + damp * (y - cp_prev.y);
     cp.z = 0.0;
 
-    m_nurbs.SetCV (j + cp_red, cp);
+    m_nurbs.SetCV (j, cp);
   }
 
-  for (int j = 0; j < cp_red; j++)
+  for (int j = 0; j < 2 * cp_red; j++)
   {
-
     ON_3dPoint cp;
-    m_nurbs.GetCV (m_nurbs.m_cv_count - 1 - cp_red + j, cp);
-    m_nurbs.SetCV (j, cp);
-
-    m_nurbs.GetCV (cp_red - j, cp);
+    m_nurbs.GetCV (2 * cp_red - 1 - j, cp);
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
+
   return cps_diff / ncp;
 }
 

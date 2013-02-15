@@ -199,8 +199,8 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
   double ry = std::max<double> (std::fabs (_min (1)), std::fabs (_max (1)));
 
   Eigen::Vector3d cv_t, cv;
-  //  for (int i = 1; i < ncpsU - 1; i++)
-  for (int i = 0; i < ncpsU; i++)
+  for (int i = 1; i < ncpsU - 1; i++)
+  //  for (int i = 0; i < ncpsU; i++)
   {
     for (int j = 0; j < ncpsV; j++)
     {
@@ -213,23 +213,27 @@ FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector
     }
   }
 
-  //  for (int j = 0; j < ncpsV; j++)
-  //  {
-  //    cv (0) = 0.0;
-  //    cv (1) = 0.0;
-  //    cv (2) = _min (2);
-  //    cv_t = cv + mean;
-  //    nurbs.SetCV (0, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
-  //  }
-  //
-  //  for (int j = 0; j < ncpsV; j++)
-  //  {
-  //    cv (0) = 0.0;
-  //    cv (1) = 0.0;
-  //    cv (2) = _max (2);
-  //    cv_t = cv + mean;
-  //    nurbs.SetCV (ncpsU - 1, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
-  //  }
+  for (int j = 0; j < ncpsV; j++)
+  {
+    //    cv (0) = 0.0;
+    //    cv (1) = 0.0;
+    cv (0) = 0.01 * rx * sin (dcv * j);
+    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (2) = _min (2);
+    cv_t = cv + mean;
+    nurbs.SetCV (0, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
+  }
+
+  for (int j = 0; j < ncpsV; j++)
+  {
+    //    cv (0) = 0.0;
+    //    cv (1) = 0.0;
+    cv (0) = 0.01 * rx * sin (dcv * j);
+    cv (1) = 0.01 * ry * cos (dcv * j);
+    cv (2) = _max (2);
+    cv_t = cv + mean;
+    nurbs.SetCV (ncpsU - 1, j, ON_3dPoint (cv_t (0), cv_t (1), cv_t (2)));
+  }
 
   return nurbs;
 }

@@ -46,7 +46,7 @@ main ()
   // fit NURBS surface
   ON_NurbsSurface nurbs = pcl::on_nurbs::FittingSurface::initNurbsPCABoundingBox (3, &data);
   pcl::on_nurbs::FittingSurface fit (&data, nurbs);
-  fit.setQuiet (false);
+//  fit.setQuiet (false);
 
   pcl::on_nurbs::FittingSurface::Parameter params;
   params.interior_smoothness = 0.1;

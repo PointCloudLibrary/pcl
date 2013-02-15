@@ -97,7 +97,7 @@ FittingCurve2dATDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
 double
 FittingCurve2dATDM::solve (double damp)
 {
-  double cps_diff(0.0);
+  double cps_diff (0.0);
 
   if (m_solver.solve ())
     cps_diff = updateCurve (damp);
@@ -111,45 +111,40 @@ FittingCurve2dATDM::updateCurve (double damp)
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
 
-  double cps_diff(0.0);
-
-  // TODO this implementation rotates the control points, look up fitting_curve_2d_apdm for correct implementation
+  double cps_diff (0.0);
 
   for (int j = 0; j < ncp; j++)
   {
 
     ON_3dPoint cp_prev;
-    m_nurbs.GetCV (j + cp_red, cp_prev);
+    m_nurbs.GetCV (j, cp_prev);
 
     double x = m_solver.x (2 * j + 0, 0);
     double y = m_solver.x (2 * j + 1, 0);
 
-    cps_diff += sqrt((x-cp_prev.x) * (x-cp_prev.x) + (y-cp_prev.y) * (y-cp_prev.y));
+    cps_diff += sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
     ON_3dPoint cp;
     cp.x = cp_prev.x + damp * (x - cp_prev.x);
     cp.y = cp_prev.y + damp * (y - cp_prev.y);
     cp.z = 0.0;
 
-    m_nurbs.SetCV (j + cp_red, cp);
+    m_nurbs.SetCV (j, cp);
   }
 
-  for (int j = 0; j < cp_red; j++)
+  for (int j = 0; j < 2 * cp_red; j++)
   {
-
     ON_3dPoint cp;
-    m_nurbs.GetCV (m_nurbs.m_cv_count - 1 - cp_red + j, cp);
-    m_nurbs.SetCV (j, cp);
-
-    m_nurbs.GetCV (cp_red - j, cp);
+    m_nurbs.GetCV (2 * cp_red - 1 - j, cp);
     m_nurbs.SetCV (m_nurbs.m_cv_count - 1 - j, cp);
   }
+
   return cps_diff / ncp;
 }
 
 void
 FittingCurve2dATDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
-                                       const Eigen::Vector2d &normal, double weight, unsigned &row)
+                                        const Eigen::Vector2d &normal, double weight, unsigned &row)
 {
   int cp_red = m_nurbs.m_order - 2;
   int ncp = m_nurbs.m_cv_count - 2 * cp_red;
@@ -171,12 +166,12 @@ FittingCurve2dATDM::addPointConstraint (const double &param, const Eigen::Vector
     m_solver.K (row, 2 * ((E + i) % ncp) + 1, weight * normal (1) * N[i]);
   row++;
 
-  delete [] N;
+  delete[] N;
 }
 
 void
 FittingCurve2dATDM::addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements,
-                                          double wConcav)
+                                           double wConcav)
 {
   int cp_red = (m_nurbs.m_order - 2);
   int ncp = (m_nurbs.m_cv_count - 2 * cp_red);
@@ -316,7 +311,7 @@ FittingCurve2dATDM::assembleInterior (double wInt, double sigma2, double rScale,
 
 void
 FittingCurve2dATDM::assembleClosestPoints (const std::vector<double> &elements, double weight, double sigma2,
-                                          unsigned &row)
+                                           unsigned &row)
 {
   m_data->closest_points.clear ();
   m_data->closest_points_param.clear ();

@@ -174,7 +174,7 @@ FittingCurve2dPDM::updateCurve (double damp)
     double x = m_solver.x (j, 0);
     double y = m_solver.x (j, 1);
 
-    cps_diff = sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
+    cps_diff += sqrt ((x - cp_prev.x) * (x - cp_prev.x) + (y - cp_prev.y) * (y - cp_prev.y));
 
     if (cps_diff > cps_diff_max)
       cps_diff_max = cps_diff;
