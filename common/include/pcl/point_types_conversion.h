@@ -57,7 +57,7 @@ namespace pcl
                      PointXYZI&    out)
   {
     out.x = in.x; out.y = in.y; out.z = in.z;
-    out.intensity = 0.299f * in.r + 0.587f * in.g + 0.114f * in.b;
+    out.intensity = 0.299f * static_cast <float> (in.r) + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b);
   }
 
   /** \brief Convert a RGB point type to a I
@@ -68,7 +68,7 @@ namespace pcl
   PointRGBtoI (RGB&          in,
                Intensity&    out)
   {
-    out.intensity = 0.299f * in.r + 0.587f * in.g + 0.114f * in.b;
+    out.intensity = 0.299f * static_cast <float> (in.r) + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b);
   }
 
   /** \brief Convert a RGB point type to a I
@@ -79,7 +79,8 @@ namespace pcl
   PointRGBtoI (RGB&          in,
                Intensity8u&  out)
   {
-    out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * in.r + 0.587f * in.g + 0.114f * in.b);
+    out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * static_cast <float> (in.r)
+                      + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
   /** \brief Convert a RGB point type to a I
@@ -90,7 +91,8 @@ namespace pcl
   PointRGBtoI (RGB&          in,
                Intensity32u& out)
   {
-    out.intensity = static_cast<uint32_t>(std::numeric_limits<uint32_t>::max() * 0.299f * in.r + 0.587f * in.g + 0.114f * in.b);
+    out.intensity = static_cast<uint32_t>(std::numeric_limits<uint32_t>::max() * 0.299f * static_cast <float> (in.r)
+                      + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b));
   }
 
   /** \brief Convert a XYZRGB point type to a XYZHSV
@@ -101,32 +103,34 @@ namespace pcl
   PointXYZRGBtoXYZHSV (PointXYZRGB& in,
                        PointXYZHSV& out)
   {
-    float min;
+    const unsigned char max = std::max (in.r, std::max (in.g, in.b));
+    const unsigned char min = std::min (in.r, std::min (in.g, in.b));
 
-    out.x = in.x; out.y = in.y; out.z = in.z;
+    out.v = static_cast <float> (max) / 255.f;
 
-    out.v = std::max (in.r, std::max (in.g, in.b));
-    min = std::min (in.r, std::min (in.g, in.b));
-
-    if (out.v != 0)
-      out.s = (out.v - min) / out.v;
-    else
+    if (max == 0) // division by zero
     {
-      out.s = 0;
-      out.h = -1;
+      out.s = 0.f;
+      out.h = 0.f; // h = -1.f;
       return;
     }
 
-    if (in.r == out.v)
-      out.h = static_cast<float> (in.g - in.b) / (out.v - min);
-    else if (in.g == out.v)
-      out.h = static_cast<float> (2.0f + float (in.b - in.r) / float (out.v - min));
-    else 
-      out.h = static_cast<float> (4.0f + float (in.r - in.g) / float (out.v - min));
-    out.h *= 60;
-    if (out.h < 0)
-      out.h += 360;
+    const float diff = static_cast <float> (max - min);
+    out.s = diff / static_cast <float> (max);
+
+    if (min == max) // diff == 0 -> division by zero
+    {
+      out.h = 0;
+      return;
+    }
+
+    if      (max == in.r) out.h = 60.f * (      static_cast <float> (in.g - in.b) / diff);
+    else if (max == in.g) out.h = 60.f * (2.f + static_cast <float> (in.b - in.r) / diff);
+    else                  out.h = 60.f * (4.f + static_cast <float> (in.r - in.g) / diff); // max == b
+
+    if (out.h < 0.f) out.h += 360.f;
   }
+
 
   /** \brief Convert a XYZHSV point type to a XYZRGB
     * \param[in] in the input XYZHSV point 
