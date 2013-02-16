@@ -40,6 +40,7 @@
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
 #include <pcl/recognition/ransac_based/model_library.h>
+#include <pcl/recognition/ransac_based/rigid_transform_space.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
@@ -51,7 +52,6 @@
 #include <list>
 
 #define OBJ_REC_RANSAC_VERBOSE
-#define OBJ_REC_RANSAC_TEST
 
 namespace pcl
 {
@@ -98,8 +98,7 @@ namespace pcl
               match_confidence_ (match_confidence),
               user_data_ (user_data)
             {
-              for ( int i = 0 ; i < 12 ; ++i )
-                rigid_transform_[i] = rigid_transform[i];
+              memcpy(this->rigid_transform_, rigid_transform, 12*sizeof (float));
             }
             virtual ~Output (){}
 
@@ -124,241 +123,70 @@ namespace pcl
             const float *p1_, *n1_, *p2_, *n2_;
     	};
 
-    	class Hypothesis
+    	class HypothesisBase
     	{
-          public:
-            Hypothesis (const ModelLibrary::Model* obj_model = NULL)
-             : match_confidence_ (-1.0f),
-               obj_model_ (obj_model)
-            {}
+    	  public:
+    	    HypothesisBase (const ModelLibrary::Model* obj_model)
+    	    : obj_model_ (obj_model)
+    	    {}
+    	    virtual  ~HypothesisBase (){}
 
-            Hypothesis (const Hypothesis& src)
-            : match_confidence_  (src.match_confidence_),
-              obj_model_  (src.obj_model_),
-              explained_pixels_ (src.explained_pixels_)
-            {
-              memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
-#ifdef OBJ_REC_RANSAC_TEST
-              memcpy (this->rot_3dId_, src.rot_3dId_, 3*sizeof (int));
-              memcpy (this->t_3dId_, src.t_3dId_, 3*sizeof (int));
-#endif
-            }
-
-            virtual ~Hypothesis (){}
-
-            void
-            copy (const Hypothesis& src)
-            {
-              memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
-              this->match_confidence_  = src.match_confidence_;
-              this->obj_model_  = src.obj_model_;
-              this->explained_pixels_ = src.explained_pixels_;
-#ifdef OBJ_REC_RANSAC_TEST
-              memcpy (this->rot_3dId_, src.rot_3dId_, 3*sizeof (int));
-              memcpy (this->t_3dId_, src.t_3dId_, 3*sizeof (int));
-#endif
-            }
-
-          public:
-            float rigid_transform_[12];
-            float match_confidence_;
-            const ModelLibrary::Model* obj_model_;
-            std::set<int> explained_pixels_;
-#ifdef OBJ_REC_RANSAC_TEST
-            int rot_3dId_[3], t_3dId_[3];
-#endif
+        public:
+          float rigid_transform_[12];
+          const ModelLibrary::Model* obj_model_;
     	};
 
-        class RotationSpace
-        {
-          public:
-            class Cell
-            {
-            public:
-              class Entry
-              {
-                public:
-                  Entry ()
-                  : num_transforms_ (0)
-                  {
-                    aux::set3 (axis_angle_, 0.0f);
-                    aux::set3 (translation_, 0.0f);
-                  }
+    	class Hypothesis: public HypothesisBase
+    	{
+        public:
+          Hypothesis (const ModelLibrary::Model* obj_model = NULL)
+           : HypothesisBase (obj_model),
+             match_confidence_ (-1.0f)
+          {
+            aux::set3 (pos_id_, -1);
+            aux::set3 (rot_id_, -1);
+          }
 
-                  Entry (const Entry& src)
-                  : num_transforms_ (src.num_transforms_)
-                  {
-                    aux::copy3 (src.axis_angle_, this->axis_angle_);
-                    aux::copy3 (src.translation_, this->translation_);
-                  }
+          Hypothesis (const Hypothesis& src)
+          : HypothesisBase (src.obj_model_),
+            match_confidence_  (src.match_confidence_),
+            explained_pixels_ (src.explained_pixels_)
+          {
+            memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
+            memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
+            memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
+          }
 
-                  inline void
-                  addRigidTransform (const float axis_angle[3], const float translation[3])
-                  {
-                    aux::add3 (this->axis_angle_, axis_angle);
-                    aux::add3 (this->translation_, translation);
-                    ++num_transforms_;
-                  }
+          virtual ~Hypothesis (){}
 
-                  inline void
-                  computeAverageRigidTransform (float *rigid_transform = NULL)
-                  {
-                    if ( num_transforms_ >= 2 )
-                    {
-                      float factor = 1.0f/static_cast<float> (num_transforms_);
-                      aux::mult3 (axis_angle_, factor);
-                      aux::mult3 (translation_, factor);
-                      num_transforms_ = 1;
-                    }
+          void
+          copy (const Hypothesis& src)
+          {
+            memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
+            this->match_confidence_  = src.match_confidence_;
+            this->obj_model_  = src.obj_model_;
+            this->explained_pixels_ = src.explained_pixels_;
+            memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
+            memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
+          }
 
-                    if ( rigid_transform )
-                    {
-                      // Save the rotation (in matrix form)
-                      aux::axisAngleToRotationMatrix (axis_angle_, rigid_transform);
-                      // Save the translation
-                      aux::copy3 (translation_, rigid_transform + 9);
-                    }
-                  }
+          void
+          setPositionId (const int id[3])
+          {
+            aux::copy3 (id, pos_id_);
+          }
 
-                  inline const float*
-                  getAxisAngle () const
-                  {
-                    return (axis_angle_);
-                  }
+          void
+          setRotationId (const int id[3])
+          {
+            aux::copy3 (id, rot_id_);
+          }
 
-                  inline const float*
-                  getTranslation () const
-                  {
-                    return (translation_);
-                  }
-
-                public:
-                  float axis_angle_[3], translation_[3];
-                  int num_transforms_;
-              };// class Entry
-
-            public:
-              Cell (){}
-              virtual ~Cell ()
-              {
-                model_to_entry_.clear ();
-              }
-
-              inline void
-              addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
-              {
-                model_to_entry_[model].addRigidTransform (axis_angle, translation);
-              }
-
-              inline void
-              computeAverageRigidTransformInEntries (std::list<ObjRecRANSAC::Hypothesis*>& out, int& hypotheses_counter)
-              {
-                for ( std::map<const ModelLibrary::Model*,Entry>::iterator it = model_to_entry_.begin () ; it != model_to_entry_.end () ; ++it )
-                {
-                  // First, compute the average rigid transform (in the axis-angle representation)
-                  it->second.computeAverageRigidTransform ();
-                  // Now create a new hypothesis
-                  ObjRecRANSAC::Hypothesis* new_hypo = new ObjRecRANSAC::Hypothesis(it->first);
-                  // Save the average rotation (in matrix form)
-                  aux::axisAngleToRotationMatrix (it->second.getAxisAngle (), new_hypo->rigid_transform_);
-                  // Save the average translation
-                  aux::copy3 (it->second.getTranslation (), new_hypo->rigid_transform_ + 9);
-                  // Save the new hypothesis
-                  out.push_back (new_hypo);
-#ifdef OBJ_REC_RANSAC_TEST
-                  aux::copy3(t_3dId_, new_hypo->t_3dId_);
-                  aux::copy3(rot_3dId_, new_hypo->rot_3dId_);
-#endif
-                }
-                hypotheses_counter += static_cast<int> (model_to_entry_.size ());
-              }
-
-#ifdef OBJ_REC_RANSAC_TEST
-            public:
-              int rot_3dId_[3], t_3dId_[3];
-#endif
-
-            public:
-              std::map<const ModelLibrary::Model*,Entry> model_to_entry_;
-            };// class Cell
-
-          public:
-            /** \brief We use the axis-angle representation for rotations. The axis is encoded in the vector
-              * and the angle is its magnitude. This is represented in an octree with bounds [-pi, pi]^3. */
-    		RotationSpace (float discretization)
-    		{
-              float min = -(AUX_PI_FLOAT + 0.000000001f), max = AUX_PI_FLOAT + 0.000000001f;
-              float bounds[6] = {min, max, min, max, min, max};
-
-              // Build the voxel structure
-              rot_octree_.build (bounds, discretization);
-    		}
-
-    		virtual ~RotationSpace ()
-            {
-              for ( std::list<RotationSpace::Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
-                delete *it;
-              full_cells_.clear ();
-            }
-
-            inline std::list<RotationSpace::Cell*>&
-            getFullCells ()
-            {
-              return (full_cells_);
-            }
-
-    		inline bool
-    		addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
-    		{
-              ORROctree::Node* rot_leaf = rot_octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
-
-              if ( !rot_leaf )
-              {
-                const float *b = rot_octree_.getBounds ();
-                printf ("WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, %f) is "
-                        "out of the rotation space bounds ([%f, %f], [%f, %f], [%f, %f]).\n",
-                        __func__, axis_angle[0], axis_angle[1], axis_angle[2], b[0], b[1], b[2], b[3], b[4], b[5]);
-                return (false);
-              }
-
-              RotationSpace::Cell* rot_cell;
-
-              if ( !rot_leaf->getData ()->getUserData () )
-              {
-                rot_cell = new RotationSpace::Cell ();
-                rot_leaf->getData ()->setUserData (rot_cell);
-                full_cells_.push_back (rot_cell);
-#ifdef OBJ_REC_RANSAC_TEST
-                rot_leaf->getData ()->get3dId (rot_cell->rot_3dId_);
-                aux::copy3(t_3dId_, rot_cell->t_3dId_);
-#endif
-              }
-              else
-                rot_cell = static_cast<RotationSpace::Cell*> (rot_leaf->getData ()->getUserData ());
-
-              // Add the rigid transform to the cell
-              rot_cell->addRigidTransform (model, axis_angle, translation);
-
-              return (true);
-            }
-
-    		/** \brief For each full rotation space cell, the method computes the average rigid transform and creates and pushes back a new
-    		  * hypothesis in 'out'. Increments 'hypotheses_counter' by the number of new created hypotheses. */
-            inline void
-            computeAverageRigidTransformInCells (std::list<ObjRecRANSAC::Hypothesis*>& out, int& hypotheses_counter)
-            {
-              for ( std::list<RotationSpace::Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
-                (*it)->computeAverageRigidTransformInEntries (out, hypotheses_counter);
-            }
-
-          protected:
-            ORROctree rot_octree_;
-            std::list<RotationSpace::Cell*> full_cells_;
-#ifdef OBJ_REC_RANSAC_TEST
-          public:
-            int t_3dId_[3];
-#endif
-        };// class RotationSpace
+        public:
+          float match_confidence_;
+          std::set<int> explained_pixels_;
+          int pos_id_[3], rot_id_[3];
+    	};
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
@@ -385,7 +213,7 @@ namespace pcl
           scene_octree_.clear ();
           scene_octree_proj_.clear ();
           sampled_oriented_point_pairs_.clear ();
-          transform_octree_.clear ();
+          transform_space_.clear ();
         }
 
         /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
@@ -516,10 +344,10 @@ namespace pcl
           return (scene_octree_);
         }
 
-        inline const ORROctree&
-        getTransformOctree () const
+        inline const RigidTransformSpace&
+        getRigidTransformSpace () const
         {
-          return (transform_octree_);
+          return (transform_space_);
         }
 
         inline float
@@ -555,23 +383,21 @@ namespace pcl
           for ( std::vector<ObjRecRANSAC::Hypothesis*>::iterator it = accepted_hypotheses_.begin () ; it != accepted_hypotheses_.end () ; ++it )
             delete *it;
           accepted_hypotheses_.clear ();
+          transform_space_.clear ();
         }
 
         void
         sampleOrientedPointPairs (int num_iterations, const std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
 
         int
-        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<Hypothesis*>& out);
+        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<HypothesisBase*>& out);
 
         /** \brief Groups repeating hypotheses in 'hypotheses'. Saves a representative for each group of repeating hypotheses
           * in 'out'. Returns the number of hypotheses after grouping. WARNING: the method deletes all hypotheses in the
           * provided input list 'hypotheses' and creates new ones and saves them in 'out'. Do not forget to destroy the memory
           * each item in 'out' is pointing to! */
         int
-        groupHypotheses(std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::list<Hypothesis*>& out);
-
-        void
-        testHypotheses (std::list<Hypothesis*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& accepted_hypotheses);
+        testHypotheses(std::list<HypothesisBase*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& out);
 
         inline void
         testHypothesis (Hypothesis* hypothesis, float& match, int& penalty)
@@ -688,7 +514,7 @@ namespace pcl
         // Parameters
         float pair_width_;
         float voxel_size_;
-        float transform_octree_voxel_size_;
+        float position_discretization_;
         float rotation_discretization_;
         float abs_zdist_thresh_;
         float relative_obj_size_;
@@ -701,8 +527,8 @@ namespace pcl
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;
-        ORROctree transform_octree_;
         ORROctreeZProjection scene_octree_proj_;
+        RigidTransformSpace transform_space_;
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
         std::vector<Hypothesis*> accepted_hypotheses_;

@@ -201,6 +201,12 @@ namespace pcl
             inline const float*
             getBounds() const { return bounds_;}
 
+            inline void
+            getBounds(float b[6]) const
+            {
+              memcpy (b, bounds_, 6*sizeof (float));
+            }
+
             inline Node*
             getChild (int id) { return &children_[id];}
 
@@ -273,9 +279,8 @@ namespace pcl
         /** \brief Creates the leaf containing p = (x, y, z) and returns a pointer to it, however, only if p lies within
           * the octree bounds! A more general version which allows p to be out of bounds is not implemented yet. The method
           * returns NULL if p is not within the root bounds. If the leaf containing p already exists nothing happens and
-          * method just returns a pointer to the leaf. If 'leaf_was_created' != NULL, the method sets this boolean to true
-          * if a new leaf was created or to false if p ends up in an existing leaf. */
-        inline Node*
+          * method just returns a pointer to the leaf. */
+        inline ORROctree::Node*
         createLeaf (float x, float y, float z)
         {
           // Make sure that the input point is within the octree bounds
@@ -330,10 +335,58 @@ namespace pcl
         void
         getFullLeavesIntersectedBySphere (const float* p, float radius, std::list<ORROctree::Node*>& out) const;
 
-    	/** \brief Randomly chooses and returns a full leaf that is intersected by the sphere with center 'p'
-    	  * and 'radius'. Returns NULL if no leaf is intersected by that sphere. */
+        /** \brief Randomly chooses and returns a full leaf that is intersected by the sphere with center 'p'
+          * and 'radius'. Returns NULL if no leaf is intersected by that sphere. */
         ORROctree::Node*
         getRandomFullLeafOnSphere (const float* p, float radius);
+
+        /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique id. The method returns the leaf
+          * with 'id' or NULL is no such leaf exists. */
+        const ORROctree::Node*
+        getLeaf (const int id[3]) const
+        {
+          float offset = 0.5f*voxel_size_;
+          float p[3] = {bounds_[0] + offset + static_cast<float> (id[0])*voxel_size_,
+                        bounds_[2] + offset + static_cast<float> (id[1])*voxel_size_,
+                        bounds_[4] + offset + static_cast<float> (id[2])*voxel_size_};
+
+          return (this->getLeaf (p[0], p[1], p[2]));
+        }
+
+        /** \brief Returns a pointer to the leaf containing p = (x, y, z) or NULL if no such leaf exists. */
+        inline const ORROctree::Node*
+        getLeaf (float x, float y, float z) const
+        {
+          // Make sure that the input point is within the octree bounds
+          if ( x < bounds_[0] || x > bounds_[1] ||
+               y < bounds_[2] || y > bounds_[3] ||
+               z < bounds_[4] || z > bounds_[5] )
+          {
+            return (NULL);
+          }
+
+          ORROctree::Node* node = root_;
+          const float *c;
+          int id;
+
+          // Go down to the right leaf
+          for ( int l = 0 ; l < tree_levels_ ; ++l )
+          {
+            if ( !node->hasChildren () )
+              return (NULL);
+
+            c = node->getCenter ();
+            id = 0;
+
+            if ( x >= c[0] ) id |= 4;
+            if ( y >= c[1] ) id |= 2;
+            if ( z >= c[2] ) id |= 1;
+
+            node = node->getChild (id);
+          }
+
+          return (node);
+        }
 
         /** \brief Deletes the branch 'node' is part of. */
         void
@@ -359,6 +412,12 @@ namespace pcl
         getBounds () const
         {
           return (bounds_);
+        }
+
+        inline void
+        getBounds (float b[6]) const
+        {
+          memcpy (b, bounds_, 6*sizeof (float));
         }
 
         inline float

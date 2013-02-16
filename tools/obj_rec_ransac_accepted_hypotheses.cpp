@@ -72,7 +72,7 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
-//#define _SHOW_TRANSFORM_OCTREE_
+#define _SHOW_TRANSFORM_SPACE_
 //#define _SHOW_SCENE_OPPS_
 //#define _SHOW_OCTREE_NORMALS_
 
@@ -96,52 +96,6 @@ class CallbackParameters
     list<vtkActor*> actors_, model_actors_;
     bool show_models_;
 };
-
-//===============================================================================================================================
-
-void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
-{
-  // Define the cube representing the leaf
-  const float *b = node->getBounds ();
-  vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
-  cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
-  cube->Update ();
-
-  additive_octree->AddInput (cube->GetOutput ());
-}
-
-//===============================================================================================================================
-
-void show_octree (const ORROctree* octree, PCLVisualizer& viz, list<vtkActor*>& actors)
-{
-  vtkSmartPointer<vtkPolyData> vtk_octree = vtkSmartPointer<vtkPolyData>::New ();
-  vtkSmartPointer<vtkAppendPolyData> append = vtkSmartPointer<vtkAppendPolyData>::New ();
-
-  cout << "There are " << octree->getFullLeaves ().size () << " full leaves.\n";
-
-  const vector<ORROctree::Node*>& full_leaves = octree->getFullLeaves ();
-  for ( vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
-    // Add it to the other cubes
-    node_to_cube (*it, append);
-
-  // Save the result
-  append->Update();
-  vtk_octree->DeepCopy (append->GetOutput ());
-
-  // Add to the visualizer
-  vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
-  vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
-  vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
-  mapper->SetInput(vtk_octree);
-  octree_actor->SetMapper(mapper);
-
-  // Set the appearance & add to the renderer
-  octree_actor->GetProperty ()->SetColor (1.0, 1.0, 1.0);
-  octree_actor->GetProperty ()->SetLineWidth (1);
-  octree_actor->GetProperty ()->SetRepresentationToWireframe ();
-  renderer->AddActor(octree_actor);
-  actors.push_back (octree_actor);
-}
 
 //===============================================================================================================================
 
@@ -338,6 +292,12 @@ update (CallbackParameters* params)
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
 #endif
 
+#ifdef _SHOW_TRANSFORM_SPACE_
+  const RigidTransformSpace &transform_space = params->objrec_.getRigidTransformSpace ();
+  char pos_cell_name[256];
+  float cb[6];
+#endif
+
   // Now show some of the accepted hypotheses
   vector<ObjRecRANSAC::Hypothesis*> accepted_hypotheses;
   params->objrec_.getAcceptedHypotheses (accepted_hypotheses);
@@ -384,17 +344,23 @@ update (CallbackParameters* params)
     // Compose the model's id
     cout << (*acc_hypo)->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << ";  ";
     printf ("t_id = [%i, %i, %i], rot_id = [%i, %i, %i]\n",
-      (*acc_hypo)->t_3dId_[0],
-      (*acc_hypo)->t_3dId_[1],
-      (*acc_hypo)->t_3dId_[2],
-      (*acc_hypo)->rot_3dId_[0],
-      (*acc_hypo)->rot_3dId_[1],
-      (*acc_hypo)->rot_3dId_[2]);
-  }
+      (*acc_hypo)->pos_id_[0],
+      (*acc_hypo)->pos_id_[1],
+      (*acc_hypo)->pos_id_[2],
+      (*acc_hypo)->rot_id_[0],
+      (*acc_hypo)->rot_id_[1],
+      (*acc_hypo)->rot_id_[2]);
 
-#ifdef _SHOW_TRANSFORM_OCTREE_
-  show_octree (&params->objrec_.getTransformOctree (), params->viz_, params->actors_);
+#ifdef _SHOW_TRANSFORM_SPACE_
+    if ( transform_space.getPositionCellBounds ((*acc_hypo)->pos_id_, cb) )
+    {
+      sprintf (pos_cell_name, "cell [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
+      params->viz_.addCube (cb[0], cb[1], cb[2], cb[3], cb[4], cb[5], 1.0, 1.0, 1.0, pos_cell_name);
+    }
+    else
+      printf ("WARNING: no cell at position [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
 #endif
+  }
 
   // Show the bounds of the scene octree
   const float* ob = params->objrec_.getSceneOctree ().getBounds ();

@@ -37,6 +37,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
         include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/rigid_transform_space.h
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
         include/pcl/${SUBSYS_NAME}/ransac_based/orr_graph.h
         include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree_zprojection.h

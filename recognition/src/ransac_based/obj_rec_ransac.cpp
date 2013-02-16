@@ -46,7 +46,7 @@ using namespace pcl::common;
 pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size)
 : pair_width_ (pair_width),
   voxel_size_ (voxel_size),
-  transform_octree_voxel_size_ (5.0f*voxel_size_),
+  position_discretization_ (5.0f*voxel_size_),
   rotation_discretization_ (5.0f*AUX_DEG_TO_RADIANS),
   abs_zdist_thresh_ (1.5f*voxel_size_),
   relative_obj_size_ (0.05f),
@@ -70,11 +70,9 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   this->clearTestData ();
 
   // Build the scene octree
-  scene_octree_.build(scene, voxel_size_, &normals, scene_bounds_enlargement_factor_);
+  scene_octree_.build(scene, voxel_size_, &normals);
   // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
-  // Build the transform octree
-  transform_octree_.build (scene_octree_.getBounds (), transform_octree_voxel_size_);
 
   if ( success_probability >= 1.0 )
     success_probability = 0.99;
@@ -91,9 +89,9 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  list<Hypothesis*> hypotheses, grouped_hypotheses;
+  list<HypothesisBase*> pre_hypotheses;
+  list<Hypothesis*> grouped_hypotheses;
   ORRGraph graph;
-  int num_hypotheses;
 
   // Now perform the recognition step by step
   this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
@@ -103,9 +101,9 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
     return;
 
   // Now that we have sampled some opps from the scene -> generate, group and test the hypotheses
-  num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, hypotheses);
-  num_hypotheses = this->groupHypotheses (hypotheses, num_hypotheses, grouped_hypotheses); hypotheses.clear ();
-  this->testHypotheses (grouped_hypotheses, num_hypotheses, accepted_hypotheses_); grouped_hypotheses.clear ();
+  int num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, pre_hypotheses);
+  this->testHypotheses (pre_hypotheses, num_hypotheses, accepted_hypotheses_);
+  pre_hypotheses.clear ();
 
   // Leave if we are in the TEST_HYPOTHESES mode
   if ( rec_mode_ == ObjRecRANSAC::TEST_HYPOTHESES )
@@ -194,7 +192,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
 //=========================================================================================================================================================================
 
 int
-pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair>& pairs, list<Hypothesis*>& out)
+pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair>& pairs, list<HypothesisBase*>& out)
 {
   // Only for 3D hash tables: this is the max number of neighbors a 3D hash table cell can have!
   ModelLibrary::HashTableCell *neigh_cells[27];
@@ -240,7 +238,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
           model_p2 = (*model_pair_it).second->getPoint ();
           model_n2 = (*model_pair_it).second->getNormal ();
 
-          Hypothesis* hypothesis = new Hypothesis (obj_model);
+          HypothesisBase* hypothesis = new HypothesisBase (obj_model);
           // Get the rigid transform from model to scene
           this->computeRigidTransform(model_p1, model_n1, model_p2, model_n2, scene_p1, scene_n1, scene_p2, scene_n2, hypothesis->rigid_transform_);
           // Save the current object hypothesis
@@ -260,92 +258,63 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 //=========================================================================================================================================================================
 
 int
-pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, int num_hypotheses, list<Hypothesis*>& out)
+pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase*>& hypotheses, int num_hypotheses, vector<Hypothesis*>& out)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): grouping %i hypotheses ...\n", __func__, num_hypotheses);
-  // These are some variables needed when printing the recognition progress
-  float printed = 0.0f, done = 0.0f, step = 100.0f/static_cast<float> (num_hypotheses);
-  int num_done = 0;
+  printf("ObjRecRANSAC::%s():\n  clustering %i hypotheses ... ", __func__, num_hypotheses); fflush (stdout);
 #endif
 
-  ORROctree::Node *com_leaf;
-  float rot_angle, axis_angle[3], transformed_point[3];
-  const float *rigid_transform;
-  list<RotationSpace*> rot_space_list;
-  RotationSpace* rot_space;
+  // Compute the bounds for the positional discretization
+  float b[6]; scene_octree_.getBounds (b);
+  float enlr = scene_bounds_enlargement_factor_ * std::max (std::max (b[1]-b[0], b[3]-b[2]), b[5]-b[4]);
+  b[0] -= enlr; b[1] += enlr;
+  b[2] -= enlr; b[3] += enlr;
+  b[4] -= enlr; b[5] += enlr;
 
-  for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
+  // Build the rigid transform space
+  transform_space_.build (b, position_discretization_, rotation_discretization_);
+  float transformed_point[3];
+
+  // First, add all rigid transforms to the discrete rigid transform space
+  for ( list<HypothesisBase*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
-    // For better code readability
-    rigid_transform = (*hypo_it)->rigid_transform_;
-
     // First transform the center of mass of the model
-    aux::transform (rigid_transform, (*hypo_it)->obj_model_->getCenterOfMass (), transformed_point);
-    // Get the leaf 'transformed_point' ends up in
-    com_leaf = transform_octree_.createLeaf (transformed_point[0], transformed_point[1], transformed_point[2]);
-
-    if ( !com_leaf )
-    {
-      printf ("WARNING in 'ObjRecRANSAC::%s()': the transformed center of mass is out of bounds! "
-              "Enlarge the scene octree bounds by calling 'setSceneBoundsEnlargementFactor()' with a larger value. "
-              "The current one is %f.\n", __func__, scene_bounds_enlargement_factor_);
-      continue;
-    }
-
-    if ( !com_leaf->getData ()->getUserData () )
-    {
-      rot_space = new RotationSpace (rotation_discretization_);
-      com_leaf->getData ()->setUserData (rot_space);
-      rot_space_list.push_back (rot_space);
-#ifdef OBJ_REC_RANSAC_TEST
-      com_leaf->getData ()->get3dId (rot_space->t_3dId_);
-#endif
-    }
-    else // get the existing rotation space
-      rot_space = static_cast<RotationSpace*> (com_leaf->getData ()->getUserData ());
-
-    // Extract the axis-angle representation from the rotation matrix
-    aux::rotationMatrixToAxisAngle (rigid_transform, axis_angle, rot_angle);
-    // Multiply the axis by the angle to get the final representation
-    aux::mult3 (axis_angle, rot_angle);
-
-    // Now, add the rigid transform to the space representation
-    rot_space->addRigidTransform ((*hypo_it)->obj_model_, axis_angle, rigid_transform + 9);
+    aux::transform ((*hypo_it)->rigid_transform_, (*hypo_it)->obj_model_->getCenterOfMass (), transformed_point);
+    // Now add the rigid transform at the right place
+    transform_space_.addRigidTransform ((*hypo_it)->obj_model_, transformed_point, (*hypo_it)->rigid_transform_);
 
     // We do not need that hypothesis -> delete it
     delete *hypo_it;
-
-#ifdef OBJ_REC_RANSAC_VERBOSE
-    // Update progress
-    done = static_cast<float> (++num_done)*step;
-    if ( done > printed )
-    {
-      printf ("\r%.1f%% ", printed); fflush (stdout);
-      printed += 0.1f;
-    }
-#endif
   }
 
+  list<RotationSpace*>& rotation_spaces = transform_space_.getRotationSpaces ();
   ObjRecRANSAC::Hypothesis hypothesis;
-  int penalty, penalty_thresh, num_after_grouping = 0;
+  int penalty, penalty_thresh, num_accepted = 0;
   float match, match_thresh, num_full_leaves;
 
-  // Now take the best hypothesis from each rotation space
-  for ( list<RotationSpace*>::iterator rs_it = rot_space_list.begin () ; rs_it != rot_space_list.end () ; ++rs_it )
-  {
-//     // Compute the average rigid transform in each full cell of the current rotation space
-//     (*rs_it)->computeAverageRigidTransformInCells (out, num_after_grouping);
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf("done\n  testing the cluster representatives ...\n", __func__); fflush (stdout);
+  // These are some variables needed when printing the recognition progress
+  float progress_factor = 100.0f/static_cast<float> (transform_space_.getNumberOfOccupiedRotationSpaces ());
+  int num_done = 0;
+#endif
 
-    list<RotationSpace::Cell*>& cells = (*rs_it)->getFullCells ();
+  // Now take the best hypothesis from each rotation space
+  for ( list<RotationSpace*>::iterator rs_it = rotation_spaces.begin () ; rs_it != rotation_spaces.end () ; ++rs_it )
+  {
+    list<Cell*>& cells = (*rs_it)->getFullCells ();
     ObjRecRANSAC::Hypothesis *best_hypothesis = NULL;
 
     // Run through the cells and take the best hypothesis
-    for ( list<RotationSpace::Cell*>::iterator cell_it = cells.begin () ; cell_it != cells.end () ; ++cell_it )
+    for ( list<Cell*>::iterator cell_it = cells.begin () ; cell_it != cells.end () ; ++cell_it )
     {
       // For better code readability
-      map<const ModelLibrary::Model*, RotationSpace::Cell::Entry>& entries = (*cell_it)->model_to_entry_;
-      map<const ModelLibrary::Model*, RotationSpace::Cell::Entry>::iterator entry_it;
+      map<const ModelLibrary::Model*, Cell::Entry>& entries = (*cell_it)->getEntries ();
+      map<const ModelLibrary::Model*, Cell::Entry>::iterator entry_it;
+
+      // Setup the ids
+      hypothesis.setPositionId ((*cell_it)->getPositionId ());
+      hypothesis.setRotationId ((*cell_it)->getRotationId ());
 
       // Run through all entries
       for ( entry_it = entries.begin () ; entry_it != entries.end () ; ++entry_it )
@@ -371,6 +340,7 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
             best_hypothesis = new ObjRecRANSAC::Hypothesis (hypothesis);
             best_hypothesis->match_confidence_ = static_cast<float> (match)/num_full_leaves;
             out.push_back (best_hypothesis);
+            ++num_accepted;
           }
           else if ( hypothesis.explained_pixels_.size () > best_hypothesis->explained_pixels_.size () )
           {
@@ -380,69 +350,17 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<Hypothesis*>& hypotheses, i
         }
       }
     }
-
-    // Delete that rotation space since we do not need it any more
-    delete *rs_it;
-  }
-
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("done\n%i hypotheses after grouping.\n", num_after_grouping); fflush (stdout);
-#endif
-
-  return (num_after_grouping);
-}
-
-//=========================================================================================================================================================================
-
-void
-pcl::recognition::ObjRecRANSAC::testHypotheses (list<Hypothesis*>& hypotheses, int num_hypotheses, vector<Hypothesis*>& accepted_hypotheses)
-{
-#ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s(): testing %i hypotheses ...\n", __func__, num_hypotheses);
-  // These are some variables needed when printing the recognition progress
-  float printed = 0.0f, done = 0.0f, step = 100.0f/static_cast<float> (num_hypotheses);
-  int num_done = 0;
-#endif
-
-  float num_full_leaves, match, match_thresh;
-  int penalty, penalty_thresh;
-
-  // Test each hypothesis
-  for ( list<Hypothesis*>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
-  {
-    // Test the current hypothesis
-    this->testHypothesis (*hypo_it, match, penalty);
-
-    // For better code readability
-    num_full_leaves = static_cast<float> ((*hypo_it)->obj_model_->getOctree ().getFullLeaves ().size ());
-	match_thresh = num_full_leaves*visibility_;
-	penalty_thresh = static_cast<int> (num_full_leaves*relative_num_of_illegal_pts_ + 0.5f);
-
-    // Check if we should accept this hypothesis
-    if ( match >= match_thresh && penalty <= penalty_thresh )
-    {
-      // Compute the match confidence which is the number of explained points divided by the total number of model points
-      (*hypo_it)->match_confidence_ = static_cast<float> (match)/num_full_leaves;
-      accepted_hypotheses.push_back (*hypo_it);
-    }
-    else
-      // We do not need that hypothesis => delete it
-      delete *hypo_it;
-
-#ifdef OBJ_REC_RANSAC_VERBOSE
-    // Update progress
-    done = static_cast<float> (++num_done)*step;
-    if ( done > printed )
-    {
-      printf ("\r%.1f%% ", printed); fflush (stdout);
-      printed += 0.1f;
-    }
+    // Update the progress
+    printf ("\r  %.1f%% ", (static_cast<float> (++num_done))*progress_factor); fflush (stdout);
 #endif
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("done\n%i accepted.\n", static_cast<int> (accepted_hypotheses.size ())); fflush (stdout);
+  printf("done\n  %i accepted.\n", num_accepted);
 #endif
+
+  return (num_accepted);
 }
 
 //=========================================================================================================================================================================
