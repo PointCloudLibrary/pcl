@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2010-2011, Willow Garage, Inc.
- * Copyright (c) 2012-, Open Perception, Inc.
+ * Copyright (c) 2013-, Open Perception, Inc.
  *
  * All rights reserved.
  *
@@ -100,9 +99,9 @@ namespace pcl
       int c1, c2, f1, f2;
       pcl::RGB g1, g2, g3, g4;
       float w1, w2;
-      for (unsigned int i = 0; i < height; i++)		// for every row
+      for (unsigned int i = 0; i < height; i++)    // for every row
       {
-        for (unsigned int j = 0; j < width; j++)	// for every column
+        for (unsigned int j = 0; j < width; j++)  // for every column
         {
           A = T_inv * Eigen::Vector3f(i, j, 1);
           c1 = ceil(A(0));
@@ -186,7 +185,7 @@ namespace pcl
         return (-1000);
       }
 
-      int height = floor((height_person * window_height_) / (0.75 * window_height_) + 0.5);	// floor(i+0.5) = round(i)
+      int height = floor((height_person * window_height_) / (0.75 * window_height_) + 0.5);  // floor(i+0.5) = round(i)
       int width = floor((height_person * window_width_) / (0.75 * window_height_) + 0.5);
       int xmin = floor(xc - width / 2 + 0.5);
       int ymin = floor(yc - height / 2 + 0.5);
@@ -221,7 +220,7 @@ namespace pcl
       double confidence = 0.0;
       for(uint i = 0; i < SVM_weights_.size(); i++)
       {
-      	confidence += SVM_weights_[i] * ris[i];
+        confidence += SVM_weights_[i] * ris[i];
       }
       //Confidence correction
       confidence -= SVM_offset_;

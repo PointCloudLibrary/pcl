@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2010-2011, Willow Garage, Inc.
- * Copyright (c) 2012-, Open Perception, Inc.
+ * Copyright (c) 2013-, Open Perception, Inc.
  *
  * All rights reserved.
  *
@@ -46,73 +45,107 @@
 
 namespace pcl
 {
-	namespace people
-	{
-		class PersonClassifier
-		{
-		protected:
+  namespace people
+  {
+    class PersonClassifier
+    {
+    protected:
 
-			int window_height_;					///Height of the image patch to classify
-			int window_width_;					///Width of the image patch to classify
-			float SVM_offset_;					///SVM offset
-			std::vector<float> SVM_weights_;	///SVM weights vector
+      /** \brief Height of the image patch to classify. */
+      int window_height_;          
+      
+      /** \brief Width of the image patch to classify. */
+      int window_width_;          
+      
+      /** \brief SVM offset. */
+      float SVM_offset_;          
+      
+      /** \brief SVM weights vector. */
+      std::vector<float> SVM_weights_;  
 
-		public:
+    public:
 
-			/**
-			 * Default constructor
-			 */
-			PersonClassifier ();
+      /** \brief Constructor. */
+      PersonClassifier ();
 
-			/**
-			 * Default destructor
-			 */
-			virtual ~PersonClassifier ();
+      /** \brief Destructor. */
+      virtual ~PersonClassifier ();
 
-			/**
-			 * Set trained SVM for person confidence estimation
-			 */
-			void
-			setSVM (int window_height, int window_width, std::vector<float> SVM_weights, float SVM_offset);
+      /**
+       * \brief Set trained SVM for person confidence estimation.
+       * 
+       * \param[in] window_height Detection window height.
+       * \param[in] window_width Detection window width.
+       * \param[in] SVM_weights SVM weights vector.
+       * \param[in] SVM_offset SVM offset.
+       */
+      void
+      setSVM (int window_height, int window_width, std::vector<float> SVM_weights, float SVM_offset);
 
-			/**
-			 * Get trained SVM for person confidence estimation
-			 */
-			void
-			getSVM (int& window_height, int& window_width, std::vector<float>& SVM_weights, float& SVM_offset);
+      /**
+       * \brief Get trained SVM for person confidence estimation.
+       * 
+       * \param[out] window_height Detection window height.
+       * \param[out] window_width Detection window width.
+       * \param[out] SVM_weights SVM weights vector.
+       * \param[out] SVM_offset SVM offset.
+       */
+      void
+      getSVM (int& window_height, int& window_width, std::vector<float>& SVM_weights, float& SVM_offset);
 
-			/**
-			 * Resize an image represented by a pointcloud RGB
-			 */
-			void
-			resize (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
-							int window_width_, int window_height_);
+      /**
+       * \brief Resize an image represented by a pointcloud RGB.
+       * 
+       * \param[in] input_image A pointer to the input RGB pointcloud.
+       * \param[out] output_image A pointer to the output RGB pointcloud.
+       * \param[in] width Output width.
+       * \param[in] height Output height.
+       */
+      void
+      resize (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
+              int width, int height);
 
-			/**
-			 * Copies an image and makes a black border around it, where the source image is not present.
-			 */
-			void
-			copyMakeBorder (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
-					int xmin, int ymin, int width, int height);
+      /**
+       * \brief Copies an image and makes a black border around it, where the source image is not present.
+       * 
+       * \param[in] input_image A pointer to the input RGB pointcloud.
+       * \param[out] output_image A pointer to the output RGB pointcloud.
+       * \param[in] xmin x coordinate of the top-left point of the bbox to copy from the input image.
+       * \param[in] ymin y coordinate of the top-left point of the bbox to copy from the input image.
+       * \param[in] width Output width.
+       * \param[in] height Output height.
+       */
+      void
+      copyMakeBorder (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
+          int xmin, int ymin, int width, int height);
 
-			/**
-			 * Classify the given portion of image
-			 * @param height the height of the object to classify, in pixel
-			 * @param xc the x-coordinate of the center of the object to classify, in pixel
-			 * @param yc the y-coordinate of the center of the object to classify, in pixel
-			 * @param image the whole image from which to extract the object to classify
-			 * @return the result given by the SVM used
-			 */
-			double
-			evaluate (float height, float xc, float yc, pcl::PointCloud<pcl::RGB>::Ptr& image);
+      /**
+       * \brief Classify the given portion of image.
+       * 
+       * \param[in] height The height of the image patch to classify, in pixels.
+       * \param[in] xc The x-coordinate of the center of the image patch to classify, in pixels.
+       * \param[in] yc The y-coordinate of the center of the image patch to classify, in pixels.
+       * \param[in] image The whole image (pointer to RGB point cloud) containing the object to classify.
+       * \return The classification score given by the SVM.
+       */
+      double
+      evaluate (float height, float xc, float yc, pcl::PointCloud<pcl::RGB>::Ptr& image);
 
-			/**
-			 * Compute person confidence for a given PersonCluster
-			 */
-			double
-			evaluate (pcl::PointCloud<pcl::RGB>::Ptr& image, Eigen::Vector3f& bottom, Eigen::Vector3f& top, Eigen::Vector3f& centroid,
-				 Eigen::Matrix3f intrinsics_matrix, bool vertical);
-		};
-	} /* namespace people */
+      /**
+       * \brief Compute person confidence for a given PersonCluster.
+       * 
+       * \param[in] image The input image (pointer to RGB point cloud).
+       * \param[in] bottom Theoretical bottom point of the cluster projected to the image.
+       * \param[in] top Theoretical top point of the cluster projected to the image.
+       * \param[in] centroid Theoretical centroid point of the cluster projected to the image.
+       * \param[in] intrinsics_matrix Image intrinsic parameters.
+       * \param[in] vertical If true, the sensor is considered to be vertically placed (portrait mode).
+       * \return The person confidence.
+       */
+      double
+      evaluate (pcl::PointCloud<pcl::RGB>::Ptr& image, Eigen::Vector3f& bottom, Eigen::Vector3f& top, Eigen::Vector3f& centroid,
+         Eigen::Matrix3f intrinsics_matrix, bool vertical);
+    };
+  } /* namespace people */
 } /* namespace pcl */
 #endif /* PCL_PEOPLE_PERSON_CLASSIFIER_H_ */

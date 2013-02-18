@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2010-2011, Willow Garage, Inc.
- * Copyright (c) 2012-, Open Perception, Inc.
+ * Copyright (c) 2013-, Open Perception, Inc.
  *
  * All rights reserved.
  *
@@ -48,142 +47,185 @@
 
 namespace pcl
 {
-	namespace people
-	{
-		/** \brief @b HeadBasedSubclustering represents a class for searching for people inside a HeadBasedSubclustering based on a 3D head detection algorithm
-			* \author Matteo Munaro
-			* \ingroup people
-		*/
-		template <typename PointT> class HeadBasedSubclustering;
+  namespace people
+  {
+    /** \brief @b HeadBasedSubclustering represents a class for searching for people inside a HeightMap2D based on a 3D head detection algorithm
+      * \author Matteo Munaro
+      * \ingroup people
+    */
+    template <typename PointT> class HeadBasedSubclustering;
 
-		template <typename PointT>
-		class HeadBasedSubclustering
-		{
-		public:
+    template <typename PointT>
+    class HeadBasedSubclustering
+    {
+    public:
 
-			typedef pcl::PointCloud<PointT> PointCloud;
-			typedef boost::shared_ptr<PointCloud> PointCloudPtr;
-			typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-			HeadBasedSubclustering ();
+      /** \brief Constructor. */
+      HeadBasedSubclustering ();
 
-			virtual ~HeadBasedSubclustering ();
+      /** \brief Destructor. */
+      virtual ~HeadBasedSubclustering ();
 
-			/**
-			 * Compute subclusters and return them into a vector of PersonCluster.
-			 * @compute subclusters and return them into a vector of PersonCluster.
-			 */
-			void
-			subcluster (std::vector<pcl::people::PersonCluster<PointT> >& clusters);
+      /**
+       * \brief Compute subclusters and return them into a vector of PersonCluster.
+       * 
+       * \param[in] clusters Vector of PersonCluster.
+       */
+      void
+      subcluster (std::vector<pcl::people::PersonCluster<PointT> >& clusters);
 
-			/**
-			 * Merge clusters close in floor coordinates.
-			 * @merge clusters close in floor coordinates.
-			 */
-			void
-			mergeClustersCloseInFloorCoordinates (std::vector<pcl::people::PersonCluster<PointT> >& input_clusters,
-					std::vector<pcl::people::PersonCluster<PointT> >& output_clusters);
+      /**
+       * \brief Merge clusters close in floor coordinates.
+       * 
+       * \param[in] input_clusters Input vector of PersonCluster.
+       * \param[in] output_clusters Output vector of PersonCluster (after merging).
+       */
+      void
+      mergeClustersCloseInFloorCoordinates (std::vector<pcl::people::PersonCluster<PointT> >& input_clusters,
+          std::vector<pcl::people::PersonCluster<PointT> >& output_clusters);
 
-			/**
-			 * Create subclusters centered on the heads position from the current cluster.
-			 * @create subclusters centered on the heads position from the current cluster.
-			 */
-			void
-			createSubClusters (pcl::people::PersonCluster<PointT>& cluster, int maxima_number_after_filtering_,	std::vector<int>& maxima_cloud_indices_filtered,
-					std::vector<pcl::people::PersonCluster<PointT> >& subclusters);
+      /**
+       * \brief Create subclusters centered on the heads position from the current cluster.
+       * 
+       * \param[in] cluster A PersonCluster.
+       * \param[in] maxima_number Number of local maxima to use as centers of the new cluster.
+       * \param[in] maxima_cloud_indices Cloud indices of local maxima to use as centers of the new cluster.
+       * \param[out] subclusters Output vector of PersonCluster objects derived from the input cluster.
+       */
+      void
+      createSubClusters (pcl::people::PersonCluster<PointT>& cluster, int maxima_number_after_filtering,  std::vector<int>& maxima_cloud_indices_filtered,
+          std::vector<pcl::people::PersonCluster<PointT> >& subclusters);
 
-			/**
-			 * Set initial cluster indices.
-			 * @set initial cluster indices.
-			 */
-			void
-			setInputCloud (PointCloudPtr& cloud);
+      /**
+       * \brief Set input cloud.
+       * 
+       * \param[in] cloud A pointer to the input point cloud.
+       */
+      void
+      setInputCloud (PointCloudPtr& cloud);
 
-			/**
-			 * Set the ground coefficients.
-			 * @set the ground coefficients.
-			 */
-			void
-			setGround (Eigen::VectorXf& ground_coeffs);
+      /**
+       * \brief Set the ground coefficients.
+       * 
+       * \param[in] ground_coeffs The ground plane coefficients.
+       */
+      void
+      setGround (Eigen::VectorXf& ground_coeffs);
 
-			/**
-			 * Set sensor orientation (vertical = true means portrait mode, vertical = false means landscape mode). Default = false.
-			 * @set sensor orientation (vertical = true means portrait mode, vertical = false means landscape mode). Default = false.
-			 */
-			void
-			setSensorPortraitOrientation (bool vertical);
+      /**
+       * \brief Set sensor orientation to landscape mode (false) or portrait mode (true).
+       * 
+       * \param[in] vertical Landscape (false) or portrait (true) mode (default = false).
+       */
+      void
+      setSensorPortraitOrientation (bool vertical);
 
-			/**
-			 * Set head_centroid_ to true (person centroid is in the head) or false (person centroid is the whole body centroid). Default = true.
-			 * @set head_centroid_ to true (person centroid is in the head) or false (person centroid is the whole body centroid). Default = true.
-			 */
-			void
-			setHeadCentroid (bool head_centroid);
+      /**
+       * \brief Set head_centroid_ to true (person centroid is in the head) or false (person centroid is the whole body centroid).
+       *
+       * \param[in] head_centroid Set the location of the person centroid (head or body center) (default = true).
+       */
+      void
+      setHeadCentroid (bool head_centroid);
 
-			/**
-			 * Set initial cluster indices.
-			 * @set initial cluster indices.
-			 */
-			void
-			setInitialClusters (std::vector<pcl::PointIndices>& cluster_indices);
+      /**
+       * \brief Set initial cluster indices.
+       * 
+       * \param[in] cluster_indices Point cloud indices corresponding to the initial clusters (before subclustering).
+       */
+      void
+      setInitialClusters (std::vector<pcl::PointIndices>& cluster_indices);
 
-			/**
-			 * Set minimum and maximum allowed height for a person cluster.
-			 * @set minimum and maximum allowed height for a person cluster.
-			 */
-			void
-			setHeightLimits (float min_height, float max_height);
+      /**
+       * \brief Set minimum and maximum allowed height for a person cluster.
+       *
+       * \param[in] min_height Minimum allowed height for a person cluster (default = 1.3).
+       * \param[in] max_height Maximum allowed height for a person cluster (default = 2.3).
+       */
+      void
+      setHeightLimits (float min_height, float max_height);
 
-			/**
-			 * Set minimum and maximum allowed number of points for a person cluster.
-			 * @set minimum and maximum allowed number of points for a person cluster.
-			 */
-			void
-			setDimensionLimits (int min_points, int max_points);
+      /**
+       * \brief Set minimum and maximum allowed number of points for a person cluster.
+       *
+       * \param[in] min_points Minimum allowed number of points for a person cluster.
+       * \param[in] max_points Maximum allowed number of points for a person cluster.
+       */
+      void
+      setDimensionLimits (int min_points, int max_points);
 
-			/**
-			 * Set minimum distance between people head. Default = 0.3 meters.
-			 * @set minimum distance between people head. Default = 0.3 meters.
-			 */
-			void
-			setMinimumDistanceBetweenHeads (float heads_minimum_distance);
+      /**
+       * \brief Set minimum distance between persons' heads.
+       *
+       * \param[in] heads_minimum_distance Minimum allowed distance between persons' heads (default = 0.3).
+       */
+      void
+      setMinimumDistanceBetweenHeads (float heads_minimum_distance);
 
-			/**
-			 * Get minimum and maximum allowed height for a person cluster.
-			 * @get minimum and maximum allowed height for a person cluster.
-			 */
-			void
-			getHeightLimits (float& min_height, float& max_height);
+      /**
+       * \brief Get minimum and maximum allowed height for a person cluster.
+       *
+       * \param[out] min_height Minimum allowed height for a person cluster.
+       * \param[out] max_height Maximum allowed height for a person cluster.
+       */
+      void
+      getHeightLimits (float& min_height, float& max_height);
 
-			/**
-			 * Get minimum and maximum allowed number of points for a person cluster.
-			 * @get minimum and maximum allowed number of points for a person cluster.
-			 */
-			void
-			getDimensionLimits (int& min_points, int& max_points);
+      /**
+       * \brief Get minimum and maximum allowed number of points for a person cluster.
+       *
+       * \param[out] min_points Minimum allowed number of points for a person cluster.
+       * \param[out] max_points Maximum allowed number of points for a person cluster.
+       */
+      void
+      getDimensionLimits (int& min_points, int& max_points);
 
-			/**
-			 * Get minimum distance between people head. Default = 0.3 meters.
-			 * @get minimum distance between people head. Default = 0.3 meters.
-			 */
-			float
-			getMinimumDistanceBetweenHeads ();
+      /**
+       * \brief Get minimum distance between persons' heads.
+       */
+      float
+      getMinimumDistanceBetweenHeads ();
 
-		protected:
-			Eigen::VectorXf ground_coeffs_;						// ground plane coefficients
-			float sqrt_ground_coeffs_;							// ground plane normalization factor
-			std::vector<pcl::PointIndices> cluster_indices_; 	// initial clusters indices
-			PointCloudPtr cloud_;								// pointer to the input cloud
-			float max_height_;									// person clusters maximum height from the ground plane;
-			float min_height_;									// person clusters minimum height from the ground plane;
-			bool vertical_;										// if true, the sensor is considered to be vertically placed (portrait mode)
-			bool head_centroid_;								// if true, the person centroid is computed as the centroid of the cluster points belonging to the head (default = false)
-																// if false, the person centroid is computed as the centroid of the whole cluster points (default = true)
-			int max_points_;									// maximum number of points for a person cluster
-			int min_points_;									// minimum number of points for a person cluster
-			float heads_minimum_distance_;						// minimum distance between persons' head
-		};
-	} /* namespace people */
+    protected:
+      /** \brief ground plane coefficients */
+      Eigen::VectorXf ground_coeffs_;            
+      
+      /** \brief ground plane normalization factor */
+      float sqrt_ground_coeffs_;              
+      
+      /** \brief initial clusters indices */
+      std::vector<pcl::PointIndices> cluster_indices_;   
+      
+      /** \brief pointer to the input cloud */
+      PointCloudPtr cloud_;                
+      
+      /** \brief person clusters maximum height from the ground plane */
+      float max_height_;                  
+      
+      /** \brief person clusters minimum height from the ground plane */
+      float min_height_;                  
+      
+      /** \brief if true, the sensor is considered to be vertically placed (portrait mode) */
+      bool vertical_;                   
+      
+      /** \brief if true, the person centroid is computed as the centroid of the cluster points belonging to the head 
+                 if false, the person centroid is computed as the centroid of the whole cluster points (default = true) */
+      bool head_centroid_;                                            
+      
+      /** \brief maximum number of points for a person cluster */
+      int max_points_;                  
+      
+      /** \brief minimum number of points for a person cluster */
+      int min_points_;                  
+      
+      /** \brief minimum distance between persons' heads */
+      float heads_minimum_distance_;           
+    };
+  } /* namespace people */
 } /* namespace pcl */
 #include <pcl/people/impl/head_based_subcluster.hpp>
 #endif /* PCL_PEOPLE_HEAD_BASED_SUBCLUSTER_H_ */

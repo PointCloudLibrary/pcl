@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2010-2011, Willow Garage, Inc.
- * Copyright (c) 2012-, Open Perception, Inc.
+ * Copyright (c) 2013-, Open Perception, Inc.
  *
  * All rights reserved.
  *
@@ -133,10 +132,10 @@ pcl::people::PersonCluster<PointT>::init (
     float sum_z = 0.0f;
     int n = 0;
 
-    float head_threshold_value;		// vertical coordinate of the lowest head point
+    float head_threshold_value;    // vertical coordinate of the lowest head point
     if (not vertical_)
     {
-      head_threshold_value = min_y_ + height_ / 8.0f;		// head is suppose to be 1/8 of the human height
+      head_threshold_value = min_y_ + height_ / 8.0f;    // head is suppose to be 1/8 of the human height
       for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
       {
         PointT* p = &input_cloud->points[*pit];
@@ -152,7 +151,7 @@ pcl::people::PersonCluster<PointT>::init (
     }
     else
     {
-      head_threshold_value = max_x_ - height_ / 8.0f;		// head is suppose to be 1/8 of the human height
+      head_threshold_value = max_x_ - height_ / 8.0f;    // head is suppose to be 1/8 of the human height
       for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
       {
         PointT* p = &input_cloud->points[*pit];
@@ -417,13 +416,13 @@ void pcl::people::PersonCluster<PointT>::drawTBoundingBox (pcl::visualization::P
   viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 1.0, 0.0, bbox_name.str());
   viewer.setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 2, bbox_name.str());
 
-  //			std::stringstream confid;
-  //			confid << person_confidence_;
-  //			PointT position;
-  //			position.x = tcenter_[0]- 0.2;
-  //			position.y = ttop_[1];
-  //			position.z = tcenter_[2];
-  //			viewer.addText3D(confid.str().substr(0, 4), position, 0.1);
+  //      std::stringstream confid;
+  //      confid << person_confidence_;
+  //      PointT position;
+  //      position.x = tcenter_[0]- 0.2;
+  //      position.y = ttop_[1];
+  //      position.z = tcenter_[2];
+  //      viewer.addText3D(confid.str().substr(0, 4), position, 0.1);
 }
 
 template <typename PointT>

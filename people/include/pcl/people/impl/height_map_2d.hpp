@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
- * Copyright (c) 2010-2011, Willow Garage, Inc.
- * Copyright (c) 2012-, Open Perception, Inc.
+ * Copyright (c) 2013-, Open Perception, Inc.
  *
  * All rights reserved.
  *
@@ -59,7 +58,7 @@ pcl::people::HeightMap2D<PointT>::HeightMap2D ()
 template <typename PointT> void
 pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& cluster)
 {
-  /// Check if all mandatory variables have been set:
+  // Check if all mandatory variables have been set:
   if (isnan(sqrt_ground_coeffs_))
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Floor parameters have not been set or they are not valid!\n");
@@ -109,10 +108,10 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
     }
   }
 
-  /// Compute local maxima of the height map:
+  // Compute local maxima of the height map:
   searchLocalMaxima();
 
-  /// Filter maxima by imposing a minimum distance between them (minimum distance between people heads):
+  // Filter maxima by imposing a minimum distance between them (minimum distance between people heads):
   filterMaxima();
 }
 
