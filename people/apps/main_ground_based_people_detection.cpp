@@ -193,7 +193,7 @@ int main (int argc, char** argv)
   int window_width;
   // read trained SVM:
   loadSVMFromFile(svm_filename, SVM_weights, SVM_offset, window_height, window_width);
-  pcl::people::PersonClassifier person_classifier;
+  pcl::people::PersonClassifier<pcl::RGB> person_classifier;
   person_classifier.setSVM(window_height, window_width, SVM_weights, SVM_offset);
 
   // Ground initialization:

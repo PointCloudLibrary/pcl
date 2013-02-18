@@ -47,6 +47,9 @@ namespace pcl
 {
   namespace people
   {
+    template <typename PointT> class PersonClassifier;
+
+    template <typename PointT>
     class PersonClassifier
     {
     protected:
@@ -64,6 +67,9 @@ namespace pcl
       std::vector<float> SVM_weights_;  
 
     public:
+
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
 
       /** \brief Constructor. */
       PersonClassifier ();
@@ -94,29 +100,29 @@ namespace pcl
       getSVM (int& window_height, int& window_width, std::vector<float>& SVM_weights, float& SVM_offset);
 
       /**
-       * \brief Resize an image represented by a pointcloud RGB.
+       * \brief Resize an image represented by a pointcloud containing RGB information.
        * 
-       * \param[in] input_image A pointer to the input RGB pointcloud.
-       * \param[out] output_image A pointer to the output RGB pointcloud.
+       * \param[in] input_image A pointer to a pointcloud containing RGB information.
+       * \param[out] output_image A pointer to the output pointcloud.
        * \param[in] width Output width.
        * \param[in] height Output height.
        */
       void
-      resize (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
+      resize (PointCloudPtr& input_image, PointCloudPtr& output_image,
               int width, int height);
 
       /**
        * \brief Copies an image and makes a black border around it, where the source image is not present.
        * 
-       * \param[in] input_image A pointer to the input RGB pointcloud.
-       * \param[out] output_image A pointer to the output RGB pointcloud.
+       * \param[in] input_image A pointer to a pointcloud containing RGB information.
+       * \param[out] output_image A pointer to the output pointcloud.
        * \param[in] xmin x coordinate of the top-left point of the bbox to copy from the input image.
        * \param[in] ymin y coordinate of the top-left point of the bbox to copy from the input image.
        * \param[in] width Output width.
        * \param[in] height Output height.
        */
       void
-      copyMakeBorder (pcl::PointCloud<pcl::RGB>::Ptr& input_image, pcl::PointCloud<pcl::RGB>::Ptr& output_image,
+      copyMakeBorder (PointCloudPtr& input_image, PointCloudPtr& output_image,
           int xmin, int ymin, int width, int height);
 
       /**
@@ -125,16 +131,16 @@ namespace pcl
        * \param[in] height The height of the image patch to classify, in pixels.
        * \param[in] xc The x-coordinate of the center of the image patch to classify, in pixels.
        * \param[in] yc The y-coordinate of the center of the image patch to classify, in pixels.
-       * \param[in] image The whole image (pointer to RGB point cloud) containing the object to classify.
+       * \param[in] image The whole image (pointer to a point cloud containing RGB information) containing the object to classify.
        * \return The classification score given by the SVM.
        */
       double
-      evaluate (float height, float xc, float yc, pcl::PointCloud<pcl::RGB>::Ptr& image);
+      evaluate (float height, float xc, float yc, PointCloudPtr& image);
 
       /**
        * \brief Compute person confidence for a given PersonCluster.
        * 
-       * \param[in] image The input image (pointer to RGB point cloud).
+       * \param[in] image The input image (pointer to a point cloud containing RGB information).
        * \param[in] bottom Theoretical bottom point of the cluster projected to the image.
        * \param[in] top Theoretical top point of the cluster projected to the image.
        * \param[in] centroid Theoretical centroid point of the cluster projected to the image.
@@ -143,9 +149,10 @@ namespace pcl
        * \return The person confidence.
        */
       double
-      evaluate (pcl::PointCloud<pcl::RGB>::Ptr& image, Eigen::Vector3f& bottom, Eigen::Vector3f& top, Eigen::Vector3f& centroid,
+      evaluate (PointCloudPtr& image, Eigen::Vector3f& bottom, Eigen::Vector3f& top, Eigen::Vector3f& centroid,
          Eigen::Matrix3f intrinsics_matrix, bool vertical);
     };
   } /* namespace people */
 } /* namespace pcl */
+#include <pcl/people/impl/person_classifier.hpp>
 #endif /* PCL_PEOPLE_PERSON_CLASSIFIER_H_ */

@@ -37,7 +37,7 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
- 
+
 #ifndef PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 #define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 
@@ -90,7 +90,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setIntrinsics (Eigen::Matrix
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setClassifier (pcl::people::PersonClassifier person_classifier)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setClassifier (pcl::people::PersonClassifier<pcl::RGB> person_classifier)
 {
   person_classifier_ = person_classifier;
   person_classifier_set_flag_ = true;
