@@ -42,6 +42,7 @@
 #define PCL_PEOPLE_PERSON_CLASSIFIER_H_
 
 #include <pcl/people/person_cluster.h>
+#include <pcl/people/hog.h>
 
 namespace pcl
 {

@@ -43,9 +43,6 @@
 #ifndef PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
 #define PCL_PEOPLE_PERSON_CLASSIFIER_HPP_
 
-// Compute HOG descriptor:
-void hog(double *I, int h, int w, int nCh, int sBin, int oBin, int oGran, double* H);
-
 template <typename PointT>
 pcl::people::PersonClassifier<PointT>::PersonClassifier () {}
 
@@ -214,7 +211,8 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
   double *ris = new double[SVM_weights_.size()];
 
   //Calculate HOG descriptor
-  hog(sample_double, sample->height, sample->width, 3, 8, 9, 10, ris);
+  pcl::people::HOG hog;
+  hog.compute(sample_double, sample->height, sample->width, 3, 8, 9, 10, ris);
 
   //Calculate confidence value by dot product
   double confidence = 0.0;

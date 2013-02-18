@@ -6,6 +6,7 @@
 * Licensed under the Simplified BSD License
 *
 * Copyright (c) 2012, Piotr Dollar
+* Copyright (c) 2013-, Open Perception, Inc.
 *
 * All rights reserved.
 *
@@ -35,18 +36,23 @@
 * either expressed or implied, of the FreeBSD Project.
 *
 *******************************************************************************/
- 
-#include <cmath>
-#include <algorithm>
 
-#define eps 0.0001
-#define PI 3.1415926535897931
+#include <pcl/people/hog.h>
+
+#ifndef PCL_PEOPLE_HOG_HPP_
+#define PCL_PEOPLE_HOG_HPP_
+
+/** \brief Constructor. */
+pcl::people::HOG::HOG () {}	
+
+/** \brief Destructor. */
+pcl::people::HOG::~HOG () {}
 
 /**
- * \brief snap to one of oBin orientations using binary search
- **/
+* \brief snap to one of oBin orientations using binary search
+**/
 int
-compOrient (double dx, double dy, double *ux, double *uy, int oBin)
+pcl::people::HOG::compOrient (double dx, double dy, double *ux, double *uy, int oBin)
 {
   if(oBin <= 1)
     return 0;
@@ -72,10 +78,10 @@ compOrient (double dx, double dy, double *ux, double *uy, int oBin)
 }
 
 /**
- * \brief compute gradient magnitude (*2) and orientation
- **/
+* \brief compute gradient magnitude (*2) and orientation
+**/
 void
-compGradImg (double *I, double *G, int *O, int h, int w, int nCh, int oBin)
+pcl::people::HOG::compGradImg (double *I, double *G, int *O, int h, int w, int nCh, int oBin)
 {
   // compute unit vectors evenly distributed at oBin orientations
   double *ux = new double[oBin];
@@ -148,10 +154,10 @@ compGradImg (double *I, double *G, int *O, int h, int w, int nCh, int oBin)
 }
 
 /**
- * \brief compute HOG features
- */
+* \brief compute HOG features
+*/
 void
-hog (double *I, int h, int w, int nCh, int sBin, int oBin, int oGran, double* H)
+pcl::people::HOG::compute (double *I, int h, int w, int nCh, int sBin, int oBin, int oGran, double* H)
 {
   // compute gradient magnitude (*2) and orientation for each location in I
   double *G = new double[h * w];
@@ -285,3 +291,4 @@ hog (double *I, int h, int w, int nCh, int sBin, int oBin, int oGran, double* H)
   delete []  norm;
   delete  hist;
 }
+#endif /* PCL_PEOPLE_HOG_HPP_ */

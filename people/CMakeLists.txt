@@ -26,6 +26,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/height_map_2d.h
         include/pcl/${SUBSYS_NAME}/person_classifier.h
         include/pcl/${SUBSYS_NAME}/person_cluster.h
+        include/pcl/${SUBSYS_NAME}/hog.h
         )
 
     set(impl_incs
@@ -34,10 +35,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/height_map_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/person_classifier.hpp
         include/pcl/${SUBSYS_NAME}/impl/person_cluster.hpp
+        include/pcl/${SUBSYS_NAME}/impl/hog.hpp
         )
 
     set(srcs
-        src/hog.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
@@ -48,6 +49,8 @@ if(build)
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})    
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    
+    SET_TARGET_PROPERTIES(pcl_${SUBSYS_NAME} PROPERTIES LINKER_LANGUAGE CXX)    
 
     PCL_ADD_EXECUTABLE(pcl_rgbd_people_detector ${SUBSYS_NAME} apps/main_ground_based_people_detection.cpp)
     target_link_libraries(pcl_rgbd_people_detector pcl_people pcl_common pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_geometry pcl_segmentation pcl_octree vtkHybrid vtkRendering vtkCommon vtkWidgets vtkFiltering)
