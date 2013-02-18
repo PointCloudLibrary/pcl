@@ -37,7 +37,7 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
+ 
 #ifndef PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 #define PCL_PEOPLE_GROUND_BASED_PEOPLE_DETECTION_APP_HPP_
 
@@ -162,17 +162,22 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::getGround ()
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (PointCloudPtr input_cloud, pcl::PointCloud<pcl::RGB>::Ptr& output_cloud)
 {
-  // Extract RGB information from a point cloud and output the corresponding RGB point cloud
-  pcl::RGB rgb_point;
-  for (unsigned int i = 0; i < input_cloud->points.size(); i++)
-  {
-    rgb_point.r = input_cloud->points[i].r;
-    rgb_point.g = input_cloud->points[i].g;
-    rgb_point.b = input_cloud->points[i].b;
-    output_cloud->points.push_back(rgb_point);
-  }
+  // Extract RGB information from a point cloud and output the corresponding RGB point cloud  
+  output_cloud->points.resize(input_cloud->height*input_cloud->width);
   output_cloud->width = input_cloud->width;
   output_cloud->height = input_cloud->height;
+
+  pcl::RGB rgb_point;
+  for (int j = 0; j < input_cloud->width; j++)
+  {
+    for (int i = 0; i < input_cloud->height; i++)
+    { 
+      rgb_point.r = (*input_cloud)(j,i).r;
+      rgb_point.g = (*input_cloud)(j,i).g;
+      rgb_point.b = (*input_cloud)(j,i).b;    
+      (*output_cloud)(j,i) = rgb_point; 
+    }
+  }
 }
 
 template <typename PointT> void
@@ -226,7 +231,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   }
 
   // Fill rgb image:
-  rgb_image_->points.clear();                      // clear RGB pointcloud
+  rgb_image_->points.clear();                            // clear RGB pointcloud
   extractRGBFromPointCloud(cloud_, rgb_image_);          // fill RGB pointcloud
 
   // Voxel grid filtering:
