@@ -255,7 +255,7 @@ template <typename PointT> void
 pcl::people::HeadBasedSubclustering<PointT>::subcluster (std::vector<pcl::people::PersonCluster<PointT> >& clusters)
 {
   // Check if all mandatory variables have been set:
-  if (isnan(sqrt_ground_coeffs_))
+  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
   {
     PCL_ERROR ("[pcl::people::pcl::people::HeadBasedSubclustering::subcluster] Floor parameters have not been set or they are not valid!\n");
     return;

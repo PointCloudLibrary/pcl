@@ -59,7 +59,7 @@ template <typename PointT> void
 pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& cluster)
 {
   // Check if all mandatory variables have been set:
-  if (isnan(sqrt_ground_coeffs_))
+  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
   {
     PCL_ERROR ("[pcl::people::HeightMap2D::compute] Floor parameters have not been set or they are not valid!\n");
     return;
