@@ -80,7 +80,7 @@ cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT *cloud_objec
   pcl::copyPointCloud<PointT, PointT>(*callback_cloud, *cloud_object);
   *new_cloud_available_flag = true;
 }
-
+ 
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
 {
@@ -96,38 +96,6 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
   data->viewerPtr->addPointCloud(data->clicked_points_3d, red, "clicked_points");
   data->viewerPtr->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "clicked_points");
   std::cout << current_point.x << " " << current_point.y << " " << current_point.z << std::endl;
-}
-
-void
-loadSVMFromFile (std::string svm_filename, std::vector<float>& SVM_weights, float& SVM_offset, int& window_height, int& window_width)
-{
-  std::string line;
-  std::ifstream SVM_file;
-  SVM_file.open(svm_filename.c_str());
-
-  getline (SVM_file,line);      // read window_height line
-  size_t tok_pos = line.find_first_of(":", 0);  // search for token ":"
-  window_height = std::atoi(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
-
-  getline (SVM_file,line);      // read window_width line
-  tok_pos = line.find_first_of(":", 0);  // search for token ":"
-  window_width = std::atoi(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
-
-  getline (SVM_file,line);      // read SVM_offset line
-  tok_pos = line.find_first_of(":", 0);  // search for token ":"
-  SVM_offset = std::atof(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
-
-  getline (SVM_file,line);      // read SVM_weights line
-  tok_pos = line.find_first_of("[", 0);  // search for token "["
-  size_t tok_end_pos = line.find_first_of("]", 0);  // search for token "]" , end of SVM weights
-  size_t prev_tok_pos;
-  while (tok_pos < tok_end_pos) // while end of SVM_weights is not reached
-  {
-    prev_tok_pos = tok_pos;
-    tok_pos = line.find_first_of(",", prev_tok_pos+1);  // search for token ","
-    SVM_weights.push_back(std::atof(line.substr(prev_tok_pos+1, tok_pos-prev_tok_pos-1).c_str()));
-  }
-  SVM_file.close();
 }
 
 int print_help()
@@ -186,15 +154,9 @@ int main (int argc, char** argv)
   pcl::copyPointCloud<PointT, PointT>(cloud_obj, *cloud);
   new_cloud_available_flag = false;
 
-  // Initialize SVM trained for people detection:
-  std::vector<float> SVM_weights;
-  float SVM_offset;
-  int window_height;
-  int window_width;
-  // read trained SVM:
-  loadSVMFromFile(svm_filename, SVM_weights, SVM_offset, window_height, window_width);
+  // Initialize classifier for people detection:  
   pcl::people::PersonClassifier<pcl::RGB> person_classifier;
-  person_classifier.setSVM(window_height, window_width, SVM_weights, SVM_offset);
+  person_classifier.loadSVMFromFile(svm_filename);   // load trained SVM
 
   // Ground initialization:
   // Display pointcloud:
@@ -230,9 +192,9 @@ int main (int argc, char** argv)
 
   // People detection main loop:
   pcl::people::GroundBasedPeopleDetectionApp<PointT> people_detector;    // people detection object
-  people_detector.setVoxelSize(voxel_size);                // set the voxel size
-  people_detector.setIntrinsics(rgb_intrinsics_matrix);          // set RGB camera intrinsic parameters
-  people_detector.setClassifier(person_classifier);            // set person classifier
+  people_detector.setVoxelSize(voxel_size);                        // set the voxel size
+  people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
+  people_detector.setClassifier(person_classifier);                // set person classifier
 //  people_detector.setSensorPortraitOrientation(true);
 
   // For timing:
@@ -248,12 +210,12 @@ int main (int argc, char** argv)
       new_cloud_available_flag = false;
 
       // Perform people detection on the new cloud:
-      std::vector<pcl::people::PersonCluster<PointT> > clusters;    // vector containing persons clusters
+      std::vector<pcl::people::PersonCluster<PointT> > clusters;   // vector containing persons clusters
       people_detector.setInputCloud(cloud);
-      people_detector.setGround(ground_coeffs);            // set floor coefficients
-      people_detector.compute(clusters);                // perform people detection
+      people_detector.setGround(ground_coeffs);                    // set floor coefficients
+      people_detector.compute(clusters);                           // perform people detection
 
-      ground_coeffs = people_detector.getGround();          // get updated floor coefficients
+      ground_coeffs = people_detector.getGround();                 // get updated floor coefficients
 
       // Draw cloud and people bounding boxes in the viewer:
       viewer.removeAllPointClouds();

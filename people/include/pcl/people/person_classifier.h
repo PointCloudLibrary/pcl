@@ -37,7 +37,7 @@
  * Created on: Nov 30, 2012
  * Author: Matteo Munaro
  */
-
+ 
 #ifndef PCL_PEOPLE_PERSON_CLASSIFIER_H_
 #define PCL_PEOPLE_PERSON_CLASSIFIER_H_
 
@@ -77,6 +77,13 @@ namespace pcl
 
       /** \brief Destructor. */
       virtual ~PersonClassifier ();
+
+      /** \brief Load SVM parameters from a text file. 
+       *
+       * \param[in] svm_filename Filename containing SVM parameters.
+       */
+      void
+      loadSVMFromFile (std::string svm_filename);
 
       /**
        * \brief Set trained SVM for person confidence estimation.

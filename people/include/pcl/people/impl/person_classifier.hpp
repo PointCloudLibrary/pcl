@@ -50,6 +50,38 @@ template <typename PointT>
 pcl::people::PersonClassifier<PointT>::~PersonClassifier () {}
 
 template <typename PointT> void
+pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)
+{
+  std::string line;
+  std::ifstream SVM_file;
+  SVM_file.open(svm_filename.c_str());
+
+  getline (SVM_file,line);      // read window_height line
+  size_t tok_pos = line.find_first_of(":", 0);  // search for token ":"
+  window_height_ = std::atoi(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
+
+  getline (SVM_file,line);      // read window_width line
+  tok_pos = line.find_first_of(":", 0);  // search for token ":"
+  window_width_ = std::atoi(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
+
+  getline (SVM_file,line);      // read SVM_offset line
+  tok_pos = line.find_first_of(":", 0);  // search for token ":"
+  SVM_offset_ = std::atof(line.substr(tok_pos+1, line.npos - tok_pos-1).c_str());
+
+  getline (SVM_file,line);      // read SVM_weights line
+  tok_pos = line.find_first_of("[", 0);  // search for token "["
+  size_t tok_end_pos = line.find_first_of("]", 0);  // search for token "]" , end of SVM weights
+  size_t prev_tok_pos;
+  while (tok_pos < tok_end_pos) // while end of SVM_weights is not reached
+  {
+    prev_tok_pos = tok_pos;
+    tok_pos = line.find_first_of(",", prev_tok_pos+1);  // search for token ","
+    SVM_weights_.push_back(std::atof(line.substr(prev_tok_pos+1, tok_pos-prev_tok_pos-1).c_str()));
+  }
+  SVM_file.close();
+}
+
+template <typename PointT> void
 pcl::people::PersonClassifier<PointT>::setSVM (int window_height, int window_width, std::vector<float> SVM_weights, float SVM_offset)
 {
   window_height_ = window_height;
