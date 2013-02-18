@@ -80,7 +80,7 @@ cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT *cloud_objec
   pcl::copyPointCloud<PointT, PointT>(*callback_cloud, *cloud_object);
   *new_cloud_available_flag = true;
 }
- 
+  
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
 {
@@ -100,8 +100,14 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
 
 int print_help()
 {
-  cout << "\nGround based people detection app options:" << std::endl;
-  cout << "\t -svm \t<path_to_svm_file>" << std::endl;
+  cout << "**********************************************" << std::endl;
+  cout << "Ground based people detection app options:" << std::endl;
+  cout << "   --help    <show_this_help>" << std::endl;
+  cout << "   --svm     <path_to_svm_file>" << std::endl;
+  cout << "   --conf    <minimum_HOG_confidence>" << std::endl;
+  cout << "   --min_h   <minimum_person_height>" << std::endl;
+  cout << "   --max_h   <maximum_person_height>" << std::endl;
+  cout << "**********************************************" << std::endl;
   return 0;
 }
 
@@ -110,26 +116,23 @@ int main (int argc, char** argv)
   if(pcl::console::find_switch (argc, argv, "--help") || pcl::console::find_switch (argc, argv, "-h"))
         return print_help();
 
-  std::string svm_filename;
-  if (argc > 1)
-  {  
-    pcl::console::parse_argument (argc, argv, "-svm", svm_filename);  
-  }
-  else
-  {
-    svm_filename = "../../people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";  
-  }  
-  
+  // Algorithm parameters:
+  float voxel_size = 0.06;
+  float min_confidence = -1.5;
+  float min_height = 1.3;
+  float max_height = 2.3;
+  std::string svm_filename = "../../people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
+
+  // Read if some parameters are passed from command line:
+  pcl::console::parse_argument (argc, argv, "--svm", svm_filename);
+  pcl::console::parse_argument (argc, argv, "--conf", min_confidence);
+  pcl::console::parse_argument (argc, argv, "--min_h", min_height);
+  pcl::console::parse_argument (argc, argv, "--max_h", max_height);
+
   // Dataset Parameters:
   //std::string svm_filename = "../data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
   Eigen::Matrix3f rgb_intrinsics_matrix;
   rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0, 1.0; // Kinect RGB camera intrinsics
-
-  // Algorithm parameters:
-  float voxel_size = 0.06;
-  float min_confidence = -1.5;
-//  float min_height = 1.3;
-//  float max_height = 2.3;
 
   // Read Kinect live stream:
 //  PointCloudT::Ptr cloud (new PointCloudT);
@@ -195,7 +198,8 @@ int main (int argc, char** argv)
   people_detector.setVoxelSize(voxel_size);                        // set the voxel size
   people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
   people_detector.setClassifier(person_classifier);                // set person classifier
-//  people_detector.setSensorPortraitOrientation(true);
+  people_detector.setHeightLimits(min_height, max_height);         // set person classifier
+//  people_detector.setSensorPortraitOrientation(true);             // set sensor orientation to vertical
 
   // For timing:
   static unsigned count = 0;
@@ -225,7 +229,7 @@ int main (int argc, char** argv)
       unsigned int k = 0;
       for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
       {
-        if(it->getPersonConfidence() > min_confidence)    // draw only people with confidence above a threshold
+        if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
         {
           // draw theoretical person bounding box in the PCL viewer:
           it->drawTBoundingBox(viewer, k);

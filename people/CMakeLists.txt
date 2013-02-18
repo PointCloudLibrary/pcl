@@ -13,8 +13,8 @@ else(NOT VTK_FOUND)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 endif(NOT VTK_FOUND)
 
-set(build FALSE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} OFF)
+set(build TRUE)
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 PCL_ADD_DOC(${SUBSYS_NAME})
@@ -52,6 +52,6 @@ if(build)
     
     SET_TARGET_PROPERTIES(pcl_${SUBSYS_NAME} PROPERTIES LINKER_LANGUAGE CXX)    
 
-    PCL_ADD_EXECUTABLE(pcl_rgbd_people_detector ${SUBSYS_NAME} apps/main_ground_based_people_detection.cpp)
-    target_link_libraries(pcl_rgbd_people_detector pcl_people pcl_common pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_geometry pcl_segmentation pcl_octree vtkHybrid vtkRendering vtkCommon vtkWidgets vtkFiltering)
+    PCL_ADD_EXECUTABLE(pcl_ground_based_rgbd_people_detector ${SUBSYS_NAME} apps/main_ground_based_people_detection.cpp)
+    target_link_libraries(pcl_ground_based_rgbd_people_detector pcl_people pcl_common pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_visualization pcl_geometry pcl_segmentation pcl_octree vtkHybrid vtkRendering vtkCommon vtkWidgets vtkFiltering)
 endif(build)
