@@ -39,17 +39,513 @@
 
 #include <pcl/segmentation/grabcut.h>
 
-float 
-pcl::segmentation::grabcut::colorDistance (const Color &c1, const Color &c2)
+#include <cstdlib>
+#include <cassert>
+#include <vector>
+#include <map>
+#include <algorithm>
+
+pcl::segmentation::grabcut::BoykovKolmogorov::BoykovKolmogorov (std::size_t max_nodes)
+  : flow_value_(0.0) 
 {
-  return ((c1.r-c2.r)*(c1.r-c2.r)+(c1.g-c2.g)*(c1.g-c2.g)+(c1.b-c2.b)*(c1.b-c2.b));
+  if (max_nodes > 0)
+  {
+    source_edges_.reserve (max_nodes);
+    target_edges_.reserve (max_nodes);
+    nodes_.reserve (max_nodes);
+  } 
+}
+
+double 
+pcl::segmentation::grabcut::BoykovKolmogorov::operator() (int u, int v) const
+{
+  if ((u < 0) && (v < 0)) return flow_value_;
+  if (u < 0) { return source_edges_[v]; }
+  if (v < 0) { return target_edges_[u]; }
+  capacitated_edge::const_iterator it = nodes_[u].find (v);
+  if (it == nodes_[u].end ()) return 0.0;
+  return it->second;
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
+{
+  for (int u = 0; u < (int)nodes_.size (); u++) 
+  {
+    // augment s-u-t paths
+    if ((source_edges_[u] > 0.0) && (target_edges_[u] > 0.0))
+    {
+      const double cap = std::min (source_edges_[u], target_edges_[u]);
+      flow_value_ += cap;
+      source_edges_[u] -= cap;
+      target_edges_[u] -= cap;
+    }
+    
+    if (source_edges_[u] == 0.0) continue;
+    
+    // augment s-u-v-t paths
+    for (std::map<int, double>::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++)
+    {
+      const int v = it->first;
+      if ((it->second == 0.0) || (target_edges_[v] == 0.0)) continue;
+      const double w = std::min (it->second, std::min (source_edges_[u], target_edges_[v]));
+      source_edges_[u] -= w;
+      target_edges_[v] -= w;
+      it->second -= w;
+      nodes_[v][u] += w;
+      flow_value_ += w;
+      if (source_edges_[u] == 0.0) break;
+    }
+  }
+}
+
+int
+pcl::segmentation::grabcut::BoykovKolmogorov::addNodes (size_t n)
+{
+  int node_id = (int)nodes_.size ();
+  nodes_.resize (nodes_.size () + n);
+  source_edges_.resize (nodes_.size (), 0.0);
+  target_edges_.resize (nodes_.size (), 0.0);
+  return (node_id);
+}
+
+// void 
+// pcl::segmentation::grabcut::BoykovKolmogorov::addSourceAndTargetEdges (int u, double source_cap, double sink_cap)
+// {
+//   addSourceEdge (u, source_cap);
+//   addTargetEdge (u, sink_cap);
+  
+// }
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::addSourceEdge (int u, double cap)
+{
+  assert ((u >= 0) && (u < (int)nodes_.size ()));
+  if (cap < 0.0) 
+  { 
+    flow_value_ += cap; 
+    target_edges_[u] -= cap; 
+  }
+  else 
+    source_edges_[u] += cap;
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::addTargetEdge (int u, double cap)
+{
+  assert ((u >= 0) && (u < (int)nodes_.size ()));
+  if (cap < 0.0) 
+  { 
+    flow_value_ += cap; 
+    source_edges_[u] -= cap; 
+  }
+  else 
+    target_edges_[u] += cap;
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::addEdge (int u, int v, double cap_uv, double cap_vu)
+{
+  assert ((u >= 0) && (u < (int)nodes_.size ()));
+  assert ((v >= 0) && (v < (int)nodes_.size ()));
+  assert (u != v);
+
+  capacitated_edge::iterator it = nodes_[u].find (v);
+  if (it == nodes_[u].end ())
+  {
+    assert (cap_uv + cap_vu >= 0.0);
+    if (cap_uv < 0.0)
+    {
+      nodes_[u].insert (std::make_pair (v, 0.0));
+      nodes_[v].insert (std::make_pair (u, cap_vu + cap_uv));
+      source_edges_[u] -= cap_uv;
+      target_edges_[v] -= cap_uv;
+      flow_value_ += cap_uv;
+    } 
+    else 
+    {
+      if (cap_vu < 0.0) 
+      {
+        nodes_[u].insert (std::make_pair (v, cap_uv + cap_vu));
+        nodes_[v].insert (std::make_pair (u, 0.0));
+        source_edges_[v] -= cap_vu;
+        target_edges_[u] -= cap_vu;
+        flow_value_ += cap_vu;
+      } 
+      else 
+      {
+        nodes_[u].insert (std::make_pair (v, cap_uv));
+        nodes_[v].insert (std::make_pair (u, cap_vu));
+      }
+    }
+  } 
+  else 
+  {
+    capacitated_edge::iterator jt = nodes_[v].find (u);
+    it->second += cap_uv;
+    jt->second += cap_vu;
+    assert (it->second + jt->second >= 0.0);            
+    if (it->second < 0.0)
+    {
+      jt->second += it->second;
+      source_edges_[u] -= it->second;
+      target_edges_[v] -= it->second;
+      flow_value_ += it->second;
+      it->second = 0.0;
+    } 
+    else 
+    {
+      if (jt->second < 0.0) 
+      {
+        it->second += jt->second;
+        source_edges_[v] -= jt->second;
+        target_edges_[u] -= jt->second;
+        flow_value_ += jt->second;
+        jt->second = 0.0;
+      }
+    }
+  }
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::reset ()
+{
+  flow_value_ = 0.0;
+  std::fill (source_edges_.begin (), source_edges_.end (), 0.0);
+  std::fill (target_edges_.begin (), target_edges_.end (), 0.0);
+  for (int u = 0; u < (int)nodes_.size (); u++)
+  {
+    for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++) 
+    {
+      it->second = 0.0;
+    }
+  }
+  std::fill (cut_.begin (), cut_.end (), FREE);
+  parents_.clear ();
+  clearActive ();
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::clear ()
+{
+  flow_value_ = 0.0;
+  source_edges_.clear ();
+  target_edges_.clear ();
+  nodes_.clear ();
+  cut_.clear ();
+  parents_.clear ();
+  clearActive ();
+}
+
+double 
+pcl::segmentation::grabcut::BoykovKolmogorov::solve ()
+{
+  // initialize search tree and active set
+  cut_.resize (nodes_.size ());
+  std::fill (cut_.begin (), cut_.end (), FREE);
+  parents_.resize (nodes_.size ());
+
+  clearActive ();
+
+  // pre-augment paths
+  preAugmentPaths ();
+
+  // initialize search trees
+  initializeTrees ();
+
+  std::deque<int> orphans;
+  while (!isActiveSetEmpty ()) 
+  {
+    const std::pair<int, int> path = expandTrees ();
+    augmentPath (path, orphans);
+    if (!orphans.empty ())
+    {
+      adoptOrphans (orphans);
+    }
+  }
+  return (flow_value_);
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::initializeTrees ()
+{
+  // initialize search tree
+  for (int u = 0; u < (int)nodes_.size (); u++) 
+  {
+    if (source_edges_[u] > 0.0) 
+    {
+      cut_[u] = SOURCE;
+      parents_[u].first = TERMINAL;
+      markActive (u);
+    } 
+    else 
+    {
+      if (target_edges_[u] > 0.0) 
+      {
+        cut_[u] = TARGET;
+        parents_[u].first = TERMINAL;
+        markActive (u);
+      }
+    }
+  }
+}
+
+std::pair<int, int> 
+pcl::segmentation::grabcut::BoykovKolmogorov::expandTrees ()
+{
+  // expand trees looking for augmenting paths
+  while (!isActiveSetEmpty ()) 
+  {
+    const int u = active_head_;
+    
+    if (cut_[u] == SOURCE) {
+      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++) 
+      {
+        if (it->second > 0.0) 
+        {
+          if (cut_[it->first] == FREE) 
+          {
+            cut_[it->first] = SOURCE;
+            parents_[it->first] = std::make_pair (u, std::make_pair (it, nodes_[it->first].find (u)));
+            markActive (it->first);
+          } 
+          else
+          {
+            if (cut_[it->first] == TARGET) 
+            {
+              // found augmenting path
+              return (std::make_pair (u, it->first));
+            }
+          }
+        }
+      }
+    } 
+    else 
+    {
+      for (capacitated_edge::iterator it = nodes_[u].begin (); it != nodes_[u].end (); it++) 
+      {
+        if (cut_[it->first] == TARGET) continue;
+        if (nodes_[it->first][u] > 0.0) 
+        {
+          if (cut_[it->first] == FREE) 
+          {
+            cut_[it->first] = TARGET;
+            parents_[it->first] = std::make_pair (u, std::make_pair (nodes_[it->first].find (u), it));
+            markActive (it->first);
+          } 
+          else 
+          {
+            if (cut_[it->first] == SOURCE) 
+            {
+              // found augmenting path
+              return (std::make_pair (it->first, u));
+            }
+          }
+        }
+      }
+    }
+    
+    // remove node from active set
+    markInactive (u);
+  }
+  
+  return (std::make_pair (TERMINAL, TERMINAL));
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::augmentPath (const std::pair<int, int>& path, std::deque<int>& orphans)
+{
+  if ((path.first == TERMINAL) && (path.second == TERMINAL))
+    return;
+  
+  // find path capacity
+  
+  // backtrack
+  const edge_pair e = std::make_pair (nodes_[path.first].find (path.second),
+                                      nodes_[path.second].find (path.first));
+  double c = e.first->second;
+  int u = path.first;
+  while (parents_[u].first != TERMINAL) 
+  {
+    c = std::min (c, parents_[u].second.first->second);
+    u = parents_[u].first;
+    //assert (cut_[u] == SOURCE);
+  }
+  c = std::min (c, source_edges_[u]);
+  
+  // forward track
+  u = path.second;
+  while (parents_[u].first != TERMINAL) 
+  {
+    c = std::min (c, parents_[u].second.first->second);
+    u = parents_[u].first;
+    //assert (cut_[u] == TARGET);
+  }
+  c = std::min (c, target_edges_[u]);
+
+  // augment path
+  flow_value_ += c;
+  //DRWN_LOG_DEBUG ("path capacity: " << c);
+
+  // backtrack
+  u = path.first;
+  while (parents_[u].first != TERMINAL) 
+  {
+    //nodes_[u][parents_[u].first] += c;
+    parents_[u].second.second->second += c;
+    parents_[u].second.first->second -= c;
+    if (parents_[u].second.first->second == 0.0) 
+    {
+      orphans.push_front (u);
+    }
+    u = parents_[u].first;
+  }
+  source_edges_[u] -= c;
+  if (source_edges_[u] == 0.0) 
+  {
+    orphans.push_front (u);
+  }
+
+  // link
+  e.first->second -= c;
+  e.second->second += c;
+
+  // forward track
+  u = path.second;
+  while (parents_[u].first != TERMINAL) {
+    //nodes_[parents_[u].first][u] += c;
+    parents_[u].second.second->second += c;
+    parents_[u].second.first->second -= c;
+    if (parents_[u].second.first->second == 0.0) {
+      orphans.push_back (u);
+    }
+    u = parents_[u].first;
+  }
+  target_edges_[u] -= c;
+  if (target_edges_[u] == 0.0) {
+    orphans.push_back (u);
+  }
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::adoptOrphans (std::deque<int>& orphans)
+{
+  // find new parent for orphaned subtree or free it
+  while (!orphans.empty ())
+  {
+    const int u = orphans.front ();
+    const char tree_label = cut_[u];
+    orphans.pop_front ();
+
+    // can occur if same node is inserted into orphans multiple times
+    if (tree_label == FREE) continue;
+    //assert (tree_label != FREE);
+
+    // look for new parent
+    bool b_free_orphan = true;
+    for (capacitated_edge::iterator jt = nodes_[u].begin (); jt != nodes_[u].end (); ++jt) {
+      // skip if different trees
+      if (cut_[jt->first] != tree_label) continue;
+
+      // check edge capacity
+      const capacitated_edge::iterator kt = nodes_[jt->first].find (u);
+      if (((tree_label == TARGET) && (jt->second <= 0.0)) ||
+          ((tree_label == SOURCE) && (kt->second <= 0.0)))
+        continue;
+
+      // check that u is not an ancestor of jt->first
+      int v = jt->first;
+      while ((v != u) && (v != TERMINAL)) 
+      {
+        v = parents_[v].first;
+      }
+      if (v != TERMINAL) continue;
+
+      // add as parent
+      const edge_pair e = (tree_label == SOURCE) ? std::make_pair (kt, jt) : std::make_pair (jt, kt);
+      parents_[u] = std::make_pair (jt->first, e);
+      b_free_orphan = false;
+      break;
+    }
+
+    // free the orphan subtree and remove it from the active set
+    if (b_free_orphan)
+    {
+      for (capacitated_edge::const_iterator jt = nodes_[u].begin (); jt != nodes_[u].end (); ++jt) 
+      {
+        if ((cut_[jt->first] == tree_label) && (parents_[jt->first].first == u)) 
+        {
+          orphans.push_front (jt->first);
+          markActive (jt->first);
+        } 
+        else if (cut_[jt->first] != FREE) 
+        {
+          markActive (jt->first);
+        }
+      }
+
+      // mark inactive and free
+      markInactive (u);
+      cut_[u] = FREE;
+    }
+  }
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::clearActive () 
+{
+  active_head_ = active_tail_ = TERMINAL;
+  active_list_.resize (nodes_.size ());
+  std::fill (active_list_.begin (), active_list_.end (), std::make_pair (TERMINAL, TERMINAL));
+}
+
+void 
+pcl::segmentation::grabcut::BoykovKolmogorov::markActive (int u) 
+{
+  if (isActive (u)) return;
+  
+  active_list_[u].first = active_tail_;
+  active_list_[u].second = TERMINAL;
+  if (active_tail_ == TERMINAL) 
+    active_head_ = u;
+  else
+    active_list_[active_tail_].second = u;
+  active_tail_ = u;
+}
+
+void
+pcl::segmentation::grabcut::BoykovKolmogorov::markInactive (int u) 
+{
+  //if (!isActive (u)) return;
+  
+  if (u == active_head_) 
+  {
+    active_head_ = active_list_[u].second;
+    if (u != active_tail_) 
+    {
+      active_list_[active_list_[u].second].first = TERMINAL;
+    }
+  } 
+  else 
+    if (u == active_tail_) 
+    {
+      active_tail_ = active_list_[u].first;
+      active_list_[active_list_[u].first].second = TERMINAL;
+    } 
+    else 
+      if (active_list_[u].first != TERMINAL) 
+      {
+        active_list_[active_list_[u].first].second = active_list_[u].second;
+        active_list_[active_list_[u].second].first = active_list_[u].first;
+      }
+  //active_list_[u] = std::make_pair (TERMINAL, TERMINAL);
+  active_list_[u].first = TERMINAL;
 }
 
 void
 pcl::segmentation::grabcut::GaussianFitter::add (const Color &c)
 {
-  sum_.r += c.r; sum_.g += c.g; sum_.b += c.b;
-
+  sum_[0] += c.r; sum_[1] += c.g; sum_[2] += c.b;
   accumulator_ (0,0) += c.r*c.r; accumulator_ (0,1) += c.r*c.g; accumulator_ (0,2) += c.r*c.b;
   accumulator_ (1,0) += c.g*c.r; accumulator_ (1,1) += c.g*c.g; accumulator_ (1,2) += c.g*c.b;
   accumulator_ (2,0) += c.b*c.r; accumulator_ (2,1) += c.b*c.g; accumulator_ (2,2) += c.b*c.b;
@@ -59,7 +555,7 @@ pcl::segmentation::grabcut::GaussianFitter::add (const Color &c)
 
 // Build the gaussian out of all the added colors
 void
-pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_count, bool compute_eigens) const
+pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, std::size_t total_count, bool compute_eigens) const
 {
   if (count_==0)
   {
@@ -70,9 +566,9 @@ pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_cou
     const float count_f = static_cast<float> (count_);
     
     // Compute mean of gaussian
-    g.mu.r = sum_.r/count_f;
-    g.mu.g = sum_.g/count_f;
-    g.mu.b = sum_.b/count_f;
+    g.mu.r = sum_[0]/count_f;
+    g.mu.g = sum_[1]/count_f;
+    g.mu.b = sum_[2]/count_f;
 
     // Compute covariance matrix
     g.covariance (0,0) = accumulator_ (0,0)/count_f - g.mu.r*g.mu.r + epsilon_;
@@ -108,7 +604,7 @@ pcl::segmentation::grabcut::GaussianFitter::fit (Gaussian& g, uint32_t total_cou
     if (compute_eigens)
     {
       // Compute eigenvalues and vectors using SVD
-      Eigen::JacobiSVD<Eigen::Matrix3f> svd (g.covariance, Eigen::ComputeThinU);
+      Eigen::JacobiSVD<Eigen::Matrix3f> svd (g.covariance, Eigen::ComputeFullU);
       // Store highest eigenvalue
       g.eigenvalue = svd.singularValues ()[0];
       // Store corresponding eigenvector
@@ -122,14 +618,14 @@ pcl::segmentation::grabcut::GMM::probabilityDensity (const Color &c)
 {
   float result = 0;
   
-  for (uint32_t i=0; i < K_; ++i)
+  for (std::size_t i=0; i < gaussians_.size (); ++i)
     result += gaussians_[i].pi * probabilityDensity (i, c);
 
   return (result);
 }
 
 float 
-pcl::segmentation::grabcut::GMM::probabilityDensity (uint32_t i, const Color &c)
+pcl::segmentation::grabcut::GMM::probabilityDensity (std::size_t i, const Color &c)
 {
   float result = 0;
   const pcl::segmentation::grabcut::Gaussian &G = gaussians_[i];
@@ -156,7 +652,7 @@ void
 pcl::segmentation::grabcut::buildGMMs (const Image& image, 
                                        const std::vector<int>& indices,
                                        const std::vector<SegmentationValue>& hard_segmentation,
-                                       std::vector<uint32_t>& components,
+                                       std::vector<std::size_t>& components,
                                        GMM& background_GMM, GMM& foreground_GMM)
 {
   // Step 3: Build GMMs using Orchard-Bouman clustering algorithm
@@ -165,7 +661,7 @@ pcl::segmentation::grabcut::buildGMMs (const Image& image,
   std::vector<GaussianFitter> back_fitters (background_GMM.getK ());
   std::vector<GaussianFitter> fore_fitters (foreground_GMM.getK ());
 
-  uint32_t fore_count = 0, back_count = 0;
+  std::size_t fore_count = 0, back_count = 0;
   const int indices_size = static_cast<int> (indices.size ());
   // Initialize the first foreground and background clusters
   for (int idx = 0; idx < indices_size; ++idx)
@@ -184,15 +680,14 @@ pcl::segmentation::grabcut::buildGMMs (const Image& image,
     }
   }
 
-
   back_fitters[0].fit (background_GMM[0], back_count, true);
   fore_fitters[0].fit (foreground_GMM[0], fore_count, true);
 
-  uint32_t n_back = 0, n_fore = 0;		// Which cluster will be split
-  uint32_t max_K = (background_GMM.getK () > foreground_GMM.getK ()) ? background_GMM.getK () : foreground_GMM.getK ();
+  std::size_t n_back = 0, n_fore = 0;		// Which cluster will be split
+  std::size_t max_K = (background_GMM.getK () > foreground_GMM.getK ()) ? background_GMM.getK () : foreground_GMM.getK ();
 
   // Compute clusters
-  for (uint32_t i = 1; i < max_K; ++i)
+  for (std::size_t i = 1; i < max_K; ++i)
   {
     // Reset the fitters for the splitting clusters
     back_fitters[n_back] = GaussianFitter ();
@@ -255,7 +750,7 @@ pcl::segmentation::grabcut::buildGMMs (const Image& image,
     n_back = 0;
     n_fore = 0;
 
-    for (uint32_t j = 0; j <= i; ++j)
+    for (std::size_t j = 0; j <= i; ++j)
     {
       if (j < background_GMM.getK () && background_GMM[j].eigenvalue > background_GMM[n_back].eigenvalue)
         n_back = j;
@@ -273,21 +768,21 @@ void
 pcl::segmentation::grabcut::learnGMMs (const Image& image,
                                        const std::vector<int>& indices,
                                        const std::vector<SegmentationValue>& hard_segmentation,
-                                       std::vector<uint32_t>& components,
+                                       std::vector<std::size_t>& components,
                                        GMM& background_GMM, GMM& foreground_GMM)
 {
-  const uint32_t indices_size = static_cast<uint32_t> (indices.size ());
+  const std::size_t indices_size = static_cast<std::size_t> (indices.size ());
   // Step 4: Assign each pixel to the component which maximizes its probability
-  for (uint32_t idx = 0; idx < indices_size; ++idx)
+  for (std::size_t idx = 0; idx < indices_size; ++idx)
   {
     const Color &c = image[indices[idx]];
     
     if (hard_segmentation[idx] == SegmentationForeground)
     {
-      uint32_t k = 0;
+      std::size_t k = 0;
       float max = 0;
       
-      for (uint32_t i = 0; i < foreground_GMM.getK (); i++)
+      for (std::size_t i = 0; i < foreground_GMM.getK (); i++)
       {
         float p = foreground_GMM.probabilityDensity (i, c);
         if (p > max)
@@ -300,10 +795,10 @@ pcl::segmentation::grabcut::learnGMMs (const Image& image,
     }
     else
     {
-      uint32_t k = 0;
+      std::size_t k = 0;
       float max = 0;
       
-      for (uint32_t i = 0; i < background_GMM.getK (); i++)
+      for (std::size_t i = 0; i < background_GMM.getK (); i++)
       {
         float p = background_GMM.probabilityDensity (i, c);
         if (p > max)
@@ -322,29 +817,28 @@ pcl::segmentation::grabcut::learnGMMs (const Image& image,
   std::vector<GaussianFitter> back_fitters (background_GMM.getK ());
   std::vector<GaussianFitter> fore_fitters (foreground_GMM.getK ());
 
-  uint32_t foreCount = 0, backCount = 0;
-
-  for (uint32_t idx = 0; idx < indices_size; ++idx)
+  std::size_t fore_counter = 0, back_counter = 0;
+  for (std::size_t idx = 0; idx < indices_size; ++idx)
   {
     const Color &c = image [indices [idx]];
     
     if (hard_segmentation[idx] == SegmentationForeground)
     {
       fore_fitters[components[idx]].add (c);
-      foreCount++;
+      fore_counter++;
     }
     else
     {
       back_fitters[components[idx]].add (c);
-      backCount++;
+      back_counter++;
     }
   }
 
-  for (uint32_t i = 0; i < background_GMM.getK (); ++i)
-    back_fitters[i].fit (background_GMM[i], backCount, false);
+  for (std::size_t i = 0; i < background_GMM.getK (); ++i)
+    back_fitters[i].fit (background_GMM[i], back_counter, false);
 
-  for (uint32_t i = 0; i < foreground_GMM.getK (); ++i)
-    fore_fitters[i].fit (foreground_GMM[i], foreCount, false);
+  for (std::size_t i = 0; i < foreground_GMM.getK (); ++i)
+    fore_fitters[i].fit (foreground_GMM[i], fore_counter, false);
 
   back_fitters.clear ();
   fore_fitters.clear ();

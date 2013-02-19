@@ -41,6 +41,7 @@
 #define PCL_SEGMENTATION_GRABCUT
 
 #include <pcl/point_cloud.h>
+#include <pcl/pcl_base.h>
 #include <pcl/point_types.h>
 #include <pcl/segmentation/boost.h>
 #include <pcl/search/search.h>
@@ -51,8 +52,118 @@ namespace pcl
   {
     namespace grabcut
     {
-      /** Structure to save RGB colors into floats 
-       */
+      /** boost implementation of Boykov and Kolmogorov's maxflow algorithm doesn't support
+        * negative flows which makes it inappropriate for this conext.
+        * This implementation of Boykov and Kolmogorov's maxflow algorithm by Stephen Gould 
+        * <stephen.gould@anu.edu.au> in DARWIN under BSD does the trick however solwer than original 
+        * implementation.
+        */
+      class BoykovKolmogorov
+      {        
+        public:
+          typedef int vertex_descriptor;
+          typedef double edge_capacity_type;
+        
+          /// construct a maxflow/mincut problem with estimated max_nodes
+          BoykovKolmogorov (std::size_t max_nodes = 0);
+          /// destructor
+          virtual ~BoykovKolmogorov () {}
+          /// get number of nodes in the graph
+          size_t 
+          numNodes () const { return nodes_.size (); }
+          /// reset all edge capacities to zero (but don't free the graph)
+          void 
+          reset ();
+          /// clear the graph and internal datastructures
+          void 
+          clear ();
+          /// add nodes to the graph (returns the id of the first node added)
+          int 
+          addNodes (std::size_t n = 1);
+          /// add constant flow to graph
+          void 
+          addConstant (double c) { flow_value_ += c; }
+          /// add edge from s to nodeId
+          void 
+          addSourceEdge (int u, double cap);
+          /// add edge from nodeId to t
+          void 
+          addTargetEdge (int u, double cap);
+          /// add edge from u to v and edge from v to u
+          /// (requires cap_uv + cap_vu >= 0)
+          void 
+          addEdge (int u, int v, double cap_uv, double cap_vu = 0.0);
+          /// solve the max-flow problem and return the flow
+          double
+          solve ();
+          /// return true if \p u is in the s-set after calling \ref solve.
+          bool 
+          inSourceTree (int u) const { return (cut_[u] == SOURCE); }
+          /// return true if \p u is in the t-set after calling \ref solve
+          bool 
+          inSinkTree (int u) const { return (cut_[u] == TARGET); }
+          /// returns the residual capacity for an edge (use -1 for terminal (-1,-1) is the current flow
+          double
+          operator() (int u, int v) const;
+
+        protected:
+          /// tree states
+          typedef enum { FREE = 0x00, SOURCE = 0x01, TARGET = 0x02 } nodestate;
+          /// capacitated edge
+          typedef std::map<int, double> capacitated_edge;
+          /// edge pair
+          typedef std::pair<capacitated_edge::iterator, capacitated_edge::iterator> edge_pair;
+          /// pre-augment s-u-t and s-u-v-t paths
+          void 
+          preAugmentPaths ();
+          /// initialize trees from source and target
+          void 
+          initializeTrees ();
+          /// expand trees until a path is found (or no path (-1, -1))
+          std::pair<int, int> 
+          expandTrees ();
+          /// augment the path found by expandTrees; return orphaned subtrees
+          void 
+          augmentPath (const std::pair<int, int>& path, std::deque<int>& orphans);
+          /// adopt orphaned subtrees
+          void 
+          adoptOrphans (std::deque<int>& orphans);
+          /// clear active set
+          void clearActive ();
+          /// \return true if active set is empty
+          inline bool 
+          isActiveSetEmpty () const { return (active_head_ == TERMINAL); }
+          /// active if head or previous node is not the terminal
+          inline bool 
+          isActive (int u) const { return ((u == active_head_) || (active_list_[u].first != TERMINAL)); }
+          /// mark vertex as active
+          void 
+          markActive (int u);
+          /// mark vertex as inactive
+          void 
+          markInactive (int u);
+          /// edges leaving the source
+          std::vector<double> source_edges_; 
+          /// edges entering the target
+          std::vector<double> target_edges_; 
+          /// nodes and their outgoing internal edges
+          std::vector<capacitated_edge> nodes_; 
+          /// current flow value (includes constant)
+          double flow_value_;
+          /// identifies which side of the cut a node falls
+          std::vector<unsigned char> cut_;  
+
+        private:
+          /// parents_ flag for terminal state
+          static const int TERMINAL = -1;
+          /// search tree (also uses cut_)
+          std::vector<std::pair<int, edge_pair> > parents_; 
+          /// doubly-linked list (prev, next)
+          std::vector<std::pair<int, int> > active_list_; 
+          int active_head_, active_tail_;
+      };
+
+      /**\brief Structure to save RGB colors into floats */
       struct Color
       {
         Color () : r (0), g (0), b (0) {}
@@ -60,10 +171,15 @@ namespace pcl
         Color (const pcl::RGB& color) : r (color.r), g (color.g), b (color.b) {}
         
         template<typename PointT>
-        Color (const PointT& p) : r (p.r), g (p.g), b (p.b) {}
+        Color (const PointT& p)
+        {
+          r = static_cast<float> (p.r);
+          g = static_cast<float> (p.g);
+          b = static_cast<float> (p.b);
+        }
         
-        template<typename PointT> PointT
-        operator() () const
+        template<typename PointT> 
+        operator PointT () const
         { 
           PointT p;
           p.r = static_cast<uint32_t> (r);
@@ -74,9 +190,8 @@ namespace pcl
         
         float r, g, b;
       };
-      
+      /// An Image is a point cloud of Color
       typedef pcl::PointCloud<Color> Image;
-      
       /** \brief Compute squared distance between two colors
        * \param[in] c1 first color
        * \param[in] c2 second color
@@ -84,109 +199,11 @@ namespace pcl
        */
       float 
       colorDistance (const Color& c1, const Color& c2);
-      
       /// User supplied Trimap values
-      enum TrimapValue { TrimapUnknown, TrimapForeground, TrimapBackground };
-      
+      enum TrimapValue { TrimapUnknown = -1, TrimapForeground, TrimapBackground };
       /// Grabcut derived hard segementation values
-      enum SegmentationValue { SegmentationForeground, SegmentationBackground };
-      
-      /** \brief clamp x value according to image width
-       * \param[in] image
-       * \param[in/out] x clamped x value
-       */
-      template <typename PointT> void
-      clampX(const pcl::PointCloud<PointT>& image, int& x)
-      {
-        if (x < 0) x = 0;
-        if (x >= image.width)  x = image.width - 1;
-      }
-      
-      /** \brief clamp y value according to image height
-       * \param[in] image
-       * \param[in/out] y clamped y value
-       */
-      template <typename PointT> void
-      clampY(const pcl::PointCloud<PointT>& image, int& y)
-      {
-        if (y < 0) y = 0;
-        if (y >= image.height) y = image.height - 1;
-      }
-      
-      /** \brief Fill a rectangular region of an image delimited by (x1,y1) -- (x2,y2) with a given value
-       * \param[in/out] image to fill
-       * \param[in] x1 top left corner X coordinate 
-       * \param[in] y1 top left corner Y coordinate 
-       * \param[in] x2 bottom right corner X coordinate 
-       * \param[in] y2 bottom right corner Y coordinate 
-       * \param[in] t the user defined value
-       */
-      template<typename PointT> void
-      fillRectangle(pcl::PointCloud<PointT>& image, int x1, int y1, int x2, int y2, const PointT& t)
-      {
-        assert (image.isOrganized ());
-        clampX(image, x1); clampY(image, y1);
-        clampX(image, x2); clampY(image, y2);
-        
-        if(y1>y2) { std::swap (y1,y2); }
-        if(x1>x2) { std::swap (x1,x2); }
-        
-        for (int i = y1; i <= y2; ++i)
-        {
-          for (int j = x1; j <= x2; ++j)
-          {
-            image[i*image.width+j] = t;
-          }
-        }
-      }
-
-      /** \brief Fill a rectangular region of an image delimited by (x1,y1) -- (x2,y2) with a given value
-       * \param[in/out] image to fill
-       * \param[in] x1 top left corner X coordinate 
-       * \param[in] y1 top left corner Y coordinate 
-       * \param[in] x2 bottom right corner X coordinate 
-       * \param[in] y2 bottom right corner Y coordinate 
-       * \param[in] t the user defined value
-       */
-      template<typename PointT> void
-      fillRectangle(std::vector<PointT>& image, int width, int height, int x1, int y1, int x2, int y2, const PointT& t)
-      {
-        std::cout << "width " << width << std::endl;
-        std::cout << "height " << height << std::endl;
-        std::cout << "start " << x1 << "," << y1 << std::endl;
-        std::cout << "end " << x2 << "," << y2 << std::endl;
-        if (y1 < 0) y1 = 0;
-        if (y1 >= height) y1 = height - 1;
-        if (y2 < 0) y2 = 0;
-        if (y2 >= height) y2 = height - 1;
-        if (x1 < 0) x1 = 0;
-        if (x1 >= width) x1 = width - 1;
-        if (x2 < 0) x2 = 0;
-        if (x2 >= width) x2 = width - 1;
-
-        if(y1>y2) { std::swap (y1,y2); }
-        if(x1>x2) { std::swap (x1,x2); }
-        
-        for (int i = y1; i <= y2; ++i)
-        {
-          for (int j = x1; j <= x2; ++j)
-          {
-            image[i*width+j] = t;
-          }
-        }
-      }
-      
-      /** \brief Fill an image with a given value 
-        * \param[in/out] image to be filled
-        * \param[in] t value to fill with
-        */
-      template<typename PointT> void
-      fill(pcl::PointCloud<PointT>& image, const PointT& t)
-      {
-        for (uint32_t i = 0; i < image.size (); ++i)
-          image[i] = t;
-      }
-      
+      enum SegmentationValue { SegmentationForeground = 0, SegmentationBackground };      
+      /// Gaussian structure
       struct Gaussian
       {
         Gaussian () {}
@@ -209,58 +226,34 @@ namespace pcl
       class GMM
       {
         public:
-        /// Initialize GMM with ddesired number of gaussians.
-        GMM ()
-          : gaussians_ (0)
-        {}
-        
-        /// Initialize GMM with ddesired number of gaussians.
-        GMM (uint32_t K)
-          : gaussians_ (K)
-          , K_ (K)
-        {}
-
-        /// Destructor
-        ~GMM () {}
-      
-        uint32_t 
-        getK () const { return K_; }
-      
-        void 
-        resize (uint32_t K) 
-        { 
-          K_ = K; 
-          gaussians_.resize (K);
-        }
-      
-        /// \return a reference to the gaussian at a given position
-        Gaussian& 
-        operator[] (std::size_t pos) { return (gaussians_[pos]); }
-
-        /// \return a const reference to the gaussian at a given position
-        const Gaussian& 
-        operator[] (std::size_t pos) const { return (gaussians_[pos]); }
-
-        /** \brief Compute the probability density of a color in this GMM 
-         * \param[in] c color
-         * \return the probability density
-         */
-        float 
-        probabilityDensity (const Color &c);
-      
-        /** \brief Compute the probability density of a color in just one Gaussian 
-         * \param[in] i index of the gaussian
-         * \param[in] c color
-         * \return the probability density
-         */
-        float 
-        probabilityDensity(uint32_t i, const Color &c);
+          /// Initialize GMM with ddesired number of gaussians.
+          GMM () : gaussians_ (0) {}
+          /// Initialize GMM with ddesired number of gaussians.
+          GMM (std::size_t K) : gaussians_ (K) {}
+          /// Destructor
+          ~GMM () {}
+          /// \return K
+          std::size_t 
+          getK () const { return gaussians_.size (); }
+          /// resize gaussians
+          void 
+          resize (std::size_t K) { gaussians_.resize (K); }
+          /// \return a reference to the gaussian at a given position
+          Gaussian& 
+          operator[] (std::size_t pos) { return (gaussians_[pos]); }
+          /// \return a const reference to the gaussian at a given position
+          const Gaussian& 
+          operator[] (std::size_t pos) const { return (gaussians_[pos]); }
+          /// \brief \return the computed probability density of a color in this GMM 
+          float 
+          probabilityDensity (const Color &c);
+          /// \brief \return the computed probability density of a color in just one Gaussian 
+          float 
+          probabilityDensity(std::size_t i, const Color &c);
       
         private:
-        /// number of gaussians
-        uint32_t K_;
-        /// array of gaussians
-        std::vector<Gaussian> gaussians_;      
+          /// array of gaussians
+          std::vector<Gaussian> gaussians_;      
       };
 
       /** Helper class that fits a single Gaussian to color samples */
@@ -268,34 +261,31 @@ namespace pcl
       {
         public:
         GaussianFitter (float epsilon = 0.0001)
-          : sum_ (Color ())
+          : sum_ (Eigen::Vector3f::Zero ())
           , accumulator_ (Eigen::Matrix3f::Zero ())
           , count_ (0)
           , epsilon_ (epsilon)
-        {}
+        { }
       
         /// Add a color sample
         void 
         add (const Color &c);
-      
         /// Build the gaussian out of all the added color samples
         void 
-        fit (Gaussian& g, uint32_t total_count, bool compute_eigens = false) const;
-
+        fit (Gaussian& g, std::size_t total_count, bool compute_eigens = false) const;
         /// \return epsilon
         float
         getEpsilon () { return (epsilon_); }
-
         /** set epsilon which will be added to the covariance matrix diagonal which avoids singular 
-         * covariance matrix 
-         * \param[in] epsilon user defined epsilon
-         */
+          * covariance matrix 
+          * \param[in] epsilon user defined epsilon
+          */
         void
         setEpsilon (float epsilon) { epsilon_ = epsilon; }
       
         private:
         /// sum of r,g, and b
-        Color sum_;
+        Eigen::Vector3f sum_;
         /// matrix of products (i.e. r*r, r*g, r*b), some values are duplicated.
         Eigen::Matrix3f accumulator_;
         /// count of color samples added to the gaussian
@@ -309,17 +299,17 @@ namespace pcl
       buildGMMs (const Image &image, 
                  const std::vector<int>& indices,
                  const std::vector<SegmentationValue> &hardSegmentation,
-                 std::vector<uint32_t> &components,
+                 std::vector<std::size_t> &components,
                  GMM &background_GMM, GMM &foreground_GMM);
       /** Iteratively learn GMMs using GrabCut updating algorithm */
       void 
       learnGMMs (const Image& image, 
                  const std::vector<int>& indices,
                  const std::vector<SegmentationValue>& hard_segmentation,
-                 std::vector<uint32_t>& components,
+                 std::vector<std::size_t>& components,
                  GMM& background_GMM, GMM& foreground_GMM);
     }
-  }
+  };
   
   /** \brief Implementation of the GrabCut segmentation in
     * "GrabCut — Interactive Foreground Extraction using Iterated Graph Cuts" by
@@ -339,17 +329,17 @@ namespace pcl
       typedef typename PCLBase<PointT>::PointCloudPtr PointCloudPtr;
       using PCLBase<PointT>::input_;
       using PCLBase<PointT>::indices_;
-
+      using PCLBase<PointT>::fake_indices_;
+    
       /// Constructor
       GrabCut (uint32_t K = 5, float lambda = 50.f)
         : K_ (K)
         , lambda_ (lambda)
-        , build_clouds_ (true)
         , initialized_ (false)
         , nb_neighbours_ (9)
       {}
       /// Desctructor
-      ~GrabCut () {};
+      virtual ~GrabCut () {};
       // /// Set input cloud
       void
       setInputCloud (const PointCloudConstPtr& cloud);
@@ -362,17 +352,11 @@ namespace pcl
       /// Set background indices, foreground indices = indices \ background indices
       void
       setBackgroundPointsIndices (const PointIndicesConstPtr& indices);
-      /// Edit Trimap
-      void 
-      setTrimap (int x1, int y1, int x2, int y2, const segmentation::grabcut::TrimapValue &t);
-      /// Fit Gaussian Multi Models
-      void 
-      fitGMMs ();
       /// Run Grabcut refinement on the hard segmentation
-      void 
+      virtual void 
       refine ();
       /// \return the number of pixels that have changed from foreground to background or vice versa
-      int 
+      virtual int 
       refineOnce ();
       /// \return lambda
       float
@@ -398,14 +382,14 @@ namespace pcl
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr
       getSearchMethod () { return (tree_); }
-      /** \brief Returns the number of neighbours to find. */
-      int
-      getNumberOfNeighbours () const { return (nb_neighbours_); }
       /** \brief Allows to set the number of neighbours to find.
         * \param[in] number_of_neighbours new number of neighbours
         */
       void
       setNumberOfNeighbours (int nb_neighbours) { nb_neighbours_ = nb_neighbours; }
+      /** \brief Returns the number of neighbours to find. */
+      int
+      getNumberOfNeighbours () const { return (nb_neighbours_); }
       /** \brief This method launches the segmentation algorithm and returns the clusters that were
         * obtained during the segmentation. The indices of points belonging to the object will be stored
         * in the cluster with index 1, other indices will be stored in the cluster with index 0.
@@ -413,24 +397,8 @@ namespace pcl
         */
       void
       extract (std::vector<pcl::PointIndices>& clusters);
-      /// \return NLinks weights for visualization purpose only
-      pcl::PointCloud<pcl::PointXYZI>::ConstPtr 
-      getNLinksCloud () const { return (n_links_cloud_); }
-      /// \return TLinks weights for visualization purpose only
-      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr 
-      getTLinksCloud () const { return (t_links_cloud_); }
-      /// \return GMM fitting for visualization purpose only
-      pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr
-      getGMMCloud () const { return (GMM_cloud_); }
-      /// \return input with alpha mask
-      pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr 
-      getAphaMask () const { return (alpha_cloud_); }
 
     protected:
-      bool
-      initCompute ();    
-
-    private:
       // Storage for N-link weights, each pixel stores links to nb_neighbours      
       struct NLinks
       {
@@ -441,28 +409,14 @@ namespace pcl
         std::vector<float> dists;
         std::vector<float> weights;
       };
-    
-      typedef float EdgeCapacityType;
-
-      typedef boost::adjacency_list_traits <boost::vecS, boost::vecS, boost::directedS> GraphTraits;
-      typedef boost::adjacency_list <boost::vecS, boost::vecS, boost::directedS,
-                                     boost::property <boost::vertex_name_t, std::string,
-                                     boost::property <boost::vertex_index_t, long,
-                                     boost::property <boost::vertex_color_t, boost::default_color_type,
-                                     boost::property <boost::vertex_distance_t, long,
-                                     boost::property <boost::vertex_predecessor_t, GraphTraits::edge_descriptor> > > > >,
-                                     boost::property <boost::edge_capacity_t, EdgeCapacityType,
-                                     boost::property <boost::edge_residual_capacity_t, EdgeCapacityType,
-                                     boost::property <boost::edge_reverse_t, GraphTraits::edge_descriptor > > > > Graph;
-
-      typedef boost::graph_traits<Graph>::edge_descriptor edge_descriptor;
-      typedef boost::graph_traits<Graph>::vertex_descriptor vertex_descriptor;
-
-      /** Update hard segmentation after running GraphCut, \return the number of pixels that have
-        * changed from foreground to background or vice versa. 
-        */
-      int 
-      updateHardSegmentation ();
+      bool
+      initCompute ();    
+      typedef pcl::segmentation::grabcut::BoykovKolmogorov::vertex_descriptor vertex_descriptor;
+      // /** Update hard segmentation after running GraphCut, \return the number of pixels that have
+      //   * changed from foreground to background or vice versa. 
+      //   */
+      // int 
+      // updateHardSegmentation ();
       /// Compute beta from image
       void 
       computeBeta ();
@@ -475,18 +429,26 @@ namespace pcl
       /// Compute NLinks at a specific rectangular location
       float 
       computeNLink (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2);
+      /// Edit Trimap
+      void 
+      setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t);
+      int
+      updateHardSegmentation ();
+      /// Fit Gaussian Multi Models
+      virtual void 
+      fitGMMs ();
       /// Build the graph for GraphCut
       void 
       initGraph ();
-      /// Build images used in GraphCut
-      void 
-      buildClouds ();
       /// Add an edge to the graph, graph must be oriented so we add the edge and its reverse
       void
-      addEdge (vertex_descriptor &v1, vertex_descriptor &v2, float capacity, float rev_capacity);      
+      addEdge (vertex_descriptor v1, vertex_descriptor v2, float capacity, float rev_capacity);
       /// Set the weights of SOURCE --> v and v --> SINK
       void
-      setTerminalWeights (vertex_descriptor& v, float source_capacity, float sink_capacity);
+      setTerminalWeights (vertex_descriptor v, float source_capacity, float sink_capacity);
+      /// \return true if v is in source tree
+      inline bool
+      isSource (vertex_descriptor v) { return (graph_.inSourceTree (v)); }
       /// image width
       uint32_t width_;
       /// image height
@@ -500,38 +462,27 @@ namespace pcl
       float beta_;
       /// L = a large value to force a pixel to be foreground or background
       float L_;
-      /** \brief A pointer to the spatial search object. */
+      /// Pointer to the spatial search object.
       KdTreePtr tree_;
+      /// Number of neighbours 
       int nb_neighbours_;
-      bool build_clouds_;
+      /// is segmentation initialized
       bool initialized_;
-      // Precomputed N-link weights
+      /// Precomputed N-link weights
       std::vector<NLinks> n_links_;
+      /// Converted input
       segmentation::grabcut::Image::Ptr image_;
       std::vector<segmentation::grabcut::TrimapValue> trimap_;
-      std::vector<uint32_t> GMM_component_;
+      std::vector<std::size_t> GMM_component_;
       std::vector<segmentation::grabcut::SegmentationValue> hard_segmentation_;
       // Not yet implemented (this would be interpreted as alpha)
       std::vector<float> soft_segmentation_;	
       segmentation::grabcut::GMM background_GMM_, foreground_GMM_;
       // Graph part
-      /// reverse edge property map
-      boost::property_map <Graph, boost::edge_reverse_t>::type rev_;
-      /// edge capacity property map
-      boost::property_map <Graph, boost::edge_capacity_t >::type capacity_;
       /// Graph for Graphcut
-      Graph graph_;
-      /// Graph source out of the image nodes
-      vertex_descriptor graph_source_;
-      /// Graph sink out of the image nodes
-      vertex_descriptor graph_sink_;
+      pcl::segmentation::grabcut::BoykovKolmogorov graph_;
       /// Graph nodes
       std::vector<vertex_descriptor> graph_nodes_;
-      // Clouds of various variables that can be displayed for debugging.
-      pcl::PointCloud<pcl::PointXYZI>::Ptr n_links_cloud_;
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr t_links_cloud_;
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr GMM_cloud_;
-      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr alpha_cloud_;
   };
 }
 
