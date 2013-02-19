@@ -1047,6 +1047,21 @@ Applications
      
      .. |ap_4| image:: images/using_kinfu_large_scale.jpg
                :height: 100px
+
+  * :ref:`ground_based_rgbd_people_detection`
+     
+     ======  ======
+     |ap_5|  Title: **Detecting people on a ground plane with RGB-D data**
+
+             Author: *Matteo Munaro*
+
+             Compatibility: > PCL 1.7 trunk
+
+             This tutorial presents a method for detecting people on a ground plane with RGB-D data.
+     ======  ======
+     
+     .. |ap_5| image:: images/ground_based_rgbd_people_detection/Index_photo.jpg
+               :height: 120px
 .. _gpu:
 
 GPU
