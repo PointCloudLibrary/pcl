@@ -440,12 +440,14 @@ pcl::DinastGrabber::captureThreadFunction ()
   {
     // Lock before checking running flag
     boost::unique_lock<boost::mutex> capture_lock (capture_mutex_);
-    readImage ();
+    if(running_)
+    {
+      readImage ();
     
-    // Check for point clouds slots
-    if (num_slots<sig_cb_dinast_point_cloud> () > 0 )
-      point_cloud_signal_->operator() (getXYZIPointCloud ());
-      
+      // Check for point clouds slots
+      if (num_slots<sig_cb_dinast_point_cloud> () > 0 )
+        point_cloud_signal_->operator() (getXYZIPointCloud ());
+    } 
     capture_lock.unlock ();
   }
 }

@@ -48,7 +48,7 @@ class DinastProcessor
     typedef pcl::PointCloud<PointType> Cloud;
     typedef typename Cloud::ConstPtr CloudConstPtr;
     
-    DinastProcessor(pcl::Grabber& grabber) : interface(grabber), vis_cld("Dinast Cloud Viewer") {}
+    DinastProcessor(pcl::Grabber& grabber) : interface(grabber), viewer("Dinast Cloud Viewer") {}
 
     void 
     cloud_cb_ (CloudConstPtr cloud_cb)
@@ -62,22 +62,22 @@ class DinastProcessor
         count = 0;
         last = now;
       }
-      if (!vis_cld.wasStopped())
-        vis_cld.showCloud(cloud_cb);
+      if (!viewer.wasStopped())
+        viewer.showCloud(cloud_cb);
     }
     
     int 
     run ()
     {
-      
-      interface.start ();
-      
+            
       boost::function<void (const CloudConstPtr&)> f =
         boost::bind (&DinastProcessor::cloud_cb_, this, _1);
       
       boost::signals2::connection c = interface.registerCallback (f);
+
+      interface.start ();
       
-      while (true)
+      while (!viewer.wasStopped())
       {
         boost::this_thread::sleep (boost::posix_time::seconds (1));
       }
@@ -88,7 +88,7 @@ class DinastProcessor
     }
     
     pcl::Grabber& interface;
-    pcl::visualization::CloudViewer vis_cld;  
+    pcl::visualization::CloudViewer viewer;  
     
 };
 
