@@ -60,11 +60,18 @@ pcl::visualization::PCLVisualizer viewer("PCL Viewer");
 
 enum { COLS = 640, ROWS = 480 };
 
-struct callback_args{
-  // structure used to pass arguments to the callback function
-  PointCloudT::Ptr clicked_points_3d;
-  pcl::visualization::PCLVisualizer::Ptr viewerPtr;
-};
+int print_help()
+{
+  cout << "*******************************************************" << std::endl;
+  cout << "Ground based people detection app options:" << std::endl;
+  cout << "   --help    <show_this_help>" << std::endl;
+  cout << "   --svm     <path_to_svm_file>" << std::endl;
+  cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
+  cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
+  cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
+  cout << "*******************************************************" << std::endl;
+  return 0;
+}
 
 //void cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT::Ptr& cloud,
 //    bool* new_cloud_available_flag)
@@ -80,6 +87,12 @@ cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT *cloud_objec
   pcl::copyPointCloud<PointT, PointT>(*callback_cloud, *cloud_object);
   *new_cloud_available_flag = true;
 }
+
+struct callback_args{
+  // structure used to pass arguments to the callback function
+  PointCloudT::Ptr clicked_points_3d;
+  pcl::visualization::PCLVisualizer::Ptr viewerPtr;
+};
   
 void
 pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
@@ -98,41 +111,25 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
   std::cout << current_point.x << " " << current_point.y << " " << current_point.z << std::endl;
 }
 
-int print_help()
-{
-  cout << "**********************************************" << std::endl;
-  cout << "Ground based people detection app options:" << std::endl;
-  cout << "   --help    <show_this_help>" << std::endl;
-  cout << "   --svm     <path_to_svm_file>" << std::endl;
-  cout << "   --conf    <minimum_HOG_confidence>" << std::endl;
-  cout << "   --min_h   <minimum_person_height>" << std::endl;
-  cout << "   --max_h   <maximum_person_height>" << std::endl;
-  cout << "**********************************************" << std::endl;
-  return 0;
-}
-
 int main (int argc, char** argv)
 {
   if(pcl::console::find_switch (argc, argv, "--help") || pcl::console::find_switch (argc, argv, "-h"))
         return print_help();
 
   // Algorithm parameters:
-  float voxel_size = 0.06;
+  std::string svm_filename = "../../people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
   float min_confidence = -1.5;
   float min_height = 1.3;
   float max_height = 2.3;
-  std::string svm_filename = "../../people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
+  float voxel_size = 0.06;
+  Eigen::Matrix3f rgb_intrinsics_matrix;
+  rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0, 1.0; // Kinect RGB camera intrinsics
 
   // Read if some parameters are passed from command line:
   pcl::console::parse_argument (argc, argv, "--svm", svm_filename);
   pcl::console::parse_argument (argc, argv, "--conf", min_confidence);
   pcl::console::parse_argument (argc, argv, "--min_h", min_height);
   pcl::console::parse_argument (argc, argv, "--max_h", max_height);
-
-  // Dataset Parameters:
-  //std::string svm_filename = "../data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
-  Eigen::Matrix3f rgb_intrinsics_matrix;
-  rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0, 1.0; // Kinect RGB camera intrinsics
 
   // Read Kinect live stream:
 //  PointCloudT::Ptr cloud (new PointCloudT);
@@ -157,11 +154,6 @@ int main (int argc, char** argv)
   pcl::copyPointCloud<PointT, PointT>(cloud_obj, *cloud);
   new_cloud_available_flag = false;
 
-  // Initialize classifier for people detection:  
-  pcl::people::PersonClassifier<pcl::RGB> person_classifier;
-  person_classifier.loadSVMFromFile(svm_filename);   // load trained SVM
-
-  // Ground initialization:
   // Display pointcloud:
   pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(cloud);
   viewer.addPointCloud<PointT> (cloud, rgb, "input_cloud");
@@ -193,7 +185,11 @@ int main (int argc, char** argv)
   pcl::visualization::PCLVisualizer viewer("PCL Viewer");          // viewer initialization
   viewer.setCameraPosition(0,0,-2,0,-1,0,0);
 
-  // People detection main loop:
+  // Create classifier for people detection:  
+  pcl::people::PersonClassifier<pcl::RGB> person_classifier;
+  person_classifier.loadSVMFromFile(svm_filename);   // load trained SVM
+
+  // People detection app initialization:
   pcl::people::GroundBasedPeopleDetectionApp<PointT> people_detector;    // people detection object
   people_detector.setVoxelSize(voxel_size);                        // set the voxel size
   people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
@@ -205,6 +201,7 @@ int main (int argc, char** argv)
   static unsigned count = 0;
   static double last = pcl::getTime ();
 
+  // Main loop:
   while (!viewer.wasStopped())
   {
     if (new_cloud_available_flag)    // if a new cloud is available
@@ -239,7 +236,7 @@ int main (int argc, char** argv)
       std::cout << k << " people found" << std::endl;
       viewer.spinOnce();
 
-      // For timing:
+      // Display average framerate:
       if (++count == 30)
       {
         double now = pcl::getTime ();
