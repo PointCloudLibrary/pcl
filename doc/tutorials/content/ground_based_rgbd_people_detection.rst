@@ -42,7 +42,7 @@ Here, the callback used for grabbing pointclouds with OpenNI is defined.
    :language: cpp
    :lines: 76-82
 
-The people detection algorithm used makes the assumptions that people stand/walk on a planar ground plane. 
+The people detection algorithm used makes the assumption that people stand/walk on a planar ground plane. 
 Thus, it requires to know the equation of the ground plane in order to perform people detection.
 In this tutorial, the ground plane is manually initialized by the user by selecting three floor points 
 from the first acquired pointcloud. 
@@ -92,11 +92,11 @@ written to the command window.
         
 In the following lines, we can see the initialization of the SVM classifier by loading the pre-trained parameters
 from file.
-Moreover, a :pcl:`GroundBasedPeopleDetectionApp <pcl::GroundBasedPeopleDetectionApp>` object is declared and the main 
+Moreover, a :pcl:`GroundBasedPeopleDetectionApp <pcl::people::GroundBasedPeopleDetectionApp>` object is declared and the main 
 parameters are set. In this example, we can see how to set the voxel size used for downsampling the pointcloud,
-the rgb camera intrinsic parameters, the :pcl:`PersonClassifier <pcl::PersonClassifier>` object and the height limits.
+the rgb camera intrinsic parameters, the :pcl:`PersonClassifier <pcl::people::PersonClassifier>` object and the height limits.
 Other parameters could be set, such as the sensor orientation. If the sensor is vertically placed, the method 
-setSensorPortraitOrientation should be used to enable the vertical mode in :pcl:`GroundBasedPeopleDetectionApp <pcl::GroundBasedPeopleDetectionApp>`.
+setSensorPortraitOrientation should be used to enable the vertical mode in :pcl:`GroundBasedPeopleDetectionApp <pcl::people::GroundBasedPeopleDetectionApp>`.
  
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
@@ -106,7 +106,7 @@ Main loop:
 **********   
 In the main loop, new frames are acquired and processed until the application is terminated by the user.
 The ``people_detector`` object receives as input the current cloud and the estimated ground coefficients and 
-computes people clusters properties, which are stored in :pcl:`PersonCluster <pcl::PersonCluster>` objects.
+computes people clusters properties, which are stored in :pcl:`PersonCluster <pcl::people::PersonCluster>` objects.
 The ground plane coefficients are re-estimated at every frame by using the previous frame estimate as initial condition.
 This procedure allows to adapt to small changes which can occurr to the ground plane equation if the camera is slowly moving.
    
@@ -132,7 +132,7 @@ Create a `CMakeLists.txt` file and add the following lines into it:
    :language: cmake
    :linenos:
 
-After you have made the executable, you can run it. Simply do::
+After you have made the executable, you can run it. Simply do:
   $ ./ground_based_rgbd_people_detector
   
 The following images show some people detection results on a Kinect RGB-D stream.
