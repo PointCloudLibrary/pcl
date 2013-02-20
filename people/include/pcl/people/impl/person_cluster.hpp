@@ -110,7 +110,7 @@ pcl::people::PersonCluster<PointT>::init (
 
 
   Eigen::Vector4f height_point(c_x_, c_y_, c_z_, 1.0f);
-  if(not vertical_)
+  if(!vertical_)
   {
     height_point(1) = min_y_;
     distance_ = std::sqrt(c_x_ * c_x_ + c_z_ * c_z_);
@@ -133,7 +133,7 @@ pcl::people::PersonCluster<PointT>::init (
     int n = 0;
 
     float head_threshold_value;    // vertical coordinate of the lowest head point
-    if (not vertical_)
+    if (!vertical_)
     {
       head_threshold_value = min_y_ + height_ / 8.0f;    // head is suppose to be 1/8 of the human height
       for (std::vector<int>::const_iterator pit = points_indices_.indices.begin(); pit != points_indices_.indices.end(); pit++)
@@ -171,7 +171,7 @@ pcl::people::PersonCluster<PointT>::init (
     c_z_ = sum_z / n;
   }
 
-  if(not vertical_)
+  if(!vertical_)
   {
     float min_x = c_x_;
     float min_z = c_z_;
@@ -274,7 +274,7 @@ template <typename PointT> float
 pcl::people::PersonCluster<PointT>::updateHeight (const Eigen::VectorXf& ground_coeffs, float sqrt_ground_coeffs)
 {
   Eigen::Vector4f height_point;
-  if (not vertical_)
+  if (!vertical_)
     height_point << c_x_, min_y_, c_z_, 1.0f;
   else
     height_point << max_x_, c_y_, c_z_, 1.0f;
