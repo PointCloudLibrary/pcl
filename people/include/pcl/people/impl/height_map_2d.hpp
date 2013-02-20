@@ -79,7 +79,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
   maxima_cloud_indices_filtered_.clear();
 
   // Create a height map with the projection of cluster points onto the ground plane:
-  if (not vertical_)    // camera horizontal
+  if (!vertical_)    // camera horizontal
     buckets_.resize(size_t((cluster.getMax()(0) - cluster.getMin()(0)) / bin_size_) + 1, 0);
   else        // camera vertical
     buckets_.resize(size_t((cluster.getMax()(1) - cluster.getMin()(1)) / bin_size_) + 1, 0);
