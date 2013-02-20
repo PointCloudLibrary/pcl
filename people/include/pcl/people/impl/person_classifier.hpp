@@ -279,26 +279,27 @@ pcl::people::PersonClassifier<PointT>::evaluate (PointCloudPtr& image,
 {
   float pixel_height;
   float pixel_width;
-  if (not vertical)
+
+  if (!vertical)
   {
-  pixel_height = bottom(1) - top(1);
-  pixel_width = pixel_height / 2.0f;
+    pixel_height = bottom(1) - top(1);
+    pixel_width = pixel_height / 2.0f;
   }
   else
   {
-  pixel_width = top(0) - bottom(0);
-  pixel_height = pixel_width / 2.0f;
+    pixel_width = top(0) - bottom(0);
+    pixel_height = pixel_width / 2.0f;
   }
   float pixel_xc = centroid(0);
   float pixel_yc = centroid(1);
 
-  if (not vertical)
+  if (!vertical)
   {
-  return (evaluate(pixel_height, pixel_xc, pixel_yc, image));
+    return (evaluate(pixel_height, pixel_xc, pixel_yc, image));
   }
   else
   {
-  return (evaluate(pixel_width, pixel_yc, image->height-pixel_xc+1, image));
+    return (evaluate(pixel_width, pixel_yc, image->height-pixel_xc+1, image));
   }
 }
 #endif /* PCL_PEOPLE_PERSON_CLASSIFIER_HPP_ */
