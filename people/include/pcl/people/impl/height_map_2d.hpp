@@ -89,7 +89,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
   {
     PointT* p = &cloud_->points[*pit];
     int index;
-    if (not vertical_)    // camera horizontal
+    if (!vertical_)    // camera horizontal
       index = int((p->x - cluster.getMin()(0)) / bin_size_);
     else        // camera vertical
       index = int((p->y - cluster.getMin()(1)) / bin_size_);
