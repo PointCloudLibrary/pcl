@@ -99,6 +99,8 @@ namespace pcl
       typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
 
       typedef typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget PointCloudTarget;
+      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
@@ -142,6 +144,7 @@ namespace pcl
         , nz_idx_offset_ (0)
         , use_reciprocal_correspondence_ (false)
         , source_has_normals_ (false)
+        , target_has_normals_ (false)
       {
         reg_name_ = "IterativeClosestPoint";
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar> ());
@@ -197,6 +200,28 @@ namespace pcl
           }
         }
       }
+      
+      /** \brief Provide a pointer to the input target 
+        * (e.g., the point cloud that we want to align to the target)
+        *
+        * \param[in] cloud the input point cloud target
+        */
+      virtual void
+      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      {
+        Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
+        std::vector<sensor_msgs::PointField> fields;
+        pcl::getFields (*cloud, fields);
+        target_has_normals_ = false;
+        for (size_t i = 0; i < fields.size (); ++i)
+        {
+          if (fields[i].name == "normal_x" || fields[i].name == "normal_y" || fields[i].name == "normal_z") 
+          {
+            target_has_normals_ = true;
+            break;
+          }
+        }
+      }
 
       /** \brief Set whether to use reciprocal correspondence or not
         *
@@ -245,8 +270,10 @@ namespace pcl
       /** \brief The correspondence type used for correspondence estimation. */
       bool use_reciprocal_correspondence_;
 
-      /** \brief Internal check whether dataset has normals or not. */
+      /** \brief Internal check whether source dataset has normals or not. */
       bool source_has_normals_;
+      /** \brief Internal check whether target dataset has normals or not. */
+      bool target_has_normals_;
   };
 
   /** \brief @b IterativeClosestPointWithNormals is a special case of

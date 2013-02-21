@@ -140,9 +140,15 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
  
   transformation_ = Matrix4::Identity ();
 
-  // Pass in the default source and target for the Correspondence Estimation/Rejection code
-  correspondence_estimation_->setInputSource (input_transformed);
+  // Pass in the default target for the Correspondence Estimation/Rejection code
   correspondence_estimation_->setInputTarget (target_);
+  // We should be doing something like this
+  // for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+  // {
+  //   correspondence_rejectors_[i]->setTargetCloud (target_);
+  //   if (target_has_normals_)
+  //     correspondence_rejectors_[i]->setTargetNormals (target_);
+  // }
 
   convergence_criteria_->setMaximumIterations (max_iterations_);
   convergence_criteria_->setRelativeMSE (euclidean_fitness_epsilon_);
@@ -155,6 +161,8 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Save the previously estimated transformation
     previous_transformation_ = transformation_;
 
+    // Set the source each iteration, to ensure the dirty flag is updated
+    correspondence_estimation_->setInputSource (input_transformed);
     // Estimate correspondences
     if (use_reciprocal_correspondence_)
       correspondence_estimation_->determineReciprocalCorrespondences (*correspondences_, corr_dist_threshold_);
@@ -166,6 +174,10 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
+      // We should be doing something like this
+      // correspondence_rejectors_[i]->setInputSource (input_transformed);
+      // if (source_has_normals_)
+      //   correspondence_rejectors_[i]->setInputNormals (input_transformed);
       correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
       correspondence_rejectors_[i]->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
