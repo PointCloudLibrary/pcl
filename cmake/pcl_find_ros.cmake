@@ -2,10 +2,10 @@
 
 # A macro for linking the ROS libraries.  (Might not be necessary... todo: add this logic at the find_package(ROS))
 macro(link_ros_libs _target)
-  if(ROS_FOUND)
+  if(ROS_FOUND OR catkin_FOUND)
     # if find_package(ROS ...) found the required libraries, link against those
-    target_link_libraries(${_target} ${ROS_LIBRARIES})
-  elseif(USE_ROS)
+    target_link_libraries(${_target} ${ROS_LIBRARIES} ${catkin_LIBRARIES})
+  elseif()
     # otherwise, we have to specify them here
     target_link_libraries(${_target} sensor_msgs roscpp_serialization rosconsole rostime)
   endif()
@@ -24,31 +24,56 @@ endmacro(get_ros_inc_path)
 
 #todo: do we really need the next two lines? 
 set(ROS_ROOT $ENV{ROS_ROOT})
+set(ROS_DISTRO $ENV{ROS_DISTRO})
+
 if(ROS_ROOT)
     option(USE_ROS "Integrate with ROS rather than using native files" OFF)
     message(STATUS "Found ROS; USE_ROS is ${USE_ROS}")
     if(USE_ROS)
         # Search for ROS
-        find_package(ROS COMPONENTS catkin roscpp_serialization std_msgs sensor_msgs rostime)
-	if (ROS_FOUND)
-	  # if find_package(ROS ...) found the required components, add their include directories
-          include_directories(${ROS_INCLUDE_DIRS})
-	else()
-          # otherwise, search for these particular packages the old hacky way	  
-          set(_ros_pkgs std_msgs sensor_msgs roscpp_serialization cpp_common rostime
-            roscpp_traits roscpp rosconsole std_msgs rosbag topic_tools pcl)
-          set(_ros_paths)
-          foreach(_pkg ${_ros_pkgs})
-            get_ros_inc_path(_path ${_pkg})
-            list(APPEND _ros_paths ${_path})
-          endforeach(_pkg)
-          foreach(_path ${_ros_paths})
-            include_directories(${_path}/include
-              ${_path}/msg_gen/cpp/include
-              )
-            link_directories(${_path}/lib)
-          endforeach(_path)
-	endif()
+        if (ROS_DISTRO EQUAL "groovy")
+           find_package(catkin REQUIRED COMPONENTS roscpp_serialization std_msgs sensor_msgs rostime)
+	   if (catkin_FOUND)
+	     # if find_package(ROS ...) found the required components, add their include directories
+             include_directories(${catkin_INCLUDE_DIRS})
+	   else()
+             # otherwise, search for these particular packages the old hacky way	  
+             set(_ros_pkgs std_msgs sensor_msgs roscpp_serialization cpp_common rostime
+               roscpp_traits roscpp rosconsole std_msgs rosbag topic_tools pcl)
+             set(_ros_paths)
+             foreach(_pkg ${_ros_pkgs})
+               get_ros_inc_path(_path ${_pkg})
+               list(APPEND _ros_paths ${_path})
+             endforeach(_pkg)
+             foreach(_path ${_ros_paths})
+               include_directories(${_path}/include
+                 ${_path}/msg_gen/cpp/include
+                 )
+               link_directories(${_path}/lib)
+             endforeach(_path)
+   	   endif()
+        elseif() 
+           find_package(ROS COMPONENTS catkin roscpp_serialization std_msgs sensor_msgs rostime)
+	   if (ROS_FOUND)
+	     # if find_package(ROS ...) found the required components, add their include directories
+             include_directories(${ROS_INCLUDE_DIRS})
+	   else()
+             # otherwise, search for these particular packages the old hacky way	  
+             set(_ros_pkgs std_msgs sensor_msgs roscpp_serialization cpp_common rostime
+               roscpp_traits roscpp rosconsole std_msgs rosbag topic_tools pcl)
+             set(_ros_paths)
+             foreach(_pkg ${_ros_pkgs})
+               get_ros_inc_path(_path ${_pkg})
+               list(APPEND _ros_paths ${_path})
+             endforeach(_pkg)
+             foreach(_path ${_ros_paths})
+               include_directories(${_path}/include
+                 ${_path}/msg_gen/cpp/include
+                 )
+               link_directories(${_path}/lib)
+             endforeach(_path)
+   	   endif()
+        endif()
 
         # use, i.e. don't skip the full RPATH for the build tree
         SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
