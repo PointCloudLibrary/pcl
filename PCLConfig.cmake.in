@@ -407,6 +407,8 @@ macro(find_external_library _component _lib _is_optional)
     find_libusb()
   elseif("${_lib}" STREQUAL "glew")
     find_glew()
+  elseif("${_lib}" STREQUAL "opengl")
+    find_package(OpenGL)
   endif("${_lib}" STREQUAL "boost")
 
   string(TOUPPER "${_component}" COMPONENT)
