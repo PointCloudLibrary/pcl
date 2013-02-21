@@ -150,6 +150,15 @@ namespace pcl
           history_[i] = src.history_[i];
       }
 
+
+      /** \brief Destructor.
+        */
+      ~ApproximateVoxelGrid ()
+      {
+        delete [] history_;
+      }
+
+
       /** \brief Copy operator. 
         * \param[in] src the approximate voxel grid to copy into this. 
         */
