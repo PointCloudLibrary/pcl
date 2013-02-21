@@ -209,7 +209,7 @@ pcl::people::HeadBasedSubclustering<PointT>::createSubClusters (pcl::people::Per
     PointT* current_point = &cloud_->points[maxima_cloud_indices[i]]; // current maximum point cloud point
     Eigen::Vector3f p_current_eigen(current_point->x, current_point->y, current_point->z);  // conversion to eigen
     float t = p_current_eigen.dot(head_ground_coeffs) / normalize_factor;       // height from the ground
-    maxima_projected.col(i) = p_current_eigen - head_ground_coeffs * t;         // projection of the point on the groundplane
+    maxima_projected.col(i).matrix () = p_current_eigen - head_ground_coeffs * t;         // projection of the point on the groundplane
     subclusters_number_of_points(i) = 0;                              // intialize number of points
   }
 
