@@ -117,7 +117,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   // Convert data back
   sensor_msgs::PointCloud2 output_normals;
   toROSMsg (normals, output_normals);
-  concatenateFields (output_normals, *input, output);
+  concatenateFields (*input, output_normals, output);
 }
 
 void
