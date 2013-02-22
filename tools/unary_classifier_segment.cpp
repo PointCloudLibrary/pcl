@@ -85,12 +85,13 @@ loadTrainedFeatures (std::vector<FeatureT::Ptr> &out,
         boost::filesystem::extension (it->path ()) == ".pcd")
     {   
       std::stringstream ss;
-      ss << it->path ().filename ();
+      ss << it->path ().string ();
 
       print_highlight ("Loading %s \n", ss.str ().c_str ());
       
       FeatureT::Ptr features (new FeatureT);
-      loadPCDFile (ss.str (), *features);
+      if (loadPCDFile (ss.str ().c_str (), *features) < 0)
+        return false;
 
       out.push_back (features);
     }
@@ -202,7 +203,8 @@ main (int argc, char** argv)
 
   // load the trained features
   std::vector<FeatureT::Ptr> trained_features;
-  loadTrainedFeatures (trained_features, dir_name.c_str ());
+  if (!loadTrainedFeatures (trained_features, dir_name.c_str ()))
+    return (-1);
 
   print_info ("feature_threshold: %f \n", feature_threshold);
   print_info ("normal-radius-search: %f \n", normal_radius_search);
