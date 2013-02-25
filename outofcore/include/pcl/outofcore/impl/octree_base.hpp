@@ -417,10 +417,14 @@ namespace pcl
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
       bin_name.clear ();
-#pragma warning(push)
-#pragma warning(disable : 4267)
+#if defined _MSC_VER
+  #pragma warning(push)
+  #pragma warning(disable : 4267)
+#endif
       root_node_->queryBBIntersects (min, max, query_depth, bin_name);
-#pragma warning(pop)
+#if defined _MSC_VER
+  #pragma warning(pop)
+#endif
     }
 
     ////////////////////////////////////////////////////////////////////////////////

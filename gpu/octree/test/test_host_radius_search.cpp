@@ -40,11 +40,17 @@
 
 #include <gtest/gtest.h>
 
-#pragma warning (disable: 4521)
+#if defined _MSC_VER
+    #pragma warning (disable: 4521)
+#endif
+    
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/octree/octree.h>
-#pragma warning (default: 4521)
+
+#if defined _MSC_VER
+    #pragma warning (default: 4521)
+#endif
 
 #include <pcl/gpu/octree/octree.hpp>
 #include <pcl/gpu/containers/device_array.h>
