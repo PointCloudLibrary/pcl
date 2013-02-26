@@ -195,6 +195,12 @@ namespace pcl
       getGround ();
 
       /**
+       * \brief Get pointcloud after voxel grid filtering and ground removal.
+       */
+      PointCloudPtr
+      getNoGroundCloud ();
+
+      /**
        * \brief Extract RGB information from a point cloud and output the corresponding RGB point cloud.
        *
        * \param[in] input_cloud A pointer to a point cloud containing also RGB information.
@@ -230,7 +236,10 @@ namespace pcl
       float sqrt_ground_coeffs_;              
       
       /** \brief pointer to the input cloud */
-      PointCloudPtr cloud_;                
+      PointCloudPtr cloud_;   
+
+      /** \brief pointer to the cloud after voxel grid filtering and ground removal */
+      PointCloudPtr no_ground_cloud_;              
       
       /** \brief pointer to a RGB cloud corresponding to cloud_ */
       pcl::PointCloud<pcl::RGB>::Ptr rgb_image_;      

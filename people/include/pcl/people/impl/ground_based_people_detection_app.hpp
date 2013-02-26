@@ -159,6 +159,12 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::getGround ()
   return (ground_coeffs_);
 }
 
+template <typename PointT> typename pcl::people::GroundBasedPeopleDetectionApp<PointT>::PointCloudPtr
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::getNoGroundCloud ()
+{
+  return (no_ground_cloud_);
+}
+
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (PointCloudPtr input_cloud, pcl::PointCloud<pcl::RGB>::Ptr& output_cloud)
 {
@@ -245,12 +251,12 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   pcl::IndicesPtr inliers(new std::vector<int>);
   boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered));
   ground_model->selectWithinDistance(ground_coeffs_, voxel_size_, *inliers);
-  PointCloudPtr no_ground_cloud(new PointCloud);
+  no_ground_cloud_ = PointCloudPtr (new PointCloud);
   pcl::ExtractIndices<PointT> extract;
   extract.setInputCloud(cloud_filtered);
   extract.setIndices(inliers);
   extract.setNegative(true);
-  extract.filter(*no_ground_cloud);
+  extract.filter(*no_ground_cloud_);
   if((inliers->size() >= 300*0.06/voxel_size_))
     ground_model->optimizeModelCoefficients(*inliers, ground_coeffs_, ground_coeffs_);
   else
@@ -259,18 +265,18 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Euclidean Clustering:
   std::vector<pcl::PointIndices> cluster_indices;
   typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
-  tree->setInputCloud(no_ground_cloud);
+  tree->setInputCloud(no_ground_cloud_);
   pcl::EuclideanClusterExtraction<PointT> ec;
   ec.setClusterTolerance(2 * 0.06);
   ec.setMinClusterSize(min_points_);
   ec.setMaxClusterSize(max_points_);
   ec.setSearchMethod(tree);
-  ec.setInputCloud(no_ground_cloud);
+  ec.setInputCloud(no_ground_cloud_);
   ec.extract(cluster_indices);
 
   // Head based sub-clustering //
   pcl::people::HeadBasedSubclustering<PointT> subclustering;
-  subclustering.setInputCloud(no_ground_cloud);
+  subclustering.setInputCloud(no_ground_cloud_);
   subclustering.setGround(ground_coeffs_);
   subclustering.setInitialClusters(cluster_indices);
   subclustering.setHeightLimits(min_height_, max_height_);
