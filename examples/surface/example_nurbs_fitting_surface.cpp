@@ -73,9 +73,9 @@ main (int argc, char *argv[])
   pcd_file = argv[1];
 
   unsigned order (3);
-  unsigned refinement (4);
+  unsigned refinement (6);
   unsigned iterations (10);
-  unsigned mesh_resolution (64);
+  unsigned mesh_resolution (256);
 
   pcl::visualization::PCLVisualizer viewer ("Test: NURBS surface fitting");
   viewer.setSize (800, 600);
@@ -122,16 +122,21 @@ main (int argc, char *argv[])
   {
     fit.refine (0);
     fit.refine (1);
+    fit.assemble (params);
+    fit.solve ();
+    pcl::on_nurbs::Triangulation::convertSurface2Vertices (fit.m_nurbs, mesh_cloud, mesh_vertices, mesh_resolution);
+    viewer.updatePolygonMesh<pcl::PointXYZ> (mesh_cloud, mesh_vertices, mesh_id);
+    viewer.spinOnce ();
   }
 
   // fitting iterations
   for (unsigned i = 0; i < iterations; i++)
   {
-    viewer.spinOnce ();
     fit.assemble (params);
     fit.solve ();
     pcl::on_nurbs::Triangulation::convertSurface2Vertices (fit.m_nurbs, mesh_cloud, mesh_vertices, mesh_resolution);
     viewer.updatePolygonMesh<pcl::PointXYZ> (mesh_cloud, mesh_vertices, mesh_id);
+    viewer.spinOnce ();
   }
 
   // ############################################################################
