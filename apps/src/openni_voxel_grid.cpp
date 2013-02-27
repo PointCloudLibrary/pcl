@@ -142,7 +142,7 @@ usage (char ** argv)
             << "where options are:\n         -minmax min-max  :: set the ApproximateVoxelGrid min-max cutting values (default: 0-5.0)\n"
             <<                     "         -field  X        :: use field/dimension 'X' to filter data on (default: 'z')\n"
 
-            << "                             -leaf x, y, z  :: set the ApproximateVoxelGrid leaf size (default: 0.01)\n";
+            << "                             -leaf x, y, z    :: set the ApproximateVoxelGrid leaf size (default: 0.01)\n";
 
   openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
   if (driver.getNumberDevices () > 0)
@@ -167,12 +167,12 @@ main (int argc, char ** argv)
     usage (argv);
 
   float min_v = 0.0f, max_v = 5.0f;
-  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v, false);
+  pcl::console::parse_2x_arguments (argc, argv, "-minmax", min_v, max_v);
   std::string field_name ("z");
   pcl::console::parse_argument (argc, argv, "-field", field_name);
   PCL_INFO ("Filtering data on %s between %f -> %f.\n", field_name.c_str (), min_v, max_v);
   float leaf_x = 0.01f, leaf_y = 0.01f, leaf_z = 0.01f;
-  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z, false);
+  pcl::console::parse_3x_arguments (argc, argv, "-leaf", leaf_x, leaf_y, leaf_z);
   PCL_INFO ("Using %f, %f, %f as a leaf size for VoxelGrid.\n", leaf_x, leaf_y, leaf_z);
 
   pcl::OpenNIGrabber grabber ("");
