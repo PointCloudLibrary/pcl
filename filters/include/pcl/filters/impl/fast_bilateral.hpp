@@ -55,15 +55,26 @@ pcl::FastBilateralFilter<PointT>::applyFilter (PointCloud &output)
   copyPointCloud (*input_, output);
   float base_max = std::numeric_limits<float>::min (),
         base_min = std::numeric_limits<float>::max ();
+  bool found_finite = false;
   for (size_t x = 0; x < output.width; ++x)
+  {
     for (size_t y = 0; y < output.height; ++y)
+    {
       if (pcl_isfinite (output (x, y).z))
       {
         if (base_max < output (x, y).z)
           base_max = output (x, y).z;
         if (base_min > output (x, y).z)
           base_min = output (x, y).z;
+        found_finite = true;
       }
+    }
+  }
+  if (!found_finite)
+  {
+    PCL_WARN ("[pcl::FastBilateralFilter] Given an empty cloud. Doing nothing.\n");
+    return;
+  }
 
   for (size_t x = 0; x < output.width; ++x)
       for (size_t y = 0; y < output.height; ++y)
