@@ -42,6 +42,7 @@
 #include <cstddef>
 
 #include <assert.h>
+#include <cstring>
 
 #include <pcl/pcl_macros.h>
 

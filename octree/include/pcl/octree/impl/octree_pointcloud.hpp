@@ -72,10 +72,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   {
     for (std::vector<int>::const_iterator current = indices_->begin (); current != indices_->end (); ++current)
     {
+      assert( (*current>=0) && (*current < static_cast<int> (input_->points.size ())));
+      
       if (isFinite (input_->points[*current]))
       {
-        assert( (*current>=0) && (*current < static_cast<int> (input_->points.size ())));
-
         // add points to octree
         this->addPointIdx (*current);
       }
