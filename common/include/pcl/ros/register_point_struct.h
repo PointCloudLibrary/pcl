@@ -60,7 +60,10 @@
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/comparison.hpp>
 #include <boost/utility.hpp>
+//https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifndef Q_MOC_RUN
 #include <boost/type_traits.hpp>
+#endif
 #include <stddef.h> //offsetof
 
 // Must be used in global namespace with name fully qualified
