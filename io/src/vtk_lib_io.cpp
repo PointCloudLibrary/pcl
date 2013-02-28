@@ -182,7 +182,7 @@ pcl::io::savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMes
   poly_writer->SetFileName (file_name.c_str ());
   poly_writer->Write ();
 
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.width));
+  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMes
 	poly_writer->SetArrayName ("Colors");
   poly_writer->Write ();
 
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.width));
+  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +215,7 @@ pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMes
   poly_writer->SetFileName (file_name.c_str ());
   poly_writer->Write ();
 
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.width));
+  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
