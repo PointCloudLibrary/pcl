@@ -115,7 +115,7 @@ namespace pcl
     else
     {
       const Scalar s_inv3 = Scalar (1.0 / 3.0);
-      const Scalar s_sqrt3 = Eigen::internal::sqrt (Scalar (3.0));
+      const Scalar s_sqrt3 = std::sqrt (Scalar (3.0));
       // Construct the parameters used in classifying the roots of the equation
       // and in solving the equation for the roots in closed form.
       Scalar c2_over_3 = c2*s_inv3;
@@ -130,10 +130,10 @@ namespace pcl
         q = Scalar (0);
 
       // Compute the eigenvalues by solving for the roots of the polynomial.
-      Scalar rho = Eigen::internal::sqrt (-a_over_3);
-      Scalar theta = std::atan2 (Eigen::internal::sqrt (-q), half_b) * s_inv3;
-      Scalar cos_theta = Eigen::internal::cos (theta);
-      Scalar sin_theta = Eigen::internal::sin (theta);
+      Scalar rho = std::sqrt (-a_over_3);
+      Scalar theta = std::atan2 (std::sqrt (-q), half_b) * s_inv3;
+      Scalar cos_theta = std::cos (theta);
+      Scalar sin_theta = std::sin (theta);
       roots (0) = c2_over_3 + Scalar (2) * rho * cos_theta;
       roots (1) = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
       roots (2) = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
@@ -286,11 +286,11 @@ namespace pcl
     Scalar len3 = vec3.squaredNorm ();
 
     if (len1 >= len2 && len1 >= len3)
-      eigenvector = vec1 / Eigen::internal::sqrt (len1);
+      eigenvector = vec1 / std::sqrt (len1);
     else if (len2 >= len1 && len2 >= len3)
-      eigenvector = vec2 / Eigen::internal::sqrt (len2);
+      eigenvector = vec2 / std::sqrt (len2);
     else
-      eigenvector = vec3 / Eigen::internal::sqrt (len3);
+      eigenvector = vec3 / std::sqrt (len3);
   }
   
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
@@ -329,11 +329,11 @@ namespace pcl
     Scalar len3 = vec3.squaredNorm ();
 
     if (len1 >= len2 && len1 >= len3)
-      eigenvector = vec1 / Eigen::internal::sqrt (len1);
+      eigenvector = vec1 / std::sqrt (len1);
     else if (len2 >= len1 && len2 >= len3)
-      eigenvector = vec2 / Eigen::internal::sqrt (len2);
+      eigenvector = vec2 / std::sqrt (len2);
     else
-      eigenvector = vec3 / Eigen::internal::sqrt (len3);
+      eigenvector = vec3 / std::sqrt (len3);
   }
 
   /** \brief determines the eigenvalues of the symmetric positive semi definite input matrix
@@ -397,11 +397,11 @@ namespace pcl
       Scalar len3 = vec3.squaredNorm ();
 
       if (len1 >= len2 && len1 >= len3)
-        evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
+        evecs.col (2) = vec1 / std::sqrt (len1);
       else if (len2 >= len1 && len2 >= len3)
-        evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
+        evecs.col (2) = vec2 / std::sqrt (len2);
       else
-        evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
+        evecs.col (2) = vec3 / std::sqrt (len3);
 
       evecs.col (1) = evecs.col (2).unitOrthogonal ();
       evecs.col (0) = evecs.col (1).cross (evecs.col (2));
@@ -422,11 +422,11 @@ namespace pcl
       Scalar len3 = vec3.squaredNorm ();
 
       if (len1 >= len2 && len1 >= len3)
-        evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
+        evecs.col (0) = vec1 / std::sqrt (len1);
       else if (len2 >= len1 && len2 >= len3)
-        evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
+        evecs.col (0) = vec2 / std::sqrt (len2);
       else
-        evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
+        evecs.col (0) = vec3 / std::sqrt (len3);
 
       evecs.col (1) = evecs.col (0).unitOrthogonal ();
       evecs.col (2) = evecs.col (0).cross (evecs.col (1));
@@ -454,17 +454,17 @@ namespace pcl
       if (len1 >= len2 && len1 >= len3)
       {
         mmax[2] = len1;
-        evecs.col (2) = vec1 / Eigen::internal::sqrt (len1);
+        evecs.col (2) = vec1 / std::sqrt (len1);
       }
       else if (len2 >= len1 && len2 >= len3)
       {
         mmax[2] = len2;
-        evecs.col (2) = vec2 / Eigen::internal::sqrt (len2);
+        evecs.col (2) = vec2 / std::sqrt (len2);
       }
       else
       {
         mmax[2] = len3;
-        evecs.col (2) = vec3 / Eigen::internal::sqrt (len3);
+        evecs.col (2) = vec3 / std::sqrt (len3);
       }
 
       tmp = scaledMat;
@@ -480,21 +480,21 @@ namespace pcl
       if (len1 >= len2 && len1 >= len3)
       {
         mmax[1] = len1;
-        evecs.col (1) = vec1 / Eigen::internal::sqrt (len1);
+        evecs.col (1) = vec1 / std::sqrt (len1);
         min_el = len1 <= mmax[min_el] ? 1 : min_el;
         max_el = len1 > mmax[max_el] ? 1 : max_el;
       }
       else if (len2 >= len1 && len2 >= len3)
       {
         mmax[1] = len2;
-        evecs.col (1) = vec2 / Eigen::internal::sqrt (len2);
+        evecs.col (1) = vec2 / std::sqrt (len2);
         min_el = len2 <= mmax[min_el] ? 1 : min_el;
         max_el = len2 > mmax[max_el] ? 1 : max_el;
       }
       else
       {
         mmax[1] = len3;
-        evecs.col (1) = vec3 / Eigen::internal::sqrt (len3);
+        evecs.col (1) = vec3 / std::sqrt (len3);
         min_el = len3 <= mmax[min_el] ? 1 : min_el;
         max_el = len3 > mmax[max_el] ? 1 : max_el;
       }
@@ -512,21 +512,21 @@ namespace pcl
       if (len1 >= len2 && len1 >= len3)
       {
         mmax[0] = len1;
-        evecs.col (0) = vec1 / Eigen::internal::sqrt (len1);
+        evecs.col (0) = vec1 / std::sqrt (len1);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
       else if (len2 >= len1 && len2 >= len3)
       {
         mmax[0] = len2;
-        evecs.col (0) = vec2 / Eigen::internal::sqrt (len2);
+        evecs.col (0) = vec2 / std::sqrt (len2);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
       else
       {
         mmax[0] = len3;
-        evecs.col (0) = vec3 / Eigen::internal::sqrt (len3);
+        evecs.col (0) = vec3 / std::sqrt (len3);
         min_el = len3 <= mmax[min_el] ? 0 : min_el;
         max_el = len3 > mmax[max_el] ? 0 : max_el;
       }
