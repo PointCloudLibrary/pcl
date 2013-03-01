@@ -29,6 +29,7 @@ if(build)
 
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/search.hpp
+		include/pcl/${SUBSYS_NAME}/impl/kdtree.hpp
         include/pcl/${SUBSYS_NAME}/impl/flann_search.hpp
         include/pcl/${SUBSYS_NAME}/impl/brute_force.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized.hpp
