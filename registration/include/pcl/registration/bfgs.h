@@ -36,7 +36,7 @@ namespace Eigen
         Scalar discriminant ((poly[1] * poly[1]) - (4 * poly[0] * poly[2]));
         if (ZERO < discriminant)
         {
-          Scalar discriminant_root (sqrt (discriminant));
+          Scalar discriminant_root (std::sqrt (discriminant));
           m_roots[0] = (-poly[1] - discriminant_root) / (a2) ;
           m_roots[1] = (-poly[1] + discriminant_root) / (a2) ;
           hasRealRoot = true;
@@ -50,7 +50,7 @@ namespace Eigen
           }
           else
           {
-            Scalar discriminant_root (sqrt (-discriminant));
+            Scalar discriminant_root (std::sqrt (-discriminant));
             m_roots[0] = RootType (-poly[1] / a2, -discriminant_root / a2);
             m_roots[1] = RootType (-poly[1] / a2,  discriminant_root / a2);
             hasRealRoot = false;
