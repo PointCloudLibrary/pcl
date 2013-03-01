@@ -495,6 +495,21 @@ I/O
 
      .. |i_o5| image:: images/hdl_grabber.png
                :height: 100px
+               
+  * :ref:`dinast_grabber`
+
+     ======  ======
+     |i_o6|  Title: **Grabbing Point Clouds from Dinast Cameras**
+
+             Author: *Marco A. Gutierrez*
+
+             Compatibility: >= PCL 1.7
+
+             In this tutorial, we will learn how to acquire point cloud data from a Dinast camera.
+     ======  ======
+
+     .. |i_o6| image:: images/dinast_cyclopes.png
+               :height: 100px
 
 
 .. _keypoints_tutorial:
