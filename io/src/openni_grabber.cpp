@@ -583,7 +583,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer (0);
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
 
     if (buffer_size < depth_width_ * depth_height_)
     {
@@ -628,7 +628,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
   static unsigned rgb_array_size = 0;
-  static boost::shared_array<unsigned char> rgb_array (0);
+  static boost::shared_array<unsigned char> rgb_array ((unsigned char*)(NULL));
   static unsigned char* rgb_buffer = 0;
 
   boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
@@ -662,7 +662,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer (0);
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
 
     if (buffer_size < depth_width_ * depth_height_)
     {
@@ -791,8 +791,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
     static unsigned buffer_size = 0;
-    static boost::shared_array<unsigned short> depth_buffer (0);
-    static boost::shared_array<unsigned short> ir_buffer (0);
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
+    static boost::shared_array<unsigned short> ir_buffer ((unsigned short*)(NULL));
 
     if (buffer_size < depth_width_ * depth_height_)
     {
