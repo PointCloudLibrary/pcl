@@ -1056,3 +1056,15 @@ pcl::ImageGrabberBase::getPrevDepthFileName () const
   return (basename);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::ImageGrabberBase::getTimestampAtIndex (size_t idx, uint64_t &timestamp) const
+{
+  std::string filename;
+  if (impl_->pclzf_mode_)
+    filename = impl_->depth_pclzf_files_[idx];
+  else
+    filename = impl_->depth_image_files_[idx];
+  return (impl_->getTimestampFromFilepath (filename, timestamp));
+}
+

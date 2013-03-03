@@ -141,6 +141,10 @@ namespace pcl
     std::string
     getPrevDepthFileName () const;
 
+    /** \brief Query only the timestamp of an index, if it exists */
+    bool
+    getTimestampAtIndex (size_t idx, uint64_t &timestamp) const;
+
     /** \brief Manually set RGB image files.
      * \param[in] rgb_image_files A vector of [tiff/png/jpg/ppm] files to use as input. There must be a 1-to-1 correspondence between these and the depth images you set
      */

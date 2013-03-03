@@ -266,6 +266,18 @@ TEST (PCL, ImageGrabberPCLZF)
   }
 }
 
+TEST (PCL, ImageGrabberTimestamps)
+{
+  // Initialize the grabber but don't load
+  pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
+  uint64_t frame0_microsec, frame1_microsec; 
+  ASSERT_EQ (grabber.size (), 3);
+  EXPECT_TRUE (grabber.getTimestampAtIndex (0, frame0_microsec));
+  EXPECT_TRUE (grabber.getTimestampAtIndex (1, frame1_microsec));
+  uint64_t timediff = frame1_microsec - frame0_microsec;
+  EXPECT_EQ (timediff, 254471); // 20121214T142256.068683 - 20121214T142255.814212 
+}
+
 TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
 {
   pcl::ImageGrabber<PointT> grabber (tiff_dir_, 0, false, false);
