@@ -99,6 +99,9 @@ namespace pcl
         , sin_angle_ (-1.0)
       {
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelParallelPlane () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to

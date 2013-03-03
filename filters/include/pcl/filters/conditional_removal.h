@@ -317,6 +317,9 @@ namespace pcl
       /** \brief Constructor.
        */
       TfQuadraticXYZComparison ();
+      
+      /** \brief Empty destructor */
+      virtual ~TfQuadraticXYZComparison () {}
 
       /** \brief Constructor.
        * \param op the operator "[OP]" of the comparison "p'Ap + 2v'p + c [OP] 0".

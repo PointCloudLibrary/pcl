@@ -245,6 +245,9 @@ namespace pcl
               nr_dimensions_ = 3;
               trivial_ = true;
             }
+      
+            /** \brief Empty destructor */
+            virtual ~MyPointRepresentation () {}
 
             virtual void
             copyToFloatArray (const PointTarget &p, float * out) const

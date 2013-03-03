@@ -222,6 +222,9 @@ namespace pcl
       {
         feature_name_ = "NormalEstimation";
       };
+      
+      /** \brief Empty destructor */
+      virtual ~NormalEstimation () {}
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
         * and return the estimated plane parameters together with the surface curvature.

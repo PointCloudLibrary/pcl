@@ -154,6 +154,8 @@ namespace pcl
         class FeatureContainerInterface
         {
           public:
+            /** \brief Empty destructor */
+            virtual ~FeatureContainerInterface () {}
             virtual bool isValid () = 0;
             virtual double getCorrespondenceScore (int index) = 0;
             virtual bool isCorrespondenceValid (int index) = 0;
@@ -183,6 +185,9 @@ namespace pcl
             FeatureContainer () : thresh_(std::numeric_limits<double>::max ()), feature_representation_()
             {
             }
+      
+            /** \brief Empty destructor */
+            virtual ~FeatureContainer () {}
 
             inline void 
             setSourceFeature (const FeatureCloudConstPtr &source_features)

@@ -76,7 +76,7 @@ namespace pcl
       /** Constructor */
       NarfDescriptor (const RangeImage* range_image=NULL, const std::vector<int>* indices=NULL);
       /** Destructor */
-      ~NarfDescriptor();
+      virtual ~NarfDescriptor();
       
       // =====METHODS=====
       //! Set input data

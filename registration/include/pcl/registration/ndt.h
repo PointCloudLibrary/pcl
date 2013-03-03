@@ -95,6 +95,9 @@ namespace pcl
         * Sets \ref outlier_ratio_ to 0.35, \ref step_size_ to 0.05 and \ref resolution_ to 1.0
         */
       NormalDistributionsTransform ();
+      
+      /** \brief Empty destructor */
+      virtual ~NormalDistributionsTransform () {}
 
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to).
         * \param[in] cloud the input point cloud target

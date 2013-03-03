@@ -91,6 +91,9 @@ namespace pcl
         name_ = "HarrisKeypoint3D";
         search_radius_ = radius;
       }
+      
+      /** \brief Empty destructor */
+      virtual ~HarrisKeypoint3D () {}
 
       /** \brief Set the method of the response to be calculated.
         * \param[in] type

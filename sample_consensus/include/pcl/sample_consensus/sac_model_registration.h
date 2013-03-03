@@ -101,6 +101,9 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelRegistration () {}
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message

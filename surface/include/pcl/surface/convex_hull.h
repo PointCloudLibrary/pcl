@@ -93,6 +93,9 @@ namespace pcl
                       x_axis_ (1.0, 0.0, 0.0), y_axis_ (0.0, 1.0, 0.0), z_axis_ (0.0, 0.0, 1.0)
       {
       };
+      
+      /** \brief Empty destructor */
+      virtual ~ConvexHull () {}
 
       /** \brief Compute a convex hull for all points given.
         *

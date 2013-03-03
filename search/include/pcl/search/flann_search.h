@@ -118,6 +118,10 @@ namespace pcl
             * cheaper, but search more costly (and the other way around).
             */
             KdTreeIndexCreator (unsigned int max_leaf_size=15) : max_leaf_size_ (max_leaf_size){}
+      
+            /** \brief Empty destructor */
+            virtual ~KdTreeIndexCreator () {}
+
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
             * \return The FLANN index.
@@ -137,6 +141,10 @@ namespace pcl
             * cheaper, but search more costly (and the other way around).
             */
             KMeansIndexCreator (){}
+            
+            /** \brief Empty destructor */
+            virtual ~KMeansIndexCreator () {}
+
           /** \brief Create a FLANN Index from the input data.
             * \param[in] data The FLANN matrix containing the input.
             * \return The FLANN index.

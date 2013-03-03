@@ -121,6 +121,9 @@ namespace pcl
       SpinImageEstimation (unsigned int image_width = 8,
                            double support_angle_cos = 0.0,   // when 0, this is bogus, so not applied
                            unsigned int min_pts_neighb = 0);
+      
+      /** \brief Empty destructor */
+      virtual ~SpinImageEstimation () {}
 
       /** \brief Sets spin-image resolution.
         * 

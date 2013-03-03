@@ -94,6 +94,9 @@ namespace pcl
         , eps_angle_ (0.0)
       {
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelParallelLine () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to

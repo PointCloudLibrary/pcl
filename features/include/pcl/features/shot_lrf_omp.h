@@ -74,6 +74,9 @@ namespace pcl
       {
         feature_name_ = "SHOTLocalReferenceFrameEstimationOMP";
       }
+      
+    /** \brief Empty destructor */
+    virtual ~SHOTLocalReferenceFrameEstimationOMP () {}
 
     /** \brief Initialize the scheduler and set the number of threads to use.
      * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)

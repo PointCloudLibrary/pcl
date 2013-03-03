@@ -112,7 +112,7 @@ namespace pcl
       /** Constructor */
       RangeImageBorderExtractor (const RangeImage* range_image=NULL);
       /** Destructor */
-      ~RangeImageBorderExtractor ();
+      virtual ~RangeImageBorderExtractor ();
       
       // =====METHODS=====
       /** \brief Provide a pointer to the range image

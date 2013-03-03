@@ -93,6 +93,9 @@ namespace pcl
                                  const std::vector<int> &indices,
                                  bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random) {};
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelStick () {}
 
       /** \brief Check whether the given index samples can form a valid stick model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The stick coefficients are represented by a

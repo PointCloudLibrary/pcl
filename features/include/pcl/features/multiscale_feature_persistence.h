@@ -75,6 +75,9 @@ namespace pcl
 
       /** \brief Empty constructor */
       MultiscaleFeaturePersistence ();
+      
+      /** \brief Empty destructor */
+      virtual ~MultiscaleFeaturePersistence () {}
 
       /** \brief Method that calls computeFeatureAtScale () for each scale parameter */
       void

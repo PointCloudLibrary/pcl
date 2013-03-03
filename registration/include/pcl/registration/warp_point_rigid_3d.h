@@ -68,6 +68,9 @@ namespace pcl
 
         /** \brief Constructor. */
         WarpPointRigid3D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (3) {}
+      
+        /** \brief Empty destructor */
+        virtual ~WarpPointRigid3D () {}
 
         /** \brief Set warp parameters. 
           * \param[in] p warp parameters (tx ty rz)

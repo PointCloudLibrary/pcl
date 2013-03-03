@@ -102,6 +102,9 @@ namespace pcl
         geometric_validation_ = false;
         tolerance_ = 2 * distance_threshold_;
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SUSANKeypoint () {}
 
       /** \brief set the radius for normal estimation and non maxima supression.
         * \param[in] radius

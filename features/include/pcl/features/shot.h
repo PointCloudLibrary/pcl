@@ -99,8 +99,13 @@ namespace pcl
       {
         feature_name_ = "SHOTEstimation";
       };
+      
 
     public:
+
+      /** \brief Empty destructor */
+      virtual ~SHOTEstimationBase () {}
+
        /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
          * \param[in] index the index of the point in indices_
          * \param[in] indices the k-neighborhood point indices in surface_
@@ -246,6 +251,9 @@ namespace pcl
       {
         feature_name_ = "SHOTEstimation";
       };
+      
+      /** \brief Empty destructor */
+      virtual ~SHOTEstimation () {}
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param[in] index the index of the point in indices_
@@ -329,6 +337,9 @@ namespace pcl
       {
         feature_name_ = "SHOTColorEstimation";
       };
+      
+      /** \brief Empty destructor */
+      virtual ~SHOTColorEstimation () {}
 
       /** \brief Estimate the SHOT descriptor for a given point based on its spatial neighborhood of 3D points with normals
         * \param[in] index the index of the point in indices_

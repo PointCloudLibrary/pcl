@@ -80,6 +80,9 @@ namespace pcl
       {
         reg_name_ = "NormalDistributionsTransform2D";
       }
+      
+      /** \brief Empty destructor */
+      virtual ~NormalDistributionsTransform2D () {}
  
       /** \brief centre of the ndt grid (target coordinate system)
         * \param centre value to set

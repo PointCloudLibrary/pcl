@@ -90,6 +90,9 @@ namespace pcl
                                     const std::vector<int> &indices,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random) {};
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelCircle3D () {}
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

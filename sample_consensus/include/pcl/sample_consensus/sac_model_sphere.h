@@ -91,6 +91,9 @@ namespace pcl
                                   bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
       {}
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelSphere () {}
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

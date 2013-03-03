@@ -84,6 +84,9 @@ namespace pcl
         search_radius_ (0), 
         k_ (0) 
       {};
+      
+      /** \brief Empty destructor */
+      virtual ~Keypoint () {}
 
       /** \brief Provide a pointer to the input dataset that we need to estimate features at every point for.
         * \param cloud the const boost shared pointer to a PointCloud message

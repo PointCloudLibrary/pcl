@@ -122,6 +122,9 @@ namespace pcl
       {
         *this = source;
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelCone () {}
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this

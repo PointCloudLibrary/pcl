@@ -89,7 +89,7 @@ namespace pcl
         /** Empty constructor */
         LZFImageReader ();
         /** Empty destructor */
-        ~LZFImageReader () {}
+        virtual ~LZFImageReader () {}
 
         /** \brief Read camera parameters from a given file and store them internally.
           * \return true if operation successful, false otherwise
@@ -195,7 +195,7 @@ namespace pcl
         {}
 
         /** Empty destructor */
-        ~LZFDepth16ImageReader () {}
+        virtual ~LZFDepth16ImageReader () {}
 
         /** \brief Read the data stored in a PCLZF depth file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -236,7 +236,7 @@ namespace pcl
         /** Empty constructor */
         LZFRGB24ImageReader () : LZFImageReader () {}
         /** Empty destructor */
-        ~LZFRGB24ImageReader () {}
+        virtual ~LZFRGB24ImageReader () {}
 
         /** \brief Read the data stored in a PCLZF RGB file and convert it to a pcl::PointCloud type.
           * \param[in] filename the file name to read the data from
@@ -341,7 +341,7 @@ namespace pcl
         /** Empty constructor */
         LZFImageWriter () {}
         /** Empty destructor */
-        ~LZFImageWriter () {}
+        virtual ~LZFImageWriter () {}
 
         /** \brief Save an image into PCL-LZF format. Virtual.
           * \param[in] data the array holding the image
@@ -448,7 +448,7 @@ namespace pcl
         {}
 
         /** Empty destructor */
-        ~LZFDepth16ImageWriter () {}
+        virtual ~LZFDepth16ImageWriter () {}
 
         /** \brief Save a 16-bit depth image into PCL-LZF format.
           * \param[in] data the array holding the depth image
@@ -501,7 +501,7 @@ namespace pcl
         /** Empty constructor */
         LZFRGB24ImageWriter () : LZFImageWriter () {}
         /** Empty destructor */
-        ~LZFRGB24ImageWriter () {}
+        virtual ~LZFRGB24ImageWriter () {}
 
         /** \brief Save a 24-bit RGB image into PCL-LZF format.
           * \param[in] data the array holding the RGB image (as [RGB..RGB] or [BGR..BGR])
@@ -543,7 +543,7 @@ namespace pcl
         /** Empty constructor */
         LZFYUV422ImageWriter () : LZFRGB24ImageWriter () {}
         /** Empty destructor */
-        ~LZFYUV422ImageWriter () {}
+        virtual ~LZFYUV422ImageWriter () {}
 
         /** \brief Save a 16-bit YUV422 image into PCL-LZF format.
           * \param[in] data the array holding the YUV422 image (as [YUYV...YUYV])
@@ -574,7 +574,7 @@ namespace pcl
         /** Empty constructor */
         LZFBayer8ImageWriter () : LZFRGB24ImageWriter () {}
         /** Empty destructor */
-        ~LZFBayer8ImageWriter () {}
+        virtual ~LZFBayer8ImageWriter () {}
 
         /** \brief Save a 8-bit Bayer image into PCL-LZF format.
           * \param[in] data the array holding the 8-bit Bayer array

@@ -193,6 +193,9 @@ namespace pcl
           , force_no_recompute_ (false)
         {
         }
+      
+        /** \brief Empty destructor */
+        virtual ~DataContainer () {}
 
         /** \brief Provide a source point cloud dataset (must contain XYZ
           * data!), used to compute the correspondence distance.  

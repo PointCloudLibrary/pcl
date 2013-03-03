@@ -56,6 +56,9 @@ namespace pcl
   {
   public:
 
+    /** \brief Empty destructor */
+    virtual ~FileGrabber () {}
+
     /** \brief operator[] Returns the idx-th cloud in the dataset, without bounds checking.
      *  Note that in the future, this could easily be modified to do caching
      *  \param[in] idx The frame to load

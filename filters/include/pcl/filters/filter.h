@@ -105,6 +105,9 @@ namespace pcl
       {
       }
 
+      /** \brief Empty destructor */
+      virtual ~Filter () {}
+
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const
       getRemovedIndices ()
@@ -202,6 +205,9 @@ namespace pcl
         filter_name_ ()
       {
       }
+      
+      /** \brief Empty destructor */
+      virtual ~Filter () {}
 
       /** \brief Get the point indices being removed */
       inline IndicesConstPtr const

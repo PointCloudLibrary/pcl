@@ -95,7 +95,7 @@ namespace pcl
       };
 
       /** \brief Destructor. */
-      ~OrganizedFastMesh () {};
+      virtual ~OrganizedFastMesh () {};
 
       /** \brief Set a maximum edge length. TODO: Implement!
         * \param[in] max_edge_length the maximum edge length

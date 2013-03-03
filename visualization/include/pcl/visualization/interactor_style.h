@@ -105,6 +105,9 @@ namespace pcl
           lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
           point_picking_signal_ (), stereo_anaglyph_mask_default_ (), mouse_callback_ (), modifier_ ()
         {}
+      
+        /** \brief Empty destructor */
+        virtual ~PCLVisualizerInteractorStyle () {}
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
         vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleTrackballCamera);

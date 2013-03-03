@@ -133,6 +133,9 @@ namespace pcl
         search_parameter_(0), search_radius_(0), k_(0),
         fake_surface_(false)
       {}
+            
+      /** \brief Empty destructor */
+      virtual ~Feature () {}
 
       /** \brief Provide a pointer to a dataset to add additional information
         * to estimate the features for every point in the input dataset.  This
@@ -326,6 +329,9 @@ namespace pcl
 
       /** \brief Empty constructor. */
       FeatureFromNormals () : normals_ () {}
+      
+      /** \brief Empty destructor */
+      virtual ~FeatureFromNormals () {}
 
       /** \brief Provide a pointer to the input dataset that contains the point normals of
         * the XYZ dataset.
@@ -386,6 +392,9 @@ namespace pcl
       {
         k_ = 1; // Search tree is not always used here.
       }
+      
+      /** \brief Empty destructor */
+      virtual ~FeatureFromLabels () {}
 
       /** \brief Provide a pointer to the input dataset that contains the point labels of
         * the XYZ dataset.

@@ -162,6 +162,9 @@ namespace pcl
                                  const std::vector<int> &indices,
                                  bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random) {};
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelPlane () {}
 
       /** \brief Check whether the given index samples can form a valid plane model, compute the model coefficients from
         * these samples and store them internally in model_coefficients_. The plane coefficients are:

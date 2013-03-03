@@ -61,6 +61,8 @@ namespace pcl
       typedef typename Registration<PointT, PointT>::Ptr RegistrationPtr;
       typedef typename pcl::registration::GraphHandler<GraphT>::Vertex GraphHandlerVertex;
 
+      /** \brief Empty destructor */
+      virtual ~PairwiseGraphRegistration () {}
 
 
       /** \brief Empty constructor */

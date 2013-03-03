@@ -84,6 +84,9 @@ namespace pcl
         name_ = "HarrisKeypoint6D";
         search_radius_ = radius;
       }
+      
+      /** \brief Empty destructor */
+      virtual ~HarrisKeypoint6D () {}
 
       /**
        * @brief set the radius for normal estimation and non maxima supression.

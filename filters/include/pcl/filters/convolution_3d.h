@@ -129,7 +129,7 @@ namespace pcl
           , threshold_ (std::numeric_limits<float>::infinity ())
         {}
 
-        ~GaussianKernel () {}
+        virtual ~GaussianKernel () {}
 
         /** Set the sigma parameter of the Gaussian
           * \param[in] sigma

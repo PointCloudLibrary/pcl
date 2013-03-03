@@ -98,6 +98,9 @@ namespace pcl
           compute_loop_ (true),
           vd_ ()
         {};
+      
+        /** \brief Empty destructor */
+        virtual ~ELCH () {}
 
         /** \brief Add a new point cloud to the internal graph.
          * \param[in] cloud the new point cloud

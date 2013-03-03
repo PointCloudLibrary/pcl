@@ -158,6 +158,9 @@ namespace pcl
     public:
       PCDGrabber (const std::string& pcd_path, float frames_per_second = 0, bool repeat = false);
       PCDGrabber (const std::vector<std::string>& pcd_files, float frames_per_second = 0, bool repeat = false);
+      
+      /** \brief Virtual destructor. */
+      virtual ~PCDGrabber () throw () {}
     
       // Inherited from FileGrabber
       const boost::shared_ptr< const pcl::PointCloud<PointT> >

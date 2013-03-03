@@ -94,6 +94,9 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelRegistration2D () {}
 
       /** \brief Compute all distances from the transformed points to their correspondences
         * \param[in] model_coefficients the 4x4 transformation matrix

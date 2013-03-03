@@ -108,6 +108,9 @@ namespace pcl
           , convergence_state_ (CONVERGENCE_CRITERIA_NOT_CONVERGED)
         {
         }
+      
+        /** \brief Empty destructor */
+        virtual ~DefaultConvergenceCriteria () {}
 
         /** \brief Set the maximum number of iterations that the internal rotation, 
           * translation, and MSE differences are allowed to be similar. 

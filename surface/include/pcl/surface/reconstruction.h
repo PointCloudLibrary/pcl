@@ -69,6 +69,9 @@ namespace pcl
 
       /** \brief Empty constructor. */
       PCLSurfaceBase () : tree_ () {}
+      
+      /** \brief Empty destructor */
+      virtual ~PCLSurfaceBase () {}
 
       /** \brief Provide an optional pointer to a search object.
         * \param[in] tree a pointer to the spatial search object.

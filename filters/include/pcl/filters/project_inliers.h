@@ -89,6 +89,9 @@ namespace pcl
       {
         filter_name_ = "ProjectInliers";
       }
+      
+      /** \brief Empty destructor */
+      virtual ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param model the model type (check \a model_types.h)
@@ -190,6 +193,9 @@ namespace pcl
       {
         filter_name_ = "ProjectInliers";
       }
+      
+      /** \brief Empty destructor */
+      virtual ~ProjectInliers () {}
 
       /** \brief The type of model to use (user given parameter).
         * \param[in] model the model type (check \a model_types.h)

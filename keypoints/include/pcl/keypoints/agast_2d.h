@@ -83,7 +83,7 @@ namespace pcl
           {}
 
           /** \brief Destructor. */
-          ~AbstractAgastDetector () {}
+          virtual ~AbstractAgastDetector () {}
 
           /** \brief Detects corner points. 
             * \param intensity_data

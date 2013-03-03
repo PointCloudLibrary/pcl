@@ -75,6 +75,9 @@ namespace pcl
       ConcaveHull () : alpha_ (0), keep_information_ (false), voronoi_centers_ (), dim_(0)
       {
       };
+      
+      /** \brief Empty destructor */
+      virtual ~ConcaveHull () {}
 
       /** \brief Compute a concave hull for all points given 
         *

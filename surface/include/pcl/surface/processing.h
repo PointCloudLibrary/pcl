@@ -69,6 +69,9 @@ namespace pcl
       /** \brief Constructor. */
       CloudSurfaceProcessing () : PCLBase<PointInT> ()
       {};
+      
+      /** \brief Empty destructor */
+      virtual ~CloudSurfaceProcessing () {}
 
       /** \brief Process the input cloud and store the results
         * \param[out] output the cloud where the results will be stored

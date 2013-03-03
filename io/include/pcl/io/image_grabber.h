@@ -213,6 +213,9 @@ namespace pcl
     ImageGrabber (const std::vector<std::string>& depth_image_files, 
                   float frames_per_second = 0, 
                   bool repeat = false);
+      
+    /** \brief Empty destructor */
+    virtual ~ImageGrabber () throw () {}
     
     // Inherited from FileGrabber
     const boost::shared_ptr< const pcl::PointCloud<PointT> >

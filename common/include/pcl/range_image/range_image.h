@@ -72,7 +72,7 @@ namespace pcl
       /** Constructor */
       PCL_EXPORTS RangeImage ();
       /** Destructor */
-      PCL_EXPORTS ~RangeImage ();
+      PCL_EXPORTS virtual ~RangeImage ();
       
       // =====STATIC VARIABLES=====
       /** The maximum number of openmp threads that can be used in this class */

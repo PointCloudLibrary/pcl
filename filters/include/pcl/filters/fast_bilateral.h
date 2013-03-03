@@ -72,6 +72,9 @@ namespace pcl
         , sigma_r_ (0.05f)
         , early_division_ (false)
       { }
+      
+      /** \brief Empty destructor */
+      virtual ~FastBilateralFilter () {}
 
       /** \brief Set the standard deviation of the Gaussian used by the bilateral filter for
         * the spatial neighborhood/window.

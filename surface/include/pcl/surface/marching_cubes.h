@@ -379,7 +379,7 @@ namespace pcl
       MarchingCubes ();
 
       /** \brief Destructor. */
-      ~MarchingCubes ();
+      virtual ~MarchingCubes ();
 
 
       /** \brief Method that sets the iso level of the surface to be extracted.

@@ -329,6 +329,9 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerHSVField () {}
 
         /** \brief Get the name of the field used. */
         virtual std::string
@@ -516,6 +519,9 @@ namespace pcl
         {
           capable_ = true;
         }
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerRandom () {}
 
         /** \brief Get the name of the class. */
         virtual std::string
@@ -556,6 +562,9 @@ namespace pcl
         {
           capable_ = true;
         }
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerCustom () {}
 
         /** \brief Get the name of the class. */
         virtual std::string
@@ -597,6 +606,9 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerRGBField (const PointCloudConstPtr &cloud);
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerRGBField () {}
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
           * \param[out] scalars the output scalars containing the color for the dataset
@@ -634,6 +646,9 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerHSVField (const PointCloudConstPtr &cloud);
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerHSVField () {}
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
           * \param[out] scalars the output scalars containing the color for the dataset
@@ -679,6 +694,9 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerGenericField (const PointCloudConstPtr &cloud,
                                             const std::string &field_name);
+      
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerGenericField () {}
 
         /** \brief Obtain the actual color for the input dataset as vtk scalars.
           * \param[out] scalars the output scalars containing the color for the dataset

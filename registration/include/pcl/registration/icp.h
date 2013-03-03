@@ -152,6 +152,9 @@ namespace pcl
         convergence_criteria_.reset(new pcl::registration::DefaultConvergenceCriteria<Scalar> (nr_iterations_, transformation_, *correspondences_));
       };
 
+      /** \brief Empty destructor */
+      virtual ~IterativeClosestPoint () {}
+
       /** \brief Returns a pointer to the DefaultConvergenceCriteria used by the IterativeClosestPoint class.
         * This allows to check the convergence state after the align() method as well as to configure
         * DefaultConvergenceCriteria's parameters not available through the ICP API before the align()
@@ -305,6 +308,9 @@ namespace pcl
         transformation_estimation_.reset (new pcl::registration::TransformationEstimationPointToPlaneLLS<PointSource, PointTarget, Scalar> ());
         //correspondence_rejectors_.add
       };
+      
+      /** \brief Empty destructor */
+      virtual ~IterativeClosestPointWithNormals () {}
 
     protected:
 

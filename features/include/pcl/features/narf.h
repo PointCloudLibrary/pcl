@@ -238,6 +238,8 @@ namespace pcl
       {
         typedef Narf* PointT;
         FeaturePointRepresentation(int nr_dimensions) { this->nr_dimensions_ = nr_dimensions; }
+        /** \brief Empty destructor */
+        virtual ~FeaturePointRepresentation () {}
         virtual void copyToFloatArray (const PointT& p, float* out) const { memcpy(out, p->getDescriptor(), sizeof(*p->getDescriptor())*this->nr_dimensions_); }
       };
       

@@ -114,6 +114,9 @@ namespace pcl
                               rng_alg_ (),
                               rng_uniform_distribution_ ()
                               {};
+      
+      /** \brief Empty destructor */
+      virtual ~MovingLeastSquares () {}
 
 
       /** \brief Set whether the algorithm should also store the normals computed

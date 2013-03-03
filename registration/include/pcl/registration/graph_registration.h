@@ -64,6 +64,9 @@ namespace pcl
                               last_aligned_vertex_ (boost::graph_traits<GraphT>::null_vertex ()),
                               last_vertices_ ()
       {}
+      
+      /** \brief Empty destructor */
+      virtual ~GraphRegistration () {}
 
       /** \brief Add a point cloud and the associated camera pose to the graph */
       template <typename PointT> inline void

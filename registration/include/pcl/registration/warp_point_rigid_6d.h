@@ -68,6 +68,9 @@ namespace pcl
         typedef boost::shared_ptr<const WarpPointRigid6D<PointSourceT, PointTargetT, Scalar> > ConstPtr;
 
         WarpPointRigid6D () : WarpPointRigid<PointSourceT, PointTargetT, Scalar> (6) {}
+      
+        /** \brief Empty destructor */
+        virtual ~WarpPointRigid6D () {}
 
         /** \brief Set warp parameters. 
           * \note Assumes the quaternion parameters are normalized. 

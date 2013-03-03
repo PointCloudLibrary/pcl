@@ -104,6 +104,9 @@ namespace pcl
           , force_no_recompute_reciprocal_ (false)
         {
         }
+      
+        /** \brief Empty destructor */
+        virtual ~CorrespondenceEstimationBase () {}
 
         /** \brief Provide a pointer to the input source 
           * (e.g., the point cloud that we want to align to the target)
@@ -380,6 +383,9 @@ namespace pcl
         {
           corr_name_  = "CorrespondenceEstimation";
         }
+      
+        /** \brief Empty destructor */
+        virtual ~CorrespondenceEstimation () {}
 
         /** \brief Determine the correspondences between input and target cloud.
           * \param[out] correspondences the found correspondences (index of query point, index of target point, distance)

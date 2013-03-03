@@ -73,6 +73,9 @@ namespace pcl
       {
         feature_name_ = "SHOTLocalReferenceFrameEstimation";
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SHOTLocalReferenceFrameEstimation () {}
 
     protected:
       using Feature<PointInT, PointOutT>::feature_name_;

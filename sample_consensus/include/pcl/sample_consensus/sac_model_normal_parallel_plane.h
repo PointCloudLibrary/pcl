@@ -134,6 +134,9 @@ namespace pcl
         , eps_dist_ (0.0)
       {
       }
+      
+      /** \brief Empty destructor */
+      virtual ~SampleConsensusModelNormalParallelPlane () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
