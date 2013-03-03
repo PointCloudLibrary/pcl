@@ -499,6 +499,39 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
   (*shape_actor_map_)[id] = leader;
   return (true);
 }
+////////////////////////////////////////////////////////////////////////////////////////////
+template <typename P1, typename P2> bool
+pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
+					     double r_line, double g_line, double b_line,
+					     double r_text, double g_text, double b_text,
+					     const std::string &id, int viewport)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (am_it != shape_actor_map_->end ())
+  {
+    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  // Create an Actor
+  vtkSmartPointer<vtkLeaderActor2D> leader = vtkSmartPointer<vtkLeaderActor2D>::New ();
+  leader->GetPositionCoordinate ()->SetCoordinateSystemToWorld ();
+  leader->GetPositionCoordinate ()->SetValue (pt1.x, pt1.y, pt1.z);
+  leader->GetPosition2Coordinate ()->SetCoordinateSystemToWorld ();
+  leader->GetPosition2Coordinate ()->SetValue (pt2.x, pt2.y, pt2.z);
+  leader->SetArrowStyleToFilled ();
+  leader->AutoLabelOn ();
+
+  leader->GetLabelTextProperty()->SetColor(r_text, g_text, b_text);
+  
+  leader->GetProperty ()->SetColor (r_line, g_line, b_line);
+  addActorToRenderer (leader, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = leader;
+  return (true);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename P1, typename P2> bool
