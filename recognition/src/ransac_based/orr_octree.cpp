@@ -332,7 +332,7 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
 //================================================================================================================================================================
 
 ORROctree::Node*
-pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float radius)
+pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float radius) const
 {
   int i, rand_pos;
   vector<int> tmp_ids;

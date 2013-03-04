@@ -123,10 +123,21 @@ namespace pcl
         clear ();
 
         inline void
-        getPixelCoordinates (const float* p, int& x, int& y)
+        getPixelCoordinates (const float* p, int& x, int& y) const
         {
         	x = static_cast<int> ((p[0] - bounds_[0])*inv_pixel_size_);
         	y = static_cast<int> ((p[1] - bounds_[2])*inv_pixel_size_);
+        }
+
+        inline const Pixel*
+        getPixel (const float* p) const
+        {
+          int x, y; this->getPixelCoordinates (p, x, y);
+
+          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
+          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+
+          return (pixels_[x][y]);
         }
 
         inline Pixel*

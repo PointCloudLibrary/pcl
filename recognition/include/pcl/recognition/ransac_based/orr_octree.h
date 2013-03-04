@@ -338,7 +338,7 @@ namespace pcl
         /** \brief Randomly chooses and returns a full leaf that is intersected by the sphere with center 'p'
           * and 'radius'. Returns NULL if no leaf is intersected by that sphere. */
         ORROctree::Node*
-        getRandomFullLeafOnSphere (const float* p, float radius);
+        getRandomFullLeafOnSphere (const float* p, float radius) const;
 
         /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique id. The method returns the leaf
           * with 'id' or NULL is no such leaf exists. */

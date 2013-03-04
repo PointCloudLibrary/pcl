@@ -55,6 +55,7 @@
 #include <vtkHedgeHog.h>
 #include <cstdio>
 #include <vector>
+#include <list>
 
 using namespace std;
 using namespace pcl;
@@ -65,12 +66,10 @@ using namespace visualization;
 
 class CallbackParameters;
 
-void run (float pair_width, float voxel_size, float max_coplanarity_angle);
-void show_octree (const ORROctree& octree, PCLVisualizer& viz);
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals);
-void node_to_cube (const ORROctree::Node* node, vtkAppendPolyData* additive_octree);
-void update (CallbackParameters* params);
 void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void);
+void update (CallbackParameters* params);
+bool vtk2PointCloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_data);
+void run (float pair_width, float voxel_size, float max_coplanarity_angle);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
@@ -80,17 +79,18 @@ void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_vo
 class CallbackParameters
 {
   public:
-    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>& points, PointCloud<Normal>& normals)
+    CallbackParameters (ObjRecRANSAC& objrec, PCLVisualizer& viz, PointCloud<PointXYZ>& scene_points, PointCloud<Normal>& scene_normals)
     : objrec_ (objrec),
       viz_ (viz),
-      points_ (points),
-      normals_ (normals)
-    { }
+      scene_points_ (scene_points),
+      scene_normals_ (scene_normals)
+    {}
 
     ObjRecRANSAC& objrec_;
     PCLVisualizer& viz_;
-    PointCloud<PointXYZ>& points_;
-    PointCloud<Normal>& normals_;
+    PointCloud<PointXYZ>& scene_points_;
+    PointCloud<Normal>& scene_normals_;
+    list<vtkActor*> actors_;
 };
 
 //===========================================================================================================================================
@@ -134,25 +134,27 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
   // The input to the object recognition instance
   char scene_file_name[] = "../../test/tum_table_scene.vtk\0", model_file_name[] = "../../test/tum_amicelli_box.vtk\0";
-
   PointCloud<PointXYZ>::Ptr scene_points (new PointCloud<PointXYZ> ()), amicelli_points (new PointCloud<PointXYZ> ());
   PointCloud<Normal>::Ptr scene_normals (new PointCloud<Normal> ()), amicelli_normals (new PointCloud<Normal> ());
 
+  vtkSmartPointer<vtkPolyData> amicelli_model = vtkSmartPointer<vtkPolyData>::New ();
+  string amicelli_name = "amicelli";
+
   // Get the points and normals from the input model
-  if ( !vtk_to_pointcloud (model_file_name, *amicelli_points, *amicelli_normals) )
+  if ( !vtk2PointCloud (model_file_name, *amicelli_points, *amicelli_normals, amicelli_model) )
     return;
 
   // Get the points and normals from the input scene
-  if ( !vtk_to_pointcloud (scene_file_name, *scene_points, *scene_normals) )
+  if ( !vtk2PointCloud (scene_file_name, *scene_points, *scene_normals, NULL) )
     return;
 
   // The recognition object
   ObjRecRANSAC objrec (pair_width, voxel_size);
   objrec.setMaxCoplanarityAngleDegrees (max_coplanarity_angle);
   // Add a model
-  objrec.addModel (*amicelli_points, *amicelli_normals, "amicelli box");
+  objrec.addModel (*amicelli_points, *amicelli_normals, amicelli_name, amicelli_model);
 
-  // The visualizer
+  // The parameters for the callback function and the visualizer
   PCLVisualizer viz;
   CallbackParameters params(objrec, viz, *scene_points, *scene_normals);
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
@@ -195,7 +197,8 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
 //===============================================================================================================================
 
-void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
+void
+keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_void)
 {
   if (event.getKeyCode () == 13 /*enter*/ && event.keyUp ())
     update (static_cast<CallbackParameters*> (params_void));
@@ -203,20 +206,81 @@ void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_vo
 
 //===============================================================================================================================
 
-void update (CallbackParameters* params)
+void
+update (CallbackParameters* params)
 {
-  // That will be the output of the recognition
+  // Clear the visualizer from old object instances
+  vtkRenderer *renderer = params->viz_.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
+  for ( list<vtkActor*>::iterator it = params->actors_.begin () ; it != params->actors_.end () ; ++it )
+    renderer->RemoveActor (*it);
+  params->actors_.clear ();
+
+  // This will be the output of the recognition
   list<ObjRecRANSAC::Output> rec_output;
 
-  // Run the recognition method
-  params->objrec_.recognize (params->points_, params->normals_, rec_output);
+  // For convenience
+  ObjRecRANSAC& objrec = params->objrec_;
 
-  cout << "There is (are) " << rec_output.size () << " recognized object(s).\n";
+  // Run the recognition method
+  objrec.recognize (params->scene_points_, params->scene_normals_, rec_output);
+  int i = 0;
+
+  // Show the hypotheses
+  for ( list<ObjRecRANSAC::Output>::iterator it = rec_output.begin () ; it != rec_output.end () ; ++it, ++i )
+  {
+    cout << it->object_name_ << " has a confidence value of " << it->match_confidence_ << endl;
+
+    // Make a copy of the VTK model
+    vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
+    vtk_model->DeepCopy (static_cast<vtkPolyData*> (it->user_data_));
+
+    // Setup the matrix
+    vtkSmartPointer<vtkMatrix4x4> vtk_mat = vtkSmartPointer<vtkMatrix4x4>::New ();
+    vtk_mat->Identity ();
+    const float *t = it->rigid_transform_;
+    // Setup the rotation
+    vtk_mat->SetElement (0, 0, t[0]); vtk_mat->SetElement (0, 1, t[1]); vtk_mat->SetElement (0, 2, t[2]);
+    vtk_mat->SetElement (1, 0, t[3]); vtk_mat->SetElement (1, 1, t[4]); vtk_mat->SetElement (1, 2, t[5]);
+    vtk_mat->SetElement (2, 0, t[6]); vtk_mat->SetElement (2, 1, t[7]); vtk_mat->SetElement (2, 2, t[8]);
+    // Setup the translation
+    vtk_mat->SetElement (0, 3, t[9]); vtk_mat->SetElement (1, 3, t[10]); vtk_mat->SetElement (2, 3, t[11]);
+
+    // Setup the transform based on the matrix
+    vtkSmartPointer<vtkTransform> vtk_transform = vtkSmartPointer<vtkTransform>::New ();
+    vtk_transform->SetMatrix (vtk_mat);
+
+    // Setup the transformator
+    vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
+    vtk_transformator->SetTransform (vtk_transform);
+    vtk_transformator->SetInput (vtk_model);
+    vtk_transformator->Update ();
+
+    // Visualize
+    vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
+    vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+    vtk_mapper->SetInput(vtk_transformator->GetOutput ());
+    vtk_actor->SetMapper(vtk_mapper);
+    // Set the appearance & add to the renderer
+    vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);
+    renderer->AddActor(vtk_actor);
+    params->actors_.push_back (vtk_actor);
+
+#ifdef _SHOW_TRANSFORM_SPACE_
+    if ( transform_space.getPositionCellBounds ((*acc_hypo)->pos_id_, cb) )
+    {
+      sprintf (pos_cell_name, "cell [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
+      params->viz_.addCube (cb[0], cb[1], cb[2], cb[3], cb[4], cb[5], 1.0, 1.0, 1.0, pos_cell_name);
+    }
+    else
+      printf ("WARNING: no cell at position [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
+#endif
+  }
 }
 
 //===============================================================================================================================
 
-bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals)
+bool
+vtk2PointCloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_data)
 {
   size_t len = strlen (file_name);
   if ( file_name[len-3] != 'v' || file_name[len-2] != 't' || file_name[len-1] != 'k' )
@@ -235,6 +299,10 @@ bool vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points,
   vtkPoints *vtk_points = vtk_poly->GetPoints ();
   vtkIdType num_points = vtk_points->GetNumberOfPoints ();
   double p[3];
+
+  // Shall we copy the vtk object
+  if ( vtk_data )
+    vtk_data->DeepCopy (vtk_poly);
 
   pcl_points.resize (num_points);
 

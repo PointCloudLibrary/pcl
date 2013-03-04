@@ -129,6 +129,13 @@ namespace pcl
     	    HypothesisBase (const ModelLibrary::Model* obj_model)
     	    : obj_model_ (obj_model)
     	    {}
+
+          HypothesisBase (const ModelLibrary::Model* obj_model, const float* rigid_transform)
+          : obj_model_ (obj_model)
+          {
+            memcpy (rigid_transform_, rigid_transform, 12*sizeof (float));
+          }
+
     	    virtual  ~HypothesisBase (){}
 
         public:
@@ -148,11 +155,10 @@ namespace pcl
           }
 
           Hypothesis (const Hypothesis& src)
-          : HypothesisBase (src.obj_model_),
+          : HypothesisBase (src.obj_model_, src.rigid_transform_),
             match_confidence_  (src.match_confidence_),
             explained_pixels_ (src.explained_pixels_)
           {
-            memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
             memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
             memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
           }
@@ -160,11 +166,11 @@ namespace pcl
           virtual ~Hypothesis (){}
 
           void
-          copy (const Hypothesis& src)
+          operator =(const Hypothesis& src)
           {
             memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
-            this->match_confidence_  = src.match_confidence_;
             this->obj_model_  = src.obj_model_;
+            this->match_confidence_  = src.match_confidence_;
             this->explained_pixels_ = src.explained_pixels_;
             memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
             memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
@@ -305,7 +311,7 @@ namespace pcl
 
         /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
           * recognition process. Makes sense only if some of the testing modes are active. */
-        inline const std::vector<ObjRecRANSAC::Hypothesis*>&
+        inline const std::vector<ObjRecRANSAC::Hypothesis>&
         getAcceptedHypotheses () const
         {
           return (accepted_hypotheses_);
@@ -314,7 +320,7 @@ namespace pcl
         /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
           * recognition process. Makes sense only if some of the testing modes are active. */
         inline void
-        getAcceptedHypotheses (std::vector<ObjRecRANSAC::Hypothesis*>& out) const
+        getAcceptedHypotheses (std::vector<ObjRecRANSAC::Hypothesis>& out) const
         {
           out = accepted_hypotheses_;
         }
@@ -344,7 +350,7 @@ namespace pcl
           return (scene_octree_);
         }
 
-        inline const RigidTransformSpace&
+        inline const RigidTransformSpace<Hypothesis>&
         getRigidTransformSpace () const
         {
           return (transform_space_);
@@ -362,7 +368,7 @@ namespace pcl
         friend class ModelLibrary;
 
         inline int
-        computeNumberOfIterations (double success_probability)
+        computeNumberOfIterations (double success_probability) const
         {
           // 'p_obj' is the probability that given that the first sample point belongs to an object,
           // the second sample point will belong to the same object
@@ -380,27 +386,23 @@ namespace pcl
         clearTestData ()
         {
           sampled_oriented_point_pairs_.clear ();
-          for ( std::vector<ObjRecRANSAC::Hypothesis*>::iterator it = accepted_hypotheses_.begin () ; it != accepted_hypotheses_.end () ; ++it )
-            delete *it;
           accepted_hypotheses_.clear ();
           transform_space_.clear ();
         }
 
         void
-        sampleOrientedPointPairs (int num_iterations, const std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output);
+        sampleOrientedPointPairs (int num_iterations, const std::vector<ORROctree::Node*>& full_scene_leaves, std::list<OrientedPointPair>& output) const;
 
         int
-        generateHypotheses(const std::list<OrientedPointPair>& pairs, std::list<HypothesisBase*>& out);
+        generateHypotheses (const std::list<OrientedPointPair>& pairs, std::list<HypothesisBase>& out) const;
 
-        /** \brief Groups repeating hypotheses in 'hypotheses'. Saves a representative for each group of repeating hypotheses
-          * in 'out'. Returns the number of hypotheses after grouping. WARNING: the method deletes all hypotheses in the
-          * provided input list 'hypotheses' and creates new ones and saves them in 'out'. Do not forget to destroy the memory
-          * each item in 'out' is pointing to! */
+        /** \brief Groups close hypotheses in 'hypotheses'. Saves a representative for each group in 'out'. Returns the
+          * number of hypotheses after grouping. */
         int
-        testHypotheses(std::list<HypothesisBase*>& hypotheses, int num_hypotheses, std::vector<Hypothesis*>& out);
+        testHypotheses(std::list<HypothesisBase>& hypotheses, int num_hypotheses, std::vector<Hypothesis>& out);
 
         inline void
-        testHypothesis (Hypothesis* hypothesis, float& match, int& penalty)
+        testHypothesis (Hypothesis* hypothesis, float& match, int& penalty) const
         {
           match = 0.0;
           penalty = 0;
@@ -408,7 +410,7 @@ namespace pcl
           // For better code readability
           const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
           const float* rigid_transform = hypothesis->rigid_transform_;
-          ORROctreeZProjection::Pixel* pixel;
+          const ORROctreeZProjection::Pixel* pixel;
           float transformed_point[3];
 
           // The match/penalty loop
@@ -435,10 +437,16 @@ namespace pcl
         }
 
         void
-        buildConflictGraph (std::vector<Hypothesis*>& hypotheses, ORRGraph& graph);
+        buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space, ORRGraph& graph) const;
 
         void
-        filterWeakHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects);
+        filterGraphOfCloseHypotheses (ORRGraph& graph) const;
+
+        void
+        buildGraphOfConflictingHypotheses (std::vector<Hypothesis>& hypotheses, ORRGraph& graph);
+
+        void
+        filterGraphOfConflictingHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects) const;
 
     	/** \brief Computes the rigid transform that maps the line (a1, b1) to (a2, b2).
     	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'
@@ -528,10 +536,10 @@ namespace pcl
         ModelLibrary model_library_;
         ORROctree scene_octree_;
         ORROctreeZProjection scene_octree_proj_;
-        RigidTransformSpace transform_space_;
+        RigidTransformSpace<Hypothesis> transform_space_;
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
-        std::vector<Hypothesis*> accepted_hypotheses_;
+        std::vector<Hypothesis> accepted_hypotheses_;
         Recognition_Mode rec_mode_;
     };
   } // namespace recognition

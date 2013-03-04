@@ -58,17 +58,24 @@ namespace pcl
       public:
     	class Node
     	{
-          public:
-            enum State {ON, OFF, UNDEF};
+        public:
+    	    enum State {ON, OFF, UNDEF};
 
-            Node (): id_ (-1), state_(UNDEF){}
-            virtual ~Node (){}
+    	    Node (): id_ (-1), state_(UNDEF){}
+    	    virtual ~Node (){}
 
-    	  public:
-            std::set<Node*> neighbors_;
-            ObjRecRANSAC::Hypothesis* hypothesis_;
-            int id_, penalty_;
-            Node::State state_;
+    	    static inline bool
+    	    compare (const ORRGraph::Node* a, const ORRGraph::Node* b)
+    	    {
+    	      return (static_cast<bool> (a->fitness_ > b->fitness_));
+    	    }
+
+        public:
+    	    std::set<Node*> neighbors_;
+    	    ObjRecRANSAC::Hypothesis hypothesis_;
+    	    int id_;
+    	    int fitness_;
+    	    Node::State state_;
     	};
 
       public:
@@ -97,15 +104,59 @@ namespace pcl
             nodes_[i] = new Node ();
         }
 
+        inline ORRGraph::Node*
+        addNode ()
+        {
+          ORRGraph::Node* new_node = new ORRGraph::Node ();
+          nodes_.push_back (new_node);
+
+          return (new_node);
+        }
+
         inline void
-        insertEdge (int id1, int id2)
+        computeMaximalOnOffPartition (std::list<ORRGraph::Node*>& on_nodes)
+        {
+          std::vector<ORRGraph::Node*> sorted_nodes (nodes_.size ());
+          int i = 0;
+
+          // Set all nodes to undefined
+          for ( std::vector<ORRGraph::Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
+          {
+            sorted_nodes[i++] = *it;
+            (*it)->state_ = ORRGraph::Node::UNDEF;
+          }
+
+          // Now sort the nodes according to the penalty
+          std::sort (sorted_nodes.begin (), sorted_nodes.end (), ORRGraph::Node::compare);
+
+          // Now run through the array and start switching nodes on and off
+          for ( std::vector<ORRGraph::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
+          {
+            // Ignore graph nodes which are already OFF
+            if ( (*it)->state_ == ORRGraph::Node::OFF )
+              continue;
+
+            // Set the node to ON
+            (*it)->state_ = ORRGraph::Node::ON;
+
+            // Set all its neighbors to OFF
+            for ( std::set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+              (*neigh)->state_ = ORRGraph::Node::OFF;
+
+            // Output the node
+            on_nodes.push_back (*it);
+          }
+        }
+
+        inline void
+        insertUndirectedEdge (int id1, int id2)
         {
           nodes_[id1]->neighbors_.insert (nodes_[id2]);
           nodes_[id2]->neighbors_.insert (nodes_[id1]);
         }
 
         inline void
-        deleteEdge (int id1, int id2)
+        deleteUndirectedEdge (int id1, int id2)
         {
           nodes_[id1]->neighbors_.erase (nodes_[id2]);
           nodes_[id2]->neighbors_.erase (nodes_[id1]);

@@ -156,28 +156,28 @@ vtk_to_pointcloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, Poin
 //===============================================================================================================================
 
 void
-showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis* hypo, CallbackParameters* parameters, string frame_name)
+showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis& hypo, CallbackParameters* parameters, string frame_name)
 {
   float rot_col[3], x_dir[3], y_dir[3], z_dir[3], origin[3], scale = 2.0f*parameters->objrec_.getPairWidth ();
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
 
   // Get the origin of the coordinate frame
-  aux::transform (hypo->rigid_transform_, hypo->obj_model_->getCenterOfMass (), origin);
+  aux::transform (hypo.rigid_transform_, hypo.obj_model_->getCenterOfMass (), origin);
   coeffs.values[0] = origin[0];
   coeffs.values[1] = origin[1];
   coeffs.values[2] = origin[2];
   // Setup the axes
-  rot_col[0] = hypo->rigid_transform_[0];
-  rot_col[1] = hypo->rigid_transform_[3];
-  rot_col[2] = hypo->rigid_transform_[6];
+  rot_col[0] = hypo.rigid_transform_[0];
+  rot_col[1] = hypo.rigid_transform_[3];
+  rot_col[2] = hypo.rigid_transform_[6];
   aux::mult3 (rot_col, scale, x_dir);
-  rot_col[0] = hypo->rigid_transform_[1];
-  rot_col[1] = hypo->rigid_transform_[4];
-  rot_col[2] = hypo->rigid_transform_[7];
+  rot_col[0] = hypo.rigid_transform_[1];
+  rot_col[1] = hypo.rigid_transform_[4];
+  rot_col[2] = hypo.rigid_transform_[7];
   aux::mult3 (rot_col, scale, y_dir);
-  rot_col[0] = hypo->rigid_transform_[2];
-  rot_col[1] = hypo->rigid_transform_[5];
-  rot_col[2] = hypo->rigid_transform_[8];
+  rot_col[0] = hypo.rigid_transform_[2];
+  rot_col[1] = hypo.rigid_transform_[5];
+  rot_col[2] = hypo.rigid_transform_[8];
   aux::mult3 (rot_col, scale, z_dir);
 
   // The x-axis
@@ -205,9 +205,9 @@ showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis* hypo, CallbackParamet
 //===============================================================================================================================
 
 bool
-compareHypotheses (const ObjRecRANSAC::Hypothesis* a, const ObjRecRANSAC::Hypothesis* b)
+compareHypotheses (const ObjRecRANSAC::Hypothesis& a, const ObjRecRANSAC::Hypothesis& b)
 {
-  return (static_cast<bool> (a->match_confidence_ > b->match_confidence_));
+  return (static_cast<bool> (a.match_confidence_ > b.match_confidence_));
 }
 
 //===============================================================================================================================
@@ -293,13 +293,13 @@ update (CallbackParameters* params)
 #endif
 
 #ifdef _SHOW_TRANSFORM_SPACE_
-  const RigidTransformSpace &transform_space = params->objrec_.getRigidTransformSpace ();
+  const RigidTransformSpace<ObjRecRANSAC::Hypothesis> &transform_space = params->objrec_.getRigidTransformSpace ();
   char pos_cell_name[256];
   float cb[6];
 #endif
 
   // Now show some of the accepted hypotheses
-  vector<ObjRecRANSAC::Hypothesis*> accepted_hypotheses;
+  vector<ObjRecRANSAC::Hypothesis> accepted_hypotheses;
   params->objrec_.getAcceptedHypotheses (accepted_hypotheses);
   int i = 0;
 
@@ -307,7 +307,7 @@ update (CallbackParameters* params)
   std::sort(accepted_hypotheses.begin (), accepted_hypotheses.end (), compareHypotheses);
 
   // Show the hypotheses
-  for ( vector<ObjRecRANSAC::Hypothesis*>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
+  for ( vector<ObjRecRANSAC::Hypothesis>::iterator acc_hypo = accepted_hypotheses.begin () ; i < params->num_hypotheses_to_show_ && acc_hypo != accepted_hypotheses.end () ; ++i, ++acc_hypo )
   {
     // Visualize the orientation as a tripod
     char frame_name[128];
@@ -316,12 +316,12 @@ update (CallbackParameters* params)
 
     // Make a copy of the VTK model
     vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
-    vtk_model->DeepCopy (static_cast<vtkPolyData*> ((*acc_hypo)->obj_model_->getUserData ()));
+    vtk_model->DeepCopy (static_cast<vtkPolyData*> (acc_hypo->obj_model_->getUserData ()));
 
     // Setup the matrix
     vtkSmartPointer<vtkMatrix4x4> vtk_mat = vtkSmartPointer<vtkMatrix4x4>::New ();
     vtk_mat->Identity ();
-    arrayToVtkMatrix ((*acc_hypo)->rigid_transform_, vtk_mat);
+    arrayToVtkMatrix (acc_hypo->rigid_transform_, vtk_mat);
     // Setup the transform based on the matrix
     vtkSmartPointer<vtkTransform> vtk_transform = vtkSmartPointer<vtkTransform>::New ();
     vtk_transform->SetMatrix (vtk_mat);
@@ -342,23 +342,23 @@ update (CallbackParameters* params)
     params->model_actors_.push_back (vtk_actor);
 
     // Compose the model's id
-    cout << (*acc_hypo)->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << (*acc_hypo)->match_confidence_ << ";  ";
+    cout << acc_hypo->obj_model_->getObjectName () << "_" << i+1 << " has a confidence value of " << acc_hypo->match_confidence_ << ";  ";
     printf ("t_id = [%i, %i, %i], rot_id = [%i, %i, %i]\n",
-      (*acc_hypo)->pos_id_[0],
-      (*acc_hypo)->pos_id_[1],
-      (*acc_hypo)->pos_id_[2],
-      (*acc_hypo)->rot_id_[0],
-      (*acc_hypo)->rot_id_[1],
-      (*acc_hypo)->rot_id_[2]);
+      acc_hypo->pos_id_[0],
+      acc_hypo->pos_id_[1],
+      acc_hypo->pos_id_[2],
+      acc_hypo->rot_id_[0],
+      acc_hypo->rot_id_[1],
+      acc_hypo->rot_id_[2]);
 
 #ifdef _SHOW_TRANSFORM_SPACE_
-    if ( transform_space.getPositionCellBounds ((*acc_hypo)->pos_id_, cb) )
+    if ( transform_space.getPositionCellBounds (acc_hypo->pos_id_, cb) )
     {
-      sprintf (pos_cell_name, "cell [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
+      sprintf (pos_cell_name, "cell [%i, %i, %i]\n", acc_hypo->pos_id_[0], acc_hypo->pos_id_[1], acc_hypo->pos_id_[2]);
       params->viz_.addCube (cb[0], cb[1], cb[2], cb[3], cb[4], cb[5], 1.0, 1.0, 1.0, pos_cell_name);
     }
     else
-      printf ("WARNING: no cell at position [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
+      printf ("WARNING: no cell at position [%i, %i, %i]\n", acc_hypo->pos_id_[0], acc_hypo->pos_id_[1], acc_hypo->pos_id_[2]);
 #endif
   }
 
