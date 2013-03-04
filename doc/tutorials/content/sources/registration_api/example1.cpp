@@ -6,6 +6,7 @@
 #include <pcl/point_representation.h>
 
 #include <pcl/io/pcd_io.h>
+#include <pcl/console/time.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
@@ -114,7 +115,7 @@ view (const CloudConstPtr &src, const CloudConstPtr &tgt, const CorrespondencesP
   vis->setPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY, 0.5, "source");
   vis->setPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY, 0.7, "target");
   vis->setPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE, 6, "source");
-  TicToc tt;
+  pcl::console::TicToc tt;
   tt.tic ();
   if (!vis->updateCorrespondences<PointT> (src, tgt, *correspondences, 1)) 
     vis->addCorrespondences<PointT> (src, tgt, *correspondences, 1, "correspondences");
