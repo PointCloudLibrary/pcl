@@ -64,13 +64,51 @@ namespace pcl
     	    Node (): id_ (-1), state_(UNDEF){}
     	    virtual ~Node (){}
 
+    	    inline const std::set<Node*>&
+    	    getNeighbors () const
+    	    {
+    	      return (neighbors_);
+    	    }
+
+          inline const ObjRecRANSAC::Hypothesis&
+          getHypothesis () const
+          {
+            return (hypothesis_);
+          }
+
+    	    inline void
+    	    setHypothesis (const ObjRecRANSAC::Hypothesis& hypothesis)
+    	    {
+    	      hypothesis_ = hypothesis;
+    	    }
+
+    	    inline int
+    	    getId () const
+    	    {
+    	      return (id_);
+    	    }
+
+          inline void
+          setId (int id)
+          {
+            id_ = id;
+          }
+
+    	    inline void
+    	    setFitness (int fitness)
+    	    {
+    	      fitness_ = fitness;
+    	    }
+
     	    static inline bool
     	    compare (const ORRGraph::Node* a, const ORRGraph::Node* b)
     	    {
     	      return (static_cast<bool> (a->fitness_ > b->fitness_));
     	    }
 
-        public:
+    	    friend class ORRGraph;
+
+        protected:
     	    std::set<Node*> neighbors_;
     	    ObjRecRANSAC::Hypothesis hypothesis_;
     	    int id_;
@@ -114,7 +152,7 @@ namespace pcl
         }
 
         inline void
-        computeMaximalOnOffPartition (std::list<ORRGraph::Node*>& on_nodes)
+        computeMaximalOnOffPartition (std::list<ORRGraph::Node*>& on_nodes, std::list<ORRGraph::Node*>& off_nodes)
         {
           std::vector<ORRGraph::Node*> sorted_nodes (nodes_.size ());
           int i = 0;
@@ -126,7 +164,7 @@ namespace pcl
             (*it)->state_ = ORRGraph::Node::UNDEF;
           }
 
-          // Now sort the nodes according to the penalty
+          // Now sort the nodes according to the fitness
           std::sort (sorted_nodes.begin (), sorted_nodes.end (), ORRGraph::Node::compare);
 
           // Now run through the array and start switching nodes on and off
@@ -141,7 +179,10 @@ namespace pcl
 
             // Set all its neighbors to OFF
             for ( std::set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+            {
               (*neigh)->state_ = ORRGraph::Node::OFF;
+              off_nodes.push_back (*neigh);
+            }
 
             // Output the node
             on_nodes.push_back (*it);
@@ -153,6 +194,18 @@ namespace pcl
         {
           nodes_[id1]->neighbors_.insert (nodes_[id2]);
           nodes_[id2]->neighbors_.insert (nodes_[id1]);
+        }
+
+        inline void
+        insertDirectedEdge (Node* node1, Node* node2)
+        {
+          this->insertDirectedEdge (node1->getId (), node2->getId ());
+        }
+
+        inline void
+        insertDirectedEdge (int id1, int id2)
+        {
+          nodes_[id1]->neighbors_.insert (nodes_[id2]);
         }
 
         inline void

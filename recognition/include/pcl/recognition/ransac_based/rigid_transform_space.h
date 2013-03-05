@@ -259,6 +259,11 @@ namespace pcl
           return (true);
         }
 
+        inline void
+        getNeighbors(std::list<RotationSpace<Data>* >& neighs) const
+        {
+        }
+
       protected:
         ORROctree octree_;
         std::list<Cell*> full_cells_;

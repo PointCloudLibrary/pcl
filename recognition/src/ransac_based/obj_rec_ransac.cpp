@@ -113,6 +113,9 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   this->buildGraphOfCloseHypotheses (transform_space_, graph_of_close_hypotheses);
   this->filterGraphOfCloseHypotheses (graph_of_close_hypotheses);
 
+  // Filter the graph
+  // Build the graph of conflicting hypothesis using the graph of closed hypotheses
+
   ORRGraph conflict_graph;
   this->buildGraphOfConflictingHypotheses (accepted_hypotheses_, conflict_graph);
   this->filterGraphOfConflictingHypotheses (conflict_graph, recognized_objects);
@@ -394,22 +397,33 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (const RigidTransfor
     // Add to the mapping
     rot2node[*rs] = graph_node;
     // Compute the fitness of the new graph node
-    graph_node->fitness_ = static_cast<int> (hypothesis.explained_pixels_.size ());
+    graph_node->setFitness(static_cast<int> (hypothesis.explained_pixels_.size ()));
   }
 
-  // Now create the graph connectivity such that each two hypothesis in a neighboring positional cells are neighbors in the graph
+  // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
   for ( map<RotationSpace<Hypothesis>*, ORRGraph::Node*>::const_iterator rs = rot2node.begin () ; rs != rot2node.end () ; ++rs )
   {
+    list<RotationSpace<Hypothesis>* > neighbors;
+    rs->first->getNeighbors (neighbors);
 
+    for ( list<RotationSpace<Hypothesis>* >::iterator n = neighbors.begin() ; n != neighbors.end() ; ++n )
+    {
+      if ( (*n)->getData ().match_confidence_ < 0.0 )
+        continue;
+
+      graph.insertDirectedEdge (rs->second, rot2node[*n]);
+    }
   }
 }
 
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::filterGraphOfCloseHypotheses (ORRGraph& /*graph*/) const
+pcl::recognition::ObjRecRANSAC::filterGraphOfCloseHypotheses (ORRGraph& graph) const
 {
-
+  list<ORRGraph::Node*> on_nodes, off_nodes;
+  graph.computeMaximalOnOffPartition (on_nodes, off_nodes);
+//  graph.deleteNodes (off_nodes);
 }
 
 //===============================================================================================================================================
@@ -441,8 +455,8 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
     rigid_transform = hypo_it->rigid_transform_;
 
     // The i-th node corresponds to the i-th hypothesis and has id 'i'
-    graph_nodes[hypothesis_id]->hypothesis_ = *hypo_it;
-    graph_nodes[hypothesis_id]->id_ = hypothesis_id;
+    graph_nodes[hypothesis_id]->setHypothesis (*hypo_it);
+    graph_nodes[hypothesis_id]->setId (hypothesis_id);
 
     // At the end of the next loop this will be the number of model points ending up in some range image pixel
     score = 0;
@@ -502,22 +516,22 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
   for ( vector<ORRGraph::Node*>::iterator it = graph_nodes.begin () ; it != graph_nodes.end () ; ++it )
   {
     node = *it;
-    for ( set<ORRGraph::Node*>::iterator neigh = node->neighbors_.begin () ; neigh != node->neighbors_.end () ; ++neigh )
+    for ( set<ORRGraph::Node*>::const_iterator neigh = node->getNeighbors ().begin () ; neigh != node->getNeighbors ().end () ; ++neigh )
     {
       id_intersection.clear ();
       // Compute the ids intersection of 'node' and its neighbor
-      std::set_intersection (node->hypothesis_.explained_pixels_.begin (),
-                             node->hypothesis_.explained_pixels_.end (),
-                             (*neigh)->hypothesis_.explained_pixels_.begin (),
-                             (*neigh)->hypothesis_.explained_pixels_.end (),
+      std::set_intersection (node->getHypothesis ().explained_pixels_.begin (),
+                             node->getHypothesis ().explained_pixels_.end (),
+                             (*neigh)->getHypothesis ().explained_pixels_.begin (),
+                             (*neigh)->getHypothesis ().explained_pixels_.end (),
                              std::inserter (id_intersection, id_intersection.begin ()));
 
-      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->hypothesis_.explained_pixels_.size ());
-      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->hypothesis_.explained_pixels_.size ());
+      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->getHypothesis ().explained_pixels_.size ());
+      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->getHypothesis ().explained_pixels_.size ());
       // Check if the intersection set is large enough, i.e., if there is a conflict
       if ( frac_1 <= intersection_fraction_ && frac_2 <= intersection_fraction_ )
         // The intersection set is too small => no conflict, detach these two neighboring nodes
-        graph.deleteUndirectedEdge (node->id_, (*neigh)->id_);
+        graph.deleteUndirectedEdge (node->getId (), (*neigh)->getId ());
     }
   }
 
@@ -540,25 +554,25 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph& gr
     num_of_explained = 0;
 
     // Accumulate the number of pixels the neighbors are explaining
-    for ( set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
-      num_of_explained += (*neigh)->hypothesis_.explained_pixels_.size ();
+    for ( set<ORRGraph::Node*>::const_iterator neigh = (*it)->getNeighbors ().begin () ; neigh != (*it)->getNeighbors ().end () ; ++neigh )
+      num_of_explained += (*neigh)->getHypothesis ().explained_pixels_.size ();
 
     // Now compute the fitness for the node
-    (*it)->fitness_ = static_cast<int> ((*it)->hypothesis_.explained_pixels_.size ()) - static_cast<int> (num_of_explained);
+    (*it)->setFitness (static_cast<int> ((*it)->getHypothesis ().explained_pixels_.size ()) - static_cast<int> (num_of_explained));
   }
 
   // Leave the fitest leaves on, such that there are no neighboring ON nodes
-  list<ORRGraph::Node*> on_nodes;
-  graph.computeMaximalOnOffPartition (on_nodes);
+  list<ORRGraph::Node*> on_nodes, off_nodes;
+  graph.computeMaximalOnOffPartition (on_nodes, off_nodes);
 
   // The ON nodes correspond to accepted solutions
   for ( list<ORRGraph::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
   {
     recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->hypothesis_.obj_model_->getObjectName (),
-                            (*it)->hypothesis_.rigid_transform_,
-                            (*it)->hypothesis_.match_confidence_,
-                            (*it)->hypothesis_.obj_model_->getUserData ())
+      ObjRecRANSAC::Output ((*it)->getHypothesis ().obj_model_->getObjectName (),
+                            (*it)->getHypothesis ().rigid_transform_,
+                            (*it)->getHypothesis ().match_confidence_,
+                            (*it)->getHypothesis ().obj_model_->getUserData ())
     );
   }
 }
