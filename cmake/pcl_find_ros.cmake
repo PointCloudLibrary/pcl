@@ -22,20 +22,19 @@ macro(get_ros_inc_path _dest _pkg)
     endif()
 endmacro(get_ros_inc_path)
 
-#todo: do we really need the next two lines? 
-set(ROS_ROOT $ENV{ROS_ROOT})
 set(ROS_DISTRO $ENV{ROS_DISTRO})
 
-if(ROS_ROOT)
+if(ROS_DISTRO)
     option(USE_ROS "Integrate with ROS rather than using native files" OFF)
-    message(STATUS "Found ROS; USE_ROS is ${USE_ROS}")
+    message(STATUS "Found ROS; USE_ROS is ${USE_ROS}; ROS-Distro: ${ROS_DISTRO}")
     if(USE_ROS)
         # Search for ROS
-        if (ROS_DISTRO EQUAL "groovy")
+        if (ROS_DISTRO STREQUAL "groovy")
            find_package(catkin REQUIRED COMPONENTS roscpp_serialization std_msgs sensor_msgs rostime)
 	   if (catkin_FOUND)
 	     # if find_package(ROS ...) found the required components, add their include directories
-             include_directories(${catkin_INCLUDE_DIRS})
+             include_directories(BEFORE ${catkin_INCLUDE_DIRS})
+             MESSAGE( STATUS "catkin_INCLUDE_DIRS: " ${catkin_INCLUDE_DIRS} )
 	   else()
              # otherwise, search for these particular packages the old hacky way	  
              set(_ros_pkgs std_msgs sensor_msgs roscpp_serialization cpp_common rostime
@@ -89,5 +88,6 @@ if(ROS_ROOT)
         SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
     endif(USE_ROS)
-endif(ROS_ROOT)
+
+endif(ROS_DISTRO)
 

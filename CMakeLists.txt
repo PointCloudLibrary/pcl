@@ -226,7 +226,7 @@ if(NOT PCL_SHARED_LIBS OR WIN32)
   set(FLANN_USE_STATIC ON)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(FLANN 1.7.0 REQUIRED)
-include_directories(SYSTEM ${FLANN_INCLUDE_DIRS})
+include_directories(${FLANN_INCLUDE_DIRS})
 
 # libusb-1.0
 find_package(libusb-1.0)
