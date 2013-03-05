@@ -43,6 +43,8 @@
 #pragma GCC system_header
 #endif
 
+#include "pcl/pcl_macros.h"
+
 #include <sensor_msgs/PointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
