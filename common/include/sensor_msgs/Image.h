@@ -4,6 +4,10 @@
 #include <vector>
 #include <ostream>
 
+#ifdef USE_ROS
+   #error USE_ROS setup requires PCL to compile against ROS message headers 
+#endif   
+
 // Include the correct Header path here
 #include "std_msgs/Header.h"
 

@@ -1,5 +1,10 @@
 #ifndef PCL_ROSLIB_MESSAGE_HEADER_H
 #define PCL_ROSLIB_MESSAGE_HEADER_H
+
+#ifdef USE_ROS
+   #error USE_ROS setup requires PCL to compile against ROS message headers  
+#endif 
+
 #include <string>
 #include <vector>
 #include <boost/shared_ptr.hpp>

@@ -1,5 +1,10 @@
 #ifndef PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
 #define PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
+
+#ifdef USE_ROS
+   #error USE_ROS setup requires PCL to compile against ROS message headers  
+#endif 
+
 #include <string>
 #include <vector>
 #include <ostream>
