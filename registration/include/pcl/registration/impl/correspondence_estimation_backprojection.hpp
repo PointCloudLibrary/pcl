@@ -91,7 +91,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
                           source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
-        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
         
         if (dist < min_dist)
         {
@@ -132,7 +132,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
                           source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
-        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
         
         if (dist < min_dist)
         {
@@ -202,7 +202,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
                           source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
-        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
         
         if (dist < min_dist)
         {
@@ -250,7 +250,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
                           source_normals_->points[*idx_i].normal_z * target_normals_->points[nn_indices[j]].normal_z ;
-        float dist = nn_dists[min_index] * (2.0f - cos_angle * cos_angle);
+        float dist = nn_dists[j] * (2.0f - cos_angle * cos_angle);
         
         if (dist < min_dist)
         {
