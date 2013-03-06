@@ -399,7 +399,7 @@ namespace pcl
           * number of hypotheses after grouping. */
         int
         groupHypotheses(const std::list<HypothesisBase>& hypotheses, int num_hypotheses, RigidTransformSpace<Hypothesis>& transform_space,
-            std::vector<RotationSpace<Hypothesis>*>& rot_spaces, std::vector<Hypothesis>& out) const;
+            std::vector<RotationSpace<Hypothesis>*>& rot_spaces) const;
 
         inline void
         testHypothesis (Hypothesis* hypothesis, float& match, int& penalty) const

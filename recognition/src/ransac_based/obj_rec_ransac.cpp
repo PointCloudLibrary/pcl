@@ -89,31 +89,33 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   printf("ObjRecRANSAC::%s(): recognizing objects [%i iteration(s)]\n", __func__, num_iterations);
 #endif
 
-  // Now perform the recognition step by step
+  // First, sample oriented point pairs (opps)
   this->sampleOrientedPointPairs (num_iterations, full_leaves, sampled_oriented_point_pairs_);
 
   // Leave if we are in the SAMPLE_OPP test mode
   if ( rec_mode_ == ObjRecRANSAC::SAMPLE_OPP )
     return;
 
-  // Now that we have sampled some opps from the scene, generate and group the hypotheses
+  // Generate hypotheses from the sampled opps
   list<HypothesisBase> pre_hypotheses;
   int num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, pre_hypotheses);
 
   // Cluster the hypotheses
   vector<RotationSpace<Hypothesis>*> rot_spaces;
-  num_hypotheses = this->groupHypotheses (pre_hypotheses, num_hypotheses, transform_space_, rot_spaces, accepted_hypotheses_);
+  num_hypotheses = this->groupHypotheses (pre_hypotheses, num_hypotheses, transform_space_, rot_spaces);
   pre_hypotheses.clear ();
 
   // The last graph-based steps in the algorithm
   ORRGraph<Hypothesis> graph_of_close_hypotheses;
   this->buildGraphOfCloseHypotheses (transform_space_, rot_spaces, graph_of_close_hypotheses);
-  accepted_hypotheses_.clear ();
   this->filterGraphOfCloseHypotheses (graph_of_close_hypotheses, accepted_hypotheses_);
 
   // Leave if we are in the TEST_HYPOTHESES mode
   if ( rec_mode_ == ObjRecRANSAC::TEST_HYPOTHESES )
     return;
+
+  // Compute a bounding volume hierarchy (BVH) which is necessary to accelerate the hypothesis intersection tests
+//  this->buildBVH (accepted_hypotheses_, bvh);
 
   // Filter the graph
   // Build the graph of conflicting hypothesis using the graph of closed hypotheses
@@ -269,8 +271,7 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 
 int
 pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypotheses, int num_hypotheses,
-    RigidTransformSpace<Hypothesis>& transform_space, vector<RotationSpace<Hypothesis>*>& rot_spaces,
-    vector<Hypothesis>& out) const
+    RigidTransformSpace<Hypothesis>& transform_space, vector<RotationSpace<Hypothesis>*>& rot_spaces) const
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ObjRecRANSAC::%s():\n  grouping %i hypotheses ... ", __func__, num_hypotheses); fflush (stdout);
@@ -362,7 +363,6 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypo
     if ( best_hypothesis )
     {
       (*rs_it)->setData (*best_hypothesis);
-      out.push_back (*best_hypothesis);
       rot_spaces.push_back (*rs_it);
       ++num_accepted;
       delete best_hypothesis;
