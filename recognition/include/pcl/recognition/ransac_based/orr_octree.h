@@ -196,7 +196,7 @@ namespace pcl
             }
 
             inline const float*
-            getCenter() const { return  center_;}
+            getCenter() const { return center_;}
 
             inline const float*
             getBounds() const { return bounds_;}
@@ -214,7 +214,13 @@ namespace pcl
             getChildren () { return children_;}
 
             inline Node::Data*
-            getData() { return data_;}
+            getData (){ return data_;}
+
+            inline const Node::Data*
+            getData () const { return data_;}
+
+            inline void
+            setUserData (void* user_data){ data_->setUserData (user_data);}
 
             inline Node*
             getParent (){ return parent_;}
@@ -341,14 +347,14 @@ namespace pcl
         getRandomFullLeafOnSphere (const float* p, float radius) const;
 
         /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique id. The method returns the leaf
-          * with 'id' or NULL is no such leaf exists. */
+          * with id [i, j, k] or NULL is no such leaf exists. */
         const ORROctree::Node*
-        getLeaf (const int id[3]) const
+        getLeaf (int i, int j, int k) const
         {
           float offset = 0.5f*voxel_size_;
-          float p[3] = {bounds_[0] + offset + static_cast<float> (id[0])*voxel_size_,
-                        bounds_[2] + offset + static_cast<float> (id[1])*voxel_size_,
-                        bounds_[4] + offset + static_cast<float> (id[2])*voxel_size_};
+          float p[3] = {bounds_[0] + offset + static_cast<float> (i)*voxel_size_,
+                        bounds_[2] + offset + static_cast<float> (j)*voxel_size_,
+                        bounds_[4] + offset + static_cast<float> (k)*voxel_size_};
 
           return (this->getLeaf (p[0], p[1], p[2]));
         }

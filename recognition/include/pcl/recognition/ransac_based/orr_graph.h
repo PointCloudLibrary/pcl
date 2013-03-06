@@ -46,75 +46,79 @@
 #ifndef PCL_RECOGNITION_ORR_GRAPH_H_
 #define PCL_RECOGNITION_ORR_GRAPH_H_
 
-#include "obj_rec_ransac.h"
 #include <vector>
 
 namespace pcl
 {
   namespace recognition
   {
+    template<class NodeData>
     class ORRGraph
     {
       public:
-    	class Node
-    	{
-        public:
-    	    enum State {ON, OFF, UNDEF};
+        class Node
+        {
+          public:
+            enum State {ON, OFF, UNDEF};
 
-    	    Node (): id_ (-1), state_(UNDEF){}
-    	    virtual ~Node (){}
+            Node (int id)
+            : id_ (id),
+              state_(UNDEF)
+            {}
 
-    	    inline const std::set<Node*>&
-    	    getNeighbors () const
-    	    {
-    	      return (neighbors_);
-    	    }
+            virtual ~Node (){}
 
-          inline const ObjRecRANSAC::Hypothesis&
-          getHypothesis () const
-          {
-            return (hypothesis_);
-          }
+            inline const std::set<Node*>&
+            getNeighbors () const
+            {
+              return (neighbors_);
+            }
 
-    	    inline void
-    	    setHypothesis (const ObjRecRANSAC::Hypothesis& hypothesis)
-    	    {
-    	      hypothesis_ = hypothesis;
-    	    }
+            inline const NodeData&
+            getData () const
+            {
+              return (data_);
+            }
 
-    	    inline int
-    	    getId () const
-    	    {
-    	      return (id_);
-    	    }
+            inline void
+            setData (const NodeData& data)
+            {
+              data_ = data;
+            }
 
-          inline void
-          setId (int id)
-          {
-            id_ = id;
-          }
+            inline int
+            getId () const
+            {
+              return (id_);
+            }
 
-    	    inline void
-    	    setFitness (int fitness)
-    	    {
-    	      fitness_ = fitness;
-    	    }
+            inline void
+            setId (int id)
+            {
+              id_ = id;
+            }
 
-    	    static inline bool
-    	    compare (const ORRGraph::Node* a, const ORRGraph::Node* b)
-    	    {
-    	      return (static_cast<bool> (a->fitness_ > b->fitness_));
-    	    }
+            inline void
+            setFitness (int fitness)
+            {
+              fitness_ = fitness;
+            }
 
-    	    friend class ORRGraph;
+            static inline bool
+            compare (const ORRGraph<NodeData>::Node* a, const ORRGraph<NodeData>::Node* b)
+            {
+              return (static_cast<bool> (a->fitness_ > b->fitness_));
+            }
 
-        protected:
-    	    std::set<Node*> neighbors_;
-    	    ObjRecRANSAC::Hypothesis hypothesis_;
-    	    int id_;
-    	    int fitness_;
-    	    Node::State state_;
-    	};
+            friend class ORRGraph;
+
+          protected:
+            std::set<Node*> neighbors_;
+            NodeData data_;
+            int id_;
+            int fitness_;
+            Node::State state_;
+        };
 
       public:
         ORRGraph (){}
@@ -123,7 +127,7 @@ namespace pcl
         inline void
         clear ()
         {
-          for ( std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+          for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
           nodes_.clear ();
@@ -133,32 +137,23 @@ namespace pcl
         inline void
         resize (int n)
         {
-          for ( std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
+          for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
           nodes_.resize (static_cast<size_t> (n));
 
           for ( int i = 0 ; i < n ; ++i )
-            nodes_[i] = new Node ();
-        }
-
-        inline ORRGraph::Node*
-        addNode ()
-        {
-          ORRGraph::Node* new_node = new ORRGraph::Node ();
-          nodes_.push_back (new_node);
-
-          return (new_node);
+            nodes_[i] = new Node (i);
         }
 
         inline void
-        computeMaximalOnOffPartition (std::list<ORRGraph::Node*>& on_nodes, std::list<ORRGraph::Node*>& off_nodes)
+        computeMaximalOnOffPartition (std::list<ORRGraph<NodeData>::Node*>& on_nodes, std::list<ORRGraph<NodeData>::Node*>& off_nodes)
         {
           std::vector<ORRGraph::Node*> sorted_nodes (nodes_.size ());
           int i = 0;
 
           // Set all nodes to undefined
-          for ( std::vector<ORRGraph::Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
+          for ( typename std::vector<ORRGraph<NodeData>::Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
           {
             sorted_nodes[i++] = *it;
             (*it)->state_ = ORRGraph::Node::UNDEF;
@@ -168,7 +163,7 @@ namespace pcl
           std::sort (sorted_nodes.begin (), sorted_nodes.end (), ORRGraph::Node::compare);
 
           // Now run through the array and start switching nodes on and off
-          for ( std::vector<ORRGraph::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
+          for ( typename std::vector<ORRGraph<NodeData>::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
           {
             // Ignore graph nodes which are already OFF
             if ( (*it)->state_ == ORRGraph::Node::OFF )
@@ -178,7 +173,7 @@ namespace pcl
             (*it)->state_ = ORRGraph::Node::ON;
 
             // Set all its neighbors to OFF
-            for ( std::set<ORRGraph::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+            for ( typename std::set<ORRGraph<NodeData>::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
             {
               (*neigh)->state_ = ORRGraph::Node::OFF;
               off_nodes.push_back (*neigh);
@@ -197,12 +192,6 @@ namespace pcl
         }
 
         inline void
-        insertDirectedEdge (Node* node1, Node* node2)
-        {
-          this->insertDirectedEdge (node1->getId (), node2->getId ());
-        }
-
-        inline void
         insertDirectedEdge (int id1, int id2)
         {
           nodes_[id1]->neighbors_.insert (nodes_[id2]);
@@ -215,11 +204,11 @@ namespace pcl
           nodes_[id2]->neighbors_.erase (nodes_[id1]);
         }
 
-        inline std::vector<Node*>&
+        inline typename std::vector<Node*>&
         getNodes (){ return nodes_;}
 
       public:
-        std::vector<Node*> nodes_;
+        typename std::vector<Node*> nodes_;
     };
   } // namespace recognition
 } // namespace pcl

@@ -127,7 +127,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   const ORROctree& octree = new_model->getOctree ();
   const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
-  ORROctree::Node::Data *node_data1;
+  const ORROctree::Node::Data *node_data1;
   int num_of_pairs = 0;
 
   // Run through all full leaves
@@ -157,7 +157,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
 //============================================================================================================================================
 
 bool
-ModelLibrary::addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2)
+ModelLibrary::addToHashTable (Model* model, const ORROctree::Node::Data* data1, const ORROctree::Node::Data* data2)
 {
   float key[3];
 
@@ -178,7 +178,7 @@ ModelLibrary::addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROct
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back (std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> (data1, data2));
+  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*,const ORROctree::Node::Data*> (data1, data2));
 
   return (true);
 }

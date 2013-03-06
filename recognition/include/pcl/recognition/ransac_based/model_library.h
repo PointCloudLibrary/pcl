@@ -120,7 +120,7 @@ namespace pcl
             void* user_data_;
         };
 
-        typedef std::list<std::pair<ORROctree::Node::Data*,ORROctree::Node::Data*> > node_data_pair_list;
+        typedef std::list<std::pair<const ORROctree::Node::Data*,const ORROctree::Node::Data*> > node_data_pair_list;
         typedef std::map<const Model*, node_data_pair_list> HashTableCell;
         typedef VoxelStructure<HashTableCell, float> HashTable;
 
@@ -197,7 +197,7 @@ namespace pcl
 
         /** \brief Returns true if the oriented point pair was added to the hash table and false otherwise. */
         bool
-        addToHashTable (Model* model, ORROctree::Node::Data* data1, ORROctree::Node::Data* data2);
+        addToHashTable (Model* model, const ORROctree::Node::Data* data1, const ORROctree::Node::Data* data2);
 
       protected:
         float pair_width_;

@@ -96,27 +96,29 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   if ( rec_mode_ == ObjRecRANSAC::SAMPLE_OPP )
     return;
 
-  // Now that we have sampled some opps from the scene, generate and test the hypotheses
+  // Now that we have sampled some opps from the scene, generate and group the hypotheses
   list<HypothesisBase> pre_hypotheses;
   int num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, pre_hypotheses);
-  this->testHypotheses (pre_hypotheses, num_hypotheses, accepted_hypotheses_);
 
-  // Cleanup
+  // Cluster the hypotheses
+  vector<RotationSpace<Hypothesis>*> rot_spaces;
+  num_hypotheses = this->groupHypotheses (pre_hypotheses, num_hypotheses, transform_space_, rot_spaces, accepted_hypotheses_);
   pre_hypotheses.clear ();
+
+  // The last graph-based steps in the algorithm
+  ORRGraph<Hypothesis> graph_of_close_hypotheses;
+  this->buildGraphOfCloseHypotheses (transform_space_, rot_spaces, graph_of_close_hypotheses);
+  accepted_hypotheses_.clear ();
+  this->filterGraphOfCloseHypotheses (graph_of_close_hypotheses, accepted_hypotheses_);
 
   // Leave if we are in the TEST_HYPOTHESES mode
   if ( rec_mode_ == ObjRecRANSAC::TEST_HYPOTHESES )
     return;
 
-  // The last graph-based steps in the algorithm
-  ORRGraph graph_of_close_hypotheses;
-  this->buildGraphOfCloseHypotheses (transform_space_, graph_of_close_hypotheses);
-  this->filterGraphOfCloseHypotheses (graph_of_close_hypotheses);
-
   // Filter the graph
   // Build the graph of conflicting hypothesis using the graph of closed hypotheses
 
-  ORRGraph conflict_graph;
+  ORRGraph<Hypothesis> conflict_graph;
   this->buildGraphOfConflictingHypotheses (accepted_hypotheses_, conflict_graph);
   this->filterGraphOfConflictingHypotheses (conflict_graph, recognized_objects);
 
@@ -266,10 +268,12 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 //===============================================================================================================================================
 
 int
-pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses, int num_hypotheses, vector<Hypothesis>& out)
+pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypotheses, int num_hypotheses,
+    RigidTransformSpace<Hypothesis>& transform_space, vector<RotationSpace<Hypothesis>*>& rot_spaces,
+    vector<Hypothesis>& out) const
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("ObjRecRANSAC::%s():\n  clustering %i hypotheses ... ", __func__, num_hypotheses); fflush (stdout);
+  printf("ObjRecRANSAC::%s():\n  grouping %i hypotheses ... ", __func__, num_hypotheses); fflush (stdout);
 #endif
 
   // Compute the bounds for the positional discretization
@@ -280,19 +284,19 @@ pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses,
   b[4] -= enlr; b[5] += enlr;
 
   // Build the rigid transform space
-  transform_space_.build (b, position_discretization_, rotation_discretization_);
+  transform_space.build (b, position_discretization_, rotation_discretization_);
   float transformed_point[3];
 
   // First, add all rigid transforms to the discrete rigid transform space
-  for ( list<HypothesisBase>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
+  for ( list<HypothesisBase>::const_iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
     // First transform the center of mass of the model
     aux::transform (hypo_it->rigid_transform_, hypo_it->obj_model_->getCenterOfMass (), transformed_point);
     // Now add the rigid transform at the right place
-    transform_space_.addRigidTransform (hypo_it->obj_model_, transformed_point, hypo_it->rigid_transform_);
+    transform_space.addRigidTransform (hypo_it->obj_model_, transformed_point, hypo_it->rigid_transform_);
   }
 
-  list<RotationSpace<Hypothesis>*>& rotation_spaces = transform_space_.getRotationSpaces ();
+  list<RotationSpace<Hypothesis>*>& rotation_spaces = transform_space.getRotationSpaces ();
   ObjRecRANSAC::Hypothesis hypothesis;
   int penalty, penalty_thresh, num_accepted = 0;
   float match, match_thresh, num_full_leaves;
@@ -300,7 +304,7 @@ pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses,
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("done\n  testing the cluster representatives ...\n", __func__); fflush (stdout);
   // These are some variables needed when printing the recognition progress
-  float progress_factor = 100.0f/static_cast<float> (transform_space_.getNumberOfOccupiedRotationSpaces ());
+  float progress_factor = 100.0f/static_cast<float> (transform_space.getNumberOfOccupiedRotationSpaces ());
   int num_done = 0;
 #endif
 
@@ -344,7 +348,6 @@ pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses,
           {
             best_hypothesis = new ObjRecRANSAC::Hypothesis (hypothesis);
             best_hypothesis->match_confidence_ = static_cast<float> (match)/num_full_leaves;
-            ++num_accepted;
           }
           else if ( hypothesis.explained_pixels_.size () > best_hypothesis->explained_pixels_.size () )
           {
@@ -360,6 +363,8 @@ pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses,
     {
       (*rs_it)->setData (*best_hypothesis);
       out.push_back (*best_hypothesis);
+      rot_spaces.push_back (*rs_it);
+      ++num_accepted;
       delete best_hypothesis;
     }
 
@@ -379,57 +384,73 @@ pcl::recognition::ObjRecRANSAC::testHypotheses(list<HypothesisBase>& hypotheses,
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space, ORRGraph& graph) const
+pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space,
+    const vector<RotationSpace<Hypothesis>*> rotation_spaces, ORRGraph<Hypothesis>& graph) const
 {
-  const list<RotationSpace<Hypothesis>*>& rot_spaces = transform_space.getRotationSpaces ();
-  map<RotationSpace<Hypothesis>*, ORRGraph::Node*> rot2node;
-  ORRGraph::Node* graph_node;
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("ObjRecRANSAC::%s(): building the graph ... ", __func__); fflush (stdout);
+#endif
 
-  // Establish a one-to-one mapping between the octree leaves and the graph nodes and compute the fitness for each hypothesis
-  for ( list<RotationSpace<Hypothesis>*>::const_iterator rs = rot_spaces.begin () ; rs != rot_spaces.end () ; ++rs )
-  {
-    const Hypothesis& hypothesis = (*rs)->getData ();
-    if ( hypothesis.match_confidence_ < 0.0 )
-      continue;
+  int i = 0;
 
-    // Add a new graph node
-    graph_node = graph.addNode ();
-    // Add to the mapping
-    rot2node[*rs] = graph_node;
-    // Compute the fitness of the new graph node
-    graph_node->setFitness(static_cast<int> (hypothesis.explained_pixels_.size ()));
-  }
+  graph.resize (static_cast<int> (rotation_spaces.size ()));
+
+  for ( vector<RotationSpace<Hypothesis>*>::const_iterator rs = rotation_spaces.begin () ; rs != rotation_spaces.end () ; ++rs, ++i )
+    (*rs)->setLinearId (i);
+
+  i = 0;
 
   // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
-  for ( map<RotationSpace<Hypothesis>*, ORRGraph::Node*>::const_iterator rs = rot2node.begin () ; rs != rot2node.end () ; ++rs )
+  for ( vector<RotationSpace<Hypothesis>*>::const_iterator rs = rotation_spaces.begin () ; rs != rotation_spaces.end () ; ++rs, ++i )
   {
-    list<RotationSpace<Hypothesis>* > neighbors;
-    rs->first->getNeighbors (neighbors);
+    // Compute the fitness of the graph node
+    graph.getNodes ()[i]->setFitness (static_cast<int> ((*rs)->getData ().explained_pixels_.size ()));
+    graph.getNodes ()[i]->setData ((*rs)->getData ());
 
-    for ( list<RotationSpace<Hypothesis>* >::iterator n = neighbors.begin() ; n != neighbors.end() ; ++n )
+    // Get the neighbors of the current rotation space
+    list<RotationSpace<Hypothesis>*> neighbors;
+    transform_space.getNeighbors ((*rs)->getPositionId (), neighbors);
+
+    for ( list<RotationSpace<Hypothesis>*>::iterator n = neighbors.begin() ; n != neighbors.end() ; ++n )
     {
+      // Check if that neighbor has a valid hypothesis
       if ( (*n)->getData ().match_confidence_ < 0.0 )
         continue;
 
-      graph.insertDirectedEdge (rs->second, rot2node[*n]);
+      graph.insertDirectedEdge ((*rs)->getLinearId (), (*n)->getLinearId ());
     }
   }
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("done\n");
+#endif
 }
 
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::filterGraphOfCloseHypotheses (ORRGraph& graph) const
+pcl::recognition::ObjRecRANSAC::filterGraphOfCloseHypotheses (ORRGraph<Hypothesis>& graph, std::vector<Hypothesis>& out) const
 {
-  list<ORRGraph::Node*> on_nodes, off_nodes;
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("ObjRecRANSAC::%s(): building the graph ... ", __func__); fflush (stdout);
+#endif
+
+  list<ORRGraph<Hypothesis>::Node*> on_nodes, off_nodes;
   graph.computeMaximalOnOffPartition (on_nodes, off_nodes);
-//  graph.deleteNodes (off_nodes);
+
+  // Copy the data from the on_nodes to the list 'out'
+  for ( list<ORRGraph<Hypothesis>::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
+    out.push_back ((*it)->getData ());
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("done [%i remaining hypotheses]\n", static_cast<int> (out.size ()));
+#endif
 }
 
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypothesis>& hypotheses, ORRGraph& graph)
+pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypothesis>& hypotheses, ORRGraph<Hypothesis>& graph)
 {
   int hypothesis_id = 0, score;
   ORROctreeZProjection::Pixel* pixel;
@@ -445,7 +466,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
 
   // There are as many graph nodes as hypotheses
   graph.resize (static_cast<int> (hypotheses.size ()));
-  vector<ORRGraph::Node*>& graph_nodes = graph.getNodes ();
+  vector<ORRGraph<Hypothesis>::Node*>& graph_nodes = graph.getNodes ();
 
   // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
   for ( vector<Hypothesis>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it, ++hypothesis_id )
@@ -455,7 +476,7 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
     rigid_transform = hypo_it->rigid_transform_;
 
     // The i-th node corresponds to the i-th hypothesis and has id 'i'
-    graph_nodes[hypothesis_id]->setHypothesis (*hypo_it);
+    graph_nodes[hypothesis_id]->setData (*hypo_it);
     graph_nodes[hypothesis_id]->setId (hypothesis_id);
 
     // At the end of the next loop this will be the number of model points ending up in some range image pixel
@@ -506,28 +527,28 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
     }
   }
 
-  ORRGraph::Node *node;
+  ORRGraph<Hypothesis>::Node *node;
   set<int> id_intersection;
   float frac_1, frac_2;
 
   // Now, that we have the graph connectivity, we want to check if each two neighbors are
   // really in conflict. This requires set intersection operations which are expensive,
   // that's why we are performing them now, and not during the computation of the graph connectivity
-  for ( vector<ORRGraph::Node*>::iterator it = graph_nodes.begin () ; it != graph_nodes.end () ; ++it )
+  for ( vector<ORRGraph<Hypothesis>::Node*>::iterator it = graph_nodes.begin () ; it != graph_nodes.end () ; ++it )
   {
     node = *it;
-    for ( set<ORRGraph::Node*>::const_iterator neigh = node->getNeighbors ().begin () ; neigh != node->getNeighbors ().end () ; ++neigh )
+    for ( set<ORRGraph<Hypothesis>::Node*>::const_iterator neigh = node->getNeighbors ().begin () ; neigh != node->getNeighbors ().end () ; ++neigh )
     {
       id_intersection.clear ();
       // Compute the ids intersection of 'node' and its neighbor
-      std::set_intersection (node->getHypothesis ().explained_pixels_.begin (),
-                             node->getHypothesis ().explained_pixels_.end (),
-                             (*neigh)->getHypothesis ().explained_pixels_.begin (),
-                             (*neigh)->getHypothesis ().explained_pixels_.end (),
+      std::set_intersection (node->getData ().explained_pixels_.begin (),
+                             node->getData ().explained_pixels_.end (),
+                             (*neigh)->getData ().explained_pixels_.begin (),
+                             (*neigh)->getData ().explained_pixels_.end (),
                              std::inserter (id_intersection, id_intersection.begin ()));
 
-      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->getHypothesis ().explained_pixels_.size ());
-      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->getHypothesis ().explained_pixels_.size ());
+      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->getData ().explained_pixels_.size ());
+      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->getData ().explained_pixels_.size ());
       // Check if the intersection set is large enough, i.e., if there is a conflict
       if ( frac_1 <= intersection_fraction_ && frac_2 <= intersection_fraction_ )
         // The intersection set is too small => no conflict, detach these two neighboring nodes
@@ -543,36 +564,36 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (vector<Hypoth
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph& graph, list<ObjRecRANSAC::Output>& recognized_objects) const
+pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hypothesis>& graph, list<ObjRecRANSAC::Output>& recognized_objects) const
 {
-  vector<ORRGraph::Node*> &nodes = graph.getNodes ();
+  vector<ORRGraph<Hypothesis>::Node*> &nodes = graph.getNodes ();
   size_t num_of_explained;
 
   // Compute the penalty for each graph node
-  for ( vector<ORRGraph::Node*>::iterator it = nodes.begin () ; it != nodes.end () ; ++it )
+  for ( vector<ORRGraph<Hypothesis>::Node*>::iterator it = nodes.begin () ; it != nodes.end () ; ++it )
   {
     num_of_explained = 0;
 
     // Accumulate the number of pixels the neighbors are explaining
-    for ( set<ORRGraph::Node*>::const_iterator neigh = (*it)->getNeighbors ().begin () ; neigh != (*it)->getNeighbors ().end () ; ++neigh )
-      num_of_explained += (*neigh)->getHypothesis ().explained_pixels_.size ();
+    for ( set<ORRGraph<Hypothesis>::Node*>::const_iterator neigh = (*it)->getNeighbors ().begin () ; neigh != (*it)->getNeighbors ().end () ; ++neigh )
+      num_of_explained += (*neigh)->getData ().explained_pixels_.size ();
 
     // Now compute the fitness for the node
-    (*it)->setFitness (static_cast<int> ((*it)->getHypothesis ().explained_pixels_.size ()) - static_cast<int> (num_of_explained));
+    (*it)->setFitness (static_cast<int> ((*it)->getData ().explained_pixels_.size ()) - static_cast<int> (num_of_explained));
   }
 
   // Leave the fitest leaves on, such that there are no neighboring ON nodes
-  list<ORRGraph::Node*> on_nodes, off_nodes;
+  list<ORRGraph<Hypothesis>::Node*> on_nodes, off_nodes;
   graph.computeMaximalOnOffPartition (on_nodes, off_nodes);
 
   // The ON nodes correspond to accepted solutions
-  for ( list<ORRGraph::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
+  for ( list<ORRGraph<Hypothesis>::Node*>::iterator it = on_nodes.begin () ; it != on_nodes.end () ; ++it )
   {
     recognized_objects.push_back (
-      ObjRecRANSAC::Output ((*it)->getHypothesis ().obj_model_->getObjectName (),
-                            (*it)->getHypothesis ().rigid_transform_,
-                            (*it)->getHypothesis ().match_confidence_,
-                            (*it)->getHypothesis ().obj_model_->getUserData ())
+      ObjRecRANSAC::Output ((*it)->getData ().obj_model_->getObjectName (),
+                            (*it)->getData ().rigid_transform_,
+                            (*it)->getData ().match_confidence_,
+                            (*it)->getData ().obj_model_->getUserData ())
     );
   }
 }

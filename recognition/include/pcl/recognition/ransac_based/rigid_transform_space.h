@@ -224,6 +224,18 @@ namespace pcl
           return (data_);
         }
 
+        inline void
+        setLinearId (int id)
+        {
+          linear_id_ = id;
+        }
+
+        inline int
+        getLinearId () const
+        {
+          return (linear_id_);
+        }
+
         inline bool
         addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
         {
@@ -243,7 +255,7 @@ namespace pcl
           if ( !rot_leaf->getData ()->getUserData () )
           {
             cell = new Cell ();
-            rot_leaf->getData ()->setUserData (cell);
+            rot_leaf->setUserData (cell);
             // Save the ids
             aux::copy3(pos_id_, cell->getPositionId ());
             rot_leaf->getData ()->get3dId (cell->getRotationId ());
@@ -259,15 +271,11 @@ namespace pcl
           return (true);
         }
 
-        inline void
-        getNeighbors(std::list<RotationSpace<Data>* >& neighs) const
-        {
-        }
-
       protected:
         ORROctree octree_;
         std::list<Cell*> full_cells_;
         int pos_id_[3];
+        int linear_id_;
         ORROctree::Node* positional_leaf_;
         Data data_;
     };// class RotationSpace
@@ -327,7 +335,7 @@ namespace pcl
         inline bool
         getPositionCellBounds (const int id[3], float bounds[6]) const
         {
-          const ORROctree::Node* leaf = pos_octree_.getLeaf (id);
+          const ORROctree::Node* leaf = pos_octree_.getLeaf (id[0], id[1], id[2]);
 
           if ( !leaf )
             return (false);
@@ -335,6 +343,57 @@ namespace pcl
           leaf->getBounds (bounds);
 
           return (true);
+        }
+
+        inline RotationSpace<Data>*
+        getRotationSpace (int i, int j, int k) const
+        {
+          const ORROctree::Node* leaf = pos_octree_.getLeaf (i, j, k);
+
+          if ( !leaf )
+            return NULL;
+
+          if ( !leaf->getData () )
+            return NULL;
+
+          return static_cast<RotationSpace<Data>*> (leaf->getData ()->getUserData ());
+        }
+
+        inline void
+        getNeighbors(const int id[3], std::list<RotationSpace<Data>*>& neighs) const
+        {
+          RotationSpace<Data>* neigh;
+
+          // Note that 'node' is not a neighbor of itself
+          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
+
+          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
+        //neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
+
+          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
         }
 
         inline bool
@@ -356,7 +415,7 @@ namespace pcl
           if ( !leaf->getData ()->getUserData () )
           {
             rot_space = new RotationSpace<Data> (rotation_cell_size_);
-            leaf->getData ()->setUserData (rot_space);
+            leaf->setUserData (rot_space);
             leaf->getData ()->get3dId (rot_space->getPositionId ());
             rot_space->setOctreeLeaf (leaf);
             rotation_space_list_.push_back (rot_space);

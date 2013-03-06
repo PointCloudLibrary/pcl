@@ -43,6 +43,7 @@
 #include <pcl/recognition/ransac_based/rigid_transform_space.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
+#include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
@@ -57,8 +58,6 @@ namespace pcl
 {
   namespace recognition
   {
-    class ORRGraph;
-
     /** \brief This is a RANSAC-based 3D object recognition method. Do the following to use it: (i) call addModel() k times with k different models
       * representing the objects to be recognized and (ii) call recognize() with the 3D scene in which the objects should be recognized. Recognition means both
       * object identification and pose (position + orientation) estimation. Check the method descriptions for more details.
@@ -399,7 +398,8 @@ namespace pcl
         /** \brief Groups close hypotheses in 'hypotheses'. Saves a representative for each group in 'out'. Returns the
           * number of hypotheses after grouping. */
         int
-        testHypotheses(std::list<HypothesisBase>& hypotheses, int num_hypotheses, std::vector<Hypothesis>& out);
+        groupHypotheses(const std::list<HypothesisBase>& hypotheses, int num_hypotheses, RigidTransformSpace<Hypothesis>& transform_space,
+            std::vector<RotationSpace<Hypothesis>*>& rot_spaces, std::vector<Hypothesis>& out) const;
 
         inline void
         testHypothesis (Hypothesis* hypothesis, float& match, int& penalty) const
@@ -437,16 +437,18 @@ namespace pcl
         }
 
         void
-        buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space, ORRGraph& graph) const;
+        buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space,
+            const std::vector<RotationSpace<Hypothesis>*> rotation_spaces,
+            ORRGraph<Hypothesis>& graph) const;
 
         void
-        filterGraphOfCloseHypotheses (ORRGraph& graph) const;
+        filterGraphOfCloseHypotheses (ORRGraph<Hypothesis>& graph, std::vector<Hypothesis>& out) const;
 
         void
-        buildGraphOfConflictingHypotheses (std::vector<Hypothesis>& hypotheses, ORRGraph& graph);
+        buildGraphOfConflictingHypotheses (std::vector<Hypothesis>& hypotheses, ORRGraph<Hypothesis>& graph);
 
         void
-        filterGraphOfConflictingHypotheses (ORRGraph& graph, std::list<ObjRecRANSAC::Output>& recognized_objects) const;
+        filterGraphOfConflictingHypotheses (ORRGraph<Hypothesis>& graph, std::list<ObjRecRANSAC::Output>& recognized_objects) const;
 
     	/** \brief Computes the rigid transform that maps the line (a1, b1) to (a2, b2).
     	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'
