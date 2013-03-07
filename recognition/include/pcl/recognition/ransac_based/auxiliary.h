@@ -64,6 +64,33 @@ namespace pcl
         return value;
       }
 
+      /** \brief Expands the destination bounding box 'dst' such that it contains 'src'. */
+      template<typename T> void
+      expandBoundingBox (T dst[6], const T src[6])
+      {
+        if ( src[0] < dst[0] ) dst[0] = src[0];
+        if ( src[2] < dst[2] ) dst[2] = src[2];
+        if ( src[4] < dst[4] ) dst[4] = src[4];
+
+        if ( src[1] > dst[1] ) dst[1] = src[1];
+        if ( src[3] > dst[3] ) dst[3] = src[3];
+        if ( src[5] > dst[5] ) dst[5] = src[5];
+      }
+
+      /** \brief Expands the bounding box 'bbox' such that it contains the point 'p'. */
+      template<typename T> void
+      expandBoundingBoxToContainPoint (T bbox[6], const T p[3])
+      {
+             if ( p[0] < bbox[0] ) bbox[0] = p[0];
+        else if ( p[0] > bbox[1] ) bbox[1] = p[0];
+
+             if ( p[1] < bbox[2] ) bbox[2] = p[1];
+        else if ( p[1] > bbox[3] ) bbox[3] = p[1];
+
+             if ( p[2] < bbox[4] ) bbox[4] = p[2];
+        else if ( p[2] > bbox[5] ) bbox[5] = p[2];
+      }
+
       /** \brief Returns a random integer in [min, max] (including both min and max). This method uses rand() from
        * the C Standard General Utilities Library <cstdlib>. That's why it uses a seed to generate the integers, which
        * should be initialized to some distinctive value using srand(). */
@@ -252,6 +279,16 @@ namespace pcl
         out[0] = t[0]*p[0] + t[1]*p[1] + t[2]*p[2] + t[9];
         out[1] = t[3]*p[0] + t[4]*p[1] + t[5]*p[2] + t[10];
         out[2] = t[6]*p[0] + t[7]*p[1] + t[8]*p[2] + t[11];
+      }
+
+      /** \brief The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.
+        * First, (x, y, z) is multiplied by that matrix and then translated. The result is saved in 'out'. */
+      template<class T> void
+      transform(const T t[12], T x, T y, T z, T out[3])
+      {
+        out[0] = t[0]*x + t[1]*y + t[2]*z + t[9];
+        out[1] = t[3]*x + t[4]*y + t[5]*z + t[10];
+        out[2] = t[6]*x + t[7]*y + t[8]*z + t[11];
       }
 
       /** \brief Returns true if the points 'p1' and 'p2' are co-planar and false otherwise. The method assumes that 'n1'

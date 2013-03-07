@@ -117,7 +117,7 @@ namespace pcl
             NodeData data_;
             int id_;
             int fitness_;
-            Node::State state_;
+            State state_;
         };
 
       public:

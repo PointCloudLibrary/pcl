@@ -43,6 +43,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree_zprojection.h
         include/pcl/${SUBSYS_NAME}/ransac_based/orr_octree.h
         include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h
 		include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
         )
         

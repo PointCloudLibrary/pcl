@@ -45,6 +45,7 @@
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
 #include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
+#include <pcl/recognition/ransac_based/bvh.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>
@@ -147,7 +148,8 @@ namespace pcl
         public:
           Hypothesis (const ModelLibrary::Model* obj_model = NULL)
            : HypothesisBase (obj_model),
-             match_confidence_ (-1.0f)
+             match_confidence_ (-1.0f),
+             linear_id_ (-1)
           {
             aux::set3 (pos_id_, -1);
             aux::set3 (rot_id_, -1);
@@ -187,11 +189,54 @@ namespace pcl
             aux::copy3 (id, rot_id_);
           }
 
+          void
+          setLinearId (int id)
+          {
+            linear_id_ = id;
+          }
+
+          int
+          getLinearId () const
+          {
+            return (linear_id_);
+          }
+
+          void
+          computeBounds (float bounds[6]) const
+          {
+            const float *b = obj_model_->getBoundsOfOctreePoints ();
+            float p[3];
+
+            // Initialize 'bounds'
+            aux::transform (rigid_transform_, b[0], b[2], b[4], p);
+            bounds[0] = bounds[1] = p[0];
+            bounds[2] = bounds[3] = p[1];
+            bounds[4] = bounds[5] = p[2];
+
+            // Expand 'bounds' to contain the other 7 points of the octree bounding box
+            aux::transform (rigid_transform_, b[0], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[0], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[0], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[1], b[2], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[1], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[1], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+            aux::transform (rigid_transform_, b[1], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
+          }
+
+          void
+          computeCenterOfMass (float center_of_mass[3]) const
+          {
+            aux::transform (rigid_transform_, obj_model_->getOctreeCenterOfMass (), center_of_mass);
+          }
+
         public:
           float match_confidence_;
           std::set<int> explained_pixels_;
           int pos_id_[3], rot_id_[3];
+          int linear_id_;
     	};
+
+    	typedef BVH<Hypothesis*> BVHH;
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
@@ -445,10 +490,10 @@ namespace pcl
         filterGraphOfCloseHypotheses (ORRGraph<Hypothesis>& graph, std::vector<Hypothesis>& out) const;
 
         void
-        buildGraphOfConflictingHypotheses (std::vector<Hypothesis>& hypotheses, ORRGraph<Hypothesis>& graph);
+        buildGraphOfConflictingHypotheses (const BVHH& bvh, ORRGraph<Hypothesis*>& graph) const;
 
         void
-        filterGraphOfConflictingHypotheses (ORRGraph<Hypothesis>& graph, std::list<ObjRecRANSAC::Output>& recognized_objects) const;
+        filterGraphOfConflictingHypotheses (ORRGraph<Hypothesis*>& graph, std::list<ObjRecRANSAC::Output>& recognized_objects) const;
 
     	/** \brief Computes the rigid transform that maps the line (a1, b1) to (a2, b2).
     	 * The computation is based on the corresponding points 'a1' <-> 'a2' and 'b1' <-> 'b2'

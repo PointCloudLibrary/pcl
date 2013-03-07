@@ -162,7 +162,7 @@ showHypothesisAsCoordinateFrame (ObjRecRANSAC::Hypothesis& hypo, CallbackParamet
   pcl::ModelCoefficients coeffs; coeffs.values.resize (6);
 
   // Get the origin of the coordinate frame
-  aux::transform (hypo.rigid_transform_, hypo.obj_model_->getCenterOfMass (), origin);
+  aux::transform (hypo.rigid_transform_, hypo.obj_model_->getOctreeCenterOfMass (), origin);
   coeffs.values[0] = origin[0];
   coeffs.values[1] = origin[1];
   coeffs.values[2] = origin[2];

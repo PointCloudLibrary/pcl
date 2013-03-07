@@ -64,14 +64,38 @@ namespace pcl
         class Model
         {
           public:
-            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, std::string object_name, void* user_data = NULL)
+            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name, void* user_data = NULL)
             : obj_name_(object_name),
               user_data_ (user_data)
             {
               octree_.build (points, voxel_size, &normals);
-              aux::set3 (center_of_mass_, 0.0f);
+
+              const std::vector<ORROctree::Node*>& full_leaves = octree_.getFullLeaves ();
+              if ( full_leaves.empty () )
+                return;
+
+              // Initialize
+              std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin ();
+              const float *p = (*it)->getData ()->getPoint ();
+              aux::copy3 (p, octree_center_of_mass_);
+              bounds_of_octree_points_[0] = bounds_of_octree_points_[1] = p[0];
+              bounds_of_octree_points_[2] = bounds_of_octree_points_[3] = p[1];
+              bounds_of_octree_points_[4] = bounds_of_octree_points_[5] = p[2];
+
+              // Compute both the bounds and the center of mass of the octree points
+              for ( ++it ; it != full_leaves.end () ; ++it )
+              {
+                aux::add3 (octree_center_of_mass_, (*it)->getData ()->getPoint ());
+                aux::expandBoundingBoxToContainPoint (bounds_of_octree_points_, (*it)->getData ()->getPoint ());
+              }
+
+              // Finalize the center of mass computation
+              aux::mult3 (octree_center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
             }
-            virtual ~Model (){}
+
+            virtual ~Model ()
+            {
+            }
 
             inline const std::string&
             getObjectName () const
@@ -80,43 +104,34 @@ namespace pcl
             }
 
             inline const ORROctree&
-            getOctree() const
+            getOctree () const
             {
               return (octree_);
             }
 
             inline void*
-            getUserData() const
+            getUserData () const
             {
               return (user_data_);
             }
 
             inline const float*
-            getCenterOfMass () const
+            getOctreeCenterOfMass () const
             {
-              return (center_of_mass_);
+              return (octree_center_of_mass_);
             }
 
-            inline void
-            computeCenterOfMass ()
+            inline const float*
+            getBoundsOfOctreePoints () const
             {
-              const std::vector<ORROctree::Node*>& full_leaves = octree_.getFullLeaves ();
-              if ( full_leaves.empty () )
-                return;
-
-              // Reset
-              aux::set3(center_of_mass_, 0.0f);
-              // Sum up
-              for ( std::vector<ORROctree::Node*>::const_iterator it = full_leaves.begin () ; it != full_leaves.end () ; ++it )
-                aux::add3 (center_of_mass_, (*it)->getData ()->getPoint ());
-              // Divide
-              aux::mult3 (center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
+              return (bounds_of_octree_points_);
             }
 
           protected:
             const std::string obj_name_;
             ORROctree octree_;
-            float center_of_mass_[3];
+            float octree_center_of_mass_[3];
+            float bounds_of_octree_points_[6];
             void* user_data_;
         };
 
