@@ -125,7 +125,7 @@ namespace pcl
             /** \brief 'sorted_objects' is a sorted vector of bounded objects. It has to be sorted in ascending order according
               * to the objects' x-coordinates. The constructor recursively calls itself with the right 'first_id' and 'last_id'
               * and with the same vector 'sorted_objects'.  */
-            Node (std::vector<BVH<UserData>::BoundedObject*>& sorted_objects, int first_id, int last_id)
+            Node (std::vector<BoundedObject*>& sorted_objects, int first_id, int last_id)
             {
               // Initialize the bounds of the node
               memcpy (bounds_, sorted_objects[first_id]->getBounds (), 6*sizeof (float));
@@ -247,7 +247,7 @@ namespace pcl
           std::sort (objects.begin (), objects.end (), BoundedObject::compareCentroidsXCoordinates);
 
           // Create the root -> it recursively creates the children nodes until each leaf contains exactly one object
-          root_ = new BVH::Node (objects, 0, static_cast<int> (objects.size () - 1));
+          root_ = new Node (objects, 0, static_cast<int> (objects.size () - 1));
         }
 
         /** \brief Frees the memory allocated by this object. After that, you have to call build to use the tree again. */
@@ -307,7 +307,7 @@ namespace pcl
         }
 
       protected:
-        BVH::Node* root_;
+        Node* root_;
         std::vector<BoundedObject*>* sorted_objects_;
     };
   } // namespace recognition
