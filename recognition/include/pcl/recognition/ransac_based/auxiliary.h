@@ -41,7 +41,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <pcl/common/eigen.h>
-#include <ostream>
 
 #define AUX_PI_FLOAT            3.14159265358979323846f
 #define AUX_HALF_PI             1.57079632679489661923f
@@ -53,6 +52,15 @@ namespace pcl
   {
     namespace aux
     {
+      template<typename T> bool
+      compareOrderedPairs (const std::pair<T,T>& a, const std::pair<T,T>& b)
+      {
+        if ( a.first == b.first )
+          return static_cast<bool> (a.second < b.second);
+
+        return static_cast<bool> (a.first < b.first);
+      }
+
       template<typename T> float
       clamp (T value, T min, T max)
       {
@@ -89,15 +97,6 @@ namespace pcl
 
              if ( p[2] < bbox[4] ) bbox[4] = p[2];
         else if ( p[2] > bbox[5] ) bbox[5] = p[2];
-      }
-
-      /** \brief Returns a random integer in [min, max] (including both min and max). This method uses rand() from
-       * the C Standard General Utilities Library <cstdlib>. That's why it uses a seed to generate the integers, which
-       * should be initialized to some distinctive value using srand(). */
-      inline int
-      getRandomInteger(int min, int max)
-      {
-        return static_cast<int>(static_cast<double>(min) + (static_cast<double>(rand())/static_cast<double>(RAND_MAX))*static_cast<double>(max-min) + 0.5);
       }
 
       /** \brief v[0] = v[1] = v[2] = value */

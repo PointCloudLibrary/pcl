@@ -137,6 +137,9 @@ namespace pcl
         inline void
         resize (int n)
         {
+          if ( !n )
+            return;
+
           for ( typename std::vector<Node*>::iterator nit = nodes_.begin () ; nit != nodes_.end () ; ++nit )
             delete *nit;
 
@@ -202,6 +205,12 @@ namespace pcl
         {
           nodes_[id1]->neighbors_.erase (nodes_[id2]);
           nodes_[id2]->neighbors_.erase (nodes_[id1]);
+        }
+
+        inline void
+        deleteDirectedEdge (int id1, int id2)
+        {
+          nodes_[id1]->neighbors_.erase (nodes_[id2]);
         }
 
         inline typename std::vector<Node*>&

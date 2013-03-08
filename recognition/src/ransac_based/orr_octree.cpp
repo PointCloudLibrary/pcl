@@ -39,9 +39,9 @@
 
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/common/common.h>
+#include <pcl/common/random.h>
 #include <cstdlib>
 #include <cmath>
-#include <ctime>
 #include <algorithm>
 #include <list>
 
@@ -52,10 +52,7 @@ pcl::recognition::ORROctree::ORROctree ()
 : voxel_size_ (-1.0),
   tree_levels_ (-1),
   root_ (NULL)
-//  randgen_ (0, 1, static_cast<uint32_t> (time (NULL)))
 {
-  // Initialize random seed
-  srand (static_cast<unsigned int> (time (NULL)));
 }
 
 //================================================================================================================================================================
@@ -334,10 +331,10 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
 ORROctree::Node*
 pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float radius) const
 {
-  int i, rand_pos;
   vector<int> tmp_ids;
   tmp_ids.reserve (8);
-  ORROctree::Node* node;
+
+  pcl::common::UniformGenerator<int> randgen (0, 1, static_cast<uint32_t> (time (NULL)));
 
   list<ORROctree::Node*> nodes;
   nodes.push_back (root_);
@@ -345,7 +342,7 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
   while ( !nodes.empty () )
   {
     // Get the last element in the list
-    node = nodes.back ();
+    ORROctree::Node *node = nodes.back ();
     // Remove the last element from the list
     nodes.pop_back ();
 
@@ -356,15 +353,14 @@ pcl::recognition::ORROctree::getRandomFullLeafOnSphere (const float* p, float ra
       if ( node->hasChildren () )
       {
         // Prepare the tmp id vector
-        for ( i = 0 ; i < 8 ; ++i )
+        for ( int i = 0 ; i < 8 ; ++i )
           tmp_ids.push_back (i);
 
         // Push back the children in random order
-        for ( i = 0 ; i < 8 ; ++i )
+        for ( int i = 0 ; i < 8 ; ++i )
         {
-//          randgen_.setParameters (0, static_cast<int> (tmp_ids.size ()));
-//          rand_pos = randgen_.run ();
-          rand_pos = aux::getRandomInteger (0, static_cast<int> (tmp_ids.size ()) - 1);
+          randgen.setParameters (0, static_cast<int> (tmp_ids.size ()) - 1);
+          int rand_pos = randgen.run ();
           nodes.push_back (node->getChild (tmp_ids[rand_pos]));
           // Remove the randomly selected id
           tmp_ids.erase (tmp_ids.begin () + rand_pos);

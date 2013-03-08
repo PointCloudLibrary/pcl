@@ -73,8 +73,6 @@ namespace pcl
 
           public:
             float z1_, z2_;
-            /** \brief These are the ids of the hypotheses at this pixel. */
-            std::set<int> hypotheses_ids_;
             int id_;
         };
 

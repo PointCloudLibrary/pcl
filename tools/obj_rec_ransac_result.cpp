@@ -42,6 +42,7 @@
  *  Visualizes the result of the ObjRecRANSAC class. STILL WORK IN PROGRESS!!
  */
 
+#include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/print.h>
@@ -70,6 +71,8 @@ void keyboardCB (const pcl::visualization::KeyboardEvent &event, void* params_vo
 void update (CallbackParameters* params);
 bool vtk2PointCloud (const char* file_name, PointCloud<PointXYZ>& pcl_points, PointCloud<Normal>& pcl_normals, vtkPolyData* vtk_data);
 void run (float pair_width, float voxel_size, float max_coplanarity_angle);
+bool loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointCloud<Normal>& non_plane_normals,
+                PointCloud<PointXYZ>& plane_points);
 
 //#define _SHOW_SCENE_POINTS_
 #define _SHOW_OCTREE_POINTS_
@@ -130,33 +133,54 @@ main (int argc, char** argv)
 void
 run (float pair_width, float voxel_size, float max_coplanarity_angle)
 {
-  // THIS IS STILL WORK IN PROGRESS!!
-
-  // The input to the object recognition instance
-  char scene_file_name[] = "../../test/tum_table_scene.vtk\0", model_file_name[] = "../../test/tum_amicelli_box.vtk\0";
-  PointCloud<PointXYZ>::Ptr scene_points (new PointCloud<PointXYZ> ()), amicelli_points (new PointCloud<PointXYZ> ());
-  PointCloud<Normal>::Ptr scene_normals (new PointCloud<Normal> ()), amicelli_normals (new PointCloud<Normal> ());
-
-  vtkSmartPointer<vtkPolyData> amicelli_model = vtkSmartPointer<vtkPolyData>::New ();
-  string amicelli_name = "amicelli";
-
-  // Get the points and normals from the input model
-  if ( !vtk2PointCloud (model_file_name, *amicelli_points, *amicelli_normals, amicelli_model) )
-    return;
-
-  // Get the points and normals from the input scene
-  if ( !vtk2PointCloud (scene_file_name, *scene_points, *scene_normals, NULL) )
-    return;
-
-  // The recognition object
+  // The object recognizer
   ObjRecRANSAC objrec (pair_width, voxel_size);
   objrec.setMaxCoplanarityAngleDegrees (max_coplanarity_angle);
-  // Add a model
-  objrec.addModel (*amicelli_points, *amicelli_normals, amicelli_name, amicelli_model);
+
+  // The models to be loaded
+  list<string> model_names;
+  model_names.push_back (string ("tum_amicelli_box"));
+  model_names.push_back (string ("tum_rusk_box"));
+  model_names.push_back (string ("tum_soda_bottle"));
+
+  list<PointCloud<PointXYZ>::Ptr> model_points_list;
+  list<PointCloud<Normal>::Ptr> model_normals_list;
+  list<vtkSmartPointer<vtkPolyData> > vtk_models_list;
+
+  // Load the models and add them to the recognizer
+  for ( list<string>::iterator it = model_names.begin () ; it != model_names.end () ; ++it )
+  {
+    PointCloud<PointXYZ>::Ptr model_points (new PointCloud<PointXYZ> ());
+    model_points_list.push_back (model_points);
+
+    PointCloud<Normal>::Ptr model_normals (new PointCloud<Normal> ());
+    model_normals_list.push_back (model_normals);
+
+    vtkSmartPointer<vtkPolyData> vtk_model = vtkSmartPointer<vtkPolyData>::New ();
+    vtk_models_list.push_back (vtk_model);
+
+    // Compose the file
+    string file_name = string("../../test/") + *it + string (".vtk");
+
+    // Get the points and normals from the input model
+    if ( !vtk2PointCloud (file_name.c_str (), *model_points, *model_normals, vtk_model) )
+      continue;
+
+    // Add the model
+    objrec.addModel (*model_points, *model_normals, *it, vtk_model);
+  }
+
+  // The scene in which the models are supposed to be recognized
+  PointCloud<PointXYZ>::Ptr non_plane_points (new PointCloud<PointXYZ> ()), plane_points (new PointCloud<PointXYZ> ());
+  PointCloud<Normal>::Ptr non_plane_normals (new PointCloud<Normal> ());
+
+  // Detect the largest plane in the dataset
+  if ( !loadScene ("../../test/tum_table_scene.vtk", *non_plane_points, *non_plane_normals, *plane_points) )
+    return;
 
   // The parameters for the callback function and the visualizer
   PCLVisualizer viz;
-  CallbackParameters params(objrec, viz, *scene_points, *scene_normals);
+  CallbackParameters params(objrec, viz, *non_plane_points, *non_plane_normals);
   viz.registerKeyboardCallback (keyboardCB, static_cast<void*> (&params));
 
   // Run the recognition and update the viewer. Have a look at this method, to see how to start the recognition and use the result!
@@ -176,8 +200,11 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
   PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
   objrec.getSceneOctree ().getFullLeafPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
-  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
+//  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
+
+  viz.addPointCloud (plane_points, "plane points");
+  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 0.9, 0.9, 0.9, "plane points");
 #endif
 
 #if defined _SHOW_OCTREE_NORMALS_ && defined _SHOW_OCTREE_POINTS_
@@ -275,6 +302,76 @@ update (CallbackParameters* params)
       printf ("WARNING: no cell at position [%i, %i, %i]\n", (*acc_hypo)->pos_id_[0], (*acc_hypo)->pos_id_[1], (*acc_hypo)->pos_id_[2]);
 #endif
   }
+}
+
+//===============================================================================================================================
+
+bool
+loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointCloud<Normal>& non_plane_normals,
+    PointCloud<PointXYZ>& plane_points)
+{
+  PointCloud<PointXYZ>::Ptr all_points (new PointCloud<PointXYZ> ());
+  PointCloud<Normal>::Ptr all_normals (new PointCloud<Normal> ());
+
+  // Get the points and normals from the input scene
+  if ( !vtk2PointCloud (file_name, *all_points, *all_normals, NULL) )
+    return false;
+
+  // Detect the largest plane and remove it from the sets
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices ());
+  // Create the segmentation object
+  pcl::SACSegmentation<pcl::PointXYZ> seg;
+  // Optional
+  seg.setOptimizeCoefficients (true);
+  // Mandatory
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (10.0);
+
+  seg.setInputCloud (all_points);
+  seg.segment (*inliers, *coefficients);
+
+  if (inliers->indices.size () == 0)
+  {
+    PCL_ERROR ("Could not estimate a planar model for the given dataset.");
+    return false;
+  }
+
+  // Copy the non-planar points
+  non_plane_points.resize (all_points->size () - inliers->indices.size ());
+  non_plane_normals.resize (all_points->size () - inliers->indices.size ());
+  plane_points.resize (inliers->indices.size ());
+
+  // Make sure that the ids are sorted
+  sort (inliers->indices.begin (), inliers->indices.end ());
+  size_t i, j, id;
+
+  for ( i = 0, j = 0, id = 0 ; i < inliers->indices.size () ; )
+  {
+    if ( id == inliers->indices[i] )
+    {
+      plane_points.points[i] = all_points->points[id];
+      ++id;
+      ++i;
+    }
+    else
+    {
+      non_plane_points.points[j] = all_points->points[id];
+      non_plane_normals.points[j] = all_normals->points[id];
+      ++id;
+      ++j;
+    }
+  }
+
+  // Just copy the rest of the non-plane points
+  for ( ; id < all_points->size () ; ++id, ++j )
+  {
+    non_plane_points.points[j] = all_points->points[id];
+    non_plane_normals.points[j] = all_normals->points[id];
+  }
+
+  return true;
 }
 
 //===============================================================================================================================

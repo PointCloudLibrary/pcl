@@ -37,6 +37,7 @@
  *
  */
 
+#include <pcl/common/random.h>
 #include <pcl/recognition/ransac_based/obj_rec_ransac.h>
 
 using namespace std;
@@ -49,7 +50,7 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   rotation_discretization_ (5.0f*AUX_DEG_TO_RADIANS),
   abs_zdist_thresh_ (1.5f*voxel_size_),
   relative_obj_size_ (0.05f),
-  visibility_ (0.06f),
+  visibility_ (0.2f),
   relative_num_of_illegal_pts_ (0.02f),
   intersection_fraction_ (0.03f),
   max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS),
@@ -152,53 +153,58 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf ("ObjRecRANSAC::%s(): sampling oriented point pairs (opps) ... ", __func__); fflush (stdout);
-#endif
-
-  int i, num_full_leaves = static_cast<int> (full_scene_leaves.size ());
-  ORROctree::Node *leaf1, *leaf2;
-  const float *p1, *p2, *n1, *n2;
-
-#ifdef OBJ_REC_RANSAC_VERBOSE
   int num_of_opps = 0;
 #endif
 
+  int num_full_leaves = static_cast<int> (full_scene_leaves.size ());
+
+  if ( !num_full_leaves )
+  {
+#ifdef OBJ_REC_RANSAC_VERBOSE
+    cout << "done [" << num_of_opps << " opps].\n";
+#endif
+    return;
+  }
+
   // The random generator
-//  UniformGenerator<int> randgen (0, num_full_leaves, static_cast<uint32_t> (time (NULL)));
+  UniformGenerator<int> randgen (0, num_full_leaves - 1, static_cast<uint32_t> (time (NULL)));
 
   // Init the vector with the ids
   vector<int> ids (num_full_leaves);
-  for ( i = 0 ; i < num_full_leaves ; ++i )
+  for ( int i = 0 ; i < num_full_leaves ; ++i )
     ids[i] = i;
 
   // Sample 'num_iterations' number of oriented point pairs
-  for ( i = 0 ; i < num_iterations ; ++i )
+  for ( int i = 0 ; i < num_iterations ; ++i )
   {
     // Choose a random position within the array of ids
-//    randgen.setParameters (0, static_cast<int> (ids.size ()));
-//    int rand_pos = randgen.run ();
-    int rand_pos = aux::getRandomInteger (0, static_cast<int> (ids.size ()) - 1);
+    randgen.setParameters (0, static_cast<int> (ids.size ()) - 1);
+    int rand_pos = randgen.run ();
 
     // Get the leaf at that random position
-    leaf1 = full_scene_leaves[ids[rand_pos]];
+    ORROctree::Node *leaf1 = full_scene_leaves[ids[rand_pos]];
 
     // Delete the selected id
     ids.erase (ids.begin() + rand_pos);
 
     // Get the leaf's point and normal
-    p1 = leaf1->getData ()->getPoint ();
-    n1 = leaf1->getData ()->getNormal ();
+    const float *p1 = leaf1->getData ()->getPoint ();
+    const float *n1 = leaf1->getData ()->getNormal ();
 
     // Randomly select a leaf at the right distance from 'leaves[i]'
-    leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
+    ORROctree::Node *leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
     if ( !leaf2 )
       continue;
 
     // Get the leaf's point and normal
-    p2 = leaf2->getData ()->getPoint ();
-    n2 = leaf2->getData ()->getNormal ();
+    const float *p2 = leaf2->getData ()->getPoint ();
+    const float *n2 = leaf2->getData ()->getNormal ();
 
-    if ( aux::pointsAreCoplanar (p1, n1, p2, n2, max_coplanarity_angle_) )
-      continue;
+    if ( ignore_coplanar_opps_ )
+    {
+      if ( aux::pointsAreCoplanar (p1, n1, p2, n2, max_coplanarity_angle_) )
+        continue;
+    }
 
     // Save the sampled point pair
     output.push_back (OrientedPointPair (p1, n1, p2, n2));
@@ -218,49 +224,45 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
 int
 pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair>& pairs, list<HypothesisBase>& out) const
 {
-  // Only for 3D hash tables: this is the max number of neighbors a 3D hash table cell can have!
-  ModelLibrary::HashTableCell *neigh_cells[27];
-  ModelLibrary::HashTableCell::iterator cell_it;
-  float hash_table_key[3];
-  const float *model_p1, *model_n1, *model_p2, *model_n2;
-  const float *scene_p1, *scene_n1, *scene_p2, *scene_n2;
-  int i, num_hypotheses = 0;
-  const ModelLibrary::Model* obj_model;
-
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ObjRecRANSAC::%s(): generating hypotheses ... ", __func__); fflush (stdout);
 #endif
 
+  // Only for 3D hash tables: this is the max number of neighbors a 3D hash table cell can have!
+  ModelLibrary::HashTableCell *neigh_cells[27];
+  float hash_table_key[3];
+  int num_hypotheses = 0;
+
   for ( list<OrientedPointPair>::const_iterator pair = pairs.begin () ; pair != pairs.end () ; ++pair )
   {
     // Just to make the code more readable
-    scene_p1 = (*pair).p1_;
-    scene_n1 = (*pair).n1_;
-    scene_p2 = (*pair).p2_;
-    scene_n2 = (*pair).n2_;
+    const float *scene_p1 = (*pair).p1_;
+    const float *scene_n1 = (*pair).n1_;
+    const float *scene_p2 = (*pair).p2_;
+    const float *scene_n2 = (*pair).n2_;
 
     // Use normals and points to compute a hash table key
     this->compute_oriented_point_pair_signature (scene_p1, scene_n1, scene_p2, scene_n2, hash_table_key);
     // Get the cell and its neighbors based on 'key'
     int num_neigh_cells = model_library_.getHashTable ().getNeighbors (hash_table_key, neigh_cells);
 
-    for ( i = 0 ; i < num_neigh_cells ; ++i )
+    for ( int i = 0 ; i < num_neigh_cells ; ++i )
     {
       // Check for all models in the current cell
-      for ( cell_it = neigh_cells[i]->begin () ; cell_it != neigh_cells[i]->end () ; ++cell_it )
+      for ( ModelLibrary::HashTableCell::iterator cell_it = neigh_cells[i]->begin () ; cell_it != neigh_cells[i]->end () ; ++cell_it )
       {
         // For better code readability
-        obj_model = (*cell_it).first;
+        const ModelLibrary::Model *obj_model = (*cell_it).first;
         ModelLibrary::node_data_pair_list& model_pairs = (*cell_it).second;
 
         // Check for all pairs which belong to the current model
         for ( ModelLibrary::node_data_pair_list::iterator model_pair_it = model_pairs.begin () ; model_pair_it != model_pairs.end () ; ++model_pair_it )
         {
           // Get the points and normals
-          model_p1 = (*model_pair_it).first->getPoint ();
-          model_n1 = (*model_pair_it).first->getNormal ();
-          model_p2 = (*model_pair_it).second->getPoint ();
-          model_n2 = (*model_pair_it).second->getNormal ();
+          const float *model_p1 = (*model_pair_it).first->getPoint ();
+          const float *model_n1 = (*model_pair_it).first->getNormal ();
+          const float *model_p2 = (*model_pair_it).second->getPoint ();
+          const float *model_n2 = (*model_pair_it).second->getNormal ();
 
           HypothesisBase hypothesis(obj_model);
           // Get the rigid transform from model to scene
@@ -464,128 +466,93 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfCloseHypotheses (ORRGraph<Hypothesi
 void
 pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& bvh, ORRGraph<Hypothesis*>& graph) const
 {
-//  int score;
-//  ORROctreeZProjection::Pixel* pixel;
-//  const float *rigid_transform;
-//  float transformed_point[3];
-
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf ("ObjRecRANSAC::%s(): building the conflict graph ... ", __func__); fflush (stdout);
 #endif
 
-  // todo: remove pixel->hypotheses_ids_ ZProj::Pixel
+  const vector<BVHH::BoundedObject*>* bounded_objects = bvh.getInputObjects ();
 
-  const vector<BVHH::BoundedObject*>& bounded_objects = bvh.getInputObjects ();
+  if ( !bounded_objects )
+  {
+#ifdef OBJ_REC_RANSAC_VERBOSE
+    printf("done\n");
+#endif
+    return;
+  }
+
   int lin_id = 0;
 
-  for ( vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects.begin () ; obj != bounded_objects.end () ; ++obj, ++lin_id )
-    (*obj)->getData ()->setLinearId (lin_id);
+  // There are as many graph nodes as bounded objects
+  graph.resize (static_cast<int> (bounded_objects->size ()));
 
-  // There are as many graph nodes as hypotheses
-  graph.resize (static_cast<int> (bounded_objects.size ()));
-//  vector<ORRGraph<Hypothesis*>::Node*>& graph_nodes = graph.getNodes ();
+  // Setup the hypotheses' ids
+  for ( vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj, ++lin_id )
+  {
+    (*obj)->getData ()->setLinearId (lin_id);
+    graph.getNodes ()[lin_id]->setData ((*obj)->getData ());
+  }
+
+  typedef pair<int,int> ordered_int_pair;
+  // This is one is to make sure that we do not compute the same set intersection twice
+  set<ordered_int_pair, bool(*)(const ordered_int_pair&, const ordered_int_pair&)> ordered_hypotheses_ids (aux::compareOrderedPairs<int>);
 
   // Project the hypotheses onto the "range image" and store in each pixel the corresponding hypothesis id
-  for ( vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects.begin () ; obj != bounded_objects.end () ; ++obj )
+  for ( vector<BVHH::BoundedObject*>::const_iterator obj = bounded_objects->begin () ; obj != bounded_objects->end () ; ++obj )
   {
+    // For better code readability
+    Hypothesis *hypo1 = (*obj)->getData ();
+
     // Get the bounds of the current hypothesis
     float bounds[6];
-    (*obj)->getData ()->computeBounds (bounds);
-
-    list<BVHH::BoundedObject*> intersected_objects;
+    hypo1->computeBounds (bounds);
 
     // Check if these bounds intersect other hypotheses' bounds
+    list<BVHH::BoundedObject*> intersected_objects;
     bvh.intersect (bounds, intersected_objects);
 
     for ( list<BVHH::BoundedObject*>::iterator it = intersected_objects.begin () ; it != intersected_objects.end () ; ++it )
-      ;
-#if 0
-    const vector<ORROctree::Node*>& full_model_leaves = hypo_it->obj_model_->getOctree ().getFullLeaves ();
-    rigid_transform = hypo_it->rigid_transform_;
-
-    // The i-th node corresponds to the i-th hypothesis and has id 'i'
-    graph_nodes[hypothesis_id]->setData (*hypo_it);
-    graph_nodes[hypothesis_id]->setId (hypothesis_id);
-
-    // At the end of the next loop this will be the number of model points ending up in some range image pixel
-    score = 0;
-
-    for ( vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
     {
-      // Transform the model point with the current rigid transform
-      aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
+      // For better code readability
+      Hypothesis *hypo2 = (*it)->getData ();
 
-      // Get the pixel containing 'transformed_point'
-      pixel = scene_octree_proj_.getPixel (transformed_point);
-      // Check if we have a valid pixel
-      if ( pixel == NULL )
-        continue;
-
-      if ( pixel->z1_ <= transformed_point[2] && transformed_point[2] <= pixel->z2_ )
+      // Build an ordered int pair out of the hypotheses ids
+      pair<int,int> id_pair;
+      if ( hypo1->getLinearId () < hypo2->getLinearId () )
       {
-        ++score;
-        pixel->hypotheses_ids_.insert (hypothesis_id); // 'hypothesis_id' is the position of the hypothesis in the vector
+        id_pair.first  = hypo1->getLinearId ();
+        id_pair.second = hypo2->getLinearId ();
       }
-    }
-#endif
-  }
+      else
+      {
+        id_pair.first  = hypo2->getLinearId ();
+        id_pair.second = hypo1->getLinearId ();
+      }
 
-#if 0
-  list<ORROctreeZProjection::Pixel*>& pixels = scene_octree_proj_.getFullPixels ();
-  set<int>::iterator id1, id2, last_id;
+      // Make sure that we do not compute the same set intersection twice
+      pair<set<ordered_int_pair>::iterator, bool> res = ordered_hypotheses_ids.insert (id_pair);
 
-  // Now, iterate through all pixels and build the conflict graph, i.e., create its connectivity
-  for ( list<ORROctreeZProjection::Pixel*>::iterator it = pixels.begin () ; it != pixels.end () ; ++it )
-  {
-    // For better code readability
-    pixel = *it;
+      if ( res.second == false )
+        continue; // We've already computed that set intersection -> check the next pair
 
-    // Go to the next pixel if the current one has no hypotheses in it
-    if ( pixel->hypotheses_ids_.empty () )
-      continue;
+      // Do the more involved intersection test based on a set intersection of the range image pixels which explained by the hypotheses
+      set<int> id_intersection;
 
-    // Get the last id in the set
-    last_id = pixel->hypotheses_ids_.end ();
-    --last_id;
-
-    // All hypotheses which explain the same pixel are conflicting
-    for ( id1 = pixel->hypotheses_ids_.begin () ; id1 != last_id ; ++id1 )
-    {
-      id2 = id1;
-      for ( ++id2 ; id2 != pixel->hypotheses_ids_.end () ; ++id2 )
-        graph.insertUndirectedEdge (*id1, *id2);
-    }
-  }
-
-  ORRGraph<Hypothesis>::Node *node;
-  set<int> id_intersection;
-  float frac_1, frac_2;
-
-  // Now, that we have the graph connectivity, we want to check if each two neighbors are
-  // really in conflict. This requires set intersection operations which are expensive,
-  // that's why we are performing them now, and not during the computation of the graph connectivity
-  for ( vector<ORRGraph<Hypothesis>::Node*>::iterator it = graph_nodes.begin () ; it != graph_nodes.end () ; ++it )
-  {
-    node = *it;
-    for ( set<ORRGraph<Hypothesis>::Node*>::const_iterator neigh = node->getNeighbors ().begin () ; neigh != node->getNeighbors ().end () ; ++neigh )
-    {
-      id_intersection.clear ();
-      // Compute the ids intersection of 'node' and its neighbor
-      std::set_intersection (node->getData ().explained_pixels_.begin (),
-                             node->getData ().explained_pixels_.end (),
-                             (*neigh)->getData ().explained_pixels_.begin (),
-                             (*neigh)->getData ().explained_pixels_.end (),
+      // Compute the ids intersection of 'obj' and 'it'
+      std::set_intersection (hypo1->explained_pixels_.begin (),
+                             hypo1->explained_pixels_.end (),
+                             hypo2->explained_pixels_.begin (),
+                             hypo2->explained_pixels_.end (),
                              std::inserter (id_intersection, id_intersection.begin ()));
 
-      frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (node->getData ().explained_pixels_.size ());
-      frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> ((*neigh)->getData ().explained_pixels_.size ());
+      // Compute the intersection fractions
+      float frac_1 = static_cast<float> (id_intersection.size ())/static_cast <float> (hypo1->explained_pixels_.size ());
+      float frac_2 = static_cast<float> (id_intersection.size ())/static_cast <float> (hypo2->explained_pixels_.size ());
+
       // Check if the intersection set is large enough, i.e., if there is a conflict
-      if ( frac_1 <= intersection_fraction_ && frac_2 <= intersection_fraction_ )
-        // The intersection set is too small => no conflict, detach these two neighboring nodes
-        graph.deleteUndirectedEdge (node->getId (), (*neigh)->getId ());
+      if ( frac_1 > intersection_fraction_ || frac_2 > intersection_fraction_ )
+        graph.insertUndirectedEdge (hypo1->getLinearId (), hypo2->getLinearId ());
     }
   }
-#endif
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
 	printf("done\n");
@@ -597,13 +564,16 @@ pcl::recognition::ObjRecRANSAC::buildGraphOfConflictingHypotheses (const BVHH& b
 void
 pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hypothesis*>& graph, list<ObjRecRANSAC::Output>& recognized_objects) const
 {
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("ObjRecRANSAC::%s(): filtering the conflict graph ... ", __func__); fflush (stdout);
+#endif
+
   vector<ORRGraph<Hypothesis*>::Node*> &nodes = graph.getNodes ();
-  size_t num_of_explained;
 
   // Compute the penalty for each graph node
   for ( vector<ORRGraph<Hypothesis*>::Node*>::iterator it = nodes.begin () ; it != nodes.end () ; ++it )
   {
-    num_of_explained = 0;
+    size_t num_of_explained = 0;
 
     // Accumulate the number of pixels the neighbors are explaining
     for ( set<ORRGraph<Hypothesis*>::Node*>::const_iterator neigh = (*it)->getNeighbors ().begin () ; neigh != (*it)->getNeighbors ().end () ; ++neigh )
@@ -627,6 +597,10 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
                             (*it)->getData ()->obj_model_->getUserData ())
     );
   }
+
+#ifdef OBJ_REC_RANSAC_VERBOSE
+  printf ("done\n");
+#endif
 }
 
 //===============================================================================================================================================

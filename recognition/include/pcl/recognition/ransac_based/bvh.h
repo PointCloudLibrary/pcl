@@ -261,10 +261,10 @@ namespace pcl
           }
         }
 
-        inline const std::vector<BoundedObject*>&
+        inline const std::vector<BoundedObject*>*
         getInputObjects () const
         {
-          return (*sorted_objects_);
+          return (sorted_objects_);
         }
 
         /** \brief Pushes back in 'intersected_objects' the bounded objects intersected by the input 'box' and returns true.

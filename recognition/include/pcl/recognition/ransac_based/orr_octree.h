@@ -47,7 +47,6 @@
 #define PCL_RECOGNITION_ORR_OCTREE_H_
 
 #include "auxiliary.h"
-//#include <pcl/common/random.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/pcl_exports.h>
@@ -434,7 +433,6 @@ namespace pcl
         int tree_levels_;
         Node* root_;
         std::vector<Node*> full_leaves_;
-//        pcl::common::UniformGenerator<int> randgen_;
     };
   } // namespace recognition
 } // namespace pcl
