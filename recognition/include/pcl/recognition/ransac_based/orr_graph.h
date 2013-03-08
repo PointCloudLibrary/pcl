@@ -105,7 +105,7 @@ namespace pcl
             }
 
             static inline bool
-            compare (const ORRGraph<NodeData>::Node* a, const ORRGraph<NodeData>::Node* b)
+            compare (const Node* a, const Node* b)
             {
               return (static_cast<bool> (a->fitness_ > b->fitness_));
             }
@@ -147,35 +147,35 @@ namespace pcl
         }
 
         inline void
-        computeMaximalOnOffPartition (std::list<ORRGraph<NodeData>::Node*>& on_nodes, std::list<ORRGraph<NodeData>::Node*>& off_nodes)
+        computeMaximalOnOffPartition (std::list<Node*>& on_nodes, std::list<Node*>& off_nodes)
         {
-          std::vector<ORRGraph::Node*> sorted_nodes (nodes_.size ());
+          std::vector<Node*> sorted_nodes (nodes_.size ());
           int i = 0;
 
           // Set all nodes to undefined
-          for ( typename std::vector<ORRGraph<NodeData>::Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
+          for ( typename std::vector<Node*>::iterator it = nodes_.begin () ; it != nodes_.end () ; ++it )
           {
             sorted_nodes[i++] = *it;
-            (*it)->state_ = ORRGraph::Node::UNDEF;
+            (*it)->state_ = Node::UNDEF;
           }
 
           // Now sort the nodes according to the fitness
-          std::sort (sorted_nodes.begin (), sorted_nodes.end (), ORRGraph::Node::compare);
+          std::sort (sorted_nodes.begin (), sorted_nodes.end (), Node::compare);
 
           // Now run through the array and start switching nodes on and off
-          for ( typename std::vector<ORRGraph<NodeData>::Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
+          for ( typename std::vector<Node*>::iterator it = sorted_nodes.begin () ; it != sorted_nodes.end () ; ++it )
           {
             // Ignore graph nodes which are already OFF
-            if ( (*it)->state_ == ORRGraph::Node::OFF )
+            if ( (*it)->state_ == Node::OFF )
               continue;
 
             // Set the node to ON
-            (*it)->state_ = ORRGraph::Node::ON;
+            (*it)->state_ = Node::ON;
 
             // Set all its neighbors to OFF
-            for ( typename std::set<ORRGraph<NodeData>::Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
+            for ( typename std::set<Node*>::iterator neigh = (*it)->neighbors_.begin () ; neigh != (*it)->neighbors_.end () ; ++neigh )
             {
-              (*neigh)->state_ = ORRGraph::Node::OFF;
+              (*neigh)->state_ = Node::OFF;
               off_nodes.push_back (*neigh);
             }
 
