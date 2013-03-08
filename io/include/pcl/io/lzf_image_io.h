@@ -203,6 +203,15 @@ namespace pcl
           */
         template <typename PointT> bool
         read (const std::string &filename, pcl::PointCloud<PointT> &cloud);
+        
+        /** \brief Read the data stored in a PCLZF depth file and convert it to a pcl::PointCloud type.
+          * \param[in] filename the file name to read the data from
+          * \param[in] num_threads The number of threads to use. 0 indicates OpenMP is free to choose.
+          * \param[out] cloud the resultant output point cloud
+          */
+        template <typename PointT> bool
+        readOMP (const std::string &filename, pcl::PointCloud<PointT> &cloud, 
+                 unsigned int num_threads=0);
 
         /** \brief Read camera parameters from a given stream and store them internally.
           * The parameters will be read from the <depth> ... </depth> tag.
@@ -244,6 +253,16 @@ namespace pcl
           */
         template<typename PointT> bool
         read (const std::string &filename, pcl::PointCloud<PointT> &cloud);
+        
+        /** \brief Read the data stored in a PCLZF RGB file and convert it to a pcl::PointCloud type.
+          * Note that, unless massively multithreaded, this will likely not result in a significant speedup and may even slow performance.
+          * \param[in] filename the file name to read the data from
+          * \param[in] num_threads The number of threads to use
+          * \param[out] cloud the resultant output point cloud
+          */
+        template <typename PointT> bool
+        readOMP (const std::string &filename, pcl::PointCloud<PointT> &cloud, 
+                 unsigned int num_threads=0);
 
         /** \brief Read camera parameters from a given stream and store them internally.
           * The parameters will be read from the <rgb> ... </rgb> tag.
@@ -281,6 +300,16 @@ namespace pcl
           */
         template<typename PointT> bool
         read (const std::string &filename, pcl::PointCloud<PointT> &cloud);
+        
+        /** \brief Read the data stored in a PCLZF YUV422 file and convert it to a pcl::PointCloud type.
+          * Note that, unless massively multithreaded, this will likely not result in a significant speedup
+          * \param[in] filename the file name to read the data from
+          * \param[in] num_threads The number of threads to use
+          * \param[out] cloud the resultant output point cloud
+          */
+        template <typename PointT> bool
+        readOMP (const std::string &filename, pcl::PointCloud<PointT> &cloud, 
+                 unsigned int num_threads=0);
     };
 
     /** \brief PCL-LZF 8-bit Bayer image format reader.
@@ -309,6 +338,16 @@ namespace pcl
           */
         template<typename PointT> bool
         read (const std::string &filename, pcl::PointCloud<PointT> &cloud);
+
+        /** \brief Read the data stored in a PCLZF Bayer 8bit file and convert it to a pcl::PointCloud type.
+          * Note that, unless massively multithreaded, this will likely not result in a significant speedup and may even slow performance.
+          * \param[in] filename the file name to read the data from
+          * \param[in] num_threads The number of threads to use
+          * \param[out] cloud the resultant output point cloud
+          */
+        template <typename PointT> bool
+        readOMP (const std::string &filename, pcl::PointCloud<PointT> &cloud, 
+                 unsigned int num_threads=0);
     };
 
     /** \brief PCL-LZF image format writer.

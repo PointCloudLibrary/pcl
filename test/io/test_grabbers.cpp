@@ -4,6 +4,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/pcd_grabber.h>
 #include <pcl/io/image_grabber.h>
+#include <pcl/console/time.h>
 
 #include <string>
 #include <vector>
@@ -197,6 +198,86 @@ TEST (PCL, ImageGrabberPCLZF)
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
+  grabber.start ();
+  for (size_t i = 0; i < grabber.size (); i++)
+  {
+    grabber.trigger ();
+    size_t niter = 0;
+    while (!signal_received)
+    {
+      boost::this_thread::sleep (boost::posix_time::microseconds (10000));
+      if (++niter > 100)
+      {
+        ASSERT_TRUE (false);
+        return;
+      }
+    }
+    pclzf_clouds.push_back (cloud_buffer);
+    signal_received = false;
+  }
+  // Make sure they match
+  EXPECT_EQ (pcds_.size (), pclzf_clouds.size ());
+  EXPECT_EQ (pcds_.size (), grabber.size ());
+  for (size_t i = 0; i < pcds_.size (); i++)
+  {
+    CloudT::ConstPtr cloud_from_file_grabber = grabber[i];
+    for (size_t j = 0; j < pcds_[i]->size (); j++)
+    {
+      const PointT &pcd_pt = pcds_[i]->at(j);
+      const PointT &pclzf_pt = pclzf_clouds[i]->at(j);
+      const PointT &pclzf_fg_pt = cloud_from_file_grabber->at(j);
+      if (pcl_isnan (pcd_pt.x))
+      {
+        EXPECT_TRUE (pcl_isnan (pclzf_pt.x));
+        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.x));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_pt.x);
+        EXPECT_FLOAT_EQ (pcd_pt.x, pclzf_fg_pt.x);
+      }
+      if (pcl_isnan (pcd_pt.y))
+      {
+        EXPECT_TRUE (pcl_isnan (pclzf_pt.y));
+        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.y));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_pt.y);
+        EXPECT_FLOAT_EQ (pcd_pt.y, pclzf_fg_pt.y);
+      }
+      if (pcl_isnan (pcd_pt.z))
+      {
+        EXPECT_TRUE (pcl_isnan (pclzf_pt.z));
+        EXPECT_TRUE (pcl_isnan (pclzf_fg_pt.z));
+      }
+      else
+      {
+        EXPECT_FLOAT_EQ (pcd_pt.z, pclzf_pt.z);
+        EXPECT_FLOAT_EQ (pcd_pt.z, pclzf_fg_pt.z);
+      }
+      EXPECT_EQ (pcd_pt.r, pclzf_pt.r);
+      EXPECT_EQ (pcd_pt.g, pclzf_pt.g);
+      EXPECT_EQ (pcd_pt.b, pclzf_pt.b);
+      EXPECT_EQ (pcd_pt.r, pclzf_fg_pt.r);
+      EXPECT_EQ (pcd_pt.g, pclzf_fg_pt.g);
+      EXPECT_EQ (pcd_pt.b, pclzf_fg_pt.b);
+      //EXPECT_EQ (pcd_pt.a, pclzf_pt.a);     // the alpha channel in the PCD set was saved as 255 but it should have been 0
+    }
+  }
+}
+
+TEST (PCL, ImageGrabberOMP)
+{
+  // Get all clouds from the grabber
+  pcl::ImageGrabber<PointT> grabber (pclzf_dir_, 0, false, true);
+  vector <CloudT::ConstPtr> pclzf_clouds;
+  CloudT::ConstPtr cloud_buffer;
+  bool signal_received = false;
+  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
+    fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
+  grabber.registerCallback (fxn);
+  grabber.setNumberOfThreads (0); // Let OMP select
   grabber.start ();
   for (size_t i = 0; i < grabber.size (); i++)
   {

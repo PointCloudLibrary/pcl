@@ -42,6 +42,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/for_each_type.h>
 #include <pcl/io/lzf_image_io.h>
+#include <pcl/console/time.h>
 
 #ifdef PCL_BUILT_WITH_VTK
   #include <vtkImageReader2.h>
@@ -165,6 +166,8 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   double focal_length_y_;
   double principal_point_x_;
   double principal_point_y_;
+
+  unsigned int num_threads_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -191,6 +194,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , focal_length_y_ (525.)
   , principal_point_x_ (320.)
   , principal_point_y_ (240.)
+  , num_threads_ (1)
 {
   if(pclzf_mode_)
   {
@@ -227,6 +231,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , focal_length_y_ (525.)
   , principal_point_x_ (320.)
   , principal_point_y_ (240.)
+  , num_threads_ (1)
 {
   loadDepthAndRGBFiles (depth_dir, rgb_dir);
   cur_frame_ = 0;
@@ -255,6 +260,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , focal_length_y_ (525.)
   , principal_point_x_ (320.)
   , principal_point_y_ (240.)
+  , num_threads_ (1)
 {
   depth_image_files_ = depth_image_files;
   cur_frame_ = 0;
@@ -735,10 +741,20 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       cy = loaded_params.principal_point_y;
     }
     cloud_color.is_dense = false;
-    if (!rgb.read (rgb_pclzf_file, cloud_color))
-      if (!yuv.read (rgb_pclzf_file, cloud_color))
-        bayer.read (rgb_pclzf_file, cloud_color);
-    depth.read (depth_pclzf_file, cloud_color);
+    if (num_threads_ == 1)
+    {
+      if (!rgb.read (rgb_pclzf_file, cloud_color))
+        if (!yuv.read (rgb_pclzf_file, cloud_color))
+          bayer.read (rgb_pclzf_file, cloud_color);
+      depth.read (depth_pclzf_file, cloud_color);
+    }
+    else
+    {
+      if (!rgb.read (rgb_pclzf_file, cloud_color))
+        if (!yuv.readOMP (rgb_pclzf_file, cloud_color, num_threads_)) // Only YUV speeds up currently
+          bayer.read (rgb_pclzf_file, cloud_color);
+      depth.readOMP (depth_pclzf_file, cloud_color, num_threads_);
+    }
     // handle timestamps
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
@@ -780,7 +796,10 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
       cy = loaded_params.principal_point_y;
     }
     cloud.is_dense = false;
-    depth.read (depth_pclzf_file, cloud);
+    if (num_threads_ == 1)
+      depth.read (depth_pclzf_file, cloud);
+    else
+      depth.readOMP (depth_pclzf_file, cloud, num_threads_);
     // handle timestamps
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
@@ -1068,3 +1087,9 @@ pcl::ImageGrabberBase::getTimestampAtIndex (size_t idx, uint64_t &timestamp) con
   return (impl_->getTimestampFromFilepath (filename, timestamp));
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::ImageGrabberBase::setNumberOfThreads (unsigned int nr_threads)
+{
+  impl_->num_threads_ = nr_threads;
+}

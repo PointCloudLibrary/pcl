@@ -179,6 +179,11 @@ namespace pcl
      *  Defaults to mm (0.001), meaning a brightness of 1000 corresponds to 1 m*/
     void
     setDepthImageUnits (float units);
+    
+    /** \brief Set the number of threads, if we wish to use OpenMP for quicker cloud population.
+     *  Note that for a standard (< 4 core) machine this is unlikely to yield a drastic speedup.*/
+    void
+    setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
     /** \brief Convenience function to see how many frames this consists of */
@@ -188,6 +193,7 @@ namespace pcl
     /** \brief Gets the cloud in ROS form at location idx */
     bool
     getCloudAt (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+
 
     private:
     virtual void 
