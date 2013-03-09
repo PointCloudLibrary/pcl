@@ -40,6 +40,15 @@
 
 #include <pcl/filters/impl/random_sample.hpp>
 
+
+///////////////////////////////////////////////////////////////////////////////
+bool
+pcl::RandomSample<sensor_msgs::PointCloud2>::initCompute ()
+{
+  rng_.seed (seed_);
+  return (FilterIndices<sensor_msgs::PointCloud2>::initCompute ());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 void
 pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
@@ -63,37 +72,43 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     output.point_step = input_->point_step;
     output.height = 1;
 
-    // Set random seed so derived indices are the same each time the filter runs
-    std::srand (seed_);
-
-    unsigned top = N - sample_;
-    unsigned i = 0;
-    unsigned index = 0;
-
     // Algorithm A
-    for (size_t n = sample_; n >= 2; n--)
+    float one_over_N = 0.f;
+    float top = 0.f;
+    size_t index = 0;
+    std::vector<bool> added;
+    if (extract_removed_indices_)
+      added.resize (indices_->size (), false);
+    size_t i = 0;
+
+    for (size_t n = sample_; n > 1; n--)
     {
+      top = N - n; // N are the remaining number of elements, n the remaining number of wanted samples
+      one_over_N = 1.f / static_cast<float> (N); //we need to re-calculate N^{-1}
+
       float V = unifRand ();
-      unsigned S = 0;
-      float quot = float (top) / float (N);
-      while (quot > V)
+      size_t S = 0;
+      float quot = top * one_over_N;
+
+      while( quot > V )
       {
-        S++;
-        top--;
-        N--;
-        quot = quot * float (top) / float (N);
+        S ++;
+        N --;
+        quot = quot * (top * one_over_N);
       }
+
+      N--; // this together with N-- above is the same than N - S - 1 (paper Vit84)
       index += S;
-      memcpy (&output.data[i++ * output.point_step], &input_->data[index++ * output.point_step], output.point_step);
-      N--;
+
+      memcpy (&output.data[i * output.point_step], &input_->data[index * output.point_step], output.point_step);
+
+      i ++;
+      index ++;
     }
-
-    index += N * static_cast<unsigned> (unifRand ());
-    memcpy (&output.data[i++ * output.point_step], &input_->data[index++ * output.point_step], output.point_step);
-
-    output.width = sample_;
-    output.row_step = output.point_step * output.width;
   }
+
+  output.width = sample_;
+  output.row_step = output.point_step * output.width;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,33 +127,41 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
     // Resize output indices to sample size
     indices.resize (sample_);
 
-    // Set random seed so derived indices are the same each time the filter runs
-    std::srand (seed_);
-
-    unsigned top = N - sample_;
-    unsigned i = 0;
-    unsigned index = 0;
-
     // Algorithm A
-    for (size_t n = sample_; n >= 2; n--)
-    {
-      float V = unifRand ();
-      unsigned S = 0;
-      float quot = float (top) / float (N);
-      while (quot > V)
-      {
-        S++;
-        top--;
-        N--;
-        quot = quot * float (top) / float (N);
-      }
-      index += S;
-      indices[i++] = (*indices_)[index++];
-      N--;
-    }
+    float one_over_N = 0.f;
+    float top = 0.f;
+    size_t index = 0;
+    std::vector<bool> added;
+    if (extract_removed_indices_)
+      added.resize (indices_->size (), false);
+    size_t i = 0;
 
-    index += N * static_cast<unsigned> (unifRand ());
-    indices[i++] = (*indices_)[index++];
+    for (size_t n = sample_; n > 1; n--)
+    {
+      top = N - n; // N are the remaining number of elements, n the remaining number of wanted samples
+      one_over_N = 1.f / static_cast<float> (N); //we need to re-calculate N^{-1}
+
+      float V = unifRand ();
+      size_t S = 0;
+      float quot = top * one_over_N;
+
+      while( quot > V )
+      {
+        S ++;
+        N --;
+        quot = quot * (top * one_over_N);
+      }
+
+      N--; // this together with N-- above is the same than N - S - 1 (paper Vit84)
+      index += S;
+
+      if (extract_removed_indices_)
+        added[index] = true;
+      indices[i] = (*indices_)[index];
+
+      i ++;
+      index ++;
+    }
   }
 }
 
@@ -146,7 +169,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 
-PCL_INSTANTIATE(RandomSample, PCL_POINT_TYPES)
+  PCL_INSTANTIATE(RandomSample, PCL_POINT_TYPES)
 
-#endif    // PCL_NO_PRECOMPILE
+    #endif    // PCL_NO_PRECOMPILE
 

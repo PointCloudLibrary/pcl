@@ -42,6 +42,13 @@
 #include <pcl/common/io.h>
 #include <pcl/point_traits.h>
 
+///////////////////////////////////////////////////////////////////////////////
+template<typename PointT> bool
+pcl::RandomSample<PointT>::initCompute ()
+{
+  rng_.seed (seed_);
+  return (FilterIndices<PointT>::initCompute ());
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
@@ -92,11 +99,10 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
-  unsigned N = static_cast<unsigned> (indices_->size ());
-  float one_over_N = 1.0f / float (N);
+  size_t N = indices_->size ();
   
-  unsigned int sample_size = negative_ ? N - sample_ : sample_;
-  // If sample size is 0 or if the sample size is greater then input cloud size
+  int sample_size = negative_ ? N - sample_ : sample_;
+  // If sample size is 0 or if the sample size is greater than input cloud size
   //   then return all indices
   if (sample_size >= N)
   {
@@ -110,50 +116,50 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
     if (extract_removed_indices_)
       removed_indices_->resize (static_cast<size_t> (N - sample_size));
 
-    // Set random seed so derived indices are the same each time the filter runs
-    std::srand (seed_);
-
     // Algorithm A
-    unsigned top = N - sample_size;
-    unsigned i = 0;
-    unsigned index = 0;
+    float one_over_N = 0.f;
+    float top = 0.f;
+    size_t index = 0;
     std::vector<bool> added;
     if (extract_removed_indices_)
       added.resize (indices_->size (), false);
-    for (size_t n = sample_size; n >= 2; n--)
+    size_t i = 0;
+
+    for (size_t n = sample_; n > 1; n--)
     {
-      unsigned int V = static_cast<unsigned int>( unifRand () );
-      unsigned S = 0;
-      float quot = float (top) * one_over_N;
-      while (quot > V)
+      top = N - n; // N are the remaining number of elements, n the remaining number of wanted samples
+      one_over_N = 1.f / static_cast<float> (N); //we need to re-calculate N^{-1}
+
+      float V = unifRand ();
+      size_t S = 0;
+      float quot = top * one_over_N;
+
+      while( quot > V )
       {
-        S++;
-        top--;
-        N--;
-        quot = quot * float (top) * one_over_N;
+        S ++;
+        N --;
+        quot = quot * (top * one_over_N);
       }
+
+      N--; // this together with N-- above is the same than N - S - 1 (paper Vit84)
       index += S;
+      
       if (extract_removed_indices_)
         added[index] = true;
-      indices[i++] = (*indices_)[index++];
-      N--;
-    }
+      indices[i] = (*indices_)[index];
 
-    index += N * static_cast<unsigned> (unifRand ());
-    if (extract_removed_indices_)
-      added[index] = true;
-    indices[i++] = (*indices_)[index++];
+      i ++;
+      index ++;
+    }
 
     // Now populate removed_indices_ appropriately
     if (extract_removed_indices_)
     {
-      unsigned ri = 0;
+      size_t ri = 0;
       for (size_t i = 0; i < added.size (); i++)
       {
         if (!added[i])
-        {
           (*removed_indices_)[ri++] = (*indices_)[i];
-        }
       }
     }
   }
