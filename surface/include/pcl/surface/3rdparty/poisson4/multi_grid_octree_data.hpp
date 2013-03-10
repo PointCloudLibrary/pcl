@@ -55,7 +55,7 @@ namespace pcl
     const Real EPSILON=Real(1e-6);
     const Real ROUND_EPS=Real(1e-5);
 
-#if defined WIN32 
+#if defined _WIN32 
     using stdext::hash_map;
 #else
     using std::hash_map;
@@ -64,16 +64,16 @@ namespace pcl
 
     void atomicOr(volatile int& dest, int value)
     {
-#ifdef WIN32
+#ifdef _WIN32
     #if defined (_M_IX86)
       _InterlockedOr( (long volatile*)&dest, value );
     #else
       InterlockedOr( (long volatile*)&dest , value );
     #endif
-#else // !WIN32
+#else // !_WIN32
     #pragma omp atomic
       dest |= value;
-#endif // WIN32
+#endif // _WIN32
     }
 
 

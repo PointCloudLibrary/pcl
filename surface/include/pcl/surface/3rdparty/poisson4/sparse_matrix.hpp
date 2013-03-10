@@ -569,7 +569,7 @@ namespace pcl
         for( int t=0 ; t<threads ; t++ ) _out += OutScratch[t][i];
       }
     }
-#ifdef WIN32
+#ifdef _WIN32
 #ifndef _AtomicIncrement_
 #define _AtomicIncrement_
     inline void AtomicIncrement( volatile float* ptr , float addend )
@@ -777,7 +777,7 @@ namespace pcl
       }
       return ii;
     }
-#endif // WIN32
+#endif // _WIN32
     template< class T >
     template< class T2 >
     int SparseSymmetricMatrix< T >::Solve( const SparseSymmetricMatrix<T>& A , const Vector<T2>& b , int iters , Vector<T2>& x , MapReduceVector< T2 >& scratch , T2 eps , int reset , bool addDCTerm , bool solveNormal )
