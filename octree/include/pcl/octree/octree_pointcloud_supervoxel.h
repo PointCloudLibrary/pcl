@@ -387,11 +387,11 @@ namespace pcl
         const PointT& point = this->input_->points[pointIdx_arg];
 
         // make sure bounding box is big enough
-        adoptBoundingBoxToPoint (point);
+        this->adoptBoundingBoxToPoint (point);
 
         // generate key
         OctreeKey key;
-        genOctreeKeyforPoint (point, key);
+        this->genOctreeKeyforPoint (point, key);
 
         LeafNode* new_leaf = 0;
         BranchNode* leaf_parent = 0;

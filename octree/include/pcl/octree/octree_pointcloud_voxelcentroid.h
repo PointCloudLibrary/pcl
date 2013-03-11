@@ -181,10 +181,10 @@ namespace pcl
           const PointT& point = this->input_->points[pointIdx_arg];
 
           // make sure bounding box is big enough
-          adoptBoundingBoxToPoint (point);
+          this->adoptBoundingBoxToPoint (point);
 
           // generate key
-          genOctreeKeyforPoint (point, key);
+          this->genOctreeKeyforPoint (point, key);
 
           // add point to octree at key
           LeafContainerT* container = this->createLeaf(key);
