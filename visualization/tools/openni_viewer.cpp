@@ -122,12 +122,6 @@ class OpenNIViewer
     {
       FPS_CALC ("cloud callback");
       boost::mutex::scoped_lock lock (cloud_mutex_);
-      int t;
-      for (int i=1; i<100000000; ++i)
-         t +=i;
-      std::cout<<t<<std::endl;
-
-
       cloud_ = cloud;
     }
 
@@ -137,12 +131,7 @@ class OpenNIViewer
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
       image_ = image;
-      int t;
-      for (int i=1; i<100000000; ++i)
-         t +=i;
-
-      std::cout<<t<<std::endl;
-
+      
       if (image->getEncoding () != openni_wrapper::Image::RGB)
       {
         if (rgb_data_size_ < image->getWidth () * image->getHeight ())
@@ -258,9 +247,6 @@ class OpenNIViewer
           image_viewer_->spinOnce ();
         }
         
-        int t;
-        for (int i=1; i<1000000; ++i)
-           t +=i;
       }
 
       grabber_.stop ();
