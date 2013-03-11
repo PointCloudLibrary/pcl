@@ -44,10 +44,6 @@
 
 #include "octree_pointcloud.h"
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
-#include "octree_nodes.h"
-
 namespace pcl
 {
   namespace octree
@@ -58,7 +54,7 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int> ,  typename BranchContainerT = OctreeContainerEmpty<int> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerPointIndices ,  typename BranchContainerT = OctreeContainerEmpty >
     class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:

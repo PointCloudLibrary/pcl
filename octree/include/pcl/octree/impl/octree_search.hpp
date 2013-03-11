@@ -63,7 +63,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::v
 
   if (leaf)
   {
-    leaf->getData (pointIdx_data);
+    (*leaf).getPointIndices (pointIdx_data);
     b_success = true;
   }
 
@@ -283,7 +283,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
       const LeafNode* childLeaf = static_cast<const LeafNode*> (childNode);
 
       // decode leaf node into decodedPointVector
-      childLeaf->getData (decodedPointVector);
+      (*childLeaf)->getPointIndices (decodedPointVector);
 
       // Linearly iterate over all decoded (unsorted) points
       for (i = 0; i < decodedPointVector.size (); i++)
@@ -379,7 +379,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
         vector<int> decodedPointVector;
 
         // decode leaf node into decodedPointVector
-        childLeaf->getData (decodedPointVector);
+        (*childLeaf)->getPointIndices (decodedPointVector);
 
         // Linearly iterate over all decoded (unsorted) points
         for (i = 0; i < decodedPointVector.size (); i++)
@@ -480,7 +480,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::a
     smallestSquaredDist = numeric_limits<double>::max ();
 
     // decode leaf node into decodedPointVector
-    childLeaf->getData (decodedPointVector);
+    (**childLeaf).getPointIndices (decodedPointVector);
 
     // Linearly iterate over all decoded (unsorted) points
     for (i = 0; i < decodedPointVector.size (); i++)
@@ -565,7 +565,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
         const LeafNode* childLeaf = static_cast<const LeafNode*> (childNode);
 
         // decode leaf node into decodedPointVector
-        childLeaf->getData (decodedPointVector);
+        (**childLeaf).getPointIndices (decodedPointVector);
 
         // Linearly iterate over all decoded (unsorted) points
         for (i = 0; i < decodedPointVector.size (); i++)
@@ -767,7 +767,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
     const LeafNode* leaf = static_cast<const LeafNode*> (node);
 
     // decode leaf node into k_indices
-    leaf->getData (k_indices);
+    (*leaf)->getPointIndices (k_indices);
 
     return (1);
   }

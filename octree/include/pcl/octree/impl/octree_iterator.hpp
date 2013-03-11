@@ -49,34 +49,34 @@ namespace pcl
   namespace octree
   {
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeDepthFirstIterator<DataT, OctreeT>::OctreeDepthFirstIterator (unsigned int maxDepth_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (maxDepth_arg), stack_ ()
+    template<typename OctreeT>
+    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (unsigned int maxDepth_arg) :
+        OctreeIteratorBase<OctreeT> (maxDepth_arg), stack_ ()
     {
       // initialize iterator
       this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeDepthFirstIterator<DataT, OctreeT>::OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (octree_arg, maxDepth_arg), stack_ ()
+    template<typename OctreeT>
+    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
+        OctreeIteratorBase<OctreeT> (octree_arg, maxDepth_arg), stack_ ()
     {
       // initialize iterator
       this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeDepthFirstIterator<DataT, OctreeT>::~OctreeDepthFirstIterator ()
+    template<typename OctreeT>
+    OctreeDepthFirstIterator<OctreeT>::~OctreeDepthFirstIterator ()
     {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    void OctreeDepthFirstIterator<DataT, OctreeT>::reset ()
+    template<typename OctreeT>
+    void OctreeDepthFirstIterator<OctreeT>::reset ()
     {
-      OctreeIteratorBase<DataT, OctreeT>::reset ();
+      OctreeIteratorBase<OctreeT>::reset ();
 
       if (this->octree_)
       {
@@ -100,8 +100,8 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    void OctreeDepthFirstIterator<DataT, OctreeT>::skipChildVoxels ()
+    template<typename OctreeT>
+    void OctreeDepthFirstIterator<OctreeT>::skipChildVoxels ()
     {
 
       if (stack_.size ())
@@ -125,9 +125,9 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeDepthFirstIterator<DataT, OctreeT>&
-    OctreeDepthFirstIterator<DataT, OctreeT>::operator++ ()
+    template<typename OctreeT>
+    OctreeDepthFirstIterator<OctreeT>&
+    OctreeDepthFirstIterator<OctreeT>::operator++ ()
     {
 
       if (stack_.size ())
@@ -181,38 +181,38 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeBreadthFirstIterator<DataT, OctreeT>::OctreeBreadthFirstIterator (unsigned int maxDepth_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (maxDepth_arg), FIFO_ ()
+    template<typename OctreeT>
+    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (unsigned int maxDepth_arg) :
+        OctreeIteratorBase<OctreeT> (maxDepth_arg), FIFO_ ()
     {
-      OctreeIteratorBase<DataT, OctreeT>::reset ();
+      OctreeIteratorBase<OctreeT>::reset ();
 
       // initialize iterator
       this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeBreadthFirstIterator<DataT, OctreeT>::OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
-        OctreeIteratorBase<DataT, OctreeT> (octree_arg, maxDepth_arg), FIFO_ ()
+    template<typename OctreeT>
+    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
+        OctreeIteratorBase<OctreeT> (octree_arg, maxDepth_arg), FIFO_ ()
     {
-      OctreeIteratorBase<DataT, OctreeT>::reset ();
+      OctreeIteratorBase<OctreeT>::reset ();
 
       // initialize iterator
       this->reset ();
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeBreadthFirstIterator<DataT, OctreeT>::~OctreeBreadthFirstIterator ()
+    template<typename OctreeT>
+    OctreeBreadthFirstIterator<OctreeT>::~OctreeBreadthFirstIterator ()
     {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    void OctreeBreadthFirstIterator<DataT, OctreeT>::reset ()
+    template<typename OctreeT>
+    void OctreeBreadthFirstIterator<OctreeT>::reset ()
     {
-      OctreeIteratorBase<DataT, OctreeT>::reset ();
+      OctreeIteratorBase<OctreeT>::reset ();
 
       // init FIFO
       FIFO_.clear ();
@@ -232,9 +232,9 @@ namespace pcl
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename DataT, typename OctreeT>
-    OctreeBreadthFirstIterator<DataT, OctreeT>&
-    OctreeBreadthFirstIterator<DataT, OctreeT>::operator++ ()
+    template<typename OctreeT>
+    OctreeBreadthFirstIterator<OctreeT>&
+    OctreeBreadthFirstIterator<OctreeT>::operator++ ()
     {
 
       if (FIFO_.size ())

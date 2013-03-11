@@ -41,9 +41,6 @@
 
 #include "octree_pointcloud.h"
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
-
 namespace pcl
 {
   namespace octree
@@ -59,11 +56,12 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int>,
-        typename BranchContainerT = OctreeContainerEmpty<int> >
+    template<typename PointT,
+        typename LeafContainerT = OctreeContainerPointIndices,
+        typename BranchContainerT = OctreeContainerEmpty >
 
     class OctreePointCloudChangeDetector : public OctreePointCloud<PointT,
-        LeafContainerT, BranchContainerT, Octree2BufBase<int, LeafContainerT, BranchContainerT> >
+        LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT, BranchContainerT> >
 
     {
 
@@ -74,7 +72,7 @@ namespace pcl
          * */
         OctreePointCloudChangeDetector (const double resolution_arg) :
             OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
-                Octree2BufBase<int, LeafContainerT, BranchContainerT> > (resolution_arg)
+                Octree2BufBase<LeafContainerT, BranchContainerT> > (resolution_arg)
         {
         }
 
@@ -88,11 +86,23 @@ namespace pcl
          * \param minPointsPerLeaf_arg: minimum amount of points required within leaf node to become serialized.
          * \return number of point indices
          */
-        int getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg,
+        std::size_t getPointIndicesFromNewVoxels (std::vector<int> &indicesVector_arg,
             const int minPointsPerLeaf_arg = 0)
         {
-          this->serializeNewLeafs (indicesVector_arg, minPointsPerLeaf_arg);
-          return (static_cast<int> (indicesVector_arg.size ()));
+
+          std::vector<OctreeContainerPointIndices*> leaf_containers;
+          this->serializeNewLeafs (leaf_containers);
+
+          std::vector<OctreeContainerPointIndices*>::iterator it;
+          std::vector<OctreeContainerPointIndices*>::const_iterator it_end = leaf_containers.end();
+
+          for (it=leaf_containers.begin(); it!=it_end; ++it)
+          {
+            if ((*it)->getSize()>=minPointsPerLeaf_arg)
+              (*it)->getPointIndices(indicesVector_arg);
+          }
+
+          return (indicesVector_arg.size ());
         }
     };
   }

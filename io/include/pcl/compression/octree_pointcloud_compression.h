@@ -40,6 +40,7 @@
 
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
+#include <pcl/octree/octree2buf_base.h>
 #include <pcl/octree/octree_pointcloud.h>
 #include "entropy_range_coder.h"
 #include "color_coding.h"
@@ -67,9 +68,9 @@ namespace pcl
      *  \note typename: PointT: type of point used in pointcloud
      *  \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename PointT, typename LeafT = OctreeContainerDataTVector<int>,
-        typename BranchT = OctreeContainerEmpty<int>,
-        typename OctreeT = Octree2BufBase<int, LeafT, BranchT> >
+    template<typename PointT, typename LeafT = OctreeContainerPointIndices,
+        typename BranchT = OctreeContainerEmpty,
+        typename OctreeT = Octree2BufBase<LeafT, BranchT> >
     class OctreePointCloudCompression : public OctreePointCloud<PointT, LeafT,
         BranchT, OctreeT>
     {
@@ -82,8 +83,8 @@ namespace pcl
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
 
-        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<int, LeafT, BranchT> > RealTimeStreamCompression;
-        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeBase<int, LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
+        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, Octree2BufBase<LeafT, BranchT> > RealTimeStreamCompression;
+        typedef OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeBase<LeafT, BranchT> > SinglePointCloudCompressionLowMemory;
 
 
         /** \brief Constructor
@@ -118,7 +119,9 @@ namespace pcl
           doColorEncoding_ (doColorEncoding_arg), cloudWithColor_ (false), dataWithColor_ (false),
           pointColorOffset_ (0), bShowStatistics (showStatistics_arg), 
           compressedPointDataLen_ (), compressedColorDataLen_ (), selectedProfile_(compressionProfile_arg),
-          pointResolution_(pointResolution_arg), octreeResolution_(octreeResolution_arg), colorBitResolution_(colorBitResolution_arg)
+          pointResolution_(pointResolution_arg), octreeResolution_(octreeResolution_arg),
+          colorBitResolution_(colorBitResolution_arg),
+          objectCount_(0)
         {
           initialization();
         }
@@ -158,6 +161,16 @@ namespace pcl
             //disable differential point colding
             doVoxelGridEnDecoding_ = true;
 
+        }
+
+        /** \brief Add point at index from input pointcloud dataset to octree
+         * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
+         */
+        virtual void
+        addPointIdx (const int pointIdx_arg)
+        {
+          ++objectCount_;
+          OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
         }
 
         /** \brief Provide a pointer to the output data set.
@@ -232,14 +245,14 @@ namespace pcl
           * \param key_arg: octree key of new leaf node
          */
         virtual void
-        serializeTreeCallback (LeafNode &leaf_arg, const OctreeKey& key_arg);
+        serializeTreeCallback (LeafT &leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf nodes information during deserialization
           * \param leaf_arg: reference to new leaf node
          * \param key_arg: octree key of new leaf node
          */
         virtual void
-        deserializeTreeCallback (LeafNode&, const OctreeKey& key_arg);
+        deserializeTreeCallback (LeafT&, const OctreeKey& key_arg);
 
 
         /** \brief Pointer to output point cloud dataset. */
@@ -290,6 +303,8 @@ namespace pcl
         const double pointResolution_;
         const double octreeResolution_;
         const unsigned char colorBitResolution_;
+
+        std::size_t objectCount_;
 
       };
 

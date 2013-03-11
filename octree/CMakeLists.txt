@@ -9,7 +9,7 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-    set(srcs src/octree_impl.cpp
+    set(srcs src/octree_inst.cpp
     )
 
     set(incs 
@@ -17,8 +17,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/octree_base.h 
         include/pcl/${SUBSYS_NAME}/octree_container.h
         include/pcl/${SUBSYS_NAME}/octree_impl.h 
-        include/pcl/${SUBSYS_NAME}/octree_nodes.h
-        include/pcl/${SUBSYS_NAME}/octree_node_pool.h
+        include/pcl/${SUBSYS_NAME}/octree_nodes.h 
         include/pcl/${SUBSYS_NAME}/octree_key.h 
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_density.h
         include/pcl/${SUBSYS_NAME}/octree_pointcloud_occupancy.h

@@ -40,13 +40,10 @@
 #define PCL_OCTREE_POINTCLOUD_H
 
 #include "octree_base.h"
-#include "octree2buf_base.h"
+//#include "octree2buf_base.h"
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-
-#include "octree_nodes.h"
-#include "octree_iterator.h"
 
 #include <queue>
 #include <vector>
@@ -73,17 +70,17 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int>,
-        typename BranchContainerT = OctreeContainerEmpty<int>,
-        typename OctreeT = OctreeBase<int, LeafContainerT, BranchContainerT> >
+    template<typename PointT, typename LeafContainerT = OctreeContainerPointIndices,
+        typename BranchContainerT = OctreeContainerEmpty,
+        typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
 
     class OctreePointCloud : public OctreeT
     {
         // iterators are friends
-        friend class OctreeIteratorBase<int, OctreeT> ;
-        friend class OctreeDepthFirstIterator<int, OctreeT> ;
-        friend class OctreeBreadthFirstIterator<int, OctreeT> ;
-        friend class OctreeLeafNodeIterator<int, OctreeT> ;
+        friend class OctreeIteratorBase<OctreeT> ;
+        friend class OctreeDepthFirstIterator<OctreeT> ;
+        friend class OctreeBreadthFirstIterator<OctreeT> ;
+        friend class OctreeLeafNodeIterator<OctreeT> ;
 
       public:
         typedef OctreeT Base;
@@ -92,20 +89,20 @@ namespace pcl
         typedef typename OctreeT::BranchNode BranchNode;
 
         // Octree default iterators
-        typedef OctreeDepthFirstIterator<int, OctreeT> Iterator;
-        typedef const OctreeDepthFirstIterator<int, OctreeT> ConstIterator;
+        typedef OctreeDepthFirstIterator<OctreeT> Iterator;
+        typedef const OctreeDepthFirstIterator<OctreeT> ConstIterator;
 
         // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<int, OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<int, OctreeT> ConstLeafNodeIterator;
+        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
+        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
 
         // Octree depth-first iterators
-        typedef OctreeDepthFirstIterator<int, OctreeT> DepthFirstIterator;
-        typedef const OctreeDepthFirstIterator<int, OctreeT> ConstDepthFirstIterator;
+        typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
+        typedef const OctreeDepthFirstIterator<OctreeT> ConstDepthFirstIterator;
 
         // Octree breadth-first iterators
-        typedef OctreeBreadthFirstIterator<int, OctreeT> BreadthFirstIterator;
-        typedef const OctreeBreadthFirstIterator<int, OctreeT> ConstBreadthFirstIterator;
+        typedef OctreeBreadthFirstIterator<OctreeT> BreadthFirstIterator;
+        typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
 
         /** \brief Octree pointcloud constructor.
          * \param[in] resolution_arg octree resolution at lowest octree level
@@ -125,12 +122,12 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
         // public typedefs for single/double buffering
-        typedef OctreePointCloud<PointT, LeafContainerT, OctreeBase<int, LeafContainerT> > SingleBuffer;
-        typedef OctreePointCloud<PointT, LeafContainerT, Octree2BufBase<int, LeafContainerT> > DoubleBuffer;
+        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeBase<LeafContainerT> > SingleBuffer;
+       // typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT> > DoubleBuffer;
 
         // Boost shared pointers
-        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, OctreeT> > Ptr;
-        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, OctreeT> > ConstPtr;
+        typedef boost::shared_ptr<OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> > Ptr;
+        typedef boost::shared_ptr<const OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> > ConstPtr;
 
         // Eigen aligned allocator
         typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > AlignedPointTVector;
@@ -243,13 +240,13 @@ namespace pcl
         /** \brief Delete the octree structure and its leaf nodes.
          *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
          * */
-        void deleteTree (bool freeMemory_arg = false)
+        void deleteTree ()
         {
           // reset bounding box
           minX_ = minY_ = maxY_ = minZ_ = maxZ_ = 0;
           this->boundingBoxDefined_ = false;
 
-          OctreeT::deleteTree (freeMemory_arg);
+          OctreeT::deleteTree ();
         }
 
         /** \brief Check if voxel at given point coordinates exist.
@@ -393,20 +390,43 @@ namespace pcl
          * \param[out] min_pt lower bound of voxel
          * \param[out] max_pt upper bound of voxel
          */
-        inline void getVoxelBounds (OctreeIteratorBase<int, OctreeT>& iterator,
+        inline void getVoxelBounds (OctreeIteratorBase<OctreeT>& iterator,
             Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
         {
           this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey (),
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);
         }
 
+        /** \brief Enable dynamic octree structure
+         *  \note Leaf nodes are kept as close to the root as possible and are only expanded if the number of DataT objects within a leaf node exceeds a fixed limit.
+         *  \param maxObjsPerLeaf: maximum number of DataT objects per leaf
+         * */
+        inline void
+        enableDynamicDepth ( size_t maxObjsPerLeaf )
+        {
+          assert(this->leafCount_==0);
+          maxObjsPerLeaf_ = maxObjsPerLeaf;
+
+          this->dynamic_depth_enabled_ = static_cast<bool> (maxObjsPerLeaf_>0);
+        }
+
+
       protected:
 
         /** \brief Add point at index from input pointcloud dataset to octree
          * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
          */
-        void
+        virtual void
         addPointIdx (const int pointIdx_arg);
+
+        /** \brief Add point at index from input pointcloud dataset to octree
+         * \param[in] leaf_node to be expanded
+         * \param[in] parent_branch parent of leaf node to be expanded
+         * \param[in] child_idx child index of leaf node (in parent branch)
+         * \param[in] depth_mask of leaf node to be expanded
+         */
+        void
+        expandLeafNode (LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, unsigned int depth_mask);
 
         /** \brief Get point at index from input pointcloud dataset
          * \param[in] index_arg index representing the point in the dataset given by \a setInputCloud
@@ -419,7 +439,7 @@ namespace pcl
          * \param[in] point_arg query point
          * \return pointer to leaf node. If leaf node does not exist, pointer is 0.
          */
-        LeafNode*
+        LeafContainerT*
         findLeafAtPoint (const PointT& point_arg) const
         {
           OctreeKey key;
@@ -548,7 +568,13 @@ namespace pcl
 
         /** \brief Flag indicating if octree has defined bounding box. */
         bool boundingBoxDefined_;
+
+        /** \brief Amount of DataT objects per leafNode before expanding branch
+         *  \note zero indicates a fixed/maximum depth octree structure
+         * **/
+        std::size_t maxObjsPerLeaf_;
     };
+
   }
 }
 

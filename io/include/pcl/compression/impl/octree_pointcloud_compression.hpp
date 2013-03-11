@@ -129,6 +129,7 @@ namespace pcl
           // p-frame encoding - XOR encoded tree structure
           this->serializeTree (binaryTreeDataVector_, true);
 
+
         // write frame header information to stream
         this->writeFrameHeader (compressedTreeDataOut_arg);
 
@@ -138,6 +139,9 @@ namespace pcl
         // prepare for next frame
         this->switchBuffers ();
         iFrame_ = false;
+
+        // reset object count
+        objectCount_ = 0;
 
         if (bShowStatistics)
         {
@@ -470,10 +474,10 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
     OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::serializeTreeCallback (
-        LeafNode &leaf_arg, const OctreeKey & key_arg)
+        LeafT &leaf_arg, const OctreeKey & key_arg)
     {
       // reference to point indices vector stored within octree leaf
-      const std::vector<int>& leafIdx = leaf_arg.getDataTVector ();
+      const std::vector<int>& leafIdx = leaf_arg.getPointIndicesVector();
 
       if (!doVoxelGridEnDecoding_)
       {
@@ -504,7 +508,7 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT> void
-    OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::deserializeTreeCallback (LeafNode&,
+    OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::deserializeTreeCallback (LeafT&,
         const OctreeKey& key_arg)
     {
       double lowerVoxelCorner[3];

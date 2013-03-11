@@ -41,11 +41,6 @@
 
 #include "octree_pointcloud.h"
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
-
-#include "octree_nodes.h"
-
 namespace pcl
 {
   namespace octree
@@ -61,19 +56,19 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeContainerDataTVector<int>,
-        typename BranchContainerT = OctreeContainerEmpty<int>,
-        typename OctreeT = OctreeBase<int, LeafContainerT, BranchContainerT> >
-    class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafContainerT,
-        BranchContainerT, OctreeT>
+    template<typename PointT,
+             typename LeafContainerT = OctreeContainerPointIndices,
+             typename BranchContainerT = OctreeContainerEmpty,
+             typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
+    class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     {
 
       public:
         // public typedefs for single/double buffering
         typedef OctreePointCloudPointVector<PointT, LeafContainerT, BranchContainerT,
-            OctreeBase<int, LeafContainerT, BranchContainerT> > SingleBuffer;
-        typedef OctreePointCloudPointVector<PointT, LeafContainerT, BranchContainerT,
-            Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
+            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
+      //  typedef OctreePointCloudPointVector<PointT, LeafContainerT, BranchContainerT,
+     //       Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
 
         /** \brief Constructor.
          *  \param resolution_arg: octree resolution at lowest octree level

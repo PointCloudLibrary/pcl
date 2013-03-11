@@ -106,7 +106,9 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
     // Search for extension
     std::string chunk_name (ltm_header.file_name);
-    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), ::tolower);
+
+    // ERROR: no matching function for call to ‘transform(std::basic_string<char>::iterator&, std::basic_string<char>::iterator&, std::basic_string<char>::iterator&, <unresolved overloaded function type>)’
+//    std::transform (chunk_name.begin (), chunk_name.end (), chunk_name.begin (), tolower);
     std::string::size_type it;
 
     if ((it = chunk_name.find (pcd_ext)) != std::string::npos &&

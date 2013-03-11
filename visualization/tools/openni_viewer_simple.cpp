@@ -108,6 +108,7 @@ class SimpleOpenNIViewer
     {
       FPS_CALC ("image callback");
       boost::mutex::scoped_lock lock (image_mutex_);
+      boost::this_thread::sleep(boost::posix_time::milliseconds(50));
       image_ = image;
     }
     

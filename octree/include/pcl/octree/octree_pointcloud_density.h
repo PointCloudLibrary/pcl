@@ -41,9 +41,6 @@
 
 #include "octree_pointcloud.h"
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
-
 namespace pcl
 {
   namespace octree
@@ -52,8 +49,7 @@ namespace pcl
       * \note This class implements a leaf node that counts the amount of points which fall into its voxel space.
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename DataT>
-    class OctreePointCloudDensityContainer : public OctreeContainerBase<DataT>
+    class OctreePointCloudDensityContainer : public OctreeContainerBase
     {
       public:
         /** \brief Class initialization. */
@@ -73,10 +69,21 @@ namespace pcl
           return (new OctreePointCloudDensityContainer (*this));
         }
 
+        /** \brief Equal comparison operator
+         * \param[in] OctreePointCloudDensityContainer to compare with
+         */
+        virtual bool operator==(const OctreeContainerBase& other) const
+        {
+          const OctreePointCloudDensityContainer* otherContainer =
+              dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
+
+          return (this->pointCounter_==otherContainer->pointCounter_);
+        }
+
         /** \brief Read input data. Only an internal counter is increased.
           */
         void
-        setData (const DataT&)
+        addPointIndex (int)
         {
           pointCounter_++;
         }
@@ -110,7 +117,7 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafContainerT = OctreePointCloudDensityContainer<int> , typename BranchContainerT = OctreeContainerEmpty<int> >
+    template<typename PointT, typename LeafContainerT = OctreePointCloudDensityContainer, typename BranchContainerT = OctreeContainerEmpty >
     class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
@@ -138,7 +145,7 @@ namespace pcl
         {
           unsigned int pointCount = 0;
 
-          OctreePointCloudDensityContainer<int>* leaf = this->findLeafAtPoint (point_arg);
+          OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint (point_arg);
 
           if (leaf)
             pointCount = leaf->getPointCounter ();

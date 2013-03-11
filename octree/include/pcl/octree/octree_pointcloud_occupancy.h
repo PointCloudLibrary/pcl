@@ -41,9 +41,6 @@
 
 #include "octree_pointcloud.h"
 
-#include "octree_base.h"
-#include "octree2buf_base.h"
-
 namespace pcl
 {
   namespace octree
@@ -59,10 +56,11 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeContainerEmpty<int>,
-        typename BranchContainerT = OctreeContainerEmpty<int> >
+    template<typename PointT,
+             typename LeafContainerT = OctreeContainerEmpty,
+             typename BranchContainerT = OctreeContainerEmpty >
     class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafContainerT,
-        BranchContainerT, OctreeBase<int, LeafContainerT, BranchContainerT> >
+        BranchContainerT, OctreeBase<LeafContainerT, BranchContainerT> >
 
     {
 
@@ -81,7 +79,7 @@ namespace pcl
          * */
         OctreePointCloudOccupancy (const double resolution_arg) :
             OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
-                OctreeBase<int, LeafContainerT, BranchContainerT> > (resolution_arg)
+                OctreeBase<LeafContainerT, BranchContainerT> > (resolution_arg)
         {
         }
 

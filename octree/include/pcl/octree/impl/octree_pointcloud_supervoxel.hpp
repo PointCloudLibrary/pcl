@@ -85,11 +85,10 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
           neighbor_key.x = current_key.x + dx;
           neighbor_key.y = current_key.y + dy;
           neighbor_key.z = current_key.z + dz;
-          LeafNode *neighbor = OctreeBaseT::findLeaf (neighbor_key);
+          LeafContainerT *neighbor = OctreeBaseT::findLeaf (neighbor_key);
           if (neighbor)
           {
-            neighbor_container = dynamic_cast<LeafContainerT*> (neighbor);
-            neighbor_centroid = neighbor_container->getCentroid ();
+            neighbor_centroid = neighbor->getCentroid ();
             float dist = pow((neighbor_centroid.x - leaf_centroid.x),2) 
                         +pow((neighbor_centroid.y - leaf_centroid.y),2) 
                         +pow((neighbor_centroid.z - leaf_centroid.z),2);

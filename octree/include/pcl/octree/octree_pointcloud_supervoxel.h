@@ -156,7 +156,7 @@ namespace pcl
      * as well as a PointSuperVoxel  
      */
     template<typename PointT>
-    class OctreePointCloudSuperVoxelContainer : public OctreeContainerBase<int>
+    class OctreePointCloudSuperVoxelContainer : public OctreeContainerBase
     {
     public:
       
@@ -320,7 +320,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template< typename PointT, 
               typename LeafContainerT = OctreePointCloudSuperVoxelContainer <PointT>,    
-              typename BranchContainerT = OctreeContainerEmpty<int> >
+              typename BranchContainerT = OctreeContainerEmpty >
     class OctreePointCloudSuperVoxel : public OctreePointCloud< PointT, LeafContainerT, BranchContainerT>
 
     {
@@ -335,24 +335,24 @@ namespace pcl
       typedef typename OctreePointCloudT::LeafNode LeafNode;
       typedef typename OctreePointCloudT::BranchNode BranchNode;
       
-      typedef OctreeBase<int, LeafContainerT, BranchContainerT> OctreeBaseT;
+      typedef OctreeBase<LeafContainerT, BranchContainerT> OctreeBaseT;
       
       
       // iterators are friends
-      friend class OctreeIteratorBase<int, OctreeSuperVoxelT> ;
-      friend class OctreeDepthFirstIterator<int, OctreeSuperVoxelT> ;
-      friend class OctreeBreadthFirstIterator<int, OctreeSuperVoxelT> ;
-      friend class OctreeLeafNodeIterator<int, OctreeSuperVoxelT> ;
+      friend class OctreeIteratorBase<OctreeSuperVoxelT> ;
+      friend class OctreeDepthFirstIterator<OctreeSuperVoxelT> ;
+      friend class OctreeBreadthFirstIterator<OctreeSuperVoxelT> ;
+      friend class OctreeLeafNodeIterator<OctreeSuperVoxelT> ;
       
       // Octree default iterators
-      typedef OctreeDepthFirstIterator<int, OctreeSuperVoxelT> Iterator;
-      typedef const OctreeDepthFirstIterator<int, OctreeSuperVoxelT> ConstIterator;
+      typedef OctreeDepthFirstIterator<OctreeSuperVoxelT> Iterator;
+      typedef const OctreeDepthFirstIterator<OctreeSuperVoxelT> ConstIterator;
       Iterator begin(unsigned int maxDepth_arg = 0) {return Iterator(this, maxDepth_arg);};
       const Iterator end() {return Iterator();};
       
       // Octree leaf node iterators
-      typedef OctreeLeafNodeIterator<int, OctreeSuperVoxelT> LeafNodeIterator;
-      typedef const OctreeLeafNodeIterator<int, OctreeSuperVoxelT> ConstLeafNodeIterator;
+      typedef OctreeLeafNodeIterator<OctreeSuperVoxelT> LeafNodeIterator;
+      typedef const OctreeLeafNodeIterator<OctreeSuperVoxelT> ConstLeafNodeIterator;
       LeafNodeIterator leaf_begin(unsigned int maxDepth_arg = 0) {return LeafNodeIterator(this, maxDepth_arg);};
       const LeafNodeIterator leaf_end() {return LeafNodeIterator();};
             
@@ -378,24 +378,30 @@ namespace pcl
       {
       }
 
-      /** \brief Add DataT object to leaf node at octree key.
-       * \param[in] key_arg octree key addressing a leaf node.
-       * \param[in] data_arg DataT object to be added.
+      /** \brief Add point at index from input pointcloud dataset to octree
+       * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
        */
-      virtual void 
-      addData (const OctreeKey& key_arg, const int& data_arg)
+      virtual void
+      addPointIdx (const int pointIdx_arg)
       {
+        const PointT& point = this->input_->points[pointIdx_arg];
+
+        // make sure bounding box is big enough
+        adoptBoundingBoxToPoint (point);
+
+        // generate key
+        OctreeKey key;
+        genOctreeKeyforPoint (point, key);
+
         LeafNode* new_leaf = 0;
-        this->createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, new_leaf);
-        
+        BranchNode* leaf_parent = 0;
+        this->createLeafRecursive (key, this->depthMask_, this->rootNode_, new_leaf, leaf_parent);
+
         if (new_leaf)
         {
-          const PointT& cloudPoint = this->getPointByIndex (data_arg);
-          
           // add data to leaf
-          LeafContainerT* container = new_leaf;
-          container->addPoint (cloudPoint);
-          this->objectCount_++;
+          LeafContainerT* container = new_leaf->getContainerPtr();
+          container->addPoint (point);
         }
       }
       

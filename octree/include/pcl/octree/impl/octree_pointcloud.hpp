@@ -51,7 +51,7 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT, ty
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::OctreePointCloud (const double resolution) :
     OctreeT (), input_ (PointCloudConstPtr ()), indices_ (IndicesConstPtr ()),
     epsilon_ (0), resolution_ (resolution), minX_ (0.0f), maxX_ (resolution), minY_ (0.0f),
-    maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), boundingBoxDefined_ (false)
+    maxY_ (resolution), minZ_ (0.0f), maxZ_ (resolution), boundingBoxDefined_ (false), maxObjsPerLeaf_(0)
 {
   assert (resolution > 0.0f);
 }
@@ -412,6 +412,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   maxZ_arg = maxZ_;
 }
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
 void
@@ -448,7 +449,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
         BranchNode* newRootBranch;
 
-        newRootBranch = this->branchNodePool_.popNode();
+        newRootBranch = new BranchNode();
         this->branchCount_++;
 
         this->setBranchChildPtr (*newRootBranch, childIdx, this->rootNode_);
@@ -505,6 +506,55 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT> void
+pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::expandLeafNode (LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, unsigned int depth_mask)
+{
+
+  if (depth_mask)
+  {
+    // get amount of objects in leaf container
+    size_t leafObjCount = (*leaf_node)->getSize ();
+
+  // copy leaf data
+    std::vector<int> leafIndices;
+    leafIndices.reserve(leafObjCount);
+
+    (*leaf_node)->getPointIndices(leafIndices);
+
+    // delete current leaf node
+    this->deleteBranchChild(*parent_branch, child_idx);
+    this->leafCount_ --;
+
+    // create new branch node
+    BranchNode* childBranch = this->createBranchChild (*parent_branch, child_idx);
+    this->branchCount_ ++;
+
+    typename std::vector<int>::iterator it = leafIndices.begin();
+    typename std::vector<int>::const_iterator it_end = leafIndices.end();
+
+    // add data to new branch
+    OctreeKey new_index_key;
+
+    for (it = leafIndices.begin(); it!=it_end; ++it)
+    {
+
+      const PointT& point_from_index = input_->points[*it];
+      // generate key
+      genOctreeKeyforPoint (point_from_index, new_index_key);
+
+      LeafNode* newLeaf;
+      BranchNode* newBranchParent;
+      createLeafRecursive (new_index_key, depth_mask, childBranch, newLeaf, newBranchParent);
+
+      (*newLeaf)->addPointIndex(*it);
+    }
+  }
+
+
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::addPointIdx (const int pointIdx_arg)
 {
   OctreeKey key;
@@ -519,8 +569,32 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // generate key
   genOctreeKeyforPoint (point, key);
 
-  // add point to octree at key
-  this->addData (key, pointIdx_arg);
+  LeafNode* leafNode;
+  BranchNode* parentBranchOfLeafNode;
+  unsigned int depth_mask = createLeafRecursive (key, this->depthMask_ ,this->rootNode_, leafNode, parentBranchOfLeafNode);
+
+  if (this->dynamic_depth_enabled_ && depth_mask)
+  {
+    // get amount of objects in leaf container
+    size_t leafObjCount = (*leafNode)->getSize ();
+
+    while  (leafObjCount>=maxObjsPerLeaf_ && depth_mask)
+    {
+      // index to branch child
+      unsigned char childIdx = key.getChildIdxWithDepthMask (depth_mask*2);
+
+      expandLeafNode (leafNode,
+                      parentBranchOfLeafNode,
+                      childIdx,
+                      depth_mask);
+
+      depth_mask = createLeafRecursive (key, this->depthMask_ ,this->rootNode_, leafNode, parentBranchOfLeafNode);
+      leafObjCount = (*leafNode)->getSize ();
+    }
+
+  }
+
+  (*leafNode)->addPointIndex (pointIdx_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -749,13 +823,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   return (voxelCount);
 }
 
-#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataTVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerDataTVector<int> , pcl::octree::OctreeContainerEmpty<int>, pcl::octree::OctreeBase<int, pcl::octree::OctreeContainerDataTVector<int>, pcl::octree::OctreeContainerEmpty<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataTVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerDataTVector<int> , pcl::octree::OctreeContainerEmpty<int>, pcl::octree::Octree2BufBase<int, pcl::octree::OctreeContainerDataTVector<int>, pcl::octree::OctreeContainerEmpty<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataTVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty, pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataTVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty, pcl::octree::Octree2BufBase<pcl::octree::OctreeContainerPointIndices, pcl::octree::OctreeContainerEmpty > >;
 
-#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataT(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataT<int>, pcl::octree::OctreeContainerEmpty<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeContainerDataT<int>, pcl::octree::OctreeContainerEmpty<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataT(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafDataT<int>, pcl::octree::OctreeContainerEmpty<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeContainerDataT<int>, pcl::octree::OctreeContainerEmpty<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithLeafDataT(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty, pcl::octree::OctreeBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithLeafDataT(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty, pcl::octree::Octree2BufBase<pcl::octree::OctreeContainerPointIndex, pcl::octree::OctreeContainerEmpty > >;
 
-#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithEmptyLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty<int>, pcl::octree::OctreeContainerEmpty<int> , pcl::octree::OctreeBase<int, pcl::octree::OctreeContainerDataT<int>, pcl::octree::OctreeContainerEmpty<int> > >;
-#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithEmptyLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty<int>, pcl::octree::OctreeContainerEmpty<int> , pcl::octree::Octree2BufBase<int, pcl::octree::OctreeContainerDataT<int>, pcl::octree::OctreeContainerEmpty<int> > >;
+#define PCL_INSTANTIATE_OctreePointCloudSingleBufferWithEmptyLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty, pcl::octree::OctreeContainerEmpty, pcl::octree::OctreeBase<pcl::octree::OctreeLeafEmpty, pcl::octree::OctreeContainerEmpty > >;
+#define PCL_INSTANTIATE_OctreePointCloudDoubleBufferWithEmptyLeaf(T) template class PCL_EXPORTS pcl::octree::OctreePointCloud<T, pcl::octree::OctreeLeafEmpty, pcl::octree::OctreeContainerEmpty, pcl::octree::Octree2BufBase<pcl::octree::OctreeLeafEmpty, pcl::octree::OctreeContainerEmpty > >;
 
 #endif /* OCTREE_POINTCLOUD_HPP_ */

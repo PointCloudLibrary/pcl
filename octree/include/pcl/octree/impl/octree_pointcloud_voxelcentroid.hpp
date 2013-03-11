@@ -99,7 +99,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
       // add current branch voxel to key
       key_arg.pushBranch (child_idx);
 
-      const OctreeNode *childNode = branch_arg->getChildPtr (child_idx);
+      OctreeNode *childNode = branch_arg->getChildPtr (child_idx);
 
       switch (childNode->getNodeType ())
       {
@@ -111,10 +111,11 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
         }
         case LEAF_NODE:
         {
-          const LeafContainerT* container = static_cast<const LeafNode*> (childNode);
-
           PointT new_centroid;
-          container->getCentroid (new_centroid);
+
+          LeafNode* container = static_cast<LeafNode*> (childNode);
+
+          container->getContainer().getCentroid (new_centroid);
 
           voxel_centroid_list_arg.push_back (new_centroid);
           break;

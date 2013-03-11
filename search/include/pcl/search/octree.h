@@ -62,8 +62,10 @@ namespace pcl
       * \author Julius Kammerl
       * \ingroup search
       */
-    template<typename PointT, typename LeafTWrap = pcl::octree::OctreeContainerDataTVector<int>, typename BranchTWrap = pcl::octree::OctreeContainerEmpty<int>,
-             typename OctreeT = pcl::octree::OctreeBase<int, LeafTWrap, BranchTWrap > >
+    template<typename PointT,
+             typename LeafTWrap = pcl::octree::OctreeContainerPointIndices,
+             typename BranchTWrap = pcl::octree::OctreeContainerEmpty,
+             typename OctreeT = pcl::octree::OctreeBase<LeafTWrap, BranchTWrap > >
     class Octree: public Search<PointT>
     {
       public:

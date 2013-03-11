@@ -50,204 +50,228 @@ namespace pcl
   namespace octree
   {
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-       /** \brief @b Octree container class that can serve as a base to construct own leaf node container classes.
-        *  \author Julius Kammerl (julius@kammerl.de)
-        */
-       template<typename DataT>
-         class OctreeContainerBase
-         {
-         public:
-           /** \brief Empty constructor. */
-           OctreeContainerBase ()
-           {
-           }
+    /** \brief @b Octree container class that can serve as a base to construct own leaf node container classes.
+     *  \author Julius Kammerl (julius@kammerl.de)
+     */
+    class OctreeContainerBase
+    {
+    public:
+      /** \brief Empty constructor. */
+      OctreeContainerBase ()
+      {
+      }
 
-           /** \brief Empty constructor. */
-           OctreeContainerBase (const OctreeContainerBase&)
-           {
-           }
+      /** \brief Empty constructor. */
+      OctreeContainerBase (const OctreeContainerBase&)
+      {
+      }
 
-           /** \brief Empty deconstructor. */
-           virtual
-           ~OctreeContainerBase ()
-           {
-           }
+      /** \brief Empty deconstructor. */
+      virtual
+      ~OctreeContainerBase ()
+      {
+      }
 
-           /** \brief Octree deep copy method */
-           virtual OctreeContainerBase *
-           deepCopy () const
-           {
-             return (new OctreeContainerBase (*this));
-           }
+      /** \brief Equal comparison operator
+       * \param[in] OctreeContainerBase to compare with
+       */
+      virtual bool
+      operator== (const OctreeContainerBase&) const
+      {
+        return false;
+      }
 
-           /** \brief Empty setData data implementation.
+      /** \brief Inequal comparison operator
+       * \param[in] OctreeContainerBase to compare with
+       */
+      bool
+      operator!= (const OctreeContainerBase& other) const
+      {
+        return (!operator== (other));
+      }
+
+      /** \brief Pure abstract method to get size of container (number of indices)
+       * \return number of points/indices stored in leaf node container.
+       */
+      virtual size_t
+      getSize ()
+      {
+        return 0u;
+      }
+
+      /** \brief Pure abstract reset leaf node implementation. */
+      virtual void
+      reset () = 0;
+
+      /** \brief Empty addPointIndex implementation. This leaf node does not store any point indices.
+       */
+      void
+      addPointIndex (const int&)
+      {
+      }
+
+      /** \brief Empty getPointIndex implementation as this leaf node does not store any point indices.
+       */
+      void
+      getPointIndex (int&) const
+      {
+      }
+
+      /** \brief Empty getPointIndices implementation as this leaf node does not store any data. \
             */
+      void
+      getPointIndices (std::vector<int>&) const
+      {
+      }
 
-           void
-           setData (const DataT&)
-           {
-           }
-
-           /** \brief Empty getData data vector implementation.
-            */
-           void
-           getData (DataT&) const
-           {
-           }
-
-
-           /** \brief Empty getData data vector implementation
-            */
-           void
-           getData (std::vector<DataT>&) const
-           {
-           }
-
-           /** \brief Get size of container
-            * \return number of elements in leaf node container.
-            */
-           size_t
-           getSize () const
-           {
-             return 0;
-           }
-         };
+    };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree container class that does not store any information.
      * \note Can be used for occupancy trees that are used for checking only the existence of leaf nodes in the tree
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT>
-      class OctreeContainerEmpty
+
+    class OctreeContainerEmpty : public OctreeContainerBase
+    {
+    public:
+      /** \brief Empty constructor. */
+      OctreeContainerEmpty () :
+          OctreeContainerBase ()
       {
-      public:
-        /** \brief Empty constructor. */
-        OctreeContainerEmpty ()
-        {
-        }
+      }
 
-        /** \brief Empty constructor. */
-        OctreeContainerEmpty (const OctreeContainerEmpty&)
-        {
-        }
+      /** \brief Empty constructor. */
+      OctreeContainerEmpty (const OctreeContainerEmpty&) :
+          OctreeContainerBase ()
+      {
+      }
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeContainerEmpty ()
-        {
-        }
+      /** \brief Empty deconstructor. */
+      virtual
+      ~OctreeContainerEmpty ()
+      {
+      }
 
-        /** \brief Octree deep copy method */
-        virtual OctreeContainerEmpty *
-        deepCopy () const
-        {
-          return (new OctreeContainerEmpty (*this));
-        }
+      /** \brief Octree deep copy method */
+      virtual OctreeContainerEmpty *
+      deepCopy () const
+      {
+        return (new OctreeContainerEmpty (*this));
+      }
 
-        /** \brief Empty setData data implementation. This leaf node does not store any data.
-         */
+      /** \brief Abstract get size of container (number of DataT objects)
+       * \return number of DataT elements in leaf node container.
+       */
+      virtual size_t
+      getSize () const
+      {
+        return 0;
+      }
 
-        void
-        setData (const DataT&)
-        {
-        }
+      /** \brief Abstract reset leaf node implementation. */
+      virtual void
+      reset ()
+      {
 
-        /** \brief Empty getData data vector implementation as this leaf node does not store any data.
-         */
-        void
-        getData (DataT&) const
-        {
-        }
+      }
 
+      /** \brief Empty addPointIndex implementation. This leaf node does not store any point indices.
+       */
+      void
+      addPointIndex (int)
+      {
+      }
 
-        /** \brief Empty getData data vector implementation as this leaf node does not store any data. \
-         */
-        void
-        getData (std::vector<DataT>&) const
-        {
-        }
+      /** \brief Empty getPointIndex implementation as this leaf node does not store any point indices.
+       */
+      int
+      getPointIndex () const
+      {
+        assert("getPointIndex: undefined point index");
+        return -1;
+      }
 
-        /** \brief Get size of container (number of DataT objects)
-         * \return number of DataT elements in leaf node container.
-         */
-        size_t
-        getSize () const
-        {
-          return 0;
-        }
+      /** \brief Empty getPointIndices implementation as this leaf node does not store any data. \
+            */
+      void
+      getPointIndices (std::vector<int>&) const
+      {
+      }
 
-        /** \brief Empty reset leaf node implementation as this leaf node does not store any data. */
-        virtual void
-        reset ()
-        {
-        }
-      };
+    };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that does store a single DataT element.
+    /** \brief @b Octree container class that does store a single point index.
      * \note Enables the octree to store a single DataT element within its leaf nodes.
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT>
-      class OctreeContainerDataT
+      class OctreeContainerPointIndex : public OctreeContainerBase
       {
       public:
         /** \brief Empty constructor. */
-        OctreeContainerDataT () :
-            data_ (),
-            isEmpty_(true)
+        OctreeContainerPointIndex () :
+            OctreeContainerBase (), data_ ()
         {
           reset ();
         }
 
         /** \brief Empty constructor. */
-        OctreeContainerDataT (const OctreeContainerDataT& source) :
-            data_ (source.data_), isEmpty_ (source.isEmpty_)
+        OctreeContainerPointIndex (const OctreeContainerPointIndex& source) :
+            OctreeContainerBase (), data_ (source.data_)
         {
         }
 
         /** \brief Empty deconstructor. */
         virtual
-        ~OctreeContainerDataT ()
+        ~OctreeContainerPointIndex ()
         {
         }
 
         /** \brief Octree deep copy method */
-        virtual OctreeContainerDataT*
+        virtual OctreeContainerPointIndex*
         deepCopy () const
         {
-          return (new OctreeContainerDataT (*this));
+          return (new OctreeContainerPointIndex (*this));
         }
 
-        /** \brief Copies a DataT element to leaf node memorye.
-         * \param[in] data_arg reference to DataT element to be stored within leaf node.
+        /** \brief Equal comparison operator
+         * \param[in] OctreeContainerBase to compare with
          */
-        void
-        setData (const DataT& data_arg)
+        virtual bool
+        operator== (const OctreeContainerBase& other) const
         {
-          this->data_ = data_arg;
-          isEmpty_ = false;
+          const OctreeContainerPointIndex* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*> (&other);
+
+          return (this->data_ == otherConDataT->data_);
         }
 
-        /** \brief Adds leaf node DataT element to dataVector vector of type DataT.
-         * \param[in] dataVector_arg: reference to DataT type to obtain the most recently added leaf node DataT element.
+        /** \brief Add point index to container memory. This container stores a only a single point index.
+         * \param[in] index to be stored within leaf node.
          */
         void
-        getData (DataT& dataVector_arg) const
+        addPointIndex (int data_arg)
         {
-          if (!isEmpty_)
-            dataVector_arg = this->data_;
+          data_ = data_arg;
         }
 
-        /** \brief Adds leaf node DataT element to dataVector vector of type DataT.
-         * \param[in] dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
+        /** \brief Retrieve point index from container. This container stores a only a single point index
+         * \return index stored within container.
+         */
+        int
+        getPointIndex () const
+        {
+          return data_;
+        }
+
+        /** \brief Retrieve point indices from container. This container stores only a single point index
+         * \param[out] vector of point indices to be stored within data vector
          */
         void
-        getData (std::vector<DataT>& dataVector_arg) const
+        getPointIndices (std::vector<int>& dataVector_arg) const
         {
-          if (!isEmpty_)
-            dataVector_arg.push_back (this->data_);
+          if (data_>=0)
+          dataVector_arg.push_back (data_);
         }
 
         /** \brief Get size of container (number of DataT objects)
@@ -256,96 +280,102 @@ namespace pcl
         size_t
         getSize () const
         {
-          return isEmpty_ ? 0 : 1;
+          return data_<0 ? 0 : 1;
         }
 
         /** \brief Reset leaf node memory to zero. */
         virtual void
         reset ()
         {
-          isEmpty_ = true;
+          data_ = -1;
         }
       protected:
-        /** \brief Leaf node DataT storage. */
-        DataT data_;
-
-        /** \brief Bool indicating if leaf node is empty or not. */
-        bool isEmpty_;
+        /** \brief Point index stored in octree. */
+        int data_;
       };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that does store a vector of DataT elements.
+    /** \brief @b Octree container class that does store a vector of point indices.
      * \note Enables the octree to store multiple DataT elements within its leaf nodes.
      * \author Julius Kammerl (julius@kammerl.de)
      */
-    template<typename DataT>
-      class OctreeContainerDataTVector
+      class OctreeContainerPointIndices : public OctreeContainerBase
       {
       public:
         /** \brief Empty constructor. */
-        OctreeContainerDataTVector () :
-            leafDataTVector_ ()
+        OctreeContainerPointIndices () :
+          OctreeContainerBase (), leafDataTVector_ ()
         {
         }
 
         /** \brief Empty constructor. */
-        OctreeContainerDataTVector (const OctreeContainerDataTVector& source) :
-            leafDataTVector_ (source.leafDataTVector_)
+        OctreeContainerPointIndices (const OctreeContainerPointIndices& source) :
+            OctreeContainerBase (), leafDataTVector_ (source.leafDataTVector_)
         {
         }
 
         /** \brief Empty deconstructor. */
         virtual
-        ~OctreeContainerDataTVector ()
+        ~OctreeContainerPointIndices ()
         {
         }
 
         /** \brief Octree deep copy method */
-        virtual OctreeContainerDataTVector *
+        virtual OctreeContainerPointIndices *
         deepCopy () const
         {
-          return (new OctreeContainerDataTVector (*this));
+          return (new OctreeContainerPointIndices (*this));
         }
 
-        /** \brief Pushes a DataT element to internal DataT vector.
-         * \param[in] data_arg reference to DataT element to be stored within leaf node.
+        /** \brief Equal comparison operator
+         * \param[in] OctreeContainerDataTVector to compare with
+         */
+        virtual bool
+        operator== (const OctreeContainerBase& other) const
+        {
+          const OctreeContainerPointIndices* otherConDataTVec = dynamic_cast<const OctreeContainerPointIndices*> (&other);
+
+          return (this->leafDataTVector_ == otherConDataTVec->leafDataTVector_);
+        }
+
+        /** \brief Add point index to container memory. This container stores a vector of point indices.
+         * \param[in] index to be stored within leaf node.
          */
         void
-        setData (const DataT& data_arg)
+        addPointIndex (int data_arg)
         {
           leafDataTVector_.push_back (data_arg);
         }
 
-        /** \brief Receive the most recent DataT element that was pushed to the internal DataT vector.
-         * \param[in] data_arg reference to DataT type to obtain the most recently added leaf node DataT element.
+        /** \brief Retrieve point index from container. This container stores a vector of point indices.
+         * \return index stored within container.
          */
-        void
-        getData (DataT& data_arg) const
+        int
+        getPointIndex ( ) const
         {
-          if (leafDataTVector_.size () > 0)
-            data_arg = leafDataTVector_.back ();
+          return leafDataTVector_.back ();
         }
 
-        /** \brief Concatenate the internal DataT vector to vector argument dataVector_arg.
-         * \param[in] dataVector_arg: reference to DataT vector that is to be extended with leaf node DataT elements.
+        /** \brief Retrieve point indices from container. This container stores a vector of point indices.
+         * \param[out] vector of point indices to be stored within data vector
          */
         void
-        getData (std::vector<DataT>& dataVector_arg) const
+        getPointIndices (std::vector<int>& dataVector_arg) const
         {
-          dataVector_arg.insert (dataVector_arg.end (),
-              leafDataTVector_.begin (), leafDataTVector_.end ());
+          dataVector_arg.insert (dataVector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());
         }
 
-        /** \brief Return const reference to internal DataT vector
-         * \return  const reference to internal DataT vector
+        /** \brief Retrieve reference to point indices vector. This container stores a vector of point indices.
+         * \return reference to vector of point indices to be stored within data vector
          */
-        const std::vector<DataT>& getDataTVector () const
+        std::vector<int>&
+        getPointIndicesVector ()
         {
           return leafDataTVector_;
         }
 
-        /** \brief Get size of container (number of DataT objects)
-         * \return number of DataT elements in leaf node container.
+        /** \brief Get size of container (number of indices)
+         * \return number of point indices in container.
          */
         size_t
         getSize () const
@@ -362,7 +392,7 @@ namespace pcl
 
       protected:
         /** \brief Leaf node DataT vector. */
-        std::vector<DataT> leafDataTVector_;
+        std::vector<int> leafDataTVector_;
       };
 
   }

@@ -41,9 +41,6 @@
 #define PCL_OCTREE_VOXELCENTROID_H
 
 #include "octree_pointcloud.h"
-#include "octree_base.h"
-#include "octree2buf_base.h"
-#include "octree_container.h"
 
 #include <pcl/common/point_operators.h>
 #include <pcl/point_types.h>
@@ -58,7 +55,7 @@ namespace pcl
       * \author Julius Kammerl (julius@kammerl.de)
       */
     template<typename PointT>
-    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase<int>
+    class OctreePointCloudVoxelCentroidContainer : public OctreeContainerBase
     {
       public:
         /** \brief Class initialization. */
@@ -77,6 +74,14 @@ namespace pcl
         deepCopy () const
         {
           return (new OctreePointCloudVoxelCentroidContainer (*this));
+        }
+
+        /** \brief Equal comparison operator - set to false
+         * \param[in] OctreePointCloudVoxelCentroidContainer to compare with
+         */
+        virtual bool operator==(const OctreeContainerBase&) const
+        {
+          return ( false );
         }
 
         /** \brief Add new point to voxel.
@@ -135,7 +140,9 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafContainerT = OctreePointCloudVoxelCentroidContainer<PointT> , typename BranchContainerT = OctreeContainerEmpty<int> >
+    template<typename PointT,
+             typename LeafContainerT = OctreePointCloudVoxelCentroidContainer<PointT> ,
+             typename BranchContainerT = OctreeContainerEmpty >
     class OctreePointCloudVoxelCentroid : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:
@@ -165,20 +172,24 @@ namespace pcl
           * \param[in] data_arg DataT object to be added.
           */
         virtual void 
-        addData (const OctreeKey& key_arg, const int& data_arg)
+        addPointIdx (const int pointIdx_arg)
         {
-          LeafNode* new_leaf = 0;
-          this->createLeafRecursive (key_arg, this->depthMask_, data_arg, this->rootNode_, new_leaf);
+          OctreeKey key;
 
-          if (new_leaf)
-          {
-            const PointT& cloudPoint = this->getPointByIndex (data_arg);
+          assert (pointIdx_arg < static_cast<int> (this->input_->points.size ()));
 
-            // add data to leaf
-            LeafContainerT* container = new_leaf;
-            container->addPoint (cloudPoint);
-            this->objectCount_++;
-          }
+          const PointT& point = this->input_->points[pointIdx_arg];
+
+          // make sure bounding box is big enough
+          adoptBoundingBoxToPoint (point);
+
+          // generate key
+          genOctreeKeyforPoint (point, key);
+
+          // add point to octree at key
+          LeafContainerT* container = this->createLeaf(key);
+          container->addPoint (point);
+
         }
 
         /** \brief Get centroid for a single voxel addressed by a PointT point.
