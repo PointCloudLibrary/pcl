@@ -205,7 +205,7 @@ void run (const char* file_name, float voxel_size)
   std::vector<ORROctree::Node*>::iterator leaf = octree.getFullLeaves ().begin ();
 
   // Get the average points in every full octree leaf
-  octree.getFullLeafPoints (*points_out);
+  octree.getFullLeavesPoints (*points_out);
   // Get the average normal at the points in each leaf
   if ( normals_in->size () )
     octree.getNormalsOfFullLeaves (*normals_out);

@@ -41,6 +41,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <pcl/common/eigen.h>
+#include <pcl/point_types.h>
 
 #define AUX_PI_FLOAT            3.14159265358979323846f
 #define AUX_HALF_PI             1.57079632679489661923f
@@ -61,7 +62,13 @@ namespace pcl
         return static_cast<bool> (a.first < b.first);
       }
 
-      template<typename T> float
+      template<typename T> T
+      sqr (T a)
+      {
+        return (a*a);
+      }
+
+      template<typename T> T
       clamp (T value, T min, T max)
       {
         if ( value < min )
@@ -113,6 +120,15 @@ namespace pcl
         dst[0] = src[0];
         dst[1] = src[1];
         dst[2] = src[2];
+      }
+
+      /** \brief dst = src */
+      template <typename T> void
+      copy3 (const T src[3], pcl::PointXYZ& dst)
+      {
+        dst.x = src[0];
+        dst.y = src[1];
+        dst.z = src[2];
       }
 
       /** \brief a = -a */
@@ -172,6 +188,13 @@ namespace pcl
       {
         T l[3] = {a[0]-b[0], a[1]-b[1], a[2]-b[2]};
         return (length3 (l));
+      }
+
+      /** \brief Returns the squared Euclidean distance between a and b. */
+      template <typename T> T
+      sqrDistance3 (const T a[3], const T b[3])
+      {
+        return (aux::sqr (a[0]-b[0]) + aux::sqr (a[1]-b[1]) + aux::sqr (a[2]-b[2]));
       }
 
       /** \brief Returns the dot product a*b */
@@ -290,6 +313,25 @@ namespace pcl
         out[2] = t[6]*x + t[7]*y + t[8]*z + t[11];
       }
 
+      /** \brief Compute out = (upper left 3x3 of mat)*p + last column of mat. */
+      template<class T> void
+      transform(const Eigen::Matrix<T,4,4>& mat, const pcl::PointXYZ& p, pcl::PointXYZ& out)
+      {
+        out.x = mat(0,0)*p.x + mat(0,1)*p.y + mat(0,2)*p.z + mat(0,3);
+        out.y = mat(1,0)*p.x + mat(1,1)*p.y + mat(1,2)*p.z + mat(1,3);
+        out.z = mat(2,0)*p.x + mat(2,1)*p.y + mat(2,2)*p.z + mat(2,3);
+      }
+
+      /** \brief The first 9 elements of 't' are treated as a 3x3 matrix (row major order) and the last 3 as a translation.
+        * First, 'p' is multiplied by that matrix and then translated. The result is saved in 'out'. */
+      template<class T> void
+      transform(const T t[12], const pcl::PointXYZ& p, T out[3])
+      {
+        out[0] = t[0]*p.x + t[1]*p.y + t[2]*p.z + t[9];
+        out[1] = t[3]*p.x + t[4]*p.y + t[5]*p.z + t[10];
+        out[2] = t[6]*p.x + t[7]*p.y + t[8]*p.z + t[11];
+      }
+
       /** \brief Returns true if the points 'p1' and 'p2' are co-planar and false otherwise. The method assumes that 'n1'
         * is a normal at 'p1' and 'n2' is a normal at 'p2'. 'max_angle' is the threshold used for the test. The bigger
         * the value the larger the deviation between the normals can be which still leads to a positive test result. The
@@ -313,6 +355,23 @@ namespace pcl
 
         // All tests passed => the points are coplanar
         return (true);
+      }
+
+      template<typename Scalar> void
+      array12ToMatrix4x4 (const Scalar src[12], Eigen::Matrix<Scalar, 4, 4>& dst)
+      {
+        dst(0,0) = src[0]; dst(0,1) = src[1];  dst(0,2) = src[2]; dst(0,3) = src[9];
+        dst(1,0) = src[3]; dst(1,1) = src[4];  dst(1,2) = src[5]; dst(1,3) = src[10];
+        dst(2,0) = src[6]; dst(2,1) = src[7];  dst(2,2) = src[8]; dst(2,3) = src[11];
+        dst(3,0) =         dst(3,1) =          dst(3,2) = 0.0;    dst(3,3) = 1.0;
+      }
+
+      template<typename Scalar> void
+      matrix4x4ToArray12 (const Eigen::Matrix<Scalar, 4, 4>& src, Scalar dst[12])
+      {
+        dst[0] = src(0,0); dst[1] = src(0,1); dst[2] = src(0,2); dst[9]  = src(0,3);
+        dst[3] = src(1,0); dst[4] = src(1,1); dst[5] = src(1,2); dst[10] = src(1,3);
+        dst[6] = src(2,0); dst[7] = src(2,1); dst[8] = src(2,2); dst[11] = src(2,3);
       }
 
       /** \brief The method copies the input array 'src' to the eigen matrix 'dst' in row major order.
@@ -356,7 +415,7 @@ namespace pcl
         }
 
         // Normalize the input
-        float normalized_axis_angle[3];
+        T normalized_axis_angle[3];
         aux::mult3 (axis_angle, static_cast<T> (1.0)/angle, normalized_axis_angle);
 
         // The eigen objects

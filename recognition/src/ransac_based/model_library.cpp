@@ -103,7 +103,8 @@ ModelLibrary::removeAllModels ()
 //============================================================================================================================================
 
 bool
-ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data)
+ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name,
+                        float frac_of_points_for_registration, void* user_data)
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ModelLibrary::%s(): begin [%s]\n", __func__, object_name.c_str ());
@@ -120,19 +121,18 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
   }
 
   // It is unique -> create a new library model and save it
-  Model* new_model = new Model (points, normals, voxel_size_, object_name, user_data);
+  Model* new_model = new Model (points, normals, voxel_size_, object_name, frac_of_points_for_registration, user_data);
   result.first->second = new_model;
 
   const ORROctree& octree = new_model->getOctree ();
   const vector<ORROctree::Node*> &full_leaves = octree.getFullLeaves ();
   list<ORROctree::Node*> inter_leaves;
-  const ORROctree::Node::Data *node_data1;
   int num_of_pairs = 0;
 
   // Run through all full leaves
   for ( vector<ORROctree::Node*>::const_iterator leaf1 = full_leaves.begin () ; leaf1 != full_leaves.end () ; ++leaf1 )
   {
-    node_data1 = (*leaf1)->getData ();
+    const ORROctree::Node::Data* node_data1 = (*leaf1)->getData ();
 
     // Get all full leaves at the right distance to the current leaf
     inter_leaves.clear ();
@@ -177,7 +177,7 @@ ModelLibrary::addToHashTable (Model* model, const ORROctree::Node::Data* data1, 
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*,const ORROctree::Node::Data*> (data1, data2));
+  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> (data1, data2));
 
   return (true);
 }

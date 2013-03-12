@@ -71,7 +71,16 @@ namespace pcl
             inline void
             set_z2 (float z2) { z2_ = z2;}
 
-          public:
+            float
+            z1 () const { return z1_;}
+
+            float
+            z2 () const { return z2_;}
+
+            int
+            getId () const { return id_;}
+
+          protected:
             float z1_, z2_;
             int id_;
         };
@@ -147,6 +156,20 @@ namespace pcl
           if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
 
           return (pixels_[x][y]);
+        }
+
+        inline const std::set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>*
+        getOctreeNodes (const float* p) const
+        {
+          int x, y; this->getPixelCoordinates (p, x, y);
+
+          if ( x < 0 || x >= num_pixels_x_ ) return (NULL);
+          if ( y < 0 || y >= num_pixels_y_ ) return (NULL);
+
+          if ( !sets_[x][y] )
+            return NULL;
+
+          return (&sets_[x][y]->get_nodes ());
         }
 
         inline std::list<Pixel*>&

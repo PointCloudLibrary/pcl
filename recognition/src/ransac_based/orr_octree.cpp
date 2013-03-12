@@ -413,7 +413,7 @@ pcl::recognition::ORROctree::deleteBranch (Node* node)
 //================================================================================================================================================================
 
 void
-pcl::recognition::ORROctree::getFullLeafPoints (PointCloudOut& out) const
+pcl::recognition::ORROctree::getFullLeavesPoints (PointCloudOut& out) const
 {
   out.resize(full_leaves_.size ());
   size_t i = 0;

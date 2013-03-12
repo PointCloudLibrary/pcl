@@ -141,7 +141,7 @@ void run (float pair_width, float voxel_size, float max_coplanarity_angle)
 #ifdef _SHOW_MODEL_OCTREE_POINTS_
   PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
 
-  model->getOctree ().getFullLeafPoints (*octree_points);
+  model->getOctree ().getFullLeavesPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");

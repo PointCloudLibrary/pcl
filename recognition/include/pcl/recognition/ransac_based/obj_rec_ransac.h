@@ -39,13 +39,18 @@
 #ifndef PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 #define PCL_RECOGNITION_OBJ_REC_RANSAC_H_
 
+#include <pcl/recognition/ransac_based/hypothesis.h>
 #include <pcl/recognition/ransac_based/model_library.h>
 #include <pcl/recognition/ransac_based/rigid_transform_space.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
+#include <pcl/recognition/ransac_based/simple_octree.h>
+#include <pcl/recognition/ransac_based/trimmed_icp.h>
 #include <pcl/recognition/ransac_based/orr_graph.h>
 #include <pcl/recognition/ransac_based/auxiliary.h>
 #include <pcl/recognition/ransac_based/bvh.h>
+#include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/correspondence.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <cmath>
@@ -84,6 +89,8 @@ namespace pcl
         typedef ModelLibrary::PointCloudIn PointCloudIn;
         typedef ModelLibrary::PointCloudN PointCloudN;
 
+        typedef BVH<Hypothesis*> BVHH;
+
         /** \brief This is an output item of the ObjRecRANSAC::recognize() method. It contains the recognized model, its name (the ones passed to
           * ObjRecRANSAC::addModel()), the rigid transform which aligns the model with the input scene and the match confidence which is a number
           * in the interval (0, 1] which gives the fraction of the model surface area matched to the scene. E.g., a match confidence of 0.3 means
@@ -109,134 +116,30 @@ namespace pcl
             void* user_data_;
         };
 
-    	class OrientedPointPair
-    	{
+        class OrientedPointPair
+        {
+            public:
+              OrientedPointPair (const float *p1, const float *n1, const float *p2, const float *n2)
+              : p1_ (p1), n1_ (n1), p2_ (p2), n2_ (n2)
+              {
+              }
+
+              virtual ~OrientedPointPair (){}
+
+            public:
+              const float *p1_, *n1_, *p2_, *n2_;
+        };
+
+        class HypothesisCreator
+        {
           public:
-            OrientedPointPair (const float *p1, const float *n1, const float *p2, const float *n2)
-            : p1_ (p1), n1_ (n1), p2_ (p2), n2_ (n2)
-            {
-            }
+            HypothesisCreator (){}
+            virtual ~HypothesisCreator (){}
 
-            virtual ~OrientedPointPair (){}
+            Hypothesis* create (const SimpleOctree<Hypothesis, HypothesisCreator, float>::Node* ) const { return new Hypothesis ();}
+        };
 
-          public:
-            const float *p1_, *n1_, *p2_, *n2_;
-    	};
-
-    	class HypothesisBase
-    	{
-    	  public:
-    	    HypothesisBase (const ModelLibrary::Model* obj_model)
-    	    : obj_model_ (obj_model)
-    	    {}
-
-          HypothesisBase (const ModelLibrary::Model* obj_model, const float* rigid_transform)
-          : obj_model_ (obj_model)
-          {
-            memcpy (rigid_transform_, rigid_transform, 12*sizeof (float));
-          }
-
-    	    virtual  ~HypothesisBase (){}
-
-        public:
-          float rigid_transform_[12];
-          const ModelLibrary::Model* obj_model_;
-    	};
-
-    	class Hypothesis: public HypothesisBase
-    	{
-        public:
-          Hypothesis (const ModelLibrary::Model* obj_model = NULL)
-           : HypothesisBase (obj_model),
-             match_confidence_ (-1.0f),
-             linear_id_ (-1)
-          {
-            aux::set3 (pos_id_, -1);
-            aux::set3 (rot_id_, -1);
-          }
-
-          Hypothesis (const Hypothesis& src)
-          : HypothesisBase (src.obj_model_, src.rigid_transform_),
-            match_confidence_  (src.match_confidence_),
-            explained_pixels_ (src.explained_pixels_)
-          {
-            memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
-            memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
-          }
-
-          virtual ~Hypothesis (){}
-
-          void
-          operator =(const Hypothesis& src)
-          {
-            memcpy (this->rigid_transform_, src.rigid_transform_, 12*sizeof (float));
-            this->obj_model_  = src.obj_model_;
-            this->match_confidence_  = src.match_confidence_;
-            this->explained_pixels_ = src.explained_pixels_;
-            memcpy (this->pos_id_, src.pos_id_, 3*sizeof (int));
-            memcpy (this->rot_id_, src.rot_id_, 3*sizeof (int));
-          }
-
-          void
-          setPositionId (const int id[3])
-          {
-            aux::copy3 (id, pos_id_);
-          }
-
-          void
-          setRotationId (const int id[3])
-          {
-            aux::copy3 (id, rot_id_);
-          }
-
-          void
-          setLinearId (int id)
-          {
-            linear_id_ = id;
-          }
-
-          int
-          getLinearId () const
-          {
-            return (linear_id_);
-          }
-
-          void
-          computeBounds (float bounds[6]) const
-          {
-            const float *b = obj_model_->getBoundsOfOctreePoints ();
-            float p[3];
-
-            // Initialize 'bounds'
-            aux::transform (rigid_transform_, b[0], b[2], b[4], p);
-            bounds[0] = bounds[1] = p[0];
-            bounds[2] = bounds[3] = p[1];
-            bounds[4] = bounds[5] = p[2];
-
-            // Expand 'bounds' to contain the other 7 points of the octree bounding box
-            aux::transform (rigid_transform_, b[0], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[0], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[0], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[1], b[2], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[1], b[2], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[1], b[3], b[4], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-            aux::transform (rigid_transform_, b[1], b[3], b[5], p); aux::expandBoundingBoxToContainPoint (bounds, p);
-          }
-
-          void
-          computeCenterOfMass (float center_of_mass[3]) const
-          {
-            aux::transform (rigid_transform_, obj_model_->getOctreeCenterOfMass (), center_of_mass);
-          }
-
-        public:
-          float match_confidence_;
-          std::set<int> explained_pixels_;
-          int pos_id_[3], rot_id_[3];
-          int linear_id_;
-    	};
-
-    	typedef BVH<Hypothesis*> BVHH;
+        typedef SimpleOctree<Hypothesis, HypothesisCreator, float> HypothesisOctree;
 
       public:
         /** \brief Constructor with some important parameters which can not be changed once an instance of that class is created.
@@ -264,6 +167,7 @@ namespace pcl
           scene_octree_proj_.clear ();
           sampled_oriented_point_pairs_.clear ();
           transform_space_.clear ();
+          scene_octree_points_.reset ();
         }
 
         /** \brief This is a threshold. The larger the value the more point pairs will be considered as co-planar and will
@@ -299,6 +203,18 @@ namespace pcl
           model_library_.ignoreCoplanarPointPairsOff ();
         }
 
+        inline void
+        icpHypothesesRefinementOn ()
+        {
+          do_icp_hypotheses_refinement_ = true;
+        }
+
+        inline void
+        icpHypothesesRefinementOff ()
+        {
+          do_icp_hypotheses_refinement_ = false;
+        }
+
         /** \brief Add an object model to be recognized.
           *
           * \param[in] points are the object points.
@@ -313,7 +229,7 @@ namespace pcl
         inline bool
         addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = NULL)
         {
-          return (model_library_.addModel (points, normals, object_name, user_data));
+          return (model_library_.addModel (points, normals, object_name, frac_of_points_for_icp_refinement_, user_data));
         }
 
         /** \brief This method performs the recognition of the models loaded to the model library with the method addModel().
@@ -355,7 +271,7 @@ namespace pcl
 
         /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
           * recognition process. Makes sense only if some of the testing modes are active. */
-        inline const std::vector<ObjRecRANSAC::Hypothesis>&
+        inline const std::vector<Hypothesis>&
         getAcceptedHypotheses () const
         {
           return (accepted_hypotheses_);
@@ -364,7 +280,7 @@ namespace pcl
         /** \brief This function is useful for testing purposes. It returns the accepted hypotheses generated during the
           * recognition process. Makes sense only if some of the testing modes are active. */
         inline void
-        getAcceptedHypotheses (std::vector<ObjRecRANSAC::Hypothesis>& out) const
+        getAcceptedHypotheses (std::vector<Hypothesis>& out) const
         {
           out = accepted_hypotheses_;
         }
@@ -394,8 +310,8 @@ namespace pcl
           return (scene_octree_);
         }
 
-        inline const RigidTransformSpace<Hypothesis>&
-        getRigidTransformSpace () const
+        inline RigidTransformSpace&
+        getRigidTransformSpace ()
         {
           return (transform_space_);
         }
@@ -443,48 +359,17 @@ namespace pcl
         /** \brief Groups close hypotheses in 'hypotheses'. Saves a representative for each group in 'out'. Returns the
           * number of hypotheses after grouping. */
         int
-        groupHypotheses(const std::list<HypothesisBase>& hypotheses, int num_hypotheses, RigidTransformSpace<Hypothesis>& transform_space,
-            std::vector<RotationSpace<Hypothesis>*>& rot_spaces) const;
+        groupHypotheses(std::list<HypothesisBase>& hypotheses, int num_hypotheses, RigidTransformSpace& transform_space,
+            HypothesisOctree& grouped_hypotheses) const;
 
         inline void
-        testHypothesis (Hypothesis* hypothesis, float& match, int& penalty) const
-        {
-          match = 0.0;
-          penalty = 0;
+        testHypothesis (Hypothesis* hypothesis, int& match, int& penalty) const;
 
-          // For better code readability
-          const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
-          const float* rigid_transform = hypothesis->rigid_transform_;
-          const ORROctreeZProjection::Pixel* pixel;
-          float transformed_point[3];
-
-          // The match/penalty loop
-          for ( std::vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
-          {
-            // Transform the model point with the current rigid transform
-            aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
-
-            // Get the pixel 'transformed_point' lies in
-            pixel = scene_octree_proj_.getPixel (transformed_point);
-            // Check if we have a valid pixel
-            if ( pixel == NULL )
-              continue;
-
-            if ( transformed_point[2] < pixel->z1_ ) // The transformed model point overshadows a pixel -> penalize the hypothesis
-              ++penalty;
-            else if ( transformed_point[2] <= pixel->z2_ ) // The point is OK
-            {
-              ++match;
-              // 'hypo_it' explains 'pixel' => insert the pixel's id in the id set of 'hypo_it'
-              hypothesis->explained_pixels_.insert (pixel->id_);
-            }
-          }
-        }
+        inline void
+        testHypothesisNormalBased (Hypothesis* hypothesis, float& match) const;
 
         void
-        buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space,
-            const std::vector<RotationSpace<Hypothesis>*> rotation_spaces,
-            ORRGraph<Hypothesis>& graph) const;
+        buildGraphOfCloseHypotheses (HypothesisOctree& hypotheses, ORRGraph<Hypothesis>& graph) const;
 
         void
         filterGraphOfCloseHypotheses (ORRGraph<Hypothesis>& graph, std::vector<Hypothesis>& out) const;
@@ -579,11 +464,15 @@ namespace pcl
         float max_coplanarity_angle_;
         float scene_bounds_enlargement_factor_;
         bool ignore_coplanar_opps_;
+        float frac_of_points_for_icp_refinement_;
+        bool do_icp_hypotheses_refinement_;
 
         ModelLibrary model_library_;
         ORROctree scene_octree_;
         ORROctreeZProjection scene_octree_proj_;
-        RigidTransformSpace<Hypothesis> transform_space_;
+        RigidTransformSpace transform_space_;
+        TrimmedICP<pcl::PointXYZ, float> trimmed_icp_;
+        PointCloudIn::Ptr scene_octree_points_;
 
         std::list<OrientedPointPair> sampled_oriented_point_pairs_;
         std::vector<Hypothesis> accepted_hypotheses_;
