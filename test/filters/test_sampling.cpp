@@ -44,6 +44,8 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/filters/covariance_sampling.h>
 #include <pcl/filters/normal_space.h>
+#include <pcl/filters/random_sample.h>
+
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
@@ -128,6 +130,106 @@ TEST (NormalSpaceSampling, Filters)
   EXPECT_EQ (3215, (*walls_indices)[walls_indices->size () * 3 / 4]);
   EXPECT_EQ (2503, (*walls_indices)[walls_indices->size () - 1]);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (RandomSample, Filters)
+{
+  // Test the PointCloud<PointT> method
+  // Randomly sample 10 points from cloud
+  RandomSample<PointXYZ> sample (true); // Extract removed indices
+  sample.setInputCloud (cloud_walls);
+  sample.setSample (10);
+
+  // Indices
+  std::vector<int> indices;
+  sample.filter (indices);
+
+  EXPECT_EQ (int (indices.size ()), 10);
+
+  // Cloud
+  PointCloud<PointXYZ> cloud_out;
+  sample.filter(cloud_out);
+
+  EXPECT_EQ (int (cloud_out.width), 10);
+  EXPECT_EQ (int (indices.size ()), int (cloud_out.size ()));
+
+  for (size_t i = 0; i < indices.size () - 1; ++i)
+  {
+    // Check that indices are sorted
+    EXPECT_LT (indices[i], indices[i+1]);
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud_walls->points[indices[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud_walls->points[indices[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud_walls->points[indices[i]].z, cloud_out.points[i].z, 1e-4);
+  }
+
+  IndicesConstPtr removed = sample.getRemovedIndices ();
+  EXPECT_EQ (removed->size (), cloud_walls->size () - 10);
+  // Organized
+  // (sdmiller) Removing for now, to debug the Linux 32-bit segfault offline
+  sample.setKeepOrganized (true);
+  sample.filter(cloud_out);
+  removed = sample.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), cloud_walls->size () - 10);
+  for (size_t i = 0; i < removed->size (); ++i)
+  {
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).x));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).y));
+    EXPECT_TRUE (pcl_isnan (cloud_out.at ((*removed)[i]).z));
+  }
+
+  EXPECT_EQ (cloud_out.width, cloud_walls->width);
+  EXPECT_EQ (cloud_out.height, cloud_walls->height);
+  // Negative
+  sample.setKeepOrganized (false);
+  sample.setNegative (true);
+  sample.filter(cloud_out);
+  removed = sample.getRemovedIndices ();
+  EXPECT_EQ (int (removed->size ()), 10);
+  EXPECT_EQ (int (cloud_out.size ()), int (cloud_walls->size () - 10));
+
+  // Make sure sampling >N works
+  sample.setSample (static_cast<unsigned int> (cloud_walls->size ()+10));
+  sample.setNegative (false);
+  sample.filter (cloud_out);
+  EXPECT_EQ (cloud_out.size (), cloud_walls->size ());
+  removed = sample.getRemovedIndices ();
+  EXPECT_TRUE (removed->empty ());
+
+  // Test the sensor_msgs::PointCloud2 method
+  // Randomly sample 10 points from cloud
+  sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2 ());
+  toROSMsg (*cloud_walls, *cloud_blob);
+  RandomSample<sensor_msgs::PointCloud2> sample2;
+  sample2.setInputCloud (cloud_blob);
+  sample2.setSample (10);
+
+  // Indices
+  std::vector<int> indices2;
+  sample2.filter (indices2);
+
+  EXPECT_EQ (int (indices2.size ()), 10);
+
+  // Cloud
+  sensor_msgs::PointCloud2 output_blob;
+  sample2.filter (output_blob);
+
+  fromROSMsg (output_blob, cloud_out);
+
+  EXPECT_EQ (int (cloud_out.width), 10);
+  EXPECT_EQ (int (indices2.size ()), int (cloud_out.size ()));
+
+  for (size_t i = 0; i < indices2.size () - 1; ++i)
+  {
+    // Check that indices are sorted
+    EXPECT_LT (indices2[i], indices2[i+1]);
+    // Compare original points with sampled indices against sampled points
+    EXPECT_NEAR (cloud_walls->points[indices2[i]].x, cloud_out.points[i].x, 1e-4);
+    EXPECT_NEAR (cloud_walls->points[indices2[i]].y, cloud_out.points[i].y, 1e-4);
+    EXPECT_NEAR (cloud_walls->points[indices2[i]].z, cloud_out.points[i].z, 1e-4);
+  }
+}
+
 
 /* ---[ */
 int
