@@ -46,19 +46,17 @@
 #ifndef PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
 #define PCL_RECOGNITION_RIGID_TRANSFORM_SPACE_H_
 
-#include "orr_octree.h"
+#include "simple_octree.h"
 #include "model_library.h"
 #include <pcl/pcl_exports.h>
 #include <list>
 #include <map>
 
-#define ROT_SPACE_TEST
-
 namespace pcl
 {
   namespace recognition
   {
-    class PCL_EXPORTS Cell
+    class RotationSpaceCell
     {
       public:
         class Entry
@@ -78,12 +76,23 @@ namespace pcl
               aux::copy3 (src.translation_, this->translation_);
             }
 
-            inline void
+            const Entry& operator = (const Entry& src)
+            {
+              num_transforms_ = src.num_transforms_;
+              aux::copy3 (src.axis_angle_, this->axis_angle_);
+              aux::copy3 (src.translation_, this->translation_);
+
+              return *this;
+            }
+
+            inline const Entry&
             addRigidTransform (const float axis_angle[3], const float translation[3])
             {
               aux::add3 (this->axis_angle_, axis_angle);
               aux::add3 (this->translation_, translation);
               ++num_transforms_;
+
+              return *this;
             }
 
             inline void
@@ -118,28 +127,22 @@ namespace pcl
               return (translation_);
             }
 
-          public:
+            inline int
+            getNumberOfTransforms () const
+            {
+              return (num_transforms_);
+            }
+
+          protected:
             float axis_angle_[3], translation_[3];
             int num_transforms_;
         };// class Entry
 
       public:
-        Cell (){}
-        virtual ~Cell ()
+        RotationSpaceCell (){}
+        virtual ~RotationSpaceCell ()
         {
           model_to_entry_.clear ();
-        }
-
-        inline int*
-        getPositionId ()
-        {
-          return (pos_id_);
-        }
-
-        inline int*
-        getRotationId ()
-        {
-          return (rot_id_);
         }
 
         inline std::map<const ModelLibrary::Model*,Entry>&
@@ -148,16 +151,40 @@ namespace pcl
           return (model_to_entry_);
         }
 
-        inline void
+        inline const RotationSpaceCell::Entry*
+        getEntry (const ModelLibrary::Model* model) const
+        {
+          std::map<const ModelLibrary::Model*, Entry>::const_iterator res = model_to_entry_.find (model);
+
+          if ( res != model_to_entry_.end () )
+            return (&res->second);
+
+          return (NULL);
+        }
+
+        inline const RotationSpaceCell::Entry&
         addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
         {
-          model_to_entry_[model].addRigidTransform (axis_angle, translation);
+          return model_to_entry_[model].addRigidTransform (axis_angle, translation);
         }
 
       protected:
         std::map<const ModelLibrary::Model*,Entry> model_to_entry_;
-        int pos_id_[3], rot_id_[3];
-    }; // class Cell
+    }; // class RotationSpaceCell
+
+    class RotationSpaceCellCreator
+    {
+      public:
+        RotationSpaceCellCreator (){}
+        virtual ~RotationSpaceCellCreator (){}
+
+        RotationSpaceCell* create (const SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float>::Node* )
+        {
+          return (new RotationSpaceCell ());
+        }
+    };
+
+    typedef SimpleOctree<RotationSpaceCell, RotationSpaceCellCreator, float> CellOctree;
 
     /** \brief This is a class for a discrete representation of the rotation space based on the axis-angle representation.
       * This class is not supposed to be very general. That's why it is dependent on the class ModelLibrary.
@@ -165,7 +192,6 @@ namespace pcl
       * \author Chavdar Papazov
       * \ingroup recognition
       */
-    template<class Data>
     class PCL_EXPORTS RotationSpace
     {
       public:
@@ -177,71 +203,74 @@ namespace pcl
           float bounds[6] = {min, max, min, max, min, max};
 
           // Build the voxel structure
-          octree_.build (bounds, discretization);
-          aux::set3 (pos_id_, -1);
+          octree_.build (bounds, discretization, &cell_creator_);
         }
 
         virtual ~RotationSpace ()
         {
-          for ( std::list<Cell*>::iterator it = full_cells_.begin () ; it != full_cells_.end () ; ++it )
-            delete *it;
-          full_cells_.clear ();
-        }
-
-        inline int*
-        getPositionId ()
-        {
-          return (pos_id_);
-        }
-
-        inline std::list<Cell*>&
-        getFullCells ()
-        {
-          return (full_cells_);
+          octree_.clear ();
         }
 
         inline void
-        setOctreeLeaf (ORROctree::Node* leaf)
+        setCenter (const float* c)
         {
-          positional_leaf_ = leaf;
+          center_[0] = c[0];
+          center_[1] = c[1];
+          center_[2] = c[2];
         }
 
-        inline ORROctree::Node*
-        getOctreeLeaf () const
-        {
-          return (positional_leaf_);
-        }
+        inline const float*
+        getCenter () const { return center_;}
 
-        inline void
-        setData (const Data& data)
+        inline bool
+        getTransformWithMostVotes (const ModelLibrary::Model* model, float rigid_transform[12]) const
         {
-          data_ = data;
-        }
+          RotationSpaceCell::Entry with_most_votes;
+          const std::vector<CellOctree::Node*>& full_leaves = octree_.getFullLeaves ();
+          int max_num_transforms = 0;
 
-        inline const Data&
-        getData () const
-        {
-          return (data_);
-        }
+          // For each full leaf
+          for ( std::vector<CellOctree::Node*>::const_iterator leaf = full_leaves.begin () ; leaf != full_leaves.end () ; ++leaf )
+          {
+            // Is there an entry for 'model' in the current cell
+            const RotationSpaceCell::Entry *entry = (*leaf)->getData ().getEntry (model);
+            if ( !entry )
+              continue;
 
-        inline void
-        setLinearId (int id)
-        {
-          linear_id_ = id;
-        }
+            int num_transforms = entry->getNumberOfTransforms ();
+            const std::set<CellOctree::Node*>& neighs = (*leaf)->getNeighbors ();
 
-        inline int
-        getLinearId () const
-        {
-          return (linear_id_);
+            // For each neighbor
+            for ( std::set<CellOctree::Node*>::const_iterator neigh = neighs.begin () ; neigh != neighs.end () ; ++neigh )
+            {
+              const RotationSpaceCell::Entry *neigh_entry = (*neigh)->getData ().getEntry (model);
+              if ( !neigh_entry )
+                continue;
+
+              num_transforms += neigh_entry->getNumberOfTransforms ();
+            }
+
+            if ( num_transforms > max_num_transforms )
+            {
+              with_most_votes = *entry;
+              max_num_transforms = num_transforms;
+            }
+          }
+
+          if ( !max_num_transforms )
+            return false;
+
+          with_most_votes.computeAverageRigidTransform (rigid_transform);
+
+          return true;
         }
 
         inline bool
         addRigidTransform (const ModelLibrary::Model* model, const float axis_angle[3], const float translation[3])
         {
-          ORROctree::Node* rot_leaf = octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
+          CellOctree::Node* cell = octree_.createLeaf (axis_angle[0], axis_angle[1], axis_angle[2]);
 
-          if ( !rot_leaf )
+          if ( !cell )
           {
             const float *b = octree_.getBounds ();
             printf ("WARNING in 'RotationSpace::%s()': the provided axis-angle input (%f, %f, %f) is "
@@ -250,157 +279,111 @@ namespace pcl
             return (false);
           }
 
-          Cell* cell;
-
-          if ( !rot_leaf->getData ()->getUserData () )
-          {
-            cell = new Cell ();
-            rot_leaf->setUserData (cell);
-            // Save the ids
-            aux::copy3(pos_id_, cell->getPositionId ());
-            rot_leaf->getData ()->get3dId (cell->getRotationId ());
-            // Save the cell
-            full_cells_.push_back (cell);
-          }
-          else
-            cell = static_cast<Cell*> (rot_leaf->getData ()->getUserData ());
-
           // Add the rigid transform to the cell
-          cell->addRigidTransform (model, axis_angle, translation);
+          cell->getData ().addRigidTransform (model, axis_angle, translation);
 
           return (true);
         }
 
       protected:
-        ORROctree octree_;
-        std::list<Cell*> full_cells_;
-        int pos_id_[3];
-        int linear_id_;
-        ORROctree::Node* positional_leaf_;
-        Data data_;
+        CellOctree octree_;
+        RotationSpaceCellCreator cell_creator_;
+        float center_[3];
     };// class RotationSpace
 
-    template<class Data>
+    class RotationSpaceCreator
+    {
+      public:
+        RotationSpaceCreator()
+        : counter_ (0)
+        {}
+
+        virtual ~RotationSpaceCreator(){}
+
+        RotationSpace* create(const SimpleOctree<RotationSpace, RotationSpaceCreator, float>::Node* leaf)
+        {
+          RotationSpace *rot_space = new RotationSpace (discretization_);
+          rot_space->setCenter (leaf->getCenter ());
+          rotation_spaces_.push_back (rot_space);
+
+          ++counter_;
+
+          return (rot_space);
+        }
+
+        void
+        setDiscretization (float value){ discretization_ = value;}
+
+        int
+        getNumberOfRotationSpaces () const { return (counter_);}
+
+        const std::list<RotationSpace*>&
+        getRotationSpaces () const { return (rotation_spaces_);}
+
+        std::list<RotationSpace*>&
+        getRotationSpaces (){ return (rotation_spaces_);}
+
+        void
+        reset ()
+        {
+          counter_ = 0;
+          rotation_spaces_.clear ();
+        }
+
+      protected:
+        float discretization_;
+        int counter_;
+        std::list<RotationSpace*> rotation_spaces_;
+    };
+
+    typedef SimpleOctree<RotationSpace, RotationSpaceCreator, float> RotationSpaceOctree;
+
     class PCL_EXPORTS RigidTransformSpace
     {
       public:
-        RigidTransformSpace ()
-        : num_occupied_rotation_spaces_ (0)
-        {}
-
-        virtual ~RigidTransformSpace ()
-        {
-          this->clear ();
-        }
+        RigidTransformSpace (){}
+        virtual ~RigidTransformSpace (){ this->clear ();}
 
         inline void
         build (const float* pos_bounds, float translation_cell_size, float rotation_cell_size)
         {
           this->clear ();
 
-          translation_cell_size_  = translation_cell_size;
-          rotation_cell_size_  = rotation_cell_size;
+          rotation_space_creator_.setDiscretization (rotation_cell_size);
 
-          pos_octree_.build (pos_bounds, translation_cell_size);
+          pos_octree_.build (pos_bounds, translation_cell_size, &rotation_space_creator_);
         }
 
         inline void
         clear ()
         {
-          for ( typename std::list<RotationSpace<Data>*>::iterator it = rotation_space_list_.begin () ; it != rotation_space_list_.end () ; ++it )
-            delete *it;
-          rotation_space_list_.clear ();
           pos_octree_.clear ();
-          num_occupied_rotation_spaces_ = 0;
+          rotation_space_creator_.reset ();
         }
 
-        inline std::list<RotationSpace<Data>*>&
+        inline std::list<RotationSpace*>&
         getRotationSpaces ()
         {
-          return (rotation_space_list_);
+          return (rotation_space_creator_.getRotationSpaces ());
         }
 
-        inline const std::list<RotationSpace<Data>*>&
+        inline const std::list<RotationSpace*>&
         getRotationSpaces () const
         {
-          return (rotation_space_list_);
+          return (rotation_space_creator_.getRotationSpaces ());
         }
 
         inline int
         getNumberOfOccupiedRotationSpaces ()
         {
-          return (num_occupied_rotation_spaces_);
-        }
-
-        inline bool
-        getPositionCellBounds (const int id[3], float bounds[6]) const
-        {
-          const ORROctree::Node* leaf = pos_octree_.getLeaf (id[0], id[1], id[2]);
-
-          if ( !leaf )
-            return (false);
-
-          leaf->getBounds (bounds);
-
-          return (true);
-        }
-
-        inline RotationSpace<Data>*
-        getRotationSpace (int i, int j, int k) const
-        {
-          const ORROctree::Node* leaf = pos_octree_.getLeaf (i, j, k);
-
-          if ( !leaf )
-            return NULL;
-
-          if ( !leaf->getData () )
-            return NULL;
-
-          return static_cast<RotationSpace<Data>*> (leaf->getData ()->getUserData ());
-        }
-
-        inline void
-        getNeighbors(const int id[3], std::list<RotationSpace<Data>*>& neighs) const
-        {
-          RotationSpace<Data>* neigh;
-
-          // Note that 'node' is not a neighbor of itself
-          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]+1); if ( neigh ) neighs.push_back (neigh);
-
-          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
-        //neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]  ); if ( neigh ) neighs.push_back (neigh);
-
-          neigh = this->getRotationSpace (id[0]+1, id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]+1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]  , id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]+1, id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]  , id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
-          neigh = this->getRotationSpace (id[0]-1, id[1]-1, id[2]-1); if ( neigh ) neighs.push_back (neigh);
+          return (rotation_space_creator_.getNumberOfRotationSpaces ());
         }
 
         inline bool
         addRigidTransform (const ModelLibrary::Model* model, const float position[3], const float rigid_transform[12])
         {
           // Get the leaf 'position' ends up in
-          ORROctree::Node* leaf = pos_octree_.createLeaf (position[0], position[1], position[2]);
+          RotationSpaceOctree::Node* leaf = pos_octree_.createLeaf (position[0], position[1], position[2]);
 
           if ( !leaf )
           {
@@ -409,39 +392,21 @@ namespace pcl
             return (false);
           }
 
-          RotationSpace<Data>* rot_space;
-
-          // Shall we create a new rotation space instance
-          if ( !leaf->getData ()->getUserData () )
-          {
-            rot_space = new RotationSpace<Data> (rotation_cell_size_);
-            leaf->setUserData (rot_space);
-            leaf->getData ()->get3dId (rot_space->getPositionId ());
-            rot_space->setOctreeLeaf (leaf);
-            rotation_space_list_.push_back (rot_space);
-            ++num_occupied_rotation_spaces_;
-          }
-          else // get the existing rotation space
-            rot_space = static_cast<RotationSpace<Data>*> (leaf->getData ()->getUserData ());
-
           float rot_angle, axis_angle[3];
           // Extract the axis-angle representation from the rotation matrix
           aux::rotationMatrixToAxisAngle (rigid_transform, axis_angle, rot_angle);
           // Multiply the axis by the angle to get the final representation
           aux::mult3 (axis_angle, rot_angle);
 
-          // Now, add the rigid transform to the space representation
-          rot_space->addRigidTransform (model, axis_angle, rigid_transform + 9);
+          // Now, add the rigid transform to the rotation space
+          leaf->getData ().addRigidTransform (model, axis_angle, rigid_transform + 9);
 
           return (true);
         }
 
       protected:
-        ORROctree pos_octree_;
-        float translation_cell_size_;
-        float rotation_cell_size_;
-        int num_occupied_rotation_spaces_;
-        std::list<RotationSpace<Data>*> rotation_space_list_;
+        RotationSpaceOctree pos_octree_;
+        RotationSpaceCreator rotation_space_creator_;
     }; // class RigidTransformSpace
   } // namespace recognition
 } // namespace pcl

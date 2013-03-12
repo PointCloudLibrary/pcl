@@ -42,9 +42,11 @@
 #include "auxiliary.h"
 #include <pcl/recognition/ransac_based/voxel_structure.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
+#include <pcl/common/random.h>
 #include <pcl/pcl_exports.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <ctime>
 #include <string>
 #include <list>
 #include <set>
@@ -64,7 +66,8 @@ namespace pcl
         class Model
         {
           public:
-            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name, void* user_data = NULL)
+            Model (const PointCloudIn& points, const PointCloudN& normals, float voxel_size, const std::string& object_name,
+                   float frac_of_points_for_registration, void* user_data = NULL)
             : obj_name_(object_name),
               user_data_ (user_data)
             {
@@ -89,8 +92,34 @@ namespace pcl
                 aux::expandBoundingBoxToContainPoint (bounds_of_octree_points_, (*it)->getData ()->getPoint ());
               }
 
+              int num_octree_points = static_cast<int> (full_leaves.size ());
               // Finalize the center of mass computation
-              aux::mult3 (octree_center_of_mass_, 1.0f/static_cast<float> (full_leaves.size ()));
+              aux::mult3 (octree_center_of_mass_, 1.0f/static_cast<float> (num_octree_points));
+
+              int num_points_for_registration = static_cast<int> (static_cast<float> (num_octree_points)*frac_of_points_for_registration);
+              points_for_registration_.resize (static_cast<size_t> (num_points_for_registration));
+
+              // Prepare for random point sampling
+              std::vector<int> ids (num_octree_points);
+              for ( int i = 0 ; i < num_octree_points ; ++i )
+                ids[i] = i;
+
+              // The random generator
+              pcl::common::UniformGenerator<int> randgen (0, num_octree_points - 1, static_cast<uint32_t> (time (NULL)));
+
+              // Randomly sample some points from the octree
+              for ( int i = 0 ; i < num_points_for_registration ; ++i )
+              {
+                // Choose a random position within the array of ids
+                randgen.setParameters (0, static_cast<int> (ids.size ()) - 1);
+                int rand_pos = randgen.run ();
+
+                // Copy the randomly selected octree point
+                aux::copy3 (octree_.getFullLeaves ()[ids[rand_pos]]->getData ()->getPoint (), points_for_registration_[i]);
+
+                // Delete the selected id
+                ids.erase (ids.begin() + rand_pos);
+              }
             }
 
             virtual ~Model ()
@@ -127,15 +156,22 @@ namespace pcl
               return (bounds_of_octree_points_);
             }
 
+            inline const PointCloudIn&
+            getPointsForRegistration () const
+            {
+              return (points_for_registration_);
+            }
+
           protected:
             const std::string obj_name_;
             ORROctree octree_;
             float octree_center_of_mass_[3];
             float bounds_of_octree_points_[6];
+            PointCloudIn points_for_registration_;
             void* user_data_;
         };
 
-        typedef std::list<std::pair<const ORROctree::Node::Data*,const ORROctree::Node::Data*> > node_data_pair_list;
+        typedef std::list<std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> > node_data_pair_list;
         typedef std::map<const Model*, node_data_pair_list> HashTableCell;
         typedef VoxelStructure<HashTableCell, float> HashTable;
 
@@ -182,11 +218,13 @@ namespace pcl
           * \param[in] points represents the model to be added.
           * \param[in] normals are the normals at the model points.
           * \param[in] object_name is the unique name of the object to be added.
+          * \param[in] num_points_for_registration is the number of points used for fast ICP registration prior to hypothesis testing
           * \param[in] user_data is a pointer to some data (can be NULL)
           *
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */
         bool
-        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name, void* user_data = NULL);
+        addModel (const PointCloudIn& points, const PointCloudN& normals, const std::string& object_name,
+                  float frac_of_points_for_registration, void* user_data = NULL);
 
         /** \brief Returns the hash table built by this instance. */
         inline const HashTable&
@@ -203,6 +241,12 @@ namespace pcl
             return (it->second);
 
           return (NULL);
+        }
+
+        inline const std::map<std::string,Model*>&
+        getModels () const
+        {
+          return (models_);
         }
 
       protected:

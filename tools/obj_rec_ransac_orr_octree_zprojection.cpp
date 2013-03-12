@@ -236,8 +236,8 @@ void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
       if ( !pixel )
         continue;
 
-      rectangle_to_vtk (x, x + psize, y, y + psize, pixel->z1_, lower_bound);
-      rectangle_to_vtk (x, x + psize, y, y + psize, pixel->z2_, upper_bound);
+      rectangle_to_vtk (x, x + psize, y, y + psize, pixel->z1 (), lower_bound);
+      rectangle_to_vtk (x, x + psize, y, y + psize, pixel->z2 (), upper_bound);
     }
   }
 
