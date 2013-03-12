@@ -56,6 +56,8 @@ pcl::recognition::ObjRecRANSAC::ObjRecRANSAC (float pair_width, float voxel_size
   max_coplanarity_angle_ (3.0f*AUX_DEG_TO_RADIANS),
   scene_bounds_enlargement_factor_ (0.25f), // 25% enlargement
   ignore_coplanar_opps_ (true),
+  frac_of_points_for_icp_refinement_ (0.3f),
+  do_icp_hypotheses_refinement_ (true),
   model_library_ (pair_width, voxel_size, max_coplanarity_angle_),
   rec_mode_ (ObjRecRANSAC::FULL_RECOGNITION)
 {
@@ -73,6 +75,18 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   scene_octree_.build(scene, voxel_size_, &normals);
   // Project it on the xy-plane (which roughly corresponds to the projection plane of the scanning device)
   scene_octree_proj_.build(scene_octree_, abs_zdist_thresh_, abs_zdist_thresh_);
+
+  // Needed only if icp hypotheses refinement is to be performed
+  scene_octree_points_ = PointCloudIn::Ptr (new PointCloudIn ());
+  // First, get the scene octree points
+  scene_octree_.getFullLeavesPoints (*scene_octree_points_);
+
+  if ( do_icp_hypotheses_refinement_ )
+  {
+    // Build the ICP instance with the scene points as the target
+    trimmed_icp_.init (scene_octree_points_);
+    trimmed_icp_.setNewToOldEnergyRatio (0.99f);
+  }
 
   if ( success_probability >= 1.0 )
     success_probability = 0.99;
@@ -101,13 +115,13 @@ pcl::recognition::ObjRecRANSAC::recognize (const PointCloudIn& scene, const Poin
   int num_hypotheses = this->generateHypotheses (sampled_oriented_point_pairs_, pre_hypotheses);
 
   // Cluster the hypotheses
-  vector<RotationSpace<Hypothesis>*> rot_spaces;
-  num_hypotheses = this->groupHypotheses (pre_hypotheses, num_hypotheses, transform_space_, rot_spaces);
+  HypothesisOctree grouped_hypotheses;
+  num_hypotheses = this->groupHypotheses (pre_hypotheses, num_hypotheses, transform_space_, grouped_hypotheses);
   pre_hypotheses.clear ();
 
   // The last graph-based steps in the algorithm
   ORRGraph<Hypothesis> graph_of_close_hypotheses;
-  this->buildGraphOfCloseHypotheses (transform_space_, rot_spaces, graph_of_close_hypotheses);
+  this->buildGraphOfCloseHypotheses (grouped_hypotheses, graph_of_close_hypotheses);
   this->filterGraphOfCloseHypotheses (graph_of_close_hypotheses, accepted_hypotheses_);
   graph_of_close_hypotheses.clear ();
 
@@ -191,7 +205,7 @@ pcl::recognition::ObjRecRANSAC::sampleOrientedPointPairs (int num_iterations, co
     const float *p1 = leaf1->getData ()->getPoint ();
     const float *n1 = leaf1->getData ()->getNormal ();
 
-    // Randomly select a leaf at the right distance from 'leaves[i]'
+    // Randomly select a leaf at the right distance from 'leaf1'
     ORROctree::Node *leaf2 = scene_octree_.getRandomFullLeafOnSphere (p1, pair_width_);
     if ( !leaf2 )
       continue;
@@ -284,8 +298,8 @@ pcl::recognition::ObjRecRANSAC::generateHypotheses (const list<OrientedPointPair
 //===============================================================================================================================================
 
 int
-pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypotheses, int num_hypotheses,
-    RigidTransformSpace<Hypothesis>& transform_space, vector<RotationSpace<Hypothesis>*>& rot_spaces) const
+pcl::recognition::ObjRecRANSAC::groupHypotheses(list<HypothesisBase>& hypotheses, int num_hypotheses,
+    RigidTransformSpace& transform_space, HypothesisOctree& grouped_hypotheses) const
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("ObjRecRANSAC::%s():\n  grouping %i hypotheses ... ", __func__, num_hypotheses); fflush (stdout);
@@ -298,23 +312,26 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypo
   b[2] -= enlr; b[3] += enlr;
   b[4] -= enlr; b[5] += enlr;
 
+  // Build the output octree which will contain the grouped hypotheses
+  HypothesisCreator hypothesis_creator;
+  grouped_hypotheses.build (b, position_discretization_, &hypothesis_creator);
+
   // Build the rigid transform space
   transform_space.build (b, position_discretization_, rotation_discretization_);
   float transformed_point[3];
 
-  // First, add all rigid transforms to the discrete rigid transform space
-  for ( list<HypothesisBase>::const_iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
+  // Add all rigid transforms to the discrete rigid transform space
+  for ( list<HypothesisBase>::iterator hypo_it = hypotheses.begin () ; hypo_it != hypotheses.end () ; ++hypo_it )
   {
-    // First transform the center of mass of the model
+    // Transform the center of mass of the model
     aux::transform (hypo_it->rigid_transform_, hypo_it->obj_model_->getOctreeCenterOfMass (), transformed_point);
+
     // Now add the rigid transform at the right place
     transform_space.addRigidTransform (hypo_it->obj_model_, transformed_point, hypo_it->rigid_transform_);
   }
 
-  list<RotationSpace<Hypothesis>*>& rotation_spaces = transform_space.getRotationSpaces ();
-  ObjRecRANSAC::Hypothesis hypothesis;
-  int penalty, penalty_thresh, num_accepted = 0;
-  float match, match_thresh, num_full_leaves;
+  list<RotationSpace*>& rotation_spaces = transform_space.getRotationSpaces ();
+  int num_accepted = 0;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf("done\n  testing the cluster representatives ...\n", __func__); fflush (stdout);
@@ -324,62 +341,60 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypo
 #endif
 
   // Now take the best hypothesis from each rotation space
-  for ( list<RotationSpace<Hypothesis>*>::iterator rs_it = rotation_spaces.begin () ; rs_it != rotation_spaces.end () ; ++rs_it )
+  for ( list<RotationSpace*>::iterator rs_it = rotation_spaces.begin () ; rs_it != rotation_spaces.end () ; ++rs_it )
   {
-    list<Cell*>& cells = (*rs_it)->getFullCells ();
-    ObjRecRANSAC::Hypothesis *best_hypothesis = NULL;
+    const map<string, ModelLibrary::Model*>& models = model_library_.getModels ();
+    Hypothesis best_hypothesis;
+    best_hypothesis.match_confidence_ = 0.0f;
 
-    // Run through the cells and take the best hypothesis
-    for ( list<Cell*>::iterator cell_it = cells.begin () ; cell_it != cells.end () ; ++cell_it )
+    // For each model in the library
+    for ( map<string, ModelLibrary::Model*>::const_iterator model = models.begin () ; model != models.end () ; ++model )
     {
+      // Build a hypothesis based on the entry with most votes
+      Hypothesis hypothesis (model->second);
+
+      if ( !(*rs_it)->getTransformWithMostVotes (model->second, hypothesis.rigid_transform_) )
+        continue;
+
+      int int_match;
+      int penalty;
+      this->testHypothesis (&hypothesis, int_match, penalty);
+
       // For better code readability
-      map<const ModelLibrary::Model*, Cell::Entry>& entries = (*cell_it)->getEntries ();
-      map<const ModelLibrary::Model*, Cell::Entry>::iterator entry_it;
+      float num_full_leaves = static_cast<float> (hypothesis.obj_model_->getOctree ().getFullLeaves ().size ());
+      float match_thresh = num_full_leaves*visibility_;
+      int penalty_thresh = static_cast<int> (num_full_leaves*relative_num_of_illegal_pts_ + 0.5f);
 
-      // Setup the ids
-      hypothesis.setPositionId ((*cell_it)->getPositionId ());
-      hypothesis.setRotationId ((*cell_it)->getRotationId ());
-
-      // Run through all entries
-      for ( entry_it = entries.begin () ; entry_it != entries.end () ; ++entry_it )
+      // Check if this hypothesis is OK
+      if ( int_match >= match_thresh && penalty <= penalty_thresh )
       {
-        // Construct a hypothesis
-        entry_it->second.computeAverageRigidTransform (hypothesis.rigid_transform_);
-        hypothesis.obj_model_ = entry_it->first;
-        hypothesis.explained_pixels_.clear ();
-
-        // Now that we constructed a hypothesis -> test it
-        this->testHypothesis (&hypothesis, match, penalty);
-
-        // For better code readability
-        num_full_leaves = static_cast<float> (hypothesis.obj_model_->getOctree ().getFullLeaves ().size ());
-        match_thresh = num_full_leaves*visibility_;
-        penalty_thresh = static_cast<int> (num_full_leaves*relative_num_of_illegal_pts_ + 0.5f);
-
-        // Check if this hypothesis is OK
-        if ( match >= match_thresh && penalty <= penalty_thresh )
+        if ( do_icp_hypotheses_refinement_ && int_match > 3 )
         {
-          if ( best_hypothesis == NULL )
-          {
-            best_hypothesis = new ObjRecRANSAC::Hypothesis (hypothesis);
-            best_hypothesis->match_confidence_ = static_cast<float> (match)/num_full_leaves;
-          }
-          else if ( hypothesis.explained_pixels_.size () > best_hypothesis->explained_pixels_.size () )
-          {
-            *best_hypothesis = hypothesis;
-            best_hypothesis->match_confidence_ = static_cast<float> (match)/num_full_leaves;
-          }
+          // Convert from array to 4x4 matrix
+          Eigen::Matrix<float, 4, 4> mat;
+          aux::array12ToMatrix4x4 (hypothesis.rigid_transform_, mat);
+          // Perform registration
+          trimmed_icp_.align (
+              hypothesis.obj_model_->getPointsForRegistration (),
+              static_cast<int> (static_cast<float> (int_match)*frac_of_points_for_icp_refinement_),
+              mat);
+          aux::matrix4x4ToArray12 (mat, hypothesis.rigid_transform_);
+
+          this->testHypothesis (&hypothesis, int_match, penalty);
         }
+
+        if ( hypothesis.match_confidence_ > best_hypothesis.match_confidence_ )
+          best_hypothesis = hypothesis;
       }
     }
 
-    // Save the best hypothesis in the rotation space and in the output list
-    if ( best_hypothesis )
+    if ( best_hypothesis.match_confidence_ > 0.0f )
     {
-      (*rs_it)->setData (*best_hypothesis);
-      rot_spaces.push_back (*rs_it);
+      const float *c = (*rs_it)->getCenter ();
+      HypothesisOctree::Node* node = grouped_hypotheses.createLeaf (c[0], c[1], c[2]);
+
+      node->setData (best_hypothesis);
       ++num_accepted;
-      delete best_hypothesis;
     }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -398,41 +413,34 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(const list<HypothesisBase>& hypo
 //===============================================================================================================================================
 
 void
-pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (const RigidTransformSpace<Hypothesis>& transform_space,
-    const vector<RotationSpace<Hypothesis>*> rotation_spaces, ORRGraph<Hypothesis>& graph) const
+pcl::recognition::ObjRecRANSAC::buildGraphOfCloseHypotheses (HypothesisOctree& hypotheses, ORRGraph<Hypothesis>& graph) const
 {
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf ("ObjRecRANSAC::%s(): building the graph ... ", __func__); fflush (stdout);
 #endif
 
+  vector<HypothesisOctree::Node*> hypo_leaves = hypotheses.getFullLeaves ();
   int i = 0;
 
-  graph.resize (static_cast<int> (rotation_spaces.size ()));
+  graph.resize (static_cast<int> (hypo_leaves.size ()));
 
-  for ( vector<RotationSpace<Hypothesis>*>::const_iterator rs = rotation_spaces.begin () ; rs != rotation_spaces.end () ; ++rs, ++i )
-    (*rs)->setLinearId (i);
+  for ( vector<HypothesisOctree::Node*>::iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
+    (*hypo)->getData ().setLinearId (i);
 
   i = 0;
 
   // Now create the graph connectivity such that each two neighboring rotation spaces are neighbors in the graph
-  for ( vector<RotationSpace<Hypothesis>*>::const_iterator rs = rotation_spaces.begin () ; rs != rotation_spaces.end () ; ++rs, ++i )
+  for ( vector<HypothesisOctree::Node*>::const_iterator hypo = hypo_leaves.begin () ; hypo != hypo_leaves.end () ; ++hypo, ++i )
   {
     // Compute the fitness of the graph node
-    graph.getNodes ()[i]->setFitness (static_cast<int> ((*rs)->getData ().explained_pixels_.size ()));
-    graph.getNodes ()[i]->setData ((*rs)->getData ());
+    graph.getNodes ()[i]->setFitness (static_cast<int> ((*hypo)->getData ().explained_pixels_.size ()));
+    graph.getNodes ()[i]->setData ((*hypo)->getData ());
 
     // Get the neighbors of the current rotation space
-    list<RotationSpace<Hypothesis>*> neighbors;
-    transform_space.getNeighbors ((*rs)->getPositionId (), neighbors);
+    const set<HypothesisOctree::Node*>& neighbors = (*hypo)->getNeighbors ();
 
-    for ( list<RotationSpace<Hypothesis>*>::iterator n = neighbors.begin() ; n != neighbors.end() ; ++n )
-    {
-      // Check if that neighbor has a valid hypothesis
-      if ( (*n)->getData ().match_confidence_ < 0.0 )
-        continue;
-
-      graph.insertDirectedEdge ((*rs)->getLinearId (), (*n)->getLinearId ());
-    }
+    for ( set<HypothesisOctree::Node*>::const_iterator n = neighbors.begin() ; n != neighbors.end() ; ++n )
+      graph.insertDirectedEdge ((*hypo)->getData ().getLinearId (), (*n)->getData ().getLinearId ());
   }
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
@@ -601,6 +609,102 @@ pcl::recognition::ObjRecRANSAC::filterGraphOfConflictingHypotheses (ORRGraph<Hyp
 #ifdef OBJ_REC_RANSAC_VERBOSE
   printf ("done\n");
 #endif
+}
+
+//===============================================================================================================================================
+
+inline void
+pcl::recognition::ObjRecRANSAC::testHypothesis (Hypothesis* hypothesis, int& match, int& penalty) const
+{
+  match = 0;
+  penalty = 0;
+
+  // For better code readability
+  const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
+  const float* rigid_transform = hypothesis->rigid_transform_;
+  const ORROctreeZProjection::Pixel* pixel;
+  float transformed_point[3];
+
+  // The match/penalty loop
+  for ( std::vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
+  {
+    // Transform the model point with the current rigid transform
+    aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
+
+    // Get the pixel 'transformed_point' lies in
+    pixel = scene_octree_proj_.getPixel (transformed_point);
+    // Check if we have a valid pixel
+    if ( pixel == NULL )
+      continue;
+
+    if ( transformed_point[2] < pixel->z1 () ) // The transformed model point overshadows a pixel -> penalize the hypothesis
+      ++penalty;
+    else if ( transformed_point[2] <= pixel->z2 () ) // The point is OK
+    {
+      ++match;
+      // 'hypo_it' explains 'pixel' => insert the pixel's id in the id set of 'hypo_it'
+      hypothesis->explained_pixels_.insert (pixel->getId ());
+    }
+  }
+
+  hypothesis->match_confidence_ = static_cast<float> (match)/static_cast<float> (hypothesis->obj_model_->getOctree ().getFullLeaves ().size ());
+}
+
+//===============================================================================================================================================
+
+inline void
+pcl::recognition::ObjRecRANSAC::testHypothesisNormalBased (Hypothesis* hypothesis, float& match) const
+{
+  match = 0.0f;
+
+  // For better code readability
+  const std::vector<ORROctree::Node*>& full_model_leaves = hypothesis->obj_model_->getOctree ().getFullLeaves ();
+  const float* rigid_transform = hypothesis->rigid_transform_;
+  float transformed_point[3];
+
+  // The match/penalty loop
+  for ( std::vector<ORROctree::Node*>::const_iterator leaf_it = full_model_leaves.begin () ; leaf_it != full_model_leaves.end () ; ++leaf_it )
+  {
+    // Transform the model point with the current rigid transform
+    aux::transform (rigid_transform, (*leaf_it)->getData ()->getPoint (), transformed_point);
+
+    // Get the pixel 'transformed_point' lies in
+    const ORROctreeZProjection::Pixel* pixel = scene_octree_proj_.getPixel (transformed_point);
+    // Check if we have a valid pixel
+    if ( pixel == NULL )
+      continue;
+
+    // Check if the point is OK
+    if ( pixel->z1 () <= transformed_point[2] && transformed_point[2] <= pixel->z2 () )
+    {
+      // 'hypo_it' explains 'pixel' => insert the pixel's id in the id set of 'hypo_it'
+      hypothesis->explained_pixels_.insert (pixel->getId ());
+
+      // Compute the match based on the normal agreement
+      const set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>* nodes = scene_octree_proj_.getOctreeNodes (transformed_point);
+
+      set<ORROctree::Node*, bool(*)(ORROctree::Node*,ORROctree::Node*)>::const_iterator n = nodes->begin ();
+      ORROctree::Node *closest_node = *n;
+      float sqr_dist, min_sqr_dist = aux::sqrDistance3 (closest_node->getData ()->getPoint (), transformed_point);
+
+      for ( ++n ; n != nodes->end () ; ++n )
+      {
+        sqr_dist = aux::sqrDistance3 ((*n)->getData ()->getPoint (), transformed_point);
+        if ( sqr_dist < min_sqr_dist )
+        {
+          closest_node = *n;
+          min_sqr_dist = sqr_dist;
+        }
+      }
+
+      float rotated_normal[3];
+      aux::mult3x3 (rigid_transform, closest_node->getData ()->getNormal (), rotated_normal);
+
+      match += aux::dot3 (rotated_normal, (*leaf_it)->getData ()->getNormal ());
+    }
+  }
+
+  hypothesis->match_confidence_ = match/static_cast<float> (hypothesis->obj_model_->getOctree ().getFullLeaves ().size ());
 }
 
 //===============================================================================================================================================

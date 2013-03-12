@@ -54,6 +54,7 @@
 #include <ctime>
 #include <vector>
 #include <list>
+#include <set>
 
 //#define PCL_REC_ORR_OCTREE_VERBOSE
 
@@ -80,11 +81,12 @@ namespace pcl
             class Data
             {
               public:
-                Data (void* user_data = NULL)
-                : id_x_ (-1),
-                  id_y_ (-1),
-                  id_z_ (-1),
-                  num_points_(0),
+                Data (int id_x, int id_y, int id_z, int lin_id, void* user_data = NULL)
+                : id_x_ (id_x),
+                  id_y_ (id_y),
+                  id_z_ (id_z),
+                  lin_id_ (lin_id),
+                  num_points_ (0),
                   user_data_ (user_data)
                 {
                   n_[0] = n_[1] = n_[2] = p_[0] = p_[1] = p_[2] = 0.0f;
@@ -125,9 +127,6 @@ namespace pcl
                 getNormal (){ return n_;}
 
                 inline void
-                set3dId (int x, int y, int z){ id_x_ = x; id_y_ = y; id_z_ = z;}
-
-                inline void
                 get3dId (int id[3]) const
                 {
                   id[0] = id_x_;
@@ -144,21 +143,25 @@ namespace pcl
                 inline int
                 get3dIdZ () const {return id_z_;}
 
+                inline int
+                getLinearId () const { return lin_id_;}
+
                 inline void
-                setUserData (void* user_data)
-                {
-                  user_data_ = user_data;
-                }
+                setUserData (void* user_data){ user_data_ = user_data;}
 
                 inline void*
-                getUserData () const
-                {
-                  return user_data_;
-                }
+                getUserData () const { return user_data_;}
+
+                inline void
+                insertNeighbor (Node* node){ neighbors_.insert (node);}
+
+                inline const std::set<Node*>&
+                getNeighbors () const { return (neighbors_);}
 
               protected:
                 float n_[3], p_[3];
-                int id_x_, id_y_, id_z_, num_points_;
+                int id_x_, id_y_, id_z_, lin_id_, num_points_;
+                std::set<Node*> neighbors_;
                 void *user_data_;
             };
 
@@ -257,6 +260,18 @@ namespace pcl
               }
             }
 
+            /** \brief Make this and 'node' neighbors by inserting each node in the others node neighbor set. Nothing happens
+              * of either of the nodes has no data. */
+            inline void
+            makeNeighbors (Node* node)
+            {
+              if ( !this->getData () || !node->getData () )
+                return;
+
+              this->getData ()->insertNeighbor (node);
+              node->getData ()->insertNeighbor (this);
+            }
+
           protected:
             Node::Data *data_;
             float center_[3], bounds_[6], radius_;
@@ -316,15 +331,14 @@ namespace pcl
 
           if ( !node->getData () )
           {
-            Node::Data* data = new Node::Data ();
-            // Compute the 3d integer id of the leaf
-            // Compute the 3d integer id of the leaf
-            data->set3dId(
-              static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
-              static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
-              static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_));
-            // Save the data
+            Node::Data* data = new Node::Data (
+                static_cast<int> ((node->getCenter ()[0] - bounds_[0])/voxel_size_),
+                static_cast<int> ((node->getCenter ()[1] - bounds_[2])/voxel_size_),
+                static_cast<int> ((node->getCenter ()[2] - bounds_[4])/voxel_size_),
+                static_cast<int> (full_leaves_.size ()));
+
             node->setData (data);
+            this->insertNeighbors (node);
             full_leaves_.push_back (node);
           }
 
@@ -347,8 +361,8 @@ namespace pcl
 
         /** \brief Since the leaves are aligned in a rectilinear grid, each leaf has a unique id. The method returns the leaf
           * with id [i, j, k] or NULL is no such leaf exists. */
-        const ORROctree::Node*
-        getLeaf (int i, int j, int k) const
+        ORROctree::Node*
+        getLeaf (int i, int j, int k)
         {
           float offset = 0.5f*voxel_size_;
           float p[3] = {bounds_[0] + offset + static_cast<float> (i)*voxel_size_,
@@ -359,8 +373,8 @@ namespace pcl
         }
 
         /** \brief Returns a pointer to the leaf containing p = (x, y, z) or NULL if no such leaf exists. */
-        inline const ORROctree::Node*
-        getLeaf (float x, float y, float z) const
+        inline ORROctree::Node*
+        getLeaf (float x, float y, float z)
         {
           // Make sure that the input point is within the octree bounds
           if ( x < bounds_[0] || x > bounds_[1] ||
@@ -405,7 +419,7 @@ namespace pcl
         getFullLeaves () const { return full_leaves_;}
 
         void
-        getFullLeafPoints (PointCloudOut& out) const;
+        getFullLeavesPoints (PointCloudOut& out) const;
 
         void
         getNormalsOfFullLeaves (PointCloudN& out) const;
@@ -427,6 +441,44 @@ namespace pcl
 
         inline float
         getVoxelSize () const { return voxel_size_;}
+
+        inline void
+        insertNeighbors (Node* node)
+        {
+          const float* c = node->getCenter ();
+          float s = 0.5f*voxel_size_;
+          Node *neigh;
+
+          neigh = this->getLeaf (c[0]+s, c[1]+s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]+s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]+s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]  , c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]  , c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]  , c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]-s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]-s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]+s, c[1]-s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+
+          neigh = this->getLeaf (c[0]  , c[1]+s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]+s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]+s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]  , c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+        //neigh = this->getLeaf (c[0]  , c[1]  , c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]  , c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]-s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]-s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]  , c[1]-s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+
+          neigh = this->getLeaf (c[0]-s, c[1]+s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]+s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]+s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]  , c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]  , c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]  , c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]-s, c[2]+s); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]-s, c[2]  ); if ( neigh ) node->makeNeighbors (neigh);
+          neigh = this->getLeaf (c[0]-s, c[1]-s, c[2]-s); if ( neigh ) node->makeNeighbors (neigh);
+        }
 
       protected:
         float voxel_size_, bounds_[6];

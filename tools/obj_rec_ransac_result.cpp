@@ -39,7 +39,7 @@
  *  Created on: Jan 23, 2013
  *      Author: papazov
  *
- *  Visualizes the result of the ObjRecRANSAC class. STILL WORK IN PROGRESS!!
+ *  Visualizes the result of the ObjRecRANSAC class.
  */
 
 #include <pcl/segmentation/sac_segmentation.h>
@@ -101,8 +101,6 @@ class CallbackParameters
 int
 main (int argc, char** argv)
 {
-  // THIS IS STILL WORK IN PROGRESS!!
-
   printf ("\nUsage: ./pcl_obj_rec_ransac_scene_opps <pair_width> <voxel_size> <max_coplanarity_angle>\n\n");
 
   const int num_params = 3;
@@ -198,7 +196,7 @@ run (float pair_width, float voxel_size, float max_coplanarity_angle)
 
 #ifdef _SHOW_OCTREE_POINTS_
   PointCloud<PointXYZ>::Ptr octree_points (new PointCloud<PointXYZ> ());
-  objrec.getSceneOctree ().getFullLeafPoints (*octree_points);
+  objrec.getSceneOctree ().getFullLeavesPoints (*octree_points);
   viz.addPointCloud (octree_points, "octree points");
 //  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "octree points");
   viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, "octree points");
