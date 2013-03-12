@@ -42,13 +42,6 @@
 #include <pcl/common/io.h>
 #include <pcl/point_traits.h>
 
-///////////////////////////////////////////////////////////////////////////////
-template<typename PointT> bool
-pcl::RandomSample<PointT>::initCompute ()
-{
-  rng_.seed (seed_);
-  return (FilterIndices<PointT>::initCompute ());
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 template<typename PointT> void
@@ -79,9 +72,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     {
       uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
       for (size_t i = 0; i < offsets.size (); ++i)
-      {
         memcpy (pt_data + offsets[i], &user_filter_value, sizeof (float));
-      }
       if (!pcl_isfinite (user_filter_value_))
         output.is_dense = false;
     }
@@ -99,6 +90,8 @@ template<typename PointT>
 void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
+  rng_->base ().seed (seed_);
+
   size_t N = indices_->size ();
   
   int sample_size = negative_ ? N - sample_ : sample_;
@@ -134,7 +127,7 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       size_t S = 0;
       float quot = top * one_over_N;
 
-      while( quot > V )
+      while (quot > V)
       {
         S ++;
         N --;
@@ -143,6 +136,7 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 
       N--; // this together with N-- above is the same than N - S - 1 (paper Vit84)
       index += S;
+
       
       if (extract_removed_indices_)
         added[index] = true;
@@ -151,6 +145,13 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       i ++;
       index ++;
     }
+
+
+    index += static_cast<size_t> (N * unifRand ());
+    if (extract_removed_indices_)
+      added[index] = true;
+    indices[i] = (*indices_)[index];
+
 
     // Now populate removed_indices_ appropriately
     if (extract_removed_indices_)

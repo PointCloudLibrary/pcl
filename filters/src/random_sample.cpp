@@ -40,19 +40,12 @@
 
 #include <pcl/filters/impl/random_sample.hpp>
 
-
-///////////////////////////////////////////////////////////////////////////////
-bool
-pcl::RandomSample<sensor_msgs::PointCloud2>::initCompute ()
-{
-  rng_.seed (seed_);
-  return (FilterIndices<sensor_msgs::PointCloud2>::initCompute ());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 void
 pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 {
+  rng_->base ().seed (seed_);
+
   unsigned N = input_->width * input_->height;
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return entire copy of cloud
@@ -90,7 +83,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       size_t S = 0;
       float quot = top * one_over_N;
 
-      while( quot > V )
+      while (quot > V)
       {
         S ++;
         N --;
@@ -105,6 +98,9 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
       i ++;
       index ++;
     }
+
+    index += static_cast<size_t> (N * unifRand ());
+    memcpy (&output.data[i * output.point_step], &input_->data[index * output.point_step], output.point_step);
   }
 
   output.width = sample_;
@@ -115,6 +111,8 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 void
 pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
 {
+  rng_->base ().seed (seed_);
+
   unsigned N = input_->width * input_->height;
   // If sample size is 0 or if the sample size is greater then input cloud size
   //   then return all indices
@@ -145,7 +143,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
       size_t S = 0;
       float quot = top * one_over_N;
 
-      while( quot > V )
+      while (quot > V)
       {
         S ++;
         N --;
@@ -162,6 +160,11 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indi
       i ++;
       index ++;
     }
+
+    index += static_cast<size_t> (N * unifRand ());
+    if (extract_removed_indices_)
+      added[index] = true;
+    indices[i] = (*indices_)[index];
   }
 }
 

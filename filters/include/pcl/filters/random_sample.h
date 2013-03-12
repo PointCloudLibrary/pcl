@@ -76,14 +76,12 @@ namespace pcl
 
       /** \brief Empty constructor. */
       RandomSample (bool extract_removed_indices = false)
-        : FilterIndices<PointT> (extract_removed_indices),
-          sample_ (std::numeric_limits<unsigned int>::max ()),
-          seed_ (static_cast<unsigned int> (time (NULL)))
+        : FilterIndices<PointT> (extract_removed_indices)
+        , sample_ (std::numeric_limits<unsigned int>::max ())
+        , rng_alg_ ()
+        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , seed_ (static_cast<unsigned int> (time (NULL)))
       { filter_name_ = "RandomSample"; }
-
-      /** \brief Prepare the filter. */
-      bool
-      initCompute ();
 
       /** \brief Set number of indices to be sampled.
         * \param sample
@@ -112,7 +110,6 @@ namespace pcl
       { return (seed_); }
 
     protected:
-
       /** \brief Number of indices that will be returned. */
       unsigned int sample_;
       /** \brief Random number seed. */
@@ -133,11 +130,14 @@ namespace pcl
       /** \brief Return a random number. */
       inline float
       unifRand ()
-      { return (uniform_rand_(rng_)); }
+      { return ((*rng_) ()); }
 
     private:
-      boost::random::mt19937 rng_;
-      boost::random::uniform_real_distribution<> uniform_rand_;
+      /** \brief Boost-based random number generator algorithm. */
+      boost::random::mt19937 rng_alg_;
+
+      /** \brief Boost-based random number generator distribution. */
+      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
   };
 
   /** \brief @b RandomSample applies a random sampling with uniform probability.
@@ -161,14 +161,11 @@ namespace pcl
   
       /** \brief Empty constructor. */
       RandomSample ()
-        : sample_ (std::numeric_limits<unsigned int>::max ()),
-          seed_ (static_cast<unsigned int> (time (NULL)))
+        : sample_ (std::numeric_limits<unsigned int>::max ())
+        , rng_alg_ ()
+        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , seed_ (static_cast<unsigned int> (time (NULL)))
       { filter_name_ = "RandomSample"; }
-
-      /** \brief Prepare the filter. */
-      bool
-      initCompute ();
-
 
       /** \brief Set number of indices to be sampled.
         * \param sample
@@ -197,7 +194,6 @@ namespace pcl
       { return (seed_); }
 
     protected:
-
       /** \brief Number of indices that will be returned. */
       unsigned int sample_;
       /** \brief Random number seed. */
@@ -218,11 +214,14 @@ namespace pcl
       /** \brief Return a random number. */
       inline float
       unifRand ()
-      { return (uniform_rand_(rng_)); }
+      { return ((*rng_) ()); }
 
     private:
-      boost::random::mt19937 rng_;
-      boost::random::uniform_real_distribution<> uniform_rand_;
+      /** \brief Boost-based random number generator algorithm. */
+      boost::random::mt19937 rng_alg_;
+
+      /** \brief Boost-based random number generator distribution. */
+      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
    };
 }
 
