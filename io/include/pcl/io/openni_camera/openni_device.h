@@ -418,7 +418,7 @@ namespace openni_wrapper
 
 
       /** \brief Convert shift to depth value. */
-      inline uint16_t
+      uint16_t
       shiftToDepth (uint16_t shift_value) const
       {
         assert (shift_conversion_parameters_.init_);
