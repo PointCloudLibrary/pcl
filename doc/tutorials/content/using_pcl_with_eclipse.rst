@@ -96,6 +96,12 @@ Now you launch your Eclipse editor and you select File->Import...
 Out of the list you select General->Existing Projects into Workspace and then next.
 At the top you select Select root directory to be the root of your pcl trunk installation and press Finish.
 
+Setting the PCL code style in Eclipse
+-------------------------------------
+
+You can find a PCL code style file for Eclipse in trunk/doc/advanced/content/files/. 
+In Eclipse go to Project->Properties, then select Code Style in the left field and Enable project specific settings, then Import and select where your trunk/doc/advanced/content/files/PCL_eclipse_profile.xml file is.
+
 Where to get more information
 -----------------------------
 
