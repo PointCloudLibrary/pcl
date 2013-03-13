@@ -46,7 +46,7 @@ Basic Usage
              Author: *Razvan G. Mihalyi*
 
              Compatibility: > PCL 1.6
-             
+
              Takes the reader through all of the PCL modules and offers basic explanations on their functionalities.
      ======  ======
 
@@ -62,7 +62,7 @@ Basic Usage
              Author: *Radu B. Rusu*
 
              Compatibility: > PCL 1.0
-             
+
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
@@ -77,7 +77,7 @@ Basic Usage
              Author: *Nizar Sallem*
 
              Compatibility: > PCL 1.0
-             
+
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
 
@@ -92,7 +92,7 @@ Basic Usage
              Author: *Nizar Sallem*
 
              Compatibility: > PCL 1.0
-             
+
              In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
@@ -107,7 +107,7 @@ Basic Usage
              Authors: *Alessio Placitelli* and *Mourad Boufarguine*
 
              Compatibility: > PCL 1.0
-             
+
              In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
      ======  ======
 
@@ -122,7 +122,7 @@ Basic Usage
              Author: *Mourad Boufarguine*
 
              Compatibility: > PCL 1.0 
-             
+
              In this tutorial, we will explain how to compile PCL on Microsoft Windows.
      ======  ======
 
@@ -137,7 +137,7 @@ Basic Usage
              Author: *Justin Rosen*
 
              Compatibility: > PCL 1.0
-             
+
              This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
      ======  ======
 
@@ -159,6 +159,21 @@ Basic Usage
      .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
+  * :ref:`using_pcl_with_eclipse`
+
+     ======  ======
+     |mi_7|  Title: **Using Eclipse as your PCL trunk editor**
+
+             Author: *Koen Buys*
+
+             Compatibility: > PCL 1.7
+
+             This tutorial shows you how to get your PCL trunk as a project in Eclipse.
+     ======  ======
+
+     .. |mi_7| image:: images/pcl_logo.png
+               :height: 75px
+
 .. _advanced_usage:
 
 Advanced Usage
@@ -172,7 +187,7 @@ Advanced Usage
              Author: *Radu B. Rusu*
 
              Compatibility: > PCL 0.9, < PCL 2.0
-             
+
              This document explains what templated point types are in PCL, why do they exist, and how to create and use your own `PointT` point type.
      ======  ======
 
@@ -187,7 +202,7 @@ Advanced Usage
              Author: *Radu B. Rusu, Luca Penasa*
 
              Compatibility: > PCL 0.9, < PCL 2.0
-             
+
              This short guide is to serve as both a HowTo and a FAQ for writing new PCL classes, either from scratch, or by adapting old code.
      ======  ======
 
@@ -200,7 +215,7 @@ Features
 --------
 
   * :ref:`how_3d_features_work`
-    
+
      ======  ======
      |fe_1|  Title: **How 3D features work**
 
