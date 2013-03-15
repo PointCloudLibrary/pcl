@@ -466,14 +466,19 @@ namespace pcl
         std::vector<int> indices;
         std::vector<float> sqr_dists;
 
-        samples_radius_search_->radiusSearch (shuffled_indices_[0], samples_radius_,
-                                              indices, sqr_dists );
+        // If indices have been set when the search object was constructed,
+        // radiusSearch() expects an index into the indices vector as its
+        // first parameter. This can't be determined efficiently, so we use
+        // the point instead of the index.
+        // Returned indices are converted automatically.
+        samples_radius_search_->radiusSearch (input_->at(shuffled_indices_[0]),
+                                              samples_radius_, indices, sqr_dists );
 
         if (indices.size () < sample_size - 1)
         {
           // radius search failed, make an invalid model
           for(unsigned int i = 1; i < sample_size; ++i)
-        	shuffled_indices_[i] = shuffled_indices_[0];
+            shuffled_indices_[i] = shuffled_indices_[0];
         }
         else
         {
