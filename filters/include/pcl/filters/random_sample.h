@@ -134,7 +134,7 @@ namespace pcl
 
     private:
       /** \brief Boost-based random number generator algorithm. */
-      boost::random::mt19937 rng_alg_;
+      boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
       boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
@@ -218,7 +218,7 @@ namespace pcl
 
     private:
       /** \brief Boost-based random number generator algorithm. */
-      boost::random::mt19937 rng_alg_;
+      boost::mt19937 rng_alg_;
 
       /** \brief Boost-based random number generator distribution. */
       boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
