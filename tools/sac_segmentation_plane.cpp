@@ -39,6 +39,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/segmentation/extract_clusters.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -50,6 +51,7 @@ using namespace pcl::console;
 
 int    default_max_iterations = 1000;
 double default_threshold = 0.05;
+bool   default_negative = false;
 
 Eigen::Vector4f    translation;
 Eigen::Quaternionf orientation;
@@ -63,6 +65,8 @@ printHelp (int, char **argv)
   print_value ("%g", default_threshold); print_info (")\n");
   print_info ("                     -max_it X = set the maximum number of RANSAC iterations to X (default: "); 
   print_value ("%d", default_max_iterations); print_info (")\n");
+  print_info ("                     -neg 0/1  = if true (1), instead of the plane, it returns the largest cluster on top of the plane (default: "); 
+  print_value ("%s", default_negative ? "true" : "false"); print_info (")\n");
   print_info ("\nOptional arguments are:\n");
   print_info ("                     -input_dir X  = batch process all PCD files found in input_dir\n");
   print_info ("                     -output_dir X = save the processed files from input_dir in this directory\n");
@@ -85,7 +89,7 @@ loadCloud (const string &filename, sensor_msgs::PointCloud2 &cloud)
 
 void
 compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
-         int max_iterations = 1000, double threshold = 0.05)
+         int max_iterations = 1000, double threshold = 0.05, bool negative = false)
 {
   // Convert data to PointCloud<T>
   PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
@@ -123,9 +127,38 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   print_info ("Model coefficients: [");
   print_value ("%g %g %g %g", coefficients[0], coefficients[1], coefficients[2], coefficients[3]); print_info ("]\n");
 
-  // Convert data back
-  PointCloud<PointXYZ> output_inliers;
-  copyPointCloud (*input, inliers, output);
+  // Instead of returning the planar model as a set of inliers, return the outliers, but perform a cluster segmentation first
+  if (negative)
+  {
+    // Remove the plane indices from the data
+    PointIndices::Ptr everything_but_the_plane (new PointIndices);
+    std::vector<int> indices_fullset (xyz->size ());
+    for (int p_it = 0; p_it < static_cast<int> (indices_fullset.size ()); ++p_it)
+      indices_fullset[p_it] = p_it;
+    
+    std::sort (inliers.begin (), inliers.end ());
+    set_difference (indices_fullset.begin (), indices_fullset.end (),
+                    inliers.begin (), inliers.end (),
+                    inserter (everything_but_the_plane->indices, everything_but_the_plane->indices.begin ()));
+
+    // Extract largest cluster minus the plane
+    vector<PointIndices> cluster_indices;
+    EuclideanClusterExtraction<PointXYZ> ec;
+    ec.setClusterTolerance (0.02); // 2cm
+    ec.setMinClusterSize (100);
+    ec.setInputCloud (xyz);
+    ec.setIndices (everything_but_the_plane);
+    ec.extract (cluster_indices);
+
+    // Convert data back
+    copyPointCloud (*input, cluster_indices[0].indices, output);
+  }
+  else
+  {
+    // Convert data back
+    PointCloud<PointXYZ> output_inliers;
+    copyPointCloud (*input, inliers, output);
+  }
 }
 
 void
@@ -143,7 +176,7 @@ saveCloud (const string &filename, const sensor_msgs::PointCloud2 &output)
 }
 
 int
-batchProcess (const vector<string> &pcd_files, string &output_dir, int max_it, double thresh)
+batchProcess (const vector<string> &pcd_files, string &output_dir, int max_it, double thresh, bool negative)
 {
   vector<string> st;
   for (size_t i = 0; i < pcd_files.size (); ++i)
@@ -155,7 +188,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int max_it, d
 
     // Perform the feature estimation
     sensor_msgs::PointCloud2 output;
-    compute (cloud, output, max_it, thresh);
+    compute (cloud, output, max_it, thresh, negative);
 
     // Prepare output file name
     string filename = pcd_files[i];
@@ -183,11 +216,11 @@ main (int argc, char** argv)
   }
 
   bool debug = false;
-  pcl::console::parse_argument (argc, argv, "-debug", debug);
+  console::parse_argument (argc, argv, "-debug", debug);
   if (debug)
   {
     print_highlight ("Enabling debug mode.\n");
-    pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
+    console::setVerbosityLevel (console::L_DEBUG);
     if (!isVerbosityLevelEnabled (L_DEBUG))
       PCL_ERROR ("Error enabling debug mode.\n");
   }
@@ -197,8 +230,10 @@ main (int argc, char** argv)
   // Command line parsing
   int max_it = default_max_iterations;
   double thresh = default_threshold;
+  bool negative = default_negative;
   parse_argument (argc, argv, "-max_it", max_it);
   parse_argument (argc, argv, "-thresh", thresh);
+  parse_argument (argc, argv, "-neg", negative);
   string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
@@ -227,6 +262,9 @@ main (int argc, char** argv)
     print_info ("Estimating planes with a threshold of: "); 
     print_value ("%g\n", thresh); 
 
+    print_info ("Planar model segmentation: ");
+    print_value ("%s\n", negative ? "false" : "true"); 
+
     // Load the first file
     sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
     if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
@@ -234,7 +272,7 @@ main (int argc, char** argv)
 
     // Perform the feature estimation
     sensor_msgs::PointCloud2 output;
-    compute (cloud, output, max_it, thresh);
+    compute (cloud, output, max_it, thresh, negative);
 
     // Save into the second file
     saveCloud (argv[p_file_indices[1]], output);
@@ -254,7 +292,7 @@ main (int argc, char** argv)
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
         }
       }
-      batchProcess (pcd_files, output_dir, max_it, thresh);
+      batchProcess (pcd_files, output_dir, max_it, thresh, negative);
     }
     else
     {

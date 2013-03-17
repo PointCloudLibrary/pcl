@@ -10,7 +10,7 @@ PCL_SUBSYS_DEPEND (build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if (build)
 
   PCL_ADD_EXECUTABLE(pcl_sac_segmentation_plane ${SUBSYS_NAME} sac_segmentation_plane.cpp)
-  target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus)
+  target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus pcl_segmentation)
 
   PCL_ADD_EXECUTABLE (pcl_plane_projection ${SUBSYS_NAME} plane_projection.cpp)
   target_link_libraries (pcl_plane_projection pcl_common pcl_io pcl_sample_consensus)
