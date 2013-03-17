@@ -47,7 +47,15 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief CorrespondenceRejectorPoly 
+    /** \brief CorrespondenceRejectorPoly implements a correspondence rejection method that exploits
+      * low-level and pose-invariant geometric constraints between two point sets by forming virtual
+      * polygons of a user-specifiable cardinality on each model using the input correspondences.
+      * These polygons are then checked in a pose-invariant manner (i.e. the side lengths must be approximately equal),
+      * and rejection is performed by thresholding these edge lengths. For more information, see:
+      * 
+      * A. G. Buch, D. Kraft, J.-K. Kämäräinen, H. G. Petersen and N. Krüger.
+      * Pose Estimation using Local Structure-Specific Shape and Appearance Context.
+      * International Conference on Robotics and Automation (ICRA), 2013 (to appear). 
       *
       * \author Anders Glent Buch
       * \ingroup registration
