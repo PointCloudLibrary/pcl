@@ -229,7 +229,6 @@ PCDVideoPlayer::selectFilesButtonPressed()
   }
   else
   {
-    frame_semantics_.resize (nr_of_frames_);
     for(int i = 0; i < qt_pcd_files.size(); i++)
     {
       pcd_files_.push_back(qt_pcd_files.at(i).toStdString());
