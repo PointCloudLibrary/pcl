@@ -138,12 +138,12 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
   }
   
   // Compute a histogram in range [0,1] for acceptance rates
-  const int hist_size = 256;
+  const int hist_size = nr_correspondences/2; // TODO: Optimize this
   const std::vector<int> histogram = computeHistogram (acceptRate, 0.0f, 1.0f, hist_size);
   
   // Find the cut point between outliers and inliers using Otsu's thresholding method
   const int cut_idx = findThresholdOtsu (histogram);
-  const float cut = float(cut_idx) / float(hist_size);
+  const float cut = float (cut_idx) / float (hist_size);
   
   // Threshold
   for (int i = 0; i < nr_correspondences; ++i)
