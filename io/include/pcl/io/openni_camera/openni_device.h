@@ -49,6 +49,7 @@
 #include <pcl/io/boost.h>
 #include <pcl/pcl_macros.h>
 
+
 /// @todo Get rid of all exception-specifications, these are useless and soon to be deprecated
 
 #ifndef _WIN32
@@ -418,12 +419,12 @@ namespace openni_wrapper
 
 
       /** \brief Convert shift to depth value. */
-      uint16_t
-      shiftToDepth (uint16_t shift_value) const
+      pcl::uint16_t
+      shiftToDepth (pcl::uint16_t shift_value) const
       {
         assert (shift_conversion_parameters_.init_);
 
-        uint16_t ret = 0;
+        pcl::uint16_t ret = 0;
 
         // lookup depth value in shift lookup table
         if (shift_value<shift_to_depth_table_.size())
@@ -493,7 +494,7 @@ namespace openni_wrapper
 
       } shift_conversion_parameters_;
 
-      std::vector<uint16_t> shift_to_depth_table_;
+      std::vector<pcl::uint16_t> shift_to_depth_table_;
 
       // holds the callback functions together with custom data
       // since same callback function can be registered multiple times with e.g. different custom data
