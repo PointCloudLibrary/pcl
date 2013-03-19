@@ -33,9 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
- *
- * @author: Koen Buys - KU Leuven
  */
 
 //PCL
@@ -84,7 +81,7 @@ PCDVideoPlayer::PCDVideoPlayer ()
   vis_timer_ = new QTimer (this);
   vis_timer_->start (5);//5ms
 
-  connect (vis_timer_, SIGNAL (timeout ()), this, SLOT (timeoutSlot()));
+  connect (vis_timer_, SIGNAL (timeout ()), this, SLOT (timeoutSlot ()));
 
   ui_ = new Ui::MainWindow;
   ui_->setupUi (this);
@@ -102,49 +99,37 @@ PCDVideoPlayer::PCDVideoPlayer ()
   ui_->qvtkWidget->update ();
 
   // Connect all buttons
-  connect (ui_->playButton, SIGNAL(clicked()), this, SLOT(playButtonPressed()));
-  connect (ui_->stopButton, SIGNAL(clicked()), this, SLOT(stopButtonPressed()));
-  connect (ui_->backButton, SIGNAL(clicked()), this, SLOT(backButtonPressed()));
-  connect (ui_->nextButton, SIGNAL(clicked()), this, SLOT(nextButtonPressed()));
+  connect (ui_->playButton, SIGNAL (clicked ()), this, SLOT (playButtonPressed ()));
+  connect (ui_->stopButton, SIGNAL (clicked ()), this, SLOT (stopButtonPressed ()));
+  connect (ui_->backButton, SIGNAL (clicked ()), this, SLOT (backButtonPressed ()));
+  connect (ui_->nextButton, SIGNAL (clicked ()), this, SLOT (nextButtonPressed ()));
 
-  connect (ui_->selectFolderButton, SIGNAL(clicked()), this, SLOT(selectFolderButtonPressed()));
-  connect (ui_->selectFilesButton, SIGNAL(clicked()), this, SLOT(selectFilesButtonPressed()));
+  connect (ui_->selectFolderButton, SIGNAL (clicked ()), this, SLOT (selectFolderButtonPressed ()));
+  connect (ui_->selectFilesButton, SIGNAL (clicked ()), this, SLOT (selectFilesButtonPressed ()));
   
-  connect (ui_->indexSlider, SIGNAL(valueChanged(int)), this, SLOT(indexSliderValueChanged(int)));
-}
-
-void
-PCDVideoPlayer::playButtonPressed()
-{
-  play_mode_ = true;
+  connect (ui_->indexSlider, SIGNAL (valueChanged (int)), this, SLOT (indexSliderValueChanged (int)));
 }
 
 void 
-PCDVideoPlayer::stopButtonPressed()
-{
-  play_mode_= false;
-}
-
-void 
-PCDVideoPlayer::backButtonPressed()
+PCDVideoPlayer::backButtonPressed ()
 {
   if(current_frame_ == 0) // Allready in the beginning
   {
     PCL_DEBUG ("[PCDVideoPlayer::nextButtonPressed] : reached the end\n");
-    current_frame_ = nr_of_frames_-1; // reset to end
+    current_frame_ = nr_of_frames_ - 1; // reset to end
   }
   else
   {
     current_frame_--;
     cloud_modified_ = true;
-    ui_->indexSlider->setSliderPosition(current_frame_);        // Update the slider position
+    ui_->indexSlider->setSliderPosition (current_frame_);        // Update the slider position
   }
 }
 
 void 
-PCDVideoPlayer::nextButtonPressed()
+PCDVideoPlayer::nextButtonPressed ()
 {
-  if(current_frame_ == (nr_of_frames_-1)) // Reached the end
+  if (current_frame_ == (nr_of_frames_ - 1)) // Reached the end
   {
     PCL_DEBUG ("[PCDVideoPlayer::nextButtonPressed] : reached the end\n");
     current_frame_ = 0; // reset to beginning
@@ -153,26 +138,29 @@ PCDVideoPlayer::nextButtonPressed()
   {
     current_frame_++;
     cloud_modified_ = true;
-    ui_->indexSlider->setSliderPosition(current_frame_);        // Update the slider position
+    ui_->indexSlider->setSliderPosition (current_frame_);        // Update the slider position
   }
 }
 
 void
-PCDVideoPlayer::selectFolderButtonPressed()
+PCDVideoPlayer::selectFolderButtonPressed ()
 {
-  pcd_files_.clear();     // Clear the std::vector
-  pcd_paths_.clear();     // Clear the boost filesystem paths
+  pcd_files_.clear ();     // Clear the std::vector
+  pcd_paths_.clear ();     // Clear the boost filesystem paths
 
-  dir_ = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+  dir_ = QFileDialog::getExistingDirectory (this,
+                                            tr("Open Directory"),
+                                            "/home",
+                                            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
   boost::filesystem::directory_iterator end_itr;
 
-  if(boost::filesystem::is_directory(dir_.toStdString()))
+  if (boost::filesystem::is_directory (dir_.toStdString ()))
   {
-    for (boost::filesystem::directory_iterator itr(dir_.toStdString()); itr != end_itr; ++itr)
+    for (boost::filesystem::directory_iterator itr (dir_.toStdString ()); itr != end_itr; ++itr)
     {
-      std::string ext = itr->path().extension().string();
-      if(ext.compare(".pcd") == 0)
+      std::string ext = itr->path ().extension ().string ();
+      if (ext.compare (".pcd") == 0)
       {
         pcd_files_.push_back (itr->path ().string ());
         pcd_paths_.push_back (itr->path ());
@@ -189,20 +177,20 @@ PCDVideoPlayer::selectFolderButtonPressed()
     PCL_ERROR("Path is not a directory\n");
     exit(-1);
   }
-  nr_of_frames_ = pcd_files_.size();
+  nr_of_frames_ = pcd_files_.size ();
   PCL_DEBUG ("[PCDVideoPlayer::selectFolderButtonPressed] : found %d files\n", nr_of_frames_ );
 
-  if(nr_of_frames_ == 0)
+  if (nr_of_frames_ == 0)
   {
-    PCL_ERROR("Please select valid pcd folder\n");
+    PCL_ERROR ("Please select valid pcd folder\n");
     cloud_present_ = false;
     return;
   }
   else
   {
     // Reset the Slider
-    ui_->indexSlider->setValue(0);                // set cursor back in the beginning
-    ui_->indexSlider->setRange(0,nr_of_frames_-1);  // rescale the slider
+    ui_->indexSlider->setValue (0);                // set cursor back in the beginning
+    ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
 
     current_frame_ = 0;
 
@@ -212,33 +200,36 @@ PCDVideoPlayer::selectFolderButtonPressed()
 }
 
 void 
-PCDVideoPlayer::selectFilesButtonPressed()
+PCDVideoPlayer::selectFilesButtonPressed ()
 {
-  pcd_files_.clear();  // Clear the std::vector
-  pcd_paths_.clear();     // Clear the boost filesystem paths
+  pcd_files_.clear ();  // Clear the std::vector
+  pcd_paths_.clear ();     // Clear the boost filesystem paths
 
-  QStringList qt_pcd_files = QFileDialog::getOpenFileNames(this, "Select one or more PCD files to open", "/home", "PointClouds (*.pcd)");
-  nr_of_frames_ = qt_pcd_files.size();
-  std::cout << "[PCDVideoPlayer::selectFilesButtonPressed] : selected " << nr_of_frames_ << " files" << std::endl;
+  QStringList qt_pcd_files = QFileDialog::getOpenFileNames (this,
+                                                            "Select one or more PCD files to open",
+                                                            "/home",
+                                                            "PointClouds (*.pcd)");
+  nr_of_frames_ = qt_pcd_files.size ();
+  PCL_INFO ("[PCDVideoPlayer::selectFilesButtonPressed] : selected %ld files\n", nr_of_frames_);
 
-  if(nr_of_frames_ == 0)
+  if (nr_of_frames_ == 0)
   {
-    PCL_ERROR("Please select valid pcd files\n");
+    PCL_ERROR ("Please select valid pcd files\n");
     cloud_present_ = false;
     return;
   }
   else
   {
-    for(int i = 0; i < qt_pcd_files.size(); i++)
+    for(int i = 0; i < qt_pcd_files.size (); i++)
     {
-      pcd_files_.push_back(qt_pcd_files.at(i).toStdString());
+      pcd_files_.push_back (qt_pcd_files.at (i).toStdString ());
     }
 
     current_frame_ = 0;
 
     // Reset the Slider
-    ui_->indexSlider->setValue(0);                // set cursor back in the beginning
-    ui_->indexSlider->setRange(0,nr_of_frames_-1);  // rescale the slider
+    ui_->indexSlider->setValue (0);                // set cursor back in the beginning
+    ui_->indexSlider->setRange (0, nr_of_frames_ - 1);  // rescale the slider
 
     cloud_present_ = true;
     cloud_modified_ = true;
@@ -248,11 +239,11 @@ PCDVideoPlayer::selectFilesButtonPressed()
 void 
 PCDVideoPlayer::timeoutSlot ()
 {
-  if(play_mode_)
+  if (play_mode_)
   {
-    if(speed_counter_ == speed_value_)
+    if (speed_counter_ == speed_value_)
     {
-      if(current_frame_ == (nr_of_frames_-1)) // Reached the end
+      if (current_frame_ == (nr_of_frames_-1)) // Reached the end
       {
         current_frame_ = 0; // reset to beginning
       }
@@ -260,7 +251,7 @@ PCDVideoPlayer::timeoutSlot ()
       {
         current_frame_++;
         cloud_modified_ = true;
-        ui_->indexSlider->setSliderPosition(current_frame_);        // Update the slider position
+        ui_->indexSlider->setSliderPosition (current_frame_);        // Update the slider position
       }
     }
     else
@@ -269,25 +260,25 @@ PCDVideoPlayer::timeoutSlot ()
     }
   }
 
-  if(cloud_present_ && cloud_modified_)
+  if (cloud_present_ && cloud_modified_)
   {
     if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (pcd_files_[current_frame_], *cloud_) == -1) //* load the file
     {
       PCL_ERROR ("[PCDVideoPlayer::timeoutSlot] : Couldn't read file %s\n");
     }
 
-    if(!vis_->updatePointCloud(cloud_, "cloud_"))
+    if (!vis_->updatePointCloud(cloud_, "cloud_"))
     {
       vis_->addPointCloud (cloud_, "cloud_");
       vis_->resetCameraViewpoint("cloud_");
     }
     cloud_modified_ = false;
   }
-  ui_->qvtkWidget->update();
+  ui_->qvtkWidget->update ();
 }
 
 void
-PCDVideoPlayer::indexSliderValueChanged(int value)
+PCDVideoPlayer::indexSliderValueChanged (int value)
 {
   PCL_DEBUG ("[PCDVideoPlayer::indexSliderValueChanged] : (I) : value %d\n", value);
   current_frame_ = value;
@@ -311,11 +302,11 @@ print_usage ()
 int
 main (int argc, char** argv)
 {
-  QApplication app(argc, argv);
+  QApplication app (argc, argv);
 
   PCDVideoPlayer VideoPlayer;
 
-  VideoPlayer.show();
+  VideoPlayer.show ();
 
-  return (app.exec());
+  return (app.exec ());
 }

@@ -68,8 +68,6 @@
 
 #include <pcl/registration/transformation_estimation_svd.h>
 
-typedef pcl::PointXYZRGBA PointT;
-
 #define CURRENT_VERSION 0.2
 
 // Useful macros
@@ -97,7 +95,7 @@ class PCDVideoPlayer : public QMainWindow
 {
   Q_OBJECT
   public:
-    typedef pcl::PointCloud<PointT> Cloud;
+    typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
     typedef Cloud::Ptr CloudPtr;
     typedef Cloud::ConstPtr CloudConstPtr;
 
@@ -106,50 +104,63 @@ class PCDVideoPlayer : public QMainWindow
     ~PCDVideoPlayer () {}
 
   protected:
-    boost::shared_ptr<pcl::visualization::PCLVisualizer>  vis_;
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr               cloud_;
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> vis_;
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_;
 
-    QMutex          mtx_;
-    QMutex          vis_mtx_;
-    Ui::MainWindow  *ui_;
-    QTimer          *vis_timer_;
+    QMutex mtx_;
+    QMutex vis_mtx_;
+    Ui::MainWindow *ui_;
+    QTimer *vis_timer_;
 
-    QString         dir_;
+    QString dir_;
 
-    std::vector<std::string>              pcd_files_;
-    std::vector<boost::filesystem::path>  pcd_paths_;
+    std::vector<std::string> pcd_files_;
+    std::vector<boost::filesystem::path> pcd_paths_;
 
-    //QStringList     pcd_files_;
 
-    unsigned int    current_frame_;         // The current displayed frame
-    unsigned int    nr_of_frames_;          // Store the number of loaded frames
+    /** \brief The current displayed frame */
+    unsigned int current_frame_;
+    /** \brief Store the number of loaded frames */
+    unsigned int nr_of_frames_;
 
-    bool            cloud_present_;         // Indicate that pointclouds were loaded
-    bool            cloud_modified_;        // Indicate that the timeoutSlot needs to reload the pointcloud
+    /** \brief Indicate that pointclouds were loaded */
+    bool cloud_present_;
+    /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
+    bool cloud_modified_;
 
-    bool            play_mode_;             // Indicate that files should play continiously
-    unsigned int    speed_counter_;         // In play mode only update if speed_counter_ == speed_value
-    unsigned int    speed_value_;           // Fixes the speed in steps of 5ms, default 5, gives 5+1 * 5ms = 30ms = 33,3 Hz playback speed
+    /** \brief Indicate that files should play continiously */
+    bool play_mode_;
+    /** \brief In play mode only update if speed_counter_ == speed_value */
+    unsigned int speed_counter_;
+    /** \brief Fixes the speed in steps of 5ms, default 5, gives 5+1 * 5ms = 30ms = 33,3 Hz playback speed */
+    unsigned int speed_value_;
 
   public slots:
     void 
-    playButtonPressed();
+    playButtonPressed ()
+    { play_mode_ = true; }
+
     void 
-    stopButtonPressed();
-    void
-    backButtonPressed();
-    void 
-    nextButtonPressed();
-    void 
-    selectFolderButtonPressed();
-    void
-    selectFilesButtonPressed();
+    stopButtonPressed()
+    { play_mode_ = false; }
 
     void
-    indexSliderValueChanged(int value);
+    backButtonPressed ();
+
+    void
+    nextButtonPressed ();
+
+    void
+    selectFolderButtonPressed ();
+
+    void
+    selectFilesButtonPressed ();
+
+    void
+    indexSliderValueChanged (int value);
 
   private slots:
     void
-    timeoutSlot();
+    timeoutSlot ();
 
 };
