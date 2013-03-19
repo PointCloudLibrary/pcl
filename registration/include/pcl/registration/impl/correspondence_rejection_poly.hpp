@@ -101,8 +101,8 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
   remaining_correspondences.reserve (nr_correspondences);
   
   // Number of times a correspondence is sampled and number of times it was accepted
-  std::vector<int> numSamples (nr_correspondences, 0);
-  std::vector<int> numAccepted (nr_correspondences, 0);
+  std::vector<int> num_samples (nr_correspondences, 0);
+  std::vector<int> num_accepted (nr_correspondences, 0);
   
   // Main loop
   for (int i = 0; i < iterations_; ++i)
@@ -116,30 +116,30 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
       // Increment sample counter and accept counter
       for (int j = 0; j < cardinality_; ++j)
       {
-        ++numSamples[ idx[j] ];
-        ++numAccepted[ idx[j] ];
+        ++num_samples[ idx[j] ];
+        ++num_accepted[ idx[j] ];
       }
     } else {
       // Not accepted, only increment sample counter
       for (int j = 0; j < cardinality_; ++j)
-        ++numSamples[ idx[j] ];
+        ++num_samples[ idx[j] ];
     }
   }
   
   // Now calculate the acceptance rate of each correspondence
-  std::vector<float> acceptRate (nr_correspondences, 0.0f);
+  std::vector<float> accept_rate (nr_correspondences, 0.0f);
   for (int i = 0; i < nr_correspondences; ++i)
   {
-    const int numsi = numSamples[i];
+    const int numsi = num_samples[i];
     if (numsi == 0)
-      acceptRate[i] = 0.0f;
+      accept_rate[i] = 0.0f;
     else
-      acceptRate[i] = float (numAccepted[i]) / float (numsi);
+      accept_rate[i] = float (num_accepted[i]) / float (numsi);
   }
   
   // Compute a histogram in range [0,1] for acceptance rates
   const int hist_size = nr_correspondences/2; // TODO: Optimize this
-  const std::vector<int> histogram = computeHistogram (acceptRate, 0.0f, 1.0f, hist_size);
+  const std::vector<int> histogram = computeHistogram (accept_rate, 0.0f, 1.0f, hist_size);
   
   // Find the cut point between outliers and inliers using Otsu's thresholding method
   const int cut_idx = findThresholdOtsu (histogram);
@@ -147,7 +147,7 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
   
   // Threshold
   for (int i = 0; i < nr_correspondences; ++i)
-    if (acceptRate[i] > cut)
+    if (accept_rate[i] > cut)
       remaining_correspondences.push_back (original_correspondences[i]);
 }
 
