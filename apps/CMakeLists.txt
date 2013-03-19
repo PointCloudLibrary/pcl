@@ -78,7 +78,7 @@ if(build)
     PCL_ADD_EXECUTABLE(pcl_face_trainer ${SUBSYS_NAME} src/face_detection/face_trainer.cpp)
     target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
 
-    PCL_ADD_EXECUTABLE(pcl_fs_face_detector ${SUBSYS_NAME} src/face_detection//filesystem_face_detection.cpp)
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_fs_face_detector ${SUBSYS_NAME} src/face_detection//filesystem_face_detection.cpp)
     target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
 
     PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation ${SUBSYS_NAME} src/stereo_ground_segmentation.cpp)
