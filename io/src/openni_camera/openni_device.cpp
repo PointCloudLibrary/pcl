@@ -418,15 +418,15 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
   {
     // Calculate shift conversion table
 
-    int32_t nIndex = 0;
-    int32_t nShiftValue = 0;
+    pcl::int32_t nIndex = 0;
+    pcl::int32_t nShiftValue = 0;
     double dFixedRefX = 0;
     double dMetric = 0;
     double dDepth = 0;
     double dPlanePixelSize = shift_conversion_parameters_.zero_plane_pixel_size_;
     double dPlaneDsr = shift_conversion_parameters_.zero_plane_distance_;
     double dPlaneDcl = shift_conversion_parameters_.emitter_dcmos_distace_;
-    int32_t nConstShift = shift_conversion_parameters_.param_coeff_ *
+    pcl::int32_t nConstShift = shift_conversion_parameters_.param_coeff_ *
         shift_conversion_parameters_.const_shift_;
 
     dPlanePixelSize *= shift_conversion_parameters_.pixel_size_factor_;
@@ -436,7 +436,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
 
     for (nIndex = 1; nIndex < shift_conversion_parameters_.device_max_shift_; nIndex++)
     {
-      nShiftValue = (int32_t)nIndex;
+      nShiftValue = (pcl::int32_t)nIndex;
 
       dFixedRefX = (double) (nShiftValue - nConstShift) /
                    (double) shift_conversion_parameters_.param_coeff_;
@@ -449,7 +449,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
       if ((dDepth > shift_conversion_parameters_.min_depth_) &&
           (dDepth < shift_conversion_parameters_.max_depth_))
       {
-        shift_to_depth_table_[nIndex] = (uint16_t)(dDepth);
+        shift_to_depth_table_[nIndex] = (pcl::uint16_t)(dDepth);
       }
     }
 
