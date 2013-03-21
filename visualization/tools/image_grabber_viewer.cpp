@@ -95,7 +95,7 @@ struct EventHelper
   void 
   cloud_cb (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud)
   {
-    uint64_t timestamp;
+    pcl::uint64_t timestamp;
 #ifdef USE_ROS
     timestamp = cloud->header.stamp.toNSec() / 1000; //Microseconds
 #else
