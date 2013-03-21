@@ -503,7 +503,7 @@ public:
         result.points.push_back(point);
     }
 
-	result.width = static_cast<pcl::uint32_t> (result.points.size ());
+    result.width = static_cast<pcl::uint32_t> (result.points.size ());
     result.height = 1;
     result.is_dense = true;
   }
@@ -519,7 +519,7 @@ public:
       PointType point = cloud->points[segmented_indices.indices[i]];
       result.points.push_back (point);
     }
-	result.width = pcl::uint32_t (result.points.size ());
+    result.width = pcl::uint32_t (result.points.size ());
     result.height = 1;
     result.is_dense = true;
   }
