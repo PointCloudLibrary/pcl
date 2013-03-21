@@ -455,7 +455,7 @@ class HRCSSegmentation
       {
         if (!pcl::isFinite (cloud->points[i]))
         {
-			ground_image->points[i].b = static_cast<pcl::uint8_t>((cloud->points[i].b + 255) / 2);
+		  ground_image->points[i].b = static_cast<pcl::uint8_t>((cloud->points[i].b + 255) / 2);
           label_image->points[i].r = 0;
           label_image->points[i].g = 0;
           label_image->points[i].b = 255;

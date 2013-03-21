@@ -115,7 +115,7 @@ namespace pcl
           * \param[in] seed new generator seed value
           */
         void 
-			setSeed (pcl::uint32_t seed);
+		setSeed (pcl::uint32_t seed);
 
         /** Set the uniform number generator parameters
           * \param[in] min minimum allowed value
@@ -123,7 +123,7 @@ namespace pcl
           * \param[in] seed random number generator seed (applied if != -1)
           */
         void 
-			setParameters (T min, T max, pcl::uint32_t seed = -1);
+		setParameters (T min, T max, pcl::uint32_t seed = -1);
 
         /** Set generator parameters
           * \param parameters uniform distribution parameters and generator seed
@@ -190,7 +190,7 @@ namespace pcl
           * \param[in] seed new seed value
           */
         void 
-			setSeed (pcl::uint32_t seed);
+		setSeed (pcl::uint32_t seed);
 
         /** Set the normal number generator parameters
           * \param[in] mean mean of the normal distribution
@@ -198,7 +198,7 @@ namespace pcl
           * \param[in] seed random number generator seed (applied if != -1)
           */
         void 
-			setParameters (T mean, T sigma, pcl::uint32_t seed = -1);
+		setParameters (T mean, T sigma, pcl::uint32_t seed = -1);
 
         /** Set generator parameters
           * \param parameters normal distribution parameters and seed

@@ -49,7 +49,7 @@ class SimpleHDLGrabber
       static double last = pcl::getTime();
 
       if (sweep->header.seq == 0) {
-		  pcl::uint64_t stamp;
+		pcl::uint64_t stamp;
 #ifdef USE_ROS
         stamp = sweep->header.stamp.toNSec () / 1000;
 #else //USE_ROS
