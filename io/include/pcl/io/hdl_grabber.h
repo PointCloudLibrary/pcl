@@ -144,9 +144,30 @@ namespace pcl
        */
       void setLaserColorRGB (const pcl::RGB& color, unsigned int laserNumber);
 
+      /** \brief Any returns from the HDL with a distance less than this are discarded.
+       *         This value is in meters
+       *         Default: 0.0
+       */
+      void setMinimumDistanceThreshold(float & minThreshold);
+
+      /** \brief Any returns from the HDL with a distance greater than this are discarded.
+       *         This value is in meters
+       *         Default: 10000.0
+       */
+      void setMaximumDistanceThreshold(float & maxThreshold);
+
+      /** \brief Returns the current minimum distance threshold, in meters
+       */
+
+      float getMinimumDistanceThreshold();
+
+      /** \brief Returns the current maximum distance threshold, in meters
+       */
+      float getMaximumDistanceThreshold();
+
     protected:
       static const int HDL_DATA_PORT = 2368;
-      static const int HDL_NUM_ROT_ANGLES = 36000;
+      static const int HDL_NUM_ROT_ANGLES = 36001;
       static const int HDL_LASER_PER_FIRING = 32;
       static const int HDL_MAX_NUM_LASERS = 64;
       static const int HDL_FIRING_PER_PKT = 12;
@@ -200,7 +221,7 @@ namespace pcl
       boost::asio::ip::udp::endpoint udp_listener_endpoint_;
       boost::asio::ip::address source_address_filter_;
       unsigned short source_port_filter_;
-	  boost::asio::io_service hdl_read_socket_service_;
+	    boost::asio::io_service hdl_read_socket_service_;
       boost::asio::ip::udp::socket *hdl_read_socket_;
       std::string pcap_file_name_;
       boost::thread *queue_consumer_thread_;
@@ -221,6 +242,8 @@ namespace pcl
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb>* scan_xyzrgb_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi>* scan_xyzi_signal_;
       pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
+      float min_distance_threshold_;
+      float max_distance_threshold_;
 
       void processVelodynePackets ();
       void enqueueHDLPacket (const unsigned char *data,
