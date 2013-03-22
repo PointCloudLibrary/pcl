@@ -89,13 +89,13 @@ TEST (PCL, MovingLeastSquares)
 
 
   // Testing OpenMP version
-  MovingLeastSquares<PointXYZ, PointNormal> mls_omp;
+  MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
   mls_omp.setInputCloud (cloud);
   mls_omp.setComputeNormals (true);
   mls_omp.setPolynomialFit (true);
   mls_omp.setSearchMethod (tree);
   mls_omp.setSearchRadius (0.03);
-  //mls_omp.setNumberOfThreads (4);
+  mls_omp.setNumberOfThreads (4);
 
   // Reconstruct
   mls_normals->clear ();
