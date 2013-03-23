@@ -521,7 +521,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
 
   // For all points
 #pragma omp parallel for schedule (dynamic,1000) num_threads (threads)
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  for (int cp = 0; cp < static_cast<int> (indices_->size ()); ++cp)
   {
     // Allocate enough space to hold the results of nearest neighbor searches
     // \note resize is irrelevant for a radiusSearch ().
@@ -529,29 +529,27 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
-    if (!searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
-      continue;
+    if (searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    {
+      // Check the number of nearest neighbors for normal estimation (and later
+      // for polynomial fit as well)
+      if (nn_indices.size () >= 3)
+      {
+        // This thread's ID (range 0 to threads-1)
+        int tn = omp_get_thread_num ();
 
+        // Size of projected points before computeMLSPointNormal () adds points
+        size_t pp_size = projected_points[tn].size ();
 
-    // Check the number of nearest neighbors for normal estimation (and later
-    // for polynomial fit as well)
-    if (nn_indices.size () < 3)
-      continue;
+        // Get a plane approximating the local surface's tangent and project point onto it
+        int index = (*indices_)[cp];
+        computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[index]);
 
-
-    // This thread's ID (range 0 to threads-1)
-    int tn = omp_get_thread_num ();
-
-    // Size of projected points before computeMLSPointNormal () adds points
-    size_t pp_size = projected_points[tn].size ();
-
-    // Get a plane approximating the local surface's tangent and project point onto it
-    int index = (*indices_)[cp];
-    computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[index]);
-
-    // Copy all information from the input cloud to the output points (not doing any interpolation)
-    for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
-      copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+        // Copy all information from the input cloud to the output points (not doing any interpolation)
+        for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
+          copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+	  }
+	}
   }
 
 
