@@ -58,7 +58,7 @@ main (int argc, char** argv)
     extract.setIndices (inliers);
     extract.setNegative (false);
 
-    // Write the planar inliers to disk
+    // Get the points associated with the planar surface
     extract.filter (*cloud_plane);
     std::cout << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
 
