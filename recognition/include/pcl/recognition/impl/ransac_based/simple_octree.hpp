@@ -255,11 +255,11 @@ pcl::recognition::SimpleOctree<NodeData, NodeDataCreator, Scalar>::build (const 
   bounds_[5] = center[2] + half_root_side;
 
   // Create and initialize the root
-  root_ = new SimpleOctree::Node();
-  root_->setCenter(center);
-  root_->setBounds(bounds_);
-  root_->setParent(NULL);
-  root_->computeRadius();
+  root_ = new Node ();
+  root_->setCenter (center);
+  root_->setBounds (bounds_);
+  root_->setParent (NULL);
+  root_->computeRadius ();
 }
 
 //===============================================================================================================================
