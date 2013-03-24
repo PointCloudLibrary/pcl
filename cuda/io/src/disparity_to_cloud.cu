@@ -34,7 +34,7 @@
  * $Id$
  *
  */
-
+#define PCL_CUDA_IO
 #include "pcl/cuda/io/disparity_to_cloud.h"
 #include "pcl/cuda/io/debayering.h"
 #include "pcl/cuda/io/cloud_to_pcl.h"
@@ -528,3 +528,4 @@ DisparityToCloud::compute<Device> (const boost::uint16_t* depth_image,
 } // namespace
 } // namespace
 
+#undef PCL_CUDA_IO
