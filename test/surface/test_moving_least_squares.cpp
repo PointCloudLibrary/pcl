@@ -87,7 +87,7 @@ TEST (PCL, MovingLeastSquares)
   EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
   EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
 
-
+#ifdef _OPENMP
   // Testing OpenMP version
   MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
   mls_omp.setInputCloud (cloud);
@@ -104,7 +104,7 @@ TEST (PCL, MovingLeastSquares)
   int count = 0;
   for (size_t i = 0; i < mls_normals->size (); ++i)
   {
-	if (fabs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
+  	if (fabs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
 	    fabs (mls_normals->points[i].y - 0.113463) < 1e-3 &&
 	    fabs (mls_normals->points[i].z - 0.040715) < 1e-3 &&
 	    fabs (fabs (mls_normals->points[i].normal[0]) - 0.111894) < 1e-3 &&
@@ -116,7 +116,7 @@ TEST (PCL, MovingLeastSquares)
 
   EXPECT_EQ (count, 1);
 
-
+#endif
 
   // Testing upsampling
   MovingLeastSquares<PointXYZ, PointNormal> mls_upsampling;
