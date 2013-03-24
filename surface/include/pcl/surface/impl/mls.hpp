@@ -529,7 +529,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
     std::vector<float> nn_sqr_dists;
 
     // Get the initial estimates of point positions and their neighborhoods
-    if (searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
+    if (this->searchForNeighbors ((*indices_)[cp], nn_indices, nn_sqr_dists))
     {
       // Check the number of nearest neighbors for normal estimation (and later
       // for polynomial fit as well)
@@ -543,13 +543,13 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
 
         // Get a plane approximating the local surface's tangent and project point onto it
         int index = (*indices_)[cp];
-        computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[index]);
+        this->computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[index]);
 
         // Copy all information from the input cloud to the output points (not doing any interpolation)
         for (size_t pp = pp_size; pp < projected_points[tn].size (); ++pp)
-          copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+          this->copyMissingFields (input_->points[(*indices_)[cp]], projected_points[tn][pp]);
+	    }
 	  }
-	}
   }
 
 
@@ -564,7 +564,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
   }
 
   // Perform the distinct-cloud or voxel-grid upsampling
-  performUpsampling (output);
+  this->performUpsampling (output);
 }
 #endif
 
