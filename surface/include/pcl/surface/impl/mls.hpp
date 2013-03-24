@@ -515,8 +515,8 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
   unsigned int threads = threads_ == 0 ? 1 : threads_;
 
   // Create temporaries for each thread in order to avoid synchronization
-  std::vector<PointCloudOut> projected_points (threads);
-  std::vector<NormalCloud> projected_points_normals (threads);
+  PointCloudOut::CloudVectorType projected_points (threads);
+  NormalCloud::CloudVectorType projected_points_normals (threads);
   std::vector<PointIndices> corresponding_input_indices (threads);
 
   // For all points
