@@ -130,6 +130,10 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_fast_bilateral_filter ${SUBSYS_NAME} fast_bilateral_filter.cpp)
   target_link_libraries(pcl_fast_bilateral_filter pcl_common pcl_io pcl_filters)
 
+  PCL_ADD_EXECUTABLE(pcl_demean_cloud ${SUBSYS_NAME} demean_cloud.cpp)
+  target_link_libraries(pcl_demean_cloud pcl_common pcl_io)
+
+
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd ${SUBSYS_NAME} oni2pcd.cpp)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
