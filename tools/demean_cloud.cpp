@@ -110,12 +110,12 @@ main (int argc, char** argv)
   compute3DCentroid (cloud_xyz, centroid);
   demeanPointCloud (cloud_xyz, centroid, cloud_xyz_demeaned);
 
-  toROSMsg (cloud_xyz_demeaned, cloud);
+  sensor_msgs::PointCloud2 cloud2_xyz_demeaned;
+  toROSMsg (cloud_xyz_demeaned, cloud2_xyz_demeaned);
   sensor_msgs::PointCloud2 cloud_out;
-  copyPointCloud (cloud, cloud_out);
+  concatenateFields (cloud, cloud2_xyz_demeaned, cloud_out);
 
-
-  // Convert to PLY and save
+  // Save cloud
   saveCloud (argv[pcd_file_indices[1]], cloud_out);
 
   return (0);
