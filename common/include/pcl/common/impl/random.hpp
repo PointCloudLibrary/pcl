@@ -41,10 +41,11 @@
 #define PCL_COMMON_RANDOM_HPP_
 
 #include <boost/version.hpp>
+#include <pcl/pcl_macros.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-pcl::common::UniformGenerator<T>::UniformGenerator(T min, T max, uint32_t seed)
+pcl::common::UniformGenerator<T>::UniformGenerator(T min, T max, pcl::uint32_t seed)
   : distribution_ (min, max)
   , generator_ (rng_, distribution_) 
 {
@@ -67,7 +68,7 @@ pcl::common::UniformGenerator<T>::UniformGenerator(const Parameters& parameters)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::UniformGenerator<T>::setSeed (uint32_t seed)
+pcl::common::UniformGenerator<T>::setSeed (pcl::uint32_t seed)
 {
   if (seed != -1)
   {
@@ -78,7 +79,7 @@ pcl::common::UniformGenerator<T>::setSeed (uint32_t seed)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::UniformGenerator<T>::setParameters (T min, T max, uint32_t seed)
+pcl::common::UniformGenerator<T>::setParameters (T min, T max, pcl::uint32_t seed)
 {
   parameters_.min = min;
   parameters_.max = max;
@@ -117,7 +118,7 @@ pcl::common::UniformGenerator<T>::setParameters (const Parameters& parameters)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T>
-pcl::common::NormalGenerator<T>::NormalGenerator(T mean, T sigma, uint32_t seed)
+pcl::common::NormalGenerator<T>::NormalGenerator(T mean, T sigma, pcl::uint32_t seed)
   : distribution_ (mean, sigma)
   , generator_ (rng_, distribution_) 
 {
@@ -140,7 +141,7 @@ pcl::common::NormalGenerator<T>::NormalGenerator(const Parameters& parameters)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::NormalGenerator<T>::setSeed (uint32_t seed)
+pcl::common::NormalGenerator<T>::setSeed (pcl::uint32_t seed)
 {	
   if (seed != -1)
   {
@@ -151,7 +152,7 @@ pcl::common::NormalGenerator<T>::setSeed (uint32_t seed)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename T> void
-pcl::common::NormalGenerator<T>::setParameters (T mean, T sigma, uint32_t seed)
+pcl::common::NormalGenerator<T>::setParameters (T mean, T sigma, pcl::uint32_t seed)
 {
   parameters_.mean = mean;
   parameters_.sigma = sigma;
