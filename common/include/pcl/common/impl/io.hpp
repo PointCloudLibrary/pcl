@@ -368,7 +368,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
         // Copy the rest
         pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]));
         // Copy RGB<->RGBA
-        memcpy (reinterpret_cast<char*> (&cloud_out.points[indices[i]]) + fields_out[rgb_idx_out].offset, reinterpret_cast<const char*> (&cloud_in.points[i]) + fields_in[rgb_idx_in].offset, field_size_in);
+        memcpy (reinterpret_cast<char*> (&cloud_out.points[i]) + fields_out[rgb_idx_out].offset, reinterpret_cast<const char*> (&cloud_in.points[indices[i]]) + fields_in[rgb_idx_in].offset, field_size_in);
       }
       return;
     }
