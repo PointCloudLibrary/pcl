@@ -80,6 +80,8 @@ pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
   , scan_xyz_signal_ ()
   , scan_xyzrgb_signal_ ()
   , scan_xyzi_signal_ ()
+  , min_distance_threshold_(0.0)
+  , max_distance_threshold_(10000.0)
 {
   initialize (correctionsFile);
 }
@@ -110,6 +112,8 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
   , scan_xyz_signal_ ()
   , scan_xyzrgb_signal_ ()
   , scan_xyzi_signal_ ()
+  , min_distance_threshold_(0.0)
+  , max_distance_threshold_(10000.0)
 {
   initialize (correctionsFile);
 }
@@ -373,6 +377,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
       PointXYZ xyz;
       PointXYZI xyzi;
       PointXYZRGBA xyzrgb;
+
       computeXYZI (xyzi, firingData.rotationalPosition, firingData.laserReturns[j], laser_corrections_[j + offset]);
 
       xyz.x = xyzrgb.x = xyzi.x;
@@ -409,6 +414,15 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth,
                               HDLLaserReturn laserReturn, HDLLaserCorrection correction)
 {
   double cosAzimuth, sinAzimuth;
+
+  double distanceM = laserReturn.distance * 0.002;
+
+  if (distanceM < min_distance_threshold_ || distanceM > max_distance_threshold_) {
+    point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN();
+    point.intensity = static_cast<float> (laserReturn.intensity);
+    return;
+  }
+
   if (correction.azimuthCorrection == 0)
   {
     cosAzimuth = cos_lookup_table_[azimuth];
@@ -420,7 +434,8 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth,
     cosAzimuth = std::cos (azimuthInRadians);
     sinAzimuth = std::sin (azimuthInRadians);
   }
-  double distanceM = laserReturn.distance * 0.002 + correction.distanceCorrection;
+
+  distanceM += correction.distanceCorrection;
 
   double xyDistance = distanceM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
 
@@ -587,16 +602,40 @@ pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
 
 /////////////////////////////////////////////////////////////////////////////
 bool
-pcl::HDLGrabber::isAddressUnspecified (const boost::asio::ip::address& ip_address)
+pcl::HDLGrabber::isAddressUnspecified (const boost::asio::ip::address& ipAddress)
 {
 #if BOOST_VERSION>=104700
-  return (ip_address.is_unspecified ());
+  return (ipAddress.is_unspecified ());
 #else
-  if (ip_address.is_v4 ())
-    return (ip_address.to_v4 ().to_ulong() == 0);
+  if (ipAddress.is_v4 ())
+    return (ipAddress.to_v4 ().to_ulong() == 0);
 
   return (false);
 #endif
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::HDLGrabber::setMaximumDistanceThreshold(float &maxThreshold) {
+  max_distance_threshold_ = maxThreshold;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::HDLGrabber::setMinimumDistanceThreshold(float &minThreshold) {
+  min_distance_threshold_ = minThreshold;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+float
+pcl::HDLGrabber::getMaximumDistanceThreshold() {
+  return(max_distance_threshold_);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+float
+pcl::HDLGrabber::getMinimumDistanceThreshold() {
+  return(min_distance_threshold_);
 }
 
 /////////////////////////////////////////////////////////////////////////////
