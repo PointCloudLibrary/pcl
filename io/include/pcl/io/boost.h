@@ -41,7 +41,7 @@
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
-
+#ifndef PCL_CUDA_IO
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
@@ -72,6 +72,6 @@
 #define BOOST_PARAMETER_MAX_ARITY 7
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
-
+#endif
 #endif    // _PCL_IO_BOOST_H_
 

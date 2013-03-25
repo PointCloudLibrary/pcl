@@ -34,7 +34,7 @@
  * $Id$
  *
  */
-
+#define PCL_CUDA_IO
 #include <pcl/pcl_exports.h>
 
 #include <pcl/cuda/io/debayering.h>
@@ -355,3 +355,4 @@ namespace pcl
   } // namespace
 } // namespace
 
+#undef PCL_CUDA_IO
