@@ -101,7 +101,7 @@ pcl::registration::CorrespondenceRejectorSampleConsensus2D<PointT>::getRemaining
   else
   {
     if (refine_ && !sac.refineModel (2.0))
-      PCL_WARN ("[pcl::registration::%s::getRemainingCorrespondences] Error refining model! Leaving correspondences as they are...\n", getClassName ().c_str ());
+      PCL_WARN ("[pcl::registration::%s::getRemainingCorrespondences] Error refining model!\n", getClassName ().c_str ());
       
     std::vector<int> inliers;
     sac.getInliers (inliers);
