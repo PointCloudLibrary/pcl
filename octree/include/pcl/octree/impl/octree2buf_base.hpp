@@ -548,7 +548,8 @@ namespace pcl
 
       // XOR of current and previous occupancy bit patterns
       node_XOR_bit_pattern = branch_bit_pattern_curr_buffer ^ branch_bit_pattern_prev_buffer;
-      if (do_XOR_encoding_arg)
+
+      if (binary_tree_out_arg)
       {
         if (do_XOR_encoding_arg)
         {
