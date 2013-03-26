@@ -176,7 +176,7 @@ namespace pcl
         * \param[in] max_iterations the maxim number of iterations to try to refine in case the inliers keep on changing
         */
       virtual bool 
-      refineModel (const double sigma = 3.0, const unsigned int max_iterations = 10000)
+      refineModel (const double sigma = 3.0, const unsigned int max_iterations = 1000)
       {
         if (!sac_model_)
         {
@@ -190,10 +190,12 @@ namespace pcl
         unsigned int refine_iterations = 0;
         bool inlier_changed = false;
         std::vector<int> new_inliers;
+        std::vector<size_t> inliers_sizes;
         do
         {
           // Optimize the model coefficients
           sac_model_->optimizeModelCoefficients (inliers_, model_coefficients_, model_coefficients_);
+          inliers_sizes.push_back (inliers_.size ());
 
           // Select the new inliers based on the optimized coefficients and new threshold
           sac_model_->selectWithinDistance (model_coefficients_, error_threshold, new_inliers);
@@ -212,6 +214,16 @@ namespace pcl
           // If the number of inliers changed, then we are still optimizing
           if (new_inliers.size () != inliers_.size ())
           {
+            // Check if the number of inliers is oscillating in between two values
+            if (inliers_sizes.size () >= 4)
+            {
+              if (inliers_sizes[inliers_sizes.size () - 1] == inliers_sizes[inliers_sizes.size () - 3] &&
+                  inliers_sizes[inliers_sizes.size () - 2] == inliers_sizes[inliers_sizes.size () - 4])
+              {
+                inlier_changed = false;
+                break;
+              }
+            }
             inlier_changed = true;
             continue;
           }
