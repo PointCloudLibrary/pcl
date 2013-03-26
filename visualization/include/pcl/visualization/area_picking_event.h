@@ -40,8 +40,6 @@
 #define PCL_VISUALIZATION_AREA_PICKING_EVENT_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/visualization/vtk.h>
-#include <Eigen/Core>
 
 namespace pcl
 {
