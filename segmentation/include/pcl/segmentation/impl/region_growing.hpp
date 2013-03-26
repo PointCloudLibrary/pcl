@@ -285,18 +285,19 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   applySmoothRegionGrowingAlgorithm ();
   assembleRegions ();
 
-  clusters.resize(clusters_.size());
-  std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin();
-  for(std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin(); cluster_iter != clusters_.end(); cluster_iter++)
+  clusters.resize (clusters_.size ());
+  std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
+  for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin (); cluster_iter != clusters_.end (); cluster_iter++)
   {
-    if (cluster_iter->indices.size () >= min_pts_per_cluster_ && cluster_iter->indices.size () <= max_pts_per_cluster_)
+    if ((cluster_iter->indices.size () >= min_pts_per_cluster_) && 
+        (cluster_iter->indices.size () <= max_pts_per_cluster_))
     {
-    *cluster_iter_input = *cluster_iter;
-    cluster_iter_input++;
+      *cluster_iter_input = *cluster_iter;
+      cluster_iter_input++;
     }
   }
 
-  clusters_ = std::vector<pcl::PointIndices> (clusters.begin(), cluster_iter_input);
+  clusters_ = std::vector<pcl::PointIndices> (clusters.begin (), cluster_iter_input);
 
   deinitCompute ();
 }
@@ -536,7 +537,7 @@ pcl::RegionGrowing<PointT, NormalT>::assembleRegions ()
   pcl::PointIndices segment;
   clusters_.resize (number_of_segments, segment);
 
-  for(int i_seg = 0; i_seg < number_of_segments; i_seg++)
+  for (int i_seg = 0; i_seg < number_of_segments; i_seg++)
   {
     clusters_[i_seg].indices.resize ( num_pts_in_segment_[i_seg], 0);
   }
