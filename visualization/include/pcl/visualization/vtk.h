@@ -115,6 +115,7 @@
 #include <vtkImageImport.h>
 #include <vtkImageViewer.h>
 #include <vtkInteractorStyleImage.h>
+#include <vtkPointSource.h>
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
 #include <vtkImageSlice.h>
 #include <vtkImageProperty.h>
