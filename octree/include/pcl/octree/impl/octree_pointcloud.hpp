@@ -571,7 +571,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   LeafNode* leaf_node;
   BranchNode* parent_branch_of_leaf_node;
-  unsigned int depth_mask = createLeafRecursive (key, this->depth_mask_ ,this->root_node_, leaf_node, parent_branch_of_leaf_node);
+  unsigned int depth_mask = this->createLeafRecursive (key, this->depth_mask_ ,this->root_node_, leaf_node, parent_branch_of_leaf_node);
 
   if (this->dynamic_depth_enabled_ && depth_mask)
   {
@@ -588,7 +588,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
                       child_idx,
                       depth_mask);
 
-      depth_mask = createLeafRecursive (key, this->depth_mask_ ,this->root_node_, leaf_node, parent_branch_of_leaf_node);
+      depth_mask = this->createLeafRecursive (key, this->depth_mask_ ,this->root_node_, leaf_node, parent_branch_of_leaf_node);
       leaf_obj_count = (*leaf_node)->getSize ();
     }
 
