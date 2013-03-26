@@ -395,7 +395,7 @@ namespace pcl
 
         LeafNode* new_leaf = 0;
         BranchNode* leaf_parent = 0;
-        this->createLeafRecursive (key, this->depthMask_, this->rootNode_, new_leaf, leaf_parent);
+        this->createLeafRecursive (key, this->depth_mask_, this->root_node_, new_leaf, leaf_parent);
 
         if (new_leaf)
         {

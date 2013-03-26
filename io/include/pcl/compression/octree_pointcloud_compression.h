@@ -107,21 +107,21 @@ namespace pcl
                                const unsigned char colorBitResolution_arg = 6) :
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT> (octreeResolution_arg),
           output_ (PointCloudPtr ()),
-          binaryTreeDataVector_ (),
-          binaryColorTreeVector_ (),
-          pointCountDataVector_ (),
-          pointCountDataVectorIterator_ (),
-          colorCoder_ (),
-          pointCoder_ (),
-          entropyCoder_ (),
-          doVoxelGridEnDecoding_ (doVoxelGridDownDownSampling_arg), iFrameRate_ (iFrameRate_arg),
-          iFrameCounter_ (0), frameID_ (0), pointCount_ (0), iFrame_ (true),
-          doColorEncoding_ (doColorEncoding_arg), cloudWithColor_ (false), dataWithColor_ (false),
-          pointColorOffset_ (0), bShowStatistics (showStatistics_arg), 
-          compressedPointDataLen_ (), compressedColorDataLen_ (), selectedProfile_(compressionProfile_arg),
-          pointResolution_(pointResolution_arg), octreeResolution_(octreeResolution_arg),
-          colorBitResolution_(colorBitResolution_arg),
-          objectCount_(0)
+          binary_tree_data_vector_ (),
+          binary_color_tree_vector_ (),
+          point_count_data_vector_ (),
+          point_count_data_vector_iterator_ (),
+          color_coder_ (),
+          point_coder_ (),
+          entropy_coder_ (),
+          do_voxel_grid_enDecoding_ (doVoxelGridDownDownSampling_arg), i_frame_rate_ (iFrameRate_arg),
+          i_frame_counter_ (0), frame_ID_ (0), point_count_ (0), i_frame_ (true),
+          do_color_encoding_ (doColorEncoding_arg), cloud_with_color_ (false), data_with_color_ (false),
+          point_color_offset_ (0), b_show_statistics_ (showStatistics_arg), 
+          compressed_point_data_len_ (), compressed_color_data_len_ (), selected_profile_(compressionProfile_arg),
+          point_resolution_(pointResolution_arg), octree_resolution_(octreeResolution_arg),
+          color_bit_resolution_(colorBitResolution_arg),
+          object_count_(0)
         {
           initialization();
         }
@@ -134,32 +134,32 @@ namespace pcl
 
         /** \brief Initialize globals */
         void initialization () {
-          if (selectedProfile_ != MANUAL_CONFIGURATION)
+          if (selected_profile_ != MANUAL_CONFIGURATION)
           {
             // apply selected compression profile
 
             // retrieve profile settings
-            const configurationProfile_t selectedProfile = compressionProfiles_[selectedProfile_];
+            const configurationProfile_t selectedProfile = compressionProfiles_[selected_profile_];
 
             // apply profile settings
-            iFrameRate_ = selectedProfile.iFrameRate;
-            doVoxelGridEnDecoding_ = selectedProfile.doVoxelGridDownSampling;
+            i_frame_rate_ = selectedProfile.iFrameRate;
+            do_voxel_grid_enDecoding_ = selectedProfile.doVoxelGridDownSampling;
             this->setResolution (selectedProfile.octreeResolution);
-            pointCoder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
-            doColorEncoding_ = selectedProfile.doColorEncoding;
-            colorCoder_.setBitDepth (selectedProfile.colorBitResolution);
+            point_coder_.setPrecision (static_cast<float> (selectedProfile.pointResolution));
+            do_color_encoding_ = selectedProfile.doColorEncoding;
+            color_coder_.setBitDepth (selectedProfile.colorBitResolution);
 
           }
           else 
           {
             // configure point & color coder
-            pointCoder_.setPrecision (static_cast<float> (pointResolution_));
-            colorCoder_.setBitDepth (colorBitResolution_);
+            point_coder_.setPrecision (static_cast<float> (point_resolution_));
+            color_coder_.setBitDepth (color_bit_resolution_);
           }
 
-          if (pointCoder_.getPrecision () == this->getResolution ())
+          if (point_coder_.getPrecision () == this->getResolution ())
             //disable differential point colding
-            doVoxelGridEnDecoding_ = true;
+            do_voxel_grid_enDecoding_ = true;
 
         }
 
@@ -169,7 +169,7 @@ namespace pcl
         virtual void
         addPointIdx (const int pointIdx_arg)
         {
-          ++objectCount_;
+          ++object_count_;
           OctreePointCloud<PointT, LeafT, BranchT, OctreeT>::addPointIdx(pointIdx_arg);
         }
 
@@ -196,49 +196,49 @@ namespace pcl
 
         /** \brief Encode point cloud to output stream
           * \param cloud_arg:  point cloud to be compressed
-          * \param compressedTreeDataOut_arg:  binary output stream containing compressed data
+          * \param compressed_tree_data_out_arg:  binary output stream containing compressed data
           */
         void
-        encodePointCloud (const PointCloudConstPtr &cloud_arg, std::ostream& compressedTreeDataOut_arg);
+        encodePointCloud (const PointCloudConstPtr &cloud_arg, std::ostream& compressed_tree_data_out_arg);
 
         /** \brief Decode point cloud from input stream
-          * \param compressedTreeDataIn_arg: binary input stream containing compressed data
+          * \param compressed_tree_data_in_arg: binary input stream containing compressed data
           * \param cloud_arg: reference to decoded point cloud
           */
         void
-        decodePointCloud (std::istream& compressedTreeDataIn_arg, PointCloudPtr &cloud_arg);
+        decodePointCloud (std::istream& compressed_tree_data_in_arg, PointCloudPtr &cloud_arg);
 
       protected:
 
         /** \brief Write frame information to output stream
-          * \param compressedTreeDataOut_arg: binary output stream
+          * \param compressed_tree_data_out_arg: binary output stream
           */
         void
-        writeFrameHeader (std::ostream& compressedTreeDataOut_arg);
+        writeFrameHeader (std::ostream& compressed_tree_data_out_arg);
 
         /** \brief Read frame information to output stream
-          * \param compressedTreeDataIn_arg: binary input stream
+          * \param compressed_tree_data_in_arg: binary input stream
           */
         void
-        readFrameHeader (std::istream& compressedTreeDataIn_arg);
+        readFrameHeader (std::istream& compressed_tree_data_in_arg);
 
         /** \brief Synchronize to frame header
-          * \param compressedTreeDataIn_arg: binary input stream
+          * \param compressed_tree_data_in_arg: binary input stream
           */
         void
-        syncToHeader (std::istream& compressedTreeDataIn_arg);
+        syncToHeader (std::istream& compressed_tree_data_in_arg);
 
         /** \brief Apply entropy encoding to encoded information and output to binary stream
-          * \param compressedTreeDataOut_arg: binary output stream
+          * \param compressed_tree_data_out_arg: binary output stream
           */
         void
-        entropyEncoding (std::ostream& compressedTreeDataOut_arg);
+        entropyEncoding (std::ostream& compressed_tree_data_out_arg);
 
         /** \brief Entropy decoding of input binary stream and output to information vectors
-          * \param compressedTreeDataIn_arg: binary input stream
+          * \param compressed_tree_data_in_arg: binary input stream
           */
         void
-        entropyDecoding (std::istream& compressedTreeDataIn_arg);
+        entropyDecoding (std::istream& compressed_tree_data_in_arg);
 
         /** \brief Encode leaf node information during serialization
           * \param leaf_arg: reference to new leaf node
@@ -259,58 +259,58 @@ namespace pcl
         PointCloudPtr output_;
 
         /** \brief Vector for storing binary tree structure */
-        std::vector<char> binaryTreeDataVector_;
+        std::vector<char> binary_tree_data_vector_;
 
         /** \brief Interator on binary tree structure vector */
-        std::vector<char> binaryColorTreeVector_;
+        std::vector<char> binary_color_tree_vector_;
 
         /** \brief Vector for storing points per voxel information  */
-        std::vector<unsigned int> pointCountDataVector_;
+        std::vector<unsigned int> point_count_data_vector_;
 
         /** \brief Interator on points per voxel vector */
-        std::vector<unsigned int>::const_iterator pointCountDataVectorIterator_;
+        std::vector<unsigned int>::const_iterator point_count_data_vector_iterator_;
 
         /** \brief Color coding instance */
-        ColorCoding<PointT> colorCoder_;
+        ColorCoding<PointT> color_coder_;
 
         /** \brief Point coding instance */
-        PointCoding<PointT> pointCoder_;
+        PointCoding<PointT> point_coder_;
 
         /** \brief Static range coder instance */
-        StaticRangeCoder entropyCoder_;
+        StaticRangeCoder entropy_coder_;
 
-        bool doVoxelGridEnDecoding_;
-        uint32_t iFrameRate_;
-        uint32_t iFrameCounter_;
-        uint32_t frameID_;
-        uint64_t pointCount_;
-        bool iFrame_;
+        bool do_voxel_grid_enDecoding_;
+        uint32_t i_frame_rate_;
+        uint32_t i_frame_counter_;
+        uint32_t frame_ID_;
+        uint64_t point_count_;
+        bool i_frame_;
 
-        bool doColorEncoding_;
-        bool cloudWithColor_;
-        bool dataWithColor_;
-        unsigned char pointColorOffset_;
+        bool do_color_encoding_;
+        bool cloud_with_color_;
+        bool data_with_color_;
+        unsigned char point_color_offset_;
 
         //bool activating statistics
-        bool bShowStatistics;
-        uint64_t compressedPointDataLen_;
-        uint64_t compressedColorDataLen_;
+        bool b_show_statistics_;
+        uint64_t compressed_point_data_len_;
+        uint64_t compressed_color_data_len_;
 
         // frame header identifier
-        static const char* frameHeaderIdentifier_;
+        static const char* frame_header_identifier_;
 
-        const compression_Profiles_e selectedProfile_;
-        const double pointResolution_;
-        const double octreeResolution_;
-        const unsigned char colorBitResolution_;
+        const compression_Profiles_e selected_profile_;
+        const double point_resolution_;
+        const double octree_resolution_;
+        const unsigned char color_bit_resolution_;
 
-        std::size_t objectCount_;
+        std::size_t object_count_;
 
       };
 
     // define frame identifier
     template<typename PointT, typename LeafT, typename BranchT, typename OctreeT>
-      const char* OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frameHeaderIdentifier_ = "<PCL-OCT-COMPRESSED>";
+      const char* OctreePointCloudCompression<PointT, LeafT, BranchT, OctreeT>::frame_header_identifier_ = "<PCL-OCT-COMPRESSED>";
   }
 
 }

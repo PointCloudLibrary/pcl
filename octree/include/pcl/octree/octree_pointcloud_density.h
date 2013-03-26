@@ -53,7 +53,7 @@ namespace pcl
     {
       public:
         /** \brief Class initialization. */
-        OctreePointCloudDensityContainer () : pointCounter_ (0)
+        OctreePointCloudDensityContainer () : point_counter_ (0)
         {
         }
 
@@ -70,14 +70,14 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator
-         * \param[in] OctreePointCloudDensityContainer to compare with
+         * \param[in] other OctreePointCloudDensityContainer to compare with
          */
         virtual bool operator==(const OctreeContainerBase& other) const
         {
           const OctreePointCloudDensityContainer* otherContainer =
               dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
 
-          return (this->pointCounter_==otherContainer->pointCounter_);
+          return (this->point_counter_==otherContainer->point_counter_);
         }
 
         /** \brief Read input data. Only an internal counter is increased.
@@ -85,7 +85,7 @@ namespace pcl
         void
         addPointIndex (int)
         {
-          pointCounter_++;
+          point_counter_++;
         }
 
         /** \brief Return point counter.
@@ -94,18 +94,18 @@ namespace pcl
         unsigned int
         getPointCounter ()
         {
-          return (pointCounter_);
+          return (point_counter_);
         }
 
         /** \brief Reset leaf node. */
         virtual void
         reset ()
         {
-          pointCounter_ = 0;
+          point_counter_ = 0;
         }
 
       private:
-        unsigned int pointCounter_;
+        unsigned int point_counter_;
 
     };
 
@@ -143,14 +143,14 @@ namespace pcl
         unsigned int
         getVoxelDensityAtPoint (const PointT& point_arg) const
         {
-          unsigned int pointCount = 0;
+          unsigned int point_count = 0;
 
           OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint (point_arg);
 
           if (leaf)
-            pointCount = leaf->getPointCounter ();
+            point_count = leaf->getPointCounter ();
 
-          return (pointCount);
+          return (point_count);
         }
     };
   }

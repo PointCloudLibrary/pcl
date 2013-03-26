@@ -159,7 +159,7 @@ pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
 pcl::octree::OctreePointCloudSuperVoxel<PointT, LeafContainerT, BranchContainerT>::insertNormals (const std::vector<PointSuperVoxel, Eigen::aligned_allocator<PointSuperVoxel> > &voxel_centroids_arg)
 {
-  assert (voxel_centroids_arg.size () == this->leafCount_);
+  assert (voxel_centroids_arg.size () == this->leaf_count_);
   typename OctreeSuperVoxelT::LeafNodeIterator leaf_itr;
   leaf_itr = this->leaf_begin ();
   LeafContainerT* leafContainer;
