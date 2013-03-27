@@ -82,7 +82,7 @@ saveImage (const std::string &filename, const PointCloud<RGB> &image)
 int
 main (int argc, char** argv)
 {
-  print_info ("Convert a PCD file to PLY format. For more information, use: %s -h\n", argv[0]);
+  print_info ("Convert the RGB information of an organized PCD file to a PNG image. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
