@@ -38,6 +38,8 @@
 #ifndef PCL_OCTREE_KEY_H
 #define PCL_OCTREE_KEY_H
 
+#include <string>
+
 namespace pcl
 {
   namespace octree
@@ -65,9 +67,9 @@ namespace pcl
       }
 
       /** \brief Copy constructor. */
-      OctreeKey (const OctreeKey& source) :
-          x (source.x), y (source.y), z (source.z)
+      OctreeKey (const OctreeKey& source)
       {
+        memcpy(key_, source.key_, sizeof(key_));
       }
 
       /** \brief Operator== for comparing octree keys with each other.
@@ -134,9 +136,18 @@ namespace pcl
       static const unsigned char maxDepth = static_cast<const unsigned char>(sizeof(uint32_t)*8);
 
       // Indices addressing a voxel at (X, Y, Z)
-      uint32_t x;
-      uint32_t y;
-      uint32_t z;
+
+      union
+      {
+        struct
+        {
+          uint32_t x;
+          uint32_t y;
+          uint32_t z;
+        };
+        uint32_t key_[3];
+      };
+
 
     };
   }

@@ -93,19 +93,19 @@ namespace pcl
 
         /** \brief Search for neighbors within a voxel at given point
           * \param[in] point point addressing a leaf node voxel
-          * \param[out] pointIdx_data the resultant indices of the neighboring voxel points
+          * \param[out] point_idx_data the resultant indices of the neighboring voxel points
           * \return "true" if leaf node exist; "false" otherwise
           */
         bool
-        voxelSearch (const PointT& point, std::vector<int>& pointIdx_data);
+        voxelSearch (const PointT& point, std::vector<int>& point_idx_data);
 
         /** \brief Search for neighbors within a voxel at given point referenced by a point index
           * \param[in] index the index in input cloud defining the query point
-          * \param[out] pointIdx_data the resultant indices of the neighboring voxel points
+          * \param[out] point_idx_data the resultant indices of the neighboring voxel points
           * \return "true" if leaf node exist; "false" otherwise
           */
         bool
-        voxelSearch (const int index, std::vector<int>& pointIdx_data);
+        voxelSearch (const int index, std::vector<int>& point_idx_data);
 
         /** \brief Search for k-nearest neighbors at the query point.
           * \param[in] cloud the point cloud data
@@ -141,11 +141,10 @@ namespace pcl
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
-          * \return number of neighbors found
-          */
+         * \return number of neighbors found
+         */
         int
-        nearestKSearch (int index, int k, std::vector<int> &k_indices,
-                        std::vector<float> &k_sqr_distances);
+        nearestKSearch (int index, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances);
 
         /** \brief Search for approx. nearest neighbor at the query point.
           * \param[in] cloud the point cloud data
@@ -155,8 +154,7 @@ namespace pcl
           * \return number of neighbors found
           */
         inline void
-        approxNearestSearch (const PointCloud &cloud, int query_index, int &result_index,
-                             float &sqr_distance)
+        approxNearestSearch (const PointCloud &cloud, int query_index, int &result_index, float &sqr_distance)
         {
           return (approxNearestSearch (cloud.points[query_index], result_index, sqr_distance));
         }
@@ -189,9 +187,8 @@ namespace pcl
           * \return number of neighbors found in radius
           */
         int
-        radiusSearch (const PointCloud &cloud, int index, double radius,
-                      std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
-                      unsigned int max_nn = 0)
+        radiusSearch (const PointCloud &cloud, int index, double radius, std::vector<int> &k_indices,
+                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0)
         {
           return (radiusSearch (cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
@@ -224,26 +221,25 @@ namespace pcl
         /** \brief Get a PointT vector of centers of all voxels that intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
-          * \param[out] voxelCenterList results are written to this vector of PointT elements
-          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
+          * \param[out] voxel_center_list results are written to this vector of PointT elements
+          * \param[in] max_voxel_count stop raycasting when this many voxels intersected (0: disable)
           * \return number of intersected voxels
-          */
+         */
         int
         getIntersectedVoxelCenters (Eigen::Vector3f origin, Eigen::Vector3f direction,
-                                    AlignedPointTVector &voxelCenterList,
-                                    int maxVoxelCount = 0) const;
+                                    AlignedPointTVector &voxel_center_list, int max_voxel_count = 0) const;
 
         /** \brief Get indices of all voxels that are intersected by a ray (origin, direction).
           * \param[in] origin ray origin
           * \param[in] direction ray direction vector
           * \param[out] k_indices resulting point indices from intersected voxels
-          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
-          * \return number of intersected voxels
-          */
+          * \param[in] max_voxel_count stop raycasting when this many voxels intersected (0: disable)
+         * \return number of intersected voxels
+         */
         int
         getIntersectedVoxelIndices (Eigen::Vector3f origin, Eigen::Vector3f direction,
                                     std::vector<int> &k_indices,
-                                    int maxVoxelCount = 0) const;
+                                    int max_voxel_count = 0) const;
 
 
         /** \brief Search for points within rectangular search area
@@ -265,88 +261,89 @@ namespace pcl
          */
         class prioBranchQueueEntry
         {
-          public:
-            /** \brief Empty constructor  */
-            prioBranchQueueEntry () : node (), pointDistance (0), key ()
-            {
-            }
+        public:
+          /** \brief Empty constructor  */
+          prioBranchQueueEntry () :
+              node (), point_distance (0), key ()
+          {
+          }
 
-            /** \brief Constructor for initializing priority queue entry.
-              * \param _node pointer to octree node
-              * \param _key octree key addressing voxel in octree structure
-              * \param[in] _point_distance distance of query point to voxel center
-              */
-            prioBranchQueueEntry (OctreeNode* _node, OctreeKey& _key, float _point_distance) :
-              node (_node), pointDistance (_point_distance), key (_key)
-            {
-            }
+          /** \brief Constructor for initializing priority queue entry.
+           * \param _node pointer to octree node
+           * \param _key octree key addressing voxel in octree structure
+           * \param[in] _point_distance distance of query point to voxel center
+           */
+          prioBranchQueueEntry (OctreeNode* _node, OctreeKey& _key, float _point_distance) :
+              node (_node), point_distance (_point_distance), key (_key)
+          {
+          }
 
-            /** \brief Operator< for comparing priority queue entries with each other. 
-              * \param[in] rhs the priority queue to compare this against
-              */
-            bool
-            operator < (const prioBranchQueueEntry rhs) const
-            {
-              return (this->pointDistance > rhs.pointDistance);
-            }
+          /** \brief Operator< for comparing priority queue entries with each other.
+           * \param[in] rhs the priority queue to compare this against
+           */
+          bool
+          operator < (const prioBranchQueueEntry rhs) const
+          {
+            return (this->point_distance > rhs.point_distance);
+          }
 
-            /** \brief Pointer to octree node. */
-            const OctreeNode* node;
+          /** \brief Pointer to octree node. */
+          const OctreeNode* node;
 
-            /** \brief Distance to query point. */
-            float pointDistance;
+          /** \brief Distance to query point. */
+          float point_distance;
 
-            /** \brief Octree key. */
-            OctreeKey key;
+          /** \brief Octree key. */
+          OctreeKey key;
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /** \brief @b Priority queue entry for point candidates
           * \note This class defines priority queue entries for the nearest neighbor point candidates.
           * \author Julius Kammerl (julius@kammerl.de)
-          */
+         */
         class prioPointQueueEntry
         {
-          public:
+        public:
 
-            /** \brief Empty constructor  */
-            prioPointQueueEntry () :
-              pointIdx_ (0), pointDistance_ (0)
-            {
-            }
+          /** \brief Empty constructor  */
+          prioPointQueueEntry () :
+              point_idx_ (0), point_distance_ (0)
+          {
+          }
 
-            /** \brief Constructor for initializing priority queue entry.
-              * \param[in] pointIdx an index representing a point in the dataset given by \a setInputCloud
-              * \param[in] pointDistance distance of query point to voxel center
-              */
-            prioPointQueueEntry (unsigned int& pointIdx, float pointDistance) :
-              pointIdx_ (pointIdx), pointDistance_ (pointDistance)
-            {
-            }
+          /** \brief Constructor for initializing priority queue entry.
+           * \param[in] point_idx an index representing a point in the dataset given by \a setInputCloud
+           * \param[in] point_distance distance of query point to voxel center
+           */
+          prioPointQueueEntry (unsigned int& point_idx, float point_distance) :
+              point_idx_ (point_idx), point_distance_ (point_distance)
+          {
+          }
 
-            /** \brief Operator< for comparing priority queue entries with each other.
-              * \param[in] rhs priority queue to compare this against 
-              */
-            bool
-            operator< (const prioPointQueueEntry& rhs) const
-            {
-              return (this->pointDistance_ < rhs.pointDistance_);
-            }
+          /** \brief Operator< for comparing priority queue entries with each other.
+           * \param[in] rhs priority queue to compare this against
+           */
+          bool
+          operator< (const prioPointQueueEntry& rhs) const
+          {
+            return (this->point_distance_ < rhs.point_distance_);
+          }
 
-            /** \brief Index representing a point in the dataset given by \a setInputCloud. */
-            int pointIdx_;
+          /** \brief Index representing a point in the dataset given by \a setInputCloud. */
+          int point_idx_;
 
-            /** \brief Distance to query point. */
-            float pointDistance_;
+          /** \brief Distance to query point. */
+          float point_distance_;
         };
 
         /** \brief Helper function to calculate the squared distance between two points
-          * \param[in] pointA point A
-          * \param[in] pointB point B
+          * \param[in] point_a point A
+          * \param[in] point_b point B
           * \return squared distance between point A and point B
           */
         float
-        pointSquaredDist (const PointT& pointA, const PointT& pointB) const;
+        pointSquaredDist (const PointT& point_a, const PointT& point_b) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Recursive search routine methods
@@ -357,7 +354,7 @@ namespace pcl
           * \param[in] radiusSquared squared search radius
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
-          * \param[in] treeDepth current depth/level in the octree
+          * \param[in] tree_depth current depth/level in the octree
           * \param[out] k_indices vector of indices found to be neighbors of query point
           * \param[out] k_sqr_distances squared distances of neighbors to query point
           * \param[in] max_nn maximum of neighbors to be found
@@ -365,7 +362,7 @@ namespace pcl
         void
         getNeighborsWithinRadiusRecursive (const PointT& point, const double radiusSquared,
                                            const BranchNode* node, const OctreeKey& key,
-                                           unsigned int treeDepth, std::vector<int>& k_indices,
+                                           unsigned int tree_depth, std::vector<int>& k_indices,
                                            std::vector<float>& k_sqr_distances, unsigned int max_nn) const;
 
         /** \brief Recursive search method that explores the octree and finds the K nearest neighbors
@@ -373,50 +370,50 @@ namespace pcl
           * \param[in] K amount of nearest neighbors to be found
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
-          * \param[in] treeDepth current depth/level in the octree
-          * \param[in] squaredSearchRadius squared search radius distance
-          * \param[out] pointCandidates priority queue of nearest neigbor point candidates
+          * \param[in] tree_depth current depth/level in the octree
+          * \param[in] squared_search_radius squared search radius distance
+          * \param[out] point_candidates priority queue of nearest neigbor point candidates
           * \return squared search radius based on current point candidate set found
           */
         double
         getKNearestNeighborRecursive (const PointT& point, unsigned int K, const BranchNode* node,
-                                      const OctreeKey& key, unsigned int treeDepth,
-                                      const double squaredSearchRadius,
-                                      std::vector<prioPointQueueEntry>& pointCandidates) const;
+                                      const OctreeKey& key, unsigned int tree_depth,
+                                      const double squared_search_radius,
+                                      std::vector<prioPointQueueEntry>& point_candidates) const;
 
         /** \brief Recursive search method that explores the octree and finds the approximate nearest neighbor
           * \param[in] point query point
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
-          * \param[in] treeDepth current depth/level in the octree
+          * \param[in] tree_depth current depth/level in the octree
           * \param[out] result_index result index is written to this reference
           * \param[out] sqr_distance squared distance to search
           */
         void
         approxNearestSearchRecursive (const PointT& point, const BranchNode* node, const OctreeKey& key,
-                                      unsigned int treeDepth, int& result_index, float& sqr_distance);
+                                      unsigned int tree_depth, int& result_index, float& sqr_distance);
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of voxel centers.
           * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
           * http://wscg.zcu.cz/wscg2000/Papers_2000/X31.pdf
-          * \param[in] minX octree nodes X coordinate of lower bounding box corner
-          * \param[in] minY octree nodes Y coordinate of lower bounding box corner
-          * \param[in] minZ octree nodes Z coordinate of lower bounding box corner
-          * \param[in] maxX octree nodes X coordinate of upper bounding box corner
-          * \param[in] maxY octree nodes Y coordinate of upper bounding box corner
-          * \param[in] maxZ octree nodes Z coordinate of upper bounding box corner
+          * \param[in] min_x octree nodes X coordinate of lower bounding box corner
+          * \param[in] min_y octree nodes Y coordinate of lower bounding box corner
+          * \param[in] min_z octree nodes Z coordinate of lower bounding box corner
+          * \param[in] max_x octree nodes X coordinate of upper bounding box corner
+          * \param[in] max_y octree nodes Y coordinate of upper bounding box corner
+          * \param[in] max_z octree nodes Z coordinate of upper bounding box corner
           * \param[in] a
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
-          * \param[out] voxelCenterList results are written to this vector of PointT elements
-          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
+          * \param[out] voxel_center_list results are written to this vector of PointT elements
+          * \param[in] max_voxel_count stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
-        getIntersectedVoxelCentersRecursive (double minX, double minY, double minZ, double maxX, double maxY,
-                                             double maxZ, unsigned char a, const OctreeNode* node,
-                                             const OctreeKey& key, AlignedPointTVector &voxelCenterList,
-                                             int maxVoxelCount) const;
+        getIntersectedVoxelCentersRecursive (double min_x, double min_y, double min_z, double max_x, double max_y,
+                                             double max_z, unsigned char a, const OctreeNode* node,
+                                             const OctreeKey& key, AlignedPointTVector &voxel_center_list,
+                                             int max_voxel_count) const;
 
 
         /** \brief Recursive search method that explores the octree and finds points within a rectangular search area
@@ -424,51 +421,51 @@ namespace pcl
          * \param[in] max_pt upper corner of search area
          * \param[in] node current octree node to be explored
          * \param[in] key octree key addressing a leaf node.
-         * \param[in] treeDepth current depth/level in the octree
+         * \param[in] tree_depth current depth/level in the octree
          * \param[out] k_indices the resultant point indices
          */
         void
         boxSearchRecursive (const Eigen::Vector3f &min_pt, const Eigen::Vector3f &max_pt, const BranchNode* node,
-                            const OctreeKey& key, unsigned int treeDepth, std::vector<int>& k_indices) const;
+                            const OctreeKey& key, unsigned int tree_depth, std::vector<int>& k_indices) const;
 
         /** \brief Recursively search the tree for all intersected leaf nodes and return a vector of indices.
           * This algorithm is based off the paper An Efficient Parametric Algorithm for Octree Traversal:
           * http://wscg.zcu.cz/wscg2000/Papers_2000/X31.pdf
-          * \param[in] minX octree nodes X coordinate of lower bounding box corner
-          * \param[in] minY octree nodes Y coordinate of lower bounding box corner
-          * \param[in] minZ octree nodes Z coordinate of lower bounding box corner
-          * \param[in] maxX octree nodes X coordinate of upper bounding box corner
-          * \param[in] maxY octree nodes Y coordinate of upper bounding box corner
-          * \param[in] maxZ octree nodes Z coordinate of upper bounding box corner
+          * \param[in] min_x octree nodes X coordinate of lower bounding box corner
+          * \param[in] min_y octree nodes Y coordinate of lower bounding box corner
+          * \param[in] min_z octree nodes Z coordinate of lower bounding box corner
+          * \param[in] max_x octree nodes X coordinate of upper bounding box corner
+          * \param[in] max_y octree nodes Y coordinate of upper bounding box corner
+          * \param[in] max_z octree nodes Z coordinate of upper bounding box corner
           * \param[in] a
           * \param[in] node current octree node to be explored
           * \param[in] key octree key addressing a leaf node.
           * \param[out] k_indices resulting indices
-          * \param[in] maxVoxelCount stop raycasting when this many voxels intersected (0: disable)
+          * \param[in] max_voxel_count stop raycasting when this many voxels intersected (0: disable)
           * \return number of voxels found
           */
         int
-        getIntersectedVoxelIndicesRecursive (double minX, double minY, double minZ,
-                                             double maxX, double maxY, double maxZ,
+        getIntersectedVoxelIndicesRecursive (double min_x, double min_y, double min_z,
+                                             double max_x, double max_y, double max_z,
                                              unsigned char a, const OctreeNode* node, const OctreeKey& key,
                                              std::vector<int> &k_indices,
-                                             int maxVoxelCount) const;
+                                             int max_voxel_count) const;
 
         /** \brief Initialize raytracing algorithm
           * \param origin
           * \param direction
-          * \param[in] minX octree nodes X coordinate of lower bounding box corner
-          * \param[in] minY octree nodes Y coordinate of lower bounding box corner
-          * \param[in] minZ octree nodes Z coordinate of lower bounding box corner
-          * \param[in] maxX octree nodes X coordinate of upper bounding box corner
-          * \param[in] maxY octree nodes Y coordinate of upper bounding box corner
-          * \param[in] maxZ octree nodes Z coordinate of upper bounding box corner
+          * \param[in] min_x octree nodes X coordinate of lower bounding box corner
+          * \param[in] min_y octree nodes Y coordinate of lower bounding box corner
+          * \param[in] min_z octree nodes Z coordinate of lower bounding box corner
+          * \param[in] max_x octree nodes X coordinate of upper bounding box corner
+          * \param[in] max_y octree nodes Y coordinate of upper bounding box corner
+          * \param[in] max_z octree nodes Z coordinate of upper bounding box corner
           * \param a
           */
         inline void
         initIntersectedVoxel (Eigen::Vector3f &origin, Eigen::Vector3f &direction,
-                              double &minX, double &minY, double &minZ,
-                              double &maxX, double &maxY, double &maxZ,
+                              double &min_x, double &min_y, double &min_z,
+                              double &max_x, double &max_y, double &max_z,
                               unsigned char &a) const
         {
           // Account for division by zero when direction vector is 0.0
@@ -486,79 +483,79 @@ namespace pcl
           // Handle negative axis direction vector
           if (direction.x () < 0.0)
           {
-            origin.x () = static_cast<float> (this->minX_) + static_cast<float> (this->maxX_) - origin.x ();
+            origin.x () = static_cast<float> (this->min_x_) + static_cast<float> (this->max_x_) - origin.x ();
             direction.x () = -direction.x ();
             a |= 4;
           }
           if (direction.y () < 0.0)
           {
-            origin.y () = static_cast<float> (this->minY_) + static_cast<float> (this->maxY_) - origin.y ();
+            origin.y () = static_cast<float> (this->min_y_) + static_cast<float> (this->max_y_) - origin.y ();
             direction.y () = -direction.y ();
             a |= 2;
           }
           if (direction.z () < 0.0)
           {
-            origin.z () = static_cast<float> (this->minZ_) + static_cast<float> (this->maxZ_) - origin.z ();
+            origin.z () = static_cast<float> (this->min_z_) + static_cast<float> (this->max_z_) - origin.z ();
             direction.z () = -direction.z ();
             a |= 1;
           }
-          minX = (this->minX_ - origin.x ()) / direction.x ();
-          maxX = (this->maxX_ - origin.x ()) / direction.x ();
-          minY = (this->minY_ - origin.y ()) / direction.y ();
-          maxY = (this->maxY_ - origin.y ()) / direction.y ();
-          minZ = (this->minZ_ - origin.z ()) / direction.z ();
-          maxZ = (this->maxZ_ - origin.z ()) / direction.z ();
+          min_x = (this->min_x_ - origin.x ()) / direction.x ();
+          max_x = (this->max_x_ - origin.x ()) / direction.x ();
+          min_y = (this->min_y_ - origin.y ()) / direction.y ();
+          max_y = (this->max_y_ - origin.y ()) / direction.y ();
+          min_z = (this->min_z_ - origin.z ()) / direction.z ();
+          max_z = (this->max_z_ - origin.z ()) / direction.z ();
         }
 
         /** \brief Find first child node ray will enter
-          * \param[in] minX octree nodes X coordinate of lower bounding box corner
-          * \param[in] minY octree nodes Y coordinate of lower bounding box corner
-          * \param[in] minZ octree nodes Z coordinate of lower bounding box corner
-          * \param[in] midX octree nodes X coordinate of bounding box mid line
-          * \param[in] midY octree nodes Y coordinate of bounding box mid line
-          * \param[in] midZ octree nodes Z coordinate of bounding box mid line
+          * \param[in] min_x octree nodes X coordinate of lower bounding box corner
+          * \param[in] min_y octree nodes Y coordinate of lower bounding box corner
+          * \param[in] min_z octree nodes Z coordinate of lower bounding box corner
+          * \param[in] mid_x octree nodes X coordinate of bounding box mid line
+          * \param[in] mid_y octree nodes Y coordinate of bounding box mid line
+          * \param[in] mid_z octree nodes Z coordinate of bounding box mid line
           * \return the first child node ray will enter
           */
         inline int
-        getFirstIntersectedNode (double minX, double minY, double minZ, double midX, double midY, double midZ) const
+        getFirstIntersectedNode (double min_x, double min_y, double min_z, double mid_x, double mid_y, double mid_z) const
         {
           int currNode = 0;
 
-          if (minX > minY)
+          if (min_x > min_y)
           {
-            if (minX > minZ)
+            if (min_x > min_z)
             {
-              // max(minX, minY, minZ) is minX. Entry plane is YZ.
-              if (midY < minX)
+              // max(min_x, min_y, min_z) is min_x. Entry plane is YZ.
+              if (mid_y < min_x)
                 currNode |= 2;
-              if (midZ < minX)
+              if (mid_z < min_x)
                 currNode |= 1;
             }
             else
             {
-              // max(minX, minY, minZ) is minZ. Entry plane is XY.
-              if (midX < minZ)
+              // max(min_x, min_y, min_z) is min_z. Entry plane is XY.
+              if (mid_x < min_z)
                 currNode |= 4;
-              if (midY < minZ)
+              if (mid_y < min_z)
                 currNode |= 2;
             }
           }
           else
           {
-            if (minY > minZ)
+            if (min_y > min_z)
             {
-              // max(minX, minY, minZ) is minY. Entry plane is XZ.
-              if (midX < minY)
+              // max(min_x, min_y, min_z) is min_y. Entry plane is XZ.
+              if (mid_x < min_y)
                 currNode |= 4;
-              if (midZ < minY)
+              if (mid_z < min_y)
                 currNode |= 1;
             }
             else
             {
-              // max(minX, minY, minZ) is minZ. Entry plane is XY.
-              if (midX < minZ)
+              // max(min_x, min_y, min_z) is min_z. Entry plane is XY.
+              if (mid_x < min_z)
                 currNode |= 4;
-              if (midY < minZ)
+              if (mid_y < min_z)
                 currNode |= 2;
             }
           }

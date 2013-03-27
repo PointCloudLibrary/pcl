@@ -207,7 +207,7 @@ namespace pcl
             OctreeNode()
         {
           // reset pointer to child node vectors
-          memset (childNodeArray_, 0, sizeof(childNodeArray_));
+          memset (child_node_array_, 0, sizeof(child_node_array_));
         }
 
         /** \brief Empty constructor. */
@@ -216,11 +216,11 @@ namespace pcl
         {
           unsigned char i;
 
-          memset (childNodeArray_, 0, sizeof(childNodeArray_));
+          memset (child_node_array_, 0, sizeof(child_node_array_));
 
           for (i = 0; i < 8; ++i)
-            if (source.childNodeArray_[i])
-              childNodeArray_[i] = source.childNodeArray_[i]->deepCopy ();
+            if (source.child_node_array_[i])
+              child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
         }
 
         /** \brief Copy operator. */
@@ -229,11 +229,11 @@ namespace pcl
         {
           unsigned char i;
 
-          memset (childNodeArray_, 0, sizeof(childNodeArray_));
+          memset (child_node_array_, 0, sizeof(child_node_array_));
 
           for (i = 0; i < 8; ++i)
-            if (source.childNodeArray_[i])
-              childNodeArray_[i] = source.childNodeArray_[i]->deepCopy ();
+            if (source.child_node_array_[i])
+              child_node_array_[i] = source.child_node_array_[i]->deepCopy ();
           return (*this);
         }
 
@@ -251,25 +251,25 @@ namespace pcl
         }
 
         /** \brief Access operator.
-         *  \param childIdx_arg: index to child node
+         *  \param child_idx_arg: index to child node
          *  \return OctreeNode pointer
          * */
         inline OctreeNode*&
-        operator[] (unsigned char childIdx_arg)
+        operator[] (unsigned char child_idx_arg)
         {
-          assert(childIdx_arg < 8);
-          return childNodeArray_[childIdx_arg];
+          assert(child_idx_arg < 8);
+          return child_node_array_[child_idx_arg];
         }
 
         /** \brief Get pointer to child
-         *  \param childIdx_arg: index to child node
+         *  \param child_idx_arg: index to child node
          *  \return OctreeNode pointer
          * */
         inline OctreeNode*
-        getChildPtr (unsigned char childIdx_arg) const
+        getChildPtr (unsigned char child_idx_arg) const
         {
-          assert(childIdx_arg < 8);
-          return childNodeArray_[childIdx_arg];
+          assert(child_idx_arg < 8);
+          return child_node_array_[child_idx_arg];
         }
 
         /** \brief Get pointer to child
@@ -278,17 +278,17 @@ namespace pcl
         inline void setChildPtr (OctreeNode* child, unsigned char index)
         {
           assert(index < 8);
-          childNodeArray_[index] = child;
+          child_node_array_[index] = child;
         }
 
 
         /** \brief Check if branch is pointing to a particular child node
-         *  \param childIdx_arg: index to child node
+         *  \param child_idx_arg: index to child node
          *  \return "true" if pointer to child node exists; "false" otherwise
          * */
-        inline bool hasChild (unsigned char childIdx_arg) const
+        inline bool hasChild (unsigned char child_idx_arg) const
         {
-          return (childNodeArray_[childIdx_arg] != 0);
+          return (child_node_array_[child_idx_arg] != 0);
         }
 
 
@@ -298,14 +298,14 @@ namespace pcl
          * */
     /*    inline bool isPrunable () const
         {
-          const OctreeNode* firstChild = childNodeArray_[0];
+          const OctreeNode* firstChild = child_node_array_[0];
           if (!firstChild || firstChild->getNodeType()==BRANCH_NODE)
             return false;
 
           bool prunable = true;
           for (unsigned char i = 1; i < 8 && prunable; ++i)
           {
-            const OctreeNode* child = childNodeArray_[i];
+            const OctreeNode* child = child_node_array_[i];
             if ( (!child) ||
                  (child->getNodeType()==BRANCH_NODE) ||
                  ((*static_cast<const OctreeContainerBase*>(child)) == (*static_cast<const OctreeContainerBase*>(child)) ) )
@@ -325,7 +325,7 @@ namespace pcl
         // reset node
         void reset()
         {
-          memset(childNodeArray_, 0, sizeof(childNodeArray_));
+          memset(child_node_array_, 0, sizeof(child_node_array_));
           container_.reset();
         }
 
@@ -387,7 +387,7 @@ namespace pcl
         }
 
       protected:
-        OctreeNode* childNodeArray_[8];
+        OctreeNode* child_node_array_[8];
 
         ContainerT container_;
       };

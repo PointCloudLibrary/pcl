@@ -229,19 +229,19 @@ namespace pcl
     protected:
 
       /** \brief The number of neighbors used for covariances computation. 
-        * \default 20
+        * default: 20
         */
       int k_correspondences_;
 
       /** \brief The epsilon constant for gicp paper; this is NOT the convergence 
         * tolerence 
-        * \default 0.001
+        * default: 0.001
         */
       double gicp_epsilon_;
 
       /** The epsilon constant for rotation error. (In GICP the transformation epsilon 
         * is split in rotation part and translation part).
-        * \default 2e-3
+        * default: 2e-3
         */
       double rotation_epsilon_;
 

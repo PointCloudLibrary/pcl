@@ -75,41 +75,50 @@ namespace pcl
       typedef boost::shared_ptr< const RandomSample<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
-      RandomSample (bool extract_removed_indices = false)
-        : FilterIndices<PointT> (extract_removed_indices)
-        , sample_ (std::numeric_limits<unsigned int>::max ())
-        , rng_alg_ ()
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
-        , seed_ (static_cast<unsigned int> (time (NULL)))
-      { filter_name_ = "RandomSample"; }
+      RandomSample (bool extract_removed_indices = false) : 
+        FilterIndices<PointT> (extract_removed_indices),
+        sample_ (UINT_MAX), 
+        seed_ (static_cast<unsigned int> (time (NULL)))
+      {
+        filter_name_ = "RandomSample";
+      }
 
       /** \brief Set number of indices to be sampled.
         * \param sample
         */
       inline void
       setSample (unsigned int sample)
-      { sample_ = sample; }
+      {
+        sample_ = sample;
+      }
 
       /** \brief Get the value of the internal \a sample parameter.
         */
       inline unsigned int
       getSample ()
-      { return (sample_); }
+      {
+        return (sample_);
+      }
 
       /** \brief Set seed of random function.
         * \param seed
         */
       inline void
       setSeed (unsigned int seed)
-      { seed_ = seed; }
+      {
+        seed_ = seed;
+      }
 
       /** \brief Get the value of the internal \a seed parameter.
         */
       inline unsigned int
       getSeed ()
-      { return (seed_); }
+      {
+        return (seed_);
+      }
 
     protected:
+
       /** \brief Number of indices that will be returned. */
       unsigned int sample_;
       /** \brief Random number seed. */
@@ -127,17 +136,15 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices);
 
-      /** \brief Return a random number. */
+      /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
+        * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
+        */
       inline float
       unifRand ()
-      { return ((*rng_) ()); }
-
-    private:
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
-
-      /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      {
+        return (static_cast<float>(rand () / double (RAND_MAX)));
+        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
+      }
   };
 
   /** \brief @b RandomSample applies a random sampling with uniform probability.
@@ -160,40 +167,47 @@ namespace pcl
       typedef boost::shared_ptr<const RandomSample<sensor_msgs::PointCloud2> > ConstPtr;
   
       /** \brief Empty constructor. */
-      RandomSample ()
-        : sample_ (std::numeric_limits<unsigned int>::max ())
-        , rng_alg_ ()
-        , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
-        , seed_ (static_cast<unsigned int> (time (NULL)))
-      { filter_name_ = "RandomSample"; }
+      RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))
+      {
+        filter_name_ = "RandomSample";
+      }
 
       /** \brief Set number of indices to be sampled.
         * \param sample
         */
       inline void
       setSample (unsigned int sample)
-      { sample_ = sample; }
+      {
+        sample_ = sample;
+      }
 
       /** \brief Get the value of the internal \a sample parameter.
         */
       inline unsigned int
       getSample ()
-      { return (sample_); }
+      {
+        return (sample_);
+      }
 
       /** \brief Set seed of random function.
         * \param seed
         */
       inline void
       setSeed (unsigned int seed)
-      { seed_ = seed; }
+      {
+        seed_ = seed;
+      }
 
       /** \brief Get the value of the internal \a seed parameter.
         */
       inline unsigned int
       getSeed ()
-      { return (seed_); }
+      {
+        return (seed_);
+      }
 
     protected:
+
       /** \brief Number of indices that will be returned. */
       unsigned int sample_;
       /** \brief Random number seed. */
@@ -211,17 +225,15 @@ namespace pcl
       void
       applyFilter (std::vector<int> &indices);
 
-      /** \brief Return a random number. */
+      /** \brief Return a random number fast using a LCG (Linear Congruential Generator) algorithm.
+        * See http://software.intel.com/en-us/articles/fast-random-number-generator-on-the-intel-pentiumr-4-processor/ for more information.
+        */
       inline float
       unifRand ()
-      { return ((*rng_) ()); }
-
-    private:
-      /** \brief Boost-based random number generator algorithm. */
-      boost::mt19937 rng_alg_;
-
-      /** \brief Boost-based random number generator distribution. */
-      boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+      {
+        return (static_cast<float> (rand () / double (RAND_MAX)));
+        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
+      }
    };
 }
 

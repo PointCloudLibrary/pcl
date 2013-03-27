@@ -419,6 +419,7 @@ namespace pcl
         /** \brief Tests whether \ref point falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
+         *  \param[in] point The test point
          */
         bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Vector3d &point);
@@ -426,6 +427,7 @@ namespace pcl
         /** \brief Tests whether \ref p falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
+         *  \param[in] p The point to be tested
          **/
         static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
@@ -445,7 +447,7 @@ namespace pcl
          *  \param[in] idx Index (0-7) of the child node
          */
         void
-        createChild (const size_t idx);
+        createChild (const std::size_t idx);
 
         /** \brief Write JSON metadata for this node to file */
         void

@@ -51,7 +51,7 @@ if(ROS_DISTRO)
                link_directories(${_path}/lib)
              endforeach(_path)
    	   endif()
-        elseif() 
+        else() 
            find_package(ROS COMPONENTS catkin roscpp_serialization std_msgs sensor_msgs rostime)
 	   if (ROS_FOUND)
 	     # if find_package(ROS ...) found the required components, add their include directories

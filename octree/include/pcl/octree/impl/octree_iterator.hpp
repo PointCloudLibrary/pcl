@@ -50,8 +50,8 @@ namespace pcl
   {
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (unsigned int maxDepth_arg) :
-        OctreeIteratorBase<OctreeT> (maxDepth_arg), stack_ ()
+    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (unsigned int max_depth_arg) :
+        OctreeIteratorBase<OctreeT> (max_depth_arg), stack_ ()
     {
       // initialize iterator
       this->reset ();
@@ -59,8 +59,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
-        OctreeIteratorBase<OctreeT> (octree_arg, maxDepth_arg), stack_ ()
+    OctreeDepthFirstIterator<OctreeT>::OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
+        OctreeIteratorBase<OctreeT> (octree_arg, max_depth_arg), stack_ ()
     {
       // initialize iterator
       this->reset ();
@@ -81,20 +81,20 @@ namespace pcl
       if (this->octree_)
       {
         // allocate stack
-        stack_.reserve (this->maxOctreeDepth_);
+        stack_.reserve (this->max_octree_depth_);
 
         // empty stack
         stack_.clear ();
 
         // pushing root node to stack
-        IteratorState stackEntry;
-        stackEntry.node_ = this->octree_->getRootNode ();
-        stackEntry.depth_ = 0;
-        stackEntry.key_.x = stackEntry.key_.y = stackEntry.key_.z = 0;
+        IteratorState stack_entry;
+        stack_entry.node_ = this->octree_->getRootNode ();
+        stack_entry.depth_ = 0;
+        stack_entry.key_.x = stack_entry.key_.y = stack_entry.key_.z = 0;
 
-        stack_.push_back(stackEntry);
+        stack_.push_back(stack_entry);
 
-        this->currentState_ = &stack_.back();
+        this->current_state_ = &stack_.back();
       }
 
     }
@@ -115,10 +115,10 @@ namespace pcl
 
         if (stack_.size ())
         {
-          this->currentState_ = &stack_.back();
+          this->current_state_ = &stack_.back();
         } else
         {
-          this->currentState_ = 0;
+          this->current_state_ = 0;
         }
       }
 
@@ -133,47 +133,47 @@ namespace pcl
       if (stack_.size ())
       {
         // get stack element
-        IteratorState stackEntry = stack_.back ();
+        IteratorState stack_entry = stack_.back ();
         stack_.pop_back ();
 
-        stackEntry.depth_ ++;
-        OctreeKey& currentKey = stackEntry.key_;
+        stack_entry.depth_ ++;
+        OctreeKey& current_key = stack_entry.key_;
 
-        if ( (this->maxOctreeDepth_>=stackEntry.depth_) &&
-             (stackEntry.node_->getNodeType () == BRANCH_NODE) )
+        if ( (this->max_octree_depth_>=stack_entry.depth_) &&
+             (stack_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char childIdx;
+          unsigned char child_idx;
 
           // current node is a branch node
-          BranchNode* currentBranch =
-              static_cast<BranchNode*> (stackEntry.node_);
+          BranchNode* current_branch =
+              static_cast<BranchNode*> (stack_entry.node_);
 
           // add all children to stack
-          for (childIdx = 0; childIdx < 8; ++childIdx)
+          for (child_idx = 0; child_idx < 8; ++child_idx)
           {
 
             // if child exist
 
-            if (this->octree_->branchHasChild(*currentBranch, childIdx))
+            if (this->octree_->branchHasChild(*current_branch, child_idx))
             {
               // add child to stack
-              currentKey.pushBranch (childIdx);
+              current_key.pushBranch (child_idx);
 
-              stackEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, childIdx);
+              stack_entry.node_ = this->octree_->getBranchChildPtr(*current_branch, child_idx);
 
-              stack_.push_back(stackEntry);
+              stack_.push_back(stack_entry);
 
-              currentKey.popBranch();
+              current_key.popBranch();
             }
           }
         }
 
         if (stack_.size ())
         {
-          this->currentState_ = &stack_.back();
+          this->current_state_ = &stack_.back();
         } else
         {
-          this->currentState_ = 0;
+          this->current_state_ = 0;
         }
       }
 
@@ -182,8 +182,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (unsigned int maxDepth_arg) :
-        OctreeIteratorBase<OctreeT> (maxDepth_arg), FIFO_ ()
+    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (unsigned int max_depth_arg) :
+        OctreeIteratorBase<OctreeT> (max_depth_arg), FIFO_ ()
     {
       OctreeIteratorBase<OctreeT>::reset ();
 
@@ -193,8 +193,8 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     template<typename OctreeT>
-    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int maxDepth_arg) :
-        OctreeIteratorBase<OctreeT> (octree_arg, maxDepth_arg), FIFO_ ()
+    OctreeBreadthFirstIterator<OctreeT>::OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
+        OctreeIteratorBase<OctreeT> (octree_arg, max_depth_arg), FIFO_ ()
     {
       OctreeIteratorBase<OctreeT>::reset ();
 
@@ -220,14 +220,14 @@ namespace pcl
       if (this->octree_)
       {
         // pushing root node to stack
-        IteratorState FIFOEntry;
-        FIFOEntry.node_ = this->octree_->getRootNode ();
-        FIFOEntry.depth_ = 0;
-        FIFOEntry.key_.x = FIFOEntry.key_.y = FIFOEntry.key_.z = 0;
+        IteratorState FIFO_entry;
+        FIFO_entry.node_ = this->octree_->getRootNode ();
+        FIFO_entry.depth_ = 0;
+        FIFO_entry.key_.x = FIFO_entry.key_.y = FIFO_entry.key_.z = 0;
 
-        FIFO_.push_back(FIFOEntry);
+        FIFO_.push_back(FIFO_entry);
 
-        this->currentState_ = &FIFO_.front();
+        this->current_state_ = &FIFO_.front();
       }
     }
 
@@ -240,46 +240,46 @@ namespace pcl
       if (FIFO_.size ())
       {
         // get stack element
-        IteratorState FIFOEntry = FIFO_.front ();
+        IteratorState FIFO_entry = FIFO_.front ();
         FIFO_.pop_front ();
 
-        FIFOEntry.depth_ ++;
-        OctreeKey& currentKey = FIFOEntry.key_;
+        FIFO_entry.depth_ ++;
+        OctreeKey& current_key = FIFO_entry.key_;
 
-        if ( (this->maxOctreeDepth_>=FIFOEntry.depth_) &&
-             (FIFOEntry.node_->getNodeType () == BRANCH_NODE) )
+        if ( (this->max_octree_depth_>=FIFO_entry.depth_) &&
+             (FIFO_entry.node_->getNodeType () == BRANCH_NODE) )
         {
-          unsigned char childIdx;
+          unsigned char child_idx;
           
           // current node is a branch node
-          BranchNode* currentBranch =
-              static_cast<BranchNode*> (FIFOEntry.node_);
+          BranchNode* current_branch =
+              static_cast<BranchNode*> (FIFO_entry.node_);
 
           // iterate over all children
-          for (childIdx = 0; childIdx < 8 ; ++childIdx)
+          for (child_idx = 0; child_idx < 8 ; ++child_idx)
           {
 
             // if child exist
-            if (this->octree_->branchHasChild(*currentBranch, childIdx))
+            if (this->octree_->branchHasChild(*current_branch, child_idx))
             {
               // add child to stack
-              currentKey.pushBranch (static_cast<unsigned char> (childIdx));
+              current_key.pushBranch (static_cast<unsigned char> (child_idx));
 
-              FIFOEntry.node_ = this->octree_->getBranchChildPtr(*currentBranch, childIdx);
+              FIFO_entry.node_ = this->octree_->getBranchChildPtr(*current_branch, child_idx);
 
-              FIFO_.push_back(FIFOEntry);
+              FIFO_.push_back(FIFO_entry);
 
-              currentKey.popBranch();
+              current_key.popBranch();
             }
           }
         }
 
         if (FIFO_.size ())
         {
-          this->currentState_ = &FIFO_.front();
+          this->current_state_ = &FIFO_.front();
         } else
         {
-          this->currentState_ = 0;
+          this->current_state_ = 0;
         }
 
       }

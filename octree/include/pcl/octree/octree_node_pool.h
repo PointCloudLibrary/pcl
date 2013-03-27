@@ -70,7 +70,7 @@ namespace pcl
         }
 
         /** \brief Push node to pool
-        *  \param childIdx_arg: pointer of noe
+        *  \param node_arg: add this node to the pool
         *  */
         inline
         void

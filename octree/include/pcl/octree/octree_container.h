@@ -73,7 +73,6 @@ namespace pcl
       }
 
       /** \brief Equal comparison operator
-       * \param[in] OctreeContainerBase to compare with
        */
       virtual bool
       operator== (const OctreeContainerBase&) const
@@ -82,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Inequal comparison operator
-       * \param[in] OctreeContainerBase to compare with
+       * \param[in] other OctreeContainerBase to compare with
        */
       bool
       operator!= (const OctreeContainerBase& other) const
@@ -236,7 +235,7 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator
-         * \param[in] OctreeContainerBase to compare with
+         * \param[in] other OctreeContainerBase to compare with
          */
         virtual bool
         operator== (const OctreeContainerBase& other) const
@@ -247,7 +246,7 @@ namespace pcl
         }
 
         /** \brief Add point index to container memory. This container stores a only a single point index.
-         * \param[in] index to be stored within leaf node.
+         * \param[in] data_arg index to be stored within leaf node.
          */
         void
         addPointIndex (int data_arg)
@@ -265,13 +264,13 @@ namespace pcl
         }
 
         /** \brief Retrieve point indices from container. This container stores only a single point index
-         * \param[out] vector of point indices to be stored within data vector
+         * \param[out] data_vector_arg vector of point indices to be stored within data vector
          */
         void
-        getPointIndices (std::vector<int>& dataVector_arg) const
+        getPointIndices (std::vector<int>& data_vector_arg) const
         {
           if (data_>=0)
-          dataVector_arg.push_back (data_);
+          data_vector_arg.push_back (data_);
         }
 
         /** \brief Get size of container (number of DataT objects)
@@ -328,7 +327,7 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator
-         * \param[in] OctreeContainerDataTVector to compare with
+         * \param[in] other OctreeContainerDataTVector to compare with
          */
         virtual bool
         operator== (const OctreeContainerBase& other) const
@@ -339,7 +338,7 @@ namespace pcl
         }
 
         /** \brief Add point index to container memory. This container stores a vector of point indices.
-         * \param[in] index to be stored within leaf node.
+         * \param[in] data_arg index to be stored within leaf node.
          */
         void
         addPointIndex (int data_arg)
@@ -357,12 +356,12 @@ namespace pcl
         }
 
         /** \brief Retrieve point indices from container. This container stores a vector of point indices.
-         * \param[out] vector of point indices to be stored within data vector
+         * \param[out] data_vector_arg vector of point indices to be stored within data vector
          */
         void
-        getPointIndices (std::vector<int>& dataVector_arg) const
+        getPointIndices (std::vector<int>& data_vector_arg) const
         {
-          dataVector_arg.insert (dataVector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());
+          data_vector_arg.insert (data_vector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());
         }
 
         /** \brief Retrieve reference to point indices vector. This container stores a vector of point indices.

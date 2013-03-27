@@ -180,7 +180,7 @@ namespace pcl
         inline void setResolution (double resolution_arg)
         {
           // octree needs to be empty to change its resolution
-          assert( this->leafCount_ == 0);
+          assert( this->leaf_count_ == 0);
 
           resolution_ = resolution_arg;
 
@@ -200,7 +200,7 @@ namespace pcl
          * */
         inline unsigned int getTreeDepth () const
         {
-          return this->octreeDepth_;
+          return this->octree_depth_;
         }
 
         /** \brief Add points from input point cloud to octree. */
@@ -208,11 +208,11 @@ namespace pcl
         addPointsFromInputCloud ();
 
         /** \brief Add point at given index from input point cloud to octree. Index will be also added to indices vector.
-         * \param[in] pointIdx_arg index of point to be added
+         * \param[in] point_idx_arg index of point to be added
          * \param[in] indices_arg pointer to indices vector of the dataset (given by \a setInputCloud)
          */
         void
-        addPointFromCloud (const int pointIdx_arg, IndicesPtr indices_arg);
+        addPointFromCloud (const int point_idx_arg, IndicesPtr indices_arg);
 
         /** \brief Add point simultaneously to octree and input point cloud.
          *  \param[in] point_arg point to be added
@@ -227,8 +227,7 @@ namespace pcl
          * \param[in] indices_arg pointer to indices vector of the dataset (given by \a setInputCloud)
          */
         void
-        addPointToCloud (const PointT& point_arg, PointCloudPtr cloud_arg,
-            IndicesPtr indices_arg);
+        addPointToCloud (const PointT& point_arg, PointCloudPtr cloud_arg, IndicesPtr indices_arg);
 
         /** \brief Check if voxel at given point exist.
          * \param[in] point_arg point to be checked
@@ -238,41 +237,38 @@ namespace pcl
         isVoxelOccupiedAtPoint (const PointT& point_arg) const;
 
         /** \brief Delete the octree structure and its leaf nodes.
-         *  \param freeMemory_arg: if "true", allocated octree nodes are deleted, otherwise they are pushed to the octree node pool
          * */
         void deleteTree ()
         {
           // reset bounding box
-          minX_ = minY_ = maxY_ = minZ_ = maxZ_ = 0;
-          this->boundingBoxDefined_ = false;
+          min_x_ = min_y_ = max_y_ = min_z_ = max_z_ = 0;
+          this->bounding_box_defined_ = false;
 
           OctreeT::deleteTree ();
         }
 
         /** \brief Check if voxel at given point coordinates exist.
-         * \param[in] pointX_arg X coordinate of point to be checked
-         * \param[in] pointY_arg Y coordinate of point to be checked
-         * \param[in] pointZ_arg Z coordinate of point to be checked
+         * \param[in] point_x_arg X coordinate of point to be checked
+         * \param[in] point_y_arg Y coordinate of point to be checked
+         * \param[in] point_z_arg Z coordinate of point to be checked
          * \return "true" if voxel exist; "false" otherwise
          */
         bool
-        isVoxelOccupiedAtPoint (const double pointX_arg,
-            const double pointY_arg, const double pointZ_arg) const;
+        isVoxelOccupiedAtPoint (const double point_x_arg, const double point_y_arg, const double point_z_arg) const;
 
         /** \brief Check if voxel at given point from input cloud exist.
-         * \param[in] pointIdx_arg point to be checked
+         * \param[in] point_idx_arg point to be checked
          * \return "true" if voxel exist; "false" otherwise
          */
         bool
-        isVoxelOccupiedAtPoint (const int& pointIdx_arg) const;
+        isVoxelOccupiedAtPoint (const int& point_idx_arg) const;
 
         /** \brief Get a PointT vector of centers of all occupied voxels.
-         * \param[out] voxelCenterList_arg results are written to this vector of PointT elements
+         * \param[out] voxel_center_list_arg results are written to this vector of PointT elements
          * \return number of occupied voxels
          */
         int
-        getOccupiedVoxelCenters (
-            AlignedPointTVector &voxelCenterList_arg) const;
+        getOccupiedVoxelCenters (AlignedPointTVector &voxel_center_list_arg) const;
 
         /** \brief Get a PointT vector of centers of voxels intersected by a line segment.
          * This returns a approximation of the actual intersected voxels by walking
@@ -296,10 +292,10 @@ namespace pcl
         deleteVoxelAtPoint (const PointT& point_arg);
 
         /** \brief Delete leaf node / voxel at given point from input cloud
-         *  \param[in] pointIdx_arg index of point addressing the voxel to be deleted.
+         *  \param[in] point_idx_arg index of point addressing the voxel to be deleted.
          */
         void
-        deleteVoxelAtPoint (const int& pointIdx_arg);
+        deleteVoxelAtPoint (const int& point_idx_arg);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Bounding box methods
@@ -311,28 +307,26 @@ namespace pcl
 
         /** \brief Define bounding box for octree
          * \note Bounding box cannot be changed once the octree contains elements.
-         * \param[in] minX_arg X coordinate of lower bounding box corner
-         * \param[in] minY_arg Y coordinate of lower bounding box corner
-         * \param[in] minZ_arg Z coordinate of lower bounding box corner
-         * \param[in] maxX_arg X coordinate of upper bounding box corner
-         * \param[in] maxY_arg Y coordinate of upper bounding box corner
-         * \param[in] maxZ_arg Z coordinate of upper bounding box corner
+         * \param[in] min_x_arg X coordinate of lower bounding box corner
+         * \param[in] min_y_arg Y coordinate of lower bounding box corner
+         * \param[in] min_z_arg Z coordinate of lower bounding box corner
+         * \param[in] max_x_arg X coordinate of upper bounding box corner
+         * \param[in] max_y_arg Y coordinate of upper bounding box corner
+         * \param[in] max_z_arg Z coordinate of upper bounding box corner
          */
         void
-        defineBoundingBox (const double minX_arg, const double minY_arg,
-            const double minZ_arg, const double maxX_arg, const double maxY_arg,
-            const double maxZ_arg);
+        defineBoundingBox (const double min_x_arg, const double min_y_arg, const double min_z_arg,
+                           const double max_x_arg, const double max_y_arg, const double max_z_arg);
 
         /** \brief Define bounding box for octree
          * \note Lower bounding box point is set to (0, 0, 0)
          * \note Bounding box cannot be changed once the octree contains elements.
-         * \param[in] maxX_arg X coordinate of upper bounding box corner
-         * \param[in] maxY_arg Y coordinate of upper bounding box corner
-         * \param[in] maxZ_arg Z coordinate of upper bounding box corner
+         * \param[in] max_x_arg X coordinate of upper bounding box corner
+         * \param[in] max_y_arg Y coordinate of upper bounding box corner
+         * \param[in] max_z_arg Z coordinate of upper bounding box corner
          */
         void
-        defineBoundingBox (const double maxX_arg, const double maxY_arg,
-            const double maxZ_arg);
+        defineBoundingBox (const double max_x_arg, const double max_y_arg, const double max_z_arg);
 
         /** \brief Define bounding box cube for octree
          * \note Lower bounding box corner is set to (0, 0, 0)
@@ -344,45 +338,46 @@ namespace pcl
 
         /** \brief Get bounding box for octree
          * \note Bounding box cannot be changed once the octree contains elements.
-         * \param[in] minX_arg X coordinate of lower bounding box corner
-         * \param[in] minY_arg Y coordinate of lower bounding box corner
-         * \param[in] minZ_arg Z coordinate of lower bounding box corner
-         * \param[in] maxX_arg X coordinate of upper bounding box corner
-         * \param[in] maxY_arg Y coordinate of upper bounding box corner
-         * \param[in] maxZ_arg Z coordinate of upper bounding box corner
+         * \param[in] min_x_arg X coordinate of lower bounding box corner
+         * \param[in] min_y_arg Y coordinate of lower bounding box corner
+         * \param[in] min_z_arg Z coordinate of lower bounding box corner
+         * \param[in] max_x_arg X coordinate of upper bounding box corner
+         * \param[in] max_y_arg Y coordinate of upper bounding box corner
+         * \param[in] max_z_arg Z coordinate of upper bounding box corner
          */
         void
-        getBoundingBox (double& minX_arg, double& minY_arg, double& minZ_arg,
-            double& maxX_arg, double& maxY_arg, double& maxZ_arg) const;
+        getBoundingBox (double& min_x_arg, double& min_y_arg, double& min_z_arg,
+                        double& max_x_arg, double& max_y_arg, double& max_z_arg) const;
 
         /** \brief Calculates the squared diameter of a voxel at given tree depth
-         * \param[in] treeDepth_arg depth/level in octree
+         * \param[in] tree_depth_arg depth/level in octree
          * \return squared diameter
          */
         double
-        getVoxelSquaredDiameter (unsigned int treeDepth_arg) const;
+        getVoxelSquaredDiameter (unsigned int tree_depth_arg) const;
 
         /** \brief Calculates the squared diameter of a voxel at leaf depth
          * \return squared diameter
          */
-        inline double getVoxelSquaredDiameter () const
+        inline double
+        getVoxelSquaredDiameter () const
         {
-          return getVoxelSquaredDiameter (this->octreeDepth_);
+          return getVoxelSquaredDiameter (this->octree_depth_);
         }
 
         /** \brief Calculates the squared voxel cube side length at given tree depth
-         * \param[in] treeDepth_arg depth/level in octree
+         * \param[in] tree_depth_arg depth/level in octree
          * \return squared voxel cube side length
          */
         double
-        getVoxelSquaredSideLen (unsigned int treeDepth_arg) const;
+        getVoxelSquaredSideLen (unsigned int tree_depth_arg) const;
 
         /** \brief Calculates the squared voxel cube side length at leaf level
          * \return squared voxel cube side length
          */
         inline double getVoxelSquaredSideLen () const
         {
-          return getVoxelSquaredSideLen (this->octreeDepth_);
+          return getVoxelSquaredSideLen (this->octree_depth_);
         }
 
         /** \brief Generate bounds of the current voxel of an octree iterator
@@ -390,8 +385,8 @@ namespace pcl
          * \param[out] min_pt lower bound of voxel
          * \param[out] max_pt upper bound of voxel
          */
-        inline void getVoxelBounds (OctreeIteratorBase<OctreeT>& iterator,
-            Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
+        inline void
+        getVoxelBounds (OctreeIteratorBase<OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
         {
           this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey (),
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);
@@ -404,20 +399,20 @@ namespace pcl
         inline void
         enableDynamicDepth ( size_t maxObjsPerLeaf )
         {
-          assert(this->leafCount_==0);
-          maxObjsPerLeaf_ = maxObjsPerLeaf;
+          assert(this->leaf_count_==0);
+          max_objs_per_leaf_ = maxObjsPerLeaf;
 
-          this->dynamic_depth_enabled_ = static_cast<bool> (maxObjsPerLeaf_>0);
+          this->dynamic_depth_enabled_ = static_cast<bool> (max_objs_per_leaf_>0);
         }
 
 
       protected:
 
         /** \brief Add point at index from input pointcloud dataset to octree
-         * \param[in] pointIdx_arg the index representing the point in the dataset given by \a setInputCloud to be added
+         * \param[in] point_idx_arg the index representing the point in the dataset given by \a setInputCloud to be added
          */
         virtual void
-        addPointIdx (const int pointIdx_arg);
+        addPointIdx (const int point_idx_arg);
 
         /** \brief Add point at index from input pointcloud dataset to octree
          * \param[in] leaf_node to be expanded
@@ -459,20 +454,20 @@ namespace pcl
         getKeyBitSize ();
 
         /** \brief Grow the bounding box/octree until point fits
-         * \param[in] pointIdx_arg point that should be within bounding box;
+         * \param[in] point_idx_arg point that should be within bounding box;
          */
         void
-        adoptBoundingBoxToPoint (const PointT& pointIdx_arg);
+        adoptBoundingBoxToPoint (const PointT& point_idx_arg);
 
         /** \brief Checks if given point is within the bounding box of the octree
-         * \param[in] pointIdx_arg point to be checked for bounding box violations
+         * \param[in] point_idx_arg point to be checked for bounding box violations
          * \return "true" - no bound violation
          */
-        inline bool isPointWithinBoundingBox (const PointT& pointIdx_arg) const
+        inline bool isPointWithinBoundingBox (const PointT& point_idx_arg) const
         {
-          return (! ( (pointIdx_arg.x < minX_) || (pointIdx_arg.y < minY_)
-              || (pointIdx_arg.z < minZ_) || (pointIdx_arg.x >= maxX_)
-              || (pointIdx_arg.y >= maxY_) || (pointIdx_arg.z >= maxZ_)));
+          return (! ( (point_idx_arg.x < min_x_) || (point_idx_arg.y < min_y_)
+                   || (point_idx_arg.z < min_z_) || (point_idx_arg.x >= max_x_)
+                   || (point_idx_arg.y >= max_y_) || (point_idx_arg.z >= max_z_)));
         }
 
         /** \brief Generate octree key for voxel at a given point
@@ -484,14 +479,14 @@ namespace pcl
             OctreeKey &key_arg) const;
 
         /** \brief Generate octree key for voxel at a given point
-         * \param[in] pointX_arg X coordinate of point addressing a voxel
-         * \param[in] pointY_arg Y coordinate of point addressing a voxel
-         * \param[in] pointZ_arg Z coordinate of point addressing a voxel
+         * \param[in] point_x_arg X coordinate of point addressing a voxel
+         * \param[in] point_y_arg Y coordinate of point addressing a voxel
+         * \param[in] point_z_arg Z coordinate of point addressing a voxel
          * \param[out] key_arg write octree key to this reference
          */
         void
-        genOctreeKeyforPoint (const double pointX_arg, const double pointY_arg,
-            const double pointZ_arg, OctreeKey & key_arg) const;
+        genOctreeKeyforPoint (const double point_x_arg, const double point_y_arg, const double point_z_arg,
+                              OctreeKey & key_arg) const;
 
         /** \brief Virtual method for generating octree key for a given point index.
          * \note This method enables to assign indices to leaf nodes during octree deserialization.
@@ -512,34 +507,34 @@ namespace pcl
 
         /** \brief Generate a point at center of octree voxel at given tree level
          * \param[in] key_arg octree key addressing an octree node.
-         * \param[in] treeDepth_arg octree depth of query voxel
+         * \param[in] tree_depth_arg octree depth of query voxel
          * \param[out] point_arg write leaf node center point to this reference
          */
         void
         genVoxelCenterFromOctreeKey (const OctreeKey & key_arg,
-            unsigned int treeDepth_arg, PointT& point_arg) const;
+            unsigned int tree_depth_arg, PointT& point_arg) const;
 
         /** \brief Generate bounds of an octree voxel using octree key and tree depth arguments
          * \param[in] key_arg octree key addressing an octree node.
-         * \param[in] treeDepth_arg octree depth of query voxel
+         * \param[in] tree_depth_arg octree depth of query voxel
          * \param[out] min_pt lower bound of voxel
          * \param[out] max_pt upper bound of voxel
          */
         void
         genVoxelBoundsFromOctreeKey (const OctreeKey & key_arg,
-            unsigned int treeDepth_arg, Eigen::Vector3f &min_pt,
+            unsigned int tree_depth_arg, Eigen::Vector3f &min_pt,
             Eigen::Vector3f &max_pt) const;
 
         /** \brief Recursively search the tree for all leaf nodes and return a vector of voxel centers.
          * \param[in] node_arg current octree node to be explored
          * \param[in] key_arg octree key addressing a leaf node.
-         * \param[out] voxelCenterList_arg results are written to this vector of PointT elements
+         * \param[out] voxel_center_list_arg results are written to this vector of PointT elements
          * \return number of voxels found
          */
         int
         getOccupiedVoxelCentersRecursive (const BranchNode* node_arg,
             const OctreeKey& key_arg,
-            AlignedPointTVector &voxelCenterList_arg) const;
+            AlignedPointTVector &voxel_center_list_arg) const;
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // Globals
@@ -557,22 +552,22 @@ namespace pcl
         double resolution_;
 
         // Octree bounding box coordinates
-        double minX_;
-        double maxX_;
+        double min_x_;
+        double max_x_;
 
-        double minY_;
-        double maxY_;
+        double min_y_;
+        double max_y_;
 
-        double minZ_;
-        double maxZ_;
+        double min_z_;
+        double max_z_;
 
         /** \brief Flag indicating if octree has defined bounding box. */
-        bool boundingBoxDefined_;
+        bool bounding_box_defined_;
 
         /** \brief Amount of DataT objects per leafNode before expanding branch
          *  \note zero indicates a fixed/maximum depth octree structure
          * **/
-        std::size_t maxObjsPerLeaf_;
+        std::size_t max_objs_per_leaf_;
     };
 
   }
