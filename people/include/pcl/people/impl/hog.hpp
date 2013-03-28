@@ -88,9 +88,9 @@ pcl::people::HOG::compGradImg (double *I, double *G, int *O, int h, int w, int n
   double *uy = new double[oBin];
 
   for(int o = 0; o < oBin; o++)
-    ux[o] = std::cos(double(o) / double(oBin) * PI);
+    ux[o] = std::cos(double(o) / double(oBin) * M_PI);
   for(int o = 0; o < oBin; o++)
-    uy[o] = std::sin(double(o) / double(oBin) * PI);
+    uy[o] = std::sin(double(o) / double(oBin) * M_PI);
 
   // compute gradients for each channel, pick strongest gradient
   int y, x, c;
@@ -275,7 +275,7 @@ pcl::people::HOG::compute (double *I, int h, int w, int nCh, int sBin, int oBin,
         for(int y1 = 1; y1 >= 0; y1--)
         {
           p = norm + (x + x1) * hb + (y + y1);
-          n = 1.0 / std::sqrt(*p + *(p + 1) + *(p + hb) + *(p + hb + 1) + eps);
+          n = 1.0 / std::sqrt(*p + *(p + 1) + *(p + hb) + *(p + hb + 1) + 0.0001);
           src = hist + (x + 1) * hb + (y + 1);
           for(int o = 0; o < oBin; o++)
           {
