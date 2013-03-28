@@ -33,15 +33,14 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
+ * $Id:$
  *
  */
 
 // STL
 #include <iostream>
 
-// PCL 
+// PCL
 #include <pcl/filters/filter.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/point_types.h>
@@ -49,10 +48,19 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/region_growing.h>
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/common/time.h>
+#include <pcl/console/parse.h>
 
 int
-main (int, char** av)
+main (int argc, char** av)
 {
+  if (argc < 2)
+  {
+    pcl::console::print_info ("Syntax is: %s <source-pcd-file> [-dump]\n\n", av[0]);
+    pcl::console::print_info ("If -dump is provided write the extracted clusters to cluster.dat\n\n");
+    return (1);
+  }
+
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_ptr (new pcl::PointCloud<pcl::PointXYZ>());
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_no_nans (new pcl::PointCloud<pcl::PointXYZ>());
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>());
@@ -61,18 +69,17 @@ main (int, char** av)
   pcl::PCDWriter writer;
   if (pcl::io::loadPCDFile(av[1], *cloud_ptr)==-1)
   {
-    std::cout << "Couldn't find the file " << av[1] << std::endl;
     return -1;
   }
-  
-  std::cout << "Loaded cloud " << av[1] << " of size " << cloud_ptr->points.size() << std::endl;	
+
+  pcl::console::print_highlight ("Loaded cloud %s of size %zu\n", av[1], cloud_ptr->points.size ());
 
   // Remove the nans
   cloud_ptr->is_dense = false;
   cloud_no_nans->is_dense = false;
   std::vector<int> indices;
   pcl::removeNaNFromPointCloud (*cloud_ptr, *cloud_no_nans, indices);
-  std::cout << "Removed nans from " << cloud_ptr->points.size () << " to " << cloud_no_nans->points.size () << std::endl;
+  pcl::console::print_highlight ("Removed nans from %zu to %zu\n", cloud_ptr->points.size (), cloud_no_nans->points.size ());
 
   // Estimate the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -81,7 +88,7 @@ main (int, char** av)
   ne.setSearchMethod (tree_n);
   ne.setRadiusSearch (0.03);
   ne.compute (*cloud_normals);
-  std::cout << "Normals are computed and size is " << cloud_normals->points.size () << std::endl;
+  pcl::console::print_highlight ("Normals are computed and size is %zu\n", cloud_normals->points.size ());
 
   // Region growing
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> rg;
@@ -90,13 +97,31 @@ main (int, char** av)
   rg.setInputNormals (cloud_normals);
 
   std::vector <pcl::PointIndices> clusters;
+  pcl::StopWatch watch;
   rg.extract (clusters);
-
+  pcl::console::print_highlight ("Extraction time: %f\n", watch.getTimeSeconds());
   cloud_segmented = rg.getColoredCloud ();
 
   // Writing the resulting cloud into a pcd file
-  std::cout << "No of segments done is " << clusters.size () << std::endl;
+  pcl::console::print_highlight ("Number of segments done is %zu\n", clusters.size ());
   writer.write<pcl::PointXYZRGB> ("segment_result.pcd", *cloud_segmented, false);
+
+  if (pcl::console::find_switch (argc, av, "-dump"))
+  {
+    pcl::console::print_highlight ("Writing clusters to clusters.dat\n");
+    std::ofstream clusters_file;
+    clusters_file.open ("clusters.dat");
+    for (std::size_t i = 0; i < clusters.size (); ++i)
+    {
+      clusters_file << i << "#" << clusters[i].indices.size () << ": ";
+      std::vector<int>::const_iterator pit = clusters[i].indices.begin ();
+      clusters_file << *pit;
+      for (; pit != clusters[i].indices.end (); ++pit)
+        clusters_file << " " << *pit;
+      clusters_file << std::endl;
+    }
+    clusters_file.close ();
+  }
 
   return (0);
 }
