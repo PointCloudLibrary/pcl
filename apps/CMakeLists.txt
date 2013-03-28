@@ -146,24 +146,24 @@ if(build)
       if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo
         QT4_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
-        QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+        QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE(pcl_openni_passthrough ${SUBSYS_NAME} ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
         target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization QVTK ${QT_LIBRARIES})
 
         # OpenNI Organized Connected Component application demo
         QT4_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
-        QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+        QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
         target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
 
         # Manual registration demo
         QT4_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
-        QT4_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+        QT4_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_manual_registration ${SUBSYS_NAME} ${manual_registration_ui} ${manual_registration_moc} src/manual_registration/manual_registration.cpp)
         target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
 
         QT4_WRAP_UI(pcd_video_player_ui src/pcd_video_player/pcd_video_player.ui)
-        QT4_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
+        QT4_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_video_player ${SUBSYS_NAME} ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp)
         target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
 
