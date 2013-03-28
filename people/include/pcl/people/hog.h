@@ -43,11 +43,8 @@
 #include <cmath>
 #include <algorithm>
 
-#define eps 0.0001
-#define PI 3.1415926535897931
-
 namespace pcl
-{
+{ 
   namespace people
   {
     class HOG
