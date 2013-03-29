@@ -108,12 +108,14 @@ namespace pcl
         * coordinate system (X right, Y down, Z forward), one can use:
         *
         * \code
-        * Eigen::Matrix4f pose = //pose in camera coordinates
-        * Eigen::Matrix3f cam2robot;
-        * cam2robot << 0, 0, 1, 
-        *              0, -1, 0, 
-        *              1, 0, 0;
-        * pose.block (0, 0, 3, 3) = cam2robot.block (0, 0, 3, 3) * pose.block (0, 0, 3, 3); //rotate
+        * Eigen::Matrix4f pose_orig = //pose in camera coordinates
+        * Eigen::Matrix4f cam2robot;
+        * cam2robot << 0, 0, 1, 0
+        *              0,-1, 0, 0
+        *              1, 0, 0, 0
+        *              0, 0, 0, 1;
+        * Eigen::Matrix4f pose_new = pose_orig * cam2robot;
+        * fc.setCameraPose (pose_new);
         * \endcode
         */
       void 
