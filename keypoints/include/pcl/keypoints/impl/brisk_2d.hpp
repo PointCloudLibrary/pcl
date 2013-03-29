@@ -77,16 +77,9 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
 
   pcl::keypoints::brisk::ScaleSpace brisk_scale_space (octaves_);
   brisk_scale_space.constructPyramid (image_data, width, height);
-  // Check if the template types are the same. If true, avoid a copy.
-  // The PointOutT MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  if (isSamePointType<PointOutT, pcl::PointWithScale> ())
-    brisk_scale_space.getKeypoints (threshold_, output.points);
-  else
-  {
-    pcl::PointCloud<pcl::PointWithScale> output_temp;
-    brisk_scale_space.getKeypoints (threshold_, output_temp.points);
-    pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
-  }
+  pcl::PointCloud<pcl::PointWithScale> output_temp;
+  brisk_scale_space.getKeypoints (threshold_, output_temp.points);
+  pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
 
   // we do not change the denseness
   output.width = int (output.points.size ());
