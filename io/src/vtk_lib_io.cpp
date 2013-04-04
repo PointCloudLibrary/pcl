@@ -51,19 +51,19 @@ pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 {
   std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
 
-  if (extension == ".pcd") // no Polygon, but only a point cloud
+  if (extension == "pcd") // no Polygon, but only a point cloud
   {
     pcl::io::loadPCDFile (file_name, mesh.cloud);
     mesh.polygons.resize (0);
     return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
   }
-  else if (extension == ".vtk")
+  else if (extension == "vtk")
    return (pcl::io::loadPolygonFileVTK (file_name, mesh));
-  else if (extension == ".ply")
+  else if (extension == "ply")
    return (pcl::io::loadPolygonFilePLY (file_name, mesh));
-  else if (extension == ".obj")
+  else if (extension == "obj")
     return (pcl::io::loadPolygonFileOBJ (file_name, mesh));
-  else if (extension == ".stl" )
+  else if (extension == "stl" )
     return (pcl::io::loadPolygonFileSTL (file_name, mesh));
   else
   {
