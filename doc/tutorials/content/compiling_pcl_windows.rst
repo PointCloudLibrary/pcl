@@ -1,4 +1,3 @@
-
 .. _compiling_pcl_windows:
 
 Compiling PCL from source on Windows
@@ -78,8 +77,21 @@ http://pointclouds.org/downloads/ and extract it somewhere on your disk, say C:\
 In this case, you can go directly to Configuring PCL section, and pay attention to adjust the 
 paths accordingly.
 
-Or, you might want to build an experimental verision
-of PCL to test some new features not yet available in the official releases. For this,
+Or, you might want to build an experimental version
+of PCL to test some new features not yet available in the official releases. 
+For this, you will need git ( http://git-scm.com/download ).
+
+The invocation to download the source code is thus, using a command line:
+
+  cd wherever/you/want/to/put/the/repo/
+  git clone https://github.com/PointCloudLibrary/pcl.git
+
+You could also use Github for Windows( http://windows.github.com/ ), but that is potentially more
+troublesome than setting up git on windows.
+
+Alternatively you could use the old subversion repository:
+
+For this,
 you will need Tortoise SVN to download sources from PCL svn server.
 
 Subversion is a version control system similar to CVS which allows developers to simultaneously work on PCL. 
