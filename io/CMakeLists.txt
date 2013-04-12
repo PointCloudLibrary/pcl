@@ -122,6 +122,7 @@ if(build)
         src/obj_io.cpp
         src/image_grabber.cpp
         src/hdl_grabber.cpp
+        src/robot_eye_grabber.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
@@ -159,6 +160,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ascii_io.h
         include/pcl/${SUBSYS_NAME}/image_grabber.h 
         include/pcl/${SUBSYS_NAME}/hdl_grabber.h
+        include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
