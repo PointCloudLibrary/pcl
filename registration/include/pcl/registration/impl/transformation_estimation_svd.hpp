@@ -139,27 +139,30 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
     ++target_it;
   }
 
-  // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
-  transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
+  if (use_umeyama_)
+  {
+    // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
+    transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
+  }
+  else
+  {
+    source_it.reset (); target_it.reset ();
+    // <cloud_src,cloud_src> is the source dataset
+    transformation_matrix.setIdentity ();
 
-#if 0
-  source_it.reset (); target_it.reset ();
-  // <cloud_src,cloud_src> is the source dataset
-  transformation_matrix.setIdentity ();
+    Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
+    // Estimate the centroids of source, target
+    compute3DCentroid (source_it, centroid_src);
+    compute3DCentroid (target_it, centroid_tgt);
+    source_it.reset (); target_it.reset ();
 
-  Eigen::Matrix<Scalar, 4, 1> centroid_src, centroid_tgt;
-  // Estimate the centroids of source, target
-  compute3DCentroid (source_it, centroid_src);
-  compute3DCentroid (target_it, centroid_tgt);
-  source_it.reset (); target_it.reset ();
+    // Subtract the centroids from source, target
+    Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
+    demeanPointCloud (source_it, centroid_src, cloud_src_demean);
+    demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
 
-  // Subtract the centroids from source, target
-  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> cloud_src_demean, cloud_tgt_demean;
-  demeanPointCloud (source_it, centroid_src, cloud_src_demean);
-  demeanPointCloud (target_it, centroid_tgt, cloud_tgt_demean);
-
-  getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
-#endif
+    getTransformationFromCorrelation (cloud_src_demean, centroid_src, cloud_tgt_demean, centroid_tgt, transformation_matrix);
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
