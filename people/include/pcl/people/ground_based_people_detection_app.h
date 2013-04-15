@@ -221,8 +221,10 @@ namespace pcl
        * \brief Perform people detection on the input data and return people clusters information.
        * 
        * \param[out] clusters Vector of PersonCluster.
+       * 
+       * \return true if the compute operation is succesful, false otherwise.
        */
-      void
+      bool
       compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters);
 
     protected:
