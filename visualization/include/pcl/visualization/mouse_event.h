@@ -79,7 +79,8 @@ namespace pcl
           */
         inline MouseEvent (const Type& type, const MouseButton& button, 
                            unsigned int x, unsigned int y, 
-                           bool alt, bool ctrl, bool shift);
+                           bool alt, bool ctrl, bool shift,
+                           bool selection_mode = false);
 
         /**
           * \return type of mouse event
@@ -121,22 +122,29 @@ namespace pcl
         inline unsigned int 
         getKeyboardModifiers () const;
 
+        /** \return true if in selection mode else otherwise */
+        inline bool
+        getSelectionMode () const;
+
       protected:
         Type type_;
         MouseButton button_;
         unsigned int pointer_x_;
         unsigned int pointer_y_;
         unsigned int key_state_;
+        bool selection_mode_;
     };
 
     MouseEvent::MouseEvent (const Type& type, const MouseButton& button,
                             unsigned x, unsigned y, 
-                            bool alt, bool ctrl, bool shift)
+                            bool alt, bool ctrl, bool shift,
+                            bool selection_mode)
     : type_ (type)
     , button_ (button)
     , pointer_x_ (x)
     , pointer_y_ (y)
     , key_state_ (0)
+    , selection_mode_ (selection_mode)
     {
       if (alt)
         key_state_ = KeyboardEvent::Alt;
@@ -188,6 +196,12 @@ namespace pcl
     MouseEvent::getKeyboardModifiers () const
     {
       return (key_state_);
+    }
+
+    bool
+    MouseEvent::getSelectionMode () const
+    {
+      return (selection_mode_);
     }
 
   } //namespace visualization

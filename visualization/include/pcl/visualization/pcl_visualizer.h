@@ -221,6 +221,36 @@ namespace pcl
           return (registerPointPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
 
+        /** \brief Register a callback function for area picking events
+          * \param[in] cb a boost function that will be registered as a callback for an area picking event
+          * \return a connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection
+        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
+
+        /** \brief Register a callback function for area picking events
+          * \param[in] callback  the function that will be registered as a callback for an area picking event
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
+          */
+        inline boost::signals2::connection
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL)
+        {
+          return (registerAreaPickingCallback (boost::bind (callback, _1, cookie)));
+        }
+
+        /** \brief Register a callback function for area picking events
+          * \param[in] callback  the member function that will be registered as a callback for an area picking event
+          * \param[in] instance  instance to the class that implements the callback function
+          * \param[in] cookie    user data that is passed to the callback
+          * \return a connection object that allows to disconnect the callback function.
+          */
+        template<typename T> inline boost::signals2::connection
+        registerAreaPickingCallback (void (T::*callback) (const pcl::visualization::AreaPickingEvent&, void*), T& instance, void* cookie = NULL)
+        {
+          return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
+        }
+
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void
         spin ();
