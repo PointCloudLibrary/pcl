@@ -42,16 +42,16 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Scalar>::getTransformationFromCorrelation (
-    const Eigen::MatrixXf &cloud_src_demean,
-    const Eigen::Vector4f &centroid_src,
-    const Eigen::MatrixXf &cloud_tgt_demean,
-    const Eigen::Vector4f &centroid_tgt,
+    const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
+    const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
+    const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
+    const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
     Matrix4 &transformation_matrix) const
 {
   transformation_matrix.setIdentity ();
 
   // Assemble the correlation matrix H = source * target'
-  Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean.cast<Scalar> () * cloud_tgt_demean.cast<Scalar> ().transpose ()).topLeftCorner (3, 3);
+  Eigen::Matrix<Scalar, 3, 3> H = (cloud_src_demean * cloud_tgt_demean.transpose ()).topLeftCorner (3, 3);
 
   // Compute the Singular Value Decomposition
   Eigen::JacobiSVD<Eigen::Matrix<Scalar, 3, 3> > svd (H, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -68,7 +68,14 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
   Eigen::Matrix<Scalar, 3, 3> R = v * u.transpose ();
 
   // rotated cloud
-  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> src_ = R * cloud_src_demean.cast<Scalar> ();
+  Eigen::Matrix<Scalar, 4, 4> R4; 
+  R4.block (0, 0, 3, 3) = R;
+  R4 (0, 3) = 0;
+  R4 (1, 3) = 0;
+  R4 (2, 3) = 0;
+  R4 (3, 3) = 1;
+
+  Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> src_ = R4 * cloud_src_demean;
   
   float scale1, scale2;
   double sum_ss = 0.0f, sum_tt = 0.0f, sum_tt_ = 0.0f;
@@ -91,8 +98,8 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
   scale2 = sum_tt_ / sum_ss;
   float scale = scale2;
   transformation_matrix.topLeftCorner (3, 3) = scale * R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.cast<Scalar> ().head (3));
-  transformation_matrix.block (0, 3, 3, 1) = centroid_tgt.cast<Scalar> (). head (3) - Rc;
+  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.head (3));
+  transformation_matrix.block (0, 3, 3, 1) = centroid_tgt. head (3) - Rc;
 }
 
 //#define PCL_INSTANTIATE_TransformationEstimationSVD(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationSVD<T,U>;
