@@ -100,19 +100,25 @@ int main (int argc, char** argv)
 {
   if (argc < 2)
   {
-    cerr << "No test file given. Please download `five_people.pcd` and pass their paths to the test." << endl;
+    cerr << "No svm filename provided. Please download `trainedLinearSVMForPeopleDetectionWithHOG.yaml` and pass its path to the test." << endl;
+    return (-1);
+  }
+  	
+  if (argc < 3)
+  {
+    cerr << "No test file given. Please download 'five_people.pcd` and pass its path to the test." << endl;
     return (-1);
   }
 
   cloud = PointCloudT::Ptr (new PointCloudT);
-  if (pcl::io::loadPCDFile (argv[1], *cloud) < 0)
+  if (pcl::io::loadPCDFile (argv[2], *cloud) < 0)
   {
     cerr << "Failed to read test file. Please download `five_people.pcd` and pass its path to the test." << endl;
     return (-1);
   }	
 	
   // Algorithm parameters:
-  svm_filename = "../../people/data/trainedLinearSVMForPeopleDetectionWithHOG.yaml";
+  svm_filename = argv[1];
   min_confidence = -1.5;
   min_height = 1.3;
   max_height = 2.3;
