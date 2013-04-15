@@ -46,6 +46,7 @@
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
+#include <pcl/visualization/area_picking_event.h>
 #include <pcl/visualization/boost.h>
 
 namespace pcl
@@ -54,8 +55,8 @@ namespace pcl
   {
 
     /** \brief A list of potential keyboard modifiers for \ref PCLVisualizerInteractorStyle.
-      * Defaults to Alt. 
-      */ 
+      * Defaults to Alt.
+      */
     enum InteractorKeyboardModifier
     {
       INTERACTOR_KB_MOD_ALT,
@@ -79,19 +80,21 @@ namespace pcl
       * -       + / -   : increment/decrement overall point size
       * -        g, G   : display scale grid (on/off)
       * -        u, U   : display lookup table (on/off)
+      * -        r, R   : enable area selection
       * -  r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]
       * -  ALT + s, S   : turn stereo mode on/off
       * -  ALT + f, F   : switch between maximized window mode and original size
-      * -        l, L           : list all available geometric and color handlers for the current actor map
+      * -        l, L   : list all available geometric and color handlers for the current actor map
       * -  ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)
       * -        0..9 [+ CTRL]  : switch between different color handlers (where available)
-      * - 
+      * -
       * -  SHIFT + left click   : select a point
+      * -        x, X   : pick area
       *
       * \author Radu B. Rusu
       * \ingroup visualization
       */
-    class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
+    class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleRubberBandPick
     {
       typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
 
@@ -99,37 +102,38 @@ namespace pcl
         static PCLVisualizerInteractorStyle *New ();
 
         /** \brief Empty constructor. */
-        PCLVisualizerInteractorStyle () : 
+        PCLVisualizerInteractorStyle () :
           init_ (), rens_ (), actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
           max_win_height_ (), max_win_width_ (), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
           lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
-          point_picking_signal_ (), stereo_anaglyph_mask_default_ (), mouse_callback_ (), modifier_ ()
+          point_picking_signal_ (), area_picking_signal_ (), stereo_anaglyph_mask_default_ (),
+          mouse_callback_ (), modifier_ ()
         {}
-      
+
         /** \brief Empty destructor */
         virtual ~PCLVisualizerInteractorStyle () {}
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
-        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleTrackballCamera);
-        
+        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
+
         /** \brief Initialization routine. Must be called before anything else. */
-        virtual void 
+        virtual void
         Initialize ();
-        
+
         /** \brief Pass a pointer to the actor map
           * \param[in] actors the actor map that will be used with this style
           */
-        inline void 
+        inline void
         setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
 
         /** \brief Get the cloud actor map pointer. */
-        inline CloudActorMapPtr 
+        inline CloudActorMapPtr
         getCloudActorMap () { return (actors_); }
 
-        /** \brief Pass a set of renderers to the interactor style. 
+        /** \brief Pass a set of renderers to the interactor style.
           * \param[in] rens the vtkRendererCollection to use
           */
-        void 
+        void
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
         /** \brief Pass a pointer to the actor map
@@ -142,22 +146,29 @@ namespace pcl
           * \param[in] cb a boost function that will be registered as a callback for a mouse event
           * \return a connection object that allows to disconnect the callback function.
           */
-        boost::signals2::connection 
+        boost::signals2::connection
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> cb);
 
         /** \brief Register a callback boost::function for keyboard events
           * \param[in] cb a boost function that will be registered as a callback for a keyboard event
           * \return a connection object that allows to disconnect the callback function.
           */
-        boost::signals2::connection 
+        boost::signals2::connection
         registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> cb);
 
         /** \brief Register a callback function for point picking events
           * \param[in] cb a boost function that will be registered as a callback for a point picking event
           * \return a connection object that allows to disconnect the callback function.
           */
-        boost::signals2::connection 
+        boost::signals2::connection
         registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
+
+        /** \brief Register a callback function for area picking events
+          * \param[in] cb a boost function that will be registered as a callback for a area picking event
+          * \return a connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection
+        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
         /** \brief Save the current rendered image to disk, as a PNG screenshot.
           * \param[in] file the name of the PNG file
@@ -218,48 +229,49 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         boost::signals2::signal<void (const pcl::visualization::PointPickingEvent&)> point_picking_signal_;
+        boost::signals2::signal<void (const pcl::visualization::AreaPickingEvent&)> area_picking_signal_;
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
-        virtual void 
+        virtual void
         OnChar ();
 
         // Keyboard events
-        virtual void 
+        virtual void
         OnKeyDown ();
-        virtual void 
+        virtual void
         OnKeyUp ();
-        
+
         // mouse button events
-        virtual void 	
+        virtual void
         OnMouseMove ();
-        virtual void 	
+        virtual void
         OnLeftButtonDown ();
-        virtual void 	
+        virtual void
         OnLeftButtonUp ();
-        virtual void 	
+        virtual void
         OnMiddleButtonDown ();
-        virtual void 	
+        virtual void
         OnMiddleButtonUp ();
-        virtual void 	
+        virtual void
         OnRightButtonDown ();
-        virtual void 	
+        virtual void
         OnRightButtonUp ();
-        virtual void 	
+        virtual void
         OnMouseWheelForward ();
-        virtual void 	
+        virtual void
         OnMouseWheelBackward ();
-        
+
         // mouse move event
         /** \brief Interactor style internal method. Gets called periodically if a timer is set. */
-        virtual void 
+        virtual void
         OnTimer ();
 
         /** \brief Interactor style internal method. Zoom in. */
-        void 
+        void
         zoomIn ();
 
         /** \brief Interactor style internal method. Zoom out. */
-        void 
+        void
         zoomOut ();
 
         /** \brief True if we're using red-blue colors for anaglyphic stereo, false if magenta-green. */
@@ -286,13 +298,13 @@ namespace pcl
         PCLHistogramVisualizerInteractorStyle () : wins_ (), init_ (false) {}
 
         /** \brief Initialization routine. Must be called before anything else. */
-        void 
+        void
         Initialize ();
-        
-        /** \brief Pass a map of render/window/interactors to the interactor style. 
+
+        /** \brief Pass a map of render/window/interactors to the interactor style.
           * \param[in] wins the RenWinInteract map to use
           */
-        void 
+        void
         setRenWinInteractMap (const RenWinInteractMap &wins) { wins_ = wins; }
 
       private:
