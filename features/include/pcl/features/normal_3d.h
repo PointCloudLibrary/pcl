@@ -119,7 +119,7 @@ namespace pcl
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
                               Eigen::Matrix<Scalar, 4, 1>& normal)
   {
-    Eigen::Matrix <Scalar, 4, 1> vp (vp_x - point.x, vp_y - point.x, vp_z - point.z, 0);
+    Eigen::Matrix <Scalar, 4, 1> vp (vp_x - point.x, vp_y - point.y, vp_z - point.z, 0);
 
     // Dot product between the (viewpoint - point) and the plane normal
     float cos_theta = vp.dot (normal);
@@ -146,7 +146,7 @@ namespace pcl
   flipNormalTowardsViewpoint (const PointT &point, float vp_x, float vp_y, float vp_z,
                               Eigen::Matrix<Scalar, 3, 1>& normal)
   {
-    Eigen::Matrix <Scalar, 3, 1> vp (vp_x - point.x, vp_y - point.x, vp_z - point.z);
+    Eigen::Matrix <Scalar, 3, 1> vp (vp_x - point.x, vp_y - point.y, vp_z - point.z);
 
     // Flip the plane normal
     if (vp.dot (normal) < 0)
