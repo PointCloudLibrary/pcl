@@ -63,7 +63,12 @@ namespace pcl
 
         typedef typename TransformationEstimation<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
-        TransformationEstimationSVD () {};
+        /** \brief Constructor
+          * \param[in] use_umeyama Toggles whether or not to use 3rd party software*/
+        TransformationEstimationSVD (bool use_umeyama=true):
+          use_umeyama_ (use_umeyama)
+        {}
+
         virtual ~TransformationEstimationSVD () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using SVD.
@@ -137,13 +142,15 @@ namespace pcl
           * \param[in] centroid_tgt the input target cloud, in Eigen format
           * \param[out] transformation_matrix the resultant 4x4 rigid transformation matrix
           */
-        void
+        virtual void
         getTransformationFromCorrelation (
             const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_src_demean,
             const Eigen::Matrix<Scalar, 4, 1> &centroid_src,
             const Eigen::Matrix<Scalar, Eigen::Dynamic, Eigen::Dynamic> &cloud_tgt_demean,
             const Eigen::Matrix<Scalar, 4, 1> &centroid_tgt,
             Matrix4 &transformation_matrix) const;
+
+        bool use_umeyama_;
      };
 
   }
