@@ -49,7 +49,7 @@ pcl::people::PersonClassifier<PointT>::PersonClassifier () {}
 template <typename PointT>
 pcl::people::PersonClassifier<PointT>::~PersonClassifier () {}
 
-template <typename PointT> void
+template <typename PointT> bool
 pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename)
 {
   std::string line;
@@ -79,6 +79,16 @@ pcl::people::PersonClassifier<PointT>::loadSVMFromFile (std::string svm_filename
     SVM_weights_.push_back(std::atof(line.substr(prev_tok_pos+1, tok_pos-prev_tok_pos-1).c_str()));
   }
   SVM_file.close();
+  
+  if (SVM_weights_.size() == 0)
+  {
+    PCL_ERROR ("[pcl::people::PersonClassifier::loadSVMFromFile] Invalid SVM file!\n");
+    return (false);
+  }
+  else
+  {
+    return (true);
+  }
 }
 
 template <typename PointT> void
