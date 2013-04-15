@@ -81,8 +81,10 @@ namespace pcl
       /** \brief Load SVM parameters from a text file. 
        *
        * \param[in] svm_filename Filename containing SVM parameters.
+       * 
+       * \return true if SVM has been correctly set, false otherwise.
        */
-      void
+      bool
       loadSVMFromFile (std::string svm_filename);
 
       /**

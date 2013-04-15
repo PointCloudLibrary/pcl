@@ -3,10 +3,10 @@ set(SUBSYS_DESC "Point cloud library global unit tests")
 
 if(BUILD_visualization)
   include (${VTK_USE_FILE})
-  set(SUBSYS_DEPS 2d common sample_consensus io kdtree features filters geometry keypoints search surface registration segmentation octree recognition outofcore visualization)
+  set(SUBSYS_DEPS 2d common sample_consensus io kdtree features filters geometry keypoints search surface registration segmentation octree recognition people outofcore visualization)
   set(OPT_DEPS vtk)
 else()
-  set(SUBSYS_DEPS 2d common sample_consensus io kdtree features filters geometry keypoints search surface registration segmentation octree recognition outofcore)
+  set(SUBSYS_DEPS 2d common sample_consensus io kdtree features filters geometry keypoints search surface registration segmentation octree recognition people outofcore)
 endif()
 
 set(DEFAULT ON)
@@ -72,6 +72,10 @@ if(build)
                  LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_features pcl_recognition pcl_keypoints
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/milk.pcd ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)   
 
+    PCL_ADD_TEST(a_people_detection_test test_people_detection
+                 FILES test_people_groundBasedPeopleDetectionApp.cpp
+                 LINK_WITH pcl_gtest pcl_common pcl_io pcl_kdtree pcl_search pcl_features pcl_sample_consensus pcl_filters pcl_io pcl_segmentation
+                 ARGUMENTS ${PCL_SOURCE_DIR}/test/five_people.pcd)   
 
     if(BUILD_visualization AND (NOT UNIX OR (UNIX AND DEFINED ENV{DISPLAY})))
         PCL_ADD_TEST(a_visualization_test test_visualization

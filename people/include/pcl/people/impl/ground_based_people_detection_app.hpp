@@ -203,29 +203,29 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCl
   cloud = output_cloud;
 }
 
-template <typename PointT> void
+template <typename PointT> bool
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters)
 {
   // Check if all mandatory variables have been set:
   if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Floor parameters have not been set or they are not valid!\n");
-    return;
+    return (false);
   }
   if (cloud_ == NULL)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Input cloud has not been set!\n");
-    return;
+    return (false);
   }
   if (intrinsics_matrix_(0) == 0)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Camera intrinsic parameters have not been set!\n");
-    return;
+    return (false);
   }
   if (!person_classifier_set_flag_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Person classifier has not been set!\n");
-    return;
+    return (false);
   }
 
   if (!dimension_limits_set_)    // if dimension limits have not been set by the user
@@ -300,6 +300,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     bottom /= bottom(2);
     it->setPersonConfidence(person_classifier_.evaluate(rgb_image_, bottom, top, centroid, intrinsics_matrix_, vertical_));
   }
+  
+  return (true);
 }
 
 template <typename PointT>
