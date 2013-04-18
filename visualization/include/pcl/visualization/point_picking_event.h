@@ -40,6 +40,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/visualization/vtk.h>
+#include <pcl/visualization/area_picking_event.h>
 
 namespace pcl
 {
@@ -66,6 +67,9 @@ namespace pcl
 
         int
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
+
+        int
+        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<int> &indices);
 
       private:
         float x_, y_, z_;
