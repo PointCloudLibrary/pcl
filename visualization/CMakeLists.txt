@@ -83,6 +83,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/point_cloud_geometry_handlers.h
         include/pcl/${SUBSYS_NAME}/keyboard_event.h
         include/pcl/${SUBSYS_NAME}/point_picking_event.h
+        include/pcl/${SUBSYS_NAME}/area_picking_event.h
         include/pcl/${SUBSYS_NAME}/mouse_event.h
         include/pcl/${SUBSYS_NAME}/window.h
         include/pcl/${SUBSYS_NAME}/range_image_visualizer.h
