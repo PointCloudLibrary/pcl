@@ -63,7 +63,6 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , data_size_ (0)
   , stopped_ ()
   , timer_id_ ()
-  , blend_ (vtkSmartPointer<vtkImageBlend>::New ())
   , layer_map_ ()
   , algo_ (vtkSmartPointer<vtkImageFlip>::New ())
   , image_data_ ()
@@ -80,8 +79,8 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   algo_->FlipAboutOriginOn ();
   algo_->SetFilteredAxis (1);
 
-  blend_->SetBlendModeToNormal ();
-  blend_->SetNumberOfThreads (1);
+  // blend_->SetBlendModeToNormal ();
+  // blend_->SetNumberOfThreads (1);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   image_viewer_->SetColorLevel (127.5);
   image_viewer_->SetColorWindow (255);
@@ -90,10 +89,10 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   // Set the mouse/keyboard callbacks
   mouse_command_->SetClientData (this);
   mouse_command_->SetCallback (ImageViewer::MouseCallback);
-  
+
   keyboard_command_->SetClientData (this);
   keyboard_command_->SetCallback (ImageViewer::KeyboardCallback);
- 
+
   // Create our own  interactor and set the window title
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   image_viewer_->SetupInteractor (interactor_);
@@ -123,7 +122,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   // Initialize and create timer
   interactor_->Initialize ();
   timer_id_ = interactor_->CreateRepeatingTimer (0);
-  
+
   // Set the exit callbacks
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->window = this;
@@ -145,7 +144,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   ren_->ResetCameraClippingRange ();
 #endif
   resetStoppedFlag ();
-    
+
   PCL_DEBUG ("[pcl::visualization::ImageViewer] VTK version found: %d.%d\n", VTK_MAJOR_VERSION, VTK_MINOR_VERSION);
 }
 
@@ -161,7 +160,7 @@ pcl::visualization::ImageViewer::addRGBImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
-  if (unsigned (getSize ()[0]) != width || 
+  if (unsigned (getSize ()[0]) != width ||
       unsigned (getSize ()[1]) != height)
     setSize (width, height);
 
@@ -174,7 +173,7 @@ pcl::visualization::ImageViewer::addRGBImage (
   }
 
   void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
-  
+
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
   image->SetScalarTypeToUnsignedChar ();
@@ -188,13 +187,10 @@ pcl::visualization::ImageViewer::addRGBImage (
 #  if (VTK_MINOR_VERSION <= 6)
     image_viewer_->SetInput (algo_->GetOutput ());
 #  else
-    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo_->GetOutputPort ());
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+    image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
 #else
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), image->GetProducerPort ());
-  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
-
+  image_viewer_->SetInputData (image);
   interactor_style_->adjustCamera (image, ren_);
 #endif
 }
@@ -215,7 +211,7 @@ pcl::visualization::ImageViewer::addMonoImage (
     const unsigned char* rgb_data, unsigned width, unsigned height,
     const std::string &layer_id, double opacity)
 {
-  if (unsigned (getSize ()[0]) != width || 
+  if (unsigned (getSize ()[0]) != width ||
       unsigned (getSize ()[1]) != height)
     setSize (width, height);
 
@@ -228,27 +224,25 @@ pcl::visualization::ImageViewer::addMonoImage (
   }
 
   void* data = const_cast<void*> (reinterpret_cast<const void*> (rgb_data));
-  
+
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (1);
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
+
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
-#  if ((VTK_MAJOR_VERSION == 5)&&(VTK_MINOR_VERSION <= 6))
+#  if (VTK_MINOR_VERSION <= 6)
     image_viewer_->SetInput (algo_->GetOutput ());
 #  else
-    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), algo_->GetOutputPort ());
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
+    image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
 #else
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), image->GetProducerPort ());
-  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
-  
+  image_viewer_->SetInputData (image);
   interactor_style_->adjustCamera (image, ren_);
 #endif
 }
@@ -328,7 +322,7 @@ pcl::visualization::ImageViewer::addFloatImage (
   unsigned char* rgb_image = FloatImageUtils::getVisualImage (float_image, width, height,
                                                               min_value, max_value, grayscale);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  image_data_.push_back (rgb_image);  
+  image_data_.push_back (rgb_image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -341,20 +335,20 @@ pcl::visualization::ImageViewer::showFloatImage (
   addFloatImage (float_image, width, height, min_value, max_value, grayscale, layer_id, opacity);
   render ();
  }
- 
+
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::addAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualAngleImage (angle_image, width, height);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  image_data_.push_back (rgb_image);  
+  image_data_.push_back (rgb_image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::showAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
@@ -364,18 +358,18 @@ pcl::visualization::ImageViewer::showAngleImage (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::addHalfAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualHalfAngleImage (angle_image, width, height);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  image_data_.push_back (rgb_image);  
+  image_data_.push_back (rgb_image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::showHalfAngleImage (
     const float* angle_image, unsigned int width, unsigned int height,
     const std::string &layer_id, double opacity)
@@ -385,22 +379,22 @@ pcl::visualization::ImageViewer::showHalfAngleImage (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::addShortImage (
-    const unsigned short* short_image, unsigned int width, unsigned int height, 
+    const unsigned short* short_image, unsigned int width, unsigned int height,
     unsigned short min_value, unsigned short max_value, bool grayscale,
     const std::string &layer_id, double opacity)
 {
   unsigned char* rgb_image = FloatImageUtils::getVisualImage (short_image, width, height,
                                                               min_value, max_value, grayscale);
   addRGBImage (rgb_image, width, height, layer_id, opacity);
-  image_data_.push_back (rgb_image);  
+  image_data_.push_back (rgb_image);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::showShortImage (
-    const unsigned short* short_image, unsigned int width, unsigned int height, 
+    const unsigned short* short_image, unsigned int width, unsigned int height,
     unsigned short min_value, unsigned short max_value, bool grayscale,
     const std::string &layer_id, double opacity)
 {
@@ -409,7 +403,7 @@ pcl::visualization::ImageViewer::showShortImage (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::spin ()
 {
   render ();
@@ -431,7 +425,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 
   if (time <= 0)
     time = 1;
-  
+
   DO_EVERY (1.0 / interactor_->GetDesiredUpdateRate (),
     exit_main_loop_timer_callback_->right_timer_id = interactor_->CreateRepeatingTimer (time);
     interactor_->Start ();
@@ -441,7 +435,7 @@ pcl::visualization::ImageViewer::spinOnce (int time, bool force_redraw)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::visualization::ImageViewer::registerMouseCallback (
     boost::function<void (const pcl::visualization::MouseEvent&)> callback)
 {
@@ -462,7 +456,7 @@ pcl::visualization::ImageViewer::registerMouseCallback (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-boost::signals2::connection 
+boost::signals2::connection
 pcl::visualization::ImageViewer::registerKeyboardCallback (
     boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
@@ -472,20 +466,20 @@ pcl::visualization::ImageViewer::registerKeyboardCallback (
     interactor_->AddObserver (vtkCommand::KeyPressEvent, keyboard_command_);
     interactor_->AddObserver (vtkCommand::KeyReleaseEvent, keyboard_command_);
   }
-  
+
   return (keyboard_signal_.connect (callback));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
 {
   //interactor_->GetMousePosition (&x, &y);
   int x = this->interactor_->GetEventPosition()[0];
   int y = this->interactor_->GetEventPosition()[1];
-  MouseEvent event (MouseEvent::MouseMove, MouseEvent::NoButton, x, y, 
-                    interactor_->GetAltKey (), 
-                    interactor_->GetControlKey (), 
+  MouseEvent event (MouseEvent::MouseMove, MouseEvent::NoButton, x, y,
+                    interactor_->GetAltKey (),
+                    interactor_->GetControlKey (),
                     interactor_->GetShiftKey ());
   bool repeat = false;
   switch (event_id)
@@ -493,7 +487,7 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
     case vtkCommand::MouseMoveEvent :
       event.setType (MouseEvent::MouseMove);
       break;
-    
+
     case vtkCommand::LeftButtonPressEvent :
       event.setButton (MouseEvent::LeftButton);
       if (interactor_->GetRepeatCount () == 0)
@@ -501,12 +495,12 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
       else
         event.setType (MouseEvent::MouseDblClick);
       break;
-      
+
     case vtkCommand::LeftButtonReleaseEvent :
       event.setButton (MouseEvent::LeftButton);
       event.setType (MouseEvent::MouseButtonRelease);
       break;
-      
+
     case vtkCommand::RightButtonPressEvent :
       event.setButton (MouseEvent::RightButton);
       if (interactor_->GetRepeatCount () == 0)
@@ -514,12 +508,12 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
       else
         event.setType (MouseEvent::MouseDblClick);
       break;
-      
+
     case vtkCommand::RightButtonReleaseEvent :
       event.setButton (MouseEvent::RightButton);
       event.setType (MouseEvent::MouseButtonRelease);
       break;
-      
+
     case vtkCommand::MiddleButtonPressEvent :
       event.setButton (MouseEvent::MiddleButton);
       if (interactor_->GetRepeatCount () == 0)
@@ -527,19 +521,19 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
       else
         event.setType (MouseEvent::MouseDblClick);
       break;
-      
+
     case vtkCommand::MiddleButtonReleaseEvent :
       event.setButton (MouseEvent::MiddleButton);
       event.setType (MouseEvent::MouseButtonRelease);
       break;
-      
+
     case vtkCommand::MouseWheelBackwardEvent :
       event.setButton (MouseEvent::VScroll);
       event.setType (MouseEvent::MouseScrollDown);
       if (interactor_->GetRepeatCount () != 0)
         repeat = true;
       break;
-      
+
     case vtkCommand::MouseWheelForwardEvent :
       event.setButton (MouseEvent::VScroll);
       event.setType (MouseEvent::MouseScrollUp);
@@ -549,14 +543,14 @@ pcl::visualization::ImageViewer::emitMouseEvent (unsigned long event_id)
     default:
       return;
   }
-  
+
   mouse_signal_ (event);
   if (repeat)
     mouse_signal_ (event);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 {
   KeyboardEvent event (bool(event_id == vtkCommand::KeyPressEvent), interactor_->GetKeySym (),  interactor_->GetKeyCode (), interactor_->GetAltKey (), interactor_->GetControlKey (), interactor_->GetShiftKey ());
@@ -564,7 +558,7 @@ pcl::visualization::ImageViewer::emitKeyboardEvent (unsigned long event_id)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
@@ -572,7 +566,7 @@ pcl::visualization::ImageViewer::MouseCallback (vtkObject*, unsigned long eid, v
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
+void
 pcl::visualization::ImageViewer::KeyboardCallback (vtkObject*, unsigned long eid, void* clientdata, void*)
 {
   ImageViewer* window = reinterpret_cast<ImageViewer*> (clientdata);
@@ -586,36 +580,19 @@ pcl::visualization::ImageViewer::createLayer (
 {
   Layer l;
   l.layer_name = layer_id;
-  l.opacity = opacity;
   // Create a new layer
-  l.canvas = vtkSmartPointer<PCLImageCanvasSource2D>::New ();
-  l.canvas->SetScalarTypeToUnsignedChar ();
-  l.canvas->SetExtent (0, width, 0, height, 0, 0);
-  l.canvas->SetNumberOfScalarComponents (4);
+  l.actor = vtkSmartPointer<vtkContextActor>::New ();
+  l.actor->PickableOff ();
+  l.actor->DragableOff ();
   if (fill_box)
   {
-    l.canvas->SetDrawColor (0.0, 0.0, 0.0, 255.0);
-    l.canvas->FillBox (0, width, 0, height);
-    l.canvas->Update ();
-    l.canvas->Modified ();
+    vtkSmartPointer<context_items::FilledRectangle> rect = vtkSmartPointer<context_items::FilledRectangle>::New ();
+    rect->setColors (0,0,0);
+    rect->setOpacity (opacity);
+    rect->set (0, 0, static_cast<float> (width), static_cast<float> (height));
+    l.actor->GetScene ()->AddItem (rect);
   }
-  blend_->AddInputConnection (l.canvas->GetOutputPort ());
-  blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, opacity);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
-  slice_->GetProperty ()->SetColorLevel (127.5);
-  slice_->GetProperty ()->SetColorWindow (255);
-
-  if (!ren_->HasViewProp (slice_))
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::createLayer] Global actor not found. Creating a new one (layer ID='%s').\n", layer_id.c_str ());
-    ren_->AddViewProp (slice_);
-  }
-#else
-  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-#endif
-
+  image_viewer_->GetRenderer ()->AddActor (l.actor);
   // Add another element
   layer_map_.push_back (l);
 
@@ -651,53 +628,14 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     PCL_DEBUG ("[pcl::visualization::ImageViewer::removeLayer] No layer with ID='%s' found.\n", layer_id.c_str ());
     return;
   }
-
-  // Remove the layers that we don't want anymore
-  layer_map_.erase (layer_map_.begin () + int (am_it - layer_map_.begin ()));
-
-  // Clear the blender
-  blend_->RemoveAllInputs ();
-
-  // Add one empty black layer
-  unsigned width  = unsigned (getSize ()[0]);
-  unsigned height = unsigned (getSize ()[1]);
-  // Create a new layer
-  vtkSmartPointer<PCLImageCanvasSource2D> canvas = vtkSmartPointer<PCLImageCanvasSource2D>::New ();
-  canvas->SetScalarTypeToUnsignedChar ();
-  canvas->SetExtent (0, width, 0, height, 0, 0);
-  canvas->SetNumberOfScalarComponents (4);
-  canvas->SetDrawColor (0.0, 0.0, 0.0, 255.0);
-  canvas->FillBox (0, width, 0, height);
-  canvas->Update ();
-  canvas->Modified ();
-  blend_->AddInputConnection (canvas->GetOutputPort ());
-  blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, 1.0);
-
-  if (layer_map_.size () > 0)
-  {
-    // Add the remaining layers back to the blender
-    for (size_t i = 0; i < layer_map_.size (); ++i)
-    {
-      blend_->AddInputConnection (layer_map_[i].canvas->GetOutputPort ());
-      blend_->SetOpacity (blend_->GetNumberOfInputs () - 1, layer_map_[i].opacity);
-    }
-  }
-  blend_->Modified ();
-  blend_->Update ();
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
-  slice_->GetMapper ()->Modified ();
-#else
-  image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-  image_viewer_->Modified ();
-#endif
+  image_viewer_->GetRenderer ()->RemoveActor (am_it->actor);
+  layer_map_.erase (am_it);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::ImageViewer::addCircle (
-    unsigned int x, unsigned int y, double radius, double r, double g, double b, 
+    unsigned int x, unsigned int y, double radius, double r, double g, double b,
     const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -705,52 +643,39 @@ pcl::visualization::ImageViewer::addCircle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  vtkSmartPointer<context_items::Circle> circle = vtkSmartPointer<context_items::Circle>::New ();
+  circle->setColors (static_cast<unsigned char> (255.0 * r),
+                     static_cast<unsigned char> (255.0 * g),
+                     static_cast<unsigned char> (255.0 * b));
+  circle->setOpacity (opacity);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawCircle (x, y, radius);
+  circle->set (static_cast<float> (x), static_cast<float> (y), static_cast<float> (radius));
 #else
-  am_it->canvas->DrawCircle (x, getSize ()[1] - y, radius);
+  circle->set (static_cast<float> (x), static_cast<float> (getSize ()[1] - y), static_cast<float> (radius));
 #endif
+  am_it->actor->GetScene ()->AddItem (circle);
 
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, double radius, 
+pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, double radius,
                                             const std::string &layer_id, double opacity)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addCircle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    interactor_style_->adjustCamera (ren_);
-#endif
-  }
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawCircle (x, y, radius);
-#else
-  am_it->canvas->DrawCircle (x, getSize ()[1] - y, radius);
-#endif
-
-  return (true);
+  return (addCircle (x, y, radius, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::ImageViewer::addFilledRectangle (
-    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -758,18 +683,25 @@ pcl::visualization::ImageViewer::addFilledRectangle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  vtkSmartPointer<context_items::FilledRectangle> rect = vtkSmartPointer<context_items::FilledRectangle>::New ();
+  rect->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
+  rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
+             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #else
-  am_it->canvas->FillBox (x_min, x_max, getSize ()[1] - y_max, getSize ()[1] - y_min);
+  rect->set (static_cast<float> (x_min), static_cast<float> (getSize ()[1] - y_min),
+             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #endif
+  am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
 }
@@ -777,34 +709,16 @@ pcl::visualization::ImageViewer::addFilledRectangle (
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::ImageViewer::addFilledRectangle (
-    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,
     const std::string &layer_id, double opacity)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addFilledRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    interactor_style_->adjustCamera (ren_);
-#endif
-  }
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->FillBox (x_min, x_max, y_min, y_max);
-#else
-  am_it->canvas->FillBox (x_min, x_max, getSize ()[1] - y_max, getSize ()[1] - y_min);
-#endif
-
-  return (true);
+  return (addFilledRectangle (x_min, x_max, y_min, y_max, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::ImageViewer::addRectangle (
-    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,
     double r, double g, double b, const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -812,24 +726,25 @@ pcl::visualization::ImageViewer::addRectangle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
+  rect->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (x_min, y_min, x_min, y_max);
-  am_it->canvas->DrawSegment (x_min, y_max, x_max, y_max);
-  am_it->canvas->DrawSegment (x_max, y_max, x_max, y_min);
-  am_it->canvas->DrawSegment (x_max, y_min, x_min, y_min);
+  rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
+             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #else
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_min, x_min, getSize ()[1] - y_max);
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_max, x_max, getSize ()[1] - y_max);
-  am_it->canvas->DrawSegment (x_max, getSize ()[1] - y_max, x_max, getSize ()[1] - y_min);
-  am_it->canvas->DrawSegment (x_max, getSize ()[1] - y_min, x_min, getSize ()[1] - y_min);
+  rect->set (static_cast<float> (x_min), static_cast<float> (getSize ()[1] - y_min),
+             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #endif
+  am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
 }
@@ -837,34 +752,10 @@ pcl::visualization::ImageViewer::addRectangle (
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::ImageViewer::addRectangle (
-    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max, 
+    unsigned int x_min, unsigned int x_max, unsigned int y_min, unsigned int y_max,
     const std::string &layer_id, double opacity)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    interactor_style_->adjustCamera (ren_);
-#endif
-  }
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (x_min, y_min, x_min, y_max);
-  am_it->canvas->DrawSegment (x_min, y_max, x_max, y_max);
-  am_it->canvas->DrawSegment (x_max, y_max, x_max, y_min);
-  am_it->canvas->DrawSegment (x_max, y_min, x_min, y_min);
-#else
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_min, x_min, getSize ()[1] - y_max);
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_max, x_max, getSize ()[1] - y_max);
-  am_it->canvas->DrawSegment (x_max, getSize ()[1] - y_max, x_max, getSize ()[1] - y_min);
-  am_it->canvas->DrawSegment (x_max, getSize ()[1] - y_min, x_min, getSize ()[1] - y_min);
-#endif
-
-  return (true);
+  return (addRectangle (x_min, x_max, y_min, y_max, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -878,24 +769,23 @@ pcl::visualization::ImageViewer::addRectangle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
+  vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
+  rect->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (int (min_pt.x), int (min_pt.y), int (min_pt.x), int (max_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), int (max_pt.y), int (max_pt.x), int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
+  rect->set (min_pt.x, min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
 #else
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
+  rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
 #endif
+  am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
 }
@@ -906,37 +796,14 @@ pcl::visualization::ImageViewer::addRectangle (
     const pcl::PointXY &min_pt, const pcl::PointXY &max_pt,
     const std::string &layer_id, double opacity)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    interactor_style_->adjustCamera (ren_);
-#endif
-  }
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (int (min_pt.x), int (min_pt.y), int (min_pt.x), int (max_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), int (max_pt.y), int (max_pt.x), int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), int (max_pt.y), int (max_pt.x), int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), int (min_pt.y), int (min_pt.x), int (min_pt.y));
-#else
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (min_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (min_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (min_pt.y), int (max_pt.x), getSize ()[1] - int (max_pt.y));
-  am_it->canvas->DrawSegment (int (max_pt.x), getSize ()[1] - int (max_pt.y), int (min_pt.x), getSize ()[1] - int (max_pt.y));
-#endif
-
-  return (true);
+  return (addRectangle (min_pt, max_pt, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min, 
+pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min,
                                           unsigned int x_max, unsigned int y_max,
+                                          double r, double g, double b,
                                           const std::string &layer_id, double opacity)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -944,47 +811,36 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
+  vtkSmartPointer<context_items::Line> line = vtkSmartPointer<context_items::Line>::New ();
+  line->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  line->setOpacity (opacity);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
+  line->set (static_cast<float> (x_min), static_cast<float> (y_min),
+             static_cast<float> (x_max), static_cast<float> (y_max));
 #else
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_min, x_max, getSize ()[1] - y_max);
+  line->set (static_cast<float> (x_min), static_cast<float> (getSize ()[1] - y_min),
+             static_cast<float> (x_max), static_cast<float> (getSize ()[1] - y_max));
 #endif
+  am_it->actor->GetScene ()->AddItem (line);
 
   return (true);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min, 
+pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min,
                                           unsigned int x_max, unsigned int y_max,
-                                          double r, double g, double b, 
                                           const std::string &layer_id, double opacity)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addLine] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    interactor_style_->adjustCamera (ren_);
-#endif
-  }
-
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawSegment (x_min, y_min, x_max, y_max);
-#else
-  am_it->canvas->DrawSegment (x_min, getSize ()[1] - y_min, x_max, getSize ()[1] - y_max);
-#endif
-  return (true);
+  return (addLine (x_min, y_min, x_max, y_max, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -998,24 +854,30 @@ pcl::visualization::ImageViewer::markPoint (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
 
-  am_it->canvas->SetDrawColor (fg_color[0], fg_color[1], fg_color[2], opacity * 255.0);
+  vtkSmartPointer<context_items::Point> point = vtkSmartPointer<context_items::Point>::New ();
+  point->setColors (fg_color[0], fg_color[1], fg_color[2]);
+  point->setOpacity (opacity);
+
+  vtkSmartPointer<context_items::Disk> disk = vtkSmartPointer<context_items::Disk>::New ();
+  disk->setColors (bg_color[0], bg_color[1], bg_color[2]);
+  disk->setOpacity (opacity);
+
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawPoint (int (u), int (v));
+  point->set (static_cast<float> (u), static_cast<float> (v));
+  disk->set (static_cast<float> (u), static_cast<float> (v), static_cast<float> (radius));
 #else
-  am_it->canvas->DrawPoint (int (u), getSize ()[1] - int (v));
+  point->set (static_cast<float> (u), static_cast<float> (getSize ()[1] - v));
+  disk->set (static_cast<float> (u), static_cast<float> (getSize ()[1] - v), static_cast<float> (radius));
 #endif
-  am_it->canvas->SetDrawColor (bg_color[0], bg_color[1], bg_color[2], opacity * 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  am_it->canvas->DrawCircle (int (u), int (v), radius);
-#else
-  am_it->canvas->DrawCircle (int (u), getSize ()[1] - int (v), radius);
-#endif
+
+  am_it->actor->GetScene ()->AddItem (disk);
+  am_it->actor->GetScene ()->AddItem (point);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1114,7 +976,7 @@ pcl::visualization::ImageViewerInteractorStyle::adjustCamera (
   image->GetOrigin  (origin);
   image->GetSpacing (spacing);
   image->GetExtent  (extent);
- 
+
   vtkCamera* camera = ren->GetActiveCamera ();
   double xc = origin[0] + 0.5 * (extent[0] + extent[1]) * spacing[0];
   double yc = origin[1] + 0.5 * (extent[2] + extent[3]) * spacing[1];
@@ -1151,11 +1013,11 @@ pcl::visualization::ImageViewerInteractorStyle::OnLeftButtonDown ()
   FindPokedRenderer (x, y);
   if (CurrentRenderer == NULL)
     return;
-  
+
   // Redefine this button to handle window/level
   GrabFocus (this->EventCallbackCommand);
   // If shift is held down, do nothing
-  if (!this->Interactor->GetShiftKey() && !this->Interactor->GetControlKey()) 
+  if (!this->Interactor->GetShiftKey() && !this->Interactor->GetControlKey())
   {
     WindowLevelStartPosition[0] = x;
     WindowLevelStartPosition[1] = y;

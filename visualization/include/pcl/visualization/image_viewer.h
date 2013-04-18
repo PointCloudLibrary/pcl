@@ -47,6 +47,7 @@
 #include <pcl/visualization/vtk.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
+#include <pcl/visualization/vtk/pcl_context_item.h>
 #include <pcl/geometry/planar_polygon.h>
 #include <pcl/correspondence.h>
 
@@ -931,10 +932,9 @@ namespace pcl
         /** \brief Internal structure describing a layer. */
         struct Layer
         {
-          Layer () : canvas (), layer_name (), opacity () {}
-          vtkSmartPointer<PCLImageCanvasSource2D> canvas;
+          Layer () : actor (), layer_name () {}
+          vtkSmartPointer<vtkContextActor> actor;
           std::string layer_name;
-          double opacity;
         };
 
         typedef std::vector<Layer> LayerMap;
@@ -992,8 +992,8 @@ namespace pcl
         /** \brief Global timer ID. Used in destructor only. */
         int timer_id_;
 
-        /** \brief Internal blender used to overlay 2D geometry over the image. */
-        vtkSmartPointer<vtkImageBlend> blend_;
+        // /** \brief Internal blender used to overlay 2D geometry over the image. */
+        // vtkSmartPointer<vtkImageBlend> blend_;
  
         /** \brief Internal list with different 2D layers shapes. */
         LayerMap layer_map_;
@@ -1016,8 +1016,8 @@ namespace pcl
           {
             return (layer.layer_name == str_);
           }
-        };
-
+        };        
+        
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

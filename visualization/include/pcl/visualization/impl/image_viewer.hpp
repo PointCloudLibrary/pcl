@@ -105,25 +105,31 @@ pcl::visualization::ImageViewer::addMask (
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
-
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  for (size_t i = 0; i < mask.points.size (); ++i)
+  std::vector<float> xy;
+  xy.reserve (mask.size () * 2);
+  const float image_height_f = static_cast<float> (image->height);
+  for (size_t i = 0; i < mask.size (); ++i)
   {
     pcl::PointXY p_projected;
-    search.projectPoint (mask.points[i], p_projected);
+    search.projectPoint (mask[i], p_projected);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-    am_it->canvas->DrawPoint (int (p_projected.x), 
-                              int (float (image->height) - p_projected.y));
-#else
-    am_it->canvas->DrawPoint (int (p_projected.x), 
-                              int (p_projected.y));
-#endif
+    xy.push_back (p_projected.x);
+    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+    xy.push_back (image_height_f - p_projected.y);
+    #else
+    xy.push_back (p_projected.y);
+    #endif
   }
 
+  vtkSmartPointer<context_items::Points> points = vtkSmartPointer<context_items::Points>::New ();
+  points->setColors (static_cast<unsigned char> (r*255.0), 
+                     static_cast<unsigned char> (g*255.0), 
+                     static_cast<unsigned char> (b*255.0));
+  points->setOpacity (opacity);
+  am_it->actor->GetScene ()->AddItem (points);
   return (true);
 }
 
@@ -134,38 +140,7 @@ pcl::visualization::ImageViewer::addMask (
     const pcl::PointCloud<T> &mask, 
     const std::string &layer_id, double opacity)
 {
-  // We assume that the data passed into image is organized, otherwise this doesn't make sense
-  if (!image->isOrganized ())
-    return (false);
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-  }
-
-  am_it->canvas->SetDrawColor (255.0, 0.0, 0.0, opacity * 255.0);
-
-  // Construct a search object to get the camera parameters
-  pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud (image);
-  for (size_t i = 0; i < mask.points.size (); ++i)
-  {
-    pcl::PointXY p_projected;
-    search.projectPoint (mask.points[i], p_projected);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-    am_it->canvas->DrawPoint (int (p_projected.x), 
-                              int (float (image->height) - p_projected.y));
-#else
-    am_it->canvas->DrawPoint (int (p_projected.x), 
-                              int (p_projected.y));
-#endif
-  }
-
-  return (true);
+  return (addMask (image, mask, 1.0, 0.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -187,39 +162,35 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
   }
-
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
-
-  // Construct a search object to get the camera parameters
+  
+  // Construct a search object to get the camera parameters and fill points
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  for (size_t i = 0; i < polygon.getContour ().size () - 1; ++i)
+  const float image_height_f = static_cast<float> (image->height);
+  std::vector<float> xy;
+  xy.reserve ((polygon.getContour ().size () + 1) * 2);
+  for (size_t i = 0; i < polygon.getContour ().size (); ++i)
   {
-    pcl::PointXY p1, p2;
-    search.projectPoint (polygon.getContour ()[i], p1);
-    search.projectPoint (polygon.getContour ()[i+1], p2);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-    am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
-                                int (p2.x), int (float (image->height) - p2.y));
-#else
-    am_it->canvas->DrawSegment (int (p1.x), int (p1.y),
-                                int (p2.x), int (p2.y));
-#endif
+    pcl::PointXY p;
+    search.projectPoint (polygon.getContour ()[i], p);
+    xy.push_back (p.x);
+    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+    xy.push_back (image_height_f - p.y);
+    #else
+    xy.push_back (p.y);
+    #endif
   }
 
   // Close the polygon
-  pcl::PointXY p1, p2;
-  search.projectPoint (polygon.getContour ()[polygon.getContour ().size () - 1], p1);
-  search.projectPoint (polygon.getContour ()[0], p2);
+  xy[xy.size () - 2] = xy[0];
+  xy[xy.size () - 1] = xy[1];
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-  am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
-                              int (p2.x), int (float (image->height) - p2.y));
-#else
-  am_it->canvas->DrawSegment (int (p1.x), int (p1.y),
-                              int (p2.x), int (p2.y));
-#endif
+  vtkSmartPointer<context_items::Polygon> poly = vtkSmartPointer<context_items::Polygon>::New ();
+  poly->setColors (static_cast<unsigned char> (r * 255.0), 
+                   static_cast<unsigned char> (g * 255.0), 
+                   static_cast<unsigned char> (b * 255.0));
+  poly->set (xy);
+  am_it->actor->GetScene ()->AddItem (poly);
 
   return (true);
 }
@@ -231,51 +202,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     const pcl::PlanarPolygon<T> &polygon, 
     const std::string &layer_id, double opacity)
 {
-  // We assume that the data passed into image is organized, otherwise this doesn't make sense
-  if (!image->isOrganized ())
-    return (false);
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-  }
-
-  am_it->canvas->SetDrawColor (255.0, 0.0, 0.0, opacity * 255.0);
-
-  // Construct a search object to get the camera parameters
-  pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud (image);
-  for (size_t i = 0; i < polygon.getContour ().size () - 1; ++i)
-  {
-    pcl::PointXY p1, p2;
-    search.projectPoint (polygon.getContour ()[i], p1);
-    search.projectPoint (polygon.getContour ()[i+1], p2);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-    am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
-                                int (p2.x), int (float (image->height) - p2.y));
-#else
-    am_it->canvas->DrawSegment (int (p1.x), int (p1.y),
-                                int (p2.x), int (p2.y));
-#endif
-  }
-
-  // Close the polygon
-  pcl::PointXY p1, p2;
-  search.projectPoint (polygon.getContour ()[polygon.getContour ().size () - 1], p1);
-  search.projectPoint (polygon.getContour ()[0], p2);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-  am_it->canvas->DrawSegment (int (p1.x), int (float (image->height) - p1.y),
-                              int (p2.x), int (float (image->height) - p2.y));
-#else
-  am_it->canvas->DrawSegment (int (p1.x), int (p1.y),
-                              int (p2.x), int (p2.y));
-#endif
-  return (true);
+  return (addPlanarPolygon (image, polygon, 1.0, 0.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -337,17 +264,15 @@ pcl::visualization::ImageViewer::addRectangle (
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#else
-  min_pt_2d.y = min_pt_2d.y;
-  max_pt_2d.y = max_pt_2d.y;
 #endif
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
-
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (min_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (min_pt_2d.y));
+  vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
+  rect->setColors (static_cast<unsigned char> (255.0 * r), 
+                   static_cast<unsigned char> (255.0 * g), 
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
+  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));  
+  am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
 }
@@ -360,68 +285,7 @@ pcl::visualization::ImageViewer::addRectangle (
     const T &max_pt,
     const std::string &layer_id, double opacity)
 {
-  // We assume that the data passed into image is organized, otherwise this doesn't make sense
-  if (!image->isOrganized ())
-    return (false);
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-  }
-
-  // Construct a search object to get the camera parameters
-  pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud (image);
-  // Project the 8 corners
-  T p1, p2, p3, p4, p5, p6, p7, p8;
-  p1.x = min_pt.x; p1.y = min_pt.y; p1.z = min_pt.z;
-  p2.x = min_pt.x; p2.y = min_pt.y; p2.z = max_pt.z;
-  p3.x = min_pt.x; p3.y = max_pt.y; p3.z = min_pt.z;
-  p4.x = min_pt.x; p4.y = max_pt.y; p4.z = max_pt.z;
-  p5.x = max_pt.x; p5.y = min_pt.y; p5.z = min_pt.z;
-  p6.x = max_pt.x; p6.y = min_pt.y; p6.z = max_pt.z;
-  p7.x = max_pt.x; p7.y = max_pt.y; p7.z = min_pt.z;
-  p8.x = max_pt.x; p8.y = max_pt.y; p8.z = max_pt.z;
-
-  std::vector<pcl::PointXY> pp_2d (8);
-  search.projectPoint (p1, pp_2d[0]);
-  search.projectPoint (p2, pp_2d[1]);
-  search.projectPoint (p3, pp_2d[2]);
-  search.projectPoint (p4, pp_2d[3]);
-  search.projectPoint (p5, pp_2d[4]);
-  search.projectPoint (p6, pp_2d[5]);
-  search.projectPoint (p7, pp_2d[6]);
-  search.projectPoint (p8, pp_2d[7]);
-
-  pcl::PointXY min_pt_2d, max_pt_2d;
-  min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
-  // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
-  {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
-  }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-  min_pt_2d.y = float (image->height) - min_pt_2d.y;
-  max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#else
-  min_pt_2d.y = min_pt_2d.y;
-  max_pt_2d.y = max_pt_2d.y;
-#endif
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (min_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (min_pt_2d.y));
-
-  return (true);
+  return (addRectangle<T> (image, min_pt, max_pt, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -444,8 +308,6 @@ pcl::visualization::ImageViewer::addRectangle (
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
   }
 
-  am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, opacity * 255.0);
-
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
@@ -467,15 +329,15 @@ pcl::visualization::ImageViewer::addRectangle (
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#else
-  min_pt_2d.y = min_pt_2d.y;
-  max_pt_2d.y = max_pt_2d.y;
 #endif
 
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (min_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (min_pt_2d.y));
+  vtkSmartPointer<context_items::Rectangle> rect = vtkSmartPointer<context_items::Rectangle>::New ();
+  rect->setColors (static_cast<unsigned char> (255.0 * r), 
+                   static_cast<unsigned char> (255.0 * g), 
+                   static_cast<unsigned char> (255.0 * b));
+  rect->setOpacity (opacity);
+  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));
+  am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
 }
@@ -487,52 +349,7 @@ pcl::visualization::ImageViewer::addRectangle (
     const pcl::PointCloud<T> &mask, 
     const std::string &layer_id, double opacity)
 {
-  // We assume that the data passed into image is organized, otherwise this doesn't make sense
-  if (!image->isOrganized ())
-    return (false);
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
-  if (am_it == layer_map_.end ())
-  {
-    PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
-  }
-
-  am_it->canvas->SetDrawColor (0.0, 255.0, 0.0, opacity * 255.0);
-
-  // Construct a search object to get the camera parameters
-  pcl::search::OrganizedNeighbor<T> search;
-  search.setInputCloud (image);
-  std::vector<pcl::PointXY> pp_2d (mask.points.size ());
-  for (size_t i = 0; i < mask.points.size (); ++i)
-    search.projectPoint (mask.points[i], pp_2d[i]);
-
-  pcl::PointXY min_pt_2d, max_pt_2d;
-  min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
-  // Search for the two extrema
-  for (size_t i = 0; i < pp_2d.size (); ++i)
-  {
-    if (pp_2d[i].x < min_pt_2d.x) min_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y < min_pt_2d.y) min_pt_2d.y = pp_2d[i].y;
-    if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
-    if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
-  }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
-  min_pt_2d.y = float (image->height) - min_pt_2d.y;
-  max_pt_2d.y = float (image->height) - max_pt_2d.y;
-#else
-  min_pt_2d.y = min_pt_2d.y;
-  max_pt_2d.y = max_pt_2d.y;
-#endif
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (min_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (max_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (max_pt_2d.y), int (max_pt_2d.x), int (min_pt_2d.y));
-  am_it->canvas->DrawSegment (int (max_pt_2d.x), int (min_pt_2d.y), int (min_pt_2d.x), int (min_pt_2d.y));
-
-
-  return (true);
+  return (addRectangle (image, mask, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -555,7 +372,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addCorrespondences] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, source_img.width + target_img.width, std::max (source_img.height, target_img.height), 255, false);
+    am_it = createLayer (layer_id, source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1.0, false);
   }
  
   int src_size = source_img.width * source_img.height * 3;
@@ -616,50 +433,53 @@ pcl::visualization::ImageViewer::showCorrespondences (
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
+  vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
-#  if (VTK_MINOR_VERSION <= 6)
-    image_viewer_->SetInput (algo_->GetOutput ());
-#  else
-    am_it->canvas->SetNumberOfScalarComponents (3);
-    am_it->canvas->DrawImage (algo_->GetOutput ());
-
-    blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-    image_viewer_->SetInputConnection (blend_->GetOutputPort ());
-#  endif
+  image_item->set (0, 0, algo_->GetOutput ());
 #else
-  am_it->canvas->SetNumberOfScalarComponents (3);
-  am_it->canvas->DrawImage (image);
-
-  blend_->ReplaceNthInputConnection (int (am_it - layer_map_.begin ()), am_it->canvas->GetOutputPort ());
-  slice_->GetMapper ()->SetInput (blend_->GetOutput ());
-
+  image_item->set (0, 0, image);
   interactor_style_->adjustCamera (image, ren_);
 #endif
+  am_it->actor->GetScene ()->AddItem (image_item);
+  image_viewer_->SetSize (image->GetDimensions ()[0], image->GetDimensions ()[1]);
 
-  double r = 1.0 , g, b;
   // Draw lines between the best corresponding points
   for (size_t i = 0; i < correspondences.size (); i += nth)
   {
-    int v_src = correspondences[i].index_query / source_img.width,
-        u_src = correspondences[i].index_query % source_img.width,
-        v_tgt = correspondences[i].index_match / target_img.width,
-        u_tgt = correspondences[i].index_match % target_img.width;
+    double r, g, b;
     getRandomColors (r, g, b);
-    am_it->canvas->SetDrawColor (r * 255.0, g * 255.0, b * 255.0, 255.0);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-    am_it->canvas->DrawSegment (u_src, v_src, source_img.width + u_tgt, v_tgt);
-    am_it->canvas->DrawCircle (u_src, v_src, 3);
-    am_it->canvas->DrawCircle (source_img.width + u_tgt, v_tgt, 3);
-#else
-    am_it->canvas->DrawSegment (u_src, getSize ()[1] - v_src, source_img.width + u_tgt, getSize ()[1] - v_tgt);
-    am_it->canvas->DrawCircle (u_src, getSize ()[1] - v_src, 3);
-    am_it->canvas->DrawCircle (source_img.width + u_tgt, getSize ()[1] - v_tgt, 3);
-#endif
-  }
+    unsigned char u_r = static_cast<unsigned char> (255.0 * r);
+    unsigned char u_g = static_cast<unsigned char> (255.0 * g);
+    unsigned char u_b = static_cast<unsigned char> (255.0 * b);
+    vtkSmartPointer<context_items::Circle> query_circle = vtkSmartPointer<context_items::Circle>::New ();
+    query_circle->setColors (u_r, u_g, u_b);
+    vtkSmartPointer<context_items::Circle> match_circle = vtkSmartPointer<context_items::Circle>::New ();
+    match_circle->setColors (u_r, u_g, u_b);
+    vtkSmartPointer<context_items::Line> line = vtkSmartPointer<context_items::Line>::New ();
+    line->setColors (u_r, u_g, u_b);
 
+    float query_x = correspondences[i].index_query % source_img.width;
+    float match_x = correspondences[i].index_match % target_img.width + source_img.width;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+    float query_y = correspondences[i].index_query / source_img.width;
+    float match_y = correspondences[i].index_match / target_img.width;
+#else
+    float query_y = getSize ()[1] - correspondences[i].index_query / source_img.width;
+    float match_y = getSize ()[1] - correspondences[i].index_match / target_img.width;
+#endif
+
+    query_circle->set (query_x, query_y, 3.0);
+    match_circle->set (match_x, match_y, 3.0);
+    line->set (query_x, query_y, match_x, match_y);
+
+    am_it->actor->GetScene ()->AddItem (query_circle);
+    am_it->actor->GetScene ()->AddItem (match_circle);
+    am_it->actor->GetScene ()->AddItem (line);
+  }
+  
   return (true);
 }
 
