@@ -49,6 +49,7 @@ if(build)
         src/range_image_visualizer.cpp
         src/common/float_image_utils.cpp
         src/vtk/pcl_image_canvas_source_2d.cpp
+        src/vtk/pcl_context_item.cpp
         src/vtk/vtkVertexBufferObject.cxx
         src/vtk/vtkVertexBufferObjectMapper.cxx
         src/vtk/vtkRenderWindowInteractorFix.cpp
@@ -127,6 +128,7 @@ if(build)
 
     set(vtk_incs 
         include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h
+        include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h
         include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h
         include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h
         include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h
