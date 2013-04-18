@@ -144,8 +144,7 @@ namespace pcl
 {
 
 #define PCL_ADD_POINT4D \
-  EIGEN_ALIGN16 \
-  union { \
+  union EIGEN_ALIGN16 { \
     float data[4]; \
     struct { \
       float x; \
@@ -163,8 +162,7 @@ namespace pcl
   inline const Eigen::Map<const Eigen::Array4f, Eigen::Aligned> getArray4fMap () const { return (Eigen::Array4f::MapAligned (data)); }
 
 #define PCL_ADD_NORMAL4D \
-  EIGEN_ALIGN16 \
-  union { \
+  union EIGEN_ALIGN16 { \
     float data_n[4]; \
     float normal[3]; \
     struct { \
