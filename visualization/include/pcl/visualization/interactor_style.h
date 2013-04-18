@@ -46,6 +46,7 @@
 #include <pcl/visualization/keyboard_event.h>
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
+#include <pcl/visualization/area_picking_event.h>
 #include <pcl/visualization/boost.h>
 
 namespace pcl
@@ -79,6 +80,7 @@ namespace pcl
       * -       + / -   : increment/decrement overall point size
       * -        g, G   : display scale grid (on/off)
       * -        u, U   : display lookup table (on/off)
+      * -        r, R   : enable area selection
       * -  r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]
       * -  ALT + s, S   : turn stereo mode on/off
       * -  ALT + f, F   : switch between maximized window mode and original size
@@ -87,11 +89,12 @@ namespace pcl
       * -        0..9 [+ CTRL]  : switch between different color handlers (where available)
       * - 
       * -  SHIFT + left click   : select a point
+      * -        x, X   : pick area
       *
       * \author Radu B. Rusu
       * \ingroup visualization
       */
-    class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleTrackballCamera
+    class PCL_EXPORTS PCLVisualizerInteractorStyle : public vtkInteractorStyleRubberBandPick
     {
       typedef boost::shared_ptr<CloudActorMap> CloudActorMapPtr;
 
@@ -103,14 +106,15 @@ namespace pcl
           init_ (), rens_ (), actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
           max_win_height_ (), max_win_width_ (), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
           lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
-          point_picking_signal_ (), stereo_anaglyph_mask_default_ (), mouse_callback_ (), modifier_ ()
+          point_picking_signal_ (), area_picking_signal_ (), stereo_anaglyph_mask_default_ (),
+          mouse_callback_ (), modifier_ ()
         {}
       
         /** \brief Empty destructor */
         virtual ~PCLVisualizerInteractorStyle () {}
 
         // this macro defines Superclass, the isA functionality and the safe downcast method
-        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleTrackballCamera);
+        vtkTypeMacro (PCLVisualizerInteractorStyle, vtkInteractorStyleRubberBandPick);
         
         /** \brief Initialization routine. Must be called before anything else. */
         virtual void 
@@ -158,6 +162,13 @@ namespace pcl
           */
         boost::signals2::connection 
         registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> cb);
+
+        /** \brief Register a callback function for area picking events
+          * \param[in] cb a boost function that will be registered as a callback for a area picking event
+          * \return a connection object that allows to disconnect the callback function.
+          */
+        boost::signals2::connection
+        registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> cb);
 
         /** \brief Save the current rendered image to disk, as a PNG screenshot.
           * \param[in] file the name of the PNG file
@@ -218,6 +229,7 @@ namespace pcl
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
         boost::signals2::signal<void (const pcl::visualization::PointPickingEvent&)> point_picking_signal_;
+        boost::signals2::signal<void (const pcl::visualization::AreaPickingEvent&)> area_picking_signal_;
 
         /** \brief Interactor style internal method. Gets called whenever a key is pressed. */
         virtual void 

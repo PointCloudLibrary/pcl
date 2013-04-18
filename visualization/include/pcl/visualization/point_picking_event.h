@@ -67,6 +67,9 @@ namespace pcl
         int
         performSinglePick (vtkRenderWindowInteractor *iren, float &x, float &y, float &z);
 
+        int
+        performAreaPick (vtkRenderWindowInteractor *iren, std::vector<int> &indices);
+
       private:
         float x_, y_, z_;
         int idx_;
