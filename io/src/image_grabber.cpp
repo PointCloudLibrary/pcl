@@ -591,8 +591,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
   {
     // The 525 factor default is only true for VGA. If not, we should scale
     scaleFactorX = scaleFactorY = 1/525.f * 640.f / static_cast<float> (dims[0]);
-    centerX = static_cast<float> (dims[0] >> 1);
-    centerY = static_cast<float> (dims[1] >> 1);
+    centerX = ((float)dims[0] - 1.f)/2.f;
+    centerY = ((float)dims[1] - 1.f)/2.f;
   }
 
   if(rgb_image_files_.size() > 0)
