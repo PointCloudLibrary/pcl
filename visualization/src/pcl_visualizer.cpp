@@ -234,9 +234,9 @@ pcl::visualization::PCLVisualizer::createInteractor ()
 #else
   timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 #endif
-  // Set a simple PointPicker
-  vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
-  pp->SetTolerance (pp->GetTolerance () * 2);
+
+  // Set an AreaPicker
+  vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
   interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
@@ -276,10 +276,9 @@ pcl::visualization::PCLVisualizer::setupInteractor (
   timer_id_ = iren->CreateRepeatingTimer (5000L);
 #endif
 
-  // Set a simple PointPicker
-  vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
-  pp->SetTolerance (pp->GetTolerance () * 2);
-  iren->SetPicker (pp);
+  // Set an AreaPicker
+  vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
+  interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -320,10 +319,9 @@ pcl::visualization::PCLVisualizer::setupInteractor (
   timer_id_ = iren->CreateRepeatingTimer (5000L);
 #endif
 
-  // Set a simple PointPicker
-  //vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
- // pp->SetTolerance (pp->GetTolerance () * 2);
- // iren->SetPicker (pp);
+  // Set an AreaPicker
+  // vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
+  // interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -376,6 +374,13 @@ boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function<void (const pcl::visualization::PointPickingEvent&)> callback)
 {
   return (style_->registerPointPickingCallback (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
+{
+  return (style_->registerAreaPickingCallback (callback));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
