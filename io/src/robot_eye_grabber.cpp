@@ -173,14 +173,10 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *dataPacket, size_t lengt
     PointXYZI xyzi;
     computeXYZI (xyzi, dataPacket + i*bytesPerPoint);
 
-    if ((boost::math::isnan)(xyzi.x) ||
-        (boost::math::isnan)(xyzi.y) ||
-        (boost::math::isnan)(xyzi.z))
+    if (pcl::isFinite(xyzi))
     {
-      continue;
+      point_cloud_xyzi_->push_back (xyzi);
     }
-
-    point_cloud_xyzi_->push_back (xyzi);
   }
 
 
