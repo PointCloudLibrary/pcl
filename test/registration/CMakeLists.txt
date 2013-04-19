@@ -18,5 +18,6 @@ PCL_ADD_TEST(correspondence_estimation test_correspondence_estimation
 
 PCL_ADD_TEST(correspondence_rejectors test_correspondence_rejectors
              FILES test_correspondence_rejectors.cpp
-             LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features)
+             LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/bunny.pcd)
 
