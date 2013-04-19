@@ -192,8 +192,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , manual_intrinsics_ (false)
   , focal_length_x_ (525.)
   , focal_length_y_ (525.)
-  , principal_point_x_ (320.)
-  , principal_point_y_ (240.)
+  , principal_point_x_ (319.5)
+  , principal_point_y_ (239.5)
   , num_threads_ (1)
 {
   if(pclzf_mode_)
@@ -229,8 +229,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , manual_intrinsics_ (false)
   , focal_length_x_ (525.)
   , focal_length_y_ (525.)
-  , principal_point_x_ (320.)
-  , principal_point_y_ (240.)
+  , principal_point_x_ (319.5)
+  , principal_point_y_ (239.5)
   , num_threads_ (1)
 {
   loadDepthAndRGBFiles (depth_dir, rgb_dir);
@@ -258,8 +258,8 @@ pcl::ImageGrabberBase::ImageGrabberImpl::ImageGrabberImpl (pcl::ImageGrabberBase
   , manual_intrinsics_ (false)
   , focal_length_x_ (525.)
   , focal_length_y_ (525.)
-  , principal_point_x_ (320.)
-  , principal_point_y_ (240.)
+  , principal_point_x_ (319.5)
+  , principal_point_y_ (239.5)
   , num_threads_ (1)
 {
   depth_image_files_ = depth_image_files;
