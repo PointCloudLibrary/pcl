@@ -34,8 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef PCL_REGISTRATION_CORRESPONDENCE_REJECTION_POLY_H_
 #define PCL_REGISTRATION_CORRESPONDENCE_REJECTION_POLY_H_
@@ -47,9 +45,9 @@ namespace pcl
 {
   namespace registration
   {
-    /** \brief CorrespondenceRejectorPoly implements a correspondence rejection method that exploits
-      * low-level and pose-invariant geometric constraints between two point sets by forming virtual
-      * polygons of a user-specifiable cardinality on each model using the input correspondences.
+    /** \brief CorrespondenceRejectorPoly implements a correspondence rejection method that exploits low-level and
+      * pose-invariant geometric constraints between two point sets by forming virtual polygons of a user-specifiable
+      * cardinality on each model using the input correspondences.
       * These polygons are then checked in a pose-invariant manner (i.e. the side lengths must be approximately equal),
       * and rejection is performed by thresholding these edge lengths. For more information, see:
       * 
@@ -59,7 +57,8 @@ namespace pcl
       *
       * \author Anders Glent Buch
       * \ingroup registration
-      * \tparam PointT the point type of the original point cloud from which the correspondences were obtained, must contain the fields x, y and z.
+      * \param PointT the point type of the original point cloud from which the correspondences were obtained, must
+      * contain the fields x, y and z.
       */
     template <typename PointT>
     class PCL_EXPORTS CorrespondenceRejectorPoly: public CorrespondenceRejector
@@ -78,7 +77,7 @@ namespace pcl
           , cardinality_ (3)
           , similarity_threshold_ (0.75f)
           , iterations_ (10000)
-        {
+        { 
           rejection_name_ = "CorrespondenceRejectorPoly";
         }
 
@@ -90,8 +89,7 @@ namespace pcl
         getRemainingCorrespondences (const pcl::Correspondences& original_correspondences, 
                                      pcl::Correspondences& remaining_correspondences);
 
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] cloud a cloud containing XYZ data
           */
         inline void 
@@ -102,21 +100,20 @@ namespace pcl
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
-        /** \brief Provide a source point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] cloud a cloud containing XYZ data
           */
         inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
         {
-          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n", getClassName ().c_str ());
+          PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n",
+                    getClassName ().c_str ());
           if (!data_container_)
             data_container_.reset (new DataContainer<PointT>);
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
         }
 
-        /** \brief Provide a target point cloud dataset (must contain XYZ
-          * data!), used to compute the correspondence distance.  
+        /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] target a cloud containing XYZ data
           */
         inline void 
@@ -127,60 +124,54 @@ namespace pcl
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
         
-        /**
-         * \brief Set the polygon cardinality
-         * \param cardinality polygon cardinality
-         */
+        /** \brief Set the polygon cardinality
+          * \param cardinality polygon cardinality
+          */
         inline void 
         setCardinality (int cardinality)
         {
           cardinality_ = cardinality;
         }
         
-        /**
-         * \brief Get the polygon cardinality
-         * \return polygon cardinality
-         */
+        /** \brief Get the polygon cardinality
+          * \return polygon cardinality
+          */
         inline int 
         getCardinality ()
         {
           return (cardinality_);
         }
         
-        /**
-         * \brief Set the Euclidean similarity threshold between edge lengths
-         * \param similarity similarity threshold
-         */
+        /** \brief Set the Euclidean similarity threshold between edge lengths
+          * \param similarity similarity threshold
+          */
         inline void 
         setSimilarityThreshold (float similarity_threshold)
         {
           similarity_threshold_ = similarity_threshold;
         }
         
-        /**
-         * \brief Get the Euclidean similarity threshold between edge lengths
-         * \return similarity threshold
-         */
+        /** \brief Get the Euclidean similarity threshold between edge lengths
+          * \return similarity threshold
+          */
         inline float 
         getSimilarityThreshold ()
         {
           return (similarity_threshold_);
         }
         
-        /**
-         * \brief Set the number of iterations
-         * \param iterations number of iterations
-         */
+        /** \brief Set the number of iterations
+          * \param iterations number of iterations
+          */
         inline void 
         setIterations (int iterations)
         {
           iterations_ = iterations;
         }
         
-        /**
-         * \brief Get the number of iterations
-         * \return number of iterations
-         */
+        /** \brief Get the number of iterations
+          * \return number of iterations
+          */
         inline int 
         getIterations ()
         {
@@ -188,7 +179,6 @@ namespace pcl
         }
 
       protected:
-
         /** \brief Apply the rejection algorithm.
           * \param[out] correspondences the set of resultant correspondences.
           */
@@ -198,13 +188,12 @@ namespace pcl
           getRemainingCorrespondences (*input_correspondences_, correspondences);
         }
         
-        /**
-         * \brief Get k unique random indices in range {0,...,n-1} (sampling without replacement)
-         * \note No check is made to ensure that k <= n.
-         * \param n upper index range, exclusive
-         * \param k number of unique indices to sample
-         * \return k unique random indices in range {0,...,n-1}
-         */
+        /** \brief Get k unique random indices in range {0,...,n-1} (sampling without replacement)
+          * \note No check is made to ensure that k <= n.
+          * \param n upper index range, exclusive
+          * \param k number of unique indices to sample
+          * \return k unique random indices in range {0,...,n-1}
+          */
         inline std::vector<int> 
         getUniqueRandomIndices (int n, int k)
         {
@@ -233,12 +222,11 @@ namespace pcl
           return (result);
         }
         
-        /**
-         * Squared Euclidean distance between two points using the members x, y and z
-         * \param p1 first point
-         * \param p2 second point
-         * \return squared Euclidean distance
-         */
+        /** \brief Squared Euclidean distance between two points using the members x, y and z
+          * \param p1 first point
+          * \param p2 second point
+          * \return squared Euclidean distance
+          */
         inline float 
         computeSquaredDistance (const PointT& p1, const PointT& p2)
         {
@@ -249,15 +237,14 @@ namespace pcl
           return (dx*dx + dy*dy + dz*dz);
         }
         
-        /**
-         * \brief Edge length similarity thresholding
-         * \param source source point cloud
-         * \param target target point cloud
-         * \param c1 first correspondence between source and target
-         * \param c2 second correspondence between source and target
-         * \param simsq squared similarity threshold in [0,1]
-         * \return true if edge length ratio is larger than or equal to threshold
-         */
+        /** \brief Edge length similarity thresholding
+          * \param source source point cloud
+          * \param target target point cloud
+          * \param c1 first correspondence between source and target
+          * \param c2 second correspondence between source and target
+          * \param simsq squared similarity threshold in [0,1]
+          * \return true if edge length ratio is larger than or equal to threshold
+          */
         inline bool 
         thresholdEdgeLength (typename pcl::PointCloud<PointT>::ConstPtr source,
             typename pcl::PointCloud<PointT>::ConstPtr target,
@@ -275,15 +262,14 @@ namespace pcl
           return (edge_sim >= simsq);
         }
         
-        /**
-         * \brief Worker function for polygonal rejection using a single polygon
-         * \param source source point cloud
-         * \param target target point cloud
-         * \param corr all correspondences
-         * \param idx indices of sampled correspondences, must have a size of \ref cardinality_
-         * \param simsq squared similarity threshold in [0,1]
-         * \return true if all edge length ratios are larger than or equal to findThreshold
-         */
+        /** \brief Worker function for polygonal rejection using a single polygon
+          * \param source source point cloud
+          * \param target target point cloud
+          * \param corr all correspondences
+          * \param idx indices of sampled correspondences, must have a size of \ref cardinality_
+          * \param simsq squared similarity threshold in [0,1]
+          * \return true if all edge length ratios are larger than or equal to findThreshold
+          */
         inline bool 
         thresholdPolygon (typename pcl::PointCloud<PointT>::ConstPtr source,
             typename pcl::PointCloud<PointT>::ConstPtr target,
@@ -305,23 +291,21 @@ namespace pcl
           }
         }
         
-        /**
-         * Compute a linear histogram. This function is equivalent to the MATLAB
-         * function \b histc, with the edges set as follows: <b> lower:(upper-lower)/bins:upper </b>
-         * \param data input samples
-         * \param lower lower bound of input samples
-         * \param upper upper bound of input samples
-         * \param bins number of bins in output
-         * \return linear histogram
-         */
+        /** \brief Compute a linear histogram. This function is equivalent to the MATLAB function \b histc, with the
+          * edges set as follows: <b> lower:(upper-lower)/bins:upper </b>
+          * \param data input samples
+          * \param lower lower bound of input samples
+          * \param upper upper bound of input samples
+          * \param bins number of bins in output
+          * \return linear histogram
+          */
         std::vector<int> 
         computeHistogram (const std::vector<float>& data, float lower, float upper, int bins);
         
-        /**
-         * Find the optimal value for binary histogram thresholding using Otsu's method
-         * \param histogram input histogram
-         * \return threshold value according to Otsu's criterion
-         */
+        /** \brief Find the optimal value for binary histogram thresholding using Otsu's method
+          * \param histogram input histogram
+          * \return threshold value according to Otsu's criterion
+          */
         int 
         findThresholdOtsu (const std::vector<int>& histogram);
 
