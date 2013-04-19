@@ -146,7 +146,7 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
 
   const double precision = double(true_positives) / double(true_positives+false_positives);
   const double recall = double(true_positives) / double(size-last);
-  EXPECT_NEAR(precision, 1.0, 0.35);
+  EXPECT_NEAR(precision, 1.0, 0.4);
   EXPECT_NEAR(recall, 1.0, 0.2);
 }
 
