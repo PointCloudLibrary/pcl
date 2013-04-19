@@ -25,6 +25,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_surface_normal.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_features.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_one_to_one.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_poly.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus_2d.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
@@ -76,6 +77,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_features.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_one_to_one.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_poly.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp
@@ -112,6 +114,7 @@ if(build)
         src/correspondence_rejection_surface_normal.cpp
         src/correspondence_rejection_features.cpp
         src/correspondence_rejection_one_to_one.cpp
+        src/correspondence_rejection_poly.cpp
         src/correspondence_types.cpp
         src/correspondence_rejection_sample_consensus.cpp
         src/correspondence_rejection_sample_consensus_2d.cpp
