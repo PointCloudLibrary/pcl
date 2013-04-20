@@ -180,7 +180,7 @@ pcl::visualization::ImageViewer::addRGBImage (
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, 3 * width * height, 1);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
@@ -232,7 +232,7 @@ pcl::visualization::ImageViewer::addMonoImage (
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
