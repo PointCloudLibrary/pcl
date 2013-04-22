@@ -51,7 +51,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   , keyboard_command_ (vtkSmartPointer<vtkCallbackCommand>::New ())
   , exit_main_loop_timer_callback_ ()
   , exit_callback_ ()
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   , image_viewer_ (vtkSmartPointer<vtkImageViewer>::New ())
 #else
   , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
@@ -94,7 +94,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
   keyboard_command_->SetCallback (ImageViewer::KeyboardCallback);
 
   // Create our own  interactor and set the window title
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   image_viewer_->SetupInteractor (interactor_);
   image_viewer_->GetRenderWindow ()->SetWindowName (window_title.c_str ());
   image_viewer_->GetRenderWindow ()->DoubleBufferOn ();
@@ -180,7 +180,7 @@ pcl::visualization::ImageViewer::addRGBImage (
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, 3 * width * height, 1);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
@@ -232,7 +232,7 @@ pcl::visualization::ImageViewer::addMonoImage (
   image->AllocateScalars ();
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
   algo_->SetInput (image);
   algo_->Update ();
@@ -694,7 +694,7 @@ pcl::visualization::ImageViewer::addFilledRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
   rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
              static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #else
@@ -737,7 +737,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
   rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
              static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #else
@@ -780,7 +780,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
   rect->set (min_pt.x, min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
 #else
   rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
@@ -822,7 +822,7 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   line->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
   line->set (static_cast<float> (x_min), static_cast<float> (y_min),
              static_cast<float> (x_max), static_cast<float> (y_max));
 #else
@@ -884,7 +884,7 @@ pcl::visualization::ImageViewer::markPoint (
 void
 pcl::visualization::ImageViewer::render ()
 {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION < 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   image_viewer_->Render ();
 #else
   win_->Render ();
