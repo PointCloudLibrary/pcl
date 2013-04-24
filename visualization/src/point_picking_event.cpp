@@ -76,7 +76,10 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       style->point_picking_signal_ (event);
     }
     // Call the parent's class mouse events
-    style->OnLeftButtonDown ();
+    if (eventid == vtkCommand::LeftButtonPressEvent)
+      style->OnLeftButtonDown ();
+    else if (eventid == vtkCommand::LeftButtonReleaseEvent)
+      style->OnLeftButtonUp ();
   }
   else
   {
