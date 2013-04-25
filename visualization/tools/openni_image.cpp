@@ -42,6 +42,7 @@
 #include <boost/thread/condition.hpp>
 #include <boost/circular_buffer.hpp>
 #include <csignal>
+#include <limits>
 #include <pcl/io/lzf_image_io.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -66,10 +67,17 @@ int nr_frames_total = 0;
 size_t 
 getTotalSystemMemory ()
 {
-  long pages = sysconf (_SC_AVPHYS_PAGES);
-  long page_size = sysconf (_SC_PAGE_SIZE);
-  print_info ("Total available memory size: %ldMB.\n", (pages * page_size) / 1024 / 1024);
-  return (pages * page_size);
+  uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
+  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  {
+    return std::numeric_limits<size_t>::max ();
+  }
+  else
+  {
+    return size_t (pages * page_size);
+  }
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480) / 2);

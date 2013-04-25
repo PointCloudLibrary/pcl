@@ -39,6 +39,7 @@
 #include <boost/thread/condition.hpp>
 #include <boost/circular_buffer.hpp>
 #include <csignal>
+#include <limits>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -58,10 +59,17 @@ boost::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
-  long pages = sysconf (_SC_AVPHYS_PAGES);
-  long page_size = sysconf (_SC_PAGE_SIZE);
-  print_info ("Total available memory size: %ldMB.\n", (pages * page_size) / 1024 / 1024);
-  return (pages * page_size);
+  uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
+  uint64_t page_size = sysconf (_SC_PAGE_SIZE);
+  print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
+  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  {
+    return std::numeric_limits<size_t>::max ();
+  }
+  else
+  {
+    return size_t (pages * page_size);
+  }
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480));
@@ -203,7 +211,10 @@ class Producer
     void 
     grabAndSend ()
     {
-      Grabber* interface = new OpenNIGrabber ();
+      OpenNIGrabber* grabber = new OpenNIGrabber ();
+      grabber->getDevice ()->setDepthOutputFormat (depth_mode_);
+
+      Grabber* interface = grabber;
       boost::function<void (const typename PointCloud<PointT>::ConstPtr&)> f = boost::bind (&Producer::grabberCallBack, this, _1);
       interface->registerCallback (f);
       interface->start ();
@@ -218,8 +229,9 @@ class Producer
     }
 
   public:
-    Producer (PCDBuffer<PointT> &buf)
-      : buf_ (buf)
+    Producer (PCDBuffer<PointT> &buf, openni_wrapper::OpenNIDevice::DepthMode depth_mode)
+      : buf_ (buf),
+        depth_mode_ (depth_mode)
     {
       thread_.reset (new boost::thread (boost::bind (&Producer::grabAndSend, this)));
     }
@@ -235,6 +247,7 @@ class Producer
 
   private:
     PCDBuffer<PointT> &buf_;
+    openni_wrapper::OpenNIDevice::DepthMode depth_mode_;
     boost::shared_ptr<boost::thread> thread_;
 };
 
@@ -318,6 +331,7 @@ main (int argc, char** argv)
   {
     print_info ("Options are: \n"
               "             -xyz    = save only XYZ data, even if the device is RGB capable\n"
+              "             -shift  = use OpenNI shift values rather than 12-bit depth\n"
               "             -buf X  = use a buffer size of X frames (default: "); 
     print_value ("%d", buff_size); print_info (")\n");
     return (0);
@@ -325,6 +339,9 @@ main (int argc, char** argv)
 
 
   bool just_xyz = find_switch (argc, argv, "-xyz");
+  openni_wrapper::OpenNIDevice::DepthMode depth_mode = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
+  if (find_switch (argc, argv, "-shift"))
+    depth_mode = openni_wrapper::OpenNIDevice::OpenNI_shift_values;
 
   if (parse_argument (argc, argv, "-buf", buff_size) != -1)
     print_highlight ("Setting buffer size to %d frames.\n", buff_size);
@@ -340,7 +357,7 @@ main (int argc, char** argv)
     print_highlight ("PointXYZRGBA enabled.\n");
     PCDBuffer<PointXYZRGBA> buf;
     buf.setCapacity (buff_size);
-    Producer<PointXYZRGBA> producer (buf);
+    Producer<PointXYZRGBA> producer (buf, depth_mode);
     boost::this_thread::sleep (boost::posix_time::seconds (2));
     Consumer<PointXYZRGBA> consumer (buf);
 
@@ -353,7 +370,7 @@ main (int argc, char** argv)
     print_highlight ("PointXYZ enabled.\n");
     PCDBuffer<PointXYZ> buf;
     buf.setCapacity (buff_size);
-    Producer<PointXYZ> producer (buf);
+    Producer<PointXYZ> producer (buf, depth_mode);
     boost::this_thread::sleep (boost::posix_time::seconds (2));
     Consumer<PointXYZ> consumer (buf);
 

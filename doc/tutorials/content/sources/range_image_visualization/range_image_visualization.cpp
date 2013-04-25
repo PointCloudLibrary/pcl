@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include <boost/thread/thread.hpp>
-#include <pcl/common/common_headers.h>
+
 #include <pcl/common/common_headers.h>
 #include <pcl/range_image/range_image.h>
 #include <pcl/io/pcd_io.h>
