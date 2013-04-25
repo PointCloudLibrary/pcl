@@ -19,7 +19,9 @@ if(FZ_API_DIR)
   #MESSAGE("Searching Fotonic libs: ${FZ_API_DIR}/Release")
   find_library(FZAPI_LIBS fotonic_fz_api
     HINTS "${FZ_API_DIR}/Release" NO_DEFAULT_PATH
-    DOC "Fotonic libraries")	
+    DOC "Fotonic libraries")
+else()
+  set(FZ_API_DIR "default value" CACHE FILEPATH "directory of Fotonic API")	
 endif()
 
 #MESSAGE("FZAPI_INCLUDE_DIR: ${FZAPI_INCLUDE_DIR}")
