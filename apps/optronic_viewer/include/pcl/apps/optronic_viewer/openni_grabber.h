@@ -54,22 +54,30 @@ namespace pcl
     namespace optronic_viewer
     {
       
+      /** \brief Wrapper for the grabbing from an OpenNI device. Wrapper is used to run
+       *         the grabbing in a separate thread (QThread).
+       */
       class OpenNIGrabber : public QThread
       {
         Q_OBJECT
 
         public:
+          /** \brief Creates a new wrapper object from the specified grabber. */
           OpenNIGrabber (pcl::Grabber * grabber);
           virtual ~OpenNIGrabber ();
 
+          /** \brief Starts the thread. */
           void run ();
 
+          /** \brief Callback that is used to get cloud data from the grabber. */
           void cloudCallback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & cloud);
 
         signals:
+          /** \brief Omitted when a new cloud is received. */
           void cloudReceived (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud);
 
         private:
+          /** \brief The grabber data is received from. */
           pcl::Grabber * grabber_;
       };
       

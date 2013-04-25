@@ -62,7 +62,6 @@ pcl::FotonicGrabber::FotonicGrabber (const FZ_DEVICE_INFO& device_info, const Mo
   point_cloud_signal_      = createSignal<sig_cb_fotonic_point_cloud> ();
   point_cloud_rgb_signal_  = createSignal<sig_cb_fotonic_point_cloud_rgb> ();
   point_cloud_rgba_signal_ = createSignal<sig_cb_fotonic_point_cloud_rgba> ();
-  //point_cloud_i_signal_    = createSignal<sig_cb_fotonic_point_cloud_i> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +72,6 @@ pcl::FotonicGrabber::~FotonicGrabber () throw ()
   disconnect_all_slots<sig_cb_fotonic_point_cloud> ();
   disconnect_all_slots<sig_cb_fotonic_point_cloud_rgb> ();
   disconnect_all_slots<sig_cb_fotonic_point_cloud_rgba> ();
-  //disconnect_all_slots<sig_cb_fotonic_point_cloud_i> ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

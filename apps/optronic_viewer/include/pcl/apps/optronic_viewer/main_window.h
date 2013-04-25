@@ -127,6 +127,11 @@ namespace pcl
           private slots:
             void addFilter ();
             void updateFilter (QListWidgetItem*);
+            void filterSelectionChanged ();
+
+            void moveFilterUp ();
+            void moveFilterDown ();
+            void removeFilter ();
 
         private:
           MainWindow();
@@ -136,6 +141,11 @@ namespace pcl
 
           // visualization of processing chain
           QListWidget * processing_list_;
+
+          // buttons to change processing chain
+          QPushButton * up_ ;
+          QPushButton * down_;
+          QPushButton * remove_;
 
           // visualization of point clouds
           QVTKWidget * qvtk_widget_;

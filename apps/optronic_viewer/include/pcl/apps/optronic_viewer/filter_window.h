@@ -56,20 +56,32 @@ namespace pcl
     namespace optronic_viewer
     {
       
+      /** \brief Window class for wizards to create new filters. */
       class FilterWindow : public QWizard
       {
         Q_OBJECT
 
       public:
-        FilterWindow (std::vector<CloudFilterFactory*> & filter_factories, std::vector<CloudFilter*> & filter_list);
+        /** \brief Creates a new wizard for creating a filter. The filter to be
+         *         created can be selected from the specified list of filters.
+         *         The supplied factories are used to create the corresponding
+         *         filters.
+         */
+        FilterWindow (
+          std::vector<CloudFilterFactory*> & filter_factories, 
+          std::vector<CloudFilter*> & filter_list);
         virtual ~FilterWindow ();
 
       public slots:
+        /** \brief Called if a different item in the filter list is selected. */
         virtual void itemSelected (int id);
+        /** \brief Called when the 'finish' button is pressed. */
         virtual void finished ();
+        /** \brief Called when the 'next' button is pressed. */
         virtual void next ();
 
       signals:
+        /** \brief Ommitted when a filter is created. */
         void filterCreated ();
 
       protected:
@@ -79,29 +91,26 @@ namespace pcl
         }
 
       private:
-        //void createPages ();
+        /** \brief Creates the page for selecting filters. */
         void createFilterSelectionPage ();
-        
-
-        //void setFilterSelectionView ();
-
+        /** \brief Fills the combo box used for selecting filters. */
         void fillFilterSelectionComboBox (QComboBox * combo_box);
 
-      private slots:
-        //void filterSelectionViewNextButtonHandle ();
-        //void filterSelectionViewOkButtonHandle ();
-        //void filterSelectionViewCancelButtonHandle ();
-
       private:
+        /** \brief List of filter factories used to create the available filters. */
         std::vector<CloudFilterFactory*> filter_factories_;
 
+        /** \brief Combo box that holds the names of the available filters. */
         QComboBox * filter_selection_combo_box_;
+        /** \brief Line edit used to specify the name of the created filter. */
         QLineEdit * filter_name_line_edit_;
 
         int last_added_page_id_;
-        std::vector<CloudFilter*> * filter_list_;
-        //std::vector<CloudFilterWizardPage*> pages_;
 
+        /** \brief The destination for the newly created filter. */
+        std::vector<CloudFilter*> * filter_list_;
+
+        /** \brief The filter to be created. */
         CloudFilter * filter_;
       };
     }

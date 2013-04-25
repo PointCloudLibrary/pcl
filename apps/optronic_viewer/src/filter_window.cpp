@@ -61,16 +61,12 @@ FilterWindow (std::vector<CloudFilterFactory*> & filter_factories, std::vector<C
 
   createFilterSelectionPage ();
 
-  //pages_.push_back (new pcl::apps::optronic_viewer::CloudFilterWizardPage (0));
-  //pages_.push_back (new pcl::apps::optronic_viewer::CloudFilterWizardPage (1));
-
   filter_ = filter_factories_[0]->create ();
 
   QString name (filter_factories_[0]->getName ().c_str ());
   filter_name_line_edit_->setText (name);
 
   if (filter_factories.size () > 0)
-    //this->setPage (1, filter_factories_[0]->getParameterPage ());
     last_added_page_id_ = this->addPage (filter_->getParameterPage ());
 
   connect (this->button (FinishButton), SIGNAL (released ()),this, SLOT (finished ()));
@@ -90,7 +86,6 @@ FilterWindow::
 itemSelected (int id)
 {
   std::cerr << "item " << id << " selected" << std::endl;
-  //this->addPage (filter_factories_[id]->getParameterPage ());
 
   delete filter_;
   filter_ = filter_factories_[id]->create ();
@@ -101,8 +96,6 @@ itemSelected (int id)
   int tmp = this->addPage (filter_->getParameterPage ());
   this->removePage (last_added_page_id_);
   last_added_page_id_ = tmp;
-  //this->setPage (1, filter_factories_[id]->getParameterPage ());
-  //this->setPage (1, pages_[id]);
   this->update ();
 }
 
@@ -146,75 +139,19 @@ createFilterSelectionPage ()
   else
     fillFilterSelectionComboBox (filter_selection_combo_box_);
 
-  //QPushButton * next_button = new QPushButton (tr ("&Next"));
-  //QPushButton * ok_button = new QPushButton (tr ("&Ok"));
-  //QPushButton * cancel_button = new QPushButton (tr ("&Cancel"));
-
-  //connect (next_button, SIGNAL (released ()),this, SLOT (filterSelectionViewNextButtonHandle ()));
-  //connect (ok_button, SIGNAL (released ()),this, SLOT (filterSelectionViewOkButtonHandle ()));
-  //connect (cancel_button, SIGNAL (released ()),this, SLOT (filterSelectionViewCancelButtonHandle ()));
-
   connect (filter_selection_combo_box_, SIGNAL (currentIndexChanged (int)),this, SLOT (itemSelected (int)));
-
 
   QLabel * filter_name_label = new QLabel (tr ("Filter Name:"));
   filter_name_line_edit_ = new QLineEdit ();
-
-
-  //QHBoxLayout * button_layout = new QHBoxLayout ();
-  //button_layout->addStretch (1);
-  //button_layout->addWidget (next_button);
-  //button_layout->addWidget (ok_button);
-  //button_layout->addWidget (cancel_button);
 
   QVBoxLayout * main_layout = new QVBoxLayout (filter_selection_page);
   main_layout->addWidget (select_filter_label);
   main_layout->addWidget (filter_selection_combo_box_);
   main_layout->addWidget (filter_name_label);
   main_layout->addWidget (filter_name_line_edit_);
-  //main_layout->addStretch (1);
-  //main_layout->addLayout (button_layout);
 
   this->addPage (filter_selection_page);
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-//void
-//pcl::apps::optronic_viewer::
-//FilterWindow::
-//setFilterSelectionView ()
-//{
-//  QLabel * select_filter_label = new QLabel (tr ("Select Filter:"));
-//  filter_selection_combo_box_ = new QComboBox ();
-//
-//  if (filter_factories_.empty ())
-//    filter_selection_combo_box_->addItem (tr ("none"));
-//  else
-//    fillFilterSelectionComboBox (filter_selection_combo_box_);
-//
-//  QPushButton * next_button = new QPushButton (tr ("&Next"));
-//  QPushButton * ok_button = new QPushButton (tr ("&Ok"));
-//  QPushButton * cancel_button = new QPushButton (tr ("&Cancel"));
-//
-//  connect (next_button, SIGNAL (released ()),this, SLOT (filterSelectionViewNextButtonHandle ()));
-//  connect (ok_button, SIGNAL (released ()),this, SLOT (filterSelectionViewOkButtonHandle ()));
-//  connect (cancel_button, SIGNAL (released ()),this, SLOT (filterSelectionViewCancelButtonHandle ()));
-//
-//
-//  QHBoxLayout * button_layout = new QHBoxLayout ();
-//  button_layout->addStretch (1);
-//  button_layout->addWidget (next_button);
-//  button_layout->addWidget (ok_button);
-//  button_layout->addWidget (cancel_button);
-//
-//  QVBoxLayout * main_layout = new QVBoxLayout (this);
-//  main_layout->addWidget (select_filter_label);
-//  main_layout->addWidget (filter_selection_combo_box_);
-//  main_layout->addStretch (1);
-//  main_layout->addLayout (button_layout);
-//
-//  this->resize (480, 640);
-//}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -229,76 +166,3 @@ fillFilterSelectionComboBox (QComboBox * combo_box)
     combo_box->addItem (tr (name.c_str ()));
   }
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-//void
-//pcl::apps::optronic_viewer::
-//FilterWindow::
-//filterSelectionViewNextButtonHandle ()
-//{
-//  std::cerr << "released Next" << std::endl;
-//
-//  if (filter_factories_.size () == 0)
-//    return;
-//
-//  const int selected_index = filter_selection_combo_box_->currentIndex ();
-//
-//  QPushButton * ok_button = new QPushButton (tr ("&Ok"));
-//  QPushButton * cancel_button = new QPushButton (tr ("&Cancel"));
-//
-//  connect (ok_button, SIGNAL (released ()),this, SLOT (filterSelectionViewOkButtonHandle ()));
-//  connect (cancel_button, SIGNAL (released ()),this, SLOT (filterSelectionViewCancelButtonHandle ()));
-//
-//  QHBoxLayout * button_layout = new QHBoxLayout ();
-//  button_layout->addStretch (1);
-//  button_layout->addWidget (ok_button);
-//  button_layout->addWidget (cancel_button);
-//
-//
-//  //QVBoxLayout * main_layout = new QVBoxLayout ();
-//  //main_layout->addLayout (button_layout);
-//  //main_layout->addLayout (filter_factories_[selected_index]->getParameterLayout ());
-//
-//
-//  QLayout * current_layout = this->layout ();
-//  while (!current_layout->isEmpty ())
-//    current_layout->removeItem (current_layout->itemAt (0));
-//
-//  //current_layout->addWidget (select_filter_label);
-//  //current_layout->addWidget (filter_selection_combo_box_);
-//  //current_layout->addStretch (1);
-//  //current_layout->addLayout (button_layout);
-//
-//}
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
-//void
-//pcl::apps::optronic_viewer::
-//FilterWindow::
-//filterSelectionViewOkButtonHandle ()
-//{
-//  std::cerr << "released OK" << std::endl;
-//
-//  if (filter_factories_.size () == 0)
-//    return;
-//
-//  const int selected_index = filter_selection_combo_box_->currentIndex ();
-//  CloudFilter * filter = filter_factories_[selected_index]->create ();
-//
-//  // todo: add filter to filter list
-//
-//  std::cerr << "cloud filter created" << std::endl;
-//
-//  this->close ();
-//}
-//
-////////////////////////////////////////////////////////////////////////////////////////////////
-//void
-//pcl::apps::optronic_viewer::
-//FilterWindow::
-//filterSelectionViewCancelButtonHandle ()
-//{
-//  std::cerr << "released Cancel" << std::endl;
-//  this->close ();
-//}
-

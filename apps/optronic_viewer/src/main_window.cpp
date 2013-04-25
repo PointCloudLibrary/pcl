@@ -62,7 +62,13 @@ MainWindow ()
 
 
   // setup filters
-  filter_factories_.push_back (new VoxelGridCFF ());
+  filter_factories_.push_back (new VoxelGridCFF2 ());
+  filter_factories_.push_back (new PassThroughCFF2 ());
+  filter_factories_.push_back (new RadiusOutlierCFF2 ());
+  filter_factories_.push_back (new FastBilateralCFF2 ());
+  filter_factories_.push_back (new MedianCFF2 ());
+  filter_factories_.push_back (new RandomSampleCFF2 ());
+  filter_factories_.push_back (new PlaneCFF2 ());
 
 
   // reset point cloud
@@ -95,6 +101,20 @@ MainWindow ()
   
   processing_list_ = new QListWidget (central_widget);
   connect (processing_list_, SIGNAL (itemDoubleClicked (QListWidgetItem*)), this, SLOT (updateFilter (QListWidgetItem*)));
+  connect (processing_list_, SIGNAL (itemSelectionChanged ()), this, SLOT (filterSelectionChanged ()));
+
+
+  up_ = new QPushButton ("up");
+  down_ = new QPushButton ("down");
+  remove_ = new QPushButton ("remove");
+
+  connect (up_, SIGNAL (clicked ()), this, SLOT (moveFilterUp ()));
+  connect (down_, SIGNAL (clicked ()), this, SLOT (moveFilterDown ()));
+  connect (remove_, SIGNAL (clicked ()), this, SLOT (removeFilter ()));
+
+  up_->setEnabled (false);
+  down_->setEnabled (false);
+  remove_->setEnabled (false);
 
   pcl_visualizer_ = new pcl::visualization::PCLVisualizer ("", false);
   qvtk_widget_ = new QVTKWidget (central_widget);
@@ -108,9 +128,15 @@ MainWindow ()
   sensor_layout->addWidget (sensor_label, 0, Qt::AlignLeft);
   sensor_layout->addWidget (sensor_selection_combo_box, 1);
 
+  QHBoxLayout * button_layout = new QHBoxLayout ();
+  button_layout->addWidget (up_);
+  button_layout->addWidget (down_);
+  button_layout->addWidget (remove_);
+
   QVBoxLayout * sensor_processing_list_layout = new QVBoxLayout ();
-  sensor_processing_list_layout->addLayout (sensor_layout);
+  sensor_processing_list_layout->addLayout (sensor_layout, 0);
   sensor_processing_list_layout->addWidget (processing_list_);
+  sensor_processing_list_layout->addLayout (button_layout, 0);
 
   QHBoxLayout * main_layout = new QHBoxLayout (central_widget);
   main_layout->addLayout (sensor_processing_list_layout, 0);
@@ -136,16 +162,11 @@ MainWindow::
 createFileMenu ()
 {
   // File menu
-  //QAction * open_pcd_file_act = new QAction (tr ("&Open PCD file"), this);
-  //open_pcd_file_act->setStatusTip(tr("Opens a PCD file"));
-  //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-
   QAction * exit_act = new QAction (tr ("E&xit"), this);
   exit_act->setStatusTip (tr ("Closes the viewer"));
-  //connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+  connect(exit_act, SIGNAL(triggered()), this, SLOT(close ()));
 
   QMenu * file_menu = this->menuBar ()->addMenu (tr ("&File"));
-  //file_menu->addAction (open_pcd_file_act);
   file_menu->addAction (exit_act);
 
 
@@ -288,12 +309,17 @@ refresh ()
       cloud_out.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
     }
 
-    // visualize
-    if (!pcl_visualizer_->updatePointCloud (cloud_in, "OpenNICloud"))
+    // only update if cloud is not empty, otherwise the reset of the camera 
+    // viewpoint won't work when initially selecting a sensor
+    if (!cloud_in->empty ()) 
     {
-      pcl_visualizer_->addPointCloud (cloud_in, "OpenNICloud");
-      pcl_visualizer_->resetCameraViewpoint ("OpenNICloud");
-    }          
+      // visualize
+      if (!pcl_visualizer_->updatePointCloud (cloud_in, "OpenNICloud"))
+      {
+        pcl_visualizer_->addPointCloud (cloud_in, "OpenNICloud");
+        pcl_visualizer_->resetCameraViewpoint ("OpenNICloud");
+      }  
+    }
     cloud_mutex_.unlock ();
   }
   qvtk_widget_->GetRenderWindow ()->Render ();
@@ -352,6 +378,109 @@ updateFilter (QListWidgetItem * item)
   QWizard * wizard = new QWizard ();
   wizard->addPage (active_cloud_filters_[id]->getParameterPage ());
   wizard->show ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+filterSelectionChanged ()
+{
+  std::cerr << "filter selection changed..." << std::endl;
+
+  QList<QListWidgetItem*> selected_items = processing_list_->selectedItems ();
+
+  std::cerr << "number of selected items: " << selected_items.size () << std::endl;
+
+  if (selected_items.size () != 0)
+  {
+    int row = processing_list_->row (selected_items[0]);
+    std::cerr << "selected filter: " << row << std::endl;
+
+    if (row != 0)
+      up_->setEnabled (true);
+    else
+      up_->setEnabled (false);
+    
+    const int list_size = active_cloud_filters_.size ();
+    if (row != list_size-1)
+      down_->setEnabled (true);
+    else
+      down_->setEnabled (false);
+
+    remove_->setEnabled (true);
+  }
+  else
+  {
+    up_->setEnabled (false);
+    down_->setEnabled (false);
+    remove_->setEnabled (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+moveFilterUp ()
+{
+  std::cerr << "move filter up" << std::endl;
+
+  QList<QListWidgetItem*> selected_items = processing_list_->selectedItems ();
+  int change_id = processing_list_->row (selected_items[0]);
+
+  pcl::apps::optronic_viewer::CloudFilter* tmp = active_cloud_filters_[change_id];
+  active_cloud_filters_[change_id] = active_cloud_filters_[change_id-1];
+  active_cloud_filters_[change_id-1] = tmp;
+
+  refreshFilterList ();
+
+  processing_list_->setCurrentRow (change_id-1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+moveFilterDown ()
+{
+  std::cerr << "move filter down" << std::endl;
+
+  QList<QListWidgetItem*> selected_items = processing_list_->selectedItems ();
+  int change_id = processing_list_->row (selected_items[0]);
+
+  pcl::apps::optronic_viewer::CloudFilter* tmp = active_cloud_filters_[change_id];
+  active_cloud_filters_[change_id] = active_cloud_filters_[change_id+1];
+  active_cloud_filters_[change_id+1] = tmp;
+
+  refreshFilterList ();
+
+  processing_list_->setCurrentRow (change_id+1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void 
+pcl::apps::optronic_viewer::
+MainWindow::
+removeFilter ()
+{
+  std::cerr << "remove filter" << std::endl;
+
+  QList<QListWidgetItem*> selected_items = processing_list_->selectedItems ();
+  int remove_id = processing_list_->row (selected_items[0]);
+
+  pcl::apps::optronic_viewer::CloudFilter* tmp = active_cloud_filters_[remove_id];
+  active_cloud_filters_.erase (active_cloud_filters_.begin()+remove_id);
+  refreshFilterList ();
+
+  cloud_mutex_.lock ();
+  delete tmp;
+  cloud_mutex_.unlock ();
+
+  if (active_cloud_filters_.size () > remove_id)
+    processing_list_->setCurrentRow (remove_id);
+  else
+    processing_list_->setCurrentRow (remove_id-1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
