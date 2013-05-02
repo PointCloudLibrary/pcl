@@ -37,6 +37,7 @@
  *
  */
 
+#include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/common/transforms.h>
@@ -102,21 +103,33 @@ loopDetection (int end, const CloudVector &clouds, double dist, int &first, int 
 int
 main (int argc, char **argv)
 {
+  double dist = 0.1;
+  pcl::console::parse_argument (argc, argv, "-d", dist);
+
+  double rans = 0.1;
+  pcl::console::parse_argument (argc, argv, "-r", rans);
+
+  int iter = 100;
+  pcl::console::parse_argument (argc, argv, "-i", iter);
+
   pcl::registration::ELCH<PointType> elch;
   pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp (new pcl::IterativeClosestPoint<PointType, PointType>);
-  icp->setMaximumIterations (100);
-  icp->setMaxCorrespondenceDistance (0.1);
-  icp->setRANSACOutlierRejectionThreshold (0.1);
+  icp->setMaximumIterations (iter);
+  icp->setMaxCorrespondenceDistance (dist);
+  icp->setRANSACOutlierRejectionThreshold (rans);
   elch.setReg (icp);
 
+  std::vector<int> pcd_indices;
+  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+
   CloudVector clouds;
-  for (int i = 1; i < argc; i++)
+  for (size_t i = 0; i < pcd_indices.size (); i++)
   {
     CloudPtr pc (new Cloud);
-    pcl::io::loadPCDFile (argv[i], *pc);
-    clouds.push_back (CloudPair (argv[i], pc));
-    std::cout << "loading file: " << argv[i] << " size: " << pc->size () << std::endl;
-    elch.addPointCloud (clouds[i-1].second);
+    pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
+    clouds.push_back (CloudPair (argv[pcd_indices[i]], pc));
+    std::cout << "loading file: " << argv[pcd_indices[i]] << " size: " << pc->size () << std::endl;
+    elch.addPointCloud (clouds[i].second);
   }
 
   int first = 0, last = 0;

@@ -37,6 +37,7 @@
  *
  */
 
+#include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/common/transforms.h>
@@ -58,21 +59,33 @@ typedef std::vector<CloudPair> CloudVector;
 int
 main (int argc, char **argv)
 {
+  double dist = 2.5;
+  pcl::console::parse_argument (argc, argv, "-d", dist);
+
+  int iter = 10;
+  pcl::console::parse_argument (argc, argv, "-i", iter);
+
+  int lumIter = 1;
+  pcl::console::parse_argument (argc, argv, "-l", lumIter);
+
   pcl::registration::LUM<PointType> lum;
-  lum.setMaxIterations (1);
+  lum.setMaxIterations (lumIter);
   lum.setConvergenceThreshold (0.001f);
 
+  std::vector<int> pcd_indices;
+  pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+
   CloudVector clouds;
-  for (int i = 1; i < argc; i++)
+  for (size_t i = 0; i < pcd_indices.size (); i++)
   {
     CloudPtr pc (new Cloud);
-    pcl::io::loadPCDFile (argv[i], *pc);
-    clouds.push_back (CloudPair (argv[i], pc));
-    //std::cout << "loading file: " << argv[i] << " size: " << pc->size () << std::endl;
-    lum.addPointCloud (clouds[i-1].second);
+    pcl::io::loadPCDFile (argv[pcd_indices[i]], *pc);
+    clouds.push_back (CloudPair (argv[pcd_indices[i]], pc));
+    std::cout << "loading file: " << argv[pcd_indices[i]] << " size: " << pc->size () << std::endl;
+    lum.addPointCloud (clouds[i].second);
   }
 
-  for (int i = 0; i < 10; i++)
+  for (int i = 0; i < iter; i++)
   {
     for (size_t i = 1; i < clouds.size (); i++)
       for (size_t j = 0; j < i; j++)
@@ -92,7 +105,7 @@ main (int argc, char **argv)
           ce.setInputTarget (clouds[i].second);
           ce.setInputSource (clouds[j].second);
           pcl::CorrespondencesPtr corr (new pcl::Correspondences);
-          ce.determineCorrespondences (*corr, 2.5f);
+          ce.determineCorrespondences (*corr, dist);
           if (corr->size () > 2)
             lum.setCorrespondences (j, i, corr);
         }
