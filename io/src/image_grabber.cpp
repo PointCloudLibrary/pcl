@@ -1062,7 +1062,11 @@ pcl::ImageGrabberBase::atLastFrame () const
 std::string
 pcl::ImageGrabberBase::getCurrentDepthFileName () const
 {
-  std::string pathname = impl_->depth_image_files_[impl_->cur_frame_];
+  std::string pathname;
+  if (impl_->pclzf_mode_)
+    pathname = impl_->depth_pclzf_files_[impl_->cur_frame_];
+  else
+    pathname = impl_->depth_image_files_[impl_->cur_frame_];
   std::string basename = boost::filesystem::basename (pathname);
   return (basename);
 }
@@ -1070,7 +1074,24 @@ pcl::ImageGrabberBase::getCurrentDepthFileName () const
 std::string
 pcl::ImageGrabberBase::getPrevDepthFileName () const
 {
-  std::string pathname = impl_->depth_image_files_[impl_->cur_frame_-1];
+  std::string pathname;
+  if (impl_->pclzf_mode_)
+    pathname = impl_->depth_pclzf_files_[impl_->cur_frame_-1];
+  else
+    pathname = impl_->depth_image_files_[impl_->cur_frame_-1];
+  std::string basename = boost::filesystem::basename (pathname);
+  return (basename);
+}
+    
+/////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::ImageGrabberBase::getDepthFileNameAtIndex (size_t idx) const
+{
+  std::string pathname;
+  if (impl_->pclzf_mode_)
+    pathname = impl_->depth_pclzf_files_[idx];
+  else
+    pathname = impl_->depth_image_files_[idx];
   std::string basename = boost::filesystem::basename (pathname);
   return (basename);
 }
