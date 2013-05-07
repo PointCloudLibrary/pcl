@@ -189,11 +189,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     case 'u': case 'U':
     case 'q': case 'Q':
     case 'x': case 'X':
+    case 'r': case 'R':
     {
       break;
     }
-    // S and R have a special !ALT case
-    case 'r': case 'R':
+    // S have a special !ALT case
     case 's': case 'S':
     {
       if (!keymod)
@@ -432,8 +432,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "          g, G   : display scale grid (on/off)\n"
                   "          u, U   : display lookup table (on/off)\n"
                   "\n"
-                  "          r, R   : toggle the rubber band selection mode for left mouse button\n"
-                  "\n"
                   "    r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]\n"
                   "\n"
                   "    ALT + s, S   : turn stereo mode on/off\n"
@@ -445,7 +443,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "\n"
                   "    SHIFT + left click   : select a point\n"
                   "\n"
-                  "          x, X   : pick area\n"
+                  "          x, X   : toggle rubber band selection mode for left mouse button\n"
           );
       break;
     }
@@ -734,7 +732,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     {
       if (!keymod)
       {
-        Superclass::OnKeyDown ();
+        FindPokedRenderer(Interactor->GetEventPosition ()[0], Interactor->GetEventPosition ()[1]);
+        if(CurrentRenderer != 0)
+          CurrentRenderer->ResetCamera ();
+        else
+          PCL_WARN ("no current renderer on the interactor style.");
+
+        CurrentRenderer->Render ();
         break;
       }
 
@@ -793,13 +797,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
     case 'x' : case 'X' :
     {
-      int *event_pos = Interactor->GetEventPosition ();
-      FindPokedRenderer (event_pos[0], event_pos[1]);
-      StartPosition[0] = event_pos[0];
-      StartPosition[1] = event_pos[1];
-      EndPosition[0] = event_pos[0];
-      EndPosition[1] = event_pos[1];
-      Superclass::Pick ();
+      CurrentMode = (CurrentMode == ORIENT_MODE) ? SELECT_MODE : ORIENT_MODE;
       break;
     }
 
