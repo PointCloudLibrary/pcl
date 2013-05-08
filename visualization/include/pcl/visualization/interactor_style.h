@@ -80,7 +80,6 @@ namespace pcl
       * -       + / -   : increment/decrement overall point size
       * -        g, G   : display scale grid (on/off)
       * -        u, U   : display lookup table (on/off)
-      * -        r, R   : enable area selection
       * -  r, R [+ ALT] : reset camera [to viewpoint = {0, 0, 0} -> center_{x, y, z}]
       * -  ALT + s, S   : turn stereo mode on/off
       * -  ALT + f, F   : switch between maximized window mode and original size
@@ -89,7 +88,7 @@ namespace pcl
       * -        0..9 [+ CTRL]  : switch between different color handlers (where available)
       * - 
       * -  SHIFT + left click   : select a point
-      * -        x, X   : pick area
+      * -        x, X   : toggle rubber band selection mode for left mouse button
       *
       * \author Radu B. Rusu
       * \ingroup visualization
