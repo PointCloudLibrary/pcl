@@ -156,7 +156,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   } 
   else if (yz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -164,7 +164,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (xz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
