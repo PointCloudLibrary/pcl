@@ -58,7 +58,7 @@ namespace pcl
       * \author Radu B. Rusu
       * \ingroup search
       */
-    template<typename PointT>
+    template<typename PointT, class Tree = pcl::KdTreeFLANN<PointT> >
     class KdTree: public Search<PointT>
     {
       public:
@@ -79,8 +79,8 @@ namespace pcl
         typedef boost::shared_ptr<KdTree<PointT> > Ptr;
         typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
 
-        typedef boost::shared_ptr<pcl::KdTreeFLANN<PointT> > KdTreeFLANNPtr;
-        typedef boost::shared_ptr<const pcl::KdTreeFLANN<PointT> > KdTreeFLANNConstPtr;
+        typedef boost::shared_ptr<Tree> KdTreePtr;
+        typedef boost::shared_ptr<const Tree> KdTreeConstPtr;
         typedef boost::shared_ptr<const PointRepresentation<PointT> > PointRepresentationConstPtr;
 
         /** \brief Constructor for KdTree. 
@@ -167,8 +167,8 @@ namespace pcl
                       std::vector<float> &k_sqr_distances,
                       unsigned int max_nn = 0) const;
       protected:
-        /** \brief A pointer to the internal KdTreeFLANN object. */
-        KdTreeFLANNPtr tree_;
+        /** \brief A pointer to the internal KdTree object. */
+        KdTreePtr tree_;
     };
   }
 }
