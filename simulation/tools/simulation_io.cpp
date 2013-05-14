@@ -1,8 +1,9 @@
 #include "simulation_io.hpp"
+#include <pcl/io/png_io.h>
 
 
 
-SimExample::SimExample(int argc, char** argv,
+pcl::simulation::SimExample::SimExample(int argc, char** argv,
 	int height,int width):
         height_(height), width_(width){
 
@@ -61,7 +62,7 @@ SimExample::SimExample(int argc, char** argv,
 
 
 void 
-SimExample::initializeGL (int argc, char** argv)
+pcl::simulation::SimExample::initializeGL (int argc, char** argv)
 {
   glutInit (&argc, argv);
   glutInitDisplayMode (GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);// was GLUT_RGBA
@@ -94,7 +95,7 @@ SimExample::initializeGL (int argc, char** argv)
 
 
 void
-SimExample::doSim (Eigen::Isometry3d pose_in)
+pcl::simulation::SimExample::doSim (Eigen::Isometry3d pose_in)
 {
   // No reference image - but this is kept for compatability with range_test_v2:
   float* reference = new float[rl_->getRowHeight() * rl_->getColWidth()];
@@ -127,7 +128,7 @@ SimExample::doSim (Eigen::Isometry3d pose_in)
 
 
 void
-SimExample::write_score_image(const float* score_buffer, std::string fname)
+pcl::simulation::SimExample::write_score_image(const float* score_buffer, std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   uint8_t* score_img = new uint8_t[npixels * 3];
@@ -155,16 +156,13 @@ SimExample::write_score_image(const float* score_buffer, std::string fname)
   }
 
   // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(width_ ,height_), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = score_img;
-  cv::imwrite(fname, cv_mat);     
+  pcl::io::saveRgbPNGFile (fname, score_img, width_, height_);
   
   delete [] score_img;
 }
 
 void
-SimExample::write_depth_image(const float* depth_buffer, std::string fname)
+pcl::simulation::SimExample::write_depth_image(const float* depth_buffer, std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   uint8_t* depth_img = new uint8_t[npixels * 3];
@@ -199,56 +197,53 @@ SimExample::write_depth_image(const float* depth_buffer, std::string fname)
       int lb = pval & 0xff;
       switch (pval>>8) {
 	case 0:
-	    depth_img[3*i+2] = 255;
+	    depth_img[3*i+0] = 255;
 	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255-lb;
+	    depth_img[3*i+2] = 255-lb;
 	    break;
 	case 1:
-	    depth_img[3*i+2] = 255;
+	    depth_img[3*i+0] = 255;
 	    depth_img[3*i+1] = lb;
-	    depth_img[3*i+0] = 0;
+	    depth_img[3*i+2] = 0;
 	    break;
 	case 2:
-	    depth_img[3*i+2] = 255-lb;
+	    depth_img[3*i+0] = 255-lb;
 	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = 0;
+	    depth_img[3*i+2] = 0;
 	    break;
 	case 3:
-	    depth_img[3*i+2] = 0;
+	    depth_img[3*i+0] = 0;
 	    depth_img[3*i+1] = 255;
-	    depth_img[3*i+0] = lb;
+	    depth_img[3*i+2] = lb;
 	    break;
 	case 4:
-	    depth_img[3*i+2] = 0;
+	    depth_img[3*i+0] = 0;
 	    depth_img[3*i+1] = 255-lb;
-	    depth_img[3*i+0] = 255;
+	    depth_img[3*i+2] = 255;
 	    break;
 	case 5:
-	    depth_img[3*i+2] = 0;
+	    depth_img[3*i+0] = 0;
 	    depth_img[3*i+1] = 0;
-	    depth_img[3*i+0] = 255-lb;
+	    depth_img[3*i+2] = 255-lb;
 	    break;
 	default:
-	    depth_img[3*i+2] = 0;
-	    depth_img[3*i+1] = 0;
 	    depth_img[3*i+0] = 0;
+	    depth_img[3*i+1] = 0;
+	    depth_img[3*i+2] = 0;
 	    break;
       }
     }
   }
 
   // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(width_ ,height_), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = depth_img;
-  cv::imwrite(fname, cv_mat);     
+  pcl::io::saveRgbPNGFile (fname, depth_img, width_, height_);
   
   delete [] depth_img;
 }
 
 
 void
-SimExample::write_depth_image_uint(const float* depth_buffer, std::string fname)
+pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer, std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   unsigned short * depth_img = new unsigned short[npixels ];
@@ -294,17 +289,14 @@ SimExample::write_depth_image_uint(const float* depth_buffer, std::string fname)
   }
 
   // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(width_ ,height_), IPL_DEPTH_16U, 1);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data =(uchar *) depth_img;
-  cv::imwrite(fname, cv_mat);     
+  pcl::io::saveShortPNGFile (fname, depth_img, width_, height_, 1);
   
   delete [] depth_img;
 }
 
 
 void
-SimExample::write_rgb_image(const uint8_t* rgb_buffer, std::string fname)
+pcl::simulation::SimExample::write_rgb_image(const uint8_t* rgb_buffer, std::string fname)
 {
   int npixels = rl_->getWidth() * rl_->getHeight();
   uint8_t* rgb_img = new uint8_t[npixels * 3];
@@ -322,10 +314,7 @@ SimExample::write_rgb_image(const uint8_t* rgb_buffer, std::string fname)
   }  
   
   // Write to file:
-  IplImage *cv_ipl = cvCreateImage( cvSize(width_ ,height_), 8, 3);
-  cv::Mat cv_mat(cv_ipl);
-  cv_mat.data = rgb_img ;
-  cv::imwrite(fname, cv_mat);     
+  pcl::io::saveRgbPNGFile (fname, rgb_img, width_, height_);
   
   delete [] rgb_img;
 }
