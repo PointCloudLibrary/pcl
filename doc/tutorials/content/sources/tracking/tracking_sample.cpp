@@ -1,19 +1,75 @@
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+#include <pcl/io/openni_grabber.h>
+#include <pcl/console/parse.h>
+#include <pcl/common/time.h>
+#include <pcl/common/centroid.h>
+
+#include <pcl/visualization/cloud_viewer.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/io/pcd_io.h>
+
+#include <pcl/filters/passthrough.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/filters/approximate_voxel_grid.h>
+
+#include <pcl/sample_consensus/method_types.h>
+#include <pcl/sample_consensus/model_types.h>
+
+#include <pcl/search/pcl_search.h>
+#include <pcl/common/transforms.h>
+
+#include <boost/format.hpp>
+
 #include <pcl/tracking/tracking.h>
 #include <pcl/tracking/particle_filter.h>
 #include <pcl/tracking/kld_adaptive_particle_filter_omp.h>
 #include <pcl/tracking/particle_filter_omp.h>
-
 #include <pcl/tracking/coherence.h>
 #include <pcl/tracking/distance_coherence.h>
 #include <pcl/tracking/hsv_color_coherence.h>
-
 #include <pcl/tracking/approx_nearest_pair_point_cloud_coherence.h>
 #include <pcl/tracking/nearest_pair_point_cloud_coherence.h>
 
-#include "segment_reference.h"
-
 using namespace pcl::tracking;
 
+typedef pcl::PointXYZRGBA RefPointType;
+typedef ParticleXYZRPY ParticleT;
+typedef pcl::PointCloud<pcl::PointXYZRGBA> Cloud;
+typedef Cloud::Ptr CloudPtr;
+typedef Cloud::ConstPtr CloudConstPtr;
+typedef ParticleFilterTracker<RefPointType, ParticleT> ParticleFilter;
+
+CloudPtr cloud_pass_;
+CloudPtr cloud_pass_downsampled_;
+CloudPtr target_cloud;
+
+boost::mutex mtx_;
+boost::shared_ptr<ParticleFilter> tracker_;
+bool new_cloud_;
+double downsampling_grid_size_;
+int counter;
+
+
+//Filter along a specified dimension
+void filterPassThrough (const CloudConstPtr &cloud, Cloud &result)
+{
+  pcl::PassThrough<pcl::PointXYZRGBA> pass;
+  pass.setFilterFieldName ("z");
+  pass.setFilterLimits (0.0, 10.0);
+  pass.setKeepOrganized (false);
+  pass.setInputCloud (cloud);
+  pass.filter (result);
+}
+
+
+void gridSampleApprox (const CloudConstPtr &cloud, Cloud &result, double leaf_size)
+{
+  pcl::ApproximateVoxelGrid<pcl::PointXYZRGBA> grid;
+  grid.setLeafSize (static_cast<float> (leaf_size), static_cast<float> (leaf_size), static_cast<float> (leaf_size));
+  grid.setInputCloud (cloud);
+  grid.filter (result);
+}
 
 
 //Draw the current particles
@@ -21,9 +77,8 @@ bool
 drawParticles (pcl::visualization::PCLVisualizer& viz)
 {
   ParticleFilter::PointCloudStatePtr particles = tracker_->getParticles ();
-  if (particles)
+  if (particles && new_cloud_)
     {
-      
       //Set pointCloud with particle's points
       pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
       for (size_t i = 0; i < particles->points.size (); i++)
@@ -39,7 +94,6 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
       //Draw red particles 
       {
 	pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red_color (particle_cloud, 250, 99, 71);
-//        viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "particle cloud");
 
 	if (!viz.updatePointCloud (particle_cloud, red_color, "particle cloud"))
 	  viz.addPointCloud (particle_cloud, red_color, "particle cloud");
@@ -59,21 +113,19 @@ drawResult (pcl::visualization::PCLVisualizer& viz)
   ParticleXYZRPY result = tracker_->getResult ();
   Eigen::Affine3f transformation = tracker_->toEigenMatrix (result);
 
-  // move a little bit for better visualization
+  //move close to camera a little for better visualization
   transformation.translation () += Eigen::Vector3f (0.0f, 0.0f, -0.005f);
-  RefCloudPtr result_cloud (new RefCloud ());
+  CloudPtr result_cloud (new Cloud ());
   pcl::transformPointCloud<RefPointType> (*(tracker_->getReferenceCloud ()), *result_cloud, transformation);
 
   //Draw blue model reference point cloud
   {
     pcl::visualization::PointCloudColorHandlerCustom<RefPointType> blue_color (result_cloud, 0, 0, 255);
-//  viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, "resultcloud");
 
     if (!viz.updatePointCloud (result_cloud, blue_color, "resultcloud"))
       viz.addPointCloud (result_cloud, blue_color, "resultcloud");
   }
 }
- 
 
 //visualization's callback function
 void
@@ -98,18 +150,12 @@ viz_cb (pcl::visualization::PCLVisualizer& viz)
 	  viz.addPointCloud (cloud_pass, "cloudpass");
 	  viz.resetCameraViewpoint ("cloudpass");
 	}
-    }
-
-  //Draw point cloud related with tracking particles
-  if (new_cloud_ && reference_)
-    {
       bool ret = drawParticles (viz);
       if (ret)
-      drawResult (viz);
+        drawResult (viz);
     }
   new_cloud_ = false;
 }
-
 
 //OpenNI Grabber's cloud Callback function
 void
@@ -119,69 +165,40 @@ cloud_cb (const CloudConstPtr &cloud)
   cloud_pass_.reset (new Cloud);
   cloud_pass_downsampled_.reset (new Cloud);
   filterPassThrough (cloud, *cloud_pass_);
+  gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_, downsampling_grid_size_);
 
-  //Point Cloud given at first few frames has some noise
-  if (counter_ < 10)
-    {
-      gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_, downsampling_grid_size_);
-    }
-  //Make model reference and set it to tracker_
-  else if (counter_ == 10)
-    {
-      cloud_pass_downsampled_ = cloud_pass_;
-      CloudPtr target_cloud;
-
-      PCL_INFO ("segmentation, please wait...\n");
-      //remove Plane's point cloud
-      extractPlanes(target_cloud);
-
-      if (target_cloud != NULL)
-	     {
-	       Eigen::Vector4f c;
-	       Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
-	       CloudPtr transed_ref_downsampled (new Cloud);
-					
-	       //Make model reference
-	       initialize_segemnted_reference(target_cloud, transed_ref_downsampled, trans);
-					
-	       tracker_->setReferenceCloud (transed_ref_downsampled);
-	       tracker_->setTrans (trans);
-	     }
-      PCL_INFO ("segmentation Complete!\n");
-      PCL_INFO ("Start tracking\n");
-    }
-  //Track the object
-  else
-    {
-      gridSampleApprox (cloud_pass_, *cloud_pass_downsampled_, downsampling_grid_size_);
-      tracker_->setInputCloud (cloud_pass_downsampled_);
-      tracker_->compute ();
-    }
-    
-  new_cloud_ = true;
-  counter_++;
+  if(counter < 10){
+	counter++;
+  }else{
+  	//Track the object
+	tracker_->setInputCloud (cloud_pass_downsampled_);
+	tracker_->compute ();
+	new_cloud_ = true;
+  }
 }
-
- 
 
 int
 main (int argc, char** argv)
 {
-  
-  if (argc < 2)
+  if (argc < 3)
     {
-      PCL_WARN("Please set device_id (e.g. $ %s '#1')\n", argv[0]);
+      PCL_WARN("Please set device_id pcd_filename(e.g. $ %s '#1' sample.pcd)\n", argv[0]);
       exit (1);
     }
 
-  std::string device_id = std::string (argv[1]);  
-  device_id_ = device_id;
+  //read pcd file
+  target_cloud.reset(new Cloud());
+  if(pcl::io::loadPCDFile (argv[2], *target_cloud) == -1){
+    std::cout << "pcd file not found" << std::endl;
+    exit(-1);
+  }
 
-  viewer_ = new pcl::visualization::CloudViewer("PCL OpenNI Tracking Viewer");
+  std::string device_id = std::string (argv[1]);  
+
+  counter = 0;
 
   //Set parameters
   new_cloud_  = false;
-  counter_    = 0;
   downsampling_grid_size_ =  0.002;
 
   std::vector<double> default_step_covariance = std::vector<double> (6, 0.015 * 0.015);
@@ -236,9 +253,23 @@ main (int argc, char** argv)
 
   tracker_->setCloudCoherence (coherence);
 
+  //prepare the model of tracker's target
+  Eigen::Vector4f c;
+  Eigen::Affine3f trans = Eigen::Affine3f::Identity ();
+  CloudPtr transed_ref (new Cloud);
+  CloudPtr transed_ref_downsampled (new Cloud);
 
+  pcl::compute3DCentroid<RefPointType> (*target_cloud, c);
+  trans.translation ().matrix () = Eigen::Vector3f (c[0], c[1], c[2]);
+  pcl::transformPointCloud<RefPointType> (*target_cloud, *transed_ref, trans.inverse());
+  gridSampleApprox (transed_ref, *transed_ref_downsampled, downsampling_grid_size_);
+
+  //set reference model and trans
+  tracker_->setReferenceCloud (transed_ref_downsampled);
+  tracker_->setTrans (trans);
 
   //Setup OpenNIGrabber and viewer
+  pcl::visualization::CloudViewer* viewer_ = new pcl::visualization::CloudViewer("PCL OpenNI Tracking Viewer");
   pcl::Grabber* interface = new pcl::OpenNIGrabber (device_id);
   boost::function<void (const CloudConstPtr&)> f =
     boost::bind (&cloud_cb, _1);
@@ -251,5 +282,4 @@ main (int argc, char** argv)
   while (!viewer_->wasStopped ())
     boost::this_thread::sleep(boost::posix_time::seconds(1));
   interface->stop();
-
 }

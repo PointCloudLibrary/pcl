@@ -8,5 +8,5 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-add_executable (openni_tracking_sample src/openni_tracking_sample.cpp src/segment_reference.cpp)
-target_link_libraries (openni_tracking_sample ${PCL_LIBRARIES})
+add_executable (tracking_sample tracking_sample.cpp)
+target_link_libraries (tracking_sample ${PCL_LIBRARIES})
