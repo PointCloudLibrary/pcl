@@ -376,19 +376,19 @@ namespace pcl
       // helper methods
 
       /** \brief Check if the RGB and Depth images are required to be synchronized or not. */
-      virtual inline void
+      virtual void
       checkImageAndDepthSynchronizationRequired ();
 
       /** \brief Check if the RGB image stream is required or not. */
-      virtual inline void
+      virtual void
       checkImageStreamRequired ();
 
       /** \brief Check if the depth stream is required or not. */
-      virtual inline void
+      virtual void
       checkDepthStreamRequired ();
 
       /** \brief Check if the IR image stream is required or not. */
-      virtual inline void
+      virtual void
       checkIRStreamRequired ();
 
 
