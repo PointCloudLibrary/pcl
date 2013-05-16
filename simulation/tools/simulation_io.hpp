@@ -15,44 +15,44 @@
 #include <pcl/io/vtk_lib_io.h>
 
 
-#include "pcl/simulation/camera.h"
-#include "pcl/simulation/scene.h"
-#include "pcl/simulation/range_likelihood.h"
+#include <pcl/simulation/camera.h>
+#include <pcl/simulation/scene.h>
+#include <pcl/simulation/range_likelihood.h>
 
-// Writing PNG files:
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-using namespace pcl::simulation;
-
-class SimExample
+namespace pcl
 {
-  public:
-    typedef boost::shared_ptr<SimExample> Ptr;
-    typedef boost::shared_ptr<const SimExample> ConstPtr;
-	
-    SimExample (int argc, char** argv,
-		int height,int width);
-    void initializeGL (int argc, char** argv);
+  namespace simulation
+  {
+    class SimExample
+    {
+      public:
+        typedef boost::shared_ptr<SimExample> Ptr;
+        typedef boost::shared_ptr<const SimExample> ConstPtr;
+    	
+        SimExample (int argc, char** argv,
+    		int height,int width);
+        void initializeGL (int argc, char** argv);
+        
+        Scene::Ptr scene_;
+        Camera::Ptr camera_;
+        RangeLikelihood::Ptr rl_;  
     
-    Scene::Ptr scene_;
-    Camera::Ptr camera_;
-    RangeLikelihood::Ptr rl_;  
-
-    void doSim (Eigen::Isometry3d pose_in);
-
-    void write_score_image(const float* score_buffer,std::string fname);
-    void write_depth_image(const float* depth_buffer,std::string fname);
-    void write_depth_image_uint(const float* depth_buffer,std::string fname);
-    void write_rgb_image(const uint8_t* rgb_buffer,std::string fname);
-
-  private:
-    uint16_t t_gamma[2048];  
-
-    // of platter, usually 640x480
-    int width_;
-    int height_;
-};
+        void doSim (Eigen::Isometry3d pose_in);
+    
+        void write_score_image(const float* score_buffer,std::string fname);
+        void write_depth_image(const float* depth_buffer,std::string fname);
+        void write_depth_image_uint(const float* depth_buffer,std::string fname);
+        void write_rgb_image(const uint8_t* rgb_buffer,std::string fname);
+    
+      private:
+        uint16_t t_gamma[2048];  
+    
+        // of platter, usually 640x480
+        int width_;
+        int height_;
+    };
+  }
+}
 
 
 

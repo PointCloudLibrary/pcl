@@ -80,11 +80,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <boost/thread/thread.hpp>
 
-/*
-// Writing PNG files:
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-*/
 
 #include <pcl/common/common.h>
 #include <pcl/io/pcd_io.h>
