@@ -141,6 +141,10 @@ namespace pcl
     std::string
     getPrevDepthFileName () const;
 
+    /** \brief Get the depth filename at a particular index */
+    std::string
+    getDepthFileNameAtIndex (size_t idx) const;
+
     /** \brief Query only the timestamp of an index, if it exists */
     bool
     getTimestampAtIndex (size_t idx, uint64_t &timestamp) const;
