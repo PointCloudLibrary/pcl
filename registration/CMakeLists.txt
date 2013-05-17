@@ -52,6 +52,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/transformation_estimation_svd_scale.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_lm.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane.h
+        include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_weighted.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls.h
         include/pcl/${SUBSYS_NAME}/transformation_estimation_point_to_plane_lls_weighted.h
         include/pcl/${SUBSYS_NAME}/transformation_validation.h
@@ -99,6 +100,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_lm.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_lls_weighted.hpp
+        include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_point_to_plane_weighted.hpp
         include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp
         include/pcl/${SUBSYS_NAME}/impl/gicp.hpp
         )
@@ -135,6 +137,7 @@ if(build)
         src/transformation_estimation_svd.cpp
         src/transformation_estimation_svd_scale.cpp
         src/transformation_estimation_lm.cpp
+        src/transformation_estimation_point_to_plane_weighted.cpp
         src/transformation_estimation_point_to_plane_lls.cpp
         src/transformation_estimation_point_to_plane_lls_weighted.cpp
         src/transformation_validation_euclidean.cpp
