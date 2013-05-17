@@ -49,8 +49,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar>
 pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::TransformationEstimationLM ()
-  : weights_ ()
-  , tmp_src_ ()
+  : tmp_src_ ()
   , tmp_tgt_ ()
   , tmp_idx_src_ ()
   , tmp_idx_tgt_ ()

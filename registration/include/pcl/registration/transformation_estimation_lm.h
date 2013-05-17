@@ -82,7 +82,6 @@ namespace pcl
           * \param[in] src the TransformationEstimationLM object to copy into this 
           */
         TransformationEstimationLM (const TransformationEstimationLM &src) : 
-          weights_ (src.weights_), 
           tmp_src_ (src.tmp_src_), 
           tmp_tgt_ (src.tmp_tgt_), 
           tmp_idx_src_ (src.tmp_idx_src_), 
@@ -96,7 +95,6 @@ namespace pcl
         TransformationEstimationLM&
         operator = (const TransformationEstimationLM &src)
         {
-          weights_ = src.weights_;
           tmp_src_ = src.tmp_src_; 
           tmp_tgt_ = src.tmp_tgt_; 
           tmp_idx_src_ = src.tmp_idx_src_;
@@ -203,9 +201,6 @@ namespace pcl
           Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
           return ((p_src - t).norm ());
         }
-
-        /** \brief The vector of residual weights. Used internall in the LM loop. */
-        std::vector<double> weights_;
 
         /** \brief Temporary pointer to the source dataset. */
         mutable const PointCloudSource *tmp_src_;
