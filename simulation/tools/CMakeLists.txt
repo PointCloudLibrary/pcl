@@ -23,26 +23,20 @@ if(GLEW_FOUND)
       pcl_simulation   pcl_common  pcl_io pcl_visualization
       ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 
-    find_package( OpenCV REQUIRED )
-    if(OpenCV_FOUND)
+    set(srcs simulation_io.cpp )
+    set(incs simulation_io.hpp )
+    set(LIB_NAME pcl_simulation_io)
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
+      ${srcs} ${incs} ${compression_incs} ${impl_incs}
+      ${VTK_IO_TARGET_LINK_LIBRARIES} 
+      ${OPENNI_INCLUDES})
+    target_link_libraries(${LIB_NAME} pcl_simulation pcl_common pcl_io 
+	    ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES})
 
-      set(srcs simulation_io.cpp )
-      set(incs simulation_io.hpp )
-      set(LIB_NAME pcl_simulation_io)
-      PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME}
-                    ${srcs} ${incs} ${compression_incs} ${impl_incs}
-                    ${VTK_IO_TARGET_LINK_LIBRARIES} 
-                    ${OPENNI_INCLUDES})
-      target_link_libraries(${LIB_NAME} pcl_simulation pcl_common pcl_io 
-	  ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES} ${OpenCV_LIBS})
-
-
-
-      PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
-      target_link_libraries (pcl_sim_terminal_demo
-	${VTK_IO_TARGET_LINK_LIBRARIES}    
-	pcl_simulation   pcl_common  pcl_io pcl_visualization pcl_simulation_io ${OpenCV_LIBS}
-	${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
-    endif(OpenCV_FOUND)
+    PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
+    target_link_libraries (pcl_sim_terminal_demo
+	    ${VTK_IO_TARGET_LINK_LIBRARIES}    
+	    pcl_simulation   pcl_common  pcl_io pcl_visualization pcl_simulation_io
+	    ${GLEW_LIBRARIES} ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
   endif(GLUT_FOUND)
 endif (GLEW_FOUND)
