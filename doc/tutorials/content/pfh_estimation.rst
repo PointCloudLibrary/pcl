@@ -194,3 +194,21 @@ neighbors from *cloud*, *nr_split* is the number of subdivisions to use for the
 binning process for each feature interval, and *pfh_histogram* is the output
 resultant histogram as an array of float values.
 
+.. note::
+  
+  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contains NaN or infinite values.
+  Passing such values to **compute()** will result in undefined output.
+  It is advisable to check the normals, at least during the design of the processing chain or when setting the parameters.
+  This can be done by inserting the following code before the call to **compute()**:
+
+  .. code-block:: cpp
+
+     for (int i = 0; i < normals->points.size(); i++)
+     {
+       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       {
+         PCL_WARN("normals[%d] is not finite\n", i);
+       }
+     }
+
+  In production code, preprocessing steps and parameters should be set so that normals are finite or raise an error.
