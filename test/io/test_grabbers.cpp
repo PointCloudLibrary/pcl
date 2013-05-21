@@ -118,6 +118,7 @@ TEST (PCL, ImageGrabberTIFF)
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
+  grabber.setCameraIntrinsics (525., 525., 320., 240.); // Setting old intrinsics which were used to generate these tests
   grabber.start ();
   for (size_t i = 0; i < grabber.size (); i++)
   {
