@@ -155,6 +155,10 @@ if(build)
       target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkCharts vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     endif()
 
+    if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+      set_target_properties(${LIB_NAME} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+    endif()
+
     set(EXT_DEPS "")
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)

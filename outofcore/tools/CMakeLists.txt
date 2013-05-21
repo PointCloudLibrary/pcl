@@ -1,9 +1,15 @@
 # pcl_outofcore_process
 PCL_ADD_EXECUTABLE(pcl_outofcore_process ${SUBSYS_NAME} outofcore_process.cpp)
 target_link_libraries(pcl_outofcore_process pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
+if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+  set_target_properties(pcl_outofcore_process PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+endif()
 
 PCL_ADD_EXECUTABLE(pcl_outofcore_print ${SUBSYS_NAME} outofcore_print.cpp)
 target_link_libraries(pcl_outofcore_print pcl_common pcl_filters pcl_io pcl_octree pcl_outofcore)
+if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+  set_target_properties(pcl_outofcore_print PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+endif()
 
 if(NOT VTK_FOUND)
   set(DEFAULT FALSE)
@@ -30,6 +36,9 @@ else(NOT VTK_FOUND)
     # pcl_outofcore_viewer
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_outofcore_viewer ${SUBSYS_NAME} ${srcs})
     target_link_libraries(pcl_outofcore_viewer pcl_common pcl_io pcl_outofcore pcl_visualization pcl_octree pcl_filters)
+    if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+      set_target_properties(pcl_outofcore_viewer PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+    endif()
   
   endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.8")
 endif(NOT VTK_FOUND)

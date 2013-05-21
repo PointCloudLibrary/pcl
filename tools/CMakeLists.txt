@@ -180,6 +180,9 @@ if (build)
 
       PCL_ADD_EXECUTABLE(pcl_vtk2pcd ${SUBSYS_NAME} vtk2pcd.cpp)
       target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
+      if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+        set_target_properties(pcl_vtk2pcd PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+      endif()
 
       if(BUILD_visualization)
   
@@ -187,12 +190,18 @@ if (build)
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps ${SUBSYS_NAME} obj_rec_ransac_model_opps.cpp)
         target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
+        if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+          set_target_properties(pcl_obj_rec_ransac_model_opps PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+        endif()
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_hash_table ${SUBSYS_NAME} obj_rec_ransac_hash_table.cpp)
         target_link_libraries(pcl_obj_rec_ransac_hash_table pcl_common pcl_visualization pcl_io pcl_recognition)
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_scene_opps ${SUBSYS_NAME} obj_rec_ransac_scene_opps.cpp) 
         target_link_libraries(pcl_obj_rec_ransac_scene_opps pcl_common pcl_visualization pcl_io pcl_recognition)
+        if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+          set_target_properties(pcl_obj_rec_ransac_scene_opps PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+        endif()
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_accepted_hypotheses ${SUBSYS_NAME} obj_rec_ransac_accepted_hypotheses.cpp) 
         target_link_libraries(pcl_obj_rec_ransac_accepted_hypotheses pcl_common pcl_visualization pcl_io pcl_recognition)
@@ -217,9 +226,15 @@ if (build)
         
         PCL_ADD_EXECUTABLE(pcl_mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
         target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+        if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+          set_target_properties(pcl_mesh_sampling PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+        endif()
         
         PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
         target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
+        if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+          set_target_properties(pcl_virtual_scanner PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+        endif()
 
         PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
         target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)

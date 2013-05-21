@@ -96,9 +96,9 @@ macro(find_boost)
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
   set(BOOST_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}")
   set(BOOST_LIBRARIES ${Boost_LIBRARIES})
-  if(WIN32)
+  if(WIN32 AND NOT MINGW)
     set(BOOST_DEFINITIONS ${BOOST_DEFINITIONS} -DBOOST_ALL_NO_LIB)
-  endif(WIN32)
+  endif(WIN32 AND NOT MINGW)
 endmacro(find_boost)
 
 #remove this as soon as eigen is shipped with FindEigen.cmake

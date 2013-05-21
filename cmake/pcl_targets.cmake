@@ -103,8 +103,12 @@ macro(PCL_ADD_LIBRARY _name _component)
     add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    if(UNIX AND NOT ANDROID)
+    if((UNIX AND NOT ANDROID) OR MINGW)
       target_link_libraries(${_name} m)
+    endif()
+
+    if (MINGW)
+      target_link_libraries(${_name} gomp)
     endif()
 	
 	if(MSVC90 OR MSVC10)
@@ -346,6 +350,10 @@ macro(PCL_ADD_TEST _name _exename)
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_exename} PROPERTIES FOLDER "Tests")
     endif(USE_PROJECT_FOLDERS)
+
+    if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
+      set_target_properties(${_exename} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
+    endif()
 
     if(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(${_name} ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
