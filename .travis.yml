@@ -8,11 +8,8 @@ before_install:
   - sudo apt-get install cmake libvtk5-qt4-dev libboost-dev libflann-dev libeigen3-dev openni-dev libqhull-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev libboost-date-time-dev libboost-iostreams-dev libusb-1.0-0-dev doxygen python-sphinx -qq
 script: 
   - git clone https://github.com/PointCloudLibrary/pcl.git
-  - cd pcl
-  - mkdir build
-  - cd build
-  - cmake ..
-  - make  
+  - cd pcl && mkdir build && cd build
+  - cmake .. && make  
 branches:
   only:
     - master
