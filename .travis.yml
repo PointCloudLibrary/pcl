@@ -5,7 +5,7 @@ compiler:
 before_install:
   - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
   - sudo apt-get update -dd
-  - sudo apt-get install cmake libvtk5-qt4-dev libboost-dev libflann-dev libeigen3-dev openni-dev -qq
+  - sudo apt-get install cmake libvtk5-qt4-dev libboost-dev libflann-dev libeigen3-dev openni-dev libqhull-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev libboost-date-time-dev libboost-iostreams-dev -qq
 script: 
   - git clone https://github.com/PointCloudLibrary/pcl.git
   - cd pcl
