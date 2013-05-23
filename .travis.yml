@@ -17,7 +17,7 @@ branches:
     - master
 notifications:
   recipients:
-    - julius@kammerl.de
+    - julius@kammerl.com
   email:
     on_success: change
     on_failure: always
