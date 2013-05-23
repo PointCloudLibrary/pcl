@@ -5,9 +5,8 @@ compiler:
 before_install:
   - sudo apt-get install cmake
 script: 
-  - mkdir pcl
-  - cd pcl
   - git clone https://github.com/PointCloudLibrary/pcl.git
+  - cd pcl
   - mkdir build
   - cd build
   - cmake ..
