@@ -118,6 +118,7 @@ TEST (PCL, ImageGrabberTIFF)
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
+  grabber.setCameraIntrinsics (525., 525., 320., 240.); // Setting old intrinsics which were used to generate these tests
   grabber.start ();
   for (size_t i = 0; i < grabber.size (); i++)
   {
@@ -377,7 +378,11 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   double cx_multiplier = 0.8;
   double cy_multiplier = 1.3;
   double fx_old, fy_old, cx_old, cy_old;
-  grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old);
+  //grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old); Need to use old intrinsics, can't trust defaults
+  fx_old = 525;
+  fy_old = 525;
+  cx_old = 320;
+  cy_old = 240;
   double fx_new = fx_multiplier * fx_old;
   double fy_new = fy_multiplier * fy_old;
   double cx_new = cx_multiplier * cx_old;

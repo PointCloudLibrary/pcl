@@ -660,7 +660,7 @@ Recognition
   * :ref:`correspondence_grouping`
 
      ======  ======
-     |rc_1|  Title: **The PCL Registration API**
+     |rc_1|  Title: **The PCL Recognition API**
 
              Author: *Tommaso Cavallari, Federico Tombari*
 
@@ -751,6 +751,22 @@ Registration
 
      .. |re_4| image:: images/normal_distributions_transform.gif
                :height: 100px
+
+  * :ref:`in_hand_scanner`
+
+     ======  ======
+     |re_5|  Title: **How to use the In-hand scanner for small objects**
+
+             Author: *Martin Saelzle*
+
+             Compatibility: > PCL 1.7
+
+             This document shows how to use the In-hand scanner applications to obtain colored models of small objects with RGB-D cameras.
+     ======  ======
+
+     .. |re_5| image:: images/ihs_lion_model.png
+               :height: 100px
+
 
 .. _sample_consensus:
 
