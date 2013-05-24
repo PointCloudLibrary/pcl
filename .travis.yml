@@ -9,7 +9,7 @@ before_install:
 script: 
   - git clone https://github.com/PointCloudLibrary/pcl.git
   - cd pcl && mkdir build && cd build
-  - cmake .. && make && make install && make test && make Tutorials && make doc
+  - cmake -DPCL_NO_PRECOMPILE=on .. && make && make install && make test && make Tutorials && make doc
 branches:
   only:
     - master
