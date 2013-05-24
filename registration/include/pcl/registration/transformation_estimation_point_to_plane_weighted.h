@@ -1,9 +1,10 @@
 /*
- * Software License Agreement (BSD License)
+ *  Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) Alexandru-Eugen Ichim
  *
  *  All rights reserved.
  *
@@ -11,15 +12,15 @@
  *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *  * Neither the name of the copyright holder(s) nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,12 +34,11 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_
+
+
+#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_H_
+#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_H_
 
 #include <pcl/registration/transformation_estimation.h>
 #include <pcl/registration/warp_point_rigid.h>
@@ -48,15 +48,15 @@ namespace pcl
 {
   namespace registration
   {
-    /** @b TransformationEstimationLM implements Levenberg Marquardt-based
-      * estimation of the transformation aligning the given correspondences.
+    /** @b TransformationEstimationPointToPlaneWeighted uses Levenberg Marquardt optimization to find the transformation
+      * that minimizes the point-to-plane distance between the given correspondences. In addition to the
+      * TransformationEstimationPointToPlane class, this version takes per-correspondence weights and optimizes accordingly.
       *
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
-      * \author Radu B. Rusu
+      * \author Alexandru-Eugen Ichim
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename MatScalar = float>
-    class TransformationEstimationLM : public TransformationEstimation<PointSource, PointTarget, MatScalar>
+    class TransformationEstimationPointToPlaneWeighted : public TransformationEstimation<PointSource, PointTarget, MatScalar>
     {
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -68,47 +68,52 @@ namespace pcl
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
       public:
-        typedef boost::shared_ptr<TransformationEstimationLM<PointSource, PointTarget, MatScalar> > Ptr;
-        typedef boost::shared_ptr<const TransformationEstimationLM<PointSource, PointTarget, MatScalar> > ConstPtr;
+        typedef boost::shared_ptr<TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> > Ptr;
+        typedef boost::shared_ptr<const TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> > ConstPtr;
 
         typedef Eigen::Matrix<MatScalar, Eigen::Dynamic, 1> VectorX;
         typedef Eigen::Matrix<MatScalar, 4, 1> Vector4;
         typedef typename TransformationEstimation<PointSource, PointTarget, MatScalar>::Matrix4 Matrix4;
         
         /** \brief Constructor. */
-        TransformationEstimationLM ();
+        TransformationEstimationPointToPlaneWeighted ();
 
         /** \brief Copy constructor. 
-          * \param[in] src the TransformationEstimationLM object to copy into this 
+          * \param[in] src the TransformationEstimationPointToPlaneWeighted object to copy into this
           */
-        TransformationEstimationLM (const TransformationEstimationLM &src) : 
+        TransformationEstimationPointToPlaneWeighted (const TransformationEstimationPointToPlaneWeighted &src) :
           tmp_src_ (src.tmp_src_), 
           tmp_tgt_ (src.tmp_tgt_), 
           tmp_idx_src_ (src.tmp_idx_src_), 
           tmp_idx_tgt_ (src.tmp_idx_tgt_), 
-          warp_point_ (src.warp_point_)
+          warp_point_ (src.warp_point_),
+          correspondence_weights_ (src.correspondence_weights_),
+          use_correspondence_weights_ (src.use_correspondence_weights_)
         {};
 
         /** \brief Copy operator. 
-          * \param[in] src the TransformationEstimationLM object to copy into this 
+          * \param[in] src the TransformationEstimationPointToPlaneWeighted object to copy into this
           */
-        TransformationEstimationLM&
-        operator = (const TransformationEstimationLM &src)
+        TransformationEstimationPointToPlaneWeighted&
+        operator = (const TransformationEstimationPointToPlaneWeighted &src)
         {
           tmp_src_ = src.tmp_src_; 
           tmp_tgt_ = src.tmp_tgt_; 
           tmp_idx_src_ = src.tmp_idx_src_;
           tmp_idx_tgt_ = src.tmp_idx_tgt_; 
           warp_point_ = src.warp_point_;
+          correspondence_weights_ = src.correspondence_weights_;
+          use_correspondence_weights_ = src.use_correspondence_weights_;
         }
 
          /** \brief Destructor. */
-        virtual ~TransformationEstimationLM () {};
+        virtual ~TransformationEstimationPointToPlaneWeighted () {};
 
         /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using LM.
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \note Uses the weights given by setWeights.
           */
         inline void
         estimateRigidTransformation (
@@ -121,6 +126,7 @@ namespace pcl
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \note Uses the weights given by setWeights.
           */
         inline void
         estimateRigidTransformation (
@@ -136,8 +142,9 @@ namespace pcl
           * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from 
           * \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \note Uses the weights given by setWeights.
           */
-        inline void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const std::vector<int> &indices_src,
@@ -150,57 +157,35 @@ namespace pcl
           * \param[in] cloud_tgt the target point cloud dataset
           * \param[in] correspondences the vector of correspondences between source and target point cloud
           * \param[out] transformation_matrix the resultant transformation matrix
+          * \note Uses the weights given by setWeights.
           */
-        inline void
+        void
         estimateRigidTransformation (
             const pcl::PointCloud<PointSource> &cloud_src,
             const pcl::PointCloud<PointTarget> &cloud_tgt,
             const pcl::Correspondences &correspondences,
-            Matrix4 &transformation_matrix) const;
+            Matrix4 &transformation_matrix) const;  
+
+
+        inline void
+        setWeights (const std::vector<double> &weights)
+        { correspondence_weights_ = weights; }
+
+        /// use the weights given in the pcl::CorrespondencesPtr for one of the estimateTransformation (...) methods
+        inline void
+        setUseCorrespondenceWeights (bool use_correspondence_weights)
+        { use_correspondence_weights_ = use_correspondence_weights; }
 
         /** \brief Set the function we use to warp points. Defaults to rigid 6D warp.
           * \param[in] warp_fcn a shared pointer to an object that warps points
           */
         void
         setWarpFunction (const boost::shared_ptr<WarpPointRigid<PointSource, PointTarget, MatScalar> > &warp_fcn)
-        {
-          warp_point_ = warp_fcn;
-        }
+        { warp_point_ = warp_fcn; }
 
       protected:
-        /** \brief Compute the distance between a source point and its corresponding target point
-          * \param[in] p_src The source point
-          * \param[in] p_tgt The target point
-          * \return The distance between \a p_src and \a p_tgt
-          *
-          * \note Older versions of PCL used this method internally for calculating the
-          * optimization gradient. Since PCL 1.7, a switch has been made to the 
-          * computeDistance method using Vector4 types instead. This method is only 
-          * kept for API compatibility reasons.
-          */
-        virtual MatScalar
-        computeDistance (const PointSource &p_src, const PointTarget &p_tgt) const
-        {
-          Vector4 s (p_src.x, p_src.y, p_src.z, 0);
-          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
-          return ((s - t).norm ());
-        }
-
-        /** \brief Compute the distance between a source point and its corresponding target point
-          * \param[in] p_src The source point
-          * \param[in] p_tgt The target point
-          * \return The distance between \a p_src and \a p_tgt
-          *
-          * \note A different distance function can be defined by creating a subclass of 
-          * TransformationEstimationLM and overriding this method. 
-          * (See \a TransformationEstimationPointToPlane)
-          */
-        virtual MatScalar
-        computeDistance (const Vector4 &p_src, const PointTarget &p_tgt) const
-        {
-          Vector4 t (p_tgt.x, p_tgt.y, p_tgt.z, 0);
-          return ((p_src - t).norm ());
-        }
+        bool use_correspondence_weights_;
+        mutable std::vector<double> correspondence_weights_;
 
         /** \brief Temporary pointer to the source dataset. */
         mutable const PointCloudSource *tmp_src_;
@@ -262,7 +247,7 @@ namespace pcl
             * \param[in,out] estimator pointer to the estimator object
             */
           OptimizationFunctor (int m_data_points, 
-                               const TransformationEstimationLM *estimator) 
+                               const TransformationEstimationPointToPlaneWeighted *estimator)
             :  Functor<MatScalar> (m_data_points), estimator_ (estimator) 
           {}
 
@@ -296,7 +281,7 @@ namespace pcl
           int 
           operator () (const VectorX &x, VectorX &fvec) const;
 
-          const TransformationEstimationLM<PointSource, PointTarget, MatScalar> *estimator_;
+          const TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> *estimator_;
         };
 
         struct OptimizationFunctorWithIndices : public Functor<MatScalar>
@@ -308,7 +293,7 @@ namespace pcl
             * \param[in,out] estimator pointer to the estimator object
             */
           OptimizationFunctorWithIndices (int m_data_points, 
-                                          const TransformationEstimationLM *estimator) 
+                                          const TransformationEstimationPointToPlaneWeighted *estimator)
             : Functor<MatScalar> (m_data_points), estimator_ (estimator) 
           {}
 
@@ -342,7 +327,7 @@ namespace pcl
           int 
           operator () (const VectorX &x, VectorX &fvec) const;
 
-          const TransformationEstimationLM<PointSource, PointTarget, MatScalar> *estimator_;
+          const TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar> *estimator_;
         };
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -350,7 +335,7 @@ namespace pcl
   }
 }
 
-#include <pcl/registration/impl/transformation_estimation_lm.hpp>
+#include <pcl/registration/impl/transformation_estimation_point_to_plane_weighted.hpp>
 
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_H_ */
+#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_H_ */
 
