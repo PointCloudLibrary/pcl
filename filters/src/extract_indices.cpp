@@ -151,7 +151,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &in
 #include <pcl/point_types.h>
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::Normal)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES)
 #endif

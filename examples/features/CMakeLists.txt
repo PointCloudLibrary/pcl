@@ -16,11 +16,8 @@ LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 PCL_ADD_EXAMPLE(pcl_example_spin_images FILES example_spin_images.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
-if(NOT PCL_ONLY_CORE_POINT_TYPES)
 PCL_ADD_EXAMPLE(pcl_example_rift_estimation FILES example_rift_estimation.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io)
 
 PCL_ADD_EXAMPLE(pcl_example_difference_of_normals FILES example_difference_of_normals.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io pcl_segmentation pcl_sample_consensus)
-endif()
-

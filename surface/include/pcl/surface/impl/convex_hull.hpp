@@ -179,8 +179,8 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // Compute convex hull
   int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
     
-  // 0 if no error from qhull
-  if (exitcode != 0)
+  // 0 if no error from qhull or it doesn't find any vertices
+  if (exitcode != 0 || qh num_vertices == 0)
   {
     PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), indices_->size ());
 

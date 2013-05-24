@@ -1,9 +1,10 @@
 /*
- * Software License Agreement (BSD License)
+ *  Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2009-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) Alexandru-Eugen Ichim
  *
  *  All rights reserved.
  *
@@ -11,15 +12,15 @@
  *  modification, are permitted provided that the following conditions
  *  are met:
  *
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
+ *  * Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  * Redistributions in binary form must reproduce the above
+ *    copyright notice, this list of conditions and the following
+ *    disclaimer in the documentation and/or other materials provided
+ *    with the distribution.
+ *  * Neither the name of the copyright holder(s) nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
  *
  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -33,12 +34,10 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
- *
  */
-#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
-#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_
+
+#ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_
+#define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_
 
 #include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/warp_point_rigid_6d.h>
@@ -48,18 +47,20 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar>
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::TransformationEstimationLM ()
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::TransformationEstimationPointToPlaneWeighted ()
   : tmp_src_ ()
   , tmp_tgt_ ()
   , tmp_idx_src_ ()
   , tmp_idx_tgt_ ()
   , warp_point_ (new WarpPointRigid6D<PointSource, PointTarget, MatScalar>)
+  , correspondence_weights_ ()
+  , use_correspondence_weights_ (true)
 {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> void
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     Matrix4 &transformation_matrix) const
@@ -68,16 +69,24 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
   // <cloud_src,cloud_src> is the source dataset
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
     PCL_ERROR ("Number or points in source (%zu) differs than target (%zu)!\n", 
                cloud_src.points.size (), cloud_tgt.points.size ());
     return;
   }
   if (cloud_src.points.size () < 4)     // need at least 4 samples
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] ");
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
     PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %zu points!\n", 
                cloud_src.points.size ());
+    return;
+  }
+
+  if (correspondence_weights_.size () != cloud_src.size ())
+  {
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
+    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+               correspondence_weights_.size (), cloud_src.points.size ());
     return;
   }
 
@@ -91,12 +100,11 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
   OptimizationFunctor functor (static_cast<int> (cloud_src.points.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
-  //Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, MatScalar> lm (num_diff);
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
-  PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation]");
+  PCL_DEBUG ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation]");
   PCL_DEBUG ("LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
   PCL_DEBUG ("Final solution: [%f", x[0]);
   for (int i = 1; i < n_unknowns; ++i) 
@@ -113,7 +121,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> void
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -121,9 +129,18 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
     return;
   }
+
+  if (correspondence_weights_.size () != indices_src.size ())
+  {
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
+    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+               correspondence_weights_.size (), indices_src.size ());
+    return;
+  }
+
 
   // <cloud_src,cloud_src> is the source dataset
   transformation_matrix.setIdentity ();
@@ -139,7 +156,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> inline void
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const std::vector<int> &indices_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
@@ -148,7 +165,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
     return;
   }
 
@@ -159,6 +176,15 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
                indices_src.size ());
     return;
   }
+
+  if (correspondence_weights_.size () != indices_src.size ())
+  {
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
+    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+               correspondence_weights_.size (), indices_src.size ());
+    return;
+  }
+
 
   int n_unknowns = warp_point_->getDimension ();  // get dimension of unknown space
   VectorX x (n_unknowns);
@@ -172,12 +198,11 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
   OptimizationFunctorWithIndices functor (static_cast<int> (indices_src.size ()), this);
   Eigen::NumericalDiff<OptimizationFunctorWithIndices> num_diff (functor);
-  //Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices> > lm (num_diff);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctorWithIndices>, MatScalar> lm (num_diff);
   int info = lm.minimize (x);
 
   // Compute the norm of the residuals
-  PCL_DEBUG ("[pcl::registration::TransformationEstimationLM::estimateRigidTransformation] LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
+  PCL_DEBUG ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] LM solver finished with exit code %i, having a residual norm of %g. \n", info, lm.fvec.norm ());
   PCL_DEBUG ("Final solution: [%f", x[0]);
   for (int i = 1; i < n_unknowns; ++i) 
     PCL_DEBUG (" %f", x[i]);
@@ -194,7 +219,7 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> inline void
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::estimateRigidTransformation (
     const pcl::PointCloud<PointSource> &cloud_src,
     const pcl::PointCloud<PointTarget> &cloud_tgt,
     const pcl::Correspondences &correspondences,
@@ -209,12 +234,19 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     indices_tgt[i] = correspondences[i].index_match;
   }
 
+  if (use_correspondence_weights_)
+  {
+    correspondence_weights_.resize (nr_correspondences);
+    for (size_t i = 0; i < nr_correspondences; ++i)
+      correspondence_weights_[i] = correspondences[i].weight;
+  }
+
   estimateRigidTransformation (cloud_src, indices_src, cloud_tgt, indices_tgt, transformation_matrix);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> int 
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::OptimizationFunctor::operator () (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::OptimizationFunctor::operator () (
     const VectorX &x, VectorX &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
@@ -234,14 +266,14 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     estimator_->warp_point_->warpPoint (p_src, p_src_warped);
 
     // Estimate the distance (cost function)
-    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
+    fvec[i] = estimator_->correspondence_weights_[i] * estimator_->computeDistance (p_src_warped, p_tgt);
   }
   return (0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename MatScalar> int
-pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScalar>::OptimizationFunctorWithIndices::operator() (
+pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, PointTarget, MatScalar>::OptimizationFunctorWithIndices::operator() (
     const VectorX &x, VectorX &fvec) const
 {
   const PointCloud<PointSource> & src_points = *estimator_->tmp_src_;
@@ -263,11 +295,9 @@ pcl::registration::TransformationEstimationLM<PointSource, PointTarget, MatScala
     estimator_->warp_point_->warpPoint (p_src, p_src_warped);
     
     // Estimate the distance (cost function)
-    fvec[i] = estimator_->computeDistance (p_src_warped, p_tgt);
+    fvec[i] = estimator_->correspondence_weights_[i] * estimator_->computeDistance (p_src_warped, p_tgt);
   }
   return (0);
 }
 
-//#define PCL_INSTANTIATE_TransformationEstimationLM(T,U) template class PCL_EXPORTS pcl::registration::TransformationEstimationLM<T,U>;
-
-#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_LM_HPP_ */
+#endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_HPP_ */

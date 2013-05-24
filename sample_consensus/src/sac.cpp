@@ -48,7 +48,7 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(RandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(RandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointNormal))
   PCL_INSTANTIATE(MEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
   PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
   PCL_INSTANTIATE(RandomizedRandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
