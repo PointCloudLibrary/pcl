@@ -40,7 +40,7 @@
 #ifndef PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_H_
 #define PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_POINT_TO_PLANE_WEIGHTED_H_
 
-#include <pcl/registration/transformation_estimation.h>
+#include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/warp_point_rigid.h>
 #include <pcl/registration/distances.h>
 
@@ -56,7 +56,7 @@ namespace pcl
       * \ingroup registration
       */
     template <typename PointSource, typename PointTarget, typename MatScalar = float>
-    class TransformationEstimationPointToPlaneWeighted : public TransformationEstimation<PointSource, PointTarget, MatScalar>
+    class TransformationEstimationPointToPlaneWeighted : public TransformationEstimationPointToPlane<PointSource, PointTarget, MatScalar>
     {
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
