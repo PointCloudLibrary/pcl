@@ -1072,6 +1072,7 @@ namespace pcl
 #else
           stopped_ = true;
           // This tends to close the window...
+          win_->Finalize ();
           interactor_->TerminateApp ();
 #endif
         }
