@@ -9,7 +9,7 @@ before_install:
   - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev openni-dev libqhull-dev boost1.53 libusb-1.0-0-dev doxygen python-sphinx -qq
 script: 
   - mkdir build && cd build
-  - cmake -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j4 && sudo make install && make test && make Tutorials && make doc
+  - cmake -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j3 && sudo make install && make test && make Tutorials && make doc
 branches:
   only:
     - master
