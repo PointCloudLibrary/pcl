@@ -43,19 +43,21 @@ void
 pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorrespondences (const pcl::Correspondences& original_correspondences,
                                                                                           pcl::Correspondences& remaining_correspondences)
 {
-  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud = boost::static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointXYZ> >(data_container_)->getInputSource ();
+  pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloud = boost::static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal> >(data_container_)->getInputTarget ();
+
+  if (!cloud->isOrganized ())
+  {
+    PCL_ERROR ("[pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorrespondences] The target cloud is not organized.\n");
+    remaining_correspondences.clear ();
+    return;
+  }
 
   remaining_correspondences.reserve (original_correspondences.size ());
   for (size_t c_i = 0; c_i < original_correspondences.size (); ++c_i)
   {
-    /// Count how many NaNs bound the source point
-    int x = original_correspondences[c_i].index_query % cloud->width;
-    int y = original_correspondences[c_i].index_query / cloud->width;
-
     /// Count how many NaNs bound the target point
-    cloud = boost::static_pointer_cast<pcl::registration::DataContainer<pcl::PointXYZ, pcl::PointNormal> >(data_container_)->getInputTarget ();
-    x = original_correspondences[c_i].index_match % cloud->width;
-    y = original_correspondences[c_i].index_match / cloud->width;
+    int x = original_correspondences[c_i].index_match % cloud->width;
+    int y = original_correspondences[c_i].index_match / cloud->width;
 
     int nan_count_tgt = 0;
     for (int x_d = -window_size_/2; x_d <= window_size_/2; ++x_d)
