@@ -10,7 +10,7 @@ before_install:
 script: 
   - git clone https://github.com/PointCloudLibrary/pcl.git
   - cd pcl && mkdir build && cd build
-  - cmake -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make && make install && make test && make Tutorials && make doc
+  - cmake -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j4 && make install && make test && make Tutorials && make doc
 branches:
   only:
     - master
