@@ -260,7 +260,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
   // number of faces for header
   unsigned nr_faces = static_cast<unsigned> (mesh.polygons.size ());
   // Do we have vertices normals?
-  int normal_index = getFieldIndex (mesh.cloud, "normal");
+  int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 
   // Write the header information
   fs << "####" << std::endl;
