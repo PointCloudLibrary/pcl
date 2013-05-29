@@ -44,7 +44,7 @@
  * Tracking people within groups with RGB-D data,
  * In Proceedings of the International Conference on Intelligent Robots and Systems (IROS) 2012, Vilamoura (Portugal), 2012.
  */
-
+  
 #include <pcl/console/parse.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/pcl_visualizer.h>    
@@ -57,6 +57,9 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 
 // PCL viewer //
 pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+
+// Mutex: //
+boost::mutex cloud_mutex;
 
 enum { COLS = 640, ROWS = 480 };
 
@@ -73,19 +76,13 @@ int print_help()
   return 0;
 }
 
-//void cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT::Ptr& cloud,
-//    bool* new_cloud_available_flag)
-//{
-//  pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZRGBA>(*callback_cloud, *cloud);
-//  *new_cloud_available_flag = true;
-//}
-
-void
-cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT *cloud_object,
+void cloud_cb_ (const PointCloudT::ConstPtr &callback_cloud, PointCloudT::Ptr& cloud,
     bool* new_cloud_available_flag)
 {
-  pcl::copyPointCloud<PointT, PointT>(*callback_cloud, *cloud_object);
+  cloud_mutex.lock ();    // for not overwriting the point cloud from another thread
+  *cloud = *callback_cloud;
   *new_cloud_available_flag = true;
+  cloud_mutex.unlock ();
 }
 
 struct callback_args{
@@ -132,27 +129,20 @@ int main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "--max_h", max_height);
 
   // Read Kinect live stream:
-//  PointCloudT::Ptr cloud (new PointCloudT);
-//  *cloud = new_cloud;
-//  cloud = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>);
-  PointCloudT cloud_obj;
   PointCloudT::Ptr cloud (new PointCloudT);
   bool new_cloud_available_flag = false;
   pcl::Grabber* interface = new pcl::OpenNIGrabber();
-//  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
-//      boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
-  boost::function<void (const PointCloudT::ConstPtr&)> f =
-        boost::bind (&cloud_cb_, _1, &cloud_obj, &new_cloud_available_flag);
+  boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> f =
+      boost::bind (&cloud_cb_, _1, cloud, &new_cloud_available_flag);
   interface->registerCallback (f);
   interface->start ();
 
   // Wait for the first frame:
   while(!new_cloud_available_flag) 
-  {  
     boost::this_thread::sleep(boost::posix_time::milliseconds(1));
-  }
-  pcl::copyPointCloud<PointT, PointT>(cloud_obj, *cloud);
   new_cloud_available_flag = false;
+
+  cloud_mutex.lock ();    // for not overwriting the point cloud
 
   // Display pointcloud:
   pcl::visualization::PointCloudColorHandlerRGBField<PointT> rgb(cloud);
@@ -170,6 +160,8 @@ int main (int argc, char** argv)
   // Spin until 'Q' is pressed:
   viewer.spin();
   std::cout << "done." << std::endl;
+  
+  cloud_mutex.unlock ();    
 
   // Ground plane estimation:
   Eigen::VectorXf ground_coeffs;
@@ -204,10 +196,8 @@ int main (int argc, char** argv)
   // Main loop:
   while (!viewer.wasStopped())
   {
-    if (new_cloud_available_flag)    // if a new cloud is available
+    if (new_cloud_available_flag && cloud_mutex.try_lock ())    // if a new cloud is available
     {
-      // Make the "cloud" pointer point to the new cloud:
-      pcl::copyPointCloud<PointT, PointT>(cloud_obj, *cloud);
       new_cloud_available_flag = false;
 
       // Perform people detection on the new cloud:
@@ -244,6 +234,7 @@ int main (int argc, char** argv)
         count = 0;
         last = now;
       }
+      cloud_mutex.unlock ();
     }
   }
 
