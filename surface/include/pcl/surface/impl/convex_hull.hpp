@@ -81,15 +81,15 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   bool xz_proj_safe = true;
 
   // Check the input's normal to see which projection to use
-  PointInT p0 = input_->points[0];
-  PointInT p1 = input_->points[indices_->size () - 1];
-  PointInT p2 = input_->points[indices_->size () / 2];
+  PointInT p0 = input_->points[(*indices_)[0]];
+  PointInT p1 = input_->points[(*indices_)[indices_->size () - 1]];
+  PointInT p2 = input_->points[(*indices_)[indices_->size () / 2]];
   Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
   {
-    p0 = input_->points[rand () % indices_->size ()];
-    p1 = input_->points[rand () % indices_->size ()];
-    p2 = input_->points[rand () % indices_->size ()];
+    p0 = input_->points[(*indices_)[rand () % indices_->size ()]];
+    p1 = input_->points[(*indices_)[rand () % indices_->size ()]];
+    p2 = input_->points[(*indices_)[rand () % indices_->size ()]];
     dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
     
@@ -156,7 +156,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   } 
   else if (yz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -164,7 +164,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (xz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
