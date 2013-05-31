@@ -76,7 +76,7 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
         THROW_OPENNI_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", image_md_->XRes (), image_md_->YRes (), width, height);
   }
 
-  register const XnUInt8* yuv_buffer = image_md_->Data();
+  register const XnUInt8* yuv_buffer = image_md_->WritableData();
 
   unsigned rgb_line_skip = 0;
   if (rgb_line_step != 0)
@@ -138,7 +138,7 @@ void ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned char*
   register unsigned yuv_step = image_md_->XRes() / width;
   register unsigned yuv_x_step = yuv_step << 1;
   register unsigned yuv_skip = (image_md_->YRes() / height - 1) * ( image_md_->XRes() << 1 );
-  register const XnUInt8* yuv_buffer = (image_md_->Data() + 1);
+  register const XnUInt8* yuv_buffer = (image_md_->WritableData() + 1);
 
   for( register unsigned yIdx = 0; yIdx < image_md_->YRes(); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip )
   {
