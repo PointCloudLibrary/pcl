@@ -434,7 +434,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
     // do we violate any bounds?
     if (bLowerBoundViolationX || bLowerBoundViolationY || bLowerBoundViolationZ || bUpperBoundViolationX
-        || bUpperBoundViolationY || bUpperBoundViolationZ )
+        || bUpperBoundViolationY || bUpperBoundViolationZ || (!bounding_box_defined_) )
     {
 
       if (bounding_box_defined_)
