@@ -12,6 +12,8 @@ if(build)
     set(incs
         include/pcl/${SUBSYS_NAME}/stereo_grabber.h
 		include/pcl/${SUBSYS_NAME}/stereo_matching.h
+		include/pcl/${SUBSYS_NAME}/disparity_map_converter.h
+		include/pcl/${SUBSYS_NAME}/digital_elevation_map.h
         )
 
     set(impl_incs
@@ -22,6 +24,8 @@ if(build)
 		src/stereo_matching.cpp
 		src/stereo_block_based.cpp
 		src/stereo_adaptive_cost_so.cpp
+		src/disparity_map_converter.cpp
+		src/digital_elevation_map.cpp
         )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
