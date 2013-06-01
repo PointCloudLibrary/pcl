@@ -100,6 +100,13 @@ pcl::MaximumLikelihoodSampleConsensus<PointT>::computeModel (int debug_verbosity
     // Iterate through the 3d points and calculate the distances from them to the model
     sac_model_->getDistancesToModel (model_coefficients, distances);
 
+    if (distances.empty ())
+    {
+      //iterations_++;
+      ++skipped_count;
+      continue;
+    }
+    
     // Use Expectiation-Maximization to find out the right value for d_cur_penalty
     // ---[ Initial estimate for the gamma mixing parameter = 1/2
     double gamma = 0.5;
