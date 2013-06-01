@@ -571,9 +571,9 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::b
           const PointT& candidate_point = this->getPointByIndex (decoded_point_vector[i]);
 
           // check if point falls within search box
-          bInBox = ( (candidate_point.x > min_pt (0)) && (candidate_point.x < max_pt (0)) &&
-                     (candidate_point.y > min_pt (1)) && (candidate_point.y < max_pt (1)) &&
-                     (candidate_point.z > min_pt (2)) && (candidate_point.z < max_pt (2)) );
+          bInBox = ( (candidate_point.x >= min_pt (0)) && (candidate_point.x <= max_pt (0)) &&
+                     (candidate_point.y >= min_pt (1)) && (candidate_point.y <= max_pt (1)) &&
+                     (candidate_point.z >= min_pt (2)) && (candidate_point.z <= max_pt (2)) );
 
           if (bInBox)
             // add to result vector
