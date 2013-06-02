@@ -54,7 +54,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -69,7 +69,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &cloud, bool binary, bool use_camera)
+saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &cloud, bool binary, bool use_camera)
 {
   TicToc tt;
   tt.tic ();
@@ -112,7 +112,7 @@ main (int argc, char** argv)
   print_value ("%s\n", (use_camera ? "using camera" : "no camera"));
 
   // Load the first file
-  sensor_msgs::PointCloud2 cloud;
+  pcl_sensor_msgs::PCLPointCloud2 cloud;
   if (!loadCloud (argv[pcd_file_indices[0]], cloud)) 
     return (-1);
 

@@ -55,7 +55,7 @@ namespace pcl
     * \ingroup common
     */
   inline int
-  getFieldIndex (const sensor_msgs::PointCloud2 &cloud, const std::string &field_name)
+  getFieldIndex (const pcl_sensor_msgs::PCLPointCloud2 &cloud, const std::string &field_name)
   {
     // Get the index we need
     for (size_t d = 0; d < cloud.fields.size (); ++d)
@@ -67,36 +67,36 @@ namespace pcl
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] cloud the the point cloud message
     * \param[in] field_name the string defining the field name
-    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
   template <typename PointT> inline int 
   getFieldIndex (const pcl::PointCloud<PointT> &cloud, const std::string &field_name, 
-                 std::vector<sensor_msgs::PointField> &fields);
+                 std::vector<pcl_sensor_msgs::PCLPointField> &fields);
 
   /** \brief Get the index of a specified field (i.e., dimension/channel)
     * \param[in] field_name the string defining the field name
-    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
   template <typename PointT> inline int 
   getFieldIndex (const std::string &field_name, 
-                 std::vector<sensor_msgs::PointField> &fields);
+                 std::vector<pcl_sensor_msgs::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
     * \param[in] cloud the point cloud message
-    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
   template <typename PointT> inline void 
-  getFields (const pcl::PointCloud<PointT> &cloud, std::vector<sensor_msgs::PointField> &fields);
+  getFields (const pcl::PointCloud<PointT> &cloud, std::vector<pcl_sensor_msgs::PCLPointField> &fields);
 
   /** \brief Get the list of available fields (i.e., dimension/channel)
-    * \param[out] fields a vector to the original \a PointField vector that the raw PointCloud message contains
+    * \param[out] fields a vector to the original \a PCLPointField vector that the raw PointCloud message contains
     * \ingroup common
     */
   template <typename PointT> inline void 
-  getFields (std::vector<sensor_msgs::PointField> &fields);
+  getFields (std::vector<pcl_sensor_msgs::PCLPointField> &fields);
 
   /** \brief Get the list of all fields available in a given cloud
     * \param[in] cloud the the point cloud message
@@ -110,7 +110,7 @@ namespace pcl
     * \ingroup common
     */
   inline std::string
-  getFieldsList (const sensor_msgs::PointCloud2 &cloud)
+  getFieldsList (const pcl_sensor_msgs::PCLPointCloud2 &cloud)
   {
     std::string result;
     for (size_t i = 0; i < cloud.fields.size () - 1; ++i)
@@ -120,7 +120,7 @@ namespace pcl
   }
 
   /** \brief Obtains the size of a specific field data type in bytes
-    * \param[in] datatype the field data type (see PointField.h)
+    * \param[in] datatype the field data type (see PCLPointField.h)
     * \ingroup common
     */
   inline int
@@ -128,20 +128,20 @@ namespace pcl
   {
     switch (datatype)
     {
-      case sensor_msgs::PointField::INT8:
-      case sensor_msgs::PointField::UINT8:
+      case pcl_sensor_msgs::PCLPointField::INT8:
+      case pcl_sensor_msgs::PCLPointField::UINT8:
         return (1);
 
-      case sensor_msgs::PointField::INT16:
-      case sensor_msgs::PointField::UINT16:
+      case pcl_sensor_msgs::PCLPointField::INT16:
+      case pcl_sensor_msgs::PCLPointField::UINT16:
         return (2);
 
-      case sensor_msgs::PointField::INT32:
-      case sensor_msgs::PointField::UINT32:
-      case sensor_msgs::PointField::FLOAT32:
+      case pcl_sensor_msgs::PCLPointField::INT32:
+      case pcl_sensor_msgs::PCLPointField::UINT32:
+      case pcl_sensor_msgs::PCLPointField::FLOAT32:
         return (4);
 
-      case sensor_msgs::PointField::FLOAT64:
+      case pcl_sensor_msgs::PCLPointField::FLOAT64:
         return (8);
 
       default:
@@ -154,10 +154,10 @@ namespace pcl
     * \param[out] field_sizes the resultant field sizes in bytes
     */
   PCL_EXPORTS void
-  getFieldsSizes (const std::vector<sensor_msgs::PointField> &fields, 
+  getFieldsSizes (const std::vector<pcl_sensor_msgs::PCLPointField> &fields, 
                   std::vector<int> &field_sizes);
 
-  /** \brief Obtains the type of the PointField from a specific size and type
+  /** \brief Obtains the type of the PCLPointField from a specific size and type
     * \param[in] size the size in bytes of the data field
     * \param[in] type a char describing the type of the field  ('F' = float, 'I' = signed, 'U' = unsigned)
     * \ingroup common
@@ -170,34 +170,34 @@ namespace pcl
     {
       case 1:
         if (type == 'I')
-          return (sensor_msgs::PointField::INT8);
+          return (pcl_sensor_msgs::PCLPointField::INT8);
         if (type == 'U')
-          return (sensor_msgs::PointField::UINT8);
+          return (pcl_sensor_msgs::PCLPointField::UINT8);
 
       case 2:
         if (type == 'I')
-          return (sensor_msgs::PointField::INT16);
+          return (pcl_sensor_msgs::PCLPointField::INT16);
         if (type == 'U')
-          return (sensor_msgs::PointField::UINT16);
+          return (pcl_sensor_msgs::PCLPointField::UINT16);
 
       case 4:
         if (type == 'I')
-          return (sensor_msgs::PointField::INT32);
+          return (pcl_sensor_msgs::PCLPointField::INT32);
         if (type == 'U')
-          return (sensor_msgs::PointField::UINT32);
+          return (pcl_sensor_msgs::PCLPointField::UINT32);
         if (type == 'F')
-          return (sensor_msgs::PointField::FLOAT32);
+          return (pcl_sensor_msgs::PCLPointField::FLOAT32);
 
       case 8:
-        return (sensor_msgs::PointField::FLOAT64);
+        return (pcl_sensor_msgs::PCLPointField::FLOAT64);
 
       default:
         return (-1);
     }
   }
 
-  /** \brief Obtains the type of the PointField from a specific PointField as a char
-    * \param[in] type the PointField field type
+  /** \brief Obtains the type of the PCLPointField from a specific PCLPointField as a char
+    * \param[in] type the PCLPointField field type
     * \ingroup common
     */
   inline char
@@ -205,25 +205,25 @@ namespace pcl
   {
     switch (type)
     {
-      case sensor_msgs::PointField::INT8:
-      case sensor_msgs::PointField::INT16:
-      case sensor_msgs::PointField::INT32:
+      case pcl_sensor_msgs::PCLPointField::INT8:
+      case pcl_sensor_msgs::PCLPointField::INT16:
+      case pcl_sensor_msgs::PCLPointField::INT32:
         return ('I');
 
-      case sensor_msgs::PointField::UINT8:
-      case sensor_msgs::PointField::UINT16:
-      case sensor_msgs::PointField::UINT32:
+      case pcl_sensor_msgs::PCLPointField::UINT8:
+      case pcl_sensor_msgs::PCLPointField::UINT16:
+      case pcl_sensor_msgs::PCLPointField::UINT32:
         return ('U');
 
-      case sensor_msgs::PointField::FLOAT32:
-      case sensor_msgs::PointField::FLOAT64:
+      case pcl_sensor_msgs::PCLPointField::FLOAT32:
+      case pcl_sensor_msgs::PCLPointField::FLOAT64:
         return ('F');
       default:
         return ('?');
     }
   }
 
-  /** \brief Concatenate two sensor_msgs::PointCloud2. 
+  /** \brief Concatenate two pcl_sensor_msgs::PCLPointCloud2. 
     * \param[in] cloud1 the first input point cloud dataset
     * \param[in] cloud2 the second input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
@@ -231,9 +231,9 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS bool 
-  concatenatePointCloud (const sensor_msgs::PointCloud2 &cloud1, 
-                         const sensor_msgs::PointCloud2 &cloud2, 
-                         sensor_msgs::PointCloud2 &cloud_out);
+  concatenatePointCloud (const pcl_sensor_msgs::PCLPointCloud2 &cloud1, 
+                         const pcl_sensor_msgs::PCLPointCloud2 &cloud2, 
+                         pcl_sensor_msgs::PCLPointCloud2 &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
@@ -243,9 +243,9 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS void 
-  copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
+  copyPointCloud (const pcl_sensor_msgs::PCLPointCloud2 &cloud_in, 
                   const std::vector<int> &indices, 
-                  sensor_msgs::PointCloud2 &cloud_out);
+                  pcl_sensor_msgs::PCLPointCloud2 &cloud_out);
 
   /** \brief Extract the indices of a given point cloud as a new point cloud
     * \param[in] cloud_in the input point cloud dataset
@@ -255,9 +255,9 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS void 
-  copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
+  copyPointCloud (const pcl_sensor_msgs::PCLPointCloud2 &cloud_in, 
                   const std::vector<int, Eigen::aligned_allocator<int> > &indices, 
-                  sensor_msgs::PointCloud2 &cloud_out);
+                  pcl_sensor_msgs::PCLPointCloud2 &cloud_out);
 
   /** \brief Copy fields and point cloud data from \a cloud_in to \a cloud_out
     * \param[in] cloud_in the input point cloud dataset
@@ -265,8 +265,8 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS void 
-  copyPointCloud (const sensor_msgs::PointCloud2 &cloud_in, 
-                  sensor_msgs::PointCloud2 &cloud_out);
+  copyPointCloud (const pcl_sensor_msgs::PCLPointCloud2 &cloud_in, 
+                  pcl_sensor_msgs::PCLPointCloud2 &cloud_out);
 
   /** \brief Check if two given point types are the same or not. */
   template <typename Point1T, typename Point2T> inline bool
@@ -408,26 +408,26 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS bool
-  concatenateFields (const sensor_msgs::PointCloud2 &cloud1_in, 
-                     const sensor_msgs::PointCloud2 &cloud2_in, 
-                     sensor_msgs::PointCloud2 &cloud_out);
+  concatenateFields (const pcl_sensor_msgs::PCLPointCloud2 &cloud1_in, 
+                     const pcl_sensor_msgs::PCLPointCloud2 &cloud2_in, 
+                     pcl_sensor_msgs::PCLPointCloud2 &cloud_out);
 
-  /** \brief Copy the XYZ dimensions of a sensor_msgs::PointCloud2 into Eigen format
+  /** \brief Copy the XYZ dimensions of a pcl_sensor_msgs::PCLPointCloud2 into Eigen format
     * \param[in] in the point cloud message
     * \param[out] out the resultant Eigen MatrixXf format containing XYZ0 / point
     * \ingroup common
     */
   PCL_EXPORTS bool 
-  getPointCloudAsEigen (const sensor_msgs::PointCloud2 &in, Eigen::MatrixXf &out);
+  getPointCloudAsEigen (const pcl_sensor_msgs::PCLPointCloud2 &in, Eigen::MatrixXf &out);
 
-  /** \brief Copy the XYZ dimensions from an Eigen MatrixXf into a sensor_msgs::PointCloud2 message
+  /** \brief Copy the XYZ dimensions from an Eigen MatrixXf into a pcl_sensor_msgs::PCLPointCloud2 message
     * \param[in] in the Eigen MatrixXf format containing XYZ0 / point
     * \param[out] out the resultant point cloud message
-    * \note the method assumes that the PointCloud2 message already has the fields set up properly !
+    * \note the method assumes that the PCLPointCloud2 message already has the fields set up properly !
     * \ingroup common
     */
   PCL_EXPORTS bool 
-  getEigenAsPointCloud (Eigen::MatrixXf &in, sensor_msgs::PointCloud2 &out);
+  getEigenAsPointCloud (Eigen::MatrixXf &in, pcl_sensor_msgs::PCLPointCloud2 &out);
   
   namespace io 
   {

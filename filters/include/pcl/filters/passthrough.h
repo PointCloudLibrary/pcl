@@ -226,19 +226,19 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS PassThrough<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS PassThrough<pcl_sensor_msgs::PCLPointCloud2> : public Filter<pcl_sensor_msgs::PCLPointCloud2>
   {
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
-    using Filter<sensor_msgs::PointCloud2>::removed_indices_;
-    using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
+    using Filter<pcl_sensor_msgs::PCLPointCloud2>::removed_indices_;
+    using Filter<pcl_sensor_msgs::PCLPointCloud2>::extract_removed_indices_;
 
     public:
       /** \brief Constructor. */
       PassThrough (bool extract_removed_indices = false) :
-        Filter<sensor_msgs::PointCloud2>::Filter (extract_removed_indices), keep_organized_ (false),
+        Filter<pcl_sensor_msgs::PCLPointCloud2>::Filter (extract_removed_indices), keep_organized_ (false),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ()),
         filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false)
@@ -347,7 +347,7 @@ namespace pcl
 
     protected:
       void
-      applyFilter (PointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output);
 
     private:
       /** \brief Keep the structure of the data organized, by setting the

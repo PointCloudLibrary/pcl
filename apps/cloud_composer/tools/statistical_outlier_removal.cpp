@@ -44,20 +44,20 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList
   
   if (input_item->type () ==  CloudComposerItem::CLOUD_ITEM )
   {
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    pcl_sensor_msgs::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl_sensor_msgs::PCLPointCloud2::ConstPtr> ();
     
     int mean_k = parameter_model_->getProperty("Mean K").toInt ();
     double std_dev_thresh = parameter_model_->getProperty ("Std Dev Thresh").toDouble ();
     
     //////////////// THE WORK - FILTERING OUTLIERS ///////////////////
     // Create the filtering object
-    pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2> sor;
+    pcl::StatisticalOutlierRemoval<pcl_sensor_msgs::PCLPointCloud2> sor;
     sor.setInputCloud (input_cloud);
     sor.setMeanK (mean_k);
     sor.setStddevMulThresh (std_dev_thresh);
     
     //Create output cloud
-    sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
+    pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_filtered (new pcl_sensor_msgs::PCLPointCloud2);
     //Filter!  
     sor.filter (*cloud_filtered);
 

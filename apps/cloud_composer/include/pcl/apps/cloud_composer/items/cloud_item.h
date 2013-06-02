@@ -43,8 +43,8 @@
 #include <pcl/search/kdtree.h>
 
 //Typedefs to make things sane
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+typedef pcl::visualization::PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2> GeometryHandler;
+typedef pcl::visualization::PointCloudColorHandler<pcl_sensor_msgs::PCLPointCloud2> ColorHandler;
 
 namespace pcl
 {
@@ -71,7 +71,7 @@ namespace pcl
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         
         CloudItem (const QString name,
-                   const sensor_msgs::PointCloud2::Ptr cloud_ptr, 
+                   const pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_ptr, 
                    const Eigen::Vector4f& origin = Eigen::Vector4f (),
                    const Eigen::Quaternionf& orientation = Eigen::Quaternionf (),
                    bool make_templated_cloud = true);
@@ -125,7 +125,7 @@ namespace pcl
       private:
         
         //These are just stored for convenience 
-        sensor_msgs::PointCloud2::Ptr cloud_blob_ptr_;
+        pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_blob_ptr_;
         ColorHandler::ConstPtr color_handler_;
         GeometryHandler::ConstPtr geometry_handler_;
 
@@ -176,7 +176,7 @@ namespace pcl
 }
 
 //Add PointCloud types to QT MetaType System
-Q_DECLARE_METATYPE (sensor_msgs::PointCloud2::ConstPtr);
+Q_DECLARE_METATYPE (pcl_sensor_msgs::PCLPointCloud2::ConstPtr);
 Q_DECLARE_METATYPE (GeometryHandler::ConstPtr);
 Q_DECLARE_METATYPE (ColorHandler::ConstPtr);
 Q_DECLARE_METATYPE (Eigen::Vector4f);

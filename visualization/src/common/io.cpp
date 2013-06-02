@@ -115,7 +115,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
 
     pcl::console::print_debug ("  Load: %s ... ", file_name.c_str ());
     // Assume the name of the actor is the name of the file
-    sensor_msgs::PointCloud2 cloud;
+    pcl_sensor_msgs::PCLPointCloud2 cloud;
     if (pcl::io::loadPCDFile (file_name, cloud) == -1)
     {
       pcl::console::print_error (stdout, "[failed]\n");
@@ -131,7 +131,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
     getCorrespondingPointCloud (cleaner->GetOutput (), cloud_xyz, indices);
 
     // Copy the indices and save the file
-    sensor_msgs::PointCloud2 cloud_out;
+    pcl_sensor_msgs::PCLPointCloud2 cloud_out;
     pcl::copyPointCloud (cloud, indices, cloud_out);
     std::stringstream ss;
     ss << out_file << i++ << ".pcd";

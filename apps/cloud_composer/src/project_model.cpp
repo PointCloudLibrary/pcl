@@ -170,7 +170,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromFile ()
     last_directory_ = file_info.absoluteDir ();
   }
     
-  sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2);
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_blob (new pcl_sensor_msgs::PCLPointCloud2);
   Eigen::Vector4f origin;
   Eigen::Quaternionf orientation;
   int version;
@@ -377,7 +377,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
     last_directory_ = file_info.absoluteDir ();
   }
   
-  sensor_msgs::PointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+  pcl_sensor_msgs::PCLPointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <pcl_sensor_msgs::PCLPointCloud2::ConstPtr> ();
   Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
   Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();
   int result = pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );

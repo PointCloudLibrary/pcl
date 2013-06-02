@@ -158,12 +158,12 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS ExtractIndices<sensor_msgs::PointCloud2> : public FilterIndices<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> : public FilterIndices<pcl_sensor_msgs::PCLPointCloud2>
   {
     public:
-      typedef sensor_msgs::PointCloud2 PointCloud2;
-      typedef PointCloud2::Ptr PointCloud2Ptr;
-      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+      typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
       /** \brief Empty constructor. */
       ExtractIndices ()
@@ -173,20 +173,20 @@ namespace pcl
       }
 
     protected:
-      using PCLBase<PointCloud2>::input_;
-      using PCLBase<PointCloud2>::indices_;
-      using PCLBase<PointCloud2>::use_indices_;
-      using Filter<PointCloud2>::filter_name_;
-      using Filter<PointCloud2>::getClassName;
-      using FilterIndices<PointCloud2>::negative_;
-      using FilterIndices<PointCloud2>::keep_organized_;
-      using FilterIndices<PointCloud2>::user_filter_value_;
+      using PCLBase<PCLPointCloud2>::input_;
+      using PCLBase<PCLPointCloud2>::indices_;
+      using PCLBase<PCLPointCloud2>::use_indices_;
+      using Filter<PCLPointCloud2>::filter_name_;
+      using Filter<PCLPointCloud2>::getClassName;
+      using FilterIndices<PCLPointCloud2>::negative_;
+      using FilterIndices<PCLPointCloud2>::keep_organized_;
+      using FilterIndices<PCLPointCloud2>::user_filter_value_;
 
       /** \brief Extract point indices into a separate PointCloud
         * \param[out] output the resultant point cloud
         */
       void
-      applyFilter (PointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output);
 
       /** \brief Extract point indices
         * \param indices the resultant indices

@@ -126,7 +126,7 @@ namespace pcl
         int field_z_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
-        std::vector<sensor_msgs::PointField> fields_;
+        std::vector<pcl_sensor_msgs::PCLPointField> fields_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -319,10 +319,10 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>
     {
       public:
-        typedef sensor_msgs::PointCloud2 PointCloud;
+        typedef pcl_sensor_msgs::PCLPointCloud2 PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -389,7 +389,7 @@ namespace pcl
         int field_z_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
-        std::vector<sensor_msgs::PointField> fields_;
+        std::vector<pcl_sensor_msgs::PCLPointField> fields_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -399,10 +399,10 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerXYZ<pcl_sensor_msgs::PCLPointCloud2> : public PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>
     {
       public:
-        typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+        typedef PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>::PointCloud PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -432,10 +432,10 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerSurfaceNormal<pcl_sensor_msgs::PCLPointCloud2> : public PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>
     {
       public:
-        typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+        typedef PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>::PointCloud PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -462,10 +462,10 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudGeometryHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudGeometryHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudGeometryHandlerCustom<pcl_sensor_msgs::PCLPointCloud2> : public PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>
     {
       public:
-        typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+        typedef PointCloudGeometryHandler<pcl_sensor_msgs::PCLPointCloud2>::PointCloud PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 

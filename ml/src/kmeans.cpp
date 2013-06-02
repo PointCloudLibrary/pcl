@@ -202,7 +202,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
   }
 
   pcl::PointCloud <PointT> point;
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl_sensor_msgs::PCLPointField> fields;
 
   int user_index = -1;
   // if no cluster field name is set, check for X Y Z
@@ -291,7 +291,7 @@ pcl::Kmeans::cluster (std::vector<PointIndices> &clusters)
   std::cout << "t: " << t << std::endl;
 */
   
-  //std::vector <sensor_msgs::PointField> fields;
+  //std::vector <pcl_sensor_msgs::PCLPointField> fields;
   //pcl::getFieldIndex (*input_, "xyz", fields);
   
   

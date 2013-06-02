@@ -155,7 +155,7 @@ TEST (PCL, concatenatePointCloud)
   cloud_xyz_rgba2.push_back (pt_xyz_rgba2);
   cloud_xyz_rgba2.push_back (pt_xyz_rgba2);
 
-  sensor_msgs::PointCloud2 cloud1, cloud2, cloud_out, cloud_out2, cloud_out3, cloud_out4;
+  pcl_sensor_msgs::PCLPointCloud2 cloud1, cloud2, cloud_out, cloud_out2, cloud_out3, cloud_out4;
   pcl::toROSMsg (cloud_xyz_rgba, cloud1);
   pcl::toROSMsg (cloud_xyz_rgba2, cloud2);
 

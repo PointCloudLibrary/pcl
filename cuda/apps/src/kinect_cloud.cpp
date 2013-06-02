@@ -36,7 +36,7 @@
  */
 
 #include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -49,7 +49,7 @@
 #include <pcl/point_types.h>
 
 using namespace message_filters;
-using namespace sensor_msgs;
+using namespace pcl_sensor_msgs;
 using namespace pcl_cuda;
 
 DisparityToCloud d2c;
@@ -58,9 +58,9 @@ ros::Publisher pub;
 struct EventHelper
 {
   void
-  callback (const sensor_msgs::Image::ConstPtr &depth,
-            const sensor_msgs::Image::ConstPtr &rgb,
-            const sensor_msgs::CameraInfo::ConstPtr &info)
+  callback (const pcl_sensor_msgs::PCLImage::ConstPtr &depth,
+            const pcl_sensor_msgs::PCLImage::ConstPtr &rgb,
+            const pcl_sensor_msgs::CameraInfo::ConstPtr &info)
   {
     //typedef pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices Indices;
 
@@ -92,12 +92,12 @@ main (int argc, char **argv)
   ros::NodeHandle nh;
 
   // Prepare output
-  pub = nh.advertise<PointCloud2>("output", 1);
+  pub = nh.advertise<PCLPointCloud2>("output", 1);
 
   // Subscribe to topics
-  Synchronizer<sync_policies::ApproximateTime<Image, Image, CameraInfo> > sync_rgb (30);
-  Synchronizer<sync_policies::ApproximateTime<Image, CameraInfo> > sync (30);
-  Subscriber<Image> sub_depth, sub_rgb;
+  Synchronizer<sync_policies::ApproximateTime<PCLImage, PCLImage, CameraInfo> > sync_rgb (30);
+  Synchronizer<sync_policies::ApproximateTime<PCLImage, CameraInfo> > sync (30);
+  Subscriber<PCLImage> sub_depth, sub_rgb;
   Subscriber<CameraInfo> sub_info;
   sub_depth.subscribe (nh, "/camera/depth/image", 30);
   sub_rgb.subscribe (nh, "/camera/rgb/image_color", 30);
@@ -116,8 +116,8 @@ main (int argc, char **argv)
   else
   {
     sync.connectInput (sub_depth, sub_info);
-    //sync.registerCallback (bind (&pcl_cuda::DisparityToCloud::callback, k, _1, ImageConstPtr (), _2));
-    sync.registerCallback (boost::bind (&EventHelper::callback, &h, _1, ImageConstPtr (), _2));
+    //sync.registerCallback (bind (&pcl_cuda::DisparityToCloud::callback, k, _1, PCLImageConstPtr (), _2));
+    sync.registerCallback (boost::bind (&EventHelper::callback, &h, _1, PCLImageConstPtr (), _2));
   }
 
   // Do this indefinitely

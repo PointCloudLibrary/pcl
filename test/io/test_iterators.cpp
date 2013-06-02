@@ -38,7 +38,7 @@
 
 #include <iostream>  
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>

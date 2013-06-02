@@ -148,11 +148,11 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       int 
-      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+      readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                   int &ply_version, int &data_type, unsigned int &data_idx, const int offset = 0);
 
-      /** \brief Read a point cloud data from a PLY file and store it into a sensor_msgs/PointCloud2.
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl_sensor_msgs/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         * \param[in] origin the sensor data acquisition origin (translation)
@@ -165,13 +165,13 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+      read (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version, const int offset = 0);
 
-      /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a sensor_msgs/PointCloud2.
+      /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a pcl_sensor_msgs/PCLPointCloud2.
         *
         * \note This function is provided for backwards compatibility only and
-        * it can only read PLY_V6 files correctly, as sensor_msgs::PointCloud2
+        * it can only read PLY_V6 files correctly, as pcl_sensor_msgs::PCLPointCloud2
         * does not contain a sensor origin/orientation. Reading any file
         * > PLY_V6 will generate a warning.
         *
@@ -184,7 +184,7 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       inline int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0)
+      read (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud, const int offset = 0)
       {
         Eigen::Vector4f origin;
         Eigen::Quaternionf orientation;
@@ -204,7 +204,7 @@ namespace pcl
       template<typename PointT> inline int
       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset = 0)
       {
-        sensor_msgs::PointCloud2 blob;
+        pcl_sensor_msgs::PCLPointCloud2 blob;
         int ply_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
                         ply_version, offset);
@@ -468,7 +468,7 @@ namespace pcl
       Eigen::Matrix3f orientation_;
 
       //vertex element artifacts
-      sensor_msgs::PointCloud2 *cloud_;
+      pcl_sensor_msgs::PCLPointCloud2 *cloud_;
       size_t vertex_count_, vertex_properties_counter_;
       int vertex_offset_before_;
       //range element artifacts
@@ -503,7 +503,7 @@ namespace pcl
         * element range_grid will be used.
         */
       inline std::string
-      generateHeaderBinary (const sensor_msgs::PointCloud2 &cloud, 
+      generateHeaderBinary (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                             const Eigen::Vector4f &origin, 
                             const Eigen::Quaternionf &orientation,
                             int valid_points,
@@ -522,7 +522,7 @@ namespace pcl
         * element range_grid will be used.
         */
       inline std::string
-      generateHeaderASCII (const sensor_msgs::PointCloud2 &cloud, 
+      generateHeaderASCII (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                            const Eigen::Vector4f &origin, 
                            const Eigen::Quaternionf &orientation,
                            int valid_points,
@@ -541,7 +541,7 @@ namespace pcl
         * element range_grid will be used.
         */
       int 
-      writeASCII (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+      writeASCII (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                   const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                   const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
                   int precision = 8,
@@ -556,7 +556,7 @@ namespace pcl
         * element range_grid will be used
         */
       int 
-      writeBinary (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud,
+      writeBinary (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                    const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                    const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
                    bool use_camera = true);
@@ -570,7 +570,7 @@ namespace pcl
         * PLY format, false (default) for ASCII
         */
       inline int
-      write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+      write (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              const bool binary = false)
@@ -592,7 +592,7 @@ namespace pcl
         * use range_grid element
         */
       inline int
-      write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+      write (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              bool binary = false,
@@ -615,7 +615,7 @@ namespace pcl
         * use range_grid element
         */
       inline int
-      write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
+      write (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud, 
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              bool binary = false,
@@ -641,7 +641,7 @@ namespace pcl
         Eigen::Vector4f origin = cloud.sensor_origin_;
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
-        sensor_msgs::PointCloud2 blob;
+        pcl_sensor_msgs::PCLPointCloud2 blob;
         pcl::toROSMsg (cloud, blob);
 
         // Save the data
@@ -654,7 +654,7 @@ namespace pcl
         * \param[in] binary whether the PLY file should be saved as binary data (true) or ascii (false)
         */
       std::string
-      generateHeader (const sensor_msgs::PointCloud2 &cloud, 
+      generateHeader (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                       const Eigen::Vector4f &origin, 
                       const Eigen::Quaternionf &orientation,
                       bool binary, 
@@ -664,7 +664,7 @@ namespace pcl
       void
       writeContentWithCameraASCII (int nr_points, 
                                    int point_size,
-                                   const sensor_msgs::PointCloud2 &cloud, 
+                                   const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                                    const Eigen::Vector4f &origin, 
                                    const Eigen::Quaternionf &orientation,
                                    std::ofstream& fs);
@@ -672,7 +672,7 @@ namespace pcl
       void
       writeContentWithRangeGridASCII (int nr_points, 
                                       int point_size,
-                                      const sensor_msgs::PointCloud2 &cloud, 
+                                      const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                                       std::ostringstream& fs,
                                       int& nb_valid_points);
   };
@@ -682,14 +682,14 @@ namespace pcl
     /** \brief Load a PLY v.6 file into a templated PointCloud type.
       *
       * Any PLY files containg sensor data will generate a warning as a
-      * sensor_msgs/PointCloud2 message cannot hold the sensor origin.
+      * pcl_sensor_msgs/PCLPointCloud2 message cannot hold the sensor origin.
       *
       * \param[in] file_name the name of the file to load
       * \param[in] cloud the resultant templated point cloud
       * \ingroup io
       */
     inline int
-    loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud)
+    loadPLYFile (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud)
     {
       pcl::PLYReader p;
       return (p.read (file_name, cloud));
@@ -704,7 +704,7 @@ namespace pcl
       * \ingroup io
       */
     inline int
-    loadPLYFile (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+    loadPLYFile (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation)
     {
       pcl::PLYReader p;
@@ -733,7 +733,7 @@ namespace pcl
       * \ingroup io
       */
     inline int 
-    savePLYFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+    savePLYFile (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                  const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                  const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
                  bool binary_mode = false, bool use_camera = true)

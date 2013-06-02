@@ -55,7 +55,7 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
 
     double radius = parameter_model_->getProperty("Radius").toDouble();
     
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    pcl_sensor_msgs::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl_sensor_msgs::PCLPointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg (*input_cloud, *cloud); 

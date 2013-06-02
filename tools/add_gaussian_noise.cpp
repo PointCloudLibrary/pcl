@@ -35,7 +35,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -59,7 +59,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -74,7 +74,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output,
          double standard_deviation)
 {
   TicToc tt;
@@ -103,7 +103,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + static_cast<float> (var_nor ());
   }
 
-  sensor_msgs::PointCloud2 input_xyz_filtered;
+  pcl_sensor_msgs::PCLPointCloud2 input_xyz_filtered;
   toROSMsg (*xyz_cloud_filtered, input_xyz_filtered);
   concatenateFields (*input, input_xyz_filtered, output);
 
@@ -111,7 +111,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -149,12 +149,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-sd", standard_deviation);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Add the noise
-  sensor_msgs::PointCloud2 output;
+  pcl_sensor_msgs::PCLPointCloud2 output;
   compute (cloud, output, standard_deviation);
 
   // Save into the second file

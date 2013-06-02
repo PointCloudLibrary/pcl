@@ -169,7 +169,7 @@ namespace pcl
     * \ingroup common
     */
   PCL_EXPORTS void 
-  getMinMax (const sensor_msgs::PointCloud2 &cloud, int idx, const std::string &field_name, 
+  getMinMax (const pcl_sensor_msgs::PCLPointCloud2 &cloud, int idx, const std::string &field_name, 
              float &min_p, float &max_p);
 
   /** \brief Compute both the mean and the standard deviation of an array of values

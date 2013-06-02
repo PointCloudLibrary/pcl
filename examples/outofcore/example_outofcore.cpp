@@ -40,7 +40,7 @@
 #include <pcl/console/print.h>
 
 #include <pcl/point_types.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
@@ -66,7 +66,7 @@ int main (int, char** argv)
   OctreeDisk* octree;
   octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
 
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
     
   pcl::io::loadPCDFile (argv[1], *cloud);
   octree->addPointCloud (cloud, false);

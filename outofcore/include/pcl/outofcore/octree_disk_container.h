@@ -47,7 +47,7 @@
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_abstract_node_container.h>
 #include <pcl/io/pcd_io.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 
 //allows operation on POSIX
 #ifndef WIN32
@@ -104,9 +104,9 @@ namespace pcl
         void
         insertRange (const AlignedPointTVector& src);
 
-        /** \brief Inserts a PointCloud2 object directly into the disk container */
+        /** \brief Inserts a PCLPointCloud2 object directly into the disk container */
         void
-        insertRange (const sensor_msgs::PointCloud2::Ptr &input_cloud);
+        insertRange (const pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud);
 
         void
         insertRange (const PointT* const * start, const uint64_t count);
@@ -134,13 +134,13 @@ namespace pcl
         readRange (const uint64_t start, const uint64_t count, AlignedPointTVector &dst);
 
         void
-        readRange (const uint64_t, const uint64_t, sensor_msgs::PointCloud2::Ptr &dst);
+        readRange (const uint64_t, const uint64_t, pcl_sensor_msgs::PCLPointCloud2::Ptr &dst);
 
         /** \brief Reads the entire point contents from disk into \ref output_cloud
          *  \param[out] output_cloud
          */
         int
-        read (sensor_msgs::PointCloud2::Ptr &output_cloud);
+        read (pcl_sensor_msgs::PCLPointCloud2::Ptr &output_cloud);
 
         /** \brief  grab percent*count random points. points are \b not guaranteed to be
          * unique (could have multiple identical points!)

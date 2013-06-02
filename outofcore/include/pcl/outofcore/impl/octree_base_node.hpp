@@ -505,7 +505,7 @@ namespace pcl
 
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud (const typename sensor_msgs::PointCloud2::Ptr& input_cloud, const bool skip_bb_check)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud (const typename pcl_sensor_msgs::PCLPointCloud2::Ptr& input_cloud, const bool skip_bb_check)
     {
       assert (this->root_node_->m_tree_ != NULL);
       
@@ -546,7 +546,7 @@ namespace pcl
             createChild (i);
           }
 
-          sensor_msgs::PointCloud2::Ptr dst_cloud (new sensor_msgs::PointCloud2 () );
+          pcl_sensor_msgs::PCLPointCloud2::Ptr dst_cloud (new pcl_sensor_msgs::PCLPointCloud2 () );
 
               PCL_DEBUG ( "[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Extracting indices to bins\n", __FUNCTION__);
               
@@ -663,7 +663,7 @@ namespace pcl
     }
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::addDataAtMaxDepth (const pcl_sensor_msgs::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check)
     {
       //this assumes data is already in the correct bin
       if(skip_bb_check == true)
@@ -717,7 +717,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::addPointCloud_and_genLOD (const pcl_sensor_msgs::PCLPointCloud2::Ptr input_cloud) //, const bool skip_bb_check = false )
     {
       boost::uint64_t points_added = 0;
       
@@ -746,7 +746,7 @@ namespace pcl
       //   1. Get indices from a random sample
       //   2. Extract those indices with the extract indices class (in order to also get the complement)
       //------------------------------------------------------------
-      pcl::RandomSample<sensor_msgs::PointCloud2> random_sampler;
+      pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> random_sampler;
       random_sampler.setInputCloud (input_cloud);
 
       //set sample size to 1/8 of total points (12.5%)
@@ -754,20 +754,20 @@ namespace pcl
       random_sampler.setSample (static_cast<unsigned int> (sample_size));
       
       //create our destination
-      sensor_msgs::PointCloud2::Ptr downsampled_cloud ( new sensor_msgs::PointCloud2 () );
+      pcl_sensor_msgs::PCLPointCloud2::Ptr downsampled_cloud ( new pcl_sensor_msgs::PCLPointCloud2 () );
 
       //create destination for indices
       pcl::IndicesPtr downsampled_cloud_indices ( new std::vector< int > () );
       random_sampler.filter (*downsampled_cloud_indices);
 
       //extract the "random subset", size by setSampleSize
-      pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
+      pcl::ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> extractor;
       extractor.setInputCloud (input_cloud);
       extractor.setIndices (downsampled_cloud_indices);
       extractor.filter (*downsampled_cloud);
 
       //extract the complement of those points (i.e. everything remaining)
-      sensor_msgs::PointCloud2::Ptr remaining_points ( new sensor_msgs::PointCloud2 () );
+      pcl_sensor_msgs::PCLPointCloud2::Ptr remaining_points ( new pcl_sensor_msgs::PCLPointCloud2 () );
       extractor.setNegative (true);
       extractor.filter (*remaining_points);
 
@@ -803,7 +803,7 @@ namespace pcl
         }
         
         //copy correct indices into a temporary cloud
-        sensor_msgs::PointCloud2::Ptr tmp_local_point_cloud (new sensor_msgs::PointCloud2 ());
+        pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_local_point_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
         pcl::copyPointCloud (*remaining_points, indices[i], *tmp_local_point_cloud);
 
         //recursively add points and keep track of how many were successfully added to the tree
@@ -1390,7 +1390,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob) 
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, size_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr& dst_blob) 
     {
       uint64_t startingSize = dst_blob->width*dst_blob->height;
       PCL_DEBUG ("[pcl::outofcore::OutofcoreOctreeBaseNode::%s] Starting points in destination blob: %ul\n", __FUNCTION__, startingSize );
@@ -1420,9 +1420,9 @@ namespace pcl
         }
         else //otherwise if we are at the max depth
         {
-          //get all the points from the payload and return (easy with PointCloud2)
-          sensor_msgs::PointCloud2::Ptr tmp_blob (new sensor_msgs::PointCloud2 ());
-          sensor_msgs::PointCloud2::Ptr tmp_dst_blob (new sensor_msgs::PointCloud2 ());
+          //get all the points from the payload and return (easy with PCLPointCloud2)
+          pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_blob (new pcl_sensor_msgs::PCLPointCloud2 ());
+          pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_dst_blob (new pcl_sensor_msgs::PCLPointCloud2 ());
           //load all the data in this node from disk
           payload_->readRange (0, payload_->size (), tmp_blob);
 
@@ -1484,7 +1484,7 @@ namespace pcl
               if( dst_blob->width*dst_blob->height > 0 )
               {
                 //need a new tmp destination with extracted points within BB
-                sensor_msgs::PointCloud2::Ptr tmp_blob_within_bb (new sensor_msgs::PointCloud2 ());
+                pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_blob_within_bb (new pcl_sensor_msgs::PCLPointCloud2 ());
                 
                 //copy just the points marked in indices
                 pcl::copyPointCloud ( *tmp_blob, indices, *tmp_blob_within_bb );
@@ -1588,7 +1588,7 @@ namespace pcl
     
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob, double percent)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::queryBBIncludes_subsample (const Eigen::Vector3d& min_bb, const Eigen::Vector3d& max_bb, boost::uint64_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr& dst_blob, double percent)
     {
       if (intersectsWithBoundingBox (min_bb, max_bb))
         {
@@ -1614,7 +1614,7 @@ namespace pcl
             
             if (inBoundingBox (min_bb, max_bb))
             {
-              sensor_msgs::PointCloud2::Ptr tmp_blob;
+              pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_blob;
               this->payload_->read (tmp_blob);
               uint64_t num_pts = tmp_blob->width*tmp_blob->height;
                 
@@ -1630,15 +1630,15 @@ namespace pcl
               }
               
               
-              pcl::RandomSample<sensor_msgs::PointCloud2> random_sampler;
+              pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> random_sampler;
               random_sampler.setInputCloud (tmp_blob);
               
-              sensor_msgs::PointCloud2::Ptr downsampled_points (new sensor_msgs::PointCloud2 ());
+              pcl_sensor_msgs::PCLPointCloud2::Ptr downsampled_points (new pcl_sensor_msgs::PCLPointCloud2 ());
               
               //set sample size as percent * number of points read
               random_sampler.setSample (static_cast<unsigned int> (sample_points));
 
-              pcl::ExtractIndices<sensor_msgs::PointCloud2> extractor;
+              pcl::ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> extractor;
               
               pcl::IndicesPtr downsampled_cloud_indices (new std::vector<int> ());
               random_sampler.filter (*downsampled_cloud_indices);
@@ -1913,7 +1913,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> int
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::read (sensor_msgs::PointCloud2::Ptr &output_cloud)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::read (pcl_sensor_msgs::PCLPointCloud2::Ptr &output_cloud)
     {
       return (this->payload_->read (output_cloud));
     }
@@ -2004,7 +2004,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
+    OutofcoreOctreeBaseNode<ContainerT, PointT>::sortOctantIndices (const pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz)
     {
       if (indices.size () < 8)
         indices.resize (8);

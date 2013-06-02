@@ -21,7 +21,7 @@ pcl::cloud_composer::ComposerMainWindow::ComposerMainWindow (QWidget *parent)
   this->setCorner (Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
    //Register types in Qt
-  qRegisterMetaType<sensor_msgs::PointCloud2::Ptr> ("PointCloud2Ptr");
+  qRegisterMetaType<sensor_msgs::PointCloud2::Ptr> ("PCLPointCloud2Ptr");
   qRegisterMetaType<GeometryHandler::ConstPtr> ("GeometryHandlerConstPtr");
   qRegisterMetaType<ColorHandler::ConstPtr> ("ColorHandlerConstPtr");
   qRegisterMetaType<Eigen::Vector4f> ("EigenVector4f");

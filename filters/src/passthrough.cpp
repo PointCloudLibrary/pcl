@@ -42,7 +42,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 void
-pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::PassThrough<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   if (!input_)
   {
@@ -117,7 +117,7 @@ pcl::PassThrough<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
     }
 
     // @todo fixme
-    if (input_->fields[distance_idx].datatype != sensor_msgs::PointField::FLOAT32)
+    if (input_->fields[distance_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
     {
       PCL_ERROR ("[pcl::%s::downsample] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
       output.width = output.height = 0;

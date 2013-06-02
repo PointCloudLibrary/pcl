@@ -812,7 +812,7 @@ RangeImage::getRangeImageWithSmoothedSurface (int radius, RangeImage& smoothed_r
 
 /////////////////////////////////////////////////////////////////////////
 void 
-RangeImage::extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data,
+RangeImage::extractFarRanges (const pcl_sensor_msgs::PCLPointCloud2& point_cloud_data,
                               PointCloud<PointWithViewpoint>& far_ranges)
 {
   int x_idx = -1, y_idx = -1, z_idx = -1,

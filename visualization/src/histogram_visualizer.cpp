@@ -361,7 +361,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
+    const pcl_sensor_msgs::PCLPointCloud2 &cloud, const std::string &field_name, 
     const std::string &id, int win_width, int win_height)
 {
   // Get the field
@@ -408,7 +408,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, 
+    const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
     const std::string &field_name, 
     const int index,
     const std::string &id, int win_width, int win_height)
@@ -468,7 +468,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
+    const pcl_sensor_msgs::PCLPointCloud2 &cloud, const std::string &field_name, 
     const std::string &id)
 {
   RenWinInteractMap::iterator am_it = wins_.find (id);
@@ -507,7 +507,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, 
+    const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
     const std::string &field_name, 
     const int index,
     const std::string &id)

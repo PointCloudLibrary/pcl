@@ -44,7 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
@@ -74,7 +74,7 @@
 
 using namespace pcl;
 using namespace pcl::outofcore;
-using namespace sensor_msgs;
+using namespace pcl_sensor_msgs;
 
 using pcl::console::parse_argument;
 using pcl::console::find_switch;
@@ -82,7 +82,7 @@ using pcl::console::print_error;
 using pcl::console::print_warn;
 using pcl::console::print_info;
 
-//typedef PointCloud2 PointT;
+//typedef PCLPointCloud2 PointT;
 typedef PointXYZ PointT;
 
 typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk;

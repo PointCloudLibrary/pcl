@@ -102,19 +102,19 @@ pcl::PLYReader::endHeaderCallback ()
 void
 pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size)
 {
-  cloud_->fields.push_back (::sensor_msgs::PointField ());
-  ::sensor_msgs::PointField &current_field = cloud_->fields.back ();
+  cloud_->fields.push_back (::pcl_sensor_msgs::PCLPointField ());
+  ::pcl_sensor_msgs::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
-  current_field.datatype = ::sensor_msgs::PointField::FLOAT32;
+  current_field.datatype = ::pcl_sensor_msgs::PCLPointField::FLOAT32;
   current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::FLOAT32) * size);
+  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::pcl_sensor_msgs::PCLPointField::FLOAT32) * size);
 }
 
 void
 pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& new_name, uint8_t new_datatype)
 {
-  std::vector< ::sensor_msgs::PointField>::reverse_iterator finder = cloud_->fields.rbegin ();
+  std::vector< ::pcl_sensor_msgs::PCLPointField>::reverse_iterator finder = cloud_->fields.rbegin ();
   for (; finder != cloud_->fields.rend (); ++finder)
     if (finder->name == old_name)
       break;
@@ -127,13 +127,13 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
 void
 pcl::PLYReader::appendUnsignedIntProperty (const std::string& name, const size_t& size)
 {
-  cloud_->fields.push_back (::sensor_msgs::PointField ());
-  ::sensor_msgs::PointField &current_field = cloud_->fields.back ();
+  cloud_->fields.push_back (::pcl_sensor_msgs::PCLPointField ());
+  ::pcl_sensor_msgs::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
-  current_field.datatype = ::sensor_msgs::PointField::UINT32;
+  current_field.datatype = ::pcl_sensor_msgs::PCLPointField::UINT32;
   current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::sensor_msgs::PointField::UINT32) * size);
+  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::pcl_sensor_msgs::PCLPointField::UINT32) * size);
 }
 
 namespace pcl
@@ -222,7 +222,7 @@ namespace pcl
       }
       else if (property_name == "alpha")
       {
-        amendProperty ("rgb", "rgba", sensor_msgs::PointField::UINT32);
+        amendProperty ("rgb", "rgba", pcl_sensor_msgs::PCLPointField::UINT32);
         return boost::bind (&pcl::PLYReader::vertexAlphaCallback, this, _1);
       }
       else if (property_name == "intensity")
@@ -451,7 +451,7 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 
 ////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+pcl::PLYReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
                             Eigen::Vector4f &, Eigen::Quaternionf &,
                             int &, int &, unsigned int &, const int)
 {
@@ -470,7 +470,7 @@ pcl::PLYReader::readHeader (const std::string &file_name, sensor_msgs::PointClou
 
 ////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud,
+pcl::PLYReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &ply_version, const int)
 {
   // kept only for backward compatibility
@@ -496,10 +496,10 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
       if ((*range_grid_)[r].size () == 0)
       {
         for (size_t f = 0; f < cloud_->fields.size (); ++f)
-          if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT32)
+          if (cloud_->fields[f].datatype == ::pcl_sensor_msgs::PCLPointField::FLOAT32)
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&f_nan), sizeof (float));
-          else if (cloud_->fields[f].datatype == ::sensor_msgs::PointField::FLOAT64)
+          else if (cloud_->fields[f].datatype == ::pcl_sensor_msgs::PCLPointField::FLOAT64)
             memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
                     reinterpret_cast<const char*> (&d_nan), sizeof (double));
           else
@@ -530,7 +530,7 @@ pcl::PLYReader::read (const std::string &file_name, sensor_msgs::PointCloud2 &cl
 ////////////////////////////////////////////////////////////////////////////////////////
 
 std::string
-pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
+pcl::PLYWriter::generateHeader (const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                                 const Eigen::Vector4f &origin,
                                 const Eigen::Quaternionf &,
                                 bool binary,
@@ -683,7 +683,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
 
 int
 pcl::PLYWriter::writeASCII (const std::string &file_name,
-                            const sensor_msgs::PointCloud2 &cloud,
+                            const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                             const Eigen::Vector4f &origin,
                             const Eigen::Quaternionf &orientation,
                             int precision,
@@ -731,7 +731,7 @@ pcl::PLYWriter::writeASCII (const std::string &file_name,
 void
 pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
                                              int point_size,
-                                             const sensor_msgs::PointCloud2 &cloud,
+                                             const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                                              const Eigen::Vector4f &origin,
                                              const Eigen::Quaternionf &orientation,
                                              std::ofstream& fs)
@@ -749,42 +749,42 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
       {
         switch (cloud.fields[d].datatype)
         {
-          case sensor_msgs::PointField::INT8:
+          case pcl_sensor_msgs::PCLPointField::INT8:
           {
             char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
             fs << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::UINT8:
+          case pcl_sensor_msgs::PCLPointField::UINT8:
           {
             unsigned char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
             fs << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::INT16:
+          case pcl_sensor_msgs::PCLPointField::INT16:
           {
             short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
             fs << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::UINT16:
+          case pcl_sensor_msgs::PCLPointField::UINT16:
           {
             unsigned short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
             fs << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::INT32:
+          case pcl_sensor_msgs::PCLPointField::INT32:
           {
             int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
             fs << value;
             break;
           }
-          case sensor_msgs::PointField::UINT32:
+          case pcl_sensor_msgs::PCLPointField::UINT32:
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
@@ -804,7 +804,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT32:
+          case pcl_sensor_msgs::PCLPointField::FLOAT32:
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
@@ -823,7 +823,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT64:
+          case pcl_sensor_msgs::PCLPointField::FLOAT64:
           {
             double value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
@@ -868,7 +868,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
 void
 pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
                                                 int point_size,
-                                                const sensor_msgs::PointCloud2 &cloud,
+                                                const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                                                 std::ostringstream& fs,
                                                 int& valid_points)
 {
@@ -888,42 +888,42 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
       {
         switch (cloud.fields[d].datatype)
         {
-          case sensor_msgs::PointField::INT8:
+          case pcl_sensor_msgs::PCLPointField::INT8:
           {
             char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (char)], sizeof (char));
             line << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::UINT8:
+          case pcl_sensor_msgs::PCLPointField::UINT8:
           {
             unsigned char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned char)], sizeof (unsigned char));
             line << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::INT16:
+          case pcl_sensor_msgs::PCLPointField::INT16:
           {
             short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (short)], sizeof (short));
             line << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::UINT16:
+          case pcl_sensor_msgs::PCLPointField::UINT16:
           {
             unsigned short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (unsigned short)], sizeof (unsigned short));
             line << boost::numeric_cast<int> (value);
             break;
           }
-          case sensor_msgs::PointField::INT32:
+          case pcl_sensor_msgs::PCLPointField::INT32:
           {
             int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (int)], sizeof (int));
             line << value;
             break;
           }
-          case sensor_msgs::PointField::UINT32:
+          case pcl_sensor_msgs::PCLPointField::UINT32:
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
@@ -943,7 +943,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT32:
+          case pcl_sensor_msgs::PCLPointField::FLOAT32:
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
@@ -968,7 +968,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT64:
+          case pcl_sensor_msgs::PCLPointField::FLOAT64:
           {
             double value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + c * sizeof (double)], sizeof (double));
@@ -1013,7 +1013,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYWriter::writeBinary (const std::string &file_name,
-                             const sensor_msgs::PointCloud2 &cloud,
+                             const pcl_sensor_msgs::PCLPointCloud2 &cloud,
                              const Eigen::Vector4f &origin,
                              const Eigen::Quaternionf &orientation,
                              bool use_camera)
@@ -1044,7 +1044,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
 
     // Determine the field containing the x-coordinate
     int xfield = pcl::getFieldIndex (cloud, "x");
-    if (xfield >= 0 && cloud.fields[xfield].datatype != sensor_msgs::PointField::FLOAT32)
+    if (xfield >= 0 && cloud.fields[xfield].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
       xfield = -1;
 
     // If no x-coordinate field exists, then assume all points are valid
@@ -1111,42 +1111,42 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
       {
         switch (cloud.fields[d].datatype)
         {
-          case sensor_msgs::PointField::INT8:
+          case pcl_sensor_msgs::PCLPointField::INT8:
           {
             char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (char)], sizeof (char));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (char));
             break;
           }
-          case sensor_msgs::PointField::UINT8:
+          case pcl_sensor_msgs::PCLPointField::UINT8:
           {
             unsigned char value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned char)], sizeof (unsigned char));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned char));
             break;
           }
-          case sensor_msgs::PointField::INT16:
+          case pcl_sensor_msgs::PCLPointField::INT16:
           {
             short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (short)], sizeof (short));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (short));
             break;
           }
-          case sensor_msgs::PointField::UINT16:
+          case pcl_sensor_msgs::PCLPointField::UINT16:
           {
             unsigned short value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (unsigned short)], sizeof (unsigned short));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (unsigned short));
             break;
           }
-          case sensor_msgs::PointField::INT32:
+          case pcl_sensor_msgs::PCLPointField::INT32:
           {
             int value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (int)], sizeof (int));
             fpout.write (reinterpret_cast<const char*> (&value), sizeof (int));
             break;
           }
-          case sensor_msgs::PointField::UINT32:
+          case pcl_sensor_msgs::PCLPointField::UINT32:
           {
             if (cloud.fields[d].name.find ("rgba") == std::string::npos)
             {
@@ -1169,7 +1169,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT32:
+          case pcl_sensor_msgs::PCLPointField::FLOAT32:
           {
             if (cloud.fields[d].name.find ("rgb") == std::string::npos)
             {
@@ -1190,7 +1190,7 @@ pcl::PLYWriter::writeBinary (const std::string &file_name,
             }
             break;
           }
-          case sensor_msgs::PointField::FLOAT64:
+          case pcl_sensor_msgs::PCLPointField::FLOAT64:
           {
             double value;
             memcpy (&value, &cloud.data[i * point_size + cloud.fields[d].offset + (total + c) * sizeof (double)], sizeof (double));
@@ -1346,7 +1346,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       int c = 0;
 
       // adding vertex
-      if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+      if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
           mesh.cloud.fields[d].name == "y" ||
           mesh.cloud.fields[d].name == "z"))
@@ -1358,7 +1358,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         //   break;
         ++xyz;
       }
-      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && 
+      else if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && 
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
@@ -1366,7 +1366,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
         memcpy (&color, &mesh.cloud.data[i * point_size + mesh.cloud.fields[rgb_index].offset + c * sizeof (float)], sizeof (RGB));
         fs << int (color.r) << " " << int (color.g) << " " << int (color.b);
       }
-      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::UINT32) &&
+      else if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;
@@ -1475,7 +1475,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
       int c = 0;
 
       // adding vertex
-      if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+      if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
           mesh.cloud.fields[d].name == "x" ||
           mesh.cloud.fields[d].name == "y" ||
           mesh.cloud.fields[d].name == "z"))
@@ -1487,7 +1487,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
         //   break;
         ++xyz;
       }
-      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && 
+      else if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && 
                 (mesh.cloud.fields[d].name == "rgb"))
 
       {
@@ -1497,7 +1497,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
         fpout.write (reinterpret_cast<const char*> (&color.g), sizeof (unsigned char));
         fpout.write (reinterpret_cast<const char*> (&color.b), sizeof (unsigned char));
       }
-      else if ((mesh.cloud.fields[d].datatype == sensor_msgs::PointField::UINT32) &&
+      else if ((mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::UINT32) &&
                (mesh.cloud.fields[d].name == "rgba"))
       {
         pcl::RGB color;

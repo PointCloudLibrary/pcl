@@ -91,7 +91,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   }
 
   // Get the fields present in this cloud
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl_sensor_msgs::PCLPointField> fields;
   // Check if our field exists
   int field_idx = pcl::getFieldIndex<PointT> (cloud, field_name, fields);
   if (field_idx == -1)
@@ -176,7 +176,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   }
   
   // Get the fields present in this cloud
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl_sensor_msgs::PCLPointField> fields;
   // Check if our field exists
   int field_idx = pcl::getFieldIndex<PointT> (cloud, field_name, fields);
   if (field_idx == -1)

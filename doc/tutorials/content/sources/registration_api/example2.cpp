@@ -13,7 +13,7 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 
 using namespace std;
-using namespace sensor_msgs;
+using namespace pcl_sensor_msgs;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -97,7 +97,7 @@ estimateFPFH (const PointCloud<PointXYZ>::Ptr &src,
 
   // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
   // pcd_viewer fpfhs_src.pcd 
-  PointCloud2 s, t, out;
+  PCLPointCloud2 s, t, out;
   toROSMsg (*keypoints_src, s); toROSMsg (fpfhs_src, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_src.pcd", out);
   toROSMsg (*keypoints_tgt, s); toROSMsg (fpfhs_tgt, t); concatenateFields (s, t, out);

@@ -101,7 +101,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                              const std::string &field_name, 
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
@@ -128,7 +128,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                              const std::string &field_name, 
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
@@ -148,7 +148,7 @@ namespace pcl
           * \param[in] id the point cloud object id (default: cloud)
           */
         bool 
-        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        updateFeatureHistogram (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                                 const std::string &field_name, 
                                 const std::string &id = "cloud");
                              
@@ -171,7 +171,7 @@ namespace pcl
           * \param[in] id the point cloud object id (default: cloud)
           */
         bool 
-        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        updateFeatureHistogram (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
                                 const std::string &field_name, const int index,
                                 const std::string &id = "cloud");         
 

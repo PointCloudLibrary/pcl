@@ -209,7 +209,7 @@ namespace pcl
         * \param[out] output the resultant reconstructed surface model
         *
         * \note This method copies the input point cloud data from
-        * PointCloud<T> to PointCloud2, and is implemented here for backwards
+        * PointCloud<T> to PCLPointCloud2, and is implemented here for backwards
         * compatibility only!
         *
         */

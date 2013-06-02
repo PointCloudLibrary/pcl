@@ -44,7 +44,7 @@ main (int, char* argv[])
 {
   // Load input file
   char* file_name = argv[1];
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl_sensor_msgs::PCLPointCloud2 cloud_blob;
   pcl::io::loadPCDFile (file_name, cloud_blob);
 
   // Declare variable to hold result
