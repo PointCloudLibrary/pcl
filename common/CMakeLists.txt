@@ -59,25 +59,16 @@ if(build)
         include/pcl/pcl_tests.h
         include/pcl/cloud_iterator.h
         include/pcl/TextureMesh.h
+        include/pcl/PCLPointField.h
+        include/pcl/PCLPointCloud2.h
+        include/pcl/PCLImage.h
+        include/pcl/PCLHeader.h
+        include/pcl/ModelCoefficients.h
+        include/pcl/PolygonMesh.h
+        include/pcl/Vertices.h
+        include/pcl/PointIndices.h
         )
 
-    if(NOT USE_ROS)
-        set(incs ${incs}
-          include/pcl/ModelCoefficients.h
-          include/pcl/PolygonMesh.h
-          include/pcl/Vertices.h
-          include/pcl/PointIndices.h
-          )
-
-        set(sensor_msg_incs 
-          include/pcl/PCLPointField.h
-          include/pcl/PCLPointCloud2.h
-          include/pcl/PCLImage.h
-          )
-
-        set(std_msg_incs include/pcl/PCLHeader.h)
-    endif(NOT USE_ROS)
-    
     set(common_incs 
         include/pcl/common/boost.h
         include/pcl/common/angles.h
@@ -167,9 +158,8 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
-    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
-    link_ros_libs (${LIB_NAME})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
 

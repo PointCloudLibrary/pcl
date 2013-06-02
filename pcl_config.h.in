@@ -24,8 +24,6 @@
 
 #cmakedefine HAVE_FZAPI 1
 
-#cmakedefine USE_ROS
-
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC
