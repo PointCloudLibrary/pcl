@@ -60,9 +60,6 @@ if(build)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${visualization_incs})
     #PCL_ADD_SSE_FLAGS(${LIB_NAME})
     target_link_libraries(${LIB_NAME} pcl_common pcl_visualization ${Boost_SYSTEM_LIBRARY})
-    if(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${LIB_NAME} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition")
-    endif()
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
