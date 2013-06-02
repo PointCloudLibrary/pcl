@@ -152,6 +152,24 @@ The actual **compute** call from the **FPFHEstimation** class does nothing inter
 
       3. use each SPFH of :math:`p` with a weighting scheme to assemble the FPFH of :math:`p`:
 
+.. note::
+  
+  For efficiency reasons, the **compute** method in **FPFHEstimation** does not check if the normals contains NaN or infinite values.
+  Passing such values to **compute()** will result in undefined output.
+  It is advisable to check the normals, at least during the design of the processing chain or when setting the parameters.
+  This can be done by inserting the following code before the call to **compute()**:
+
+  .. code-block:: cpp
+
+     for (int i = 0; i < normals->points.size(); i++)
+     {
+       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       {
+         PCL_WARN("normals[%d] is not finite\n", i);
+       }
+     }
+
+  In production code, preprocessing steps and parameters should be set so that normals are finite or raise an error.
 
 Speeding FPFH with OpenMP
 -------------------------
