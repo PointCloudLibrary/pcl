@@ -5,7 +5,7 @@
 #include <ostream>
 
 #ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers 
+   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated 
 #endif   
 
 // Include the correct PCLHeader path here
