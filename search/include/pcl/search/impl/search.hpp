@@ -63,6 +63,13 @@ pcl::search::Search<PointT>::setSortedResults (bool sorted)
 {
   sorted_results_ = sorted;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::search::Search<PointT>::getSortedResults ()
+{
+  return (sorted_results_);
+}
  
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
