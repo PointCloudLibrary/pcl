@@ -166,7 +166,7 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
-    link_ros_libs (${LIB_NAME})
+    #link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
 
