@@ -2,7 +2,7 @@
 #define PCL_ROSLIB_MESSAGE_HEADER_H
 
 #ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers  
+   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated  
 #endif 
 
 #include <string>

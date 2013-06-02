@@ -628,11 +628,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud_color.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud_color.header.stamp = timestamp;
-#endif //USE_ROS
     }
 
     pcl::toROSMsg (cloud_color, blob);
@@ -664,11 +660,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud.header.stamp = timestamp;
-#endif //USE_ROS
     }
 
     pcl::toROSMsg (cloud, blob);
@@ -759,11 +751,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud_color.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud_color.header.stamp = timestamp;
-#endif //USE_ROS
     }
     pcl::toROSMsg (cloud_color, blob);
   }
@@ -804,11 +792,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud.header.stamp = timestamp;
-#endif //USE_ROS
     }
     pcl::toROSMsg (cloud, blob);
   }

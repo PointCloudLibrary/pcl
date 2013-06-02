@@ -61,22 +61,20 @@ if(build)
         include/pcl/TextureMesh.h
         )
 
-    if(NOT USE_ROS)
-        set(incs ${incs}
-          include/pcl/ModelCoefficients.h
-          include/pcl/PolygonMesh.h
-          include/pcl/Vertices.h
-          include/pcl/PointIndices.h
-          )
+    set(incs ${incs}
+      include/pcl/ModelCoefficients.h
+      include/pcl/PolygonMesh.h
+      include/pcl/Vertices.h
+      include/pcl/PointIndices.h
+      )
 
-        set(sensor_msg_incs 
-          include/pcl_sensor_msgs/PCLPointField.h
-          include/pcl_sensor_msgs/PCLPointCloud2.h
-          include/pcl_sensor_msgs/PCLImage.h
-          )
+    set(sensor_msg_incs 
+      include/pcl_sensor_msgs/PCLPointField.h
+      include/pcl_sensor_msgs/PCLPointCloud2.h
+      include/pcl_sensor_msgs/PCLImage.h
+      )
 
-        set(std_msg_incs include/pcl_std_msgs/PCLHeader.h)
-    endif(NOT USE_ROS)
+    set(std_msg_incs include/pcl_std_msgs/PCLHeader.h)
     
     set(common_incs 
         include/pcl/common/boost.h
@@ -174,10 +172,8 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    if(NOT USE_ROS)
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_sensor_msgs" ${sensor_msg_incs})
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_std_msgs" ${std_msg_incs})
-    endif(NOT USE_ROS)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_sensor_msgs" ${sensor_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_std_msgs" ${std_msg_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
