@@ -119,7 +119,7 @@ TEST (PCL, ConvexHull_bunny)
   PolygonMesh mesh;
   chull.reconstruct (mesh);
 
-  // convert the internal PointCloud2 to a PointCloud
+  // convert the internal PCLPointCloud2 to a PointCloud
   PointCloud<pcl::PointXYZ> hull2;
   pcl::fromROSMsg (mesh.cloud, hull2);
 
@@ -281,7 +281,7 @@ TEST (PCL, ConvexHull_LTable)
   PolygonMesh mesh;
   chull.reconstruct (mesh);
 
-  // convert the internal PointCloud2 to a PointCloud
+  // convert the internal PCLPointCloud2 to a PointCloud
   PointCloud<pcl::PointXYZ> hull2;
   pcl::fromROSMsg (mesh.cloud, hull2);
 
@@ -495,7 +495,7 @@ main (int argc, char** argv)
   }
 
   // Load file
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
 
@@ -522,7 +522,7 @@ main (int argc, char** argv)
   // Process for update cloud
   if (argc == 3)
   {
-    sensor_msgs::PointCloud2 cloud_blob1;
+    pcl::PCLPointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
     fromROSMsg (cloud_blob1, *cloud1);
         // Create search tree

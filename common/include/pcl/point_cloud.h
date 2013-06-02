@@ -45,7 +45,7 @@
 
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
-#include <std_msgs/Header.h>
+#include <pcl/PCLHeader.h>
 #include <pcl/exceptions.h>
 #include <pcl/point_traits.h>
 
@@ -404,7 +404,7 @@ namespace pcl
       }
 
       /** \brief The point cloud header. It contains information about the acquisition time. */
-      std_msgs::Header header;
+      pcl::PCLHeader header;
 
       /** \brief The point data. */
       std::vector<PointT, Eigen::aligned_allocator<PointT> > points;

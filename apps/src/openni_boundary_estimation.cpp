@@ -47,7 +47,7 @@
 #include <pcl/common/time.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
 typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
@@ -140,9 +140,9 @@ class OpenNIIntegralImageNormalEstimation
 //        }
 
         viz.removePointCloud ("normalcloud");
-        sensor_msgs::PointCloud2::Ptr cloud2 (new sensor_msgs::PointCloud2);
+        pcl::PCLPointCloud2::Ptr cloud2 (new pcl::PCLPointCloud2);
         pcl::toROSMsg (*boundaries_, *cloud2);
-        ColorHandlerConstPtr color_handler (new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud2, "boundary_point"));
+        ColorHandlerConstPtr color_handler (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud2, "boundary_point"));
         viz.addPointCloud<pcl::PointXYZRGBNormal> (temp_cloud, color_handler, "normalcloud");
         viz.resetCameraViewpoint ("normalcloud");
         new_cloud_ = false;

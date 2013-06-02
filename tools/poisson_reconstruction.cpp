@@ -38,7 +38,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/console/print.h>
@@ -71,7 +71,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -86,7 +86,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, PolygonMesh &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, PolygonMesh &output,
          int depth, int solver_divide, int iso_divide, float point_weight)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
@@ -167,7 +167,7 @@ main (int argc, char** argv)
   print_info ("Setting point_weight to: "); print_value ("%f\n", point_weight);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 

@@ -529,13 +529,13 @@ class ObjectSelection
       if (cloud_->isOrganized ())
       {
         // If the dataset is organized, and has RGB data, create an image viewer
-        vector<sensor_msgs::PointField> fields;
+        vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = getFieldIndex (*cloud_, "rgba", fields);
        
         if (rgba_index >= 0)
         {
-          image_viewer_.reset (new visualization::ImageViewer ("RGB Image"));
+          image_viewer_.reset (new visualization::ImageViewer ("RGB PCLImage"));
 
           image_viewer_->registerMouseCallback (&ObjectSelection::mouse_callback, *this);
           image_viewer_->registerKeyboardCallback(&ObjectSelection::keyboard_callback, *this);
@@ -651,7 +651,7 @@ main (int argc, char** argv)
 
   PCDReader reader;
   // Test the header
-  sensor_msgs::PointCloud2 dummy;
+  pcl::PCLPointCloud2 dummy;
   reader.readHeader (argv[p_file_indices[0]], dummy);
   if (dummy.height != 1 && getFieldIndex (dummy, "rgba") != -1)
   {

@@ -37,7 +37,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/boundary.h>
 #include <pcl/console/print.h>
@@ -69,7 +69,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -90,7 +90,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int k, double radius, double angle)
 {
   // Convert data to PointCloud<T>
@@ -117,13 +117,13 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", boundaries.width * boundaries.height); print_info (" points]\n");
 
   // Convert data back
-  sensor_msgs::PointCloud2 output_boundaries;
+  pcl::PCLPointCloud2 output_boundaries;
   toROSMsg (boundaries, output_boundaries);
   concatenateFields (*input, output_boundaries, output);
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -166,12 +166,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-thresh", angle);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (cloud, output, k, radius, angle);
 
   // Save into the second file

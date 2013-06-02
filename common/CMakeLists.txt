@@ -71,12 +71,12 @@ if(build)
           )
 
         set(sensor_msg_incs 
-          include/sensor_msgs/PointField.h
-          include/sensor_msgs/PointCloud2.h
-          include/sensor_msgs/Image.h
+          include/pcl/PCLPointField.h
+          include/pcl/PCLPointCloud2.h
+          include/pcl/PCLImage.h
           )
 
-        set(std_msg_incs include/std_msgs/Header.h)
+        set(std_msg_incs include/pcl/PCLHeader.h)
     endif(NOT USE_ROS)
     
     set(common_incs 
@@ -175,10 +175,6 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    if(NOT USE_ROS)
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
-    endif(NOT USE_ROS)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
