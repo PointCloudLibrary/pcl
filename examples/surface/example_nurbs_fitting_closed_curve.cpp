@@ -75,7 +75,7 @@ main (int argc, char *argv[])
   // #################### LOAD FILE #########################
   printf ("  loading %s\n", pcd_file.c_str ());
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  sensor_msgs::PointCloud2 cloud2;
+  pcl_sensor_msgs::PCLPointCloud2 cloud2;
 
   if (pcl::io::loadPCDFile (pcd_file, cloud2) == -1)
     throw std::runtime_error ("  PCD file not found.");

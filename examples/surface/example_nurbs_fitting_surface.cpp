@@ -84,7 +84,7 @@ main (int argc, char *argv[])
   // load point cloud
   printf ("  loading %s\n", pcd_file.c_str ());
   pcl::PointCloud<Point>::Ptr cloud (new pcl::PointCloud<Point>);
-  sensor_msgs::PointCloud2 cloud2;
+  pcl_sensor_msgs::PCLPointCloud2 cloud2;
   pcl::on_nurbs::NurbsDataSurface data;
 
   if (pcl::io::loadPCDFile (pcd_file, cloud2) == -1)

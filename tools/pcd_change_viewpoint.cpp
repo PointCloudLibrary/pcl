@@ -37,7 +37,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/console/print.h>
@@ -57,7 +57,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 {
   Eigen::Vector4f    translation;
   Eigen::Quaternionf orientation;
@@ -81,7 +81,7 @@ void
 saveCloud (const std::string &filename, 
            const Eigen::Vector4f    &translation,
            const Eigen::Quaternionf &orientation,
-           const sensor_msgs::PointCloud2 &output)
+           const pcl_sensor_msgs::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -135,7 +135,7 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  sensor_msgs::PointCloud2 cloud;
+  pcl_sensor_msgs::PCLPointCloud2 cloud;
   if (!loadCloud (argv[p_file_indices[0]], cloud)) 
     return (-1);
 

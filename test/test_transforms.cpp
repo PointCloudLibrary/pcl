@@ -37,7 +37,7 @@
 
 #include <iostream>  // For debug
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/feature.h>
 #include <pcl/common/eigen.h>
@@ -53,7 +53,7 @@ const float PI = 3.14159265f;
 const float rho = sqrtf (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
 
 PointCloud<PointXYZ> cloud;
-sensor_msgs::PointCloud2 cloud_blob;
+pcl_sensor_msgs::PCLPointCloud2 cloud_blob;
 
 void 
 init ()

@@ -99,7 +99,7 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
   else
   {
     // Attempt to get the field name's index
-    std::vector<sensor_msgs::PointField> fields;
+    std::vector<pcl_sensor_msgs::PCLPointField> fields;
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
     {

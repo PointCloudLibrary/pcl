@@ -75,7 +75,7 @@ namespace pcl
 
         // color field analysis
         cloud_with_color_ = false;
-        std::vector<sensor_msgs::PointField> fields;
+        std::vector<pcl_sensor_msgs::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = pcl::getFieldIndex (*this->input_, "rgb", fields);
         if (rgba_index == -1)
@@ -190,7 +190,7 @@ namespace pcl
 
       // color field analysis
       cloud_with_color_ = false;
-      std::vector<sensor_msgs::PointField> fields;
+      std::vector<pcl_sensor_msgs::PCLPointField> fields;
       int rgba_index = -1;
       rgba_index = pcl::getFieldIndex (*output_, "rgb", fields);
       if (rgba_index == -1)

@@ -556,10 +556,10 @@ CloudEditorWidget::initFileLoadMap()
 bool
 CloudEditorWidget::isColored (const std::string &fileName) const
 {
-  sensor_msgs::PointCloud2 cloud2;
+  pcl_sensor_msgs::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
-  std::vector< sensor_msgs::PointField > fs = cloud2.fields;
+  std::vector< pcl_sensor_msgs::PCLPointField > fs = cloud2.fields;
   for(unsigned int i = 0; i < fs.size(); ++i)
   {
     std::string name(fs[i].name);

@@ -56,7 +56,7 @@ int
 main (int, char ** argv)
 {
   pcl::PCDReader reader;
-  sensor_msgs::PointCloud2 cloud;
+  pcl_sensor_msgs::PCLPointCloud2 cloud;
   reader.read (argv[1], cloud);
   
   pcl::PointCloud<pcl::PointXYZ> xyz;

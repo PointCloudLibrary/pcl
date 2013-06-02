@@ -36,7 +36,7 @@
  * $Id$
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 #include <pcl/io/pcd_io.h>
@@ -66,7 +66,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 {
   TicToc tt;
 //  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -81,8 +81,8 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_msgs::PointCloud2::ConstPtr &cloud_target,
-         sensor_msgs::PointCloud2 &output, std::string correspondence_type)
+compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud_source, const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud_target,
+         pcl_sensor_msgs::PCLPointCloud2 &output, std::string correspondence_type)
 {
   // Estimate
   TicToc tt;
@@ -205,7 +205,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -243,15 +243,15 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-correspondence", correspondence_type);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud_source (new sensor_msgs::PointCloud2 ());
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_source (new pcl_sensor_msgs::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[0]], *cloud_source))
     return (-1);
   // Load the second file
-  sensor_msgs::PointCloud2::Ptr cloud_target (new sensor_msgs::PointCloud2 ());
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_target (new pcl_sensor_msgs::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[1]], *cloud_target))
     return (-1);
 
-  sensor_msgs::PointCloud2 output;
+  pcl_sensor_msgs::PCLPointCloud2 output;
   // Perform the feature estimation
   compute (cloud_source, cloud_target, output, correspondence_type);
 

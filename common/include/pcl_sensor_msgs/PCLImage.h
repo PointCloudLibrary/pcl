@@ -8,18 +8,18 @@
    #error USE_ROS setup requires PCL to compile against ROS message headers 
 #endif   
 
-// Include the correct Header path here
-#include "std_msgs/Header.h"
+// Include the correct PCLHeader path here
+#include "pcl_std_msgs/PCLHeader.h"
 
-namespace sensor_msgs
+namespace pcl_sensor_msgs
 {
-  struct Image
+  struct PCLImage
   {
-    Image () : header (), height (0), width (0), encoding (), 
+    PCLImage () : header (), height (0), width (0), encoding (), 
                is_bigendian (0), step (0), data ()
     {}
 
-     ::std_msgs::Header  header;
+     ::pcl_std_msgs::PCLHeader  header;
 
     pcl::uint32_t height;
     pcl::uint32_t width;
@@ -30,14 +30,14 @@ namespace sensor_msgs
 
     std::vector<pcl::uint8_t> data;
 
-    typedef boost::shared_ptr< ::sensor_msgs::Image> Ptr;
-    typedef boost::shared_ptr< ::sensor_msgs::Image  const> ConstPtr;
-  }; // struct Image
+    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage> Ptr;
+    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage  const> ConstPtr;
+  }; // struct PCLImage
 
-  typedef boost::shared_ptr< ::sensor_msgs::Image> ImagePtr;
-  typedef boost::shared_ptr< ::sensor_msgs::Image const> ImageConstPtr;
+  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage> PCLImagePtr;
+  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage const> PCLImageConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::Image & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl_sensor_msgs::PCLImage & v)
   {
     s << "header: " << std::endl;
     s << v.header;
@@ -59,7 +59,7 @@ namespace sensor_msgs
     }
     return (s);
   }
-} // namespace sensor_msgs
+} // namespace pcl_sensor_msgs
 
 #endif // PCL_MESSAGE_IMAGE_H
 

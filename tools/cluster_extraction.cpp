@@ -35,7 +35,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl_sensor_msgs/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/segmentation/extract_clusters.h>
@@ -71,7 +71,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -86,7 +86,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, std::vector<sensor_msgs::PointCloud2::Ptr> &output,
+compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, std::vector<pcl_sensor_msgs::PCLPointCloud2::Ptr> &output,
          int min, int max, double tolerance)
 {
   // Convert data to PointCloud<T>
@@ -117,17 +117,17 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, std::vector<sensor_msg
   output.reserve (cluster_indices.size ());
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
-    pcl::ExtractIndices<sensor_msgs::PointCloud2> extract;
+    pcl::ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> extract;
     extract.setInputCloud (input);
     extract.setIndices (boost::make_shared<const pcl::PointIndices> (*it));
-    sensor_msgs::PointCloud2::Ptr out (new sensor_msgs::PointCloud2);
+    pcl_sensor_msgs::PCLPointCloud2::Ptr out (new pcl_sensor_msgs::PCLPointCloud2);
     extract.filter (*out);
     output.push_back (out);
   }
 }
 
 void
-saveCloud (const std::string &filename, const std::vector<sensor_msgs::PointCloud2::Ptr> &output)
+saveCloud (const std::string &filename, const std::vector<pcl_sensor_msgs::PCLPointCloud2::Ptr> &output)
 {
   TicToc tt;
   tt.tic ();
@@ -177,12 +177,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-tolerance", tolerance);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  std::vector<sensor_msgs::PointCloud2::Ptr> output;
+  std::vector<pcl_sensor_msgs::PCLPointCloud2::Ptr> output;
   compute (cloud, output, min, max, tolerance);
 
   // Save into the second file

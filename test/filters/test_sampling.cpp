@@ -196,11 +196,11 @@ TEST (RandomSample, Filters)
   removed = sample.getRemovedIndices ();
   EXPECT_TRUE (removed->empty ());
 
-  // Test the sensor_msgs::PointCloud2 method
+  // Test the pcl_sensor_msgs::PCLPointCloud2 method
   // Randomly sample 10 points from cloud
-  sensor_msgs::PointCloud2::Ptr cloud_blob (new sensor_msgs::PointCloud2 ());
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_blob (new pcl_sensor_msgs::PCLPointCloud2 ());
   toROSMsg (*cloud_walls, *cloud_blob);
-  RandomSample<sensor_msgs::PointCloud2> sample2;
+  RandomSample<pcl_sensor_msgs::PCLPointCloud2> sample2;
   sample2.setInputCloud (cloud_blob);
   sample2.setSample (10);
 
@@ -211,7 +211,7 @@ TEST (RandomSample, Filters)
   EXPECT_EQ (int (indices2.size ()), 10);
 
   // Cloud
-  sensor_msgs::PointCloud2 output_blob;
+  pcl_sensor_msgs::PCLPointCloud2 output_blob;
   sample2.filter (output_blob);
 
   fromROSMsg (output_blob, cloud_out);

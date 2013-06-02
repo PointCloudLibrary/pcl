@@ -67,7 +67,7 @@ pcl::cloud_composer::CloudItem::printNumPoints () const
 template <typename PointT> pcl::cloud_composer::CloudItem* 
 pcl::cloud_composer::CloudItem::createCloudItemFromTemplate (const QString name, typename PointCloud<PointT>::Ptr cloud_ptr)
 {
-  sensor_msgs::PointCloud2::Ptr cloud_blob = boost::make_shared <sensor_msgs::PointCloud2> ();
+  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_blob = boost::make_shared <pcl_sensor_msgs::PCLPointCloud2> ();
   toROSMsg (*cloud_ptr, *cloud_blob);
   CloudItem* cloud_item = new CloudItem ( name, cloud_blob,  Eigen::Vector4f (), Eigen::Quaternionf (), false);
   cloud_item->setData (QVariant::fromValue(cloud_ptr), ItemDataRole::CLOUD_TEMPLATED);
