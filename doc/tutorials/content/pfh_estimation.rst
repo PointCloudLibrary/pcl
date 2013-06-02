@@ -212,3 +212,4 @@ resultant histogram as an array of float values.
      }
 
   In production code, preprocessing steps and parameters should be set so that normals are finite or raise an error.
+
