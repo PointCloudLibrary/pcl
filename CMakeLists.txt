@@ -276,8 +276,6 @@ find_package(Qhull)
 # Cuda
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake)
 
-# Find ROS
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_ros.cmake)
 # Find QT4
 find_package(Qt4)
 if (QT4_FOUND)
