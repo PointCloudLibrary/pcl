@@ -18,11 +18,11 @@ The :pcl:`PointCloud <pcl::PointCloud>` class represents the base class in PCL
 for holding **nD** (n dimensional) data. 
 
 The 1.x API includes the following data members:
- * :pcl:`Header <std_msgs::Header>` (coming from ROS)
+ * :pcl:`PCLHeader <pcl::PCLHeader>` (coming from ROS)
 
-   * **uint32_t** :pcl:`seq <std_msgs::Header::seq>` - a sequence number
-   * **uint64_t** :pcl:`stamp <std_msgs::Header::stamp>` - a timestamp associated with the time when the data was acquired
-   * **std::string** :pcl:`frame_id <std_msgs::Header::frame_id>` - a TF frame ID
+   * **uint32_t** :pcl:`seq <pcl::PCLHeader::seq>` - a sequence number
+   * **uint64_t** :pcl:`stamp <pcl::PCLHeader::stamp>` - a timestamp associated with the time when the data was acquired
+   * **std::string** :pcl:`frame_id <pcl::PCLHeader::frame_id>` - a TF frame ID
 
  * **std::vector<T>** :pcl:`points <pcl::PointCloud::points>` - a std C++ vector of T data. T can be a structure of any of the types defined in `point_types.h`.
 
@@ -37,7 +37,7 @@ The 1.x API includes the following data members:
 Proposals for the 2.x API:
 
  * drop templating on point types, thus making :pcl:`PointCloud <pcl::PointCloud>` template free
- * drop the :pcl:`Header <std_msgs::Header>` structure, or consolidate all the above information (width, height, is_dense, sensor_origin, sensor_orientation) into a single struct
+ * drop the :pcl:`PCLHeader <pcl::PCLHeader>` structure, or consolidate all the above information (width, height, is_dense, sensor_origin, sensor_orientation) into a single struct
  * make sure we can access a slice of the data as a *2D image*, thus allowing fast 2D displaying, [u, v] operations, etc
  * make sure we can access a slice of the data as a subpoint cloud: only certain points are chosen from the main point cloud
  * implement channels (of a single type!) as data holders, e.g.:

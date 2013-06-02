@@ -50,8 +50,8 @@ pcl::ASCIIReader::ASCIIReader ()
   name_ = "AsciiReader";
 
   {
-    sensor_msgs::PointField f;
-    f.datatype = sensor_msgs::PointField::FLOAT32;
+    pcl::PCLPointField f;
+    f.datatype = pcl::PCLPointField::FLOAT32;
     f.count    = 1;
     f.name     = "x";
     f.offset   = 0;
@@ -59,8 +59,8 @@ pcl::ASCIIReader::ASCIIReader ()
   }
 
   {
-    sensor_msgs::PointField f;
-    f.datatype = sensor_msgs::PointField::FLOAT32;
+    pcl::PCLPointField f;
+    f.datatype = pcl::PCLPointField::FLOAT32;
     f.count    = 1;
     f.name     = "y";
     f.offset   = 4;
@@ -68,8 +68,8 @@ pcl::ASCIIReader::ASCIIReader ()
   }
 
   {
-    sensor_msgs::PointField f;
-    f.datatype = sensor_msgs::PointField::FLOAT32;
+    pcl::PCLPointField f;
+    f.datatype = pcl::PCLPointField::FLOAT32;
     f.count    = 1;
     f.name     = "z";
     f.offset   = 8;
@@ -85,7 +85,7 @@ pcl::ASCIIReader::~ASCIIReader ()
 //////////////////////////////////////////////////////////////////////////////
 int
 pcl::ASCIIReader::readHeader (const std::string& file_name,
-  sensor_msgs::PointCloud2& cloud, Eigen::Vector4f& origin,
+  pcl::PCLPointCloud2& cloud, Eigen::Vector4f& origin,
   Eigen::Quaternionf& orientation, int& file_version, int& data_type,
   unsigned int& data_idx, const int offset)
 {
@@ -130,7 +130,7 @@ pcl::ASCIIReader::readHeader (const std::string& file_name,
 int
 pcl::ASCIIReader::read (
     const std::string& file_name,
-    sensor_msgs::PointCloud2& cloud, 
+    pcl::PCLPointCloud2& cloud,
     Eigen::Vector4f& origin,
     Eigen::Quaternionf& orientation, int& file_version, const int offset)
 {
@@ -178,7 +178,7 @@ pcl::ASCIIReader::read (
 
 //////////////////////////////////////////////////////////////////////////////
 void
-pcl::ASCIIReader::setInputFields (const std::vector<sensor_msgs::PointField>& fields)
+pcl::ASCIIReader::setInputFields (const std::vector<pcl::PCLPointField>& fields)
 {
 	fields_ = fields;
 }
@@ -194,47 +194,47 @@ pcl::ASCIIReader::setSepChars (const std::string &chars)
 int
 pcl::ASCIIReader::parse (
     const std::string& token,
-    const sensor_msgs::PointField& field, 
+    const pcl::PCLPointField& field,
     uint8_t* data_target)
 {
   switch (field.datatype)
   {
-    case sensor_msgs::PointField::INT8:
+    case pcl::PCLPointField::INT8:
     {
       *(reinterpret_cast<int8_t*>(data_target)) = boost::lexical_cast<int8_t> (token);
       return (1);
     }
-    case sensor_msgs::PointField::UINT8:
+    case pcl::PCLPointField::UINT8:
     {
       *(reinterpret_cast<uint8_t*>(data_target)) = boost::lexical_cast<uint8_t> (token);
       return 1;
     }
-    case sensor_msgs::PointField::INT16:
+    case pcl::PCLPointField::INT16:
     {
       *(reinterpret_cast<int16_t*>(data_target)) = boost::lexical_cast<int16_t> (token);
       return 2;
     }
-    case sensor_msgs::PointField::UINT16:
+    case pcl::PCLPointField::UINT16:
     {
       *(reinterpret_cast<uint16_t*>(data_target)) = boost::lexical_cast<uint16_t> (token);
       return 2;
     }
-    case sensor_msgs::PointField::INT32:
+    case pcl::PCLPointField::INT32:
     {
       *(reinterpret_cast<int32_t*>(data_target)) = boost::lexical_cast<int32_t> (token);
       return 4;
     }
-    case sensor_msgs::PointField::UINT32:
+    case pcl::PCLPointField::UINT32:
     {
       *(reinterpret_cast<uint32_t*>(data_target)) = boost::lexical_cast<uint32_t> (token);
       return 4;
     }
-    case sensor_msgs::PointField::FLOAT32:
+    case pcl::PCLPointField::FLOAT32:
     {
       *(reinterpret_cast<float*>(data_target)) = boost::lexical_cast<float> (token);
       return 4;
     }
-    case sensor_msgs::PointField::FLOAT64:
+    case pcl::PCLPointField::FLOAT64:
     {
       *(reinterpret_cast<double*>(data_target)) = boost::lexical_cast<double> (token);
       return 8;
@@ -249,21 +249,21 @@ pcl::ASCIIReader::typeSize (int type)
 {
   switch (type)
   {
-    case sensor_msgs::PointField::INT8:
+    case pcl::PCLPointField::INT8:
       return 1;
-    case sensor_msgs::PointField::UINT8:
+    case pcl::PCLPointField::UINT8:
       return 1;
-    case sensor_msgs::PointField::INT16:
+    case pcl::PCLPointField::INT16:
       return 2;
-    case sensor_msgs::PointField::UINT16:
+    case pcl::PCLPointField::UINT16:
       return 2;
-    case sensor_msgs::PointField::INT32:
+    case pcl::PCLPointField::INT32:
       return 4;
-    case sensor_msgs::PointField::UINT32:
+    case pcl::PCLPointField::UINT32:
       return 4;
-    case sensor_msgs::PointField::FLOAT32:
+    case pcl::PCLPointField::FLOAT32:
       return 4;
-    case sensor_msgs::PointField::FLOAT64:
+    case pcl::PCLPointField::FLOAT64:
       return 8;
   }
   return (0);

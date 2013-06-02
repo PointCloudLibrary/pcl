@@ -42,9 +42,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  // TODO: the PointCloud2 implementation is not yet using the keep_organized_ system -FF
+  // TODO: the PCLPointCloud2 implementation is not yet using the keep_organized_ system -FF
   if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;
@@ -109,7 +109,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
   if (negative_)
   {

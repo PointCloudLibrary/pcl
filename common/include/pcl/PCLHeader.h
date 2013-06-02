@@ -11,11 +11,11 @@
 #include <pcl/pcl_macros.h>
 #include <ostream>
 
-namespace std_msgs
+namespace pcl
 {
-  struct Header
+  struct PCLHeader
   {
-    Header (): seq (0), stamp (), frame_id ()
+    PCLHeader (): seq (0), stamp (), frame_id ()
     {}
 
     pcl::uint32_t seq;
@@ -23,14 +23,14 @@ namespace std_msgs
 
     std::string frame_id;
 
-    typedef boost::shared_ptr<Header> Ptr;
-    typedef boost::shared_ptr<Header const> ConstPtr;
-  }; // struct Header
+    typedef boost::shared_ptr<PCLHeader> Ptr;
+    typedef boost::shared_ptr<PCLHeader const> ConstPtr;
+  }; // struct PCLHeader
 
-  typedef boost::shared_ptr<Header> HeaderPtr;
-  typedef boost::shared_ptr<Header const> HeaderConstPtr;
+  typedef boost::shared_ptr<PCLHeader> HeaderPtr;
+  typedef boost::shared_ptr<PCLHeader const> HeaderConstPtr;
 
-  inline std::ostream& operator << (std::ostream& out, const Header &h)
+  inline std::ostream& operator << (std::ostream& out, const PCLHeader &h)
   {
     out << "seq: " << h.seq;
     out << " stamp: " << h.stamp;
@@ -38,7 +38,7 @@ namespace std_msgs
     return (out);
   }
 
-} // namespace std_msgs
+} // namespace pcl
 
 #endif // PCL_ROSLIB_MESSAGE_HEADER_H
 

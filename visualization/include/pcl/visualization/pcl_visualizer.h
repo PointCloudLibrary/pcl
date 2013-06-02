@@ -88,11 +88,11 @@ namespace pcl
         typedef boost::shared_ptr<PCLVisualizer> Ptr;
         typedef boost::shared_ptr<const PCLVisualizer> ConstPtr;
 
-        typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+        typedef PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
         typedef GeometryHandler::Ptr GeometryHandlerPtr;
         typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-        typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+        typedef PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
         typedef ColorHandler::Ptr ColorHandlerPtr;
         typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
@@ -697,7 +697,7 @@ namespace pcl
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         bool
-        addPointCloud (const sensor_msgs::PointCloud2::ConstPtr &cloud,
+        addPointCloud (const pcl::PCLPointCloud2::ConstPtr &cloud,
                        const GeometryHandlerConstPtr &geometry_handler,
                        const ColorHandlerConstPtr &color_handler,
                        const Eigen::Vector4f& sensor_origin,
@@ -719,7 +719,7 @@ namespace pcl
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         bool
-        addPointCloud (const sensor_msgs::PointCloud2::ConstPtr &cloud,
+        addPointCloud (const pcl::PCLPointCloud2::ConstPtr &cloud,
                        const GeometryHandlerConstPtr &geometry_handler,
                        const Eigen::Vector4f& sensor_origin,
                        const Eigen::Quaternion<float>& sensor_orientation,
@@ -740,7 +740,7 @@ namespace pcl
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
         bool
-        addPointCloud (const sensor_msgs::PointCloud2::ConstPtr &cloud,
+        addPointCloud (const pcl::PCLPointCloud2::ConstPtr &cloud,
                        const ColorHandlerConstPtr &color_handler,
                        const Eigen::Vector4f& sensor_origin,
                        const Eigen::Quaternion<float>& sensor_orientation,

@@ -8,7 +8,7 @@
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 
 pcl::cloud_composer::CloudItem::CloudItem (QString name,
-                                           sensor_msgs::PointCloud2::Ptr cloud_ptr, 
+                                           pcl::PCLPointCloud2::Ptr cloud_ptr,
                                            const Eigen::Vector4f& origin, 
                                            const Eigen::Quaternionf& orientation,
                                            bool make_templated_cloud)
@@ -25,15 +25,15 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
 
 //  qDebug () << "Cloud size after passthrough : "<<cloud_filtered->width<<"x"<<cloud_filtered->height;
   cloud_blob_ptr_ = cloud_ptr;
-  sensor_msgs::PointCloud2::ConstPtr const_cloud_ptr = cloud_ptr;  
+  pcl::PCLPointCloud2::ConstPtr const_cloud_ptr = cloud_ptr;
   this->setData (QVariant::fromValue (const_cloud_ptr), ItemDataRole::CLOUD_BLOB);
   this->setData (QVariant::fromValue (origin_), ItemDataRole::ORIGIN);
   this->setData (QVariant::fromValue (orientation_), ItemDataRole::ORIENTATION);
    
   //Create a color and geometry handler for this cloud
-  color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud_ptr));
+  color_handler_.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud_ptr));
   this->setData (QVariant::fromValue (color_handler_), ItemDataRole::COLOR_HANDLER);
-  geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud_ptr));
+  geometry_handler_.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud_ptr));
   this->setData (QVariant::fromValue (geometry_handler_), ItemDataRole::GEOMETRY_HANDLER);
      
   properties_->addCategory ("Core Properties");
@@ -56,7 +56,7 @@ pcl::cloud_composer::CloudItem::CloudItem (QString name,
 pcl::cloud_composer::CloudItem*
 pcl::cloud_composer::CloudItem::clone () const
 {
-  sensor_msgs::PointCloud2::Ptr cloud_copy (new sensor_msgs::PointCloud2 (*cloud_blob_ptr_));
+  pcl::PCLPointCloud2::Ptr cloud_copy (new pcl::PCLPointCloud2 (*cloud_blob_ptr_));
   //Vector4f and Quaternionf do deep copies using constructor
   CloudItem* new_item = new CloudItem (this->text (), cloud_copy, origin_,orientation_);
   
@@ -114,8 +114,8 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
   if (! template_cloud_set_ )
   {
     int num_fields = cloud_blob_ptr_->fields.size ();
-    std::vector<sensor_msgs::PointField>::iterator end = cloud_blob_ptr_->fields.end ();
-    std::vector<sensor_msgs::PointField>::iterator itr = cloud_blob_ptr_->fields.begin ();
+    std::vector<pcl::PCLPointField>::iterator end = cloud_blob_ptr_->fields.end ();
+    std::vector<pcl::PCLPointField>::iterator itr = cloud_blob_ptr_->fields.begin ();
     QStringList field_names;
     for ( itr = cloud_blob_ptr_->fields.begin ()  ; itr != end; ++itr)
     {
@@ -194,8 +194,8 @@ pcl::cloud_composer::CloudItem::checkIfFinite ()
   if (! cloud_blob_ptr_)
     return false;
   
-  sensor_msgs::PointCloud2::Ptr cloud_filtered = boost::make_shared<sensor_msgs::PointCloud2> ();
-  pcl::PassThrough<sensor_msgs::PointCloud2> pass_filter;
+  pcl::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl::PCLPointCloud2> ();
+  pcl::PassThrough<pcl::PCLPointCloud2> pass_filter;
   pass_filter.setInputCloud (cloud_blob_ptr_);
   pass_filter.setKeepOrganized (false);
   pass_filter.filter (*cloud_filtered);
