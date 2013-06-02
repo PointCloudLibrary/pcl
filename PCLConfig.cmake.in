@@ -96,9 +96,9 @@ macro(find_boost)
   set(BOOST_INCLUDE_DIRS "${Boost_INCLUDE_DIR}")
   set(BOOST_LIBRARY_DIRS "${Boost_LIBRARY_DIRS}")
   set(BOOST_LIBRARIES ${Boost_LIBRARIES})
-  if(WIN32)
+  if(WIN32 AND NOT MINGW)
     set(BOOST_DEFINITIONS ${BOOST_DEFINITIONS} -DBOOST_ALL_NO_LIB)
-  endif(WIN32)
+  endif(WIN32 AND NOT MINGW)
 endmacro(find_boost)
 
 #remove this as soon as eigen is shipped with FindEigen.cmake
@@ -485,14 +485,14 @@ endif(PCL_FIND_QUIETLY)
 find_package(PkgConfig QUIET)
 
 file(TO_CMAKE_PATH "${PCL_DIR}" PCL_DIR)
-if(WIN32)
+if(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/cmake
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
-else(WIN32)
+else(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
   get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
-endif(WIN32)
+endif(WIN32 AND NOT MINGW)
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree
 if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl/pcl_config.h")

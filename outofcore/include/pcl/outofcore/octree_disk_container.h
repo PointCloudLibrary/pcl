@@ -50,8 +50,10 @@
 #include <sensor_msgs/PointCloud2.h>
 
 //allows operation on POSIX
-#ifndef WIN32
+#if !defined WIN32
 #define _fseeki64 fseeko
+#elif defined __MINGW32__
+#define _fseeki64 fseeko64
 #endif
 
 namespace pcl
