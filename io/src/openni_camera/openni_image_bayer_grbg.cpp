@@ -86,7 +86,7 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
   unsigned gray_line_skip = gray_line_step - width;
   if (image_md_->XRes () == width && image_md_->YRes () == height)
   { // if no downsampling
-    const XnUInt8 *bayer_pixel = image_md_->WritableData ();
+    const XnUInt8 *bayer_pixel = image_md_->Data ();
     int line_skip = image_md_->XRes ();
     if (debayering_method_ == Bilinear)
     {
@@ -285,7 +285,7 @@ openni_wrapper::ImageBayerGRBG::fillGrayscale (
     register unsigned bayerYSkip = (image_md_->YRes () / height - 1) * image_md_->XRes ();
 
     // Downsampling and debayering at once
-    register const XnUInt8* bayer_buffer = image_md_->WritableData ();
+    register const XnUInt8* bayer_buffer = image_md_->Data ();
 
     for (register unsigned yIdx = 0; yIdx < height; ++yIdx, bayer_buffer += bayerYSkip, gray_buffer += gray_line_skip) // skip a line
     {
@@ -314,7 +314,7 @@ openni_wrapper::ImageBayerGRBG::fillRGB (
 
   if (image_md_->XRes () == width && image_md_->YRes () == height)
   {
-    register const unsigned char* bayer_pixel = image_md_->WritableData ();
+    register const unsigned char* bayer_pixel = image_md_->Data ();
 
     int bayer_line_step = image_md_->XRes ();
     int bayer_line_step2 = image_md_->XRes () << 1;
@@ -339,7 +339,7 @@ openni_wrapper::ImageBayerGRBG::fillRGB (
     register unsigned bayerYSkip = (image_md_->YRes () / height - 1) * image_md_->XRes ();
 
     // Downsampling and debayering at once
-    register const XnUInt8* bayer_buffer = image_md_->WritableData ();
+    register const XnUInt8* bayer_buffer = image_md_->Data ();
 
     for (register unsigned yIdx = 0; yIdx < height; ++yIdx, bayer_buffer += bayerYSkip, rgb_buffer += rgb_line_skip) // skip a line
     {
