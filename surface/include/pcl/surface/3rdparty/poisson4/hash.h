@@ -1,9 +1,9 @@
 #ifndef HASH_INCLUDED
 #define HASH_INCLUDED
-#ifdef _WIN32
+#if defined _WIN32 && !defined __MINGW32__
 #include <hash_map>
 using namespace stdext;
-#else // !_WIN32
+#else // !_WIN32 || __MINGW32__
 #define _GLIBCXX_PERMIT_BACKWARD_HASH
 #include <ext/hash_map>
 using namespace __gnu_cxx;
@@ -26,6 +26,6 @@ namespace __gnu_cxx
     size_t operator()(const unsigned long long __x) const { return __x; }
   };
 }
-#endif // _WIN32
+#endif // _WIN32 && !__MINGW32__
 #endif // HASH_INCLUDED
 
