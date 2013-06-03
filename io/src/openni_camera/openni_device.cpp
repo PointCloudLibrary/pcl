@@ -876,13 +876,9 @@ openni_wrapper::OpenNIDevice::ImageDataThreadFunction ()
     xn::ImageMetaData image_md;
     image_generator_.GetMetaData (image_md);
     boost::shared_ptr<xn::ImageMetaData> image_data (new xn::ImageMetaData);
-    XnStatus xs = image_data->CopyFrom (image_md);
+    image_data->CopyFrom (image_md);
     image_lock.unlock ();
     
-    // copy failed, don't continue but drop !.
-    if (xs != XN_STATUS_OK)
-      continue;
-    // note: from here on, don't access image->getMetaData()->Data() but image->getMetaData()->WritableData() !
     boost::shared_ptr<Image> image = getCurrentImage (image_data);
     for (std::map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
     {
