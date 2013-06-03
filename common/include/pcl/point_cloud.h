@@ -330,7 +330,7 @@ namespace pcl
       inline bool
       isOrganized () const
       {
-        return (height != 1);
+        return (height > 1);
       }
       
       /** \brief Return an Eigen MatrixXf (assumes float values) mapped to the specified dimensions of the PointCloud.

@@ -1270,13 +1270,16 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*cloud_actor_map_)[id].actor = actor;
-  (*cloud_actor_map_)[id].cells = initcells;
+  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
+  cloud_actor.actor = actor;
+  cloud_actor.cells = initcells;
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
-  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+  cloud_actor.viewpoint_transformation_ = transformation;
+  cloud_actor.actor->SetUserMatrix (transformation);
+  cloud_actor.actor->Modified ();
 
   return (true);
 }
@@ -1331,15 +1334,17 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*cloud_actor_map_)[id].actor = actor;
-  (*cloud_actor_map_)[id].cells = initcells;
-  (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
+  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
+  cloud_actor.actor = actor;
+  cloud_actor.cells = initcells;
+  cloud_actor.color_handlers.push_back (color_handler);
 
-  // Save the viewpoint transformation matrix to the global actor map
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
-  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+  cloud_actor.viewpoint_transformation_ = transformation;
+  cloud_actor.actor->SetUserMatrix (transformation);
+  cloud_actor.actor->Modified ();
 
   return (true);
 }
@@ -1394,14 +1399,17 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*cloud_actor_map_)[id].actor = actor;
-  (*cloud_actor_map_)[id].cells = initcells;
-  (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
+  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
+  cloud_actor.actor = actor;
+  cloud_actor.cells = initcells;
+  cloud_actor.geometry_handlers.push_back (geometry_handler);
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
-  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+  cloud_actor.viewpoint_transformation_ = transformation;
+  cloud_actor.actor->SetUserMatrix (transformation);
+  cloud_actor.actor->Modified ();
 
   return (true);
 }

@@ -53,6 +53,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
+  // Check if the tree is sorted -- if it is we don't need to check the first element
+  int nn_start_idx = tree->getSortedResults () ? 1 : 0;
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.points.size (), false);
 
@@ -79,7 +81,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         continue;
       }
 
-      for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      for (size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
         if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;
@@ -132,6 +134,8 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
     PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different set of indices (%zu) than the input set (%zu)!\n", tree->getIndices ()->size (), indices.size ());
     return;
   }
+  // Check if the tree is sorted -- if it is we don't need to check the first element
+  int nn_start_idx = tree->getSortedResults () ? 1 : 0;
 
   // Create a bool vector of processed point indices, and initialize it to false
   std::vector<bool> processed (cloud.points.size (), false);
@@ -165,7 +169,7 @@ pcl::extractEuclideanClusters (const PointCloud<PointT> &cloud,
         continue;
       }
 
-      for (size_t j = 1; j < nn_indices.size (); ++j)             // nn_indices[0] should be sq_idx
+      for (size_t j = nn_start_idx; j < nn_indices.size (); ++j)             // can't assume sorted (default isn't!)
       {
         if (nn_indices[j] == -1 || processed[nn_indices[j]])        // Has this point been processed before ?
           continue;

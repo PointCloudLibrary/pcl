@@ -48,6 +48,7 @@ foreach(subdir
           statistical_removal
           stick_segmentation
           template_alignment
+	  tracking
           vfh_recognition
           voxel_grid
           normal_distributions_transform

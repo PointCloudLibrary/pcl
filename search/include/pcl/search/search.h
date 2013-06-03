@@ -103,6 +103,13 @@ namespace pcl
           */
         virtual void 
         setSortedResults (bool sorted);
+
+        /** \brief Gets whether the results should be sorted (ascending in the distance) or not
+          * Otherwise the results may be returned in any order.
+          */
+        virtual bool 
+        getSortedResults ();
+
         
         /** \brief Pass the input dataset that the search will be performed on.
           * \param[in] cloud a const pointer to the PointCloud data

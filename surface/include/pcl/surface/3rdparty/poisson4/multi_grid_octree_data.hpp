@@ -30,8 +30,10 @@ DAMAGE.
 #include "mat.h"
 
 #if defined WIN32 || defined _WIN32
-  #include <intrin.h>
-  #include <hash_map>
+  #if !defined __MINGW32__
+    #include <intrin.h>
+    #include <hash_map>
+  #endif
 #endif
 
 
@@ -55,7 +57,7 @@ namespace pcl
     const Real EPSILON=Real(1e-6);
     const Real ROUND_EPS=Real(1e-5);
 
-#if defined _WIN32 
+#if defined _WIN32 && !defined __MINGW32__
     using stdext::hash_map;
 #else
     using std::hash_map;
@@ -64,16 +66,16 @@ namespace pcl
 
     void atomicOr(volatile int& dest, int value)
     {
-#ifdef _WIN32
+#if defined _WIN32 && !defined __MINGW32__
     #if defined (_M_IX86)
       _InterlockedOr( (long volatile*)&dest, value );
     #else
       InterlockedOr( (long volatile*)&dest , value );
     #endif
-#else // !_WIN32
+#else // !_WIN32 || __MINGW32__
     #pragma omp atomic
       dest |= value;
-#endif // _WIN32
+#endif // _WIN32 && !__MINGW32__
     }
 
 
