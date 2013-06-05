@@ -1,3 +1,38 @@
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ */
 #include <pcl/stereo/disparity_map_converter.h>
 
 #include <fstream>
@@ -138,6 +173,14 @@ pcl::DisparityMapConverter<typename PointT>::setImage (const pcl::PointCloud<pcl
   disparity_map_height_ = image_->height;
 }
 
+template <typename PointT> pcl::PointCloud<pcl::RGB>::Ptr
+pcl::DisparityMapConverter<typename PointT>::getImage ()
+{
+  pcl::PointCloud<pcl::RGB>::Ptr image_pointer (new pcl::PointCloud<pcl::RGB>);
+  *image_pointer = *image_;
+  return image_pointer;
+}
+
 template <typename PointT> bool
 pcl::DisparityMapConverter<typename PointT>::loadDisparityMap (const std::string &file_name)
 {
@@ -193,6 +236,12 @@ pcl::DisparityMapConverter<typename PointT>::setDisparityMap(const std::vector<f
   disparity_map_height_ = height;
 
   disparity_map_ = disparity_map;
+}
+
+template <typename PointT> std::vector<float>
+pcl::DisparityMapConverter<typename PointT>::getDisparityMap ()
+{
+  return disparity_map_;
 }
 
 template <typename PointT> void
