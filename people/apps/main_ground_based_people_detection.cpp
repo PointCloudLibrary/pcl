@@ -187,7 +187,8 @@ int main (int argc, char** argv)
   people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
   people_detector.setClassifier(person_classifier);                // set person classifier
   people_detector.setHeightLimits(min_height, max_height);         // set person classifier
-//  people_detector.setSensorPortraitOrientation(true);             // set sensor orientation to vertical
+//  people_detector.setScaleFactor(4);                               // set a downsampling factor to the point cloud (for increasing speed)
+//  people_detector.setSensorPortraitOrientation(true);              // set sensor orientation to vertical
 
   // For timing:
   static unsigned count = 0;
