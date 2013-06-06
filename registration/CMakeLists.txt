@@ -30,6 +30,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_sample_consensus_2d.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_trimmed.h
         include/pcl/${SUBSYS_NAME}/correspondence_rejection_var_trimmed.h
+        include/pcl/${SUBSYS_NAME}/correspondence_rejection_organized_boundary.h
         include/pcl/${SUBSYS_NAME}/correspondence_sorting.h
         include/pcl/${SUBSYS_NAME}/correspondence_types.h
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
@@ -83,6 +84,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_sample_consensus_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_trimmed.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_var_trimmed.hpp
+        include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_organized_boundary.hpp
         include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
@@ -122,6 +124,7 @@ if(build)
         src/correspondence_rejection_sample_consensus_2d.cpp
         src/correspondence_rejection_trimmed.cpp
         src/correspondence_rejection_var_trimmed.cpp
+        src/correspondence_rejection_organized_boundary.cpp
         src/ppf_registration.cpp
         src/pyramid_feature_matching.cpp
         #src/pairwise_graph_registration.cpp
