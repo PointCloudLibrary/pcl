@@ -99,6 +99,14 @@ namespace pcl
       setGround (Eigen::VectorXf& ground_coeffs);
 
       /**
+       * \brief Set scale factor. 
+       *
+       * \param[in] scale_factor Value of the downsampling factor (in each dimension) which is applied to the raw point cloud (default = 1.).
+       */
+      void
+      setScaleFactor (int scale_factor);
+      
+      /**
        * \brief Set voxel size. 
        *
        * \param[in] voxel_size Value of the voxel dimension (default = 0.06m.).
@@ -228,7 +236,10 @@ namespace pcl
       compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters);
 
     protected:
-	  /** \brief voxel size */
+      /** \brief scale factor used to downsample the point cloud */
+      int scale_factor_; 
+      
+      /** \brief voxel size */
       float voxel_size_;                  
       
       /** \brief ground plane coefficients */
