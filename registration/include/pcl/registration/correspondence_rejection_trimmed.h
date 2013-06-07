@@ -91,7 +91,7 @@ namespace pcl
 
         /** \brief Get the maximum distance used for thresholding in correspondence rejection. */
         inline float 
-        getOverlapRadio () { return overlap_ratio_; };
+        getOverlapRatio () { return overlap_ratio_; };
 
         /** \brief Set a minimum number of correspondences. If the specified overlap ratio causes to have
           * less correspondences,  \a CorrespondenceRejectorTrimmed will try to return at least
