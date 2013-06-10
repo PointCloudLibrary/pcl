@@ -806,6 +806,19 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'x' : case 'X' :
     {
       CurrentMode = (CurrentMode == ORIENT_MODE) ? SELECT_MODE : ORIENT_MODE;
+      if (CurrentMode == SELECT_MODE)
+      {
+        // Save the point picker
+        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker ());
+        // Switch for an area picker
+        vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New ();
+        Interactor->SetPicker (area_picker);
+      }
+      else
+      {
+        // Restore point picker
+        Interactor->SetPicker (point_picker_);
+      }
       break;
     }
 
