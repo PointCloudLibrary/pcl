@@ -56,9 +56,12 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/crop_box.h>
 #include <pcl/filters/median_filter.h>
+#include <pcl/filters/normal_refinement.h>
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
+
+#include <pcl/segmentation/sac_segmentation.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -2176,6 +2179,184 @@ TEST (MedianFilter, Filters)
   EXPECT_NEAR (1.177000045f, out_3(128, 128).z, 1e-5);
   EXPECT_NEAR (0.778999984f, out_3(256, 256).z, 1e-5);
   EXPECT_NEAR (0.703000009f, out_3(428, 300).z, 1e-5);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+#include <pcl/common/time.h>
+TEST (NormalRefinement, Filters)
+{
+  /*
+   * Initialization of parameters
+   */
+  
+  // Input without NaN
+  pcl::PointCloud<pcl::PointXYZRGB> cloud_organized_nonan;
+  std::vector<int> dummy;
+  pcl::removeNaNFromPointCloud<pcl::PointXYZRGB> (*cloud_organized, cloud_organized_nonan, dummy);
+  
+  // Viewpoint
+  const float vp_x = cloud_organized_nonan.sensor_origin_[0];
+  const float vp_y = cloud_organized_nonan.sensor_origin_[1];
+  const float vp_z = cloud_organized_nonan.sensor_origin_[2];
+  
+  // Search parameters
+  const int k = 5;
+  std::vector<std::vector<int> > k_indices;
+  std::vector<std::vector<float> > k_sqr_distances;
+  
+  // Estimated and refined normal containers
+  pcl::PointCloud<pcl::PointXYZRGBNormal> cloud_organized_normal;
+  pcl::PointCloud<pcl::PointXYZRGBNormal> cloud_organized_normal_refined;
+  
+  /*
+   * Neighbor search
+   */
+  
+  // Search for neighbors
+  pcl::search::KdTree<pcl::PointXYZRGB> kdtree;
+  kdtree.setInputCloud (cloud_organized_nonan.makeShared ());
+  kdtree.nearestKSearch (cloud_organized_nonan, std::vector<int> (), k, k_indices, k_sqr_distances);
+  
+  /*
+   * Estimate normals
+   */
+  
+  // Run estimation
+  pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
+  cloud_organized_normal.reserve (cloud_organized_nonan.size ());
+  for (unsigned int i = 0; i < cloud_organized_nonan.size (); ++i)
+  {
+    // Output point
+    pcl::PointXYZRGBNormal normali;
+    // XYZ and RGB
+    std::memcpy (normali.data, cloud_organized_nonan[i].data, 3*sizeof (float));
+    normali.rgba = cloud_organized_nonan[i].rgba;
+    // Normal
+    ne.computePointNormal (cloud_organized_nonan, k_indices[i], normali.normal_x, normali.normal_y, normali.normal_z, normali.curvature);
+    pcl::flipNormalTowardsViewpoint (cloud_organized_nonan[i], vp_x, vp_y, vp_z, normali.normal_x, normali.normal_y, normali.normal_z);
+    // Store
+    cloud_organized_normal.push_back (normali);
+  }
+  
+  /*
+   * Refine normals
+   */
+  
+  // Run refinement
+  pcl::NormalRefinement<pcl::PointXYZRGBNormal> nr (k_indices, k_sqr_distances);
+  nr.setInputCloud (cloud_organized_normal.makeShared());
+  nr.setMaxIterations (15);
+  nr.setConvergenceThreshold (0.00001f);
+  nr.filter (cloud_organized_normal_refined);
+  
+  /*
+   * Find dominant plane in the scene
+   */
+  
+  // Calculate SAC model
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  pcl::SACSegmentation<pcl::PointXYZRGBNormal> seg;
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.005);
+  seg.setInputCloud (cloud_organized_normal.makeShared ());
+  seg.segment (*inliers, *coefficients);
+  
+  // Read out SAC model
+  const std::vector<int>& idx_table = inliers->indices;
+  float a = coefficients->values[0];
+  float b = coefficients->values[1];
+  float c = coefficients->values[2];
+  const float d = coefficients->values[3];
+  
+  // Find a point on the plane [0 0 z] => z = -d / c
+  pcl::PointXYZ p_table;
+  p_table.x = 0.0f;
+  p_table.y = 0.0f;
+  p_table.z = -d / c;
+  
+  // Use the point to orient the SAC normal correctly
+  pcl::flipNormalTowardsViewpoint (p_table, vp_x, vp_y, vp_z, a, b, c);  
+  
+  /*
+   * Test: check that the refined table normals are closer to the SAC model normal
+   */
+  
+  // Errors for the two normal sets and their means
+  std::vector<float> errs_est;
+  float err_est_mean = 0.0f;
+  std::vector<float> errs_refined;
+  float err_refined_mean = 0.0f;
+  
+  // Number of zero or NaN vectors produced by refinement
+  int num_zeros = 0;
+  int num_nans = 0;
+  
+  // Loop
+  for (unsigned int i = 0; i < idx_table.size (); ++i)
+  {
+    float tmp;
+    
+    // Estimated (need to avoid zeros and NaNs)
+    const pcl::PointXYZRGBNormal& calci = cloud_organized_normal[idx_table[i]];
+    if ((fabsf (calci.normal_x) + fabsf (calci.normal_y) + fabsf (calci.normal_z)) > 0.0f)
+    {
+      tmp = 1.0f - (calci.normal_x * a + calci.normal_y * b + calci.normal_z * c);
+      if (pcl_isfinite (tmp))
+      {
+        errs_est.push_back (tmp);
+        err_est_mean += tmp;
+      }
+    }
+    
+    // Refined
+    const pcl::PointXYZRGBNormal& refinedi = cloud_organized_normal_refined[idx_table[i]];
+    if ((fabsf (refinedi.normal_x) + fabsf (refinedi.normal_y) + fabsf (refinedi.normal_z)) > 0.0f)
+    {
+      tmp = 1.0f - (refinedi.normal_x * a + refinedi.normal_y * b + refinedi.normal_z * c);
+      if (pcl_isfinite(tmp))
+      {
+        errs_refined.push_back (tmp);
+        err_refined_mean += tmp;
+      }
+      else
+      {
+        // Non-finite normal encountered
+        ++num_nans;
+      }
+    } else
+    {
+      // Zero normal encountered
+      ++num_zeros;
+    }
+  }
+  
+  // Mean errors
+  err_est_mean /= static_cast<float> (errs_est.size ());
+  err_refined_mean /= static_cast<float> (errs_refined.size ());
+  
+  // Error variance of estimated
+  float err_est_var = 0.0f;
+  for (unsigned int i = 0; i < errs_est.size (); ++i)
+    err_est_var = (errs_est[i] - err_est_mean) * (errs_est[i] - err_est_mean);
+  err_est_var /= static_cast<float> (errs_est.size () - 1);
+  
+  // Error variance of refined
+  float err_refined_var = 0.0f;
+  for (unsigned int i = 0; i < errs_refined.size (); ++i)
+    err_refined_var = (errs_refined[i] - err_refined_mean) * (errs_refined[i] - err_refined_mean);
+  err_refined_var /= static_cast<float> (errs_refined.size () - 1);
+  
+  // Refinement should not produce any zeros and NaNs
+  EXPECT_EQ(num_zeros, 0);
+  EXPECT_EQ(num_nans, 0);
+  
+  // Expect mean/variance of error of refined to be smaller, i.e. closer to SAC model
+  EXPECT_LT(err_refined_mean, err_est_mean);
+  EXPECT_LT(err_refined_var, err_est_var);
 }
 
 /* ---[ */
