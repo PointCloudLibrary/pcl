@@ -282,7 +282,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   extract.setIndices(inliers);
   extract.setNegative(true);
   extract.filter(*no_ground_cloud_);
-  if(inliers->size() >= (300*0.06/voxel_size_/std::pow(scale_factor_,2)))        
+  if(inliers->size() >= (300*0.06/voxel_size_/std::pow(static_cast<float>(scale_factor_),2)))        
     ground_model->optimizeModelCoefficients(*inliers, ground_coeffs_, ground_coeffs_);
   else
     std::cout << "No groundplane update!" << std::endl;
