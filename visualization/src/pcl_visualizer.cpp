@@ -278,7 +278,7 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Set an AreaPicker
   vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
-  interactor_->SetPicker (pp);
+  iren->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -321,7 +321,7 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Set an AreaPicker
   // vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
-  // interactor_->SetPicker (pp);
+  // iren->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
