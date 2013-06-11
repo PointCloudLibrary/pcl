@@ -49,18 +49,18 @@ namespace pcl
       * pose-invariant geometric constraints between two point sets by forming virtual polygons of a user-specifiable
       * cardinality on each model using the input correspondences.
       * These polygons are then checked in a pose-invariant manner (i.e. the side lengths must be approximately equal),
-      * and rejection is performed by thresholding these edge lengths. For more information, see:
+      * and rejection is performed by thresholding these edge lengths.
+      * 
+      * If you use this in academic work, please cite:
       * 
       * A. G. Buch, D. Kraft, J.-K. Kämäräinen, H. G. Petersen and N. Krüger.
       * Pose Estimation using Local Structure-Specific Shape and Appearance Context.
-      * International Conference on Robotics and Automation (ICRA), 2013 (to appear). 
+      * International Conference on Robotics and Automation (ICRA), 2013. 
       *
       * \author Anders Glent Buch
       * \ingroup registration
-      * \param PointT the point type of the original point cloud from which the correspondences were obtained, must
-      * contain the fields x, y and z.
       */
-    template <typename PointT>
+    template <typename SourceT, typename TargetT>
     class PCL_EXPORTS CorrespondenceRejectorPoly: public CorrespondenceRejector
     {
       using CorrespondenceRejector::input_correspondences_;
@@ -70,14 +70,22 @@ namespace pcl
       public:
         typedef boost::shared_ptr<CorrespondenceRejectorPoly> Ptr;
         typedef boost::shared_ptr<const CorrespondenceRejectorPoly> ConstPtr;
+        
+        typedef pcl::PointCloud<SourceT> PointCloudSource;
+        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
+        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+        
+        typedef pcl::PointCloud<TargetT> PointCloudTarget;
+        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
+        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
-        /** \brief Empty constructor. */
-        CorrespondenceRejectorPoly () 
-          : data_container_ ()
+        /** \brief Empty constructor */
+        CorrespondenceRejectorPoly ()
+          : iterations_ (10000)
           , cardinality_ (3)
           , similarity_threshold_ (0.75f)
-          , iterations_ (10000)
-        { 
+          , similarity_threshold_squared_ (0.75f * 0.75f)
+        {
           rejection_name_ = "CorrespondenceRejectorPoly";
         }
 
@@ -93,35 +101,29 @@ namespace pcl
           * \param[in] cloud a cloud containing XYZ data
           */
         inline void 
-        setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        setInputSource (const PointCloudSourceConstPtr &cloud)
         {
-          if (!data_container_)
-            data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          input_ = cloud;
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] cloud a cloud containing XYZ data
           */
         inline void 
-        setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
+        setInputCloud (const PointCloudSourceConstPtr &cloud)
         {
           PCL_WARN ("[pcl::registration::%s::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.\n",
                     getClassName ().c_str ());
-          if (!data_container_)
-            data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputSource (cloud);
+          input_ = cloud;
         }
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.
           * \param[in] target a cloud containing XYZ data
           */
         inline void 
-        setInputTarget (const typename pcl::PointCloud<PointT>::ConstPtr &target)
+        setInputTarget (const PointCloudTargetConstPtr &target)
         {
-          if (!data_container_)
-            data_container_.reset (new DataContainer<PointT>);
-          boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
+          target_ = target;
         }
         
         /** \brief Set the polygon cardinality
@@ -142,16 +144,18 @@ namespace pcl
           return (cardinality_);
         }
         
-        /** \brief Set the Euclidean similarity threshold between edge lengths
+        /** \brief Set the similarity threshold in [0,1[ between edge lengths,
+          * where 1 is a perfect match
           * \param similarity similarity threshold
           */
         inline void 
         setSimilarityThreshold (float similarity_threshold)
         {
           similarity_threshold_ = similarity_threshold;
+          similarity_threshold_squared_ = similarity_threshold * similarity_threshold;
         }
         
-        /** \brief Get the Euclidean similarity threshold between edge lengths
+        /** \brief Get the similarity threshold between edge lengths
           * \return similarity threshold
           */
         inline float 
@@ -176,6 +180,53 @@ namespace pcl
         getIterations ()
         {
           return (iterations_);
+        }
+        
+        /** \brief Polygonal rejection of a single polygon, indexed by a subset of correspondences
+          * \param corr all correspondences into \ref input_ and \ref target_
+          * \param idx sampled indices into \b correspondences, must have a size equal to \ref cardinality_
+          * \return true if all edge length ratios are larger than or equal to \ref similarity_threshold_
+          */
+        inline bool 
+        thresholdPolygon (const pcl::Correspondences& corr, const std::vector<int>& idx)
+        {
+          if (cardinality_ == 2) // Special case: when two points are considered, we only have one edge
+          {
+            return (thresholdEdgeLength (corr[ idx[0] ].index_query, corr[ idx[1] ].index_query,
+                                         corr[ idx[0] ].index_match, corr[ idx[1] ].index_match,
+                                         cardinality_));
+          }
+          else
+          { // Otherwise check all edges
+            for (int i = 0; i < cardinality_; ++i)
+              if (!thresholdEdgeLength (corr[ idx[i] ].index_query, corr[ idx[(i+1)%cardinality_] ].index_query,
+                                        corr[ idx[i] ].index_match, corr[ idx[(i+1)%cardinality_] ].index_match,
+                                        similarity_threshold_squared_))
+                return (false);
+            
+            return (true);
+          }
+        }
+        
+        /** \brief Polygonal rejection of a single polygon, indexed by two point index vectors
+          * \param source_indices indices of polygon points in \ref input_, must have a size equal to \ref cardinality_
+          * \param target_indices corresponding indices of polygon points in \ref target_, must have a size equal to \ref cardinality_
+          * \return true if all edge length ratios are larger than or equal to \ref similarity_threshold_
+          */
+        inline bool 
+        thresholdPolygon (const std::vector<int>& source_indices, const std::vector<int>& target_indices)
+        {
+          // Convert indices to correspondences and an index vector pointing to each element
+          pcl::Correspondences corr (cardinality_);
+          std::vector<int> idx (cardinality_);
+          for (int i = 0; i < cardinality_; ++i)
+          {
+            corr[i].index_query = source_indices[i];
+            corr[i].index_match = target_indices[i];
+            idx[i] = i;
+          }
+          
+          return (thresholdPolygon (corr, idx));
         }
 
       protected:
@@ -228,7 +279,7 @@ namespace pcl
           * \return squared Euclidean distance
           */
         inline float 
-        computeSquaredDistance (const PointT& p1, const PointT& p2)
+        computeSquaredDistance (const SourceT& p1, const TargetT& p2)
         {
           const float dx = p2.x - p1.x;
           const float dy = p2.y - p1.y;
@@ -238,57 +289,28 @@ namespace pcl
         }
         
         /** \brief Edge length similarity thresholding
-          * \param source source point cloud
-          * \param target target point cloud
-          * \param c1 first correspondence between source and target
-          * \param c2 second correspondence between source and target
+          * \param index_query_1 index of first source vertex
+          * \param index_query_2 index of second source vertex
+          * \param index_match_1 index of first target vertex
+          * \param index_match_2 index of second target vertex
           * \param simsq squared similarity threshold in [0,1]
           * \return true if edge length ratio is larger than or equal to threshold
           */
         inline bool 
-        thresholdEdgeLength (typename pcl::PointCloud<PointT>::ConstPtr source,
-            typename pcl::PointCloud<PointT>::ConstPtr target,
-            const pcl::Correspondence& c1,
-            const pcl::Correspondence& c2,
-            float simsq)
+        thresholdEdgeLength (int index_query_1,
+                             int index_query_2,
+                             int index_match_1,
+                             int index_match_2,
+                             float simsq)
         {
           // Distance between source points
-          const float dist_src = computeSquaredDistance ((*source)[c1.index_query], (*source)[c2.index_query]);
+          const float dist_src = computeSquaredDistance ((*input_)[index_query_1], (*input_)[index_query_2]);
           // Distance between target points
-          const float dist_tgt = computeSquaredDistance ((*target)[c1.index_match], (*target)[c2.index_match]);
+          const float dist_tgt = computeSquaredDistance ((*target_)[index_match_1], (*target_)[index_match_2]);
           // Edge length similarity [0,1] where 1 is a perfect match
           const float edge_sim = (dist_src < dist_tgt ? dist_src / dist_tgt : dist_tgt / dist_src);
           
           return (edge_sim >= simsq);
-        }
-        
-        /** \brief Worker function for polygonal rejection using a single polygon
-          * \param source source point cloud
-          * \param target target point cloud
-          * \param corr all correspondences
-          * \param idx indices of sampled correspondences, must have a size of \ref cardinality_
-          * \param simsq squared similarity threshold in [0,1]
-          * \return true if all edge length ratios are larger than or equal to findThreshold
-          */
-        inline bool 
-        thresholdPolygon (typename pcl::PointCloud<PointT>::ConstPtr source,
-            typename pcl::PointCloud<PointT>::ConstPtr target,
-            const pcl::Correspondences& corr,
-            const std::vector<int>& idx,
-            float simsq)
-        {
-          if (cardinality_ == 2) // Special case: when two points are considered, we only have one edge
-          {
-            return (thresholdEdgeLength (source, target, corr[ idx[0] ], corr[ idx[1] ], simsq));
-          }
-          else
-          { // Otherwise check all edges
-            for (int i = 0; i < cardinality_; ++i)
-              if (!thresholdEdgeLength (source, target, corr[ idx[i] ], corr[ idx[(i+1)%cardinality_] ], simsq))
-                return (false);
-            
-            return (true);
-          }
         }
         
         /** \brief Compute a linear histogram. This function is equivalent to the MATLAB function \b histc, with the
@@ -309,10 +331,14 @@ namespace pcl
         int 
         findThresholdOtsu (const std::vector<int>& histogram);
 
-        typedef boost::shared_ptr<DataContainerInterface> DataContainerPtr;
+        /** \brief The input point cloud dataset */
+        PointCloudSourceConstPtr input_;
 
-        /** \brief A pointer to the DataContainer object containing the input and target point clouds */
-        DataContainerPtr data_container_;
+        /** \brief The input point cloud dataset target */
+        PointCloudTargetConstPtr target_;
+        
+        /** \brief Number of iterations to run */
+        int iterations_;
         
         /** \brief The polygon cardinality used during rejection */
         int cardinality_;
@@ -320,8 +346,8 @@ namespace pcl
         /** \brief Lower edge length threshold in [0,1] used for verifying polygon similarities, where 1 is a perfect match */
         float similarity_threshold_;
         
-        /** \brief Number of iterations to run */
-        int iterations_;
+        /** \brief Squared value if \ref similarity_threshold_, only for internal use */
+        float similarity_threshold_squared_;
     };
   }
 }
