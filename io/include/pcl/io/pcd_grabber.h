@@ -43,14 +43,14 @@
 #include <pcl/common/io.h>
 #include <pcl/io/grabber.h>
 #include <pcl/io/file_grabber.h>
-#include <pcl/io/openni_camera/openni_image.h>
-#include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/common/time_trigger.h>
 #include <string>
 #include <vector>
 #include <pcl/ros/conversions.h>
 
 #ifdef HAVE_OPENNI
+#include <pcl/io/openni_camera/openni_image.h>
+#include <pcl/io/openni_camera/openni_image_rgb24.h>
 #include <pcl/io/openni_camera/openni_depth_image.h>
 #endif
 
