@@ -31,7 +31,7 @@ if(GLEW_FOUND)
       ${VTK_IO_TARGET_LINK_LIBRARIES} 
       ${OPENNI_INCLUDES})
     target_link_libraries(${LIB_NAME} pcl_simulation pcl_common pcl_io 
-	    ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES})
+	    ${VTK_IO_TARGET_LINK_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 
     PCL_ADD_EXECUTABLE(pcl_sim_terminal_demo ${SUBSYS_NAME} sim_terminal_demo.cpp)
     target_link_libraries (pcl_sim_terminal_demo
