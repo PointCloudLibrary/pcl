@@ -854,7 +854,7 @@ pcl::PLYWriter::generateHeader (const sensor_msgs::PointCloud2 &cloud,
     }
     else if (cloud.fields[i].name == "normal_z")
     {
-      oss << "\npropertz float nz";
+      oss << "\nproperty float nz";
     }
     else if (cloud.fields[i].name == "rgb")
     {
