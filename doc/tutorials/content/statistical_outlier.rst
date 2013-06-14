@@ -65,7 +65,7 @@ The following lines of code will read the point cloud data from disk.
 Then, a *pcl::StatisticalOutlierRemoval* filter is created. The number of
 neighbors to analyze for each point is set to 50, and the standard deviation
 multiplier to 1. What this means is that all points who have a distance larger
-than 1 standard deviation of the mean distance to teh query point will be
+than 1 standard deviation of the mean distance to the query point will be
 marked as outliers and removed. The output is computed and stored in
 *cloud_filtered*.
 
