@@ -35,7 +35,7 @@ laser scanners. Some of these formats include:
 All the above file formats suffer from several shortcomings, as explained in
 the next sections -- which is natural, as they were created for a different
 purpose and at different times, before today's sensing technologies and
-algorithms have been invented. 
+algorithms had been invented. 
 
 PCD versions
 ------------
