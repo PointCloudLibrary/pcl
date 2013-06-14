@@ -76,7 +76,7 @@ printHelp (int, char **argv)
   std::cout << "     -h:                                               Show this help." << std::endl;
   std::cout << "     -format 0 | 1:                                    Set the format of the output pcd file." << std::endl;
   std::cout << "     -mode DEFAULT | FORCE_COLOR | FORCE_GRAYSCALE:    Set the working mode of the converter." << std::endl;
-  std::cout << "       --intensity_type: FLOAT | UINT8_T               Set the desired intensity type" << std::endl;
+  std::cout << "       --intensity_type: FLOAT | UINT_8               Set the desired intensity type" << std::endl;
 }
 
 template<typename PointInT> void
