@@ -3,6 +3,7 @@ compiler:
   - gcc
 before_install:
   - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
+  - sudo add-apt-repository ppa:nmi/vim-snapshots -y
   - sudo apt-get update -d
   - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev
 script: 
