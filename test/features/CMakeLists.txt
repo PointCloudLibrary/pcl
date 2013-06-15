@@ -9,7 +9,7 @@ PCL_ADD_TEST(feature_base test_base_feature
 PCL_ADD_TEST(feature_normal_estimation test_normal_estimation
              FILES test_normal_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
-             ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd ${PCL_SOURCE_DIR}/test/sac_plane_test.pcd ${PCL_SOURCE_DIR}/test/features/expected_normal_estimation_32_vs_64_bit.pcd)
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
 PCL_ADD_TEST(feature_pfh_estimation test_pfh_estimation
              FILES test_pfh_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
