@@ -147,48 +147,6 @@ endmacro(PCL_ADD_LIBRARY)
 
 
 ###############################################################################
-# Add a cuda library target.
-# _name The library name.
-# _component The part of PCL that this library belongs to.
-# ARGN The source files for the library.
-macro(PCL_CUDA_ADD_LIBRARY _name _component)
-    if(PCL_SHARED_LIBS)
-        # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
-    else(PCL_SHARED_LIBS)
-        cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN})
-    endif(PCL_SHARED_LIBS)
-    
-    # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
-    set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
-        SOVERSION ${PCL_MAJOR_VERSION}
-        DEFINE_SYMBOL "PCLAPI_EXPORTS")
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Libraries")
-    endif(USE_PROJECT_FOLDERS)
-
-    install(TARGETS ${_name}
-        RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT pcl_${_component}
-        LIBRARY DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component}
-        ARCHIVE DESTINATION ${LIB_INSTALL_DIR} COMPONENT pcl_${_component})
-endmacro(PCL_CUDA_ADD_LIBRARY)
-
-
-###############################################################################
 # Add an executable target.
 # _name The executable name.
 # _component The part of PCL that this library belongs to.
@@ -283,38 +241,6 @@ else(APPLE AND VTK_USE_COCOA)
 endif(APPLE AND VTK_USE_COCOA)
 endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
 
-
-###############################################################################
-# Add an executable target.
-# _name The executable name.
-# _component The part of PCL that this library belongs to.
-# ARGN the source files for the library.
-macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
-    cuda_add_executable(${_name} ${ARGN})
-    # must link explicitly against boost.
-    target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
-                                                RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
-    if(USE_PROJECT_FOLDERS)
-      set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
-    endif(USE_PROJECT_FOLDERS)
-  
-    set(PCL_EXECUTABLES ${PCL_EXECUTABLES} ${_name})
-    install(TARGETS ${_name} RUNTIME DESTINATION ${BIN_INSTALL_DIR}
-        COMPONENT pcl_${_component})
-endmacro(PCL_CUDA_ADD_EXECUTABLE)
 
 ###############################################################################
 # Add a test target.
