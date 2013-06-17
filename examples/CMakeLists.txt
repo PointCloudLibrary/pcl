@@ -1,6 +1,6 @@
 set(SUBSYS_NAME examples)
 set(SUBSYS_DESC "PCL examples")
-set(SUBSYS_DEPS common io features search kdtree octree filters keypoints segmentation sample_consensus outofcore stereo geometry)
+set(SUBSYS_DEPS common io features search kdtree octree filters keypoints segmentation sample_consensus outofcore geometry)
 
 set(DEFAULT FALSE)
 set(REASON "Code examples are disabled by default.")

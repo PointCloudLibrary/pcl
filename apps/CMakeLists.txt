@@ -1,6 +1,6 @@
 set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
-set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition stereo)
+set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition)
 
 # Find VTK
 if(NOT VTK_FOUND)
@@ -71,9 +71,6 @@ if(build)
 
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
-
-    PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation ${SUBSYS_NAME} src/stereo_ground_segmentation.cpp)
-    target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
 
     if (OPENNI_FOUND AND BUILD_OPENNI)
 
