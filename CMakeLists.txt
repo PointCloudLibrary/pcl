@@ -273,9 +273,6 @@ if(NOT PCL_SHARED_LIBS OR WIN32)
 endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(Qhull)
 
-# Cuda
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake)
-
 # Find QT4
 find_package(Qt4)
 if (QT4_FOUND)
