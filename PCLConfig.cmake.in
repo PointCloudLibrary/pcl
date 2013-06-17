@@ -528,7 +528,7 @@ list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
 
 @PCLCONFIG_OPTIONAL_DEPENDENCIES@
 
-set(pcl_header_only_components geometry gpu_tracking modeler in_hand_scanner)
+set(pcl_header_only_components geometry modeler in_hand_scanner)
 
 include(FindPackageHandleStandardArgs)
 
@@ -565,18 +565,14 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
 
   pcl_message(STATUS "looking for PCL_${COMPONENT}")
 
-  string(REGEX REPLACE "^gpu_(.*)$" "\\1" gpu_component "${component}") 
-  
   find_path(PCL_${COMPONENT}_INCLUDE_DIR
     NAMES pcl/${component}
           pcl/apps/${component}
-          pcl/gpu/${gpu_component} pcl/gpu/${component}
     HINTS ${PCL_INCLUDE_DIRS}
           "${PCL_SOURCES_TREE}"
     PATH_SUFFIXES
           ${component}/include
           apps/${component}/include
-          gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
 

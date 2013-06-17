@@ -31,7 +31,6 @@ Table of contents
   * :ref:`segmentation_tutorial`
   * :ref:`surface_tutorial`
   * :ref:`visualization_tutorial`
-  * :ref:`gpu`
 
 .. _basic_usage:
 
@@ -1124,40 +1123,6 @@ Applications
      
      .. |ap_5| image:: images/ground_based_rgbd_people_detection/Index_photo.jpg
                :height: 120px
-.. _gpu:
-
-GPU
----
-
-  * :ref:`gpu_install`
-     
-     ======  ======
-     |gp_1|  Title: **GPU Installation**
-
-             Author: *Koen Buys*
-
-             Compatibility: > PCL 1.7 trunk
-
-             This tutorial explains how to configure PCL to use with a Nvidia GPU
-     ======  ======
-     
-     .. |gp_1| image:: images/PCD_icon.png
-               :height: 100px
-
-  * :ref:`gpu_people`
-     
-     ======  ======
-     |gp_2|  Title: **People Detection**
-
-             Author: *Koen Buys*
-
-             Compatibility: > PCL 1.7 trunk
-
-             This tutorial presents a method for people and pose detection.
-     ======  ======
-     
-     .. |gp_2| image:: images/gpu/people/c2_100.jpg
-               :height: 100px
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
