@@ -72,9 +72,6 @@ if(build)
 #    PCL_ADD_EXECUTABLE(pcl_convolve ${SUBSYS_NAME} src/convolve.cpp)
 #    target_link_libraries(pcl_convolve pcl_common pcl_io pcl_visualization)
 
-    PCL_ADD_EXECUTABLE(pcl_pcd_organized_edge_detection ${SUBSYS_NAME} src/pcd_organized_edge_detection.cpp)
-    target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
-
     PCL_ADD_EXECUTABLE(pcl_face_trainer ${SUBSYS_NAME} src/face_detection/face_trainer.cpp)
     target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
 
@@ -136,9 +133,6 @@ if(build)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_boundary_estimation ${SUBSYS_NAME} src/openni_boundary_estimation.cpp)
       target_link_libraries(pcl_openni_boundary_estimation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
-
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_organized_edge_detection ${SUBSYS_NAME} src/openni_organized_edge_detection.cpp)
-      target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_face_detector ${SUBSYS_NAME} src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp)
       target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
