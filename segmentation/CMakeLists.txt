@@ -1,6 +1,6 @@
 set(SUBSYS_NAME segmentation)
 set(SUBSYS_DESC "Point cloud segmentation library")
-set(SUBSYS_DEPS common geometry search sample_consensus kdtree octree features filters ml)
+set(SUBSYS_DEPS common geometry search sample_consensus kdtree octree features filters)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
@@ -20,9 +20,7 @@ if(build)
         src/organized_connected_component_segmentation.cpp
         src/organized_multi_plane_segmentation.cpp
         src/planar_polygon_fusion.cpp
-        src/crf_segmentation.cpp
         src/crf_normal_segmentation.cpp
-        src/unary_classifier.cpp
         src/conditional_euclidean_clustering.cpp
         src/supervoxels.cpp
        )
@@ -57,9 +55,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/region_3d.h
         include/pcl/${SUBSYS_NAME}/planar_region.h
         include/pcl/${SUBSYS_NAME}/planar_polygon_fusion.h
-        include/pcl/${SUBSYS_NAME}/crf_segmentation.h
         include/pcl/${SUBSYS_NAME}/crf_normal_segmentation.h
-        include/pcl/${SUBSYS_NAME}/unary_classifier.h
         include/pcl/${SUBSYS_NAME}/conditional_euclidean_clustering.h
         include/pcl/${SUBSYS_NAME}/supervoxels.h
         )
@@ -83,8 +79,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/organized_connected_component_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/organized_multi_plane_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/planar_polygon_fusion.hpp
-        include/pcl/${SUBSYS_NAME}/impl/crf_segmentation.hpp
-        include/pcl/${SUBSYS_NAME}/impl/unary_classifier.hpp
         include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/conditional_euclidean_clustering.hpp
         include/pcl/${SUBSYS_NAME}/impl/supervoxels.hpp
@@ -100,7 +94,7 @@ if(build)
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
-    target_link_libraries(${LIB_NAME} pcl_search pcl_sample_consensus pcl_filters pcl_ml pcl_features)
+    target_link_libraries(${LIB_NAME} pcl_search pcl_sample_consensus pcl_filters pcl_features)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
