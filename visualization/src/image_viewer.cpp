@@ -34,8 +34,12 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  */
+
+#include <vtkImageViewer.h>
+#include <vtkCallbackCommand.h>
+#include <vtkRenderer.h>
+#include <vtkCamera.h>
 
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -1035,6 +1039,50 @@ pcl::visualization::ImageViewerInteractorStyle::OnLeftButtonDown ()
   // The rest of the button + key combinations remain the same
   else
     Superclass::OnLeftButtonDown ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::setWindowTitle (const std::string& name)
+{
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+  win_->SetWindowName (name.c_str ());
+#else
+  image_viewer_->GetRenderWindow ()->SetWindowName (name.c_str ());
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::setPosition (int x, int y)
+{
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+  win_->SetPosition (x, y);
+#else
+  image_viewer_->GetRenderWindow ()->SetPosition (x, y);
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+int*
+pcl::visualization::ImageViewer::getSize ()
+{
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+  return (win_->GetSize ());
+#else
+  return (image_viewer_->GetRenderWindow ()->GetSize ());
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::setSize (int xw, int yw)
+{
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+  win_->SetSize (xw, yw);
+#else
+  image_viewer_->GetRenderWindow ()->SetSize (xw, yw);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

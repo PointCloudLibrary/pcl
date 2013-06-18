@@ -41,6 +41,7 @@
 #include <pcl/console/print.h>
 #include <pcl/filters/convolution.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/common/time.h>
 
 void
 usage (char ** argv)

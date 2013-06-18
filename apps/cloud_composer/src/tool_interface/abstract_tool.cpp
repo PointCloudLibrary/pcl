@@ -16,7 +16,7 @@ pcl::cloud_composer::AbstractTool::AbstractTool (PropertiesModel* parameter_mode
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::AbstractTool::performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type)
+pcl::cloud_composer::AbstractTool::performAction (QList <const CloudComposerItem*>, PointTypeFlags::PointType)
 {
   qDebug () << "AbstractTool::performTemplatedAction";
   return QList <CloudComposerItem*> ();

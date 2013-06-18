@@ -125,7 +125,7 @@ namespace pcl
       public:
         IntParameter(const std::string& name, const std::string& description, int value, int low, int high, int step=1):
           Parameter(name, description, value), low_(low), high_(high), step_(step){}
-        ~IntParameter(){}
+        virtual ~IntParameter(){}
 
         operator int() const {return boost::any_cast<int>(current_value_);}
 
@@ -202,7 +202,7 @@ namespace pcl
       public:
         DoubleParameter(const std::string& name, const std::string& description, double value, double low, double high, double step=0.01):
           Parameter(name, description, value), low_(low), high_(high), step_(step){}
-        ~DoubleParameter(){}
+        virtual ~DoubleParameter(){}
 
         operator double() const {return boost::any_cast<double>(current_value_);}
 

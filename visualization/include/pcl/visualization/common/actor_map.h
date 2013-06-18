@@ -39,10 +39,12 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <vector>
-#include <vtkLODActor.h>
-#include <vtkSmartPointer.h>
 #include <sensor_msgs/PointCloud2.h>
-#include <pcl/visualization/boost.h>
+#include <boost/unordered_map.hpp>
+
+template <typename T> class vtkSmartPointer;
+class vtkLODActor;
+class vtkProp;
 
 namespace pcl
 {

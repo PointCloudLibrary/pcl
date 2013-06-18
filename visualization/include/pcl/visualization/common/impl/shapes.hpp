@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,9 +34,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
+
+#pragma once
+#include <vtkSmartPointer.h>
+#include <vtkPoints.h>
+#include <vtkPolygon.h>
+#include <vtkUnstructuredGrid.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> vtkSmartPointer<vtkDataSet> 

@@ -59,6 +59,7 @@
 #include <vtkPolyDataReader.h>
 #include <vtkCubeSource.h>
 #include <vtkPointData.h>
+#include <vtkRenderWindow.h>
 #include <vector>
 #include <list>
 #include <cstdlib>

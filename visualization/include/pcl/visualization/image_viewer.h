@@ -44,12 +44,18 @@
 #include <pcl/console/print.h>
 #include <pcl/visualization/interactor.h>
 #include <pcl/visualization/interactor_style.h>
-#include <pcl/visualization/vtk.h>
-#include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
 #include <pcl/visualization/vtk/pcl_context_item.h>
 #include <pcl/geometry/planar_polygon.h>
 #include <pcl/correspondence.h>
+
+#include <boost/shared_array.hpp>
+
+#include <vtkInteractorStyleImage.h>
+
+class vtkContextActor;
+class vtkImageViewer;
+class vtkImageFlip;
 
 namespace pcl
 {
@@ -415,14 +421,7 @@ namespace pcl
           * \param[in] name the window title
           */
         void
-        setWindowTitle (const std::string& name)
-        {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-          win_->SetWindowName (name.c_str ());
-#else
-          image_viewer_->GetRenderWindow ()->SetWindowName (name.c_str ());
-#endif
-        }
+        setWindowTitle (const std::string& name);
 
         /** \brief Spin method. Calls the interactor and runs an internal loop. */
         void 
@@ -505,39 +504,18 @@ namespace pcl
           * \param[in] y where to move the window to (Y)
           */
         void
-        setPosition (int x, int y)
-        {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-          win_->SetPosition (x, y);
-#else
-          image_viewer_->GetRenderWindow ()->SetPosition (x, y);
-#endif
-        }
+        setPosition (int x, int y);
 
         /** \brief Set the window size in screen coordinates.
           * \param[in] xw window size in horizontal (pixels)
           * \param[in] yw window size in vertical (pixels)
           */
         void
-        setSize (int xw, int yw)
-        {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-          win_->SetSize (xw, yw);
-#else
-          image_viewer_->GetRenderWindow ()->SetSize (xw, yw);
-#endif
-        }
+        setSize (int xw, int yw);
 
         /** \brief Return the window size in pixels. */
-        inline int*
-        getSize ()
-        {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-          return (win_->GetSize ());
-#else
-          return (image_viewer_->GetRenderWindow ()->GetSize ());
-#endif
-        }
+        int*
+        getSize ();
 
         /** \brief Returns true when the user tried to close the window */
         bool
