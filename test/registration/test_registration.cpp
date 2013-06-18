@@ -86,7 +86,6 @@ TEST (PCL, findFeatureCorrespondences)
 {
   typedef Histogram<2> FeatureT;
   typedef PointCloud<FeatureT> FeatureCloud;
-  typedef FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
   RegistrationWrapper <PointXYZ, PointXYZ> reg;
 
