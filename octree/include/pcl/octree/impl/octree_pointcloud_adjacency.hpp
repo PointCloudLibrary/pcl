@@ -306,6 +306,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   Eigen::Vector3f leaf_centroid(static_cast<float> ((static_cast<double> (key.x) + 0.5f) * this->resolution_ + this->min_x_),
                                 static_cast<float> ((static_cast<double> (key.y) + 0.5f) * this->resolution_ + this->min_y_), 
                                 static_cast<float> ((static_cast<double> (key.z) + 0.5f) * this->resolution_ + this->min_z_));
+
   Eigen::Vector3f direction = sensor - leaf_centroid;
   
   float norm = direction.norm ();
