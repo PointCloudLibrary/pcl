@@ -46,6 +46,7 @@
 #include <thrust/sequence.h>
 #include <thrust/sort.h>
 #include <thrust/reduce.h>
+#include <thrust/device_ptr.h>
 
 using namespace pcl::gpu;
 using namespace thrust;
