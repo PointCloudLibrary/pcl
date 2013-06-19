@@ -39,24 +39,31 @@
 
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/segmentation/supervoxels.h>
-#include <pcl/segmentation/impl/supervoxels.hpp>
-//These are needed to link with our local PointSuperVoxel
-#include <pcl/features/impl/normal_3d_omp.hpp>
-#include <pcl/features/impl/normal_3d.hpp>
-#include <pcl/search/impl/organized.hpp>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
-#include <pcl/impl/pcl_base.hpp>
-#include <pcl/search/impl/kdtree.hpp>
-#include <pcl/search/impl/search.hpp>
+#include <pcl/segmentation/impl/supervoxel_clustering.hpp>
 
-// Instantiations of specific point types
-template class pcl::PCLBase<pcl::PointSuperVoxel>;
-template class pcl::search::Search<pcl::PointSuperVoxel>;
-template class pcl::search::KdTree<pcl::PointSuperVoxel>;
-template class pcl::SuperVoxels<pcl::PointXYZRGBA>;
-template class pcl::SuperVoxels<pcl::PointXYZRGB>;
-template class pcl::NormalEstimationOMP<pcl::PointSuperVoxel,pcl::PointSuperVoxel>;
-template class pcl::NormalEstimation<pcl::PointSuperVoxel,pcl::PointSuperVoxel>;
-template class pcl::KdTreeFLANN<pcl::PointSuperVoxel>;
-template class pcl::search::OrganizedNeighbor<pcl::PointSuperVoxel>;
+#include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
+#include <pcl/octree/impl/octree_pointcloud.hpp>
+#include <pcl/octree/impl/octree_base.hpp>
+#include <pcl/octree/impl/octree_iterator.hpp>
+
+template class pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
+template class pcl::SupervoxelClustering<pcl::PointXYZRGB>;
+
+typedef pcl::SupervoxelClustering<pcl::PointXYZRGB>::VoxelData VoxelDataRGBT;
+typedef pcl::SupervoxelClustering<pcl::PointXYZRGBA>::VoxelData VoxelDataRGBAT;
+
+typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT> AdjacencyContainerRGBT;
+typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT> AdjacencyContainerRGBAT;
+
+template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
+template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
+
+template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGB, AdjacencyContainerRGBT>;
+template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGBA, AdjacencyContainerRGBAT>;
+
+//template class pcl::octree::OctreeBase<AdjacencyContainerRGBT, pcl::octree::OctreeContainerEmpty>;
+//template class pcl::octree::OctreeBase<AdjacencyContainerRGBAT, pcl::octree::OctreeContainerEmpty>;
+
+//template class pcl::octree::OctreeBreadthFirstIterator<pcl::octree::OctreeBase<AdjacencyContainerRGBT, pcl::octree::OctreeContainerEmpty> >;
+//template class pcl::octree::OctreeBreadthFirstIterator<pcl::octree::OctreeBase<AdjacencyContainerRGBAT, pcl::octree::OctreeContainerEmpty> >;
+

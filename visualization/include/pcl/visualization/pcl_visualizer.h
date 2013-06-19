@@ -330,6 +330,18 @@ namespace pcl
         bool
         removeCoordinateSystem (int viewport = 0);
 
+        /** \brief Returns whether a given object id exists as a cloud or shape
+          * \param[in] id the object id (e.g., given in \a addPointCloud or \a addPolygonMesh)
+          * \return True if id is found, false if no matching id exists
+          */
+        inline bool
+        idExists (const std::string &id)
+        {
+          return !(cloud_actor_map_->find (id) == cloud_actor_map_->end () && 
+                   shape_actor_map_->find (id) == shape_actor_map_->end ()); 
+          
+        }
+        
         /** \brief Removes a Point Cloud from screen, based on a given ID.
           * \param[in] id the point cloud object id (i.e., given on \a addPointCloud)
           * \param[in] viewport view port from where the Point Cloud should be removed (default: all)
