@@ -49,7 +49,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
 }
 
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ()
 {
@@ -67,6 +67,8 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   
   //t1 = timer_.getTime ();
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
+
+
   //t2 = timer_.getTime ();
   //std::cout << "Add Points:"<<t2-t1<<" ms  Num leaves ="<<this->getLeafCount ()<<"\n";
    
@@ -80,7 +82,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   {
     //t_temp = timer_.getTime ();
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
-    //std::cout << "Current key "<<leaf_key.x<<" "<<leaf_key.y<<" "<<leaf_key.z <<"\n";
     leaf_container = &(leaf_itr.getLeafContainer ());
     //t_getLeaf += timer_.getTime () - t_temp;
     
@@ -95,14 +96,14 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     //t_neigh += timer_.getTime () - t_temp;
     
     // If has no neighbors, we should just delete this voxel - it's not useful and prob. noise
-    if (leaf_container->getNumNeighbors () <= 1)
-    {
-      delete_list.push_back (std::make_pair (leaf_key,leaf_container));
-    }
-    else
-    {
+ //   if (leaf_container->getNumNeighbors () <= 1)
+ //   {
+//      delete_list.push_back (std::make_pair (leaf_key,leaf_container));
+ //   }
+ //   else
+ //   {
       leaf_vector_.push_back (leaf_container);
-    }
+  //  }
   }
   //Go through and delete voxels scheduled
   for (typename std::list<std::pair<OctreeKey,LeafContainerT*> >::iterator delete_itr = delete_list.begin (); delete_itr != delete_list.end (); ++delete_itr)
@@ -161,7 +162,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   assert (pointIdx_arg < static_cast<int> (this->input_->points.size ()));
   
   const PointT& point = this->input_->points[pointIdx_arg];
-  if (point.z == 0 || !pcl::isFinite (point))
+  if (!pcl::isFinite (point))
     return;
   
   if (transform_func_)
