@@ -118,7 +118,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxe
   
   //double t_prep = timer_.getTime ();
   //std::cout << "Placing Seeds" << std::endl;
-  std::vector<PointT> seed_points;
+  std::vector<PointT, Eigen::aligned_allocator<PointT> > seed_points;
   selectInitialSupervoxelSeeds (seed_points);
   createSupervoxelHelpers (seed_points);
   //double t_seeds = timer_.getTime ();
@@ -305,7 +305,7 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<uint32_t,typename S
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<PointT> &seed_points)
+pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points)
 {
   
   supervoxel_helpers_.clear ();
@@ -319,14 +319,15 @@ pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<PointT> 
       supervoxel_helpers_.back ().addLeaf (seed_leaf);
     }
     else
-      PCL_ERROR ("Could not find leaf in pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers - OctreeAdjacency is corrupted!!");
-    
+    {
+      PCL_WARN ("Could not find leaf in pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers - supervoxel will be deleted \n");
+    }
   }
   
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<PointT> &seed_points)
+pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points)
 {
   //TODO THIS IS BAD - SEEDING SHOULD BE BETTER
   //TODO Switch to assigning leaves! Don't use Octree!
@@ -364,10 +365,10 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<Poi
   std::vector<int> neighbors;
   std::vector<float> sqr_distances;
   seed_points.reserve (seed_indices_orig.size ());
-  float search_radius = 0.3f*seed_resolution_;
+  float search_radius = 0.5f*seed_resolution_;
   // This is number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side
-  float min_points = 0.25f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
+  float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
   for (int i = 0; i < seed_indices_orig.size (); ++i)
   {
     int num = voxel_kdtree_->radiusSearch (seed_indices_orig[i], search_radius , neighbors, sqr_distances);

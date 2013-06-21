@@ -54,7 +54,7 @@ main (int argc, char ** argv)
 {
   if (argc < 2)
   {
-    pcl::console::print_info ("Syntax is: %s {-p <pcd-file> OR -r <rgb-file> -d <depth-file>} \n -o <output-file> \n -O <refined-output-file> \n-l <output-label-file> \n -L <refined-output-label-file> \n-v <voxel resolution> \n-s <seed resolution> \n-c <color weight> \n-z <spatial weight> \n-n <normal_weight>] \n", argv[0]);
+    pcl::console::print_info ("Syntax is: %s {-p <pcd-file> OR -r <rgb-file> -d <depth-file>} \n --NT  (disables use of single camera transform) \n -o <output-file> \n -O <refined-output-file> \n-l <output-label-file> \n -L <refined-output-label-file> \n-v <voxel resolution> \n-s <seed resolution> \n-c <color weight> \n-z <spatial weight> \n-n <normal_weight>] \n", argv[0]);
     return (1);
   }
   
@@ -88,6 +88,9 @@ main (int argc, char ** argv)
       pcl::console::parse (argc,argv,"-p",pcd_path);
     }
   }
+  
+  
+  bool disable_transform = pcl::console::find_switch (argc, argv, "--NT");
   
   std::string out_path;
   bool output_file_specified = pcl::console::find_switch (argc, argv, "-o");
@@ -244,7 +247,7 @@ main (int argc, char ** argv)
   //////////////////////////////  //////////////////////////////
   //////////////////////////////  //////////////////////////////
   
-  pcl::SupervoxelClustering<pcl::PointXYZRGB> super (voxel_resolution, seed_resolution);
+  pcl::SupervoxelClustering<pcl::PointXYZRGB> super (voxel_resolution, seed_resolution,!disable_transform);
   super.setInputCloud (cloud);
   super.setColorImportance (color_importance);
   super.setSpatialImportance (spatial_importance);
@@ -291,41 +294,7 @@ main (int argc, char ** argv)
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
   viewer->registerKeyboardCallback(keyboard_callback, 0);
-    
- /*
-  //The vertices in the supervoxel adjacency list are the supervoxel centroids
-  //This iterates through them, finding the edges
-  typedef boost::graph_traits<VoxelAdjacencyList>::vertex_iterator VertexIterator;
-  typedef boost::graph_traits<VoxelAdjacencyList>::adjacency_iterator AdjacencyIterator;
-     
-  std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
-  vertex_iterator_range = boost::vertices(supervoxel_adjacency_list);
-  for (VertexIterator itr=vertex_iterator_range.first ; itr != vertex_iterator_range.second; ++itr)
-  {
-    PointSuperVoxel label_centroid = supervoxel_adjacency_list[*itr];
-    std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*itr, supervoxel_adjacency_list);
-    if(print_graph)
-    {
-      std::cout << "Label "<<label_centroid.label<<" is at ("<<label_centroid.x<<","<<label_centroid.y<<","<<label_centroid.z<<")\n";
-      std::cout << "Edges: label --- edge length :\n";
-    }
-    for(AdjacencyIterator itr_neighbor = neighbors.first; itr_neighbor != neighbors.second; ++itr_neighbor)
-    {
-      //Get the edge connecting these supervoxels
-      EdgeID connecting_edge = boost::edge (*itr,*itr_neighbor, supervoxel_adjacency_list).first;
-      PointSuperVoxel neighbor_point = supervoxel_adjacency_list[*itr_neighbor];
-      if (print_graph)
-        std::cout <<"        "<< neighbor_point.label << "  ---  "<<supervoxel_adjacency_list[connecting_edge].length<<"\n";
 
-      std::stringstream ss;
-      ss << label_centroid.label<<"-"<<neighbor_point.label;
-      //Draw lines connecting supervoxel centers
-      viewer->addLine (label_centroid, neighbor_point,1.0,1.0,1.0, ss.str ());
-    }
-    if(print_graph)
-      std::cout << "\n------------------------------------\n";
-  }
-  */
  
   bool refined_normal_shown = show_refined;
   bool refined_sv_normal_shown = show_refined;
@@ -333,7 +302,7 @@ main (int argc, char ** argv)
   bool normals_added = false;
   bool graph_added = false;
   std::vector<std::string> poly_names;
-  std::cout << "Loading viewer...";
+  std::cout << "Loading viewer...\n";
   while (!viewer->wasStopped ())
   {
     if (show_voxel_centroids)

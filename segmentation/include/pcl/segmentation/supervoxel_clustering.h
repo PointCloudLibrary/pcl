@@ -291,13 +291,13 @@ namespace pcl
        *  \param[out] seed_points The selected points
        */
       void
-      selectInitialSupervoxelSeeds (std::vector<PointT> &seed_points);
+      selectInitialSupervoxelSeeds (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
       
       /** \brief This method creates the internal supervoxel helpers based on the provided seed points
        *  \param[in] seed_points The selected points
        */
       void
-      createSupervoxelHelpers (std::vector<PointT> &seed_points);
+      createSupervoxelHelpers (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
       
       /** \brief This performs the superpixel evolution */
       void
