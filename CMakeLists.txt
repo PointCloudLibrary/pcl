@@ -68,26 +68,33 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
+# check for SSE flags
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+if (PCL_ENABLE_SSE)
+  PCL_CHECK_FOR_SSE()
+endif (PCL_ENABLE_SSE)
+
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion")
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+    SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS}")
 
-  # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3 
-  # to disable a lot of warnings which are not fixable
-  execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
-  if (GCC_VERSION VERSION_GREATER 4.3)
-    message(STATUS "-- GCC > 4.3 found, enabling -Wabi")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
-  else()
-    message(STATUS "-- GCC < 4.3 found, enabling -Wno-deprecated")
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
-  endif ()
-
+    # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3
+    # to disable a lot of warnings which are not fixable
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+    if (GCC_VERSION VERSION_GREATER 4.3)
+      message(STATUS "-- GCC > 4.3 found, enabling -Wabi")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wabi")
+    else()
+      message(STATUS "-- GCC < 4.3 found, enabling -Wno-deprecated")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated")
+    endif ()
+  endif()
 
   if(NOT ANDROID)
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
   endif(NOT ANDROID)
+
   if(WIN32)
     if(PCL_SHARED_LIBS)
       SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols -Wl,--enable-auto-import")
@@ -103,42 +110,45 @@ endif()
 if(MSVC)
   SET(CMAKE_COMPILER_IS_MSVC 1)
   add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355")
-  # Add extra code generation/link optimizations
-  if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
-    SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
-    SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
-    SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-  endif(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
-  # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
-  
-  if(MSVC90 OR MSVC10 AND NOT ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8 AND NOT ${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} LESS 8.6)
-    include(ProcessorCount)
-    ProcessorCount(N)
-    if(NOT N EQUAL 0)
-      SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   /MP${N} ")
-      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N} ")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+    SET(CMAKE_CXX_FLAGS "/bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
+
+    # Add extra code generation/link optimizations
+    if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
+      SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
+      SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
+      SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+    endif(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
+    # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
+
+    if(MSVC90 OR MSVC10 AND NOT ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8 AND NOT ${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} LESS 8.6)
+      include(ProcessorCount)
+      ProcessorCount(N)
+      if(NOT N EQUAL 0)
+        SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   /MP${N} ")
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N} ")
+      endif()
     endif()
   endif()
 endif()
 
 if (__COMPILER_PATHSCALE)
   SET(CMAKE_COMPILER_IS_PATHSCALE 1)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -zerouv -pthread -mp")
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+    SET(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
+  endif()
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CMAKE_COMPILER_IS_CLANG 1)
-  SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Qunused-arguments")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Qunused-arguments -Wno-invalid-offsetof") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+  if("${CMAKE_C_FLAGS}" STREQUAL "")
+    SET(CMAKE_C_FLAGS "-Qunused-arguments")
+  endif()
+  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
+    SET(CMAKE_CXX_FLAGS "-Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+  endif()
   SET(CLANG_LIBRARIES "stdc++")
 endif()
-
-# check for SSE flags
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
-if (PCL_ENABLE_SSE)
-  PCL_CHECK_FOR_SSE()
-endif (PCL_ENABLE_SSE)
 
 # ---[ Project folders
 option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
