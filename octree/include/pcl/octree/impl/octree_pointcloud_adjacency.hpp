@@ -54,16 +54,6 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT> vo
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ()
 {
   //double t1,t2;
- // if (transform_func_)
-//  {
- //   t1 = timer_.getTime ();
- //   CloudT::Ptr transformed_cloud = boost::make_shared<CloudT> (*input_);
- //   for (CloudT::iterator cloud_itr = transformed_cloud.begin(); cloud_itr!=transformed_cloud.end (); ++cloud_itr)
- //     transform_func_ (*cloud_itr);
- //   input_ = transformed_cloud;
-  //  t2 = timer_.getTime ();
-  //  std::cout << "Transform function"<<t2-t1<<" ms\n";    
- // }
   
   //t1 = timer_.getTime ();
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
@@ -95,15 +85,8 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     computeNeighbors (leaf_key, leaf_container);
     //t_neigh += timer_.getTime () - t_temp;
     
-    // If has no neighbors, we should just delete this voxel - it's not useful and prob. noise
- //   if (leaf_container->getNumNeighbors () <= 1)
- //   {
-//      delete_list.push_back (std::make_pair (leaf_key,leaf_container));
- //   }
- //   else
- //   {
-      leaf_vector_.push_back (leaf_container);
-  //  }
+    leaf_vector_.push_back (leaf_container);
+
   }
   //Go through and delete voxels scheduled
   for (typename std::list<std::pair<OctreeKey,LeafContainerT*> >::iterator delete_itr = delete_list.begin (); delete_itr != delete_list.end (); ++delete_itr)
