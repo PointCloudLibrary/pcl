@@ -19,6 +19,7 @@ if(build)
         src/agast_2d.cpp
         src/susan.cpp
         src/iss_3d.cpp
+        src/brisk_2d.cpp
         )
     set(incs
         include/pcl/${SUBSYS_NAME}/keypoint.h
@@ -30,7 +31,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/harris_3d.h
         include/pcl/${SUBSYS_NAME}/harris_6d.h
         include/pcl/${SUBSYS_NAME}/susan.h
-	include/pcl/${SUBSYS_NAME}/iss_3d.h
+        include/pcl/${SUBSYS_NAME}/iss_3d.h
+        include/pcl/${SUBSYS_NAME}/brisk_2d.h
         )
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
@@ -41,19 +43,10 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/harris_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/harris_6d.hpp
         include/pcl/${SUBSYS_NAME}/impl/susan.hpp
-	include/pcl/${SUBSYS_NAME}/impl/iss_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/iss_3d.hpp
+        include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp
         )
     
-    if (PCL_ENABLE_SSE)
-      PCL_CHECK_FOR_SSE4_1()
-      if(HAVE_SSE4_1_EXTENSIONS AND CMAKE_SIZEOF_VOID_P MATCHES 8)
-        message(STATUS "[pcl_keypoints] SSE4.1 status: found. Enabling BriskKeypoint2D.")
-        set(srcs ${srcs} src/brisk_2d.cpp)
-        set(incs ${incs} include/pcl/${SUBSYS_NAME}/brisk_2d.h)
-        set(impl_incs ${impl_incs} include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp)
-      endif()
-    endif (PCL_ENABLE_SSE)
-
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
