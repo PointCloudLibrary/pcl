@@ -7,6 +7,10 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/segmentation/supervoxels.h>
 
+#include <vtkImageReader2Factory.h>
+#include <vtkImageReader2.h>
+#include <vtkImageData.h>
+#include <vtkImageFlip.h>
 
 using namespace pcl;
 

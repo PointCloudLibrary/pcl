@@ -50,6 +50,8 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
 #include <vtkPolyDataReader.h>
+#include <vtkRenderWindow.h>
+#include <vtkTransformPolyDataFilter.h>
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>
 #include <vtkPointData.h>

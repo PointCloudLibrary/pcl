@@ -46,7 +46,10 @@
 #include <pcl/common/transforms.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/filters/voxel_grid_occlusion_estimation.h>
-
+#include <vtkCubeSource.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
 #include <vtkLine.h>
 
 using namespace pcl;

@@ -42,7 +42,7 @@
 #include <pcl/io/pcd_io.h>
 #include <cfloat>
 #include <pcl/visualization/eigen.h>
-#include <pcl/visualization/vtk.h>
+//#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
@@ -55,6 +55,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/search/kdtree.h>
+#include <vtkPolyDataReader.h>
 
 using namespace pcl::console;
 

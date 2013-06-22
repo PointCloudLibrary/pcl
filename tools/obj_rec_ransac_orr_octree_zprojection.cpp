@@ -54,6 +54,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <vtkRenderWindow.h>
 #include <vtkPolyData.h>
 #include <vtkAppendPolyData.h>
 #include <vtkPolyDataReader.h>

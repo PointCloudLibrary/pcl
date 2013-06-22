@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -39,7 +40,6 @@
 #ifndef PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
 #define PCL_PCL_VISUALIZER_INTERACTOR_STYLE_H_
 
-#include <pcl/visualization/vtk.h>
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
@@ -47,7 +47,15 @@
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/area_picking_event.h>
-#include <pcl/visualization/boost.h>
+#include <boost/signals2/signal.hpp>
+
+#include <vtkInteractorStyleRubberBandPick.h>
+
+class vtkRendererCollection;
+class vtkLegendScaleActor;
+class vtkScalarBarActor;
+class vtkPNGWriter;
+class vtkWindowToImageFilter;
 
 namespace pcl
 {

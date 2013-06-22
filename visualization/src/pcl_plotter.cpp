@@ -36,9 +36,23 @@
  *
  */
 
+#include <vtkSmartPointer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkContextView.h>
+#include <vtkChartXY.h>
+#include <vtkColorSeries.h>
+#include <vtkContextScene.h>
+#include <vtkAxis.h>
+#include <vtkPlot.h>
+#include <vtkDoubleArray.h>
+#include <vtkTable.h>
+
 #include <fstream>
 #include <sstream>
 
+#include <pcl/visualization/interactor.h>
 #include <pcl/visualization/pcl_plotter.h>
 #include <pcl/common/common_headers.h>
 
@@ -589,7 +603,7 @@ pcl::visualization::PCLPlotter::compute (
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 double 
-pcl::visualization::PCLPlotter::compute(RationalFunction const & r_function, double val)
+pcl::visualization::PCLPlotter::compute (RationalFunction const & r_function, double val)
 {
   PolynomialFunction numerator = r_function.first, denominator = r_function.second;
   
@@ -599,3 +613,67 @@ pcl::visualization::PCLPlotter::compute(RationalFunction const & r_function, dou
   return (nres/dres);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setViewInteractor (
+    vtkSmartPointer<vtkRenderWindowInteractor> interactor)
+{
+  view_->SetInteractor (interactor);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLPlotter::wasStopped () const
+{
+  if (view_->GetInteractor() != NULL) 
+    return (stopped_); 
+  else 
+    return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::close ()
+{
+  stopped_ = true;
+  // This tends to close the window...
+  view_->GetInteractor()->TerminateApp ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+vtkSmartPointer<vtkRenderWindow>
+pcl::visualization::PCLPlotter::getRenderWindow ()
+{
+  return (view_->GetRenderWindow ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::ExitMainLoopTimerCallback::Execute (
+    vtkObject*, unsigned long event_id, void* call_data)
+{
+  if (event_id != vtkCommand::TimerEvent)
+    return;
+  int timer_id = *(reinterpret_cast<int*> (call_data));
+
+  if (timer_id != right_timer_id)
+    return;
+
+  // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  interactor->stopLoop ();
+#else
+  interactor->TerminateApp ();
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::ExitCallback::Execute (
+    vtkObject*, unsigned long event_id, void*)
+{
+  if (event_id != vtkCommand::ExitEvent)
+    return;
+  plotter->stopped_ = true;
+  plotter->view_->GetInteractor ()->TerminateApp ();
+}
