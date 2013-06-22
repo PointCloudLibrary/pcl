@@ -39,6 +39,7 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <vector>
+#include <map>
 #include <sensor_msgs/PointCloud2.h>
 #include <boost/unordered_map.hpp>
 
