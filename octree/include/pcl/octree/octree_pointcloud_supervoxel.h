@@ -78,8 +78,7 @@ namespace pcl
       };
       float data_c[4];
     };
-    EIGEN_ALIGN16 
-    union 
+    union EIGEN_ALIGN16
     { 
       float RGB[3]; 
       struct 
