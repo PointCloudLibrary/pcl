@@ -161,9 +161,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   if (!initCompute ())
     return;
 
-  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
   typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
   
   // Set the internal point representation of choice
   if(!initComputeReciprocal())

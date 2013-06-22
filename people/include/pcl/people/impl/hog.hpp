@@ -94,7 +94,7 @@ pcl::people::HOG::compGradImg (double *I, double *G, int *O, int h, int w, int n
 
   // compute gradients for each channel, pick strongest gradient
   int y, x, c;
-  double *I1, v, dx, dy, dx1, dy1, v1;
+  double *I1, v, dx = 0.0, dy = 0.0, dx1, dy1, v1;
 
 #define COMPGRAD(x0, x1, rx, y0, y1, ry)      \
 {                                             \
