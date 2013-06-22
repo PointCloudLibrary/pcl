@@ -337,7 +337,6 @@ template<typename PointT> void
 pcl::search::OrganizedNeighbor<PointT>::estimateProjectionMatrix ()
 {
   // internally we calculate with double but store the result into float matrices.
-  typedef double Scalar;
   projection_matrix_.setZero ();
   if (input_->height == 1 || input_->width == 1)
   {
