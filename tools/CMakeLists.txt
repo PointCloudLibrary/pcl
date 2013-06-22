@@ -72,10 +72,6 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_crf_segmentation ${SUBSYS_NAME} crf_segmentation.cpp)
   target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
 
-  PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png ${SUBSYS_NAME} organized_pcd_to_png.cpp)
-  target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
-    
-
   # NOTE: boost/uuid/uuid.hpp only exists for versions > 1.41
   if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 41)
     PCL_ADD_EXECUTABLE (pcl_add_gaussian_noise ${SUBSYS_NAME} add_gaussian_noise.cpp)
@@ -162,6 +158,9 @@ if (build)
   
       PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
       target_link_libraries(pcl_png2pcd pcl_common pcl_io)
+
+      PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png ${SUBSYS_NAME} organized_pcd_to_png.cpp)
+      target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
 
       PCL_ADD_EXECUTABLE(pcl_tiff2pcd ${SUBSYS_NAME} tiff2pcd.cpp)
       target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)
