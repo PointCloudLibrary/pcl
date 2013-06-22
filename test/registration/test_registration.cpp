@@ -155,8 +155,11 @@ TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
   PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   reg.setInputCloud (source);     // test for PCL_DEPRECATED
   source = reg.getInputCloud ();  // test for PCL_DEPRECATED
+#pragma GCC diagnostic pop
   reg.setInputSource (source);
   reg.setInputTarget (cloud_target.makeShared ());
   reg.setMaximumIterations (50);
