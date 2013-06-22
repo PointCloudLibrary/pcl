@@ -43,6 +43,7 @@ if(build)
         src/common/common.cpp
         src/common/io.cpp
         src/common/shapes.cpp
+        src/common/ren_win_interact_map.cpp
         src/cloud_viewer.cpp
         src/image_viewer.cpp
         src/window.cpp

@@ -9,6 +9,8 @@
 #include <pcl/segmentation/extract_polygonal_prism_data.h>
 #include <pcl/surface/convex_hull.h>
 
+#include <vtkRenderWindow.h>
+
 void
 displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > &regions, 
                       boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
