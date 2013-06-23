@@ -3,15 +3,8 @@ compiler:
   - gcc
 before_install:
   - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
-  - sudo add-apt-repository ppa:nmi/vim-snapshots -y
   - sudo apt-get update -d
-  - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev
+  - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem-dev libboost-iostreams-dev libboost-thread-dev
 script: 
   - mkdir build && cd build
-  - cmake -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j2 && make test
-notifications:
-  recipients:
-    - julius@kammerl.com
-  email:
-    on_success: change
-    on_failure: always
+  - cmake -DCMAKE_C_FLAGS="-Wall -Wextra -Wabi -Wconversion -O2" -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -Wconversion -O2" -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j2 && make test
