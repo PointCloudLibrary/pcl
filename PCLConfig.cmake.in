@@ -267,7 +267,7 @@ macro(find_VTK)
   endif(PCL_ALL_IN_ONE_INSTALLER)
   find_package(VTK ${QUIET_})
   if (VTK_FOUND AND NOT ANDROID)
-    set(VTK_LIBRARIES vtkCommon vtkRendering vtkHybrid)
+    set(VTK_LIBRARIES vtkCommon vtkRendering vtkHybrid vtkCharts)
   endif(VTK_FOUND AND NOT ANDROID)
 endmacro(find_VTK)
 
@@ -671,6 +671,8 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
+# Add 3rd party libraries, as user code might include our .HPP implementations
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
