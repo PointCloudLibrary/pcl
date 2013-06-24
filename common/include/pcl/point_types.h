@@ -257,11 +257,6 @@ namespace pcl
     */
   struct GFPFHSignature16;
 
-  /** \brief Members: float scale; float orientation; uint8_t descriptor[64]
-    * \ingroup common
-    */
-  struct BRISKSignature512;
-
    /** \brief Members: float x, y, z, roll, pitch, yaw; float descriptor[36]
      * \ingroup common
      */
@@ -550,12 +545,6 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT1344,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::FPFHSignature33,
     (float[33], histogram, fpfh)
-)
-
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
-    (float, scale, brisk_scale)
-    (float, orientation, brisk_orientation)
-    (unsigned char[64], descriptor, brisk_descriptor512)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,

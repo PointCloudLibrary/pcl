@@ -327,15 +327,6 @@ namespace pcl
   }
 
   std::ostream& 
-  operator << (std::ostream& os, const BRISKSignature512& p)
-  {
-    os << p.scale << " " << p.orientation << " ";
-    for (int i = 0; i < 64; ++i)
-    os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 63 ? ", " : ")");
-    return (os);
-  }
-
-  std::ostream& 
   operator << (std::ostream& os, const ESFSignature640& p)
   {
     for (int i = 0; i < 640; ++i)

@@ -15,7 +15,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/eigen.h
         include/pcl/${SUBSYS_NAME}/board.h
-        include/pcl/${SUBSYS_NAME}/brisk_2d.h
         include/pcl/${SUBSYS_NAME}/cvfh.h
         include/pcl/${SUBSYS_NAME}/our_cvfh.h
         include/pcl/${SUBSYS_NAME}/crh.h
@@ -60,7 +59,6 @@ if(build)
 
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/board.hpp
-        include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp
         include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/our_cvfh.hpp
         include/pcl/${SUBSYS_NAME}/impl/crh.hpp
@@ -103,7 +101,6 @@ if(build)
 
     set(srcs
         src/board.cpp
-        src/brisk_2d.cpp
         src/boundary.cpp
         src/cvfh.cpp
         src/our_cvfh.cpp

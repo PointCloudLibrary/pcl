@@ -77,7 +77,6 @@
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
   (pcl::ESFSignature640)        \
-  (pcl::BRISKSignature512)      \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
   (pcl::PointWithScale)         \
@@ -137,7 +136,6 @@
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
   (pcl::ESFSignature640)        \
-  (pcl::BRISKSignature512)      \
   (pcl::Narf36)
 
 namespace pcl
@@ -1271,19 +1269,6 @@ namespace pcl
     float histogram[308];
   
     friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
-  };
-
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
-  /** \brief A point structure representing the Binary Robust Invariant Scalable Keypoints (BRISK).
-    * \ingroup common
-    */
-  struct BRISKSignature512
-  {
-    float scale;
-    float orientation;
-    unsigned char descriptor[64];
-  
-    friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
