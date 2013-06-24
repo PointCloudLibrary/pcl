@@ -78,9 +78,8 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::getMeshFromTSDFCloud (const 
   tsdf_volume_gpu_->reset (); // This one uses the same tsdf volume but clears it before loading new values. This one is our friend.
 
   //Clear values in TSDF Volume CPU
-  int tsdf_total_size = voxels_x_ * voxels_y_ * voxels_z_;
-  tsdf_volume_cpu_= std::vector<int> (tsdf_total_size,0);
-  
+  fill (tsdf_volume_cpu_.begin (), tsdf_volume_cpu_.end (), 0);
+   
   //Loading values to GPU
   loadTsdfCloudToGPU (cloud);
 
