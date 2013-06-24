@@ -74,6 +74,7 @@ TEST (PCL, PersonClassifier)
 
 TEST (PCL, GroundBasedPeopleDetectionApp)
 {
+#if defined(__SSE2__)
   // People detection app initialization:
   pcl::people::GroundBasedPeopleDetectionApp<PointT> people_detector;    // people detection object
   people_detector.setVoxelSize(voxel_size);                        // set the voxel size
@@ -91,9 +92,12 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   for(std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
   {
     if(it->getPersonConfidence() > min_confidence)             // draw only people with confidence above a threshold
-      k++;
+    k++;
   }
-  EXPECT_EQ (k, 5);		// verify number of people found (should be five)
+  EXPECT_EQ (k, 5);    // verify number of people found (should be five)
+#else
+  PCL_WARN ("Not compiled with SSE2, skipping test of GroundBasedPeopleDetectionApp.\n");
+#endif
 }
 
 int main (int argc, char** argv)
@@ -103,7 +107,7 @@ int main (int argc, char** argv)
     cerr << "No svm filename provided. Please download `trainedLinearSVMForPeopleDetectionWithHOG.yaml` and pass its path to the test." << endl;
     return (-1);
   }
-  	
+    
   if (argc < 3)
   {
     cerr << "No test file given. Please download 'five_people.pcd` and pass its path to the test." << endl;
@@ -115,8 +119,8 @@ int main (int argc, char** argv)
   {
     cerr << "Failed to read test file. Please download `five_people.pcd` and pass its path to the test." << endl;
     return (-1);
-  }	
-	
+  }  
+  
   // Algorithm parameters:
   svm_filename = argv[1];
   min_confidence = -1.5;
@@ -126,7 +130,7 @@ int main (int argc, char** argv)
 
   rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0, 1.0; // Kinect RGB camera intrinsics
   ground_coeffs.resize(4);
-  ground_coeffs << -0.0103586, 0.997011, 0.0765573, -1.26614;			// set ground coefficients
+  ground_coeffs << -0.0103586, 0.997011, 0.0765573, -1.26614;      // set ground coefficients
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

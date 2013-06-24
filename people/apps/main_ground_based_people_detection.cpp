@@ -72,6 +72,7 @@ int print_help()
   cout << "   --conf    <minimum_HOG_confidence (default = -1.5)>" << std::endl;
   cout << "   --min_h   <minimum_person_height (default = 1.3)>" << std::endl;
   cout << "   --max_h   <maximum_person_height (default = 2.3)>" << std::endl;
+  cout << "   --sample  <sampling_factor (default = 1)>" << std::endl;
   cout << "*******************************************************" << std::endl;
   return 0;
 }
@@ -119,6 +120,7 @@ int main (int argc, char** argv)
   float min_height = 1.3;
   float max_height = 2.3;
   float voxel_size = 0.06;
+  float sampling_factor = 1;
   Eigen::Matrix3f rgb_intrinsics_matrix;
   rgb_intrinsics_matrix << 525, 0.0, 319.5, 0.0, 525, 239.5, 0.0, 0.0, 1.0; // Kinect RGB camera intrinsics
 
@@ -127,6 +129,7 @@ int main (int argc, char** argv)
   pcl::console::parse_argument (argc, argv, "--conf", min_confidence);
   pcl::console::parse_argument (argc, argv, "--min_h", min_height);
   pcl::console::parse_argument (argc, argv, "--max_h", max_height);
+  pcl::console::parse_argument (argc, argv, "--sample", sampling_factor);
 
   // Read Kinect live stream:
   PointCloudT::Ptr cloud (new PointCloudT);
@@ -187,7 +190,7 @@ int main (int argc, char** argv)
   people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
   people_detector.setClassifier(person_classifier);                // set person classifier
   people_detector.setHeightLimits(min_height, max_height);         // set person classifier
-//  people_detector.setScaleFactor(4);                               // set a downsampling factor to the point cloud (for increasing speed)
+  people_detector.setSamplingFactor(sampling_factor);              // set a downsampling factor to the point cloud (for increasing speed)
 //  people_detector.setSensorPortraitOrientation(true);              // set sensor orientation to vertical
 
   // For timing:

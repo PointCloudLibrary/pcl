@@ -232,44 +232,43 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
 
   if (height > 0)
   {
-    // If near the border, fill with black
+    // If near the border, fill with black:
     PointCloudPtr box(new PointCloud);
     copyMakeBorder(image, box, xmin, ymin, width, height);
 
-    // Make the image match the correct size
+    // Make the image match the correct size (used in the training stage):
     PointCloudPtr sample(new PointCloud);
     resize(box, sample, window_width_, window_height_);
 
-    //Convert the image to Matlab format
-    double* sample_double = new double[sample->width * sample->height * 3]; 
+    // Convert the image to array of float:
+    float* sample_float = new float[sample->width * sample->height * 3]; 
     int delta = sample->height * sample->width;
     for(int row = 0; row < sample->height; row++)
     {
       for(int col = 0; col < sample->width; col++)
       {
-        sample_double[row + sample->height * col] = (double) ((*sample)(col, row).r); //ptr[col * 3 + 2];
-        sample_double[row + sample->height * col + delta] = (double) ((*sample)(col, row).g); //ptr[col * 3 + 1];
-        sample_double[row + sample->height * col + delta * 2] = (double) ((*sample)(col, row).b); //ptr[col * 3];
+        sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
+        sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
+        sample_float[row + sample->height * col + delta * 2] = (float) (((*sample)(col, row).b))/255; //ptr[col * 3];
       }
     }
 
-    double *ris = new double[SVM_weights_.size()];
-
-    //Calculate HOG descriptor
+    // Calculate HOG descriptor:
     pcl::people::HOG hog;
-    hog.compute(sample_double, sample->height, sample->width, 3, 8, 9, 10, ris);
-
-    //Calculate confidence value by dot product
+    float *descriptor = (float*) calloc(SVM_weights_.size(), sizeof(float));
+    hog.compute(sample_float, descriptor);
+ 
+    // Calculate confidence value by dot product:
     confidence = 0.0;
     for(unsigned int i = 0; i < SVM_weights_.size(); i++)
-    {
-      confidence += SVM_weights_[i] * ris[i];
+    { 
+      confidence += SVM_weights_[i] * descriptor[i];
     }
-    //Confidence correction
+    // Confidence correction:
     confidence -= SVM_offset_;  
 
-    delete[] ris;
-    delete[] sample_double;
+    delete[] descriptor;
+    delete[] sample_float;
   }
   else
   {

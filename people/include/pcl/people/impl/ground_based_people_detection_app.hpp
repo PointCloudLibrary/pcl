@@ -49,7 +49,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionAp
   rgb_image_ = pcl::PointCloud<pcl::RGB>::Ptr(new pcl::PointCloud<pcl::RGB>);
 
   // set default values for optional parameters:
-  scale_factor_ = 1;
+  sampling_factor_ = 1;
   voxel_size_ = 0.06;
   vertical_ = false;
   head_centroid_ = true;
@@ -79,9 +79,9 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setGround (Eigen::VectorXf& 
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setScaleFactor (int scale_factor)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setSamplingFactor (int sampling_factor)
 {
-  scale_factor_ = scale_factor;
+  sampling_factor_ = sampling_factor;
 }
 
 template <typename PointT> void
@@ -247,19 +247,19 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   rgb_image_->points.clear();                            // clear RGB pointcloud
   extractRGBFromPointCloud(cloud_, rgb_image_);          // fill RGB pointcloud
   
-  // Downsample of scale_factor in every dimension:
-  if (scale_factor_ != 1)
+  // Downsample of sampling_factor in every dimension:
+  if (sampling_factor_ != 1)
   {
     PointCloudPtr cloud_downsampled(new PointCloud);
-    cloud_downsampled->width = (cloud_->width)/scale_factor_;
-    cloud_downsampled->height = (cloud_->height)/scale_factor_;
+    cloud_downsampled->width = (cloud_->width)/sampling_factor_;
+    cloud_downsampled->height = (cloud_->height)/sampling_factor_;
     cloud_downsampled->points.resize(cloud_downsampled->height*cloud_downsampled->width);
     cloud_downsampled->is_dense = cloud_->is_dense;
     for (int j = 0; j < cloud_downsampled->width; j++)
     {
       for (int i = 0; i < cloud_downsampled->height; i++)
       {
-        (*cloud_downsampled)(j,i) = (*cloud_)(scale_factor_*j,scale_factor_*i);
+        (*cloud_downsampled)(j,i) = (*cloud_)(sampling_factor_*j,sampling_factor_*i);
       }
     }
     (*cloud_) = (*cloud_downsampled);
@@ -282,11 +282,11 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   extract.setIndices(inliers);
   extract.setNegative(true);
   extract.filter(*no_ground_cloud_);
-  if (inliers->size () >= (300 * 0.06 / voxel_size_ / std::pow (static_cast<double> (scale_factor_), 2)))
+  if (inliers->size () >= (300 * 0.06 / voxel_size_ / std::pow (static_cast<double> (sampling_factor_), 2)))
     ground_model->optimizeModelCoefficients (*inliers, ground_coeffs_, ground_coeffs_);
   else
     PCL_INFO ("No groundplane update!\n");
-  
+
   // Euclidean Clustering:
   std::vector<pcl::PointIndices> cluster_indices;
   typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
@@ -325,7 +325,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     bottom /= bottom(2);
     it->setPersonConfidence(person_classifier_.evaluate(rgb_image_, bottom, top, centroid, intrinsics_matrix_, vertical_));
   }
-  
+ 
   return (true);
 }
 
