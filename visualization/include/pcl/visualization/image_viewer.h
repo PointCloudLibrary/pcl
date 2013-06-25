@@ -53,6 +53,7 @@
 
 #include <vtkInteractorStyleImage.h>
 
+class vtkImageSlice;
 class vtkContextActor;
 class vtkImageViewer;
 class vtkImageFlip;
