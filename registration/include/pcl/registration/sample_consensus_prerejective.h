@@ -56,6 +56,14 @@ namespace pcl
    * constraints, as also implemented in the class
    * \ref registration::CorrespondenceRejectorPoly "CorrespondenceRejectorPoly".
    * 
+   * In order to robustly align partial/occluded models, this routine does not
+   * try to minimize the fit error, but instead tries to maximize the inlier rate,
+   * above a threshold specifiable using \ref setInlierFraction().
+   * 
+   * The amount of prerejection or "greedyness" of the algorithm can be specified
+   * using \ref setSimilarityThreshold() in [0,1[, where a value of 0 means disabled,
+   * and 1 is maximally rejective.
+   * 
    * If you use this in academic work, please cite:
    * 
    * A. G. Buch, D. Kraft, J.-K. Kämäräinen, H. G. Petersen and N. Krüger.
@@ -82,6 +90,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::transformation_estimation_;
       using Registration<PointSource, PointTarget>::getFitnessScore;
+      using Registration<PointSource, PointTarget>::converged_;
 
       typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -113,6 +122,7 @@ namespace pcl
         , k_correspondences_ (2)
         , feature_tree_ (new pcl::KdTreeFLANN<FeatureT>)
         , correspondence_rejector_poly_ (new CorrespondenceRejectorPoly)
+        , inlier_fraction_ (0.0f)
       {
         reg_name_ = "SampleConsensusPrerejective";
         correspondence_rejector_poly_->setSimilarityThreshold (0.6f);
@@ -132,8 +142,8 @@ namespace pcl
       setSourceFeatures (const FeatureCloudConstPtr &features);
 
       /** \brief Get a pointer to the source point cloud's features */
-      inline const FeatureCloudConstPtr 
-      getSourceFeatures ()
+      inline const FeatureCloudConstPtr
+      getSourceFeatures () const
       { 
         return (input_features_);
       }
@@ -146,7 +156,7 @@ namespace pcl
 
       /** \brief Get a pointer to the target point cloud's features */
       inline const FeatureCloudConstPtr 
-      getTargetFeatures ()
+      getTargetFeatures () const
       {
         return (target_features_);
       }
@@ -162,7 +172,7 @@ namespace pcl
 
       /** \brief Get the number of samples to use during each iteration, as set by the user */
       inline int 
-      getNumberOfSamples ()
+      getNumberOfSamples () const
       {
         return (nr_samples_);
       }
@@ -179,7 +189,7 @@ namespace pcl
 
       /** \brief Get the number of neighbors used when selecting a random feature correspondence, as set by the user */
       inline int
-      getCorrespondenceRandomness ()
+      getCorrespondenceRandomness () const
       {
         return (k_correspondences_);
       }
@@ -198,9 +208,36 @@ namespace pcl
        * \return edge length similarity threshold
        */
       inline float
-      getSimilarityThreshold ()
+      getSimilarityThreshold () const
       {
         return correspondence_rejector_poly_->getSimilarityThreshold ();
+      }
+      
+      /** \brief Set the required inlier fraction (of the input)
+       * \param inlier_fraction required inlier fraction, must be in [0,1]
+       */
+      inline void
+      setInlierFraction (float inlier_fraction)
+      {
+        inlier_fraction_ = inlier_fraction;
+      }
+      
+      /** \brief Get the required inlier fraction
+       * \return required inlier fraction in [0,1]
+       */
+      inline float
+      getInlierFraction () const
+      {
+        return inlier_fraction_;
+      }
+      
+      /** \brief Get the inlier indices of the source point cloud under the final transformation
+       * @return inlier indices
+       */
+      inline const std::vector<int>&
+      getInliers () const
+      {
+        return inliers_;
       }
 
     protected:
@@ -208,7 +245,7 @@ namespace pcl
         * \param n the number of possible indices to choose from
         */
       inline int 
-      getRandomIndex (int n)
+      getRandomIndex (int n) const
       {
         return (static_cast<int> (n * (rand () / (RAND_MAX + 1.0))));
       };
@@ -237,8 +274,19 @@ namespace pcl
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
         */
-      virtual void 
+      void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
+
+      /** \brief Obtain the fitness of a transformation
+        * The following metrics are calculated, based on
+        * \b final_transformation_ and \b corr_dist_threshold_:
+        *   - Inliers: the number of transformed points which are closer than threshold to NN
+        *   - Error score: the MSE of the inliers  
+        * \param inliers indices of source point cloud inliers
+        * \param fitness_score output fitness score as RMSE 
+        */
+      void 
+      getFitness (std::vector<int>& inliers, float& fitness_score);
 
       /** \brief The source point cloud's feature descriptors. */
       FeatureCloudConstPtr input_features_;
@@ -257,6 +305,12 @@ namespace pcl
       
       /** \brief The polygonal correspondence rejector used for prerejection */
       CorrespondenceRejectorPolyPtr correspondence_rejector_poly_;
+      
+      /** \brief The fraction [0,1] of inlier points required for accepting a transformation */
+      float inlier_fraction_;
+      
+      /** \brief Inlier points of final transformation as indices into source */
+      std::vector<int> inliers_;
   };
 }
 
