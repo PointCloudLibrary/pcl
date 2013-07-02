@@ -290,7 +290,7 @@ namespace pcl
         PointCloudTargetPtr input_transformed_;
 
         /** \brief The types of input point fields available. */
-        std::vector<pcl_sensor_msgs::PCLPointField> input_fields_;
+        std::vector<pcl::PCLPointField> input_fields_;
 
         /** \brief Abstract class get name method. */
         inline const std::string& 

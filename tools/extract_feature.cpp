@@ -36,7 +36,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -77,7 +77,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -93,7 +93,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 
 template <typename FeatureAlgorithm, typename PointIn, typename NormalT, typename PointOut>
 void
-computeFeatureViaNormals (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output,
+computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int argc, char** argv, bool set_search_flag = true)
 {
   int n_k = default_n_k;
@@ -146,7 +146,7 @@ computeFeatureViaNormals (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -184,12 +184,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-feature", feature_name);
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   if (feature_name == "PFHEstimation") 
     computeFeatureViaNormals< PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125>
       (cloud, output, argc, argv);

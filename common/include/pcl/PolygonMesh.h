@@ -6,8 +6,8 @@
 #include <ostream>
 
 // Include the correct PCLHeader path here
-#include "pcl_std_msgs/PCLHeader.h"
-#include "pcl_sensor_msgs/PCLPointCloud2.h"
+#include "pcl/PCLHeader.h"
+#include "pcl/PCLPointCloud2.h"
 #include <pcl/Vertices.h>
 
 namespace pcl
@@ -17,9 +17,9 @@ namespace pcl
     PolygonMesh () : header (), cloud (), polygons ()
     {}
 
-    ::pcl_std_msgs::PCLHeader  header;
+    ::pcl::PCLHeader  header;
 
-    ::pcl_sensor_msgs::PCLPointCloud2 cloud;
+    ::pcl::PCLPointCloud2 cloud;
 
     std::vector< ::pcl::Vertices>  polygons;
 

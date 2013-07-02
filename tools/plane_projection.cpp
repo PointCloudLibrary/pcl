@@ -37,7 +37,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/console/print.h>
@@ -61,7 +61,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -76,7 +76,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-project (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output, float a, float b, float c, float d)
+project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output, float a, float b, float c, float d)
 {
   Eigen::Vector4f coeffs;
   coeffs << a, b, c, d;
@@ -111,7 +111,7 @@ project (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
   pcl::io::savePCDFile ("foo.pcd", *projected_cloud_pcl);
 
   // Convert data back
-  pcl_sensor_msgs::PCLPointCloud2 projected_cloud;
+  pcl::PCLPointCloud2 projected_cloud;
   toROSMsg (*projected_cloud_pcl, projected_cloud);
 
   //we can actually use concatenate fields to inject our projection into the
@@ -121,7 +121,7 @@ project (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -167,12 +167,12 @@ main (int argc, char** argv)
   float d = static_cast<float> (atof (argv[6]));
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   project (cloud, output, a, b, c, d);
 
   // Save into the second file

@@ -199,25 +199,25 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS StatisticalOutlierRemoval<pcl_sensor_msgs::PCLPointCloud2> : public Filter<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS StatisticalOutlierRemoval<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::filter_name_;
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::removed_indices_;
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::extract_removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
     typedef pcl::search::Search<pcl::PointXYZ> KdTree;
     typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
 
-    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
     public:
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<pcl_sensor_msgs::PCLPointCloud2>::Filter (extract_removed_indices), mean_k_ (2), 
+        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices), mean_k_ (2), 
         std_mul_ (0.0), tree_ (), negative_ (false)
       {
         filter_name_ = "StatisticalOutlierRemoval";

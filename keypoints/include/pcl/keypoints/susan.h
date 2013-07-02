@@ -193,7 +193,7 @@ namespace pcl
         */
       int label_idx_;
       /** \brief The list of fields present in the output point cloud data. */
-      std::vector<pcl_sensor_msgs::PCLPointField> out_fields_;
+      std::vector<pcl::PCLPointField> out_fields_;
       pcl::common::IntensityFieldAccessor<PointOutT> intensity_out_;
   };
 }

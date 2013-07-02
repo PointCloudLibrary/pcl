@@ -76,7 +76,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   //! Get cloud at a particular location
   bool
   getCloudAt (size_t idx, 
-              pcl_sensor_msgs::PCLPointCloud2 &blob, 
+              pcl::PCLPointCloud2 &blob, 
               Eigen::Vector4f &origin, 
               Eigen::Quaternionf &orientation);
 
@@ -92,7 +92,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   std::vector<std::string>::iterator pcd_iterator_;
   TimeTrigger time_trigger_;
 
-  pcl_sensor_msgs::PCLPointCloud2 next_cloud_;
+  pcl::PCLPointCloud2 next_cloud_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
   bool valid_;
@@ -305,7 +305,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
 
   // Go through and index the clouds
   PCDReader reader;
-  pcl_sensor_msgs::PCLPointCloud2 blob;
+  pcl::PCLPointCloud2 blob;
   for (size_t i = 0; i < pcd_files_.size (); ++i)
   {
     std::string pcd_file = pcd_files_[i];
@@ -344,7 +344,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::scrapeForClouds (bool force)
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool 
 pcl::PCDGrabberBase::PCDGrabberImpl::getCloudAt (size_t idx, 
-                                                 pcl_sensor_msgs::PCLPointCloud2 &blob, 
+                                                 pcl::PCLPointCloud2 &blob, 
                                                  Eigen::Vector4f &origin, 
                                                  Eigen::Quaternionf &orientation)
 {
@@ -461,7 +461,7 @@ pcl::PCDGrabberBase::isRepeatOn () const
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::PCDGrabberBase::getCloudAt (size_t idx, 
-                                 pcl_sensor_msgs::PCLPointCloud2 &blob, 
+                                 pcl::PCLPointCloud2 &blob, 
                                  Eigen::Vector4f &origin, 
                                  Eigen::Quaternionf &orientation) const
 {

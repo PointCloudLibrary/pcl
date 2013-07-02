@@ -36,7 +36,7 @@
  * $Id$
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 #include <pcl/io/pcd_io.h>
@@ -66,7 +66,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
 //  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -81,8 +81,8 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud_source, const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud_target,
-         pcl_sensor_msgs::PCLPointCloud2 &output, std::string correspondence_type)
+compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointCloud2::ConstPtr &cloud_target,
+         pcl::PCLPointCloud2 &output, std::string correspondence_type)
 {
   // Estimate
   TicToc tt;
@@ -205,7 +205,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud_source, const pc
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -243,15 +243,15 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-correspondence", correspondence_type);
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_source (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_source (new pcl::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[0]], *cloud_source))
     return (-1);
   // Load the second file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_target (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_target (new pcl::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[1]], *cloud_target))
     return (-1);
 
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   // Perform the feature estimation
   compute (cloud_source, cloud_target, output, correspondence_type);
 

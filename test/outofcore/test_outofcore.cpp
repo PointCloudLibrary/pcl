@@ -60,7 +60,7 @@ using namespace pcl;
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 using namespace pcl::outofcore;
 
@@ -588,7 +588,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloud2Basic)
   const double min[3] = { -1.0, -1.0, -1.0 };
   const double max[3] = { 1.0, 1.0, 1.0 };
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
 
 }
 */
@@ -732,7 +732,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
     test_cloud->points.push_back (tmp);
   }
 
-  boost::shared_ptr<pcl_sensor_msgs::PCLPointCloud2> point_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+  boost::shared_ptr<pcl::PCLPointCloud2> point_cloud (new pcl::PCLPointCloud2 ());
   
   pcl::toROSMsg (*test_cloud, *point_cloud);
 
@@ -761,7 +761,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
     point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
 
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr input_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());
 
   toROSMsg<PointXYZ> (point_cloud, *input_cloud);
   ASSERT_EQ (point_cloud.width*point_cloud.height, input_cloud->width*input_cloud->height);
@@ -815,8 +815,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
     second_cloud->points.push_back (tmp);
   }
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr first_cloud_ptr (new pcl_sensor_msgs::PCLPointCloud2 ());
-  pcl_sensor_msgs::PCLPointCloud2::Ptr second_cloud_ptr (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr second_cloud_ptr (new pcl::PCLPointCloud2 ());
   
   toROSMsg<PointT> (*first_cloud, *first_cloud_ptr);
   toROSMsg<PointT> (*second_cloud, *second_cloud_ptr);
@@ -827,7 +827,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   shallow_outofcore.addPointCloud (first_cloud);
   shallow_outofcore.addPointCloud (second_cloud);
   
-  pcl_sensor_msgs::PCLPointCloud2::Ptr result (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr result (new pcl::PCLPointCloud2 ());
   shallow_outofcore.queryBBIncludes (min, max, 0, result);
   
   size_t num_points_queried = result->width*result->height;
@@ -863,7 +863,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
     test_cloud->points.push_back (tmp);
   }
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr dst_blob (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
   pcl::toROSMsg (*test_cloud, *dst_blob);
 
@@ -873,7 +873,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
   EXPECT_EQ (points_added, dst_blob->width*dst_blob->height);
   
-  pcl_sensor_msgs::PCLPointCloud2::Ptr dst_blob2 (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob2 (new pcl::PCLPointCloud2 ());
   
   octreeA.queryBoundingBox (min, max, 2, dst_blob2);
   std::list<std::string> filenames;
@@ -915,7 +915,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
     test_cloud->points.push_back (tmp);
   }
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr dst_blob (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
   pcl::toROSMsg (*test_cloud, *dst_blob);
 
@@ -928,8 +928,8 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";
   ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud_and_genLOD does not match the number of points in the input point cloud\n";
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr query_result_a (new pcl_sensor_msgs::PCLPointCloud2 ());
-  pcl_sensor_msgs::PCLPointCloud2::Ptr query_result_b (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr query_result_a (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr query_result_b (new pcl::PCLPointCloud2 ());
 
   octreeA.queryBBIncludes (min, max, int (octreeA.getDepth ()), query_result_a);
   

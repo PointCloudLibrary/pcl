@@ -41,7 +41,7 @@
 
 #include <Eigen/Core>
 #include <string>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/Vertices.h>
 
 namespace pcl
@@ -93,8 +93,8 @@ namespace pcl
     TextureMesh () : 
       cloud (), tex_polygons (), tex_coordinates (), tex_materials () {}
 
-    pcl_sensor_msgs::PCLPointCloud2  cloud;
-    pcl_std_msgs::PCLHeader  header;
+    pcl::PCLPointCloud2  cloud;
+    pcl::PCLHeader  header;
 
 
     std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial

@@ -529,7 +529,7 @@ class ObjectSelection
       if (cloud_->isOrganized ())
       {
         // If the dataset is organized, and has RGB data, create an image viewer
-        vector<pcl_sensor_msgs::PCLPointField> fields;
+        vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = getFieldIndex (*cloud_, "rgba", fields);
        
@@ -651,7 +651,7 @@ main (int argc, char** argv)
 
   PCDReader reader;
   // Test the header
-  pcl_sensor_msgs::PCLPointCloud2 dummy;
+  pcl::PCLPointCloud2 dummy;
   reader.readHeader (argv[p_file_indices[0]], dummy);
   if (dummy.height != 1 && getFieldIndex (dummy, "rgba") != -1)
   {

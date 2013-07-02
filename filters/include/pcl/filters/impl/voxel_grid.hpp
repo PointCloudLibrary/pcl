@@ -53,7 +53,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   max_p.setConstant (-FLT_MAX);
 
   // Get the fields list and the distance field index
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name, fields);
 
   float distance_value;
@@ -132,7 +132,7 @@ pcl::getMinMax3D (const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
   max_p.setConstant (-FLT_MAX);
 
   // Get the fields list and the distance field index
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name, fields);
 
   float distance_value;
@@ -264,7 +264,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     centroid_size = boost::mpl::size<FieldList>::value;
 
   // ---[ RGB special case
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
   rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
   if (rgba_index == -1)
@@ -282,7 +282,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   if (!filter_field_name_.empty ())
   {
     // Get the distance field index
-    std::vector<pcl_sensor_msgs::PCLPointField> fields;
+    std::vector<pcl::PCLPointField> fields;
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (distance_idx == -1)
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);

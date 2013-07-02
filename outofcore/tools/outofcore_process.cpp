@@ -41,7 +41,7 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/pcl_macros.h>
@@ -58,7 +58,7 @@ typedef pcl::PointXYZ PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
-using namespace pcl_sensor_msgs;
+using namespace pcl;
 
 using pcl::console::parse_argument;
 using pcl::console::parse_file_extension_argument;

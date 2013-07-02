@@ -36,7 +36,7 @@
  */
 
 #include <ros/ros.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <message_filters/subscriber.h>
 #include <message_filters/synchronizer.h>
 #include <message_filters/sync_policies/approximate_time.h>
@@ -49,7 +49,7 @@
 #include <pcl/point_types.h>
 
 using namespace message_filters;
-using namespace pcl_sensor_msgs;
+using namespace pcl;
 using namespace pcl_cuda;
 
 DisparityToCloud d2c;
@@ -58,9 +58,9 @@ ros::Publisher pub;
 struct EventHelper
 {
   void
-  callback (const pcl_sensor_msgs::PCLImage::ConstPtr &depth,
-            const pcl_sensor_msgs::PCLImage::ConstPtr &rgb,
-            const pcl_sensor_msgs::CameraInfo::ConstPtr &info)
+  callback (const pcl::PCLImage::ConstPtr &depth,
+            const pcl::PCLImage::ConstPtr &rgb,
+            const pcl::CameraInfo::ConstPtr &info)
   {
     //typedef pcl_cuda::SampleConsensusModel<pcl_cuda::Host>::Indices Indices;
 

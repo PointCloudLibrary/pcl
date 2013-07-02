@@ -178,7 +178,7 @@ namespace pcl
       setInputSource (const PointCloudSourceConstPtr &cloud)
       {
         Registration<PointSource, PointTarget, Scalar>::setInputSource (cloud);
-        std::vector<pcl_sensor_msgs::PCLPointField> fields;
+        std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         source_has_normals_ = false;
         for (size_t i = 0; i < fields.size (); ++i)
@@ -213,7 +213,7 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &cloud)
       {
         Registration<PointSource, PointTarget, Scalar>::setInputTarget (cloud);
-        std::vector<pcl_sensor_msgs::PCLPointField> fields;
+        std::vector<pcl::PCLPointField> fields;
         pcl::getFields (*cloud, fields);
         target_has_normals_ = false;
         for (size_t i = 0; i < fields.size (); ++i)

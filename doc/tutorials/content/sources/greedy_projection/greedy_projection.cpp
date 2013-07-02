@@ -9,7 +9,7 @@ main (int argc, char** argv)
 {
   // Load input file into a PointCloud<T> with an appropriate type
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl_sensor_msgs::PCLPointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   pcl::io::loadPCDFile ("bun0.pcd", cloud_blob);
   pcl::fromROSMsg (cloud_blob, *cloud);
   //* the data should be available in cloud

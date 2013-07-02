@@ -46,7 +46,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 using namespace pcl;
 using namespace pcl::io;
@@ -73,7 +73,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -88,7 +88,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -133,7 +133,7 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 }
 
 void
-compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          float th_dd, int max_search)
 {
   CloudPtr cloud (new Cloud);
@@ -217,7 +217,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
   }
 
   // Combine point clouds and edge labels
-  pcl_sensor_msgs::PCLPointCloud2 output_edges;  
+  pcl::PCLPointCloud2 output_edges;  
   toROSMsg (labels, output_edges);
   concatenateFields (*input, output_edges, output);
 }
@@ -254,12 +254,12 @@ main (int argc, char** argv)
   print_info ("max_search: "); print_value ("%d\n", max_search); 
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
 
   compute (cloud, output, th_dd, max_search);
 

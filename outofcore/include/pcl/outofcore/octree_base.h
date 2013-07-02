@@ -62,7 +62,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/random_sample.h>
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 namespace pcl
 {
@@ -259,7 +259,7 @@ namespace pcl
          * \return Number of poitns successfully copied from the point cloud to the octree
          */
         boost::uint64_t
-        addPointCloud (pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
+        addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
         /** \brief Recursively add points to the tree. 
          *
@@ -279,10 +279,10 @@ namespace pcl
          * octree.
          */
         boost::uint64_t
-        addPointCloud_and_genLOD (pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud);
+        addPointCloud_and_genLOD (pcl::PCLPointCloud2::Ptr &input_cloud);
 
         boost::uint64_t
-        addPointCloud (pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud);
+        addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud);
         
         boost::uint64_t
         addPointCloud_and_genLOD (PointCloudConstPtr point_cloud);
@@ -342,7 +342,7 @@ namespace pcl
          * \param[out] dst_blob Storage location for the points satisfying the query.
          **/
         void
-        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::uint64_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr &dst_blob) const;
+        queryBBIncludes (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob) const;
         
         /** \brief Returns a random subsample of points within the given bounding box at \ref query_depth.
          *
@@ -367,7 +367,7 @@ namespace pcl
          *  \param[in] percent optional sampling percentage which is applied after each time data are read from disk
          */
         virtual void
-        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr &dst_blob, double percent = 1.0);
+        queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob, double percent = 1.0);
         
         /** \brief Returns list of pcd files from nodes whose bounding boxes intersect with the input bounding box.
          * \param[in] min The minimum corner of the input bounding box.
@@ -534,15 +534,15 @@ namespace pcl
         OutofcoreNodeType*
         getBranchChildPtr (const BranchNode& branch_arg, unsigned char childIdx_arg) const;
 
-        pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::Ptr
+        pcl::Filter<pcl::PCLPointCloud2>::Ptr
         getLODFilter ();
 
-        const pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::ConstPtr
+        const pcl::Filter<pcl::PCLPointCloud2>::ConstPtr
         getLODFilter () const;
 
-        /** \brief Sets the filter to use when building the levels of depth. Recommended filters are pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> or pcl::VoxelGrid */
+        /** \brief Sets the filter to use when building the levels of depth. Recommended filters are pcl::RandomSample<pcl::PCLPointCloud2> or pcl::VoxelGrid */
         void
-        setLODFilter (const pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::Ptr& filter_arg);
+        setLODFilter (const pcl::Filter<pcl::PCLPointCloud2>::Ptr& filter_arg);
 
         /** \brief Returns the sample_percent_ used when constructing the LOD. */
         double 
@@ -650,7 +650,7 @@ namespace pcl
 
         double sample_percent_;
 
-        pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2>::Ptr lod_filter_ptr_;
+        pcl::RandomSample<pcl::PCLPointCloud2>::Ptr lod_filter_ptr_;
         
     };
   }

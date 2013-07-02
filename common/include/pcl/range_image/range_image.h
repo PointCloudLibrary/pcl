@@ -117,7 +117,7 @@ namespace pcl
         * \param far_ranges the resulting cloud containing those points with far ranges
         */
       PCL_EXPORTS static void
-      extractFarRanges (const pcl_sensor_msgs::PCLPointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
+      extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
       
       // =====METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */

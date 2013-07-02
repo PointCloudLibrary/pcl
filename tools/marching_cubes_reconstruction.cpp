@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_io.h>
 #include <pcl/surface/marching_cubes_hoppe.h>
@@ -72,7 +72,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -87,7 +87,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, PolygonMesh &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, PolygonMesh &output,
          int hoppe_or_rbf, float iso_level, int grid_res, float extend_percentage, float off_surface_displacement)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
@@ -192,7 +192,7 @@ main (int argc, char** argv)
   print_info ("Setting an off-surface displacement of: "); print_value ("%f\n", off_surface_displacement);
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[pcd_file_indices[0]], *cloud))
     return (-1);
 

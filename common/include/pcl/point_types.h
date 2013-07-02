@@ -614,11 +614,11 @@ namespace pcl
   template<typename PointT>
   struct FieldMatches<PointT, fields::rgba>
   {
-    bool operator() (const pcl_sensor_msgs::PCLPointField& field)
+    bool operator() (const pcl::PCLPointField& field)
     {
       if (field.name == "rgb")
       {
-        return (field.datatype == pcl_sensor_msgs::PCLPointField::FLOAT32 &&
+        return (field.datatype == pcl::PCLPointField::FLOAT32 &&
                 field.count == 1);
       }
       else
@@ -632,11 +632,11 @@ namespace pcl
   template<typename PointT>
   struct FieldMatches<PointT, fields::rgb>
   {
-    bool operator() (const pcl_sensor_msgs::PCLPointField& field)
+    bool operator() (const pcl::PCLPointField& field)
     {
       if (field.name == "rgba")
       {
-        return (field.datatype == pcl_sensor_msgs::PCLPointField::UINT32 &&
+        return (field.datatype == pcl::PCLPointField::UINT32 &&
                 field.count == 1);
       }
       else

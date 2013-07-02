@@ -11,10 +11,10 @@
 #include <boost/detail/endian.hpp>
 
 // Include the correct PCLHeader path here
-#include "pcl_std_msgs/PCLHeader.h"
-#include "pcl_sensor_msgs/PCLPointField.h"
+#include "pcl/PCLHeader.h"
+#include "pcl/PCLPointField.h"
 
-namespace pcl_sensor_msgs
+namespace pcl
 {
 
   struct PCLPointCloud2
@@ -32,12 +32,12 @@ namespace pcl_sensor_msgs
 #endif
     }
 
-    ::pcl_std_msgs::PCLHeader header;
+    ::pcl::PCLHeader header;
 
     pcl::uint32_t height;
     pcl::uint32_t width;
 
-    std::vector< ::pcl_sensor_msgs::PCLPointField>  fields;
+    std::vector< ::pcl::PCLPointField>  fields;
 
     pcl::uint8_t is_bigendian;
     pcl::uint32_t point_step;
@@ -48,14 +48,14 @@ namespace pcl_sensor_msgs
     pcl::uint8_t is_dense;
 
   public:
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointCloud2> Ptr;
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointCloud2  const> ConstPtr;
+    typedef boost::shared_ptr< ::pcl::PCLPointCloud2> Ptr;
+    typedef boost::shared_ptr< ::pcl::PCLPointCloud2  const> ConstPtr;
   }; // struct PCLPointCloud2
 
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointCloud2> PCLPointCloud2Ptr;
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointCloud2 const> PCLPointCloud2ConstPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointCloud2> PCLPointCloud2Ptr;
+  typedef boost::shared_ptr< ::pcl::PCLPointCloud2 const> PCLPointCloud2ConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl_sensor_msgs::PCLPointCloud2 &v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointCloud2 &v)
   {
     s << "header: " << std::endl;
     s << v.header;
@@ -88,7 +88,7 @@ namespace pcl_sensor_msgs
     return (s);
   }
 
-} // namespace pcl_sensor_msgs
+} // namespace pcl
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTCLOUD2_H
 

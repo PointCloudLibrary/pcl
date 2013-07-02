@@ -2743,7 +2743,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
   // Get the handler
-  PointCloudColorHandler<pcl_sensor_msgs::PCLPointCloud2>::ConstPtr color_handler = am_it->second.color_handlers[index];
+  PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = am_it->second.color_handlers[index];
 
   vtkSmartPointer<vtkDataArray> scalars;
   color_handler->getColor (scalars);
@@ -3841,7 +3841,7 @@ pcl::visualization::PCLVisualizer::convertToEigenMatrix (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &,
+    const pcl::PCLPointCloud2::ConstPtr &,
     const GeometryHandlerConstPtr &geometry_handler,
     const ColorHandlerConstPtr &color_handler,
     const Eigen::Vector4f& sensor_origin,
@@ -3864,7 +3864,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud,
+    const pcl::PCLPointCloud2::ConstPtr &cloud,
     const GeometryHandlerConstPtr &geometry_handler,
     const Eigen::Vector4f& sensor_origin,
     const Eigen::Quaternion<float>& sensor_orientation,
@@ -3881,14 +3881,14 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     return (true);
   }
 
-  PointCloudColorHandlerCustom<pcl_sensor_msgs::PCLPointCloud2>::Ptr color_handler (new PointCloudColorHandlerCustom<pcl_sensor_msgs::PCLPointCloud2> (cloud, 255, 255, 255));
+  PointCloudColorHandlerCustom<pcl::PCLPointCloud2>::Ptr color_handler (new PointCloudColorHandlerCustom<pcl::PCLPointCloud2> (cloud, 255, 255, 255));
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addPointCloud (
-    const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &cloud,
+    const pcl::PCLPointCloud2::ConstPtr &cloud,
     const ColorHandlerConstPtr &color_handler,
     const Eigen::Vector4f& sensor_origin,
     const Eigen::Quaternion<float>& sensor_orientation,
@@ -3904,7 +3904,7 @@ pcl::visualization::PCLVisualizer::addPointCloud (
     return (true);
   }
 
-  PointCloudGeometryHandlerXYZ<pcl_sensor_msgs::PCLPointCloud2>::Ptr geometry_handler (new PointCloudGeometryHandlerXYZ<pcl_sensor_msgs::PCLPointCloud2> (cloud));
+  PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2>::Ptr geometry_handler (new PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud));
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
 }
 

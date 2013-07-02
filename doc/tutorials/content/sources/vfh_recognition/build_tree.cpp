@@ -21,7 +21,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   // Load the file as a PCD
   try
   {
-    pcl_sensor_msgs::PCLPointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud;
     int version;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
@@ -45,7 +45,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   pcl::io::loadPCDFile (path.string (), point);
   vfh.second.resize (308);
 
-  std::vector <pcl_sensor_msgs::PCLPointField> fields;
+  std::vector <pcl::PCLPointField> fields;
   pcl::getFieldIndex (point, "vfh", fields);
 
   for (size_t i = 0; i < fields[vfh_idx].count; ++i)

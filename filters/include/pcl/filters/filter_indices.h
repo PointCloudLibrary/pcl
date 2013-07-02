@@ -190,10 +190,10 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS FilterIndices<pcl_sensor_msgs::PCLPointCloud2> : public Filter<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS FilterIndices<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
 
       /** \brief Constructor.
         * \param[in] extract_removed_indices Set to true if you want to extract the indices of points being removed (default = false).

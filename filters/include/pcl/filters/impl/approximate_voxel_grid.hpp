@@ -69,7 +69,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     centroid_size = boost::mpl::size<FieldList>::value;
 
   // ---[ RGB special case
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   int rgba_index = -1;
   rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
   if (rgba_index == -1)

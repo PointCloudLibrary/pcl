@@ -45,7 +45,7 @@
 #include <pcl/outofcore/boost.h>
 
 #include<pcl/point_types.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 using namespace pcl::outofcore;
 
@@ -66,7 +66,7 @@ int main (int, char** argv)
   
   octree = new OctreeDisk (depth, min, max, file_location, "ECEF");
 
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
     
   pcl::io::loadPCDFile (argv[1], *cloud);
   

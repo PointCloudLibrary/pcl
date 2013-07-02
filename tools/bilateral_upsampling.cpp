@@ -38,7 +38,7 @@
  */
 
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -70,7 +70,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -85,7 +85,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int window_size, double sigma_color, double sigma_depth)
 {
   PointCloud<PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<PointXYZRGBA> ());
@@ -112,7 +112,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -156,12 +156,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-sigma_depth", sigma_depth);
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Do the smoothing
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (cloud, output, window_size, sigma_color, sigma_depth);
 
   // Save into the second file

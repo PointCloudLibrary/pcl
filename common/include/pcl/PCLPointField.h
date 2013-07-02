@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/pcl_macros.h>
 
-namespace pcl_sensor_msgs
+namespace pcl
 {
   struct PCLPointField
   {
@@ -34,14 +34,14 @@ namespace pcl_sensor_msgs
                            FLOAT64 = 8 };
 
   public:
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointField> Ptr;
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointField const> ConstPtr;
+    typedef boost::shared_ptr< ::pcl::PCLPointField> Ptr;
+    typedef boost::shared_ptr< ::pcl::PCLPointField const> ConstPtr;
   }; // struct PCLPointField
 
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointField> PCLPointFieldPtr;
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLPointField const> PCLPointFieldConstPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointField> PCLPointFieldPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointField const> PCLPointFieldConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl_sensor_msgs::PCLPointField & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {
     s << "name: ";
     s << "  " << v.name << std::endl;
@@ -53,7 +53,7 @@ namespace pcl_sensor_msgs
     s << "  " << v.count << std::endl;
     return (s);
   }
-} // namespace pcl_sensor_msgs
+} // namespace pcl
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
 

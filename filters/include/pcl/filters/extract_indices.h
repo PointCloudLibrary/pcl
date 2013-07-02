@@ -158,10 +158,10 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> : public FilterIndices<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS ExtractIndices<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
       typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
       typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 

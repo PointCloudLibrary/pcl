@@ -40,7 +40,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::CropBox<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
+pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // Resize output cloud to sample size
   output.data.resize (input_->data.size ());
@@ -134,7 +134,7 @@ pcl::CropBox<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &outp
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::CropBox<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
   indices.resize (input_->width * input_->height);
   removed_indices_->resize (input_->width * input_->height);

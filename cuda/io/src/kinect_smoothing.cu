@@ -85,9 +85,9 @@ namespace pcl
     
     //////////////////////////////////////////////////////////////////////////
     //void
-    //DisparityToCloud::compute (const pcl_sensor_msgs::PCLImage::ConstPtr &depth_image,
-    //                                     const pcl_sensor_msgs::PCLImage::ConstPtr &rgb_image,
-    //                                     const pcl_sensor_msgs::CameraInfo::ConstPtr &info,
+    //DisparityToCloud::compute (const pcl::PCLImage::ConstPtr &depth_image,
+    //                                     const pcl::PCLImage::ConstPtr &rgb_image,
+    //                                     const pcl::CameraInfo::ConstPtr &info,
     //                                     PointCloudAOS<Device>::Ptr &output) 
     //{
     //  if (!output)
@@ -140,9 +140,9 @@ namespace pcl
     //
     ////////////////////////////////////////////////////////////////////////////
     //void
-    //DisparityToCloud::compute (const pcl_sensor_msgs::PCLImage::ConstPtr &depth_image,
-    //                                     const pcl_sensor_msgs::PCLImage::ConstPtr &rgb_image,
-    //                                     const pcl_sensor_msgs::CameraInfo::ConstPtr &info,
+    //DisparityToCloud::compute (const pcl::PCLImage::ConstPtr &depth_image,
+    //                                     const pcl::PCLImage::ConstPtr &rgb_image,
+    //                                     const pcl::CameraInfo::ConstPtr &info,
     //                                     PointCloudAOS<Host>::Ptr &output) 
     //{
     //  if (!output)
@@ -299,20 +299,20 @@ namespace pcl
     
     //////////////////////////////////////////////////////////////////////////
     //void
-    //DisparityToCloud::compute (const pcl_sensor_msgs::PCLImage::ConstPtr &depth_image,
-    //                                     const pcl_sensor_msgs::CameraInfo::ConstPtr &info,
+    //DisparityToCloud::compute (const pcl::PCLImage::ConstPtr &depth_image,
+    //                                     const pcl::CameraInfo::ConstPtr &info,
     //                                     PointCloudAOS<Device>::Ptr &output) 
     //{
     //  if (!output)
     //    output.reset (new PointCloudAOS<Device>);
     //
-    //  compute (depth_image, pcl_sensor_msgs::PCLImage::ConstPtr(), info, output);
+    //  compute (depth_image, pcl::PCLImage::ConstPtr(), info, output);
     //}
     //
     ////////////////////////////////////////////////////////////////////////////
     //void
-    //DisparityToCloud::compute (const pcl_sensor_msgs::PCLImage::ConstPtr &depth_image,
-    //                                     const pcl_sensor_msgs::CameraInfo::ConstPtr &info,
+    //DisparityToCloud::compute (const pcl::PCLImage::ConstPtr &depth_image,
+    //                                     const pcl::CameraInfo::ConstPtr &info,
     //                                     PointCloudAOS<Host>::Ptr &output) 
     //{
     //  if (!output)

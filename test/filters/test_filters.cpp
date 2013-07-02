@@ -66,7 +66,7 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
-using namespace pcl_sensor_msgs;
+using namespace pcl;
 using namespace Eigen;
 
 
@@ -147,7 +147,7 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].y, output.points[output.points.size () - 1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].z, output.points[output.points.size () - 1].z);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   ExtractIndices<PCLPointCloud2> ei2;
 
   PCLPointCloud2 output_blob;
@@ -608,7 +608,7 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   VoxelGrid<PCLPointCloud2> grid2;
 
   PCLPointCloud2 output_blob;
@@ -1077,7 +1077,7 @@ TEST (ProjectInliers, Filters)
   for (size_t i = 0; i < output.points.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
 
-    // Test the pcl_sensor_msgs::PCLPointCloud2 method
+    // Test the pcl::PCLPointCloud2 method
     ProjectInliers<PCLPointCloud2> proj2;
 
     PCLPointCloud2 output_blob;
@@ -1112,7 +1112,7 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 cloud_out2;
   RadiusOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
@@ -1144,7 +1144,7 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setRadiusSearch (0.02);
@@ -1506,7 +1506,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 output2;
   StatisticalOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
@@ -1561,7 +1561,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the pcl_sensor_msgs::PCLPointCloud2 method
+  // Test the pcl::PCLPointCloud2 method
   StatisticalOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setMeanK (50);

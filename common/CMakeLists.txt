@@ -69,12 +69,12 @@ if(build)
       )
 
     set(sensor_msg_incs 
-      include/pcl_sensor_msgs/PCLPointField.h
-      include/pcl_sensor_msgs/PCLPointCloud2.h
-      include/pcl_sensor_msgs/PCLImage.h
+      include/pcl/PCLPointField.h
+      include/pcl/PCLPointCloud2.h
+      include/pcl/PCLImage.h
       )
 
-    set(std_msg_incs include/pcl_std_msgs/PCLHeader.h)
+    set(std_msg_incs include/pcl/PCLHeader.h)
     
     set(common_incs 
         include/pcl/common/boost.h
@@ -172,8 +172,8 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_sensor_msgs" ${sensor_msg_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl_std_msgs" ${std_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl" ${sensor_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl" ${std_msg_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})

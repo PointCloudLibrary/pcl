@@ -56,7 +56,7 @@ pcl::RandomSample<PointT>::applyFilter (PointCloud &output)
     extract_removed_indices_ = temp;
     copyPointCloud (*input_, output);
     // Get X, Y, Z fields
-    std::vector<pcl_sensor_msgs::PCLPointField> fields;
+    std::vector<pcl::PCLPointField> fields;
     pcl::getFields (*input_, fields);
     std::vector<size_t> offsets;
     for (size_t i = 0; i < fields.size (); ++i)

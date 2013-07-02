@@ -185,13 +185,13 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS Filter<pcl_sensor_msgs::PCLPointCloud2> : public PCLBase<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS Filter<pcl::PCLPointCloud2> : public PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef boost::shared_ptr< Filter<pcl_sensor_msgs::PCLPointCloud2> > Ptr;
-      typedef boost::shared_ptr< const Filter<pcl_sensor_msgs::PCLPointCloud2> > ConstPtr;
+      typedef boost::shared_ptr< Filter<pcl::PCLPointCloud2> > Ptr;
+      typedef boost::shared_ptr< const Filter<pcl::PCLPointCloud2> > ConstPtr;
 
-      typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
       typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
       typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 

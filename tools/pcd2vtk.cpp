@@ -53,7 +53,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -68,7 +68,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &cloud)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   tt.tic ();
@@ -102,7 +102,7 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   if (!loadCloud (argv[pcd_file_indices[0]], cloud)) 
     return (-1);
 

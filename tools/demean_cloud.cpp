@@ -52,7 +52,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -67,7 +67,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &cloud)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   tt.tic ();
@@ -100,7 +100,7 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   if (!loadCloud (argv[pcd_file_indices[0]], cloud))
     return (-1);
 
@@ -110,9 +110,9 @@ main (int argc, char** argv)
   compute3DCentroid (cloud_xyz, centroid);
   demeanPointCloud (cloud_xyz, centroid, cloud_xyz_demeaned);
 
-  pcl_sensor_msgs::PCLPointCloud2 cloud2_xyz_demeaned;
+  pcl::PCLPointCloud2 cloud2_xyz_demeaned;
   toROSMsg (cloud_xyz_demeaned, cloud2_xyz_demeaned);
-  pcl_sensor_msgs::PCLPointCloud2 cloud_out;
+  pcl::PCLPointCloud2 cloud_out;
   concatenateFields (cloud, cloud2_xyz_demeaned, cloud_out);
 
   // Save cloud

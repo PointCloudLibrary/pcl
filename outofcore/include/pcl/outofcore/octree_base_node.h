@@ -41,7 +41,7 @@
 #define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 
 #include <pcl/common/io.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
@@ -180,7 +180,7 @@ namespace pcl
          *  \param[out] dst_blob destion of points returned by the queries
          */
         virtual void
-        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr &dst_blob);
+        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
@@ -193,7 +193,7 @@ namespace pcl
         queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector &v);
 
         virtual void
-        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr& dst_blob, double percent = 1.0);
+        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob, double percent = 1.0);
 
         /** \brief Recursive acquires PCD paths to any node with which the queried bounding box intersects (at query_depth only).
          */
@@ -222,11 +222,11 @@ namespace pcl
          * \param[in] skip_bb_check (default = false)
          */
         virtual boost::uint64_t
-        addPointCloud (const pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
+        addPointCloud (const pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
         /** \brief Add a single PCLPointCloud2 into the octree and build the subsampled LOD during construction; this method of LOD construction is <b>not</b> multiresolution. Rather, there are no redundant data. */
         virtual boost::uint64_t
-        addPointCloud_and_genLOD (const pcl_sensor_msgs::PCLPointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
+        addPointCloud_and_genLOD (const pcl::PCLPointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
         /** \brief Recursively add points to the leaf and children subsampling LODs
          * on the way down.
@@ -243,7 +243,7 @@ namespace pcl
         writeVPythonVisual (std::ofstream &file);
 
         virtual int
-        read (pcl_sensor_msgs::PCLPointCloud2::Ptr &output_cloud);
+        read (pcl::PCLPointCloud2::Ptr &output_cloud);
 
         virtual inline node_type_t
         getNodeType () const
@@ -398,7 +398,7 @@ namespace pcl
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const pcl_sensor_msgs::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check = true);
+        addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check = true);
         
         /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
          *  \param[in] min_bb The minimum corner of the input bounding box
@@ -517,7 +517,7 @@ namespace pcl
          *  This could be overloaded with a parallelized implementation
          */
         void
-        sortOctantIndices (const pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
 
         /** \brief Enlarges the shortest two sidelengths of the
          *  bounding box to a cubic shape; operation is done in

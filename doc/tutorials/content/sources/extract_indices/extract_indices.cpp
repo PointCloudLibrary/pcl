@@ -11,7 +11,7 @@
 int
 main (int argc, char** argv)
 {
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_blob (new pcl_sensor_msgs::PCLPointCloud2), cloud_filtered_blob (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2), cloud_filtered_blob (new pcl::PCLPointCloud2);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>), cloud_f (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
@@ -21,7 +21,7 @@ main (int argc, char** argv)
   std::cerr << "PointCloud before filtering: " << cloud_blob->width * cloud_blob->height << " data points." << std::endl;
 
   // Create the filtering object: downsample the dataset using a leaf size of 1cm
-  pcl::VoxelGrid<pcl_sensor_msgs::PCLPointCloud2> sor;
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloud_blob);
   sor.setLeafSize (0.01f, 0.01f, 0.01f);
   sor.filter (*cloud_filtered_blob);

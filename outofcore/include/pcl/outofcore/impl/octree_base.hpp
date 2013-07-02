@@ -79,7 +79,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , sample_percent_ (0.125)
-      , lod_filter_ptr_ (new pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> ())
+      , lod_filter_ptr_ (new pcl::RandomSample<pcl::PCLPointCloud2> ())
     {
       //validate the root filename
       if (!this->checkExtension (root_name))
@@ -107,7 +107,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , sample_percent_ (0.125)
-      , lod_filter_ptr_ (new pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> ())
+      , lod_filter_ptr_ (new pcl::RandomSample<pcl::PCLPointCloud2> ())
     {
       //Enlarge the bounding box to a cube so our voxels will be cubes
       Eigen::Vector3d tmp_min = min;
@@ -129,7 +129,7 @@ namespace pcl
       , read_write_mutex_ ()
       , metadata_ (new OutofcoreOctreeBaseMetadata ())
       , sample_percent_ (0.125)
-      , lod_filter_ptr_ (new pcl::RandomSample<pcl_sensor_msgs::PCLPointCloud2> ())
+      , lod_filter_ptr_ (new pcl::RandomSample<pcl::PCLPointCloud2> ())
     {
       //Create a new outofcore tree
       this->init (max_depth, min, max, root_node_name, coord_sys);
@@ -229,7 +229,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud (pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check)
     {
       uint64_t pt_added = this->root_node_->addPointCloud (input_cloud, skip_bb_check) ;
 //      assert (input_cloud->width*input_cloud->height == pt_added);
@@ -251,7 +251,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> boost::uint64_t
-    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (pcl_sensor_msgs::PCLPointCloud2::Ptr &input_cloud)
+    OutofcoreOctreeBase<ContainerT, PointT>::addPointCloud_and_genLOD (pcl::PCLPointCloud2::Ptr &input_cloud)
     {
       // Lock the tree while writing
       boost::unique_lock < boost::shared_mutex > lock (read_write_mutex_);
@@ -321,7 +321,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr& dst_blob) const
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBBIncludes (const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob) const
     {
       boost::shared_lock < boost::shared_mutex > lock (read_write_mutex_);
 
@@ -344,7 +344,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const pcl_sensor_msgs::PCLPointCloud2::Ptr &dst_blob, double percent)
+    OutofcoreOctreeBase<ContainerT, PointT>::queryBoundingBox (const Eigen::Vector3d &min, const Eigen::Vector3d &max, const int query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob, double percent)
     {
       if (percent==1.0)
       {
@@ -497,7 +497,7 @@ namespace pcl
     }      
 
     ////////////////////////////////////////////////////////////////////////////////
-    template<typename ContainerT, typename PointT> pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::Ptr
+    template<typename ContainerT, typename PointT> pcl::Filter<pcl::PCLPointCloud2>::Ptr
     OutofcoreOctreeBase<ContainerT, PointT>::getLODFilter ()
     {
       return (lod_filter_ptr_);
@@ -505,7 +505,7 @@ namespace pcl
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    template<typename ContainerT, typename PointT> const pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::ConstPtr
+    template<typename ContainerT, typename PointT> const pcl::Filter<pcl::PCLPointCloud2>::ConstPtr
     OutofcoreOctreeBase<ContainerT, PointT>::getLODFilter () const
     {
       return (lod_filter_ptr_);
@@ -514,7 +514,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename ContainerT, typename PointT> void
-    OutofcoreOctreeBase<ContainerT, PointT>::setLODFilter (const pcl::Filter<pcl_sensor_msgs::PCLPointCloud2>::Ptr& filter_arg)
+    OutofcoreOctreeBase<ContainerT, PointT>::setLODFilter (const pcl::Filter<pcl::PCLPointCloud2>::Ptr& filter_arg)
     {
       lod_filter_ptr_ = filter_arg;
     }
@@ -604,7 +604,7 @@ namespace pcl
         
         BranchNode* leaf = current_branch.back ();
 
-        pcl_sensor_msgs::PCLPointCloud2::Ptr leaf_input_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+        pcl::PCLPointCloud2::Ptr leaf_input_cloud (new pcl::PCLPointCloud2 ());
         //read the data from the PCD file associated with the leaf; it is full resolution
         leaf->read (leaf_input_cloud);
         assert (leaf_input_cloud->width*leaf_input_cloud->height > 0);
@@ -635,14 +635,14 @@ namespace pcl
           lod_filter_ptr_->setSample (static_cast<unsigned int>(sample_size));
       
           //create our destination
-          pcl_sensor_msgs::PCLPointCloud2::Ptr downsampled_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+          pcl::PCLPointCloud2::Ptr downsampled_cloud (new pcl::PCLPointCloud2 ());
 
           //create destination for indices
           pcl::IndicesPtr downsampled_cloud_indices (new std::vector< int > ());
           lod_filter_ptr_->filter (*downsampled_cloud_indices);
 
           //extract the "random subset", size by setSampleSize
-          pcl::ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> extractor;
+          pcl::ExtractIndices<pcl::PCLPointCloud2> extractor;
           extractor.setInputCloud (leaf_input_cloud);
           extractor.setIndices (downsampled_cloud_indices);
           extractor.filter (*downsampled_cloud);

@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/spin_image.h>
 #include <pcl/console/print.h>
@@ -77,7 +77,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -100,7 +100,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud)
 
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -145,12 +145,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-neigh", min_neigh);
 
   // Load the first file
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   
   // Convert data to PointCloud<T>
   PointCloud<PointNormal>::Ptr xyznormals (new PointCloud<PointNormal>);
@@ -182,7 +182,7 @@ main (int argc, char** argv)
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", descriptors.width * descriptors.height); print_info (" points]\n");
 
   // Convert data back
-  pcl_sensor_msgs::PCLPointCloud2 output_descr;
+  pcl::PCLPointCloud2 output_descr;
   toROSMsg (descriptors, output_descr);
   concatenateFields (*cloud, output_descr, output);
 

@@ -39,7 +39,7 @@
 #include <pcl/impl/pcl_base.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::PCLBase ()
+pcl::PCLBase<pcl::PCLPointCloud2>::PCLBase ()
   : input_ ()
   , indices_ ()
   , use_indices_ (false)
@@ -56,7 +56,7 @@ pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::PCLBase ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &cloud)
+pcl::PCLBase<pcl::PCLPointCloud2>::setInputCloud (const PCLPointCloud2ConstPtr &cloud)
 {
   input_ = cloud;
 
@@ -77,29 +77,29 @@ pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setInputCloud (const PCLPointClou
     int fsize;
     switch (input_->fields[d].datatype)
     {
-      case pcl_sensor_msgs::PCLPointField::INT8:
-      case pcl_sensor_msgs::PCLPointField::UINT8:
+      case pcl::PCLPointField::INT8:
+      case pcl::PCLPointField::UINT8:
       {
         fsize = 1;
         break;
       }
 
-      case pcl_sensor_msgs::PCLPointField::INT16:
-      case pcl_sensor_msgs::PCLPointField::UINT16:
+      case pcl::PCLPointField::INT16:
+      case pcl::PCLPointField::UINT16:
       {
         fsize = 2;
         break;
       }
 
-      case pcl_sensor_msgs::PCLPointField::INT32:
-      case pcl_sensor_msgs::PCLPointField::UINT32:
-      case pcl_sensor_msgs::PCLPointField::FLOAT32:
+      case pcl::PCLPointField::INT32:
+      case pcl::PCLPointField::UINT32:
+      case pcl::PCLPointField::FLOAT32:
       {
         fsize = 4;
         break;
       }
 
-      case pcl_sensor_msgs::PCLPointField::FLOAT64:
+      case pcl::PCLPointField::FLOAT64:
       {
         fsize = 8;
         break;
@@ -118,14 +118,14 @@ pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setInputCloud (const PCLPointClou
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::deinitCompute ()
+pcl::PCLBase<pcl::PCLPointCloud2>::deinitCompute ()
 {
   return (true);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::initCompute ()
+pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
 {
   // Check if input was set
   if (!input_)
@@ -159,7 +159,7 @@ pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setIndices (const IndicesPtr &indices)
+pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const IndicesPtr &indices)
 {
   indices_ = indices;
   fake_indices_ = false;
@@ -168,7 +168,7 @@ pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setIndices (const IndicesPtr &ind
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::PCLBase<pcl_sensor_msgs::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indices)
+pcl::PCLBase<pcl::PCLPointCloud2>::setIndices (const PointIndicesConstPtr &indices)
 {
   indices_.reset (new std::vector<int> (indices->indices));
   fake_indices_ = false;

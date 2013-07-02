@@ -35,7 +35,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -79,7 +79,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud,
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud,
            Eigen::Vector4f &translation, Eigen::Quaternionf &orientation)
 {
   TicToc tt;
@@ -95,7 +95,7 @@ loadCloud (const std::string &filename, pcl_sensor_msgs::PCLPointCloud2 &cloud,
 }
 
 void
-compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs::PCLPointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          std::string method,
          int min_pts, double radius,
          int mean_k, double std_dev_mul, bool negative, bool keep_organized)
@@ -156,7 +156,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
 
   if (keep_organized)
   {
-    pcl_sensor_msgs::PCLPointCloud2 output_filtered;
+    pcl::PCLPointCloud2 output_filtered;
     toROSMsg (*xyz_cloud_filtered, output_filtered);
     concatenateFields (*input, output_filtered, output);
   }
@@ -167,7 +167,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
       indices->indices.push_back (valid_indices[removed_indices->indices[i]]);
 
     // Extract the indices of the remaining points
-    pcl::ExtractIndices<pcl_sensor_msgs::PCLPointCloud2> ei;
+    pcl::ExtractIndices<pcl::PCLPointCloud2> ei;
     ei.setInputCloud (input);
     ei.setIndices (indices);
     ei.setNegative (true);
@@ -176,7 +176,7 @@ compute (const pcl_sensor_msgs::PCLPointCloud2::ConstPtr &input, pcl_sensor_msgs
 }
 
 void
-saveCloud (const std::string &filename, const pcl_sensor_msgs::PCLPointCloud2 &output,
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output,
            const Eigen::Vector4f &translation, const Eigen::Quaternionf &rotation)
 {
   TicToc tt;
@@ -231,7 +231,7 @@ main (int argc, char** argv)
   // Load the first file
   Eigen::Vector4f translation;
   Eigen::Quaternionf rotation;
-  pcl_sensor_msgs::PCLPointCloud2::Ptr cloud (new pcl_sensor_msgs::PCLPointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud, translation, rotation))
     return (-1);
   
@@ -242,7 +242,7 @@ main (int argc, char** argv)
   }
 
   // Do the smoothing
-  pcl_sensor_msgs::PCLPointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (cloud, output, method, min_pts, radius, mean_k, std_dev_mul, negative, keep_organized);
 
   // Save into the second file

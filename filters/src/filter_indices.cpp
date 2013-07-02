@@ -37,7 +37,7 @@
  */
 
 #include <pcl/filters/impl/filter_indices.hpp>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 /** \brief Base method for feature estimation for all points given in
  * <setInputCloud (), setIndices ()> using the surface in setSearchSurface ()
@@ -45,7 +45,7 @@
  * \param output the resultant filtered point cloud dataset
  */
 void
-pcl::FilterIndices<pcl_sensor_msgs::PCLPointCloud2>::filter (std::vector<int> &indices)
+pcl::FilterIndices<pcl::PCLPointCloud2>::filter (std::vector<int> &indices)
 {
   if (!initCompute ())
     return;

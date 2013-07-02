@@ -45,7 +45,7 @@
 
 #include "pcl/pcl_macros.h"
 
-#include <pcl_sensor_msgs/PCLPointField.h>
+#include <pcl/PCLPointField.h>
 #include <boost/type_traits/remove_all_extents.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <boost/mpl/assert.hpp>
@@ -65,25 +65,25 @@ namespace pcl
   {
     // Metafunction to return enum value representing a type
     template<typename T> struct asEnum {};
-    template<> struct asEnum<int8_t>   { static const uint8_t value = pcl_sensor_msgs::PCLPointField::INT8;    };
-    template<> struct asEnum<uint8_t>  { static const uint8_t value = pcl_sensor_msgs::PCLPointField::UINT8;   };
-    template<> struct asEnum<int16_t>  { static const uint8_t value = pcl_sensor_msgs::PCLPointField::INT16;   };
-    template<> struct asEnum<uint16_t> { static const uint8_t value = pcl_sensor_msgs::PCLPointField::UINT16;  };
-    template<> struct asEnum<int32_t>  { static const uint8_t value = pcl_sensor_msgs::PCLPointField::INT32;   };
-    template<> struct asEnum<uint32_t> { static const uint8_t value = pcl_sensor_msgs::PCLPointField::UINT32;  };
-    template<> struct asEnum<float>    { static const uint8_t value = pcl_sensor_msgs::PCLPointField::FLOAT32; };
-    template<> struct asEnum<double>   { static const uint8_t value = pcl_sensor_msgs::PCLPointField::FLOAT64; };
+    template<> struct asEnum<int8_t>   { static const uint8_t value = pcl::PCLPointField::INT8;    };
+    template<> struct asEnum<uint8_t>  { static const uint8_t value = pcl::PCLPointField::UINT8;   };
+    template<> struct asEnum<int16_t>  { static const uint8_t value = pcl::PCLPointField::INT16;   };
+    template<> struct asEnum<uint16_t> { static const uint8_t value = pcl::PCLPointField::UINT16;  };
+    template<> struct asEnum<int32_t>  { static const uint8_t value = pcl::PCLPointField::INT32;   };
+    template<> struct asEnum<uint32_t> { static const uint8_t value = pcl::PCLPointField::UINT32;  };
+    template<> struct asEnum<float>    { static const uint8_t value = pcl::PCLPointField::FLOAT32; };
+    template<> struct asEnum<double>   { static const uint8_t value = pcl::PCLPointField::FLOAT64; };
 
     // Metafunction to return type of enum value
     template<int> struct asType {};
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::INT8>    { typedef int8_t   type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::UINT8>   { typedef uint8_t  type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::INT16>   { typedef int16_t  type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::UINT16>  { typedef uint16_t type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::INT32>   { typedef int32_t  type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::UINT32>  { typedef uint32_t type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::FLOAT32> { typedef float    type; };
-    template<> struct asType<pcl_sensor_msgs::PCLPointField::FLOAT64> { typedef double   type; };
+    template<> struct asType<pcl::PCLPointField::INT8>    { typedef int8_t   type; };
+    template<> struct asType<pcl::PCLPointField::UINT8>   { typedef uint8_t  type; };
+    template<> struct asType<pcl::PCLPointField::INT16>   { typedef int16_t  type; };
+    template<> struct asType<pcl::PCLPointField::UINT16>  { typedef uint16_t type; };
+    template<> struct asType<pcl::PCLPointField::INT32>   { typedef int32_t  type; };
+    template<> struct asType<pcl::PCLPointField::UINT32>  { typedef uint32_t type; };
+    template<> struct asType<pcl::PCLPointField::FLOAT32> { typedef float    type; };
+    template<> struct asType<pcl::PCLPointField::FLOAT64> { typedef double   type; };
 
     // Metafunction to decompose a type (possibly of array of any number of dimensions) into
     // its scalar type and total number of elements.
@@ -176,7 +176,7 @@ namespace pcl
   template<typename PointT, typename Tag>
   struct FieldMatches
   {
-    bool operator() (const pcl_sensor_msgs::PCLPointField& field)
+    bool operator() (const pcl::PCLPointField& field)
     {
       return (field.name == traits::name<PointT, Tag>::value &&
               field.datatype == traits::datatype<PointT, Tag>::value &&

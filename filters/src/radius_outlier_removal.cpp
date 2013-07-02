@@ -43,7 +43,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::RadiusOutlierRemoval<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
+pcl::RadiusOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   output.is_dense = true;
   // If fields x/y/z are not present, we cannot filter

@@ -115,7 +115,7 @@ saveOBJFile (const std::string &file_name,
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
       // adding vertex
-      if ((tex_mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
+      if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 tex_mesh.cloud.fields[d].name == "x" ||
                 tex_mesh.cloud.fields[d].name == "y" ||
                 tex_mesh.cloud.fields[d].name == "z"))
@@ -156,7 +156,7 @@ saveOBJFile (const std::string &file_name,
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
       // adding vertex
-      if ((tex_mesh.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
+      if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
       tex_mesh.cloud.fields[d].name == "normal_x" ||
       tex_mesh.cloud.fields[d].name == "normal_y" ||
       tex_mesh.cloud.fields[d].name == "normal_z"))

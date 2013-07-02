@@ -52,7 +52,7 @@
 // Point Cloud message includes. Needed everywhere.
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 namespace pcl
 {
@@ -177,10 +177,10 @@ namespace pcl
 
   /////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class PCL_EXPORTS PCLBase<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
       typedef boost::shared_ptr<PCLPointCloud2> PCLPointCloud2Ptr;
       typedef boost::shared_ptr<PCLPointCloud2 const> PCLPointCloud2ConstPtr;
 

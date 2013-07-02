@@ -75,7 +75,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
-      if ((triangles.cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
+      if ((triangles.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            triangles.cloud.fields[d].name == "x" || 
            triangles.cloud.fields[d].name == "y" || 
            triangles.cloud.fields[d].name == "z"))
@@ -128,7 +128,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
-      if (triangles.cloud.fields[field_index].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32)
+      if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
       {
         pcl::RGB color;
         memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
@@ -149,7 +149,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
 //////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::io::saveVTKFile (const std::string &file_name, 
-                      const pcl_sensor_msgs::PCLPointCloud2 &cloud, unsigned precision)
+                      const pcl::PCLPointCloud2 &cloud, unsigned precision)
 {
   if (cloud.data.empty ())
   {
@@ -178,7 +178,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
-      if ((cloud.fields[d].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32) && (
+      if ((cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
            cloud.fields[d].name == "x" || 
            cloud.fields[d].name == "y" || 
            cloud.fields[d].name == "z"))
@@ -215,7 +215,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
       if (count == 0)
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
-      if (cloud.fields[field_index].datatype == pcl_sensor_msgs::PCLPointField::FLOAT32)
+      if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
       {
         pcl::RGB color;
         memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));

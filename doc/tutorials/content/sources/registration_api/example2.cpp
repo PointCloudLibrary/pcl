@@ -13,7 +13,7 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 
 using namespace std;
-using namespace pcl_sensor_msgs;
+using namespace pcl;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;

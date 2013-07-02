@@ -296,7 +296,7 @@ pcl::visualization::PCLPlotter::addHistogramData (
 ////////////////////////////////HistVizualizer Functions//////////////////////////////////////
 bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
-    const pcl_sensor_msgs::PCLPointCloud2 &cloud, const std::string &field_name, 
+    const pcl::PCLPointCloud2 &cloud, const std::string &field_name, 
     const std::string &id, int win_width, int win_height)
 {
   // Get the field
@@ -328,7 +328,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLPlotter::addFeatureHistogram (
-    const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+    const pcl::PCLPointCloud2 &cloud, 
     const std::string &field_name, 
     const int index,
     const std::string &id, int win_width, int win_height)

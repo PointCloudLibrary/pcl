@@ -9,9 +9,9 @@
 #endif   
 
 // Include the correct PCLHeader path here
-#include "pcl_std_msgs/PCLHeader.h"
+#include "pcl/PCLHeader.h"
 
-namespace pcl_sensor_msgs
+namespace pcl
 {
   struct PCLImage
   {
@@ -19,7 +19,7 @@ namespace pcl_sensor_msgs
                is_bigendian (0), step (0), data ()
     {}
 
-     ::pcl_std_msgs::PCLHeader  header;
+     ::pcl::PCLHeader  header;
 
     pcl::uint32_t height;
     pcl::uint32_t width;
@@ -30,14 +30,14 @@ namespace pcl_sensor_msgs
 
     std::vector<pcl::uint8_t> data;
 
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage> Ptr;
-    typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage  const> ConstPtr;
+    typedef boost::shared_ptr< ::pcl::PCLImage> Ptr;
+    typedef boost::shared_ptr< ::pcl::PCLImage  const> ConstPtr;
   }; // struct PCLImage
 
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage> PCLImagePtr;
-  typedef boost::shared_ptr< ::pcl_sensor_msgs::PCLImage const> PCLImageConstPtr;
+  typedef boost::shared_ptr< ::pcl::PCLImage> PCLImagePtr;
+  typedef boost::shared_ptr< ::pcl::PCLImage const> PCLImageConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::pcl_sensor_msgs::PCLImage & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLImage & v)
   {
     s << "header: " << std::endl;
     s << v.header;
@@ -59,7 +59,7 @@ namespace pcl_sensor_msgs
     }
     return (s);
   }
-} // namespace pcl_sensor_msgs
+} // namespace pcl
 
 #endif // PCL_MESSAGE_IMAGE_H
 

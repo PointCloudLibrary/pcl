@@ -54,7 +54,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   applyFilterIndices (indices);
   extract_removed_indices_ = temp;
 
-  std::vector<pcl_sensor_msgs::PCLPointField> fields; 
+  std::vector<pcl::PCLPointField> fields; 
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
   for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
@@ -79,7 +79,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     extract_removed_indices_ = temp;
 
     output = *input_;
-    std::vector<pcl_sensor_msgs::PCLPointField> fields; 
+    std::vector<pcl::PCLPointField> fields; 
     pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
     {

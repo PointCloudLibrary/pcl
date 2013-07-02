@@ -37,7 +37,7 @@
  *
  */
 
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/vfh.h>
 #include <pcl/console/print.h>
@@ -67,7 +67,7 @@ loadCloud (const std::string &filename, PointCloud<PointNormal> &cloud)
   print_info ("Available dimensions: "); print_value ("%s\n", getFieldsList (cloud).c_str ());
 
   // Check if the dataset has normals
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   if (getFieldIndex (cloud, "normal_x", fields) == -1)
   {
     print_error ("The input dataset does not contain normal information!\n");

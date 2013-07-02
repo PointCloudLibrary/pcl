@@ -176,12 +176,12 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS ProjectInliers<pcl_sensor_msgs::PCLPointCloud2> : public Filter<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS ProjectInliers<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::filter_name_;
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 

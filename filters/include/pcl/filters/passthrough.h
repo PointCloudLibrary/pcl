@@ -226,19 +226,19 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS PassThrough<pcl_sensor_msgs::PCLPointCloud2> : public Filter<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS PassThrough<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::removed_indices_;
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::extract_removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
     public:
       /** \brief Constructor. */
       PassThrough (bool extract_removed_indices = false) :
-        Filter<pcl_sensor_msgs::PCLPointCloud2>::Filter (extract_removed_indices), keep_organized_ (false),
+        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices), keep_organized_ (false),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ()),
         filter_field_name_ (""), filter_limit_min_ (-FLT_MAX), filter_limit_max_ (FLT_MAX),
         filter_limit_negative_ (false)

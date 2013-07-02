@@ -11,7 +11,7 @@
 #include <pcl/pcl_macros.h>
 #include <ostream>
 
-namespace pcl_std_msgs
+namespace pcl
 {
   struct PCLHeader
   {
@@ -38,7 +38,7 @@ namespace pcl_std_msgs
     return (out);
   }
 
-} // namespace pcl_std_msgs
+} // namespace pcl
 
 #endif // PCL_ROSLIB_MESSAGE_HEADER_H
 

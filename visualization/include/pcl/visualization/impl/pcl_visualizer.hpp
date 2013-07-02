@@ -1538,7 +1538,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   }
 
   int rgb_idx = -1;
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   vtkSmartPointer<vtkUnsignedCharArray> colors;
   rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
   if (rgb_idx == -1)
@@ -1756,7 +1756,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   // Update colors
   vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
   int rgb_idx = -1;
-  std::vector<pcl_sensor_msgs::PCLPointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
   if (rgb_idx == -1)
     rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);

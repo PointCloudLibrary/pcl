@@ -152,19 +152,19 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS RandomSample<pcl_sensor_msgs::PCLPointCloud2> : public FilterIndices<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS RandomSample<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
-    using FilterIndices<pcl_sensor_msgs::PCLPointCloud2>::filter_name_;
-    using FilterIndices<pcl_sensor_msgs::PCLPointCloud2>::getClassName;
+    using FilterIndices<pcl::PCLPointCloud2>::filter_name_;
+    using FilterIndices<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
     public:
   
-      typedef boost::shared_ptr<RandomSample<pcl_sensor_msgs::PCLPointCloud2> > Ptr;
-      typedef boost::shared_ptr<const RandomSample<pcl_sensor_msgs::PCLPointCloud2> > ConstPtr;
+      typedef boost::shared_ptr<RandomSample<pcl::PCLPointCloud2> > Ptr;
+      typedef boost::shared_ptr<const RandomSample<pcl::PCLPointCloud2> > ConstPtr;
   
       /** \brief Empty constructor. */
       RandomSample () : sample_ (UINT_MAX), seed_ (static_cast<unsigned int> (time (NULL)))

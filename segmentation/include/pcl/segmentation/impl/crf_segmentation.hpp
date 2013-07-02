@@ -244,7 +244,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   
 /*
   // get the size of the input fields
-  std::vector< pcl_sensor_msgs::PCLPointField > fields;
+  std::vector< pcl::PCLPointField > fields;
   pcl::getFields (*input_cloud_, fields);
   
   for (int i = 0; i < fields.size (); i++)
@@ -255,7 +255,7 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   // reserve space for the data vector
   data_.resize (filtered_cloud_->points.size ());
 
-  std::vector< pcl_sensor_msgs::PCLPointField > fields;
+  std::vector< pcl::PCLPointField > fields;
   // check if we have color data
   bool color_data = false;
   int rgba_index = -1;  

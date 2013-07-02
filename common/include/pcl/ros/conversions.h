@@ -44,9 +44,9 @@
 #pragma GCC system_header 
 #endif
 
-#include <pcl_sensor_msgs/PCLPointField.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
-#include <pcl_sensor_msgs/PCLImage.h>
+#include <pcl/PCLPointField.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/PCLImage.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_traits.h>
 #include <pcl/for_each_type.h>
@@ -62,11 +62,11 @@ namespace pcl
     template<typename PointT>
     struct FieldAdder
     {
-      FieldAdder (std::vector<pcl_sensor_msgs::PCLPointField>& fields) : fields_ (fields) {};
+      FieldAdder (std::vector<pcl::PCLPointField>& fields) : fields_ (fields) {};
       
       template<typename U> void operator() ()
       {
-        pcl_sensor_msgs::PCLPointField f;
+        pcl::PCLPointField f;
         f.name = traits::name<PointT, U>::value;
         f.offset = traits::offset<PointT, U>::value;
         f.datatype = traits::datatype<PointT, U>::value;
@@ -74,14 +74,14 @@ namespace pcl
         fields_.push_back (f);
       }
 
-      std::vector<pcl_sensor_msgs::PCLPointField>& fields_;
+      std::vector<pcl::PCLPointField>& fields_;
     };
 
     // For converting message to template point cloud.
     template<typename PointT>
     struct FieldMapper
     {
-      FieldMapper (const std::vector<pcl_sensor_msgs::PCLPointField>& fields,
+      FieldMapper (const std::vector<pcl::PCLPointField>& fields,
                    std::vector<FieldMapping>& map)
         : fields_ (fields), map_ (map)
       {
@@ -90,7 +90,7 @@ namespace pcl
       template<typename Tag> void 
       operator () ()
       {
-        BOOST_FOREACH (const pcl_sensor_msgs::PCLPointField& field, fields_)
+        BOOST_FOREACH (const pcl::PCLPointField& field, fields_)
         {
           if (FieldMatches<PointT, Tag>()(field))
           {
@@ -107,7 +107,7 @@ namespace pcl
         //throw pcl::InvalidConversionException (ss.str ());
       }
 
-      const std::vector<pcl_sensor_msgs::PCLPointField>& fields_;
+      const std::vector<pcl::PCLPointField>& fields_;
       std::vector<FieldMapping>& map_;
     };
 
@@ -120,7 +120,7 @@ namespace pcl
   } //namespace detail
 
   template<typename PointT> void 
-  createMapping (const std::vector<pcl_sensor_msgs::PCLPointField>& msg_fields, MsgFieldMap& field_map)
+  createMapping (const std::vector<pcl::PCLPointField>& msg_fields, MsgFieldMap& field_map)
   {
     // Create initial 1-1 mapping between serialized data segments and struct fields
     detail::FieldMapper<PointT> mapper (msg_fields, field_map);
@@ -164,7 +164,7 @@ namespace pcl
     * \endcode
     */
   template <typename PointT> void 
-  fromROSMsg (const pcl_sensor_msgs::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+  fromROSMsg (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
               const MsgFieldMap& field_map)
   {
     // Copy info fields
@@ -222,7 +222,7 @@ namespace pcl
     * \param[out] cloud the resultant pcl::PointCloud<T>
     */
   template<typename PointT> void 
-  fromROSMsg (const pcl_sensor_msgs::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud)
+  fromROSMsg (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud)
   {
     MsgFieldMap field_map;
     createMapping<PointT> (msg.fields, field_map);
@@ -234,7 +234,7 @@ namespace pcl
     * \param[out] msg the resultant PCLPointCloud2 binary blob
     */
   template<typename PointT> void 
-  toROSMsg (const pcl::PointCloud<PointT>& cloud, pcl_sensor_msgs::PCLPointCloud2& msg)
+  toROSMsg (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg)
   {
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
@@ -265,14 +265,14 @@ namespace pcl
     /// @todo msg.is_bigendian = ?;
   }
 
-   /** \brief Copy the RGB fields of a PointCloud into pcl_sensor_msgs::PCLImage format
+   /** \brief Copy the RGB fields of a PointCloud into pcl::PCLImage format
      * \param[in] cloud the point cloud message
-     * \param[out] msg the resultant pcl_sensor_msgs::PCLImage
+     * \param[out] msg the resultant pcl::PCLImage
      * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGBA>
      * \note will throw std::runtime_error if there is a problem
      */
   template<typename CloudT> void
-  toROSMsg (const CloudT& cloud, pcl_sensor_msgs::PCLImage& msg)
+  toROSMsg (const CloudT& cloud, pcl::PCLImage& msg)
   {
     // Ease the user's burden on specifying width/height for unorganized datasets
     if (cloud.width == 0 && cloud.height == 0)
@@ -299,13 +299,13 @@ namespace pcl
     }
   }
 
-  /** \brief Copy the RGB fields of a PCLPointCloud2 msg into pcl_sensor_msgs::PCLImage format
+  /** \brief Copy the RGB fields of a PCLPointCloud2 msg into pcl::PCLImage format
     * \param cloud the point cloud message
-    * \param msg the resultant pcl_sensor_msgs::PCLImage
+    * \param msg the resultant pcl::PCLImage
     * will throw std::runtime_error if there is a problem
     */
   inline void
-  toROSMsg (const pcl_sensor_msgs::PCLPointCloud2& cloud, pcl_sensor_msgs::PCLImage& msg)
+  toROSMsg (const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg)
   {
     int rgb_index = -1;
     // Get the index we need
@@ -328,7 +328,7 @@ namespace pcl
     int rgb_offset = cloud.fields[rgb_index].offset;
     int point_step = cloud.point_step;
 
-    // pcl_sensor_msgs::image_encodings::BGR8;
+    // pcl::image_encodings::BGR8;
     msg.encoding = "bgr8";
     msg.step = static_cast<uint32_t>(msg.width * sizeof (uint8_t) * 3);
     msg.data.resize (msg.step * msg.height);

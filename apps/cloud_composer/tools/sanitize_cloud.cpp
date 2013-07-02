@@ -34,18 +34,18 @@ pcl::cloud_composer::SanitizeCloudTool::performAction (ConstItemList input_data,
   
   if (input_item->type () ==  CloudComposerItem::CLOUD_ITEM )
   {
-    pcl_sensor_msgs::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl_sensor_msgs::PCLPointCloud2::ConstPtr> ();
+    pcl::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
     
     bool keep_organized = parameter_model_->getProperty("Keep Organized").toBool ();
    
     //////////////// THE WORK - FILTERING NANS ///////////////////
     // Create the filtering object
-    pcl::PassThrough<pcl_sensor_msgs::PCLPointCloud2> pass_filter;
+    pcl::PassThrough<pcl::PCLPointCloud2> pass_filter;
     pass_filter.setInputCloud (input_cloud);
     pass_filter.setKeepOrganized (keep_organized);
         
     //Create output cloud
-    pcl_sensor_msgs::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl_sensor_msgs::PCLPointCloud2> ();
+    pcl::PCLPointCloud2::Ptr cloud_filtered = boost::make_shared<pcl::PCLPointCloud2> ();
     //Filter!  
     pass_filter.filter (*cloud_filtered);
     

@@ -5,7 +5,7 @@
 #include <ostream>
 
 // Include the correct PCLHeader path here
-#include "pcl_std_msgs/PCLHeader.h"
+#include "pcl/PCLHeader.h"
 
 namespace pcl
 {
@@ -15,7 +15,7 @@ namespace pcl
     {
     }
 
-    ::pcl_std_msgs::PCLHeader header;
+    ::pcl::PCLHeader header;
 
     std::vector<float> values;
 

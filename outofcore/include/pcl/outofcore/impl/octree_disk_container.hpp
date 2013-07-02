@@ -51,7 +51,7 @@
 // PCL
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl_sensor_msgs/PCLPointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 // PCL (Urban Robotics)
 #include <pcl/outofcore/octree_disk_container.h>
@@ -134,7 +134,7 @@ namespace pcl
 
           filelen_ = len / sizeof(PointT);
 
-          pcl_sensor_msgs::PCLPointCloud2 cloud_info;
+          pcl::PCLPointCloud2 cloud_info;
           Eigen::Vector4f origin;
           Eigen::Quaternionf orientation;
           int pcd_version;
@@ -509,9 +509,9 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::insertRange (const pcl_sensor_msgs::PCLPointCloud2::Ptr& input_cloud)
+    OutofcoreOctreeDiskContainer<PointT>::insertRange (const pcl::PCLPointCloud2::Ptr& input_cloud)
     {
-      pcl_sensor_msgs::PCLPointCloud2::Ptr tmp_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+      pcl::PCLPointCloud2::Ptr tmp_cloud (new pcl::PCLPointCloud2 ());
           
       //if there's a pcd file with data associated with this node, read the data, concatenate, and resave
       if (boost::filesystem::exists (*disk_storage_filename_))
@@ -550,7 +550,7 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> void
-    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t, const uint64_t, pcl_sensor_msgs::PCLPointCloud2::Ptr& dst)
+    OutofcoreOctreeDiskContainer<PointT>::readRange (const uint64_t, const uint64_t, pcl::PCLPointCloud2::Ptr& dst)
     {
       pcl::PCDReader reader;
 
@@ -574,9 +574,9 @@ namespace pcl
     ////////////////////////////////////////////////////////////////////////////////
 
     template<typename PointT> int
-    OutofcoreOctreeDiskContainer<PointT>::read (pcl_sensor_msgs::PCLPointCloud2::Ptr& output_cloud)
+    OutofcoreOctreeDiskContainer<PointT>::read (pcl::PCLPointCloud2::Ptr& output_cloud)
     {
-      pcl_sensor_msgs::PCLPointCloud2::Ptr temp_output_cloud (new pcl_sensor_msgs::PCLPointCloud2 ());
+      pcl::PCLPointCloud2::Ptr temp_output_cloud (new pcl::PCLPointCloud2 ());
 
       if (boost::filesystem::exists (*disk_storage_filename_))
       {
@@ -672,7 +672,7 @@ namespace pcl
     template<typename PointT> boost::uint64_t
     OutofcoreOctreeDiskContainer<PointT>::getDataSize () const
     {
-      pcl_sensor_msgs::PCLPointCloud2 cloud_info;
+      pcl::PCLPointCloud2 cloud_info;
       Eigen::Vector4f origin;
       Eigen::Quaternionf orientation;
       int pcd_version;

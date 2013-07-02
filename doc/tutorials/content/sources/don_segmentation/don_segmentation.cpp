@@ -51,7 +51,7 @@ main (int argc, char *argv[])
   istringstream (argv[5]) >> segradius;   // threshold for radius segmentation
 
   // Load cloud in blob format
-  pcl_sensor_msgs::PCLPointCloud2 blob;
+  pcl::PCLPointCloud2 blob;
   pcl::io::loadPCDFile (infile.c_str (), blob);
   pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);
   pcl::fromROSMsg (blob, *cloud);

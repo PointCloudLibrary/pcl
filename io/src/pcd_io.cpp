@@ -108,7 +108,7 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud, 
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                             int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
 {
@@ -202,7 +202,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPo
         for (int i = 0; i < specified_channel_count; ++i, offset += 4)
         {
           cloud.fields[i].offset   = offset;
-          cloud.fields[i].datatype = pcl_sensor_msgs::PCLPointField::FLOAT32;
+          cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
           cloud.fields[i].count    = 1;
         }
         cloud.point_step = offset;
@@ -398,7 +398,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPo
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud, const int offset)
+pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset)
 {
   // Default values
   cloud.width = cloud.height = cloud.point_step = cloud.row_step = 0;
@@ -485,7 +485,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPo
         for (int i = 0; i < specified_channel_count; ++i, offset += 4)
         {
           cloud.fields[i].offset   = offset;
-          cloud.fields[i].datatype = pcl_sensor_msgs::PCLPointField::FLOAT32;
+          cloud.fields[i].datatype = pcl::PCLPointField::FLOAT32;
           cloud.fields[i].count    = 1;
         }
         cloud.point_step = offset;
@@ -662,7 +662,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl_sensor_msgs::PCLPo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud,
+pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version, 
                       const int offset)
 {
@@ -742,51 +742,51 @@ pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointClo
           {
             switch (cloud.fields[d].datatype)
             {
-              case pcl_sensor_msgs::PCLPointField::INT8:
+              case pcl::PCLPointField::INT8:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT8>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::UINT8:
+              case pcl::PCLPointField::UINT8:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT8>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::INT16:
+              case pcl::PCLPointField::INT16:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT16>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::UINT16:
+              case pcl::PCLPointField::UINT16:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT16>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::INT32:
+              case pcl::PCLPointField::INT32:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT32>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::UINT32:
+              case pcl::PCLPointField::UINT32:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT32>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::FLOAT32:
+              case pcl::PCLPointField::FLOAT32:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT32>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
-              case pcl_sensor_msgs::PCLPointField::FLOAT64:
+              case pcl::PCLPointField::FLOAT64:
               {
-                copyStringValue<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT64>::type> (
+                copyStringValue<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (
                     st.at (total + c), cloud, idx, d, c);
                 break;
               }
@@ -901,7 +901,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointClo
       }
 
       // Get the fields sizes
-      std::vector<pcl_sensor_msgs::PCLPointField> fields (cloud.fields.size ());
+      std::vector<pcl::PCLPointField> fields (cloud.fields.size ());
       std::vector<int> fields_sizes (cloud.fields.size ());
       int nri = 0, fsize = 0;
       for (size_t i = 0; i < cloud.fields.size (); ++i)
@@ -976,51 +976,51 @@ pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointClo
         {
           switch (cloud.fields[d].datatype)
           {
-            case pcl_sensor_msgs::PCLPointField::INT8:
+            case pcl::PCLPointField::INT8:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT8>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT8>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::UINT8:
+            case pcl::PCLPointField::UINT8:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::INT16:
+            case pcl::PCLPointField::INT16:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT16>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT16>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::UINT16:
+            case pcl::PCLPointField::UINT16:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::INT32:
+            case pcl::PCLPointField::INT32:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT32>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT32>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::UINT32:
+            case pcl::PCLPointField::UINT32:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::FLOAT32:
+            case pcl::PCLPointField::FLOAT32:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
-            case pcl_sensor_msgs::PCLPointField::FLOAT64:
+            case pcl::PCLPointField::FLOAT64:
             {
-              if (!isValueFinite<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c))
+              if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c))
                 cloud.is_dense = false;
               break;
             }
@@ -1038,7 +1038,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointClo
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointCloud2 &cloud, const int offset)
+pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset)
 {
   int pcd_version;
   Eigen::Vector4f origin;
@@ -1054,7 +1054,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl_sensor_msgs::PCLPointClo
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::PCDWriter::generateHeaderASCII (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud, 
                                      const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   std::ostringstream oss;
@@ -1154,7 +1154,7 @@ pcl::PCDWriter::generateHeaderASCII (const pcl_sensor_msgs::PCLPointCloud2 &clou
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::PCDWriter::generateHeaderBinary (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud, 
                                       const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   std::ostringstream oss;
@@ -1235,7 +1235,7 @@ pcl::PCDWriter::generateHeaderBinary (const pcl_sensor_msgs::PCLPointCloud2 &clo
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
-pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud, 
                                                 const Eigen::Vector4f &origin, 
                                                 const Eigen::Quaternionf &orientation)
 {
@@ -1288,7 +1288,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl_sensor_msgs::PCLPointC
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud, 
+pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointCloud2 &cloud, 
                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation,
                             const int precision)
 {
@@ -1338,44 +1338,44 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl_sensor_msgs:
       {
         switch (cloud.fields[d].datatype)
         {
-          case pcl_sensor_msgs::PCLPointField::INT8:
+          case pcl::PCLPointField::INT8:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT8>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::UINT8:
+          case pcl::PCLPointField::UINT8:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::INT16:
+          case pcl::PCLPointField::INT16:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT16>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::UINT16:
+          case pcl::PCLPointField::UINT16:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::INT32:
+          case pcl::PCLPointField::INT32:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::INT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::UINT32:
+          case pcl::PCLPointField::UINT32:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::FLOAT32:
+          case pcl::PCLPointField::FLOAT32:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
-          case pcl_sensor_msgs::PCLPointField::FLOAT64:
+          case pcl::PCLPointField::FLOAT64:
           {
-            copyValueString<pcl::traits::asType<pcl_sensor_msgs::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           default:
@@ -1400,7 +1400,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl_sensor_msgs:
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud,
+pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
                              const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
@@ -1511,7 +1511,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl_sensor_msgs
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl_sensor_msgs::PCLPointCloud2 &cloud,
+pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
                                        const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
@@ -1549,7 +1549,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl_s
   size_t fsize = 0;
   size_t data_size = 0;
   size_t nri = 0;
-  std::vector<pcl_sensor_msgs::PCLPointField> fields (cloud.fields.size ());
+  std::vector<pcl::PCLPointField> fields (cloud.fields.size ());
   std::vector<int> fields_sizes (cloud.fields.size ());
   // Compute the total size of the fields
   for (size_t i = 0; i < cloud.fields.size (); ++i)

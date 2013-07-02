@@ -62,7 +62,7 @@ struct pcl::StereoGrabberBase::StereoGrabberImpl
   std::vector<std::pair<std::string, std::string> >::iterator pair_iterator_;
   TimeTrigger time_trigger_;
 
-  pcl_sensor_msgs::PCLPointCloud2 next_cloud_;
+  pcl::PCLPointCloud2 next_cloud_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
   bool valid_;

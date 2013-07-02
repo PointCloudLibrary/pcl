@@ -208,12 +208,12 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS CropBox<pcl_sensor_msgs::PCLPointCloud2> : public FilterIndices<pcl_sensor_msgs::PCLPointCloud2>
+  class PCL_EXPORTS CropBox<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::filter_name_;
-    using Filter<pcl_sensor_msgs::PCLPointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef pcl_sensor_msgs::PCLPointCloud2 PCLPointCloud2;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
     typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
     typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
@@ -222,7 +222,7 @@ namespace pcl
         * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
         */
        CropBox (bool extract_removed_indices = false) :
-        FilterIndices<pcl_sensor_msgs::PCLPointCloud2>::FilterIndices (extract_removed_indices),
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices),
         min_pt_(Eigen::Vector4f (-1, -1, -1, 1)),
         max_pt_(Eigen::Vector4f (1, 1, 1, 1)),
         translation_ (Eigen::Vector3f::Zero ()),

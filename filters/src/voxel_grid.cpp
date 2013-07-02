@@ -46,13 +46,13 @@ typedef Eigen::Array<size_t, 4, 1> Array4size_t;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::getMinMax3D (const pcl_sensor_msgs::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt)
 {
   // @todo fix this
-  if (cloud->fields[x_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32 || 
-      cloud->fields[y_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32 ||
-      cloud->fields[z_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
+  if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 || 
+      cloud->fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[z_idx].datatype != pcl::PCLPointField::FLOAT32)
   {
     PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
     return;
@@ -91,14 +91,14 @@ pcl::getMinMax3D (const pcl_sensor_msgs::PCLPointCloud2ConstPtr &cloud, int x_id
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::getMinMax3D (const pcl_sensor_msgs::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
+pcl::getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                   const std::string &distance_field_name, float min_distance, float max_distance,
                   Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative)
 {
   // @todo fix this
-  if (cloud->fields[x_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32 || 
-      cloud->fields[y_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32 ||
-      cloud->fields[z_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
+  if (cloud->fields[x_idx].datatype != pcl::PCLPointField::FLOAT32 || 
+      cloud->fields[y_idx].datatype != pcl::PCLPointField::FLOAT32 ||
+      cloud->fields[z_idx].datatype != pcl::PCLPointField::FLOAT32)
   {
     PCL_ERROR ("[pcl::getMinMax3D] XYZ dimensions are not float type!\n");
     return;
@@ -112,7 +112,7 @@ pcl::getMinMax3D (const pcl_sensor_msgs::PCLPointCloud2ConstPtr &cloud, int x_id
   int distance_idx = pcl::getFieldIndex (*cloud, distance_field_name);
 
   // @todo fix this
-  if (cloud->fields[distance_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
+  if (cloud->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32)
   {
     PCL_ERROR ("[pcl::getMinMax3D] Filtering dimensions is not float type!\n");
     return;
@@ -174,7 +174,7 @@ pcl::getMinMax3D (const pcl_sensor_msgs::PCLPointCloud2ConstPtr &cloud, int x_id
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::VoxelGrid<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
+pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   // If fields x/y/z are not present, we cannot downsample
   if (x_idx_ == -1 || y_idx_ == -1 || z_idx_ == -1)
@@ -282,7 +282,7 @@ pcl::VoxelGrid<pcl_sensor_msgs::PCLPointCloud2>::applyFilter (PCLPointCloud2 &ou
     int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_);
 
     // @todo fixme
-    if (input_->fields[distance_idx].datatype != pcl_sensor_msgs::PCLPointField::FLOAT32)
+    if (input_->fields[distance_idx].datatype != pcl::PCLPointField::FLOAT32)
     {
       PCL_ERROR ("[pcl::%s::applyFilter] Distance filtering requested, but distances are not float/double in the dataset! Only FLOAT32/FLOAT64 distances are supported right now.\n", getClassName ().c_str ());
       output.width = output.height = 0;
