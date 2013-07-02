@@ -134,6 +134,7 @@ pcl::PLYReader::appendUnsignedIntProperty (const std::string& name, const size_t
   current_field.datatype = ::pcl_sensor_msgs::PCLPointField::UINT32;
   current_field.count = static_cast<uint32_t> (size);
   cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::pcl_sensor_msgs::PCLPointField::UINT32) * size);
+<<<<<<< HEAD
 }
 
 void

@@ -207,7 +207,6 @@ scaleInPlace (pcl_sensor_msgs::PCLPointCloud2 &cloud, double* multiplier)
     assert ((cloud.fields[x_idx].datatype == cloud.fields[z_idx].datatype));
     switch (cloud.fields[x_idx].datatype)
     {
-<<<<<<< HEAD
       case pcl_sensor_msgs::PCLPointField::INT8:
         for (int i = 0; i < 3; ++i) multiply<int8_t> (cloud, xyz_offset[i], multiplier[i]);
         break;
