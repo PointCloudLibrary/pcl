@@ -181,5 +181,4 @@ namespace pcl
     };
   } /* namespace people */
 } /* namespace pcl */
-#include <pcl/people/impl/hog.hpp>
 #endif /* PCL_PEOPLE_HOG_H_ */

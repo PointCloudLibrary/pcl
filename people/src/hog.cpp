@@ -37,9 +37,8 @@
  */
 
 #include <pcl/people/hog.h>
-
-#ifndef PCL_PEOPLE_HOG_HPP_
-#define PCL_PEOPLE_HOG_HPP_
+#include <math.h>
+#include <string.h>
 
 /** \brief Constructor. */
 pcl::people::HOG::HOG () 
@@ -340,4 +339,3 @@ pcl::people::HOG::alFree (void* aligned) const
   free(raw);
 }
 
-#endif /* PCL_PEOPLE_HOG_HPP_ */
