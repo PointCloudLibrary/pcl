@@ -176,7 +176,7 @@ namespace pcl
       bool soft_bin_;   
       
       /** \brief value at which to clip histogram bins (default = 0.2) */
-      bool clip_; 
+      float clip_; 
       
     };
   } /* namespace people */
