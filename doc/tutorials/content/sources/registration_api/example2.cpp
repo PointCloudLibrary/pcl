@@ -4,7 +4,7 @@
 #include <pcl/point_representation.h>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
@@ -97,9 +97,9 @@ estimateFPFH (const PointCloud<PointXYZ>::Ptr &src,
   // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
   // pcd_viewer fpfhs_src.pcd 
   PCLPointCloud2 s, t, out;
-  toROSMsg (*keypoints_src, s); toROSMsg (fpfhs_src, t); concatenateFields (s, t, out);
+  toPCLPointCloud2 (*keypoints_src, s); toPCLPointCloud2 (fpfhs_src, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_src.pcd", out);
-  toROSMsg (*keypoints_tgt, s); toROSMsg (fpfhs_tgt, t); concatenateFields (s, t, out);
+  toPCLPointCloud2 (*keypoints_tgt, s); toPCLPointCloud2 (fpfhs_tgt, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_tgt.pcd", out);
 }
 

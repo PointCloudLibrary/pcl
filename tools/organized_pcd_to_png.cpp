@@ -112,7 +112,7 @@ main (int argc, char** argv)
 
 
   PointCloud<RGB> image;
-  fromROSMsg (cloud, image);
+  fromPCLPointCloud2 (cloud, image);
 
 
   // Check if the cloud is organized

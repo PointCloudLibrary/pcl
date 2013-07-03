@@ -41,7 +41,7 @@ and then convert to the actual representation that we want to use.
 
    pcl::PCLPointCloud2 cloud_blob;
    pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob);
-   pcl::fromROSMsg (cloud_blob, *cloud); //* convert from pcl/PCLPointCloud2 to pcl::PointCloud<T>
+   pcl::fromPCLPointCloud2 (cloud_blob, *cloud); //* convert from pcl/PCLPointCloud2 to pcl::PointCloud<T>
 
 reads and converts the binary blob into the templated PointCloud format, here
 using pcl::PointXYZ as the underlying point type.

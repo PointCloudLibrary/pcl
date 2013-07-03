@@ -108,7 +108,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
     PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
     PointCloud<PointXYZ>::Ptr cloudXYZ (new PointCloud<PointXYZ>);
 
-    fromROSMsg (*cloud, *cloudXYZ);
+    fromPCLPointCloud2 (*cloud, *cloudXYZ);
 
     PointT tmp_min_pt, tmp_max_pt;
 

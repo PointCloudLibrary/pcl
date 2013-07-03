@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 
 	pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         cout << "Loading point cloud...";
-        pcl::fromROSMsg (blob, *cloud);
+        pcl::fromPCLPointCloud2 (blob, *cloud);
         cout << "done." << endl;
 
 	SearchPtr tree;

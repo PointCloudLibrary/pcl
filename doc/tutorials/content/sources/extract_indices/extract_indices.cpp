@@ -27,7 +27,7 @@ main (int argc, char** argv)
   sor.filter (*cloud_filtered_blob);
 
   // Convert to the templated PointCloud
-  pcl::fromROSMsg (*cloud_filtered_blob, *cloud_filtered);
+  pcl::fromPCLPointCloud2 (*cloud_filtered_blob, *cloud_filtered);
 
   std::cerr << "PointCloud after filtering: " << cloud_filtered->width * cloud_filtered->height << " data points." << std::endl;
 

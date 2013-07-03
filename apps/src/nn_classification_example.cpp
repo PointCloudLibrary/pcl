@@ -56,7 +56,7 @@ main (int, char* argv[])
   {
     // Estimate your favorite feature
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-    pcl::fromROSMsg (cloud_blob, *cloud);
+    pcl::fromPCLPointCloud2 (cloud_blob, *cloud);
     /// NOTE: make sure to use same radius as for training data
     pcl::PointCloud<pcl::VFHSignature308>::Ptr feature = pcl::computeVFH<pcl::PointXYZ> (cloud, 0.03);
 

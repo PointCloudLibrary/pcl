@@ -89,7 +89,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
          int window_size, double sigma_color, double sigma_depth)
 {
   PointCloud<PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<PointXYZRGBA> ());
-  fromROSMsg (*input, *cloud);
+  fromPCLPointCloud2 (*input, *cloud);
 
   PointCloud<PointXYZRGBA>::Ptr cloud_upsampled (new PointCloud<PointXYZRGBA> ());
 
@@ -108,7 +108,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   bu.process (*cloud_upsampled);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud_upsampled->width * cloud_upsampled->height); print_info (" points]\n");
 
-  toROSMsg (*cloud_upsampled, output);
+  toPCLPointCloud2 (*cloud_upsampled, output);
 }
 
 void

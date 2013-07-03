@@ -91,21 +91,21 @@ transform (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &outp
   if (has_normals)
   {
     PointCloud<PointNormal> xyznormals;
-    fromROSMsg (*input, xyznormals);
+    fromPCLPointCloud2 (*input, xyznormals);
     pcl::transformPointCloud<PointNormal> (xyznormals, xyznormals, translation.head<3> (), orientation);
     // Copy back the xyz and normals
     pcl::PCLPointCloud2 output_xyznormals;
-    toROSMsg (xyznormals, output_xyznormals);
+    toPCLPointCloud2 (xyznormals, output_xyznormals);
     concatenateFields (*input, output_xyznormals, output);
   }
   else
   {
     PointCloud<PointXYZ> xyz;
-    fromROSMsg (*input, xyz);
+    fromPCLPointCloud2 (*input, xyz);
     pcl::transformPointCloud<PointXYZ> (xyz, xyz, translation.head<3> (), orientation);
     // Copy back the xyz and normals
     pcl::PCLPointCloud2 output_xyz;
-    toROSMsg (xyz, output_xyz);
+    toPCLPointCloud2 (xyz, output_xyz);
     concatenateFields (*input, output_xyz, output);
   }
 

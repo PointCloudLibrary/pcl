@@ -68,6 +68,8 @@ if(build)
         include/pcl/PolygonMesh.h
         include/pcl/Vertices.h
         include/pcl/PointIndices.h
+        include/pcl/register_point_struct.h
+        include/pcl/conversions.h
         )
 
     set(common_incs 

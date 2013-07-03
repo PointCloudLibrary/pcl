@@ -58,7 +58,7 @@ pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data
     pcl::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
     //Get the cloud in template form
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg (*input_cloud, *cloud); 
+    pcl::fromPCLPointCloud2 (*input_cloud, *cloud);
     
     //Get the normals cloud, we just use the first normals that were found if there are more than one
     pcl::PointCloud<pcl::Normal>::ConstPtr input_normals = normals_list.value(0)->data(ItemDataRole::CLOUD_TEMPLATED).value <pcl::PointCloud<pcl::Normal>::ConstPtr> ();

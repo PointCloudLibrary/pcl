@@ -548,7 +548,7 @@ boost::shared_ptr<pcl::PolygonMesh> convertToMesh(const DeviceArray<PointXYZ>& t
   triangles.download(cloud.points);
   
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr( new pcl::PolygonMesh() ); 
-  pcl::toROSMsg(cloud, mesh_ptr->cloud);  
+  pcl::toPCLPointCloud2(cloud, mesh_ptr->cloud);
       
   mesh_ptr->polygons.resize (triangles.size() / 3);
   for (size_t i = 0; i < mesh_ptr->polygons.size (); ++i)

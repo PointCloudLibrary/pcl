@@ -154,7 +154,7 @@ TEST (ExtractIndices, Filters)
   ei2.setIndices (indices);
   ei2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
@@ -171,7 +171,7 @@ TEST (ExtractIndices, Filters)
   ei2.setNegative (true);
   ei2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size () - 2);
   EXPECT_EQ (output.width, cloud->points.size () - 2);
@@ -387,7 +387,7 @@ TEST (PassThrough, Filters)
   pt2.setInputCloud (cloud_blob);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -397,7 +397,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimits (0.05, 0.1);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
@@ -415,7 +415,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimitsNegative (true);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
@@ -434,7 +434,7 @@ TEST (PassThrough, Filters)
   pt2_.setInputCloud (cloud_blob);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (pt2_.getRemovedIndices()->size(), 0);
   EXPECT_EQ (output.points.size (), cloud->points.size ());
@@ -445,7 +445,7 @@ TEST (PassThrough, Filters)
   pt2_.setFilterLimits (0.05, 0.1);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
@@ -464,7 +464,7 @@ TEST (PassThrough, Filters)
   pt2_.setFilterLimitsNegative (true);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
@@ -484,7 +484,7 @@ TEST (PassThrough, Filters)
   pt2.setUserFilterValue (std::numeric_limits<float>::quiet_NaN ());
   pt2.setFilterFieldName ("");
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -497,7 +497,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimitsNegative (false);
   pt2.setKeepOrganized (true);
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -514,7 +514,7 @@ TEST (PassThrough, Filters)
 
   pt2.setFilterLimitsNegative (true);
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -616,7 +616,7 @@ TEST (VoxelGrid, Filters)
   grid2.setInputCloud (cloud_blob);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 103);
   EXPECT_EQ (int (output.width), 103);
@@ -627,7 +627,7 @@ TEST (VoxelGrid, Filters)
   grid2.setFilterLimits (0.05, 0.1);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 14);
   EXPECT_EQ (int (output.width), 14);
@@ -646,7 +646,7 @@ TEST (VoxelGrid, Filters)
   grid2.setSaveLeafLayout(true);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 100);
   EXPECT_EQ (int (output.width), 100);
@@ -725,7 +725,7 @@ TEST (VoxelGrid_RGB, Filters)
     cloud_rgb_.points.push_back (pt);
   }
 
-  toROSMsg (cloud_rgb_, cloud_rgb_blob_);
+  toPCLPointCloud2 (cloud_rgb_, cloud_rgb_blob_);
   cloud_rgb_blob_ptr_.reset (new PCLPointCloud2 (cloud_rgb_blob_));
   cloud_rgb_ptr_.reset (new PointCloud<PointXYZRGB> (cloud_rgb_));
 
@@ -760,7 +760,7 @@ TEST (VoxelGrid_RGB, Filters)
   grid2.setInputCloud (cloud_rgb_blob_ptr_);
   grid2.filter (output_rgb_blob);
 
-  fromROSMsg (output_rgb_blob, output_rgb);
+  fromPCLPointCloud2 (output_rgb_blob, output_rgb);
 
   EXPECT_EQ (int (output_rgb.points.size ()), 1);
   EXPECT_EQ (int (output_rgb.width), 1);
@@ -933,7 +933,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
     }
   }
   
-  toROSMsg (*input, cloud_blob_);
+  toPCLPointCloud2 (*input, cloud_blob_);
   cloud_blob_ptr_.reset (new PCLPointCloud2 (cloud_blob_));
   
   VoxelGrid<PCLPointCloud2> grid2;
@@ -944,7 +944,7 @@ TEST (VoxelGrid_XYZNormal, Filters)
   grid2.setInputCloud (cloud_blob_ptr_);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
   // check the output
   for (unsigned idx = 0, zIdx = 0; zIdx < 2; ++zIdx)
   {
@@ -1086,7 +1086,7 @@ TEST (ProjectInliers, Filters)
     proj2.setModelCoefficients (coefficients);
     proj2.filter (output_blob);
 
-    fromROSMsg (output_blob, output);
+    fromPCLPointCloud2 (output_blob, output);
 
     for (size_t i = 0; i < output.points.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
@@ -1119,7 +1119,7 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem2.setMinNeighborsInRadius (15);
   outrem2.filter (cloud_out2);
 
-  fromROSMsg (cloud_out2, cloud_out);
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
@@ -1150,7 +1150,7 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem2_.setMinNeighborsInRadius (15);
   outrem2_.filter (cloud_out2);
 
-  fromROSMsg (cloud_out2, cloud_out);
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
@@ -1341,7 +1341,7 @@ TEST (CropBox, Filters)
 
   // Create cloud with center point and corner points
   PCLPointCloud2::Ptr input2 (new PCLPointCloud2);
-  pcl::toROSMsg (*input, *input2);
+  pcl::toPCLPointCloud2 (*input, *input2);
 
   // Test the PointCloud<PointT> method
   CropBox<PCLPointCloud2> cropBoxFilter2(true);
@@ -1513,7 +1513,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2.setStddevMulThresh (1.0);
   outrem2.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
@@ -1525,7 +1525,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2.setNegative (true);
   outrem2.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
@@ -1567,7 +1567,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2_.setStddevMulThresh (1.0);
   outrem2_.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
@@ -1580,7 +1580,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2_.setNegative (true);
   outrem2_.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
@@ -2372,7 +2372,7 @@ main (int argc, char** argv)
   char* file_name = argv[1];
   // Load a standard PCD file from disk
   loadPCDFile (file_name, *cloud_blob);
-  fromROSMsg (*cloud_blob, *cloud);
+  fromPCLPointCloud2 (*cloud_blob, *cloud);
 
   indices_.resize (cloud->points.size ());
   for (int i = 0; i < static_cast<int> (indices_.size ()); ++i)

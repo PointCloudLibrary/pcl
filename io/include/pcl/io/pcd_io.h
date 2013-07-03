@@ -210,7 +210,7 @@ namespace pcl
 
         // If no error, convert the data
         if (res == 0)
-          pcl::fromROSMsg (blob, cloud);
+          pcl::fromPCLPointCloud2 (blob, cloud);
         return (res);
       }
 

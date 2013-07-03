@@ -250,7 +250,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     xyz_cloud->points[i].z = static_cast<float> (point_xyz[2]);
   }
   // And put it in the mesh cloud
-  pcl::toROSMsg (*xyz_cloud, mesh.cloud);
+  pcl::toPCLPointCloud2 (*xyz_cloud, mesh.cloud);
 
 
   // Then the color information, if any
@@ -284,7 +284,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     }
 
     pcl::PCLPointCloud2 rgb_cloud2;
-    pcl::toROSMsg (*rgb_cloud, rgb_cloud2);
+    pcl::toPCLPointCloud2 (*rgb_cloud, rgb_cloud2);
     pcl::PCLPointCloud2 aux;
     pcl::concatenateFields (rgb_cloud2, mesh.cloud, aux);
     mesh.cloud = aux;
@@ -313,7 +313,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     }
 
     pcl::PCLPointCloud2 normal_cloud2;
-    pcl::toROSMsg (*normal_cloud, normal_cloud2);
+    pcl::toPCLPointCloud2 (*normal_cloud, normal_cloud2);
     pcl::PCLPointCloud2 aux;
     pcl::concatenateFields (normal_cloud2, mesh.cloud, aux);
     mesh.cloud = aux;

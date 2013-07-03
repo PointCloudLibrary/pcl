@@ -44,7 +44,7 @@
 #include <string>
 #include <pcl/pcl_base.h>
 #include <pcl/PointIndices.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <locale>
 
 namespace pcl

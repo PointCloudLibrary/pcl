@@ -260,7 +260,7 @@ namespace pcl
       FeatureCloudPtr computeFeature (const pcl::PCLPointCloud2 &points, double radius = 0.03)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-        pcl::fromROSMsg (points, *cloud);
+        pcl::fromPCLPointCloud2 (points, *cloud);
         return pcl::computeVFH<pcl::PointXYZ> (cloud, radius);
       }
   };

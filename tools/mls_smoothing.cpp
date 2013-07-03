@@ -92,7 +92,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
       xyz_cloud (new pcl::PointCloud<PointXYZ> ());
-  fromROSMsg (*input, *xyz_cloud_pre);
+  fromPCLPointCloud2 (*input, *xyz_cloud_pre);
 
   // Filter the NaNs from the cloud
   for (size_t i = 0; i < xyz_cloud_pre->size (); ++i)
@@ -135,7 +135,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   mls.process (*xyz_cloud_smoothed);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_smoothed->width * xyz_cloud_smoothed->height); print_info (" points]\n");
 
-  toROSMsg (*xyz_cloud_smoothed, output);
+  toPCLPointCloud2 (*xyz_cloud_smoothed, output);
 }
 
 void

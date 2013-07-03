@@ -734,7 +734,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
 
   boost::shared_ptr<pcl::PCLPointCloud2> point_cloud (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *point_cloud);
+  pcl::toPCLPointCloud2 (*test_cloud, *point_cloud);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
@@ -763,7 +763,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());
 
-  toROSMsg<PointXYZ> (point_cloud, *input_cloud);
+  toPCLPointCloud2<PointXYZ> (point_cloud, *input_cloud);
   ASSERT_EQ (point_cloud.width*point_cloud.height, input_cloud->width*input_cloud->height);
 
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
@@ -818,8 +818,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
   pcl::PCLPointCloud2::Ptr second_cloud_ptr (new pcl::PCLPointCloud2 ());
   
-  toROSMsg<PointT> (*first_cloud, *first_cloud_ptr);
-  toROSMsg<PointT> (*second_cloud, *second_cloud_ptr);
+  toPCLPointCloud2<PointT> (*first_cloud, *first_cloud_ptr);
+  toPCLPointCloud2<PointT> (*second_cloud, *second_cloud_ptr);
 
   //Create an outofcore tree which just concatenates the two clouds into a single PCD in the root node. Check that the number of points is correct.
   octree_disk shallow_outofcore (0/*depth*/, min, max, filename_otreeB, "ECEF");
@@ -865,7 +865,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *dst_blob);
+  pcl::toPCLPointCloud2 (*test_cloud, *dst_blob);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
@@ -917,7 +917,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *dst_blob);
+  pcl::toPCLPointCloud2 (*test_cloud, *dst_blob);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");

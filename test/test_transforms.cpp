@@ -72,7 +72,7 @@ init ()
 TEST (PCL, DeMean)
 {
   PointCloud<PointXYZ> cloud, cloud_demean;
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
   Eigen::Vector4f centroid;
   compute3DCentroid (cloud, centroid);

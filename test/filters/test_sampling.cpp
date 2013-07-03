@@ -199,7 +199,7 @@ TEST (RandomSample, Filters)
   // Test the pcl::PCLPointCloud2 method
   // Randomly sample 10 points from cloud
   pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2 ());
-  toROSMsg (*cloud_walls, *cloud_blob);
+  toPCLPointCloud2 (*cloud_walls, *cloud_blob);
   RandomSample<pcl::PCLPointCloud2> sample2;
   sample2.setInputCloud (cloud_blob);
   sample2.setSample (10);
@@ -214,7 +214,7 @@ TEST (RandomSample, Filters)
   pcl::PCLPointCloud2 output_blob;
   sample2.filter (output_blob);
 
-  fromROSMsg (output_blob, cloud_out);
+  fromPCLPointCloud2 (output_blob, cloud_out);
 
   EXPECT_EQ (int (cloud_out.width), 10);
   EXPECT_EQ (int (indices2.size ()), int (cloud_out.size ()));

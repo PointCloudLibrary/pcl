@@ -130,7 +130,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_debug ("[success]\n");
  
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
-    pcl::fromROSMsg (cloud, cloud_xyz);
+    pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
     // Get the corresponding indices that we need to save from this point cloud
     std::vector<int> indices;
     getCorrespondingPointCloud (cleaner->GetOutput (), cloud_xyz, indices);

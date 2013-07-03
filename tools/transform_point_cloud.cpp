@@ -39,7 +39,7 @@
  */
 
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
@@ -123,9 +123,9 @@ transformPointCloud2AsType (const pcl::PCLPointCloud2 &input, pcl::PCLPointCloud
                             Eigen::Matrix4f &tform)
 {
   PointCloud<PointT> cloud;
-  fromROSMsg (input, cloud);
+  fromPCLPointCloud2 (input, cloud);
   transformPointCloudHelper (cloud, cloud, tform);
-  toROSMsg (cloud, output);
+  toPCLPointCloud2 (cloud, output);
 }
 
 void

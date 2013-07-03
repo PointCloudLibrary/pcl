@@ -39,7 +39,7 @@
  */
 
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -64,7 +64,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   }
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg (*input_, *cloud);
+  pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
   if (!tree_)

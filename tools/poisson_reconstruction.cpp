@@ -90,7 +90,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, PolygonMesh &output,
          int depth, int solver_divide, int iso_divide, float point_weight)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
-  fromROSMsg (*input, *xyz_cloud);
+  fromPCLPointCloud2 (*input, *xyz_cloud);
 
   print_info ("Using parameters: depth %d, solverDivide %d, isoDivide %d\n", depth, solver_divide, iso_divide);
 

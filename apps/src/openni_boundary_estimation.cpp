@@ -141,7 +141,7 @@ class OpenNIIntegralImageNormalEstimation
 
         viz.removePointCloud ("normalcloud");
         pcl::PCLPointCloud2::Ptr cloud2 (new pcl::PCLPointCloud2);
-        pcl::toROSMsg (*boundaries_, *cloud2);
+        pcl::toPCLPointCloud2 (*boundaries_, *cloud2);
         ColorHandlerConstPtr color_handler (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud2, "boundary_point"));
         viz.addPointCloud<pcl::PointXYZRGBNormal> (temp_cloud, color_handler, "normalcloud");
         viz.resetCameraViewpoint ("normalcloud");

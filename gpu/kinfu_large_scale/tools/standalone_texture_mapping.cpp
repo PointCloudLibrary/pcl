@@ -427,7 +427,7 @@ main (int argc, char** argv)
   pcl::io::loadPolygonFilePLY(argv[1], triangles);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg(triangles.cloud, *cloud);
+  pcl::fromPCLPointCloud2(triangles.cloud, *cloud);
 
   // Create the texturemesh object that will contain our UV-mapped mesh
   TextureMesh mesh;
@@ -533,7 +533,7 @@ main (int argc, char** argv)
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
   PCL_INFO ("...Done.\n");
 
-  pcl::toROSMsg (*cloud_with_normals, mesh.cloud);
+  pcl::toPCLPointCloud2 (*cloud_with_normals, mesh.cloud);
 
   PCL_INFO ("\nSaving mesh to textured_mesh.obj\n");
 

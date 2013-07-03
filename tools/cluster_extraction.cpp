@@ -91,7 +91,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, std::vector<pcl::PCLPointCl
 {
   // Convert data to PointCloud<T>
   PointCloud<pcl::PointXYZ>::Ptr xyz (new PointCloud<pcl::PointXYZ>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;

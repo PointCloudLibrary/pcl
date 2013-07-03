@@ -91,7 +91,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, PolygonMesh &output,
          int hoppe_or_rbf, float iso_level, int grid_res, float extend_percentage, float off_surface_displacement)
 {
   PointCloud<PointNormal>::Ptr xyz_cloud (new pcl::PointCloud<PointNormal> ());
-  fromROSMsg (*input, *xyz_cloud);
+  fromPCLPointCloud2 (*input, *xyz_cloud);
 
   MarchingCubes<PointNormal> *mc;
   if (hoppe_or_rbf == 0)

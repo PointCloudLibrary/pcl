@@ -91,8 +91,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &source,
   // Convert data to PointCloud<T>
   PointCloud<PointNormal>::Ptr src (new PointCloud<PointNormal>);
   PointCloud<PointNormal>::Ptr tgt (new PointCloud<PointNormal>);
-  fromROSMsg (*source, *src);
-  fromROSMsg (*target, *tgt);
+  fromPCLPointCloud2 (*source, *src);
+  fromPCLPointCloud2 (*target, *tgt);
 
   // Estimate
   TicToc tt;
@@ -157,7 +157,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &source,
 
   // Convert data back
   pcl::PCLPointCloud2 output_source;
-  toROSMsg (output, output_source);
+  toPCLPointCloud2 (output, output_source);
   concatenateFields (*source, output_source, transformed_source);
 }
 

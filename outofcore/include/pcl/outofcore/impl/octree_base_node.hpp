@@ -1467,7 +1467,7 @@ namespace pcl
             
             //put the ros message into a pointxyz point cloud (just to get the indices by using getPointsInBox)
             typename pcl::PointCloud<PointT>::Ptr tmp_cloud ( new pcl::PointCloud<PointT> () );
-            pcl::fromROSMsg ( *tmp_blob, *tmp_cloud );
+            pcl::fromPCLPointCloud2 ( *tmp_blob, *tmp_cloud );
             assert (tmp_blob->width*tmp_blob->height == tmp_cloud->width*tmp_cloud->height );
 
             Eigen::Vector4f min_pt ( static_cast<float> ( min_bb[0] ), static_cast<float> ( min_bb[1] ), static_cast<float> ( min_bb[2] ), 1.0f);

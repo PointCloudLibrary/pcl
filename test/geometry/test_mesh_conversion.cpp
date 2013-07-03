@@ -190,7 +190,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
 
   // Check if the cloud got copied correctly.
   pcl::PointCloud <pcl::PointXYZRGBNormal> converted_cloud;
-  pcl::fromROSMsg (face_vertex_mesh.cloud, converted_cloud);
+  pcl::fromPCLPointCloud2 (face_vertex_mesh.cloud, converted_cloud);
   ASSERT_EQ (this->vertices_.size (), converted_cloud.size ());
   for (size_t i=0; i<this->vertices_.size (); ++i)
   {
@@ -229,7 +229,7 @@ TYPED_TEST (TestMeshConversion, FaceVertexMeshToHalfEdgeMesh)
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
-  pcl::toROSMsg (this->vertices_, face_vertex_mesh.cloud);
+  pcl::toPCLPointCloud2 (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
   for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
@@ -312,7 +312,7 @@ TYPED_TEST (TestMeshConversion, NonConvertibleCases)
 
   // Generate the mesh
   pcl::PolygonMesh face_vertex_mesh;
-  pcl::toROSMsg (this->vertices_, face_vertex_mesh.cloud);
+  pcl::toPCLPointCloud2 (this->vertices_, face_vertex_mesh.cloud);
   pcl::Vertices face;
   for (size_t i=0; i<this->non_manifold_faces_.size (); ++i)
   {
