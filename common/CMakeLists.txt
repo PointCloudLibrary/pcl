@@ -61,22 +61,20 @@ if(build)
         include/pcl/TextureMesh.h
         )
 
-    if(NOT USE_ROS)
-        set(incs ${incs}
-          include/pcl/ModelCoefficients.h
-          include/pcl/PolygonMesh.h
-          include/pcl/Vertices.h
-          include/pcl/PointIndices.h
-          )
+    set(incs ${incs}
+      include/pcl/ModelCoefficients.h
+      include/pcl/PolygonMesh.h
+      include/pcl/Vertices.h
+      include/pcl/PointIndices.h
+      )
 
-        set(sensor_msg_incs 
-          include/sensor_msgs/PointField.h
-          include/sensor_msgs/PointCloud2.h
-          include/sensor_msgs/Image.h
-          )
+    set(sensor_msg_incs 
+      include/pcl/PCLPointField.h
+      include/pcl/PCLPointCloud2.h
+      include/pcl/PCLImage.h
+      )
 
-        set(std_msg_incs include/std_msgs/Header.h)
-    endif(NOT USE_ROS)
+    set(std_msg_incs include/pcl/PCLHeader.h)
     
     set(common_incs 
         include/pcl/common/boost.h
@@ -168,16 +166,14 @@ if(build)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
     #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${sensor_msg_incs} ${std_msg_incs} ${range_image_incs} ${range_image_incs_impl})
-    link_ros_libs (${LIB_NAME})
+    #link_ros_libs (${LIB_NAME})
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
         "" "" "")
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    if(NOT USE_ROS)
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../sensor_msgs" ${sensor_msg_incs})
-        PCL_ADD_INCLUDES(${SUBSYS_NAME} "../std_msgs" ${std_msg_incs})
-    endif(NOT USE_ROS)
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl" ${sensor_msg_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} "../pcl" ${std_msg_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})

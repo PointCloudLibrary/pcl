@@ -39,7 +39,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>

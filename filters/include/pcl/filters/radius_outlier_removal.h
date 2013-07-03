@@ -190,25 +190,25 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS RadiusOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS RadiusOutlierRemoval<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    using Filter<sensor_msgs::PointCloud2>::filter_name_;
-    using Filter<sensor_msgs::PointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    using Filter<sensor_msgs::PointCloud2>::removed_indices_;
-    using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
     typedef pcl::search::Search<pcl::PointXYZ> KdTree;
     typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
 
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
+    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
     public:
       /** \brief Empty constructor. */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<sensor_msgs::PointCloud2>::Filter (extract_removed_indices), 
+        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices), 
         search_radius_ (0.0), min_pts_radius_ (1), tree_ ()
       {
         filter_name_ = "RadiusOutlierRemoval";
@@ -262,7 +262,7 @@ namespace pcl
       KdTreePtr tree_;
 
       void
-      applyFilter (PointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output);
   };
 }
 

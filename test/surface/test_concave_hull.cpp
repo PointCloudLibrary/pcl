@@ -288,7 +288,7 @@ main (int argc, char** argv)
   }
 
   // Load file
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
   fromROSMsg (cloud_blob, *cloud);
 
@@ -315,7 +315,7 @@ main (int argc, char** argv)
   // Process for update cloud
   if (argc == 3)
   {
-    sensor_msgs::PointCloud2 cloud_blob1;
+    pcl::PCLPointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
     fromROSMsg (cloud_blob1, *cloud1);
         // Create search tree

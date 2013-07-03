@@ -44,7 +44,7 @@
 #include <pcl/features/vfh.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/apps/nn_classification.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 namespace pcl
 {
@@ -213,7 +213,7 @@ namespace pcl
         */
       bool loadTrainingData (std::string file_name, std::string label)
       {
-        sensor_msgs::PointCloud2 cloud_blob;
+        pcl::PCLPointCloud2 cloud_blob;
         if (pcl::io::loadPCDFile (file_name.c_str (), cloud_blob) != 0)
           return false;
         return addTrainingData (cloud_blob, label);
@@ -225,7 +225,7 @@ namespace pcl
         * \param label the class label for the training example
         * \return true on success, false on failure (read error or number of entries don't match)
         */
-      bool addTrainingData (const sensor_msgs::PointCloud2 &training_data, std::string &label)
+      bool addTrainingData (const pcl::PCLPointCloud2 &training_data, std::string &label)
       {
         // Create label list containing the single label
         std::vector<std::string> labels;
@@ -242,7 +242,7 @@ namespace pcl
         * \param minimum_score the score to be given to matches at maximum distance (>0) -- 0.002 by default
         * \return pair of label and score for each relevant training class
         */
-      ResultPtr classify (const sensor_msgs::PointCloud2 &testing_data, double radius = 300, double min_score = 0.002)
+      ResultPtr classify (const pcl::PCLPointCloud2 &testing_data, double radius = 300, double min_score = 0.002)
       {
         // compute the VFH feature for this point cloud
         FeatureCloudPtr vfhs = computeFeature (testing_data);
@@ -257,7 +257,7 @@ namespace pcl
         * \param radius search radius for normal estimation -- 0.03 m by default
         * \return point cloud containing the extracted feature
         */
-      FeatureCloudPtr computeFeature (const sensor_msgs::PointCloud2 &points, double radius = 0.03)
+      FeatureCloudPtr computeFeature (const pcl::PCLPointCloud2 &points, double radius = 0.03)
       {
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
         pcl::fromROSMsg (points, *cloud);

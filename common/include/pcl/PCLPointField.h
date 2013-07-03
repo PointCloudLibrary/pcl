@@ -2,7 +2,7 @@
 #define PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
 
 #ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers  
+   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated  
 #endif 
 
 #include <string>
@@ -11,11 +11,11 @@
 #include <boost/shared_ptr.hpp>
 #include <pcl/pcl_macros.h>
 
-namespace sensor_msgs
+namespace pcl
 {
-  struct PointField
+  struct PCLPointField
   {
-    PointField () : name (), offset (0), datatype (0), count (0)
+    PCLPointField () : name (), offset (0), datatype (0), count (0)
     {}
 
     std::string name;
@@ -34,14 +34,14 @@ namespace sensor_msgs
                            FLOAT64 = 8 };
 
   public:
-    typedef boost::shared_ptr< ::sensor_msgs::PointField> Ptr;
-    typedef boost::shared_ptr< ::sensor_msgs::PointField const> ConstPtr;
-  }; // struct PointField
+    typedef boost::shared_ptr< ::pcl::PCLPointField> Ptr;
+    typedef boost::shared_ptr< ::pcl::PCLPointField const> ConstPtr;
+  }; // struct PCLPointField
 
-  typedef boost::shared_ptr< ::sensor_msgs::PointField> PointFieldPtr;
-  typedef boost::shared_ptr< ::sensor_msgs::PointField const> PointFieldConstPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointField> PCLPointFieldPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointField const> PCLPointFieldConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointField & v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointField & v)
   {
     s << "name: ";
     s << "  " << v.name << std::endl;
@@ -53,7 +53,7 @@ namespace sensor_msgs
     s << "  " << v.count << std::endl;
     return (s);
   }
-} // namespace sensor_msgs
+} // namespace pcl
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTFIELD_H
 

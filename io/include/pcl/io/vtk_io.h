@@ -42,7 +42,7 @@
 #define PCL_IO_VTK_IO_H_
 
 #include <pcl/pcl_macros.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/PolygonMesh.h>
 
 // Please do not add any functions tha depend on VTK structures to this file!
@@ -68,7 +68,7 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS int 
-    saveVTKFile (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, unsigned precision = 5);    
+    saveVTKFile (const std::string &file_name, const pcl::PCLPointCloud2 &cloud, unsigned precision = 5);    
   }
 }
 

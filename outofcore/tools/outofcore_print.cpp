@@ -41,7 +41,7 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/pcl_macros.h>
@@ -60,13 +60,13 @@
 
 namespace ba = boost::accumulators;
 
-// todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
-//       This also requires our octree to take PointCloud2 as an input.
+// todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
+//       This also requires our octree to take PCLPointCloud2 as an input.
 typedef pcl::PointXYZ PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
-using namespace sensor_msgs;
+using namespace pcl;
 
 using pcl::console::parse_argument;
 using pcl::console::parse_file_extension_argument;

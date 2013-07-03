@@ -66,11 +66,11 @@
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
-using namespace sensor_msgs;
+using namespace pcl;
 using namespace Eigen;
 
 
-PointCloud2::Ptr cloud_blob (new PointCloud2);
+PCLPointCloud2::Ptr cloud_blob (new PCLPointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 vector<int> indices_;
 
@@ -147,10 +147,10 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].y, output.points[output.points.size () - 1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].z, output.points[output.points.size () - 1].z);
 
-  // Test the sensor_msgs::PointCloud2 method
-  ExtractIndices<PointCloud2> ei2;
+  // Test the pcl::PCLPointCloud2 method
+  ExtractIndices<PCLPointCloud2> ei2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
   ei2.setInputCloud (cloud_blob);
   ei2.setIndices (indices);
   ei2.filter (output_blob);
@@ -381,10 +381,10 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, cloud->points[41].y, 1e-5);
   EXPECT_NEAR (output.points[41].z, cloud->points[41].z, 1e-5);
 
-  // Test the PointCloud2 method
-  PassThrough<PointCloud2> pt2;
+  // Test the PCLPointCloud2 method
+  PassThrough<PCLPointCloud2> pt2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
   pt2.setInputCloud (cloud_blob);
   pt2.filter (output_blob);
 
@@ -431,7 +431,7 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[354].y, 0.17516, 1e-5);
   EXPECT_NEAR (output.points[354].z, -0.0444, 1e-5);
 
-  PassThrough<PointCloud2> pt2_(true);
+  PassThrough<PCLPointCloud2> pt2_(true);
   pt2_.setInputCloud (cloud_blob);
   pt2_.filter (output_blob);
 
@@ -608,10 +608,10 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
-  // Test the sensor_msgs::PointCloud2 method
-  VoxelGrid<PointCloud2> grid2;
+  // Test the pcl::PCLPointCloud2 method
+  VoxelGrid<PCLPointCloud2> grid2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
 
   grid2.setLeafSize (0.02f, 0.02f, 0.02f);
   grid2.setInputCloud (cloud_blob);
@@ -694,8 +694,8 @@ TEST (VoxelGrid, Filters)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid_RGB, Filters)
 {
-  PointCloud2 cloud_rgb_blob_;
-  PointCloud2::Ptr cloud_rgb_blob_ptr_;
+  PCLPointCloud2 cloud_rgb_blob_;
+  PCLPointCloud2::Ptr cloud_rgb_blob_ptr_;
   PointCloud<PointXYZRGB> cloud_rgb_;
   PointCloud<PointXYZRGB>::Ptr cloud_rgb_ptr_;
 
@@ -727,7 +727,7 @@ TEST (VoxelGrid_RGB, Filters)
   }
 
   toROSMsg (cloud_rgb_, cloud_rgb_blob_);
-  cloud_rgb_blob_ptr_.reset (new PointCloud2 (cloud_rgb_blob_));
+  cloud_rgb_blob_ptr_.reset (new PCLPointCloud2 (cloud_rgb_blob_));
   cloud_rgb_ptr_.reset (new PointCloud<PointXYZRGB> (cloud_rgb_));
 
   PointCloud<PointXYZRGB> output_rgb;
@@ -754,8 +754,8 @@ TEST (VoxelGrid_RGB, Filters)
     EXPECT_NEAR (b, ave_b, 1.0);
   }
 
-  VoxelGrid<PointCloud2> grid2;
-  PointCloud2 output_rgb_blob;
+  VoxelGrid<PCLPointCloud2> grid2;
+  PCLPointCloud2 output_rgb_blob;
 
   grid2.setLeafSize (0.03f, 0.03f, 0.03f);
   grid2.setInputCloud (cloud_rgb_blob_ptr_);
@@ -791,8 +791,8 @@ float getRandomNumber (float max = 1.0, float min = 0.0)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid_XYZNormal, Filters)
 {
-  PointCloud2 cloud_blob_;
-  PointCloud2::Ptr cloud_blob_ptr_;
+  PCLPointCloud2 cloud_blob_;
+  PCLPointCloud2::Ptr cloud_blob_ptr_;
 
   PointCloud<PointNormal>::Ptr input (new PointCloud<PointNormal>);
   PointCloud<PointNormal> output;
@@ -935,10 +935,10 @@ TEST (VoxelGrid_XYZNormal, Filters)
   }
   
   toROSMsg (*input, cloud_blob_);
-  cloud_blob_ptr_.reset (new PointCloud2 (cloud_blob_));
+  cloud_blob_ptr_.reset (new PCLPointCloud2 (cloud_blob_));
   
-  VoxelGrid<PointCloud2> grid2;
-  PointCloud2 output_blob;
+  VoxelGrid<PCLPointCloud2> grid2;
+  PCLPointCloud2 output_blob;
 
   grid2.setLeafSize (1.0f, 1.0f, 1.0f);
   grid2.setFilterLimits (0.0f, 2.0f);
@@ -1077,10 +1077,10 @@ TEST (ProjectInliers, Filters)
   for (size_t i = 0; i < output.points.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
 
-    // Test the sensor_msgs::PointCloud2 method
-    ProjectInliers<PointCloud2> proj2;
+    // Test the pcl::PCLPointCloud2 method
+    ProjectInliers<PCLPointCloud2> proj2;
 
-    PointCloud2 output_blob;
+    PCLPointCloud2 output_blob;
 
     proj2.setModelType (SACMODEL_PLANE);
     proj2.setInputCloud (cloud_blob);
@@ -1112,9 +1112,9 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  PointCloud2 cloud_out2;
-  RadiusOutlierRemoval<PointCloud2> outrem2;
+  // Test the pcl::PCLPointCloud2 method
+  PCLPointCloud2 cloud_out2;
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
   outrem2.setRadiusSearch (0.02);
   outrem2.setMinNeighborsInRadius (15);
@@ -1144,8 +1144,8 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  RadiusOutlierRemoval<PointCloud2> outrem2_(true);
+  // Test the pcl::PCLPointCloud2 method
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setRadiusSearch (0.02);
   outrem2_.setMinNeighborsInRadius (15);
@@ -1337,15 +1337,15 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 9);
 
-  // PointCloud2
+  // PCLPointCloud2
   // -------------------------------------------------------------------------
 
   // Create cloud with center point and corner points
-  PointCloud2::Ptr input2 (new PointCloud2);
+  PCLPointCloud2::Ptr input2 (new PCLPointCloud2);
   pcl::toROSMsg (*input, *input2);
 
   // Test the PointCloud<PointT> method
-  CropBox<PointCloud2> cropBoxFilter2(true);
+  CropBox<PCLPointCloud2> cropBoxFilter2(true);
   cropBoxFilter2.setInputCloud (input2);
 
   // Cropbox slighlty bigger then bounding box of points
@@ -1357,7 +1357,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.filter (indices2);
 
   // Cloud
-  PointCloud2 cloud_out2;
+  PCLPointCloud2 cloud_out2;
   cropBoxFilter2.filter (cloud_out2);
 
   // Should contain all
@@ -1369,7 +1369,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (removed_indices2->size ()), 0);
 
   // Test setNegative
-  PointCloud2 cloud_out2_negative;
+  PCLPointCloud2 cloud_out2_negative;
   cropBoxFilter2.setNegative (true);
   cropBoxFilter2.filter (cloud_out2_negative);
   EXPECT_EQ (int (cloud_out2_negative.width), 0);
@@ -1506,9 +1506,9 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  PointCloud2 output2;
-  StatisticalOutlierRemoval<PointCloud2> outrem2;
+  // Test the pcl::PCLPointCloud2 method
+  PCLPointCloud2 output2;
+  StatisticalOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
   outrem2.setMeanK (50);
   outrem2.setStddevMulThresh (1.0);
@@ -1561,8 +1561,8 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  StatisticalOutlierRemoval<PointCloud2> outrem2_(true);
+  // Test the pcl::PCLPointCloud2 method
+  StatisticalOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setMeanK (50);
   outrem2_.setStddevMulThresh (1.0);

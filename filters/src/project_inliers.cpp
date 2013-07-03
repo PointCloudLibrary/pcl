@@ -42,7 +42,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   if (indices_->empty ())
   {
@@ -156,7 +156,7 @@ pcl::ProjectInliers<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::ProjectInliers<sensor_msgs::PointCloud2>::initSACModel (int model_type)
+pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
 {
   // Convert the input data
   PointCloud<PointXYZ> cloud;

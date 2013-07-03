@@ -54,7 +54,7 @@ pcl::FieldComparison<PointT>::FieldComparison (
   op_ = op;
 
   // Get all fields
-  std::vector<sensor_msgs::PointField> point_fields; 
+  std::vector<pcl::PCLPointField> point_fields; 
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -141,7 +141,7 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
   component_name_ (component_name), component_offset_ (), compare_val_ (compare_val)
 {
   // get all the fields
-  std::vector<sensor_msgs::PointField> point_fields;
+  std::vector<pcl::PCLPointField> point_fields;
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -162,9 +162,9 @@ pcl::PackedRGBComparison<PointT>::PackedRGBComparison (
 
   // Verify the datatype
   uint8_t datatype = point_fields[d].datatype;
-  if (datatype != sensor_msgs::PointField::FLOAT32 &&
-      datatype != sensor_msgs::PointField::UINT32 &&
-      datatype != sensor_msgs::PointField::INT32)
+  if (datatype != pcl::PCLPointField::FLOAT32 &&
+      datatype != pcl::PCLPointField::UINT32 &&
+      datatype != pcl::PCLPointField::INT32)
   {
     PCL_WARN ("[pcl::PackedRGBComparison::PackedRGBComparison] has unusable type!\n");
     capable_ = false;
@@ -233,7 +233,7 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
   component_name_ (component_name), component_id_ (), compare_val_ (compare_val), rgb_offset_ ()
 {
   // Get all the fields
-  std::vector<sensor_msgs::PointField> point_fields; 
+  std::vector<pcl::PCLPointField> point_fields; 
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -252,9 +252,9 @@ pcl::PackedHSIComparison<PointT>::PackedHSIComparison (
 
   // Verify the datatype
   uint8_t datatype = point_fields[d].datatype;
-  if (datatype != sensor_msgs::PointField::FLOAT32 && 
-      datatype != sensor_msgs::PointField::UINT32 && 
-      datatype != sensor_msgs::PointField::INT32) 
+  if (datatype != pcl::PCLPointField::FLOAT32 && 
+      datatype != pcl::PCLPointField::UINT32 && 
+      datatype != pcl::PCLPointField::INT32) 
   {
     PCL_WARN ("[pcl::PackedHSIComparison::PackedHSIComparison] has unusable type!\n");
     capable_ = false;
@@ -382,7 +382,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison () :
   comp_matr_ (), comp_vect_ (), comp_scalar_ (0.0)
 {
   // get all the fields
-  std::vector<sensor_msgs::PointField> point_fields;
+  std::vector<pcl::PCLPointField> point_fields;
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -447,7 +447,7 @@ pcl::TfQuadraticXYZComparison<PointT>::TfQuadraticXYZComparison (const pcl::Comp
   comp_matr_ (), comp_vect_ (), comp_scalar_ (comparison_scalar)
 {
   // get all the fields
-  std::vector<sensor_msgs::PointField> point_fields;
+  std::vector<pcl::PCLPointField> point_fields;
   // Use a dummy cloud to get the field types in a clever way
   PointCloud<PointT> dummyCloud;
   pcl::getFields (dummyCloud, point_fields);
@@ -545,49 +545,49 @@ pcl::PointDataAtOffset<PointT>::compare (const PointT& p, const double& val)
 
   switch (datatype_) 
   {
-    case sensor_msgs::PointField::INT8 : 
+    case pcl::PCLPointField::INT8 : 
     {
       int8_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (int8_t));
       return (pt_val > static_cast<int8_t>(val)) - (pt_val < static_cast<int8_t> (val));
     }
-    case sensor_msgs::PointField::UINT8 : 
+    case pcl::PCLPointField::UINT8 : 
     {
       uint8_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (uint8_t));
       return (pt_val > static_cast<uint8_t>(val)) - (pt_val < static_cast<uint8_t> (val));
     }
-    case sensor_msgs::PointField::INT16 :
+    case pcl::PCLPointField::INT16 :
     {
       int16_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (int16_t));
       return (pt_val > static_cast<int16_t>(val)) - (pt_val < static_cast<int16_t> (val));
     }
-    case sensor_msgs::PointField::UINT16 : 
+    case pcl::PCLPointField::UINT16 : 
     {
       uint16_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (uint16_t));
       return (pt_val > static_cast<uint16_t> (val)) - (pt_val < static_cast<uint16_t> (val));
     }
-    case sensor_msgs::PointField::INT32 : 
+    case pcl::PCLPointField::INT32 : 
     {
       int32_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (int32_t));
       return (pt_val > static_cast<int32_t> (val)) - (pt_val < static_cast<int32_t> (val));
     }
-    case sensor_msgs::PointField::UINT32 : 
+    case pcl::PCLPointField::UINT32 : 
     {
       uint32_t pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (uint32_t));
       return (pt_val > static_cast<uint32_t> (val)) - (pt_val < static_cast<uint32_t> (val));
     }
-    case sensor_msgs::PointField::FLOAT32 : 
+    case pcl::PCLPointField::FLOAT32 : 
     {
       float pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (float));
       return (pt_val > static_cast<float> (val)) - (pt_val < static_cast<float> (val));
     }
-    case sensor_msgs::PointField::FLOAT64 : 
+    case pcl::PCLPointField::FLOAT64 : 
     {
       double pt_val;
       memcpy (&pt_val, pt_data + this->offset_, sizeof (double));

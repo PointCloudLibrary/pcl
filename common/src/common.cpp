@@ -41,7 +41,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 void 
-pcl::getMinMax (const sensor_msgs::PointCloud2 &cloud, int, 
+pcl::getMinMax (const pcl::PCLPointCloud2 &cloud, int, 
                 const std::string &field_name, float &min_p, float &max_p)
 {
   min_p = FLT_MAX;

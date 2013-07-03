@@ -84,15 +84,15 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
   
   //! Get cloud at a particular location
   bool
-  getCloudAt (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+  getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
               double &fx, double &fy, double &cx, double &cy) const;
   
   //! Get cloud at a particular location
   bool
-  getCloudVTK (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+  getCloudVTK (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
   //! Get cloud at a particular location
   bool
-  getCloudPCLZF (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+  getCloudPCLZF (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                  double &fx, double &fy, double &cx, double &cy) const;
 
   //! Scrapes a directory for image files which contain "rgb" or "depth" and
@@ -147,7 +147,7 @@ struct pcl::ImageGrabberBase::ImageGrabberImpl
 
   TimeTrigger time_trigger_;
 
-  sensor_msgs::PointCloud2 next_cloud_;
+  pcl::PCLPointCloud2 next_cloud_;
   //! Two cases, for depth only and depth+color
   pcl::PointCloud<pcl::PointXYZ> next_cloud_depth_;
   pcl::PointCloud<pcl::PointXYZRGBA> next_cloud_color_;
@@ -517,7 +517,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getTimestampFromFilepath (
 /////////////////////////////////////////////////////////////////////////////
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx, 
-                                                     sensor_msgs::PointCloud2 &blob, 
+                                                     pcl::PCLPointCloud2 &blob, 
                                                      Eigen::Vector4f &origin, 
                                                      Eigen::Quaternionf &orientation, 
                                                      double &fx, 
@@ -544,7 +544,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudAt (size_t idx,
 
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx, 
-                                                      sensor_msgs::PointCloud2 &blob, 
+                                                      pcl::PCLPointCloud2 &blob, 
                                                       Eigen::Vector4f &origin, 
                                                       Eigen::Quaternionf &orientation) const
 {
@@ -628,11 +628,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud_color.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud_color.header.stamp = timestamp;
-#endif //USE_ROS
     }
 
     pcl::toROSMsg (cloud_color, blob);
@@ -664,11 +660,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_image_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud.header.stamp = timestamp;
-#endif //USE_ROS
     }
 
     pcl::toROSMsg (cloud, blob);
@@ -687,7 +679,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
 
 bool
 pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx, 
-                                                        sensor_msgs::PointCloud2 &blob, 
+                                                        pcl::PCLPointCloud2 &blob, 
                                                         Eigen::Vector4f &origin, 
                                                         Eigen::Quaternionf &orientation, 
                                                         double &fx, 
@@ -759,11 +751,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud_color.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud_color.header.stamp = timestamp;
-#endif //USE_ROS
     }
     pcl::toROSMsg (cloud_color, blob);
   }
@@ -804,11 +792,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     uint64_t timestamp;
     if (getTimestampFromFilepath (depth_pclzf_file, timestamp))
     {
-#ifdef USE_ROS
-      cloud.header.stamp.fromNSec (timestamp * 1000);
-#else
       cloud.header.stamp = timestamp;
-#endif //USE_ROS
     }
     pcl::toROSMsg (cloud, blob);
   }
@@ -1040,7 +1024,7 @@ pcl::ImageGrabberBase::numFrames () const
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::ImageGrabberBase::getCloudAt (size_t idx,
-                                   sensor_msgs::PointCloud2 &blob, 
+                                   pcl::PCLPointCloud2 &blob, 
                                    Eigen::Vector4f &origin, 
                                    Eigen::Quaternionf &orientation) const
 {
