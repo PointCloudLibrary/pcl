@@ -32,8 +32,10 @@
  * of the authors and should not be interpreted as representing official policies,
  * either expressed or implied, of the FreeBSD Project.
  *
- * Derived from Piotr Dollar's MATLAB Image&Video Toolbox      Version 3.00.
- *
+ * hog.h
+ * Created on: Nov 30, 2012
+ * Derived from Piotr Dollar's MATLAB Image&Video Toolbox      Version 3.00. 
+ * Non-SSE version of the code provided by Matteo Munaro, Stefano Ghidoni and Stefano Michieletto
  */
 
 #ifndef PCL_PEOPLE_HOG_H_
@@ -41,12 +43,19 @@
 
 #if defined(__SSE2__)
 #include <pcl/common/impl/sse.hpp>
+#else
+#include <cstdlib>
 #endif
 
 namespace pcl
 { 
   namespace people
   {
+    /** \brief @b HOG represents a class for computing the HOG descriptor described in 
+      * Dalal, N. and Triggs, B., "Histograms of oriented gradients for human detection", CVPR 2005.
+      * \author Matteo Munaro, Stefano Ghidoni, Stefano Michieletto
+      * \ingroup people
+      */
     class HOG
     {
   public:

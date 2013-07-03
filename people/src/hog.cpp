@@ -34,6 +34,9 @@
  *
  * Derived from Piotr Dollar's MATLAB Image&Video Toolbox      Version 3.00.
  *
+ * hog.cpp
+ * Created on: Nov 30, 2012
+ * Authors: Matteo Munaro, Stefano Ghidoni, Stefano Michieletto
  */
 
 #include <pcl/people/hog.h>
@@ -99,7 +102,60 @@ pcl::people::HOG::gradMag( float *I, int h, int w, int d, float *M, float *O ) c
   }
   alFree(Gx); alFree(Gy); alFree(M2); 
 #else
-  PCL_ERROR("hog without SSE2 support not implemented");
+  int x, y, y1, c, h4, s; float *Gx, *Gy, *M2; 
+  float *acost = acosTable(), acMult=25000/2.02f;
+
+  // allocate memory for storing one column of output (padded so h4%4==0)
+  h4=(h%4==0) ? h : h-(h%4)+4; s=d*h4*sizeof(float);
+
+  M2=(float*) alMalloc(s,16);
+  Gx=(float*) alMalloc(s,16); 
+  Gy=(float*) alMalloc(s,16); 
+  float m;
+
+  // compute gradient magnitude and orientation for each column
+  for( x=0; x<w; x++ ) {
+  // compute gradients (Gx, Gy) and squared magnitude (M2) for each channel
+  for( c=0; c<d; c++ ) grad1( I+x*h+c*w*h, Gx+c*h4, Gy+c*h4, h, w, x );
+  for( y=0; y<d*h4; y++ ) 
+  {
+    M2[y] = Gx[y] * Gx[y] + Gy[y] * Gy[y];
+  }  
+  
+  // store gradients with maximum response in the first channel
+  for(c=1; c<d; c++) 
+  {
+  for( y=0; y<h4/4; y++ ) 
+    {
+      y1=h4/4*c+y; 
+
+    for (int ii = 0; ii < 4; ++ii)
+    {
+      if (M2[y1 * 4 + ii] > M2[y * 4 + ii])
+      {
+        M2[y * 4 + ii] = M2[y1 * 4 + ii];
+        Gx[y * 4 + ii] = Gx[y1 * 4 + ii];
+        Gy[y * 4 + ii] = Gy[y1 * 4 + ii];
+      }
+    }
+    }
+  }
+  // compute gradient magnitude (M) and normalize Gx
+  for( y=0; y<h4; y++ ) 
+  {
+  m = 1.0f/sqrtf(M2[y]);
+  m = m < 1e10f ? m : 1e10f;
+    M2[y] = 1.0f / m;
+    Gx[y] = ((Gx[y] * m) * acMult);
+    if (Gy[y] < 0)
+    Gx[y] = -Gx[y];
+  }
+  
+  memcpy( M+x*h, M2, h*sizeof(float) );
+  // compute and store gradient orientation (O) via table lookup
+  if(O!=0) for( y=0; y<h; y++ ) O[x*h+y] = acost[(int)Gx[y]];
+  }
+  alFree(Gx); alFree(Gy); alFree(M2);
 #endif  
 }
 
@@ -164,7 +220,49 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       #undef GHinit
       #undef GH
 #else
-      PCL_ERROR("hog without SSE2 support not implemented");
+      float ms[4], xyd, xb, yb, xd, yd, init; 
+      bool hasLf, hasRt; int xb0, yb0;
+      if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
+      hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
+      xd=xb-xb0; xb+=sInv; yb=init; y=0;
+      // macros for code conciseness
+      #define GHinit yd=yb-yb0; yb+=sInv; H0=H+xb0*hb+yb0; xyd=xd*yd; \
+      ms[0]=1-xd-yd+xyd; ms[1]=yd-xyd; ms[2]=xd-xyd; ms[3]=xyd;
+      // leading rows, no top bin_size
+      for( ; y<bin_size/2; y++ ) {
+        yb0=-1; GHinit;
+        if(hasLf) { H0[O0[y]+1]+=ms[1]*M0[y]; H0[O1[y]+1]+=ms[1]*M1[y]; }
+        if(hasRt) { H0[O0[y]+hb+1]+=ms[3]*M0[y]; H0[O1[y]+hb+1]+=ms[3]*M1[y]; }
+      }
+      // main rows, has top and bottom bins
+      for( ; ; y++ ) {
+        yb0 = (int) yb;
+        if(yb0>=hb-1) 
+          break; 
+        GHinit;
+  
+        if(hasLf) 
+        {
+          H0[O0[y]+1]+=ms[1]*M0[y]; 
+          H0[O1[y]+1]+=ms[1]*M1[y];
+          H0[O0[y]]+=ms[0]*M0[y]; 
+          H0[O1[y]]+=ms[0]*M1[y];
+        }
+            if(hasRt) 
+        {
+          H0[O0[y]+hb+1]+=ms[3]*M0[y];
+          H0[O1[y]+hb+1]+=ms[3]*M1[y]; 
+          H0[O0[y]+hb]+=ms[2]*M0[y];
+          H0[O1[y]+hb]+=ms[2]*M1[y];
+        }
+      }      
+      // final rows, no bottom bin_size
+      for( ; y<h0; y++ ) {
+        yb0 = (int) yb; GHinit;
+        if(hasLf) { H0[O0[y]]+=ms[0]*M0[y]; H0[O1[y]]+=ms[0]*M1[y]; }
+        if(hasRt) { H0[O0[y]+hb]+=ms[2]*M0[y]; H0[O1[y]+hb]+=ms[2]*M1[y]; }
+      }       
+      #undef GHinit
 #endif     
     }
   }
@@ -271,7 +369,39 @@ pcl::people::HOG::grad1 (float *I, float *Gx, float *Gy, int h, int w, int x) co
   for(; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
   #undef GRADY
 #else
-  PCL_ERROR("hog without SSE2 support not implemented");
+  int y, y1;
+  float *Ip, *In, r;
+  
+  // compute column of Gx
+  Ip = I - h;
+  In = I + h;
+  r = .5f;
+  
+  if(x == 0)
+  {
+  r = 1;
+  Ip += h;
+  }
+  else if (x == w-1)
+  {
+  r = 1;
+  In -= h;
+  }
+
+  for (y = 0; y < h; y++)
+  *Gx++=(*In++ - *Ip++)*r;
+  
+  // compute column of Gy
+  #define GRADY(r) *Gy++=(*In++-*Ip++)*r;
+  Ip=I; In=Ip+1;
+  // GRADY(1); Ip--; for(y=1; y<h-1; y++) GRADY(.5f); In--; GRADY(1);
+  y1=((~((size_t) Gy) + 1) & 15)/4; if(y1==0) y1=4; if(y1>h-1) y1=h-1;
+  GRADY(1); Ip--; for(y=1; y<y1; y++) GRADY(.5f);
+  
+  r = 0.5f;
+  for(; y<h-1; y++)
+    GRADY(.5f); In--; GRADY(1);
+  #undef GRADY
 #endif
 }
       
@@ -318,7 +448,19 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   O0[i]=o0; O1[i]=o1; M1[i]=od*m; M0[i]=m-M1[i];
   }
 #else
-  PCL_ERROR("hog without SSE2 support not implemented");
+  int i, o0, o1;
+  float o, od, m;
+
+  // define useful constants
+  const float oMult=(float)n_orients/M_PI; const int oMax=n_orients*nb;
+
+  // compute trailing locations without sse
+  for( i = 0; i<n; i++ )
+  {
+    o=O[i]*oMult; m=M[i]*norm; o0=(int) o; od=o-o0;
+    o0*=nb; o1=o0+nb; if(o1==oMax) o1=0;
+    O0[i]=o0; O1[i]=o1; M1[i]=od*m; M0[i]=m-M1[i];
+  }
 #endif
 }
 

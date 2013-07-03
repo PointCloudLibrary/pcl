@@ -91,7 +91,5 @@ RETi CVT( const __m128 x ) { return _mm_cvttps_epi32(x); }
 
 #undef RETf
 #undef RETi
-#else
-PCL_ERROR("SSE2 instructions not supported");
-#endif /* defined(__SSE2__) && !defined(__i386__) */
+#endif /* defined(__SSE2__) */
 #endif /* PCL_COMMON_SSE_HPP_ */
