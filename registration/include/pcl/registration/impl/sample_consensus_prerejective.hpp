@@ -190,7 +190,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   final_transformation_ = guess;
   inliers_.clear ();
   float highest_inlier_fraction = inlier_fraction_;
-  float final_error = std::numeric_limits<float>::max ();
   converged_ = false;
   
   // Temporaries
@@ -208,7 +207,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     {
       inliers_ = inliers;
       highest_inlier_fraction = inlier_fraction;
-      final_error = error;
       converged_ = true;
     }
   }
@@ -250,7 +248,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     {
       inliers_ = inliers;
       highest_inlier_fraction = inlier_fraction;
-      final_error = error;
       converged_ = true;
     }
     else
