@@ -37,7 +37,7 @@
  */
 
 #include <pcl/visualization/common/common.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
 #include <vtkCellData.h>
@@ -2804,7 +2804,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::fromROSMsg (poly_mesh.cloud, *point_cloud);
+  pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
   poly_points->SetNumberOfPoints (point_cloud->points.size ());
 
   size_t i;
@@ -2819,7 +2819,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
-    pcl::fromROSMsg(poly_mesh.cloud, cloud);
+    pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
     for (i = 0; i < cloud.points.size (); ++i)
     {
       const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
@@ -2832,7 +2832,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGBA> cloud;
-    pcl::fromROSMsg(poly_mesh.cloud, cloud);
+    pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
     for (i = 0; i < cloud.points.size (); ++i)
     {
       const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
@@ -2922,7 +2922,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Create points from polyMesh.cloud
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  pcl::fromROSMsg (poly_mesh.cloud, *cloud);
+  pcl::fromPCLPointCloud2 (poly_mesh.cloud, *cloud);
 
   std::vector<pcl::Vertices> verts(poly_mesh.polygons); // copy vector
 
@@ -3025,7 +3025,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
-  pcl::fromROSMsg (polymesh.cloud, point_cloud);
+  pcl::fromPCLPointCloud2 (polymesh.cloud, point_cloud);
   poly_points->SetNumberOfPoints (point_cloud.points.size ());
 
   size_t i;

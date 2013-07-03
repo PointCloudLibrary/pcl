@@ -920,12 +920,12 @@ main (int argc, char** argv)
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
       cloud_xyz->sensor_origin_ = origin;
       cloud_xyz->sensor_orientation_ = orientation;
 
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-      pcl::fromROSMsg (*cloud, *cloud_normals);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_normals);
       std::stringstream cloud_name_normals;
       cloud_name_normals << argv[p_file_indices.at (i)] << "-" << i << "-normals";
       p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, normals, normals_scale, cloud_name_normals.str (), viewport);
@@ -954,13 +954,13 @@ main (int argc, char** argv)
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
       cloud_xyz->sensor_origin_ = origin;
       cloud_xyz->sensor_orientation_ = orientation;
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-      pcl::fromROSMsg (*cloud, *cloud_normals);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_normals);
       pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr cloud_pc (new pcl::PointCloud<pcl::PrincipalCurvatures>);
-      pcl::fromROSMsg (*cloud, *cloud_pc);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_pc);
       std::stringstream cloud_name_normals_pc;
       cloud_name_normals_pc << argv[p_file_indices.at (i)] << "-" << i << "-normals";
       int factor = (std::min)(normals, pc);

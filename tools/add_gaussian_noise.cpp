@@ -83,7 +83,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   print_highlight ("Adding Gaussian noise with mean 0.0 and standard deviation %f\n", standard_deviation);
 
   PointCloud<PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<PointXYZ> ());
-  fromROSMsg (*input, *xyz_cloud);
+  fromPCLPointCloud2 (*input, *xyz_cloud);
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> ());
   xyz_cloud_filtered->points.resize (xyz_cloud->points.size ());
@@ -104,7 +104,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   }
 
   pcl::PCLPointCloud2 input_xyz_filtered;
-  toROSMsg (*xyz_cloud_filtered, input_xyz_filtered);
+  toPCLPointCloud2 (*xyz_cloud_filtered, input_xyz_filtered);
   concatenateFields (*input, input_xyz_filtered, output);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms: "); print_value ("%d", output.width * output.height); print_info (" points]\n");

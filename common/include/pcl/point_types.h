@@ -41,7 +41,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <bitset>
-#include <pcl/ros/register_point_struct.h>
+#include <pcl/register_point_struct.h>
 
 /**
   * \file pcl/point_types.h

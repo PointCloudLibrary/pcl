@@ -214,7 +214,7 @@ namespace pcl
         // Exit in case of error
         if (res < 0)
           return (res);
-        pcl::fromROSMsg (blob, cloud);
+        pcl::fromPCLPointCloud2 (blob, cloud);
         return (0);
       }
       
@@ -750,7 +750,7 @@ namespace pcl
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
         pcl::PCLPointCloud2 blob;
-        pcl::toROSMsg (cloud, blob);
+        pcl::toPCLPointCloud2 (cloud, blob);
 
         // Save the data
         return (this->write (file_name, blob, origin, orientation, binary, use_camera));

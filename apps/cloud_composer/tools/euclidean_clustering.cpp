@@ -48,7 +48,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       pcl::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
       //Get the cloud in template form
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*input_cloud, *cloud); 
+      pcl::fromPCLPointCloud2 (*input_cloud, *cloud);
       
       //////////////// THE WORK - COMPUTING CLUSTERS ///////////////////
       // Creating the KdTree object for the search method of the extraction

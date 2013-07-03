@@ -55,7 +55,7 @@
 // PCL specific includes
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include "pcl/ros/conversions.h"
+#include <pcl/conversions.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/common.h>
 #include <pcl/common/centroid.h>

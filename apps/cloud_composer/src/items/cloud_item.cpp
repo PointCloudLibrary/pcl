@@ -145,7 +145,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
       case (PointTypeFlags::XYZ):
       {
         pcl::PointCloud <PointXYZ>::Ptr cloud_ptr =  boost::make_shared<pcl::PointCloud <PointXYZ> >();
-        pcl::fromROSMsg (*cloud_blob_ptr_, *cloud_ptr); 
+        pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
         //Initialize the search kd-tree for this cloud
         pcl::search::KdTree<PointXYZ>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZ> >();
@@ -156,7 +156,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
       case (PointTypeFlags::XYZ | PointTypeFlags::RGB):
       {
         pcl::PointCloud <PointXYZRGB>::Ptr cloud_ptr =  boost::make_shared<pcl::PointCloud <PointXYZRGB> >();
-        pcl::fromROSMsg (*cloud_blob_ptr_, *cloud_ptr); 
+        pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
         pcl::search::KdTree<PointXYZRGB>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZRGB> >();
         kd_search->setInputCloud (cloud_ptr);
@@ -166,7 +166,7 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
       case (PointTypeFlags::XYZ | PointTypeFlags::RGBA):
       {
         pcl::PointCloud <PointXYZRGBA>::Ptr cloud_ptr =  boost::make_shared<pcl::PointCloud <PointXYZRGBA> >();
-        pcl::fromROSMsg (*cloud_blob_ptr_, *cloud_ptr); 
+        pcl::fromPCLPointCloud2 (*cloud_blob_ptr_, *cloud_ptr);
         cloud_pointer_variant = QVariant::fromValue (cloud_ptr);
         pcl::search::KdTree<PointXYZRGBA>::Ptr kd_search = boost::make_shared<search::KdTree<PointXYZRGBA> >();
         kd_search->setInputCloud (cloud_ptr);

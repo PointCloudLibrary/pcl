@@ -54,7 +54,7 @@ main (int argc, char *argv[])
   pcl::PCLPointCloud2 blob;
   pcl::io::loadPCDFile (infile.c_str (), blob);
   pcl::PointCloud<PointXYZRGB>::Ptr cloud (new pcl::PointCloud<PointXYZRGB>);
-  pcl::fromROSMsg (blob, *cloud);
+  pcl::fromPCLPointCloud2 (blob, *cloud);
 
   // Create a search tree, use KDTreee for non-organized data.
   pcl::search::Search<PointXYZRGB>::Ptr tree;

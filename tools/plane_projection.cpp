@@ -83,7 +83,7 @@ project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   // Convert data to PointCloud<T>
   PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;
@@ -112,7 +112,7 @@ project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   // Convert data back
   pcl::PCLPointCloud2 projected_cloud;
-  toROSMsg (*projected_cloud_pcl, projected_cloud);
+  toPCLPointCloud2 (*projected_cloud_pcl, projected_cloud);
 
   //we can actually use concatenate fields to inject our projection into the
   //output, the second argument overwrites the first's fields for those that

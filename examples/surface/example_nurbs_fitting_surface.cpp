@@ -90,7 +90,7 @@ main (int argc, char *argv[])
   if (pcl::io::loadPCDFile (pcd_file, cloud2) == -1)
     throw std::runtime_error ("  PCD file not found.");
 
-  fromROSMsg (cloud2, *cloud);
+  fromPCLPointCloud2 (cloud2, *cloud);
   PointCloud2Vector3d (cloud, data.interior);
   pcl::visualization::PointCloudColorHandlerCustom<Point> handler (cloud, 0, 255, 0);
   viewer.addPointCloud<Point> (cloud, handler, "cloud_cylinder");

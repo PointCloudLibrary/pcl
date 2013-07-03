@@ -137,7 +137,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
          float th_dd, int max_search)
 {
   CloudPtr cloud (new Cloud);
-  fromROSMsg (*input, *cloud);
+  fromPCLPointCloud2 (*input, *cloud);
 
   pcl::PointCloud<pcl::Normal>::Ptr normal (new pcl::PointCloud<pcl::Normal>);
   pcl::IntegralImageNormalEstimation<PointXYZRGBA, pcl::Normal> ne;
@@ -218,7 +218,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   // Combine point clouds and edge labels
   pcl::PCLPointCloud2 output_edges;
-  toROSMsg (labels, output_edges);
+  toPCLPointCloud2 (labels, output_edges);
   concatenateFields (*input, output_edges, output);
 }
 

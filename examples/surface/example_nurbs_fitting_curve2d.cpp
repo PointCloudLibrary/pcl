@@ -78,7 +78,7 @@ main (int argc, char *argv[])
   if (pcl::io::loadPCDFile (pcd_file, cloud2) == -1)
     throw std::runtime_error ("  PCD file not found.");
 
-  fromROSMsg (cloud2, *cloud);
+  fromPCLPointCloud2 (cloud2, *cloud);
 
   // convert to NURBS data structure
   pcl::on_nurbs::NurbsDataCurve2d data;

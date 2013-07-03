@@ -223,7 +223,7 @@ main (int argc, char** argv)
 
     // Convert from blob to PointCloud
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
-    pcl::fromROSMsg (cloud, cloud_xyz);
+    pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
 
     if (cloud_xyz.points.size () == 0)
       break;

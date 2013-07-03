@@ -631,7 +631,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       cloud_color.header.stamp = timestamp;
     }
 
-    pcl::toROSMsg (cloud_color, blob);
+    pcl::toPCLPointCloud2 (cloud_color, blob);
   }
   else
   {
@@ -663,7 +663,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudVTK (size_t idx,
       cloud.header.stamp = timestamp;
     }
 
-    pcl::toROSMsg (cloud, blob);
+    pcl::toPCLPointCloud2 (cloud, blob);
   }
   // Origin 0, orientation is forward
   origin = Eigen::Vector4f::Zero ();
@@ -753,7 +753,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     {
       cloud_color.header.stamp = timestamp;
     }
-    pcl::toROSMsg (cloud_color, blob);
+    pcl::toPCLPointCloud2 (cloud_color, blob);
   }
   else
   {
@@ -794,7 +794,7 @@ pcl::ImageGrabberBase::ImageGrabberImpl::getCloudPCLZF (size_t idx,
     {
       cloud.header.stamp = timestamp;
     }
-    pcl::toROSMsg (cloud, blob);
+    pcl::toPCLPointCloud2 (cloud, blob);
   }
 
   // Origin 0, orientation is forward

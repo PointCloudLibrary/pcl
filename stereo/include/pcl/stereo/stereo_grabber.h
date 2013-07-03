@@ -40,7 +40,7 @@
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/time_trigger.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/stereo/stereo_matching.h>
 
 namespace pcl
@@ -164,7 +164,7 @@ namespace pcl
   StereoGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
 

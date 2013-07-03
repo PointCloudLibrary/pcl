@@ -105,13 +105,13 @@ main (int argc, char** argv)
     return (-1);
 
   PointCloud<PointXYZ> cloud_xyz, cloud_xyz_demeaned;
-  fromROSMsg (cloud, cloud_xyz);
+  fromPCLPointCloud2 (cloud, cloud_xyz);
   Eigen::Vector4f centroid;
   compute3DCentroid (cloud_xyz, centroid);
   demeanPointCloud (cloud_xyz, centroid, cloud_xyz_demeaned);
 
   pcl::PCLPointCloud2 cloud2_xyz_demeaned;
-  toROSMsg (cloud_xyz_demeaned, cloud2_xyz_demeaned);
+  toPCLPointCloud2 (cloud_xyz_demeaned, cloud2_xyz_demeaned);
   pcl::PCLPointCloud2 cloud_out;
   concatenateFields (cloud, cloud2_xyz_demeaned, cloud_out);
 

@@ -43,7 +43,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/search/pcl_search.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/surface/boost.h>
 
 namespace pcl

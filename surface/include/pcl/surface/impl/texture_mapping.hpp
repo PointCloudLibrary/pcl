@@ -300,7 +300,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
   pcl::PointCloud<pcl::PointXYZ>::Ptr camera_transformed_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // convert mesh's cloud to pcl format for ease
-  pcl::fromROSMsg (tex_mesh.cloud, *originalCloud);
+  pcl::fromPCLPointCloud2 (tex_mesh.cloud, *originalCloud);
 
   // texture coordinates for each mesh
   std::vector<std::vector<Eigen::Vector2f> > texture_map;
@@ -489,7 +489,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
   pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // load points into a PCL format
-  pcl::fromROSMsg (tex_mesh.cloud, *cloud);
+  pcl::fromPCLPointCloud2 (tex_mesh.cloud, *cloud);
 
   std::vector<int> visible, occluded;
   removeOccludedPoints (cloud, filtered_cloud, octree_voxel_size, visible, occluded);
@@ -542,7 +542,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const pcl::TextureMesh &tex
   PointCloudPtr cloud (new PointCloud);
 
   // load points into a PCL format
-  pcl::fromROSMsg (tex_mesh.cloud, *cloud);
+  pcl::fromPCLPointCloud2 (tex_mesh.cloud, *cloud);
 
   std::vector<int> visible, occluded;
   removeOccludedPoints (cloud, filtered_cloud, octree_voxel_size, visible, occluded);
@@ -577,7 +577,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
   pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   // load points into a PCL format
-  pcl::fromROSMsg (tex_mesh.cloud, *original_cloud);
+  pcl::fromPCLPointCloud2 (tex_mesh.cloud, *original_cloud);
 
   // for each camera
   for (size_t cam = 0; cam < cameras.size (); ++cam)
@@ -733,7 +733,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (pcl::TextureMesh &tex_mesh, pcl::
 {
   // load points into a PCL format
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg (tex_mesh.cloud, *cloud);
+  pcl::fromPCLPointCloud2 (tex_mesh.cloud, *cloud);
 
   showOcclusions (cloud, colored_cloud, octree_voxel_size, show_nb_occlusions, max_occlusions);
 }
@@ -748,7 +748,7 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr mesh_cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-  pcl::fromROSMsg (mesh.cloud, *mesh_cloud);
+  pcl::fromPCLPointCloud2 (mesh.cloud, *mesh_cloud);
 
   std::vector<pcl::Vertices> faces;
 

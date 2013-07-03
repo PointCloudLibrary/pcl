@@ -46,7 +46,7 @@
 #include <pcl/common/time_trigger.h>
 #include <string>
 #include <vector>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 #ifdef HAVE_OPENNI
 #include <pcl/io/openni_camera/openni_image.h>
@@ -218,7 +218,7 @@ namespace pcl
     Eigen::Quaternionf orientation;
     getCloudAt (idx, blob, origin, orientation);
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
     return (cloud);
@@ -236,7 +236,7 @@ namespace pcl
   PCDGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
 

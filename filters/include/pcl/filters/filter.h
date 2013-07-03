@@ -41,7 +41,7 @@
 #define PCL_FILTER_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/filters/boost.h>
 #include <cfloat>
 #include <pcl/PointIndices.h>

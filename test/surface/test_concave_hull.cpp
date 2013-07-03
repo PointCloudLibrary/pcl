@@ -108,7 +108,7 @@ TEST (PCL, ConcaveHull_bunny)
   EXPECT_EQ (alpha_shape2.points.size (), 81);
 
   //PolygonMesh concave;
-  //toROSMsg (alpha_shape2, concave.cloud);
+  //toPCLPointCloud2 (alpha_shape2, concave.cloud);
   //concave.polygons = polygons_alpha2;
   //saveVTKFile ("./test/bun0-concave2d.vtk", concave);
 }
@@ -188,7 +188,7 @@ TEST (PCL, ConcaveHull_4points)
   EXPECT_EQ (mesh.polygons[0].vertices.size (), 4);
 
   PointCloud<PointXYZ> mesh_cloud;
-  fromROSMsg (mesh.cloud, mesh_cloud);
+  fromPCLPointCloud2 (mesh.cloud, mesh_cloud);
 
   EXPECT_NEAR (mesh_cloud[0].x, 1.f, 1e-6);
   EXPECT_NEAR (mesh_cloud[0].y, 0.f, 1e-6);
@@ -290,7 +290,7 @@ main (int argc, char** argv)
   // Load file
   pcl::PCLPointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
-  fromROSMsg (cloud_blob, *cloud);
+  fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
   tree.reset (new search::KdTree<PointXYZ> (false));
@@ -317,7 +317,7 @@ main (int argc, char** argv)
   {
     pcl::PCLPointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
-    fromROSMsg (cloud_blob1, *cloud1);
+    fromPCLPointCloud2 (cloud_blob1, *cloud1);
         // Create search tree
     tree3.reset (new search::KdTree<PointXYZ> (false));
     tree3->setInputCloud (cloud1);

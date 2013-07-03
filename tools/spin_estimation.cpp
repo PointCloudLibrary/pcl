@@ -154,7 +154,7 @@ main (int argc, char** argv)
   
   // Convert data to PointCloud<T>
   PointCloud<PointNormal>::Ptr xyznormals (new PointCloud<PointNormal>);
-  fromROSMsg (*cloud, *xyznormals);
+  fromPCLPointCloud2 (*cloud, *xyznormals);
 
   // Estimate
   TicToc tt;
@@ -183,7 +183,7 @@ main (int argc, char** argv)
 
   // Convert data back
   pcl::PCLPointCloud2 output_descr;
-  toROSMsg (descriptors, output_descr);
+  toPCLPointCloud2 (descriptors, output_descr);
   concatenateFields (*cloud, output_descr, output);
 
 

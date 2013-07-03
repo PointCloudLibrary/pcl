@@ -103,7 +103,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
                             xyz_cloud (new pcl::PointCloud<PointXYZ> ());
-  fromROSMsg (*input, *xyz_cloud_pre);
+  fromPCLPointCloud2 (*input, *xyz_cloud_pre);
 
   pcl::PointIndices::Ptr removed_indices (new PointIndices),
                          indices (new PointIndices);
@@ -157,7 +157,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   if (keep_organized)
   {
     pcl::PCLPointCloud2 output_filtered;
-    toROSMsg (*xyz_cloud_filtered, output_filtered);
+    toPCLPointCloud2 (*xyz_cloud_filtered, output_filtered);
     concatenateFields (*input, output_filtered, output);
   }
   else 

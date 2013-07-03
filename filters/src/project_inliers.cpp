@@ -111,7 +111,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     if (!copy_all_fields_)
     {
-      pcl::toROSMsg<pcl::PointXYZ> (cloud_out, output);
+      pcl::toPCLPointCloud2<pcl::PointXYZ> (cloud_out, output);
     }
     else
     {
@@ -160,7 +160,7 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::initSACModel (int model_type)
 {
   // Convert the input data
   PointCloud<PointXYZ> cloud;
-  fromROSMsg (*input_, cloud);
+  fromPCLPointCloud2 (*input_, cloud);
   PointCloud<PointXYZ>::Ptr cloud_ptr = cloud.makeShared ();
 
   // Build the model

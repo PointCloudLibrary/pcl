@@ -89,9 +89,9 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
   tt.tic ();
 
   PointCloud<PointXYZ>::Ptr xyz_source (new PointCloud<PointXYZ> ());
-  fromROSMsg (*cloud_source, *xyz_source);
+  fromPCLPointCloud2 (*cloud_source, *xyz_source);
   PointCloud<PointXYZ>::Ptr xyz_target (new PointCloud<PointXYZ> ());
-  fromROSMsg (*cloud_target, *xyz_target);
+  fromPCLPointCloud2 (*cloud_target, *xyz_target);
 
   PointCloud<PointXYZI>::Ptr output_xyzi (new PointCloud<PointXYZI> ());
   output_xyzi->points.resize (xyz_source->points.size ());
@@ -162,7 +162,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
 //    print_highlight (stderr, "Computing using the nearest neighbor plane projection correspondence heuristic.\n");
 
     PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ());
-    fromROSMsg (*cloud_target, *normals_target);
+    fromPCLPointCloud2 (*cloud_target, *normals_target);
 
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
@@ -198,7 +198,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
     return;
   }
 
-  toROSMsg (*output_xyzi, output);
+  toPCLPointCloud2 (*output_xyzi, output);
 
 //  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds]\n");
   print_highlight ("RMSE Error: %f\n", rmse);

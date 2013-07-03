@@ -47,7 +47,7 @@
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/PCLPointCloud2.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
@@ -78,7 +78,7 @@ class Recorder
                         blk_offset.total_microseconds() / 10000));
             // Here the frame data itself is added to the block
             pcl::PCLPointCloud2 blob;
-            pcl::toROSMsg(*cloud, blob);
+            pcl::toPCLPointCloud2(*cloud, blob);
             tide::Block::FramePtr frame_ptr(new tide::Block::Frame(blob.data.begin(),
                         blob.data.end()));
             block->push_back(frame_ptr);
@@ -381,7 +381,7 @@ class Player
                 blob.is_dense = false;
                 blob.data.assign(frame_data->begin(), frame_data->end());
                 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                pcl::fromROSMsg(blob, *cloud);
+                pcl::fromPCLPointCloud2(blob, *cloud);
                 // Sleep until the block's display time. The played_time is
                 // updated to account for the time spent preparing the data.
                 played_time = bpt::microsec_clock::local_time() - pb_start;

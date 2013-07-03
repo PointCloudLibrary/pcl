@@ -80,7 +80,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 {
   // Convert data to PointCloud<T>
   PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   TicToc tt;
   tt.tic ();
@@ -97,7 +97,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   // Convert data back
   pcl::PCLPointCloud2 output_xyz;
-  toROSMsg (xyz_filtered, output_xyz);
+  toPCLPointCloud2 (xyz_filtered, output_xyz);
   concatenateFields (*input, output_xyz, output);
 }
 

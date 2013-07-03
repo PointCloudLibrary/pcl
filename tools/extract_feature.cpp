@@ -107,7 +107,7 @@ computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPo
 
   // Convert data to PointCloud<PointIn>
   typename PointCloud<PointIn>::Ptr xyz (new PointCloud<PointIn>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;
@@ -142,7 +142,7 @@ computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPo
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 
   // Convert data back
-  toROSMsg (output_features, output);
+  toPCLPointCloud2 (output_features, output);
 }
 
 void
