@@ -98,9 +98,8 @@ template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters)
 {
   //timer_.reset ();
-  
   //double t_start = timer_.getTime ();
- // std::cout << "Init compute  \n";
+  //std::cout << "Init compute  \n";
   bool segmentation_is_possible = initCompute ();
   if ( !segmentation_is_possible )
   {
@@ -108,7 +107,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxe
     return;
   }
   
- // std::cout << "Preparing for segmentation \n";
+  //std::cout << "Preparing for segmentation \n";
   segmentation_is_possible = prepareForSegmentation ();
   if ( !segmentation_is_possible )
   {
@@ -120,6 +119,7 @@ pcl::SupervoxelClustering<PointT>::extract (std::map<uint32_t,typename Supervoxe
   //std::cout << "Placing Seeds" << std::endl;
   std::vector<PointT, Eigen::aligned_allocator<PointT> > seed_points;
   selectInitialSupervoxelSeeds (seed_points);
+  //std::cout << "Creating helpers "<<std::endl;
   createSupervoxelHelpers (seed_points);
   //double t_seeds = timer_.getTime ();
   
@@ -332,16 +332,15 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<Poi
   //TODO THIS IS BAD - SEEDING SHOULD BE BETTER
   //TODO Switch to assigning leaves! Don't use Octree!
   
-  //std::cout << "Size of centroid cloud="<<voxel_centroid_cloud_->size ()<<", seeding resolution="<<seed_resolution_<<"\n";
-  
+ // std::cout << "Size of centroid cloud="<<voxel_centroid_cloud_->size ()<<", seeding resolution="<<seed_resolution_<<"\n";
   //Initialize octree with voxel centroids
   pcl::octree::OctreePointCloudSearch <PointT> seed_octree (seed_resolution_);
   seed_octree.setInputCloud (voxel_centroid_cloud_);
   seed_octree.addPointsFromInputCloud ();
-  
+ // std::cout << "Size of octree ="<<seed_octree.getLeafCount ()<<"\n";
   std::vector<PointT, Eigen::aligned_allocator<PointT> > voxel_centers; 
   int num_seeds = seed_octree.getOccupiedVoxelCenters(voxel_centers); 
-  // std::cout << "Number of seed points before filtering="<<voxel_centers.size ()<<std::endl;
+  //std::cout << "Number of seed points before filtering="<<voxel_centers.size ()<<std::endl;
   
   std::vector<int> seed_indices_orig;
   seed_indices_orig.resize (num_seeds, 0);
@@ -379,7 +378,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<Poi
     }
     
   }
-  //std::cout << "Number of seed points after filtering="<<seed_indices.size ()<<std::endl;
+ // std::cout << "Number of seed points after filtering="<<seed_points.size ()<<std::endl;
   
 }
 

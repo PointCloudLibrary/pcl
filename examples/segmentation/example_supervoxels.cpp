@@ -252,7 +252,7 @@ main (int argc, char ** argv)
  
   std::cout << "Extracting supervoxels!\n";
   super.extract (supervoxel_clusters);
-  
+  std::cout << "Found " << supervoxel_clusters.size () << " Supervoxels!\n";
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_voxel_cloud = super.getColoredVoxelCloud ();
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr voxel_centroid_cloud = super.getVoxelCentroidCloud ();
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr full_colored_cloud = super.getColoredCloud ();
