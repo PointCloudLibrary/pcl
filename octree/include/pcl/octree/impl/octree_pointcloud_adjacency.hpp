@@ -189,27 +189,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
       }
     }
   }
-    
-  /* KDTREE Version - probably faster, but cheating...
-  PointT &point = leaf_container->getCentroid ();
-  std::vector<int> k_indices;
-  std::vector<float> k_sqr_distances;
-  OctreeKey neighbor_key;
-  LeafContainerT *neighbor_container;
-  //Maximally has 26 neighbors
-  int num_neighbors = tree_->radiusSearch (point, max_dist_, k_indices, k_sqr_distances, 26);
-  for (int i = 0; i < num_neighbors; ++i)
-  {
-    std::cout << k_sqr_distances[i] << " ";
-    this->genOctreeKeyforPoint (centroid_cloud_->points[i], neighbor_key);
-    LeafNode *neighbor = this->findLeafCached (neighbor_key);
-    neighbor_container = dynamic_cast<LeafContainerT*> (neighbor);
-    //Reflexive add, since neighbor won't always be new as well
-    leaf_container->addNeighbor (neighbor_container);
-    neighbor_container->addNeighbor (leaf_container);
-  }
-  std::cout << "\n";
-  */
 }
 
 

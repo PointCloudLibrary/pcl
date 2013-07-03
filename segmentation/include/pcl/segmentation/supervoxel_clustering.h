@@ -126,15 +126,29 @@ namespace pcl
       class VoxelData
       {
         public:
+          VoxelData ():
+            xyz_ (0.0f, 0.0f, 0.0f),
+            rgb_ (0.0f, 0.0f, 0.0f),
+            normal_ (0.0f, 0.0f, 0.0f, 0.0f),
+            curvature_ (0.0f),
+            owner_ (0)
+            {}
+            
+          /** \brief Gets the data of in the form of a point
+           *  \param[out] point_arg Will contain the point value of the voxeldata
+           */  
           void
           getPoint (PointT &point_arg) const;
           
+          /** \brief Gets the data of in the form of a normal
+           *  \param[out] normal_arg Will contain the normal value of the voxeldata
+           */            
           void
           getNormal (Normal &normal_arg) const;
           
-          Eigen::Vector4f normal_;
-          Eigen::Vector3f rgb_;
           Eigen::Vector3f xyz_;
+          Eigen::Vector3f rgb_;
+          Eigen::Vector4f normal_;
           float curvature_;
           float distance_;
           int idx_;
