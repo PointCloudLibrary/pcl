@@ -41,6 +41,9 @@
 #ifndef PCL_PEOPLE_HOG_H_
 #define PCL_PEOPLE_HOG_H_
 
+#include <math.h>
+#include <string.h>
+
 #if defined(__SSE2__)
 #include <pcl/common/impl/sse.hpp>
 #else

@@ -199,9 +199,9 @@ pcl::people::PersonClassifier<PointT>::copyMakeBorder (PointCloudPtr& input_imag
   int y_end_in = std::min(int(input_image->height-1), ymin+height-1);
 
   int x_start_out = std::max(0, -xmin);
-  int x_end_out = x_start_out + (x_end_in - x_start_in);
+  //int x_end_out = x_start_out + (x_end_in - x_start_in);
   int y_start_out = std::max(0, -ymin);
-  int y_end_out = y_start_out + (y_end_in - y_start_in);
+  //int y_end_out = y_start_out + (y_end_in - y_start_in);
 
   for (unsigned int i = 0; i < (y_end_in - y_start_in + 1); i++)
   {
@@ -283,7 +283,6 @@ pcl::people::PersonClassifier<PointT>::evaluate (PointCloudPtr& image,
               Eigen::Vector3f& bottom,
               Eigen::Vector3f& top,
               Eigen::Vector3f& centroid,
-              Eigen::Matrix3f intrinsics_matrix,
               bool vertical)
 {
   float pixel_height;

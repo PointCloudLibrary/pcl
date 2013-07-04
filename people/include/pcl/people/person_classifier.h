@@ -154,13 +154,12 @@ namespace pcl
        * \param[in] bottom Theoretical bottom point of the cluster projected to the image.
        * \param[in] top Theoretical top point of the cluster projected to the image.
        * \param[in] centroid Theoretical centroid point of the cluster projected to the image.
-       * \param[in] intrinsics_matrix Image intrinsic parameters.
        * \param[in] vertical If true, the sensor is considered to be vertically placed (portrait mode).
        * \return The person confidence.
        */
       double
       evaluate (PointCloudPtr& image, Eigen::Vector3f& bottom, Eigen::Vector3f& top, Eigen::Vector3f& centroid,
-         Eigen::Matrix3f intrinsics_matrix, bool vertical);
+         bool vertical);
     };
   } /* namespace people */
 } /* namespace pcl */

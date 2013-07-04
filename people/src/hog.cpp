@@ -40,8 +40,6 @@
  */
 
 #include <pcl/people/hog.h>
-#include <math.h>
-#include <string.h>
 
 /** \brief Constructor. */
 pcl::people::HOG::HOG () 
@@ -169,6 +167,8 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
   O1=(int*)alMalloc(h*sizeof(int),16); M1=(float*) alMalloc(h*sizeof(float),16);
 
   // main loop
+  float xb = 0;
+  float init = 0;
   for( x=0; x<w0; x++ ) {
     // compute target orientation bins for entire column - very fast
     gradQuantize( O+x*h, M+x*h, O0, O1, M0, M1, n_orients, nb, h0, sInv2 );
@@ -187,7 +187,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
     } else {
       // interpolate using trilinear interpolation
 #if defined(__SSE2__)
-      float ms[4], xyd, xb, yb, xd, yd, init; __m128 _m, _m0, _m1;
+      float ms[4], xyd, yb, xd, yd; __m128 _m, _m0, _m1;
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
@@ -220,7 +220,7 @@ pcl::people::HOG::gradHist( float *M, float *O, int h, int w, int bin_size, int 
       #undef GHinit
       #undef GH
 #else
-      float ms[4], xyd, xb, yb, xd, yd, init; 
+      float ms[4], xyd, yb, xd, yd;  
       bool hasLf, hasRt; int xb0, yb0;
       if( x==0 ) { init=(0+.5f)*sInv-0.5f; xb=init; }
       hasLf = xb>=0; xb0 = hasLf?(int)xb:-1; hasRt = xb0 < wb-1;
@@ -442,7 +442,7 @@ pcl::people::HOG::gradQuantize (float *O, float *M, int *O0, int *O1, float *M0,
   }
 
   // compute trailing locations without sse
-  for( i; i<n; i++ ) {
+  for( ; i<n; i++ ) {
   o=O[i]*oMult; m=M[i]*norm; o0=(int) o; od=o-o0;
   o0*=nb; o1=o0+nb; if(o1==oMax) o1=0;
   O0[i]=o0; O1[i]=o1; M1[i]=od*m; M0[i]=m-M1[i];
