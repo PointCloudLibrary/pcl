@@ -669,7 +669,7 @@ loadPolygonMeshModel (char* polygon_file)
 }
 
 void
-initialize (int argc, char** argv)
+initialize (int, char** argv)
 {
   const GLubyte* version = glGetString (GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;

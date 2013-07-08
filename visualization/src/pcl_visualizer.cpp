@@ -34,13 +34,10 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/ros/conversions.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <vtkTextActor.h>
 #include <vtkTextProperty.h>
 #include <vtkCellData.h>
@@ -67,6 +64,30 @@
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
+
+#include <vtkPolyLine.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkCamera.h>
+#include <vtkAppendPolyData.h>
+#include <vtkPointData.h>
+#include <vtkTransformFilter.h>
+#include <vtkProperty.h>
+#include <vtkPLYReader.h>
+#include <vtkAxes.h>
+#include <vtkTubeFilter.h>
+#include <vtkLineSource.h>
+#include <vtkOrientationMarkerWidget.h>
+#include <vtkAxesActor.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkAreaPicker.h>
+#include <vtkXYPlotActor.h>
+
+#include <pcl/visualization/common/shapes.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/common/time.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
@@ -381,9 +402,23 @@ pcl::visualization::PCLVisualizer::registerPointPickingCallback (boost::function
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie)
+{
+  return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerAreaPickingCallback (boost::function<void (const pcl::visualization::AreaPickingEvent&)> callback)
 {
   return (style_->registerAreaPickingCallback (callback));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+boost::signals2::connection
+pcl::visualization::PCLVisualizer::registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie)
+{
+  return (registerAreaPickingCallback (boost::bind (callback, _1, cookie)));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1503,14 +1538,14 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     {
       switch (int (value))
       {
-        case PCL_VISUALIZER_SHADING_FLAT:
+        case PCL_VISUALIZER_SHADING_FLAT: 
         {
           actor->GetProperty ()->SetInterpolationToFlat ();
           break;
         }
         case PCL_VISUALIZER_SHADING_GOURAUD:
         {
-          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
           {
             PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Gouraud shading was requested. Estimating normals...\n");
             vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
@@ -1523,7 +1558,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
         }
         case PCL_VISUALIZER_SHADING_PHONG:
         {
-          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
           {
             PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Phong shading was requested. Estimating normals...\n");
             vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
@@ -1619,25 +1654,6 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
   actor->SetUserMatrix (matrix);
   actor->Modified ();
-
-  return (true);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-bool
-pcl::visualization::PCLVisualizer::updatePointCloudPose (const std::string &id, const Eigen::Affine3f& pose)
-{
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it == cloud_actor_map_->end ())
-    return (false);
-
-  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
-  convertToVtkMatrix (pose.matrix (), transformation);
-  am_it->second.viewpoint_transformation_ = transformation;
-  am_it->second.actor->SetUserMatrix (transformation);
-  am_it->second.actor->Modified ();
 
   return (true);
 }
@@ -3578,7 +3594,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
     for (int j = 0; j < 4; ++j)
     {
       mat1 (i, j) = static_cast<float> (composite_projection_transform->Element[i][j]);
-      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
+      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]); 
     }
 
   mat1 = mat1.inverse ();
@@ -3596,7 +3612,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
         continue;
       }
 
-      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f,
+      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f, 
                                     dheight * float (y) - 1.0f,
                                     depth[ptr],
                                     1.0f);
@@ -3668,18 +3684,15 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
-  cloud_actor.actor = actor;
-  cloud_actor.cells = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
-  cloud_actor.geometry_handlers.push_back (geometry_handler);
-  cloud_actor.color_handlers.push_back (color_handler);
+  (*cloud_actor_map_)[id].actor = actor;
+  (*cloud_actor_map_)[id].cells = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+  (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
+  (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
-  cloud_actor.viewpoint_transformation_ = transformation;
-  cloud_actor.actor->SetUserMatrix (transformation);
-  cloud_actor.actor->Modified ();
+  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
 
   return (true);
 }
@@ -3873,6 +3886,162 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, sensor_origin, sensor_orientation));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setFullScreen (bool mode)
+{
+  if (win_)
+    win_->SetFullScreen (mode);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setWindowName (const std::string &name)
+{
+  if (win_)
+    win_->SetWindowName (name.c_str ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setWindowBorders (bool mode)
+{
+  if (win_)
+    win_->SetBorders (mode);
+}
+   
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setPosition (int x, int y)
+{
+  if (win_)
+    win_->SetPosition (x, y);
+}
+ 
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setSize (int xw, int yw)
+{
+  if (win_)
+    win_->SetSize (xw, yw);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::close ()
+{
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  interactor_->stopped = true;
+  // This tends to close the window...
+  interactor_->stopLoop ();
+#else
+  stopped_ = true;
+  // This tends to close the window...
+  win_->Finalize ();
+  interactor_->TerminateApp ();
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::removeCorrespondences (
+    const std::string &id, int viewport)
+{ 
+  removeShape (id, viewport);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::visualization::PCLVisualizer::getColorHandlerIndex (const std::string &id)
+{
+  CloudActorMap::iterator am_it = style_->getCloudActorMap ()->find (id);
+  if (am_it == cloud_actor_map_->end ())
+    return (-1);
+
+  return (am_it->second.color_handler_index_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::visualization::PCLVisualizer::getGeometryHandlerIndex (const std::string &id)
+{
+  CloudActorMap::iterator am_it = style_->getCloudActorMap ()->find (id);
+  if (am_it != cloud_actor_map_->end ())
+    return (-1);
+
+  return (am_it->second.geometry_handler_index_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::wasStopped () const
+{
+  if (interactor_ != NULL) 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+    return (interactor_->stopped);
+#else
+    return (stopped_); 
+#endif
+  else 
+    return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::resetStoppedFlag ()
+{
+  if (interactor_ != NULL) 
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+    interactor_->stopped = false;
+#else
+    stopped_ = false; 
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
+{
+  use_vbos_ = use_vbos;
+  style_->setUseVbos (use_vbos_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback::Execute (
+    vtkObject*, unsigned long event_id, void* call_data)
+{
+  if (event_id != vtkCommand::TimerEvent)
+    return;
+  int timer_id = * static_cast<int*> (call_data);
+  //PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
+  if (timer_id != right_timer_id)
+    return;
+  // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  pcl_visualizer->interactor_->stopLoop ();
+#else
+  pcl_visualizer->interactor_->TerminateApp ();
+#endif
+}
+  
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::ExitCallback::Execute (
+    vtkObject*, unsigned long event_id, void*)
+{
+  if (event_id != vtkCommand::ExitEvent)
+    return;
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  pcl_visualizer->interactor_->stopped = true;
+  // This tends to close the window...
+  pcl_visualizer->interactor_->stopLoop ();
+#else
+  pcl_visualizer->stopped_ = true;
+  // This tends to close the window...
+  pcl_visualizer->interactor_->TerminateApp ();
+#endif
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////

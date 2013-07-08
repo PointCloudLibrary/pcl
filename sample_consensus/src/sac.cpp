@@ -48,13 +48,13 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(RandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointNormal))
-  PCL_INSTANTIATE(MEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(RandomizedRandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(ProgressiveSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(LeastMedianSquares, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(RandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(MEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(RandomizedMEstimatorSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(RandomizedRandomSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(ProgressiveSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(MaximumLikelihoodSampleConsensus, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(LeastMedianSquares, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(RandomSampleConsensus, PCL_XYZ_POINT_TYPES)
   PCL_INSTANTIATE(MEstimatorSampleConsensus, PCL_XYZ_POINT_TYPES)

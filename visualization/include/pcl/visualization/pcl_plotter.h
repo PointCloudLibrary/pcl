@@ -1,39 +1,40 @@
- /*
-  * Software License Agreement (BSD License)
-  *
-  *  Point Cloud Library (PCL) - www.pointclouds.org
-  *  Copyright (c) 2010-2011, Willow Garage, Inc.
-  *
-  *  All rights reserved.
-  *
-  *  Redistribution and use in source and binary forms, with or without
-  *  modification, are permitted provided that the following conditions
-  *  are met:
-  *
-  *   * Redistributions of source code must retain the above copyright
-  *     notice, this list of conditions and the following disclaimer.
-  *   * Redistributions in binary form must reproduce the above
-  *     copyright notice, this list of conditions and the following
-  *     disclaimer in the documentation and/or other materials provided
-  *     with the distribution.
-  *   * Neither the name of Willow Garage, Inc. nor the names of its
-  *     contributors may be used to endorse or promote products derived
-  *     from this software without specific prior written permission.
-  *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  *  POSSIBILITY OF SUCH DAMAGE.
-  *
-  */
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 #ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_H_
 #define	PCL_VISUALUALIZATION_PCL_PLOTTER_H_
 
@@ -42,15 +43,21 @@
 #include <utility>
 #include <cfloat>
 
-//VTK includes
-#include <pcl/visualization/vtk.h>
-
-//pcl includes
 #include <pcl/visualization/common/common.h>
 #include <pcl/point_types.h>
 #include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
+
+class PCLVisualizerInteractor;
+template <typename T> class vtkSmartPointer;
+class vtkRenderWindowInteractor;
+class vtkContextView;
+class vtkChartXY;
+class vtkColorSeries;
+
+#include <vtkCommand.h>
+#include <vtkChart.h>
 
 namespace pcl
 {
@@ -355,17 +362,11 @@ namespace pcl
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
         vtkSmartPointer<vtkRenderWindow>
-        getRenderWindow ()
-        {
-          return (view_->GetRenderWindow ());
-        }
+        getRenderWindow ();
         
         /** \brief Set the view's interactor. */
         void
-        setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> interactor)
-        {
-          view_->SetInteractor (interactor);
-        }
+        setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> interactor);
         
         /** \brief Initialize and Start the view's interactor. */
         void
@@ -376,16 +377,11 @@ namespace pcl
 
         /** \brief Returns true when the user tried to close the window */
         bool
-        wasStopped () const { if (view_->GetInteractor() != NULL) return (stopped_); else return (true); }
+        wasStopped () const;
         
         /** \brief Stop the interaction and close the visualizaton window. */
         void
-        close ()
-        {
-          stopped_ = true;
-          // This tends to close the window...
-          view_->GetInteractor()->TerminateApp ();
-        }
+        close ();
       
       private:
         vtkSmartPointer<vtkContextView> view_;  
@@ -405,22 +401,8 @@ namespace pcl
             return (new ExitMainLoopTimerCallback);
           }
           virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
-          {
-            if (event_id != vtkCommand::TimerEvent)
-              return;
-            int timer_id = *(reinterpret_cast<int*> (call_data));
+          Execute (vtkObject*, unsigned long event_id, void* call_data);
 
-            if (timer_id != right_timer_id)
-              return;
-
-            // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interactor->stopLoop ();
-#else
-            interactor->TerminateApp ();
-#endif
-          }
           int right_timer_id;
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
           PCLVisualizerInteractor *interactor;
@@ -435,13 +417,9 @@ namespace pcl
           {
             return new ExitCallback;
           }
-          virtual void Execute (vtkObject*, unsigned long event_id, void*)
-          {
-            if (event_id != vtkCommand::ExitEvent)
-              return;
-            plotter->stopped_ = true;
-            plotter->view_->GetInteractor ()->TerminateApp ();
-          }
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           PCLPlotter *plotter;
         };
         

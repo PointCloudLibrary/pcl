@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -40,12 +39,12 @@
 #define	PCL_VISUALIZATION_PCL_CONTEXT_ITEM_H_
 
 #include <pcl/pcl_macros.h>
-#include <pcl/visualization/vtk.h>
 #include <vtkContextItem.h>
-#include <vtkContextActor.h>
-#include <vtkContext2D.h>
-#include <vtkPen.h>
-#include <vtkBrush.h>
+#include <vector>
+
+template <typename T> class vtkSmartPointer;
+class vtkImageData;
+class vtkContext2D;
 
 namespace pcl
 {
@@ -77,7 +76,8 @@ namespace pcl
     struct PCL_EXPORTS PCLContextImageItem : public vtkContextItem
     {
       vtkTypeMacro (PCLContextImageItem, vtkContextItem);
-      PCLContextImageItem () { image = vtkSmartPointer<vtkImageData>::New (); }
+      PCLContextImageItem ();
+
       static PCLContextImageItem *New ();
       virtual bool Paint (vtkContext2D *painter);
       void set (float _x, float _y, vtkImageData *_image);

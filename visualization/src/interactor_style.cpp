@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,26 +34,31 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <list>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkLODActor.h>
 #include <vtkPolyData.h>
-#include <vtkMapper.h>
 #include <vtkPolyDataMapper.h>
-#include <vtkPointData.h>
 #include <vtkCellArray.h>
-#include <vtkAppendPolyData.h>
 #include <vtkTextProperty.h>
-#include <vtkAbstractPicker.h>
 #include <vtkAbstractPropPicker.h>
-#include <vtkPlanes.h>
-#include <vtkMatrix4x4.h>
-#include <vtkInteractorObserver.h>
 #include <vtkCamera.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkScalarBarActor.h>
+#include <vtkPNGWriter.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkRendererCollection.h>
+#include <vtkActorCollection.h>
+#include <vtkLegendScaleActor.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkObjectFactory.h>
+#include <vtkProperty.h>
+#include <vtkPointData.h>
+#include <vtkAssemblyPath.h>
 
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 

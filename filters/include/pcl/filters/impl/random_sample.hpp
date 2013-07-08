@@ -93,7 +93,6 @@ void
 pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
 {
   unsigned N = static_cast<unsigned> (indices_->size ());
-  float one_over_N = 1.0f / float (N);
   
   unsigned int sample_size = negative_ ? N - sample_ : sample_;
   // If sample size is 0 or if the sample size is greater then input cloud size
@@ -122,15 +121,15 @@ pcl::RandomSample<PointT>::applyFilter (std::vector<int> &indices)
       added.resize (indices_->size (), false);
     for (size_t n = sample_size; n >= 2; n--)
     {
-      unsigned int V = static_cast<unsigned int>( unifRand () );
+      float V = unifRand ();
       unsigned S = 0;
-      float quot = float (top) * one_over_N;
+      float quot = static_cast<float> (top) / static_cast<float> (N);
       while (quot > V)
       {
         S++;
         top--;
         N--;
-        quot = quot * float (top) * one_over_N;
+        quot = quot * static_cast<float> (top) / static_cast<float> (N);
       }
       index += S;
       if (extract_removed_indices_)

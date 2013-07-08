@@ -20,7 +20,7 @@ pcl::cloud_composer::EuclideanClusteringTool::~EuclideanClusteringTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
+pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;

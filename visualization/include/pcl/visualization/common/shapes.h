@@ -41,9 +41,12 @@
 
 #include <pcl/ModelCoefficients.h>
 #include <pcl/point_cloud.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/eigen.h>
 #include <pcl/geometry/planar_polygon.h>
+
+template <typename T> class vtkSmartPointer;
+class vtkDataSet;
+class vtkUnstructuredGrid;
 
 /**
   * \file pcl/visualization/common/shapes.h

@@ -36,7 +36,7 @@
  * */
 
 #include <pcl/io/pcd_io.h>
-
+#include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
@@ -47,6 +47,9 @@
 #include <pcl/filters/filter.h>
 #include "boost.h"
 
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkCubeSource.h>
 //=============================
 // Displaying cubes is very long!
 // so we limit their numbers.

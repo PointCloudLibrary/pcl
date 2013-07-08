@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,33 +34,49 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 #ifndef PCL_PCL_VISUALIZER_H_
 #define PCL_PCL_VISUALIZER_H_
 
 // PCL includes
-#include <pcl/point_types.h>
 #include <pcl/correspondence.h>
-#include <pcl/point_cloud.h>
+#include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
-#include <pcl/geometry/planar_polygon.h>
 //
 #include <pcl/console/print.h>
+#include <pcl/visualization/common/actor_map.h>
 #include <pcl/visualization/common/common.h>
-#include <pcl/visualization/common/shapes.h>
-#include <pcl/visualization/window.h>
+#include <pcl/visualization/point_cloud_geometry_handlers.h>
+#include <pcl/visualization/point_cloud_color_handlers.h>
+#include <pcl/visualization/point_picking_event.h>
+#include <pcl/visualization/area_picking_event.h>
+#include <pcl/visualization/interactor_style.h>
+
 // VTK includes
-#include <pcl/visualization/vtk.h>
-#include <pcl/visualization/boost.h>
+class vtkPolyData;
+class vtkTextActor;
+class vtkRenderWindow;
+class vtkOrientationMarkerWidget;
+class vtkAppendPolyData;
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
+class vtkTransform;
+class vtkInteractorStyle;
+class vtkLODActor;
+class vtkProp;
+class vtkActor;
+class vtkDataSet;
+class vtkUnstructuredGrid;
 
 namespace pcl
 {
+  template <typename T> class PointCloud;
+  template <typename T> class PlanarPolygon;
+
   namespace visualization
   {
     /** \brief PCL Visualizer main class.
-      * \author Radu Bogdan Rusu
+      * \author Radu B. Rusu
       * \ingroup visualization
       * \note This class can NOT be used across multiple threads. Only call functions of objects of this class
       * from the same thread that they were created in! Some methods, e.g. addPointCloud, will crash if called
@@ -84,6 +101,7 @@ namespace pcl
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
         PCLVisualizer (const std::string &name = "", const bool create_interactor = true);
+
         /** \brief PCL Visualizer constructor.
           * \param[in] argc
           * \param[in] argv
@@ -102,34 +120,22 @@ namespace pcl
           * See the VTK documentation for additional details.
           * \param[in] mode true for full screen, false otherwise
           */
-        inline void
-        setFullScreen (bool mode)
-        {
-          if (win_)
-            win_->SetFullScreen (mode);
-        }
+        void
+        setFullScreen (bool mode);
 
         /** \brief Set the visualizer window name.
           * \param[in] name the name of the window
           */
-        inline void
-        setWindowName (const std::string &name)
-        {
-          if (win_)
-            win_->SetWindowName (name.c_str ());
-        }
+        void
+        setWindowName (const std::string &name);
 
         /** \brief Enables or disable the underlying window borders.
           * \note This might or might not work, depending on your window manager.
           * See the VTK documentation for additional details.
           * \param[in] mode true for borders, false otherwise
           */
-        inline void
-        setWindowBorders (bool mode)
-        {
-          if (win_)
-            win_->SetBorders (mode);
-        }
+        void
+        setWindowBorders (bool mode);
 
         /** \brief Register a callback boost::function for keyboard events
           * \param[in] cb a boost function that will be registered as a callback for a keyboard event
@@ -203,11 +209,8 @@ namespace pcl
           * \param[in] cookie    user data that is passed to the callback
           * \return a connection object that allows to disconnect the callback function.
           */
-        inline boost::signals2::connection
-        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL)
-        {
-          return (registerPointPickingCallback (boost::bind (callback, _1, cookie)));
-        }
+        boost::signals2::connection
+        registerPointPickingCallback (void (*callback) (const pcl::visualization::PointPickingEvent&, void*), void* cookie = NULL);
 
         /** \brief Register a callback function for point picking events
           * \param[in] callback  the member function that will be registered as a callback for a point picking event
@@ -233,11 +236,8 @@ namespace pcl
           * \param[in] cookie    user data that is passed to the callback
           * \return a connection object that allows to disconnect the callback function.
           */
-        inline boost::signals2::connection
-        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL)
-        {
-          return (registerAreaPickingCallback (boost::bind (callback, _1, cookie)));
-        }
+        boost::signals2::connection
+        registerAreaPickingCallback (void (*callback) (const pcl::visualization::AreaPickingEvent&, void*), void* cookie = NULL);
 
         /** \brief Register a callback function for area picking events
           * \param[in] callback  the member function that will be registered as a callback for an area picking event
@@ -479,18 +479,6 @@ namespace pcl
           */
         bool
         updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
-
-        /** \brief Set the pose of an existing point cloud.
-          *
-          * Returns false if the point cloud doesn't exist, true if the pose was succesfully
-          * updated.
-          *
-          * \param[in] id the point cloud object id (i.e., given on \a addPointCloud etc.)
-          * \param[in] pose the new pose
-          * \return false if no point cloud with the specified ID was found
-          */
-        bool
-        updatePointCloudPose (const std::string &id, const Eigen::Affine3f& pose);
 
         /** \brief Add a 3d text to the scene
           * \param[in] text the text to add
@@ -956,37 +944,20 @@ namespace pcl
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
           * \param[in] viewport view port from where the correspondences should be removed (default: all)
           */
-        inline void
-        removeCorrespondences (const std::string &id = "correspondences", int viewport = 0)
-        {
-          removeShape (id, viewport);
-        }
+        void
+        removeCorrespondences (const std::string &id = "correspondences", int viewport = 0);
 
         /** \brief Get the color handler index of a rendered PointCloud based on its ID
           * \param[in] id the point cloud object id
           */
-        inline int
-        getColorHandlerIndex (const std::string &id)
-        {
-          CloudActorMap::iterator am_it = style_->getCloudActorMap ()->find (id);
-          if (am_it == cloud_actor_map_->end ())
-            return (-1);
-
-          return (am_it->second.color_handler_index_);
-        }
+        int
+        getColorHandlerIndex (const std::string &id);
 
         /** \brief Get the geometry handler index of a rendered PointCloud based on its ID
           * \param[in] id the point cloud object id
           */
-        inline int
-        getGeometryHandlerIndex (const std::string &id)
-        {
-          CloudActorMap::iterator am_it = style_->getCloudActorMap ()->find (id);
-          if (am_it != cloud_actor_map_->end ())
-            return (-1);
-
-          return (am_it->second.geometry_handler_index_);
-        }
+        int
+        getGeometryHandlerIndex (const std::string &id);
 
         /** \brief Update/set the color index of a renderered PointCloud based on its ID
           * \param[in] id the point cloud object id
@@ -1055,39 +1026,17 @@ namespace pcl
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
                                       const std::string &id, int viewport = 0);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
         /** \brief Returns true when the user tried to close the window */
         bool
-        wasStopped () const { if (interactor_ != NULL) return (interactor_->stopped); else return true; }
+        wasStopped () const;
 
         /** \brief Set the stopped flag back to false */
         void
-        resetStoppedFlag () { if (interactor_ != NULL) interactor_->stopped = false; }
-#else
-        /** \brief Returns true when the user tried to close the window */
-        bool
-        wasStopped () const { if (interactor_ != NULL) return (stopped_); else return (true); }
-
-        /** \brief Set the stopped flag back to false */
-        void
-        resetStoppedFlag () { if (interactor_ != NULL) stopped_ = false; }
-#endif
+        resetStoppedFlag ();
 
         /** \brief Stop the interaction and close the visualizaton window. */
         void
-        close ()
-        {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-          interactor_->stopped = true;
-          // This tends to close the window...
-          interactor_->stopLoop ();
-#else
-          stopped_ = true;
-          // This tends to close the window...
-          win_->Finalize ();
-          interactor_->TerminateApp ();
-#endif
-        }
+        close ();
 
         /** \brief Create a new viewport from [xmin,ymin] -> [xmax,ymax].
           * \param[in] xmin the minimum X coordinate for the viewport (0.0 <= 1.0)
@@ -1671,30 +1620,20 @@ namespace pcl
           * \param[in] y where to move the window to (Y)
           */
         void
-        setPosition (int x, int y)
-        {
-          win_->SetPosition (x, y);
-        }
+        setPosition (int x, int y);
 
         /** \brief Set the window size in screen coordinates.
           * \param[in] xw window size in horizontal (pixels)
           * \param[in] yw window size in vertical (pixels)
           */
         void
-        setSize (int xw, int yw)
-        {
-          win_->SetSize (xw, yw);
-        }
+        setSize (int xw, int yw);
 
         /** \brief Use Vertex Buffer Objects renderers.
           * \param[in] use_vbos set to true to use VBOs 
           */
         void
-        setUseVbos (bool use_vbos)
-        {
-          use_vbos_ = use_vbos;
-          style_->setUseVbos (use_vbos_);
-        }
+        setUseVbos (bool use_vbos);
 
         /** \brief Create the internal Interactor object. */
         void
@@ -1736,48 +1675,26 @@ namespace pcl
       private:
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
-          static ExitMainLoopTimerCallback* New()
+          static ExitMainLoopTimerCallback* New ()
           {
-            return new ExitMainLoopTimerCallback;
+            return (new ExitMainLoopTimerCallback);
           }
-          virtual void Execute(vtkObject* vtkNotUsed(caller), unsigned long event_id, void* call_data)
-          {
-            if (event_id != vtkCommand::TimerEvent)
-              return;
-            int timer_id = * static_cast<int*> (call_data);
-            //PCL_WARN ("[pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
-            if (timer_id != right_timer_id)
-              return;
-            // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            pcl_visualizer->interactor_->stopLoop ();
-#else
-            pcl_visualizer->interactor_->TerminateApp ();
-#endif
-          }
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           int right_timer_id;
           PCLVisualizer* pcl_visualizer;
         };
+
         struct ExitCallback : public vtkCommand
         {
           static ExitCallback* New ()
           {
-            return new ExitCallback;
+            return (new ExitCallback);
           }
-          virtual void Execute (vtkObject*, unsigned long event_id, void*)
-          {
-            if (event_id != vtkCommand::ExitEvent)
-              return;
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            pcl_visualizer->interactor_->stopped = true;
-            // This tends to close the window...
-            pcl_visualizer->interactor_->stopLoop ();
-#else
-            pcl_visualizer->stopped_ = true;
-            // This tends to close the window...
-            pcl_visualizer->interactor_->TerminateApp ();
-#endif
-          }
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           PCLVisualizer* pcl_visualizer;
         };
 
@@ -1791,7 +1708,7 @@ namespace pcl
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; return (*this); }
 
           virtual void 
-          Execute (vtkObject* caller, unsigned long event_id, void* call_data);
+          Execute (vtkObject*, unsigned long event_id, void*);
             
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
