@@ -47,6 +47,7 @@ foreach(subdir
           resampling
           statistical_removal
           stick_segmentation
+          supervoxel_clustering
           template_alignment
 	  tracking
           vfh_recognition

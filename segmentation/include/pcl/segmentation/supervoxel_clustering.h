@@ -76,7 +76,7 @@ namespace pcl
        *  \param[out] centroid_arg centroid of the supervoxel
        */ 
       void
-      getCentroidPoint (PointXYZRGB &centroid_arg)
+      getCentroidPoint (PointXYZRGBA &centroid_arg)
       {
         centroid_arg = centroid_;
       }
@@ -97,10 +97,13 @@ namespace pcl
         normal_arg.curvature = normal_.curvature;
       }
       
+      /** \brief The normal calculated for the voxels contained in the supervoxel */
       pcl::Normal normal_;
-      pcl::PointXYZRGB centroid_;
-      //  std::vector<std::vector<int> > voxel_adjacency_; //removed since really not needed
+      /** \brief The centroid of the supervoxel - average voxel */
+      pcl::PointXYZRGBA centroid_;
+      /** \brief A Pointcloud of the voxels in the supervoxel */
       typename pcl::PointCloud<PointT>::Ptr voxels_;
+      /** \brief A Pointcloud of the normals for the points in the supervoxel */
       typename pcl::PointCloud<Normal>::Ptr normals_;
   };
   
@@ -244,7 +247,7 @@ namespace pcl
         * But this function doesn't guarantee that different segments will have different
         * color(it's random). Points that are unlabeled will be black
         */
-      typename pcl::PointCloud<PointXYZRGB>::Ptr
+      typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const;
       
       /** \brief Returns a deep copy of the voxel centroid cloud */
@@ -264,7 +267,7 @@ namespace pcl
        * But this function doesn't guarantee that different segments will have different
        * color(it's random). Points that are unlabeled will be black
        */
-      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+      pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const;
       
       /** \brief Returns labeled voxelized cloud

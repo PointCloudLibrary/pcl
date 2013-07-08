@@ -929,6 +929,21 @@ Segmentation
 
      .. |se_8| image:: images/don_segmentation.png
                :height: 100px
+
+  * :ref:`supervoxel_clustering`
+
+     ======  ======
+     |se_9|  Title: **Supervoxel Clustering**
+
+             Author: *Jeremie Papon*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial, we show to break a pointcloud into the mid-level supervoxel representation.
+     ======  ======
+
+     .. |se_9| image:: images/supervoxel_clustering_small.png
+               :height: 100px
                
 .. _surface_tutorial:
 

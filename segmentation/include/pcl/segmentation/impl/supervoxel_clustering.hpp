@@ -510,14 +510,14 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 {
   
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZRGB> >();
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZRGBA> >();
   pcl::copyPointCloud (*input_,*colored_cloud);
   
-  pcl::PointCloud <pcl::PointXYZRGB>::iterator i_colored;
+  pcl::PointCloud <pcl::PointXYZRGBA>::iterator i_colored;
   typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
   std::vector <int> indices;
   std::vector <float> sqr_distances;
@@ -541,18 +541,18 @@ pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud () const
 {
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGB> > ();
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGBA> > ();
   for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
   {
     typename PointCloudT::Ptr voxels;
     sv_itr->getVoxels (voxels);
-    pcl::PointCloud<pcl::PointXYZRGB> rgb_copy;
+    pcl::PointCloud<pcl::PointXYZRGBA> rgb_copy;
     copyPointCloud (*voxels, rgb_copy);
     
-    pcl::PointCloud<pcl::PointXYZRGB>::iterator rgb_copy_itr = rgb_copy.begin ();
+    pcl::PointCloud<pcl::PointXYZRGBA>::iterator rgb_copy_itr = rgb_copy.begin ();
     for ( ; rgb_copy_itr != rgb_copy.end (); ++rgb_copy_itr) 
       rgb_copy_itr->rgba = label_colors_ [sv_itr->getLabel ()];
     
