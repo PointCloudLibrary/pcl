@@ -45,7 +45,7 @@
 #include <string.h>
 
 #if defined(__SSE2__)
-#include <pcl/common/impl/sse.hpp>
+#include <pcl/sse.h>
 #else
 #include <cstdlib>
 #endif

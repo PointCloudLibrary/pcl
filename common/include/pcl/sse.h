@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef PCL_COMMON_SSE_HPP_
-#define PCL_COMMON_SSE_HPP_
+#ifndef PCL_SSE_H_
+#define PCL_SSE_H_
 #if defined(__SSE2__)
 #include <emmintrin.h> // SSE2:<e*.h>, SSE3:<p*.h>, SSE4:<s*.h>
 
@@ -45,8 +45,6 @@
 #define RETi inline __m128i
 
 namespace pcl {
-
-  namespace common {
 
 // set, load and store values
 RETf sse_set( const float &x ) { return _mm_set1_ps(x); }
@@ -93,10 +91,9 @@ RETi sse_cmpgt( const __m128i x, const __m128i y ) { return _mm_cmpgt_epi32(x,y)
 RETf sse_cvt( const __m128i x ) { return _mm_cvtepi32_ps(x); }
 RETi sse_cvt( const __m128 x ) { return _mm_cvttps_epi32(x); }
 
-  } // namespace common
 } // namespace pcl
 
 #undef RETf
 #undef RETi
 #endif /* defined(__SSE2__) */
-#endif /* PCL_COMMON_SSE_HPP_ */
+#endif /* PCL_SSE_H_ */
