@@ -94,24 +94,24 @@ pcl::io::LZFDepth16ImageReader::read (
       }
 
       pt.z = static_cast<float> (val * z_multiplication_factor_);
-      pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x)) 
+      pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x))
         * pt.z * static_cast<float> (constant_x);
-      pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y)) 
+      pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y))
         * pt.z * static_cast<float> (constant_y);
     }
   }
-  cloud.sensor_origin_.setZero ();
-  cloud.sensor_orientation_.w () = 0.0f;
-  cloud.sensor_orientation_.x () = 1.0f;
-  cloud.sensor_orientation_.y () = 0.0f;
-  cloud.sensor_orientation_.z () = 0.0f;
+//  cloud.sensor_origin_.setZero ();
+//  cloud.sensor_orientation_.w () = 0.0f;
+//  cloud.sensor_orientation_.x () = 1.0f;
+//  cloud.sensor_orientation_.y () = 0.0f;
+//  cloud.sensor_orientation_.z () = 0.0f;
   return (true);
 }
-        
+
 ///////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename, 
-                                         pcl::PointCloud<PointT> &cloud, 
+pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
+                                         pcl::PointCloud<PointT> &cloud,
                                          unsigned int num_threads)
 {
   uint32_t uncompressed_size;
@@ -172,17 +172,17 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
     }
 
     pt.z = static_cast<float> (val * z_multiplication_factor_);
-    pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x)) 
+    pt.x = (static_cast<float> (u) - static_cast<float> (parameters_.principal_point_x))
       * pt.z * static_cast<float> (constant_x);
-    pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y)) 
+    pt.y = (static_cast<float> (v) - static_cast<float> (parameters_.principal_point_y))
       * pt.z * static_cast<float> (constant_y);
-    
+
   }
-  cloud.sensor_origin_.setZero ();
-  cloud.sensor_orientation_.w () = 0.0f;
-  cloud.sensor_orientation_.x () = 1.0f;
-  cloud.sensor_orientation_.y () = 0.0f;
-  cloud.sensor_orientation_.z () = 0.0f;
+//  cloud.sensor_origin_.setZero ();
+//  cloud.sensor_orientation_.w () = 0.0f;
+//  cloud.sensor_orientation_.x () = 1.0f;
+//  cloud.sensor_orientation_.y () = 0.0f;
+//  cloud.sensor_orientation_.z () = 0.0f;
   return (true);
 
 }
@@ -324,7 +324,7 @@ pcl::io::LZFYUV422ImageReader::read (
   unsigned char *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
   unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
-  
+
   register int y_idx = 0;
   for (size_t i = 0; i < wh2; ++i, y_idx += 2)
   {
@@ -382,7 +382,7 @@ pcl::io::LZFYUV422ImageReader::readOMP (
   unsigned char *color_u = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
   unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
-  
+
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (num_threads)
 #endif//_OPENMP
@@ -437,8 +437,8 @@ pcl::io::LZFBayer8ImageReader::read (
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
   pcl::io::DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
-                     static_cast<unsigned char*> (&rgb_buffer[0]), 
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
+                     static_cast<unsigned char*> (&rgb_buffer[0]),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
@@ -487,8 +487,8 @@ pcl::io::LZFBayer8ImageReader::readOMP (
   // Convert Bayer8 to RGB24
   std::vector<unsigned char> rgb_buffer (getWidth () * getHeight () * 3);
   pcl::io::DeBayer i;
-  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]), 
-                     static_cast<unsigned char*> (&rgb_buffer[0]), 
+  i.debayerEdgeAware (reinterpret_cast<unsigned char*> (&uncompressed_data[0]),
+                     static_cast<unsigned char*> (&rgb_buffer[0]),
                      getWidth (), getHeight ());
   // Copy to PointT
   cloud.width  = getWidth ();
