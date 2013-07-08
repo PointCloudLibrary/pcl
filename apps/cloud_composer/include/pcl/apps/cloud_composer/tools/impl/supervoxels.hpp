@@ -95,10 +95,10 @@ pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (QList <const Cloud
     std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
     super.refineSupervoxels (3, refined_supervoxel_clusters);
   
-    typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
+    typename pcl::PointCloud<PointXYZRGBA>::Ptr color_segments;
     color_segments= super.getColoredVoxelCloud ();
     
-    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGB>(input_item->text(),color_segments);
+    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA>(input_item->text(),color_segments);
  
     
     output.append (cloud_item_out);
