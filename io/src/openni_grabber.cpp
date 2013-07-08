@@ -615,8 +615,8 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
     }
   }
   cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 0.0f;
-  cloud->sensor_orientation_.x () = 1.0f;
+  cloud->sensor_orientation_.w () = 1.0f;
+  cloud->sensor_orientation_.x () = 0.0f;
   cloud->sensor_orientation_.y () = 0.0f;
   cloud->sensor_orientation_.z () = 0.0f;  
   return (cloud);
@@ -746,8 +746,8 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     }
   }
   cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 0.0;
-  cloud->sensor_orientation_.x () = 1.0;
+  cloud->sensor_orientation_.w () = 1.0;
+  cloud->sensor_orientation_.x () = 0.0;
   cloud->sensor_orientation_.y () = 0.0;
   cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
@@ -836,8 +836,8 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
     }
   }
   cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 0.0;
-  cloud->sensor_orientation_.x () = 1.0;
+  cloud->sensor_orientation_.w () = 1.0;
+  cloud->sensor_orientation_.x () = 0.0;
   cloud->sensor_orientation_.y () = 0.0;
   cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
