@@ -59,6 +59,7 @@ if(build)
         include/pcl/pcl_tests.h
         include/pcl/cloud_iterator.h
         include/pcl/TextureMesh.h
+        include/pcl/sse.h
         )
 
     if(NOT USE_ROS)
@@ -135,7 +136,6 @@ if(build)
         include/pcl/common/impl/random.hpp
         include/pcl/common/impl/generate.hpp
         include/pcl/common/impl/projection_matrix.hpp
-        include/pcl/common/impl/sse.hpp
         )
 
     set(impl_incs 
