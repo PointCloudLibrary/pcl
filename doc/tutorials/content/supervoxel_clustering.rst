@@ -1,16 +1,54 @@
 .. _supervoxel_clustering:
 
-Clustering of Pointclouds into Supervoxels
----------------------------------------
+Clustering of Pointclouds into Supervoxels - Theoretical primer
+---------------------------------------------------------------
 
 In this tutorial, we show how to divide a pointcloud into a number of supervoxel clusters using ``pcl::SupervoxelClustering``, and then how to use and visualize the adjacency information and supervoxels themselves.
 
-.. image:: images/supervoxel_clustering_2.png
+.. figure:: images/supervoxel_clustering_example.jpg
+   :scale: 75%
    :align: center
 
-To create supervoxel clusters, we use Voxel Cloud Connectivity Segmentation (VCCS), a full 3D over-segmentation algorithm developed to use as the basis for higher-level semantic segmentation and predictive tracking. It uses voxel relationships to produce over-segmentations (supervoxels - the 3d analogue of superpixels). Supervoxels adhere to object boundaries better than state-of-the-art 2D methods, while remaining efficient enough to use in online applications. VCCS uses a region growing variant of k-means clustering for generating its labeling of points directly within a voxel octree structure (``pcl::octree::OctreePointCloudAdjacency``). Supervoxels have two important properties; they are evenly distributed across the 3D space, and they cannot cross boundaries unless the underlying voxels are spatially connected. The former is accomplished by seeding supervoxels directly in the cloud, rather than the projected plane, while the latter uses an octree structure which maintains adjacency information of leaves.
+   **An example of supervoxels and adjacency graph generated for a cloud**
 
-For a more complicated example which uses Supervoxels, see ``pcl/examples/segmentation/supervoxel_clustering.cpp``. For further details on how supervoxels work (and if you use them in an academic work) please reference the following publication::
+Segmentation algorithms aim to group pixels in images into perceptually meaningful regions which conform to object boundaries. Graph-based approaches, such as Markov Random Field (MRF) and Conditional Random Field (CRF), have become popular, as they merge relational low-level context within the image with object level class knowledge. The cost of solving pixel-level graphs led to the development of mid-level inference schemes which do not use pixels directly, but rather use groupings of pixels, known as superpixels, as the base level for nodes. Superpixels are formed by over-segmenting the image into small regions based on local low-level features, reducing the number of nodes which must be considered for inference. 
+
+Due to their strong impact on the quality of the eventual segmentation, it is important that superpixels have certain characteristics. Of these, avoiding violating object boundaries is the most vital, as failing to do so will decrease the accuracy of classifiers used later - since they will be forced to consider pixels which belong to more than one class. Additionally, even if the classifier does manage a correct output, the final pixel level segmentation will necessarily contain errors. Another useful quality is regular distribution over the area being segmented, as this will produce a simpler graph for later steps.
+
+Voxel Cloud Connectivity Segmentation (VCCS) is a recent "superpixel" method which generates volumetric over-segmentations of 3D point cloud data, known as supervoxels. Supervoxels adhere to object boundaries better than state-of-the-art 2D methods, while remaining efficient enough to use in online applications. VCCS uses a region growing variant of k-means clustering for generating its labeling of points directly within a voxel octree structure. Supervoxels have two important properties; they are evenly distributed across the 3D space, and they cannot cross boundaries unless the underlying voxels are spatial connected. The former is accomplished by seeding supervoxels directly in the cloud, rather than the projected plane, while the latter uses an octree structure which maintains adjacency information of leaves. Supervoxels maintain adjacency relations in voxelized 3D space; specifically, 26-adjacency- that is neighboring voxels are those that share a face, edge, or vertex, as seen below. 
+
+.. figure:: images/supervoxel_clustering_adjacency.jpg
+   :scale: 50%
+   :align: center
+
+   **From right to left, 6 (faces), 18 (faces,egdes), and 26 (faces, edges, vertices) adjacency**
+
+The adjacency graph of supervoxels (and the underlying voxels) is maintained efficiently within the octree by specifying that neighbors are voxels within R_voxel of one another, where R_voxel specifies the octree leaf resolution. This adjacency graph is used extensively for both the region growing used to generate the supervoxels, as well as determining adjacency of the resulting supervoxels themselves.
+
+VCCS is a region growing method which incrementally expand supervoxels from a set of seed points distributed evenly in space on a grid with resolution R_seed. To maintain efficiency, VCCS does not search globally, but rather only considers points within R_seed of the seed center. Additionally, seeds which are isolated are filtered out by establishing a small search radius R_search around each seed and removing seeds which do not have sufficient neighbor voxels connected to them. 
+
+.. figure:: images/supervoxel_clustering_parameters.jpg
+   :align: center
+   :scale: 70%
+
+   **The various sizing parameters which affect supervoxel clustering. R_seed and R_voxel must both be set by the user.**
+
+Expansion from the seed points is governed by a distance measure calculated in a feature space consisting of spatial extent, color, and normals. The spatial distance D_s is normalized by the seeding resolution, color distance D_c is the euclidean distance in normalized RGB space, and normal distance D_n measures the angle between surface normal vectors.
+
+.. figure:: images/supervoxel_clustering_distance_eqn.png
+   :align: center
+   :scale: 70%
+
+   **Weighting equation used in supervoxel clustering. w_c, w_s, and w_n, the color, spatial, and normal weights, respectively, are user controlled parameters.**
+
+Supervoxels are grown iteratively, using a local k-means clustering which considers connectivity and flow. The general process is as follows. Beginning at the voxel nearest the cluster center, we flow outward to adjacent voxels and compute the distance from each of these to the supervoxel center using the distance equation above. If the distance is the smallest this voxel has seen, its label is set, and using the adjacency graph, we add its neighbors which are further from the center to our search queue for this label. We then proceed to the next supervoxel, so that each level outwards from the center is considered at the same time for all supervoxels (a 2d version of this is seen in the figure below). We proceed iteratively outwards until we have reached the edge of the search volume for each supervoxel (or have no more neighbors to check).
+
+.. figure:: images/supervoxel_clustering_search_order.jpg
+   :align: center
+
+   **Search order in the adjacency octree for supervoxel cluster expansion. Dotted edges in the adjacency graph are not searched, since they have already been considered earlier in the queue.**
+
+Alright, let's get to the code... but if you want further details on how supervoxels work (and if you use them in an academic work) please reference the following publication::
 
   @InProceedings{Papon13CVPR,
     author={Jeremie Papon and Alexey Abramov and Markus Schoeler and Florentin W\"{o}rg\"{o}tter},
@@ -21,6 +59,7 @@ For a more complicated example which uses Supervoxels, see ``pcl/examples/segmen
     address   = {Portland, Oregon},
   }
 
+Oh, and for a more complicated example which uses Supervoxels, see ``pcl/examples/segmentation/supervoxel_clustering.cpp``. 
 
 The code
 --------
@@ -103,7 +142,7 @@ Then we create a string label for the supervoxel graph we will draw and call ``a
 
 This results in a supervoxel graph that looks like this for seed size of 0.1m (top) and 0.05m (middle). The bottom is the original cloud, given for reference.:
 
-.. image:: images/supervoxel_clustering_1.png
+.. image:: images/supervoxel_clustering_results.jpg
    :align: center
 
 Compiling and running the program
