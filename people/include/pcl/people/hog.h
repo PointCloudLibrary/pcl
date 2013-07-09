@@ -41,6 +41,7 @@
 #ifndef PCL_PEOPLE_HOG_H_
 #define PCL_PEOPLE_HOG_H_
 
+#define _USE_MATH_DEFINES
 #include <math.h>
 #include <string.h>
 
