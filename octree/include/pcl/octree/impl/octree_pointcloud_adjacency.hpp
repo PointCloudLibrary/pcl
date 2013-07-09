@@ -201,7 +201,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   OctreeKey key;
   LeafContainerT* leaf = 0;
   // generate key
-  genOctreeKeyforPoint (point_arg, key);
+  this->genOctreeKeyforPoint (point_arg, key);
   
   leaf = this->findLeaf (key);
   
@@ -221,7 +221,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   {
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
     PointT centroid_point;
-    genLeafNodeCenterFromOctreeKey (leaf_key, centroid_point);
+    this->genLeafNodeCenterFromOctreeKey (leaf_key, centroid_point);
     VoxelID node_id = add_vertex (voxel_adjacency_graph);
     
     voxel_adjacency_graph[node_id] = centroid_point;
@@ -260,7 +260,7 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT> bo
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::testForOcclusion (const PointT& point_arg, const PointXYZ &camera_pos)
 {
   OctreeKey key;
-  genOctreeKeyforPoint (point_arg, key);
+  this->genOctreeKeyforPoint (point_arg, key);
   // This code follows the method in Octree::PointCloud
   Eigen::Vector3f sensor(camera_pos.x,
                          camera_pos.y,
