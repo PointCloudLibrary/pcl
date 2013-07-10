@@ -101,11 +101,37 @@ namespace pcl
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-
     void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
     {
       saveShortPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
+    }
+
+    /** \brief Saves a PCLImage (formely ROS sensor_msgs::Image) to PNG file.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] image image to save
+      * \ingroup io
+      * \note Currently only "rgb8", "mono8", and "mono16" image encodings are supported.
+      */
+    void
+    savePNGFile (const std::string& file_name, const pcl::PCLImage& image)
+    {
+      if (image.encoding == "rgb8")
+      {
+        saveRgbPNGFile(file_name, &image.data[0], image.width, image.height);
+      }
+      else if (image.encoding == "mono8")
+      {
+        saveCharPNGFile(file_name, &image.data[0], image.width, image.height, 1);
+      }
+      else if (image.encoding == "mono16")
+      {
+        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(&image.data[0]), image.width, image.height, 1);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported image encoding \"%s\".\n", image.encoding.c_str ());
+      }
     }
 
     /** \brief Saves RGB fields of cloud as image to PNG file. 
