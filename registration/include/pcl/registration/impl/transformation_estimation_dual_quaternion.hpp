@@ -124,23 +124,23 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   transformation_matrix.setIdentity ();
 
   // dual quaternion optimization
-  Eigen::Matrix<Scalar,4,4> C1 = Eigen::Matrix<Scalar,4,4>::Zero();
-  Eigen::Matrix<Scalar,4,4> C2 = Eigen::Matrix<Scalar,4,4>::Zero();
-  Scalar *c1 = C1.data();
-  Scalar *c2 = C2.data();
+  Eigen::Matrix<double,4,4> C1 = Eigen::Matrix<double,4,4>::Zero();
+  Eigen::Matrix<double,4,4> C2 = Eigen::Matrix<double,4,4>::Zero();
+  double *c1 = C1.data();
+  double *c2 = C2.data();
 
   for( int i=0; i<npts; i++ ) {
     const PointSource &a = *source_it;
     const PointTarget &b = *target_it;
-    const Scalar axbx = a.x*b.x;
-    const Scalar ayby = a.y*b.y;
-    const Scalar azbz = a.z*b.z;
-    const Scalar axby = a.x*b.y;
-    const Scalar aybx = a.y*b.x;
-    const Scalar axbz = a.x*b.z;
-    const Scalar azbx = a.z*b.x;
-    const Scalar aybz = a.y*b.z;
-    const Scalar azby = a.z*b.y;
+    const double axbx = a.x*b.x;
+    const double ayby = a.y*b.y;
+    const double azbz = a.z*b.z;
+    const double axby = a.x*b.y;
+    const double aybx = a.y*b.x;
+    const double axbz = a.x*b.z;
+    const double azbx = a.z*b.x;
+    const double aybz = a.y*b.z;
+    const double azby = a.z*b.y;
     c1[0] += axbx - azbz - ayby;
     c1[5] += ayby - azbz - axbx;
     c1[10]+= azbz - axbx - ayby;
@@ -178,21 +178,21 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   C1 *= -2.0f;
   C2 *= 2.0f;
 
-  const Eigen::Matrix<Scalar,4,4> A = (0.25f/float(npts))*C2.transpose()*C2 - C1;
+  const Eigen::Matrix<double,4,4> A = (0.25f/double(npts))*C2.transpose()*C2 - C1;
 
-  const Eigen::EigenSolver< Eigen::Matrix<Scalar,4,4> > es(A);
+  const Eigen::EigenSolver< Eigen::Matrix<double,4,4> > es(A);
 
   ptrdiff_t i;
   es.eigenvalues().real().maxCoeff(&i);
-  const Eigen::Matrix<Scalar,4,1> qmat = es.eigenvectors().col(i).real();
-  const Eigen::Matrix<Scalar,4,1> smat = -(0.5f/float(npts))*C2*qmat;
+  const Eigen::Matrix<double,4,1> qmat = es.eigenvectors().col(i).real();
+  const Eigen::Matrix<double,4,1> smat = -(0.5f/float(npts))*C2*qmat;
 
-  const Eigen::Quaternion<Scalar> q( qmat(3), qmat(0), qmat(1), qmat(2) );
-  const Eigen::Quaternion<Scalar> s( smat(3), smat(0), smat(1), smat(2) );
+  const Eigen::Quaternion<double> q( qmat(3), qmat(0), qmat(1), qmat(2) );
+  const Eigen::Quaternion<double> s( smat(3), smat(0), smat(1), smat(2) );
 
-  const Eigen::Quaternion<Scalar> t = s*q.conjugate();
+  const Eigen::Quaternion<double> t = s*q.conjugate();
 
-  const Eigen::Matrix<Scalar,3,3> R( q.toRotationMatrix() );
+  const Eigen::Matrix<double,3,3> R( q.toRotationMatrix() );
 
   for( int i=0; i<3; ++i )
     for( int j=0; j<3; ++j)
