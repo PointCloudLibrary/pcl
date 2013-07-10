@@ -161,6 +161,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/image_grabber.h 
         include/pcl/${SUBSYS_NAME}/hdl_grabber.h
         include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
@@ -192,6 +193,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp
         include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
