@@ -480,6 +480,18 @@ namespace pcl
         bool
         updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
 
+        /** \brief Set the pose of an existing point cloud.
+          *
+          * Returns false if the point cloud doesn't exist, true if the pose was succesfully
+          * updated.
+          *
+          * \param[in] id the point cloud object id (i.e., given on \a addPointCloud etc.)
+          * \param[in] pose the new pose
+          * \return false if no point cloud with the specified ID was found
+          */
+        bool
+        updatePointCloudPose (const std::string &id, const Eigen::Affine3f& pose);
+
         /** \brief Add a 3d text to the scene
           * \param[in] text the text to add
           * \param[in] position the world position where the text should be added

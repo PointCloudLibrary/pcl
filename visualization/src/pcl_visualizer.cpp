@@ -1538,14 +1538,14 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     {
       switch (int (value))
       {
-        case PCL_VISUALIZER_SHADING_FLAT: 
+        case PCL_VISUALIZER_SHADING_FLAT:
         {
           actor->GetProperty ()->SetInterpolationToFlat ();
           break;
         }
         case PCL_VISUALIZER_SHADING_GOURAUD:
         {
-          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
           {
             PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Gouraud shading was requested. Estimating normals...\n");
             vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
@@ -1558,7 +1558,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
         }
         case PCL_VISUALIZER_SHADING_PHONG:
         {
-          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ()) 
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
           {
             PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Phong shading was requested. Estimating normals...\n");
             vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
@@ -1654,6 +1654,25 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
   actor->SetUserMatrix (matrix);
   actor->Modified ();
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::updatePointCloudPose (const std::string &id, const Eigen::Affine3f& pose)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it == cloud_actor_map_->end ())
+    return (false);
+
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
+  convertToVtkMatrix (pose.matrix (), transformation);
+  am_it->second.viewpoint_transformation_ = transformation;
+  am_it->second.actor->SetUserMatrix (transformation);
+  am_it->second.actor->Modified ();
 
   return (true);
 }
@@ -3594,7 +3613,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
     for (int j = 0; j < 4; ++j)
     {
       mat1 (i, j) = static_cast<float> (composite_projection_transform->Element[i][j]);
-      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]); 
+      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
     }
 
   mat1 = mat1.inverse ();
@@ -3612,7 +3631,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
         continue;
       }
 
-      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f, 
+      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f,
                                     dheight * float (y) - 1.0f,
                                     depth[ptr],
                                     1.0f);
@@ -3684,15 +3703,18 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
-  (*cloud_actor_map_)[id].actor = actor;
-  (*cloud_actor_map_)[id].cells = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
-  (*cloud_actor_map_)[id].geometry_handlers.push_back (geometry_handler);
-  (*cloud_actor_map_)[id].color_handlers.push_back (color_handler);
+  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
+  cloud_actor.actor = actor;
+  cloud_actor.cells = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ()->GetVerts ()->GetData ();
+  cloud_actor.geometry_handlers.push_back (geometry_handler);
+  cloud_actor.color_handlers.push_back (color_handler);
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
   convertToVtkMatrix (sensor_origin, sensor_orientation, transformation);
-  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+  cloud_actor.viewpoint_transformation_ = transformation;
+  cloud_actor.actor->SetUserMatrix (transformation);
+  cloud_actor.actor->Modified ();
 
   return (true);
 }
