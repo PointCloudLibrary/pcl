@@ -9,7 +9,7 @@ else()
   set(SUBSYS_DEPS 2d common sample_consensus io kdtree features filters geometry keypoints search surface registration segmentation octree recognition people outofcore)
 endif()
 
-set(DEFAULT ON)
+set(DEFAULT OFF)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
