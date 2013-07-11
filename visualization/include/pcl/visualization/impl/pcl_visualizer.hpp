@@ -1683,12 +1683,15 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   actor->GetProperty ()->ShadingOff ();
 
   // Save the pointer/ID pair to the global actor map
-  (*cloud_actor_map_)[id].actor = actor;
+  CloudActor& cloud_actor = (*cloud_actor_map_)[id];
+  cloud_actor.actor = actor;
 
   // Save the viewpoint transformation matrix to the global actor map
   vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New();
   convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
-  (*cloud_actor_map_)[id].viewpoint_transformation_ = transformation;
+  cloud_actor.viewpoint_transformation_ = transformation;
+  cloud_actor.actor->SetUserMatrix (transformation);
+  cloud_actor.actor->Modified ();
 
   return (true);
 }
