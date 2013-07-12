@@ -34,22 +34,39 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "../include/bearing_angle.h"
+/**
+  * \bearing_angle.cpp
+  * \Created on: July 07, 2012
+  * \Author: Qinghua Li
+  */
 
-BearingAngle::BearingAngle ()
+#include <pcl/place_recognition/bearing_angle.h>
+// #include "../include/bearing_angle.h"
+
+/** \brief Constructor. */
+pcl::BearingAngle::BearingAngle ()
 {
+  BA_image = NULL;
+  channels_image = NULL;
 }
 
-BearingAngle::~BearingAngle ()
+/** \brief Destructor. */
+pcl::BearingAngle::~BearingAngle ()
 {
-  cvReleaseImage (&BA_image);
-  cvReleaseImage (&channels_image);
+  if (BA_image != NULL)
+  {
+    cvReleaseImage (&BA_image);
+  }
+  if (channels_image != NULL)
+  {
+    cvReleaseImage (&channels_image);
+  }
 }
 
 
-// Calculate the angle between the laser beam and the segment joining two consecutive measurement points
+/** \Calculate the angle between the laser beam and the segment joining two consecutive measurement points */
 double
-BearingAngle::getAngle (pcl::PointXYZ point1, pcl::PointXYZ point2)
+pcl::BearingAngle::getAngle (pcl::PointXYZ point1, pcl::PointXYZ point2)
 {
   double a, b, c;
   double theta;
@@ -70,18 +87,18 @@ BearingAngle::getAngle (pcl::PointXYZ point1, pcl::PointXYZ point2)
   return theta;
 }
 
-// Based on the theta, calculate the gray value of every pixel point
+/** \Based on the theta, calculate the gray value of every pixel point */
 double
-BearingAngle::getGray (double theta)
+pcl::BearingAngle::getGray (double theta)
 {
   double gray;
   gray = theta / 180 * 255;
   return gray;
 }
 
-// Transform 3D point cloud into a 2D improved bearing-angle(BA) image
+/** \Transform 3D point cloud into a 2D improved bearing-angle(BA) image */
 IplImage*
-BearingAngle::generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points, int width, int height)
+pcl::BearingAngle::generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points, int width, int height)
 {
   BA_image = cvCreateImage (cvSize (width, height), IPL_DEPTH_8U, 1);
   cvSetZero (BA_image);
@@ -90,7 +107,7 @@ BearingAngle::generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points
   double theta;
   pcl::PointXYZ current_point, next_point;
 
-  // Primary transformation process
+  /** \Primary transformation process */
   for (int i = 1; i < (int) points.size (); ++i)
   {
     for (int j = 0; j < (int) points[i].size () - 1; ++j)
@@ -113,43 +130,10 @@ BearingAngle::generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points
 }
 
 IplImage*
-BearingAngle::getChannelsImage (IplImage* ipl_image)
+pcl::BearingAngle::getChannelsImage (IplImage* ipl_image)
 {
   /* Create a three channels image */
   channels_image = cvCreateImage (cvSize (ipl_image->width, ipl_image->height), IPL_DEPTH_8U, 3);
   cvCvtColor (ipl_image, channels_image, CV_GRAY2BGR);
   return channels_image;
 }
-
-QImage
-BearingAngle::cvIplImage2QImage (IplImage* ipl_image)
-{
-  int width = ipl_image->width;
-  int height = ipl_image->height;
-
-  if (ipl_image->depth == IPL_DEPTH_8U && ipl_image->nChannels == 3)
-  {
-    const uchar *qImageBuffer = (const uchar*) ipl_image->imageData;
-    QImage img (qImageBuffer, width, height, QImage::Format_RGB888);
-    return img.rgbSwapped ();
-  }
-  else if (ipl_image->depth == IPL_DEPTH_8U && ipl_image->nChannels == 1)
-  {
-    const uchar *qImageBuffer = (const uchar*) ipl_image->imageData;
-    QImage img (qImageBuffer, width, height, QImage::Format_Indexed8);
-
-    QVector < QRgb > colorTable;
-    for (int i = 0; i < 256; i++)
-    {
-      colorTable.push_back (qRgb (i, i, i));
-    }
-    img.setColorTable (colorTable);
-    return img;
-  }
-  else
-  {
-    PCL_ERROR ("Error\n Image cannot be converted.\n");
-    return QImage ();
-  }
-}
-

@@ -34,52 +34,50 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
- * Brief interface for bearing-angle(BA) image
- * The class is used as an interface to generate bearing-angle(BA) image,
- * and do some necessary transformation.
- *
- *  Created on: 2012.07.07
- *      Author: Qinghua Li
- */
+/**
+  * \bearing_angle.h
+  * \Created on: July 07, 2012
+  * \Author: Qinghua Li
+  */
 
-#ifndef BEARING_ANGLE_H_
-#define BEARING_ANGLE_H_
+#ifndef PCL_BEARING_ANGLE_H_
+#define PCL_BEARING_ANGLE_H_
 
 #include <cmath>
 #include <vector>
-#include <QImage>
 #include <opencv/cv.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
 const double PI = 3.14159265358979323846;
 
-class BearingAngle
+namespace pcl
 {
-  public:
-    BearingAngle ();
-    ~BearingAngle ();
+  /** \brief interface(API) for bearing-angle(BA) image
+    * The class is used as an interface to generate bearing-angle(BA) image,
+    * and do some necessary transformation.
+    */
+  class BearingAngle
+  {
+    public:
+      BearingAngle ();
+      ~BearingAngle ();
 
-  public:
-    double
-    getAngle (pcl::PointXYZ point1, pcl::PointXYZ point2);
+    public:
+      double
+      getAngle (pcl::PointXYZ point1, pcl::PointXYZ point2);
 
-    double
-    getGray (double theta);
+      double
+      getGray (double theta);
 
-    IplImage*
-    generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points, int width, int height);
+      IplImage*
+      generateBAImage (std::vector< std::vector<pcl::PointXYZ> > &points, int width, int height);
 
-    IplImage*
-    getChannelsImage (IplImage* ipl_image);
+      IplImage*
+      getChannelsImage (IplImage* ipl_image);
 
-    QImage
-    cvIplImage2QImage (IplImage* ipl_image);
+      IplImage* BA_image;
+      IplImage* channels_image;
+  };
+}
 
-    IplImage* BA_image;
-    IplImage* channels_image;
-};
-
-#endif // BEARING_ANGLE_H_
-
+#endif // PCL_BEARING_ANGLE_H_

@@ -1,74 +1,38 @@
+#########################################################
+#  * Copyright (c) 2013, Intelligent Robotics Lab, DLUT
+#  * Author: Qinghua Li, Yan Zhuang
+#  * Created on: July 07, 2013
+#########################################################
 
-cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+set(SUBSYS_NAME place_recognition)
+set(SUBSYS_DESC "Point cloud place recognition library")
+set(SUBSYS_DEPS common io features registration kdtree search)
 
-project(place_recognition)
+set(build TRUE)
+PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS opencv)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+PCL_ADD_DOC(${SUBSYS_NAME})
 
-##############################################################################
-# Required 3rd party
-##############################################################################
+if(build)
+    set(incs
+        include/pcl/${SUBSYS_NAME}/bearing_angle.h
+        include/pcl/${SUBSYS_NAME}/scene_cognition.h
+        )
 
-#############################
-# PCL #######################
-#############################
-find_package(PCL 1.2 REQUIRED)
+    set(srcs
+        src/bearing_angle.cpp
+        src/scene_cognition.cpp
+        )
 
-include_directories(${PCL_INCLUDE_DIRS})
-#link_directories(${PCL_LIBRARY_DIRS})
-#add_definitions(${PCL_DEFINITIONS})
+    set(LIB_NAME pcl_${SUBSYS_NAME})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs})
+    target_link_libraries(${LIB_NAME} pcl_common pcl_io opencv_core opencv_imgproc)
+    set(EXT_DEPS opencv)
+    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
-#############################
-# Qt ########################
-#############################
-# http://qtnode.net/wiki/Qt4_with_cmake
-find_package(Qt4 REQUIRED)
+    # Install include files
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
 
-SET(QT_USE_QTXML TRUE)
-SET(QT_USE_QTOPENGL TRUE)
-ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
-include(${QT_USE_FILE})
-
-# This is necessary as all ui files etc will get dumped in the bottom of then binary directory.
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${QT_QTOPENGL_INCLUDE_DIR})
- 	
-LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
-SET(${CMAKE_LIBRARY_PATH} ${LIBRARY_OUTPUT_PATH})
-
-#############################
-# OpenCV ####################
-#############################
-find_package(OpenCV)
-
-include_directories(${OpenCV_INCLUDE_DIRS} external/)
-#link_directories(/usr/lib)
-
-##############################################################################
-# Some QT Magic (MOC Creation)
-##############################################################################
-
-file(GLOB QT_FORMS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ui/*.ui)
-file(GLOB QT_RESOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} resources/*.qrc)
-file(GLOB_RECURSE QT_MOC RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS include/local/*.hpp include/*.h)
-
-QT4_ADD_RESOURCES(QT_RESOURCES_CPP ${QT_RESOURCES})
-QT4_WRAP_UI(QT_FORMS_HPP ${QT_FORMS})
-QT4_WRAP_CPP(QT_MOC_HPP ${QT_MOC})
-
-##############################################################################
-# Sources to Compile
-##############################################################################
-SET(ADDITIONAL_SOURCES src/*.cpp)
-
-file(GLOB_RECURSE QT_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} FOLLOW_SYMLINKS ${ADDITIONAL_SOURCES})
-
-##############################################################################
-# Binaries
-##############################################################################
-add_executable(place_recognition ${QT_SOURCES} ${QT_RESOURCES_CPP} ${QT_FORMS_HPP} ${QT_MOC_HPP})
-
-#link libraries
-target_link_libraries(place_recognition GLU opencv_core opencv_highgui opencv_imgproc ${PCL_LIBRARIES} ${QT_LIBRARIES})
+endif(build)
