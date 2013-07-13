@@ -111,6 +111,7 @@ namespace pcl
         , use_depth_dependent_smoothing_ (false)
         , max_depth_change_factor_ (20.0f*0.001f)
         , normal_smoothing_size_ (10.0f)
+        , minimum_normal_smoothing_size_ (3.0f)
         , init_covariance_matrix_ (false)
         , init_average_3d_gradient_ (false)
         , init_simple_3d_gradient_ (false)
@@ -175,6 +176,8 @@ namespace pcl
       /** \brief Set the normal smoothing size
         * \param[in] normal_smoothing_size factor which influences the size of the area used to smooth normals
         * (depth dependent if useDepthDependentSmoothing is true)
+        * \note The actual smoothing size used at each point will also depend on the distance from the point to
+        * the closest depth discontinuity. \sa setMinimumNormalSmoothingSize().
         */
       void
       setNormalSmoothingSize (float normal_smoothing_size)
@@ -186,6 +189,24 @@ namespace pcl
           return;
         }
         normal_smoothing_size_ = normal_smoothing_size;
+      }
+
+      /** \brief Set the minimum normal smoothing size.
+        * If computation of the normal is not possible using the area of this size (because there is a depth
+        * discontinuity in this region), the output normal and curvature values will be set to quiet NaNs.
+        * \param[in] minimum_normal_smoothing_size factor which influences the minimum allowed size of the area
+        * used to smooth normals
+        */
+      void
+      setMinimumNormalSmoothingSize (float minimum_normal_smoothing_size)
+      {
+        if (minimum_normal_smoothing_size < 3)
+        {
+          PCL_ERROR ("[pcl::%s::setMinimumNormalSmoothingSize] Invalid minimum normal smoothing size given! (%f). Allowed ranges are: 3 <= N. Defaulting to %f.\n", 
+                      feature_name_.c_str (), minimum_normal_smoothing_size, minimum_normal_smoothing_size_);
+          return;
+        }
+        minimum_normal_smoothing_size_ = minimum_normal_smoothing_size;
       }
 
       /** \brief Set the normal estimation method. The current implemented algorithms are:
@@ -396,8 +417,11 @@ namespace pcl
       /** \brief Threshold for detecting depth discontinuities */
       float max_depth_change_factor_;
 
-      /** \brief */
+      /** \brief Desired width of the region used to compute normal. */
       float normal_smoothing_size_;
+
+      /** \brief Minimum allowed width of the region used to compute normal. */
+      float minimum_normal_smoothing_size_;
 
       /** \brief True when a dataset has been received and the covariance_matrix data has been initialized. */
       bool init_covariance_matrix_;

@@ -904,7 +904,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           float smoothing = (std::min)(distanceMap[index] * 2 + 1, normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
 
-          if (smoothing > 2.0f)
+          if (smoothing >= minimum_normal_smoothing_size_)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
             computePointNormal (ci, ri, index, output [index]);
@@ -938,7 +938,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           float smoothing = (std::min)(distanceMap[index] * 2 + 1, smoothing_constant);
 
-          if (smoothing > 2.0f)
+          if (smoothing >= minimum_normal_smoothing_size_)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
             computePointNormal (ci, ri, index, output [index]);
@@ -978,7 +978,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           float smoothing = (std::min)(distanceMap[index] * 2 + 1, normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
 
-          if (smoothing > 2.0f)
+          if (smoothing >= minimum_normal_smoothing_size_)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
             computePointNormalMirror (ci, ri, index, output [index]);
@@ -1014,7 +1014,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 
           float smoothing = (std::min)(distanceMap[index] * 2 + 1, smoothing_constant);
 
-          if (smoothing > 2.0f)
+          if (smoothing >= minimum_normal_smoothing_size_)
           {
             setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
             computePointNormalMirror (ci, ri, index, output [index]);
