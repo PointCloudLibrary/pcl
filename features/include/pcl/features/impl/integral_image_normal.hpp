@@ -731,30 +731,65 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   memset (depthChangeMap, 255, input_->points.size ());
 
   unsigned index = 0;
-  for (unsigned int ri = 0; ri < input_->height-1; ++ri)
+  for (unsigned int ri = 1; ri < input_->height-1; ++ri)
   {
-    for (unsigned int ci = 0; ci < input_->width-1; ++ci, ++index)
+    for (unsigned int ci = 1; ci < input_->width-1; ++ci, ++index)
     {
       index = ri * input_->width + ci;
+      const float depth  = input_->points[index].z;
 
-      const float depth  = input_->points [index].z;
-      const float depthR = input_->points [index + 1].z;
-      const float depthD = input_->points [index + input_->width].z;
+      // NW N NE
+      //  W . E
+      // SW S SE
+      const unsigned int NE = index - input_->width + 1;
+      const unsigned int  E = index                 + 1;
+      const unsigned int SE = index + input_->width + 1;
+      const unsigned int  S = index + input_->width    ;
+      const unsigned int SW = index + input_->width - 1;
 
       //const float depthDependendDepthChange = (max_depth_change_factor_ * (fabs(depth)+1.0f))/(500.0f*0.001f);
       const float depthDependendDepthChange = (max_depth_change_factor_ * (fabsf (depth) + 1.0f) * 2.0f);
 
-      if (fabs (depth - depthR) > depthDependendDepthChange
-        || !pcl_isfinite (depth) || !pcl_isfinite (depthR))
+      if (!pcl_isfinite (depth))
       {
         depthChangeMap[index] = 0;
-        depthChangeMap[index+1] = 0;
+        depthChangeMap[   NE] = 0;
+        depthChangeMap[    E] = 0;
+        depthChangeMap[   SE] = 0;
+        depthChangeMap[    S] = 0;
+        depthChangeMap[   SW] = 0;
+        continue;
       }
-      if (fabs (depth - depthD) > depthDependendDepthChange
-        || !pcl_isfinite (depth) || !pcl_isfinite (depthD))
+
+      if (!pcl_isfinite (input_->points[NE].z) ||
+           fabs (depth - input_->points[NE].z) > depthDependendDepthChange)
       {
         depthChangeMap[index] = 0;
-        depthChangeMap[index + input_->width] = 0;
+        depthChangeMap[   NE] = 0;
+      }
+      if (!pcl_isfinite (input_->points[E].z) ||
+           fabs (depth - input_->points[E].z) > depthDependendDepthChange)
+      {
+        depthChangeMap[index] = 0;
+        depthChangeMap[    E] = 0;
+      }
+      if (!pcl_isfinite (input_->points[SE].z) ||
+           fabs (depth - input_->points[SE].z) > depthDependendDepthChange)
+      {
+        depthChangeMap[index] = 0;
+        depthChangeMap[   SE] = 0;
+      }
+      if (!pcl_isfinite (input_->points[S].z) ||
+           fabs (depth - input_->points[S].z) > depthDependendDepthChange)
+      {
+        depthChangeMap[index] = 0;
+        depthChangeMap[    S] = 0;
+      }
+      if (!pcl_isfinite (input_->points[SW].z) ||
+           fabs (depth - input_->points[SW].z) > depthDependendDepthChange)
+      {
+        depthChangeMap[index] = 0;
+        depthChangeMap[   SW] = 0;
       }
     }
   }
@@ -779,11 +814,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   {
     for (size_t ci = 1; ci < input_->width; ++ci)
     {
-      const float upLeft  = previous_row [ci - 1] + 1.4f; //distanceMap[(ri-1)*input_->width + ci-1] + 1.4f;
-      const float up      = previous_row [ci] + 1.0f;     //distanceMap[(ri-1)*input_->width + ci] + 1.0f;
-      const float upRight = previous_row [ci + 1] + 1.4f; //distanceMap[(ri-1)*input_->width + ci+1] + 1.4f;
-      const float left    = current_row  [ci - 1] + 1.0f;  //distanceMap[ri*input_->width + ci-1] + 1.0f;
-      const float center  = current_row  [ci];             //distanceMap[ri*input_->width + ci];
+      const float upLeft  = previous_row [ci - 1] + 1.0f;
+      const float up      = previous_row [ci] + 1.0f;
+      const float upRight = previous_row [ci + 1] + 1.0f;
+      const float left    = current_row  [ci - 1] + 1.0f;
+      const float center  = current_row  [ci];
 
       const float minValue = std::min (std::min (upLeft, up), std::min (left, upRight));
 
@@ -801,11 +836,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   {
     for (int ci = input_->width-2; ci >= 0; --ci)
     {
-      const float lowerLeft  = next_row [ci - 1] + 1.4f;    //distanceMap[(ri+1)*input_->width + ci-1] + 1.4f;
-      const float lower      = next_row [ci] + 1.0f;        //distanceMap[(ri+1)*input_->width + ci] + 1.0f;
-      const float lowerRight = next_row [ci + 1] + 1.4f;    //distanceMap[(ri+1)*input_->width + ci+1] + 1.4f;
-      const float right      = current_row [ci + 1] + 1.0f; //distanceMap[ri*input_->width + ci+1] + 1.0f;
-      const float center     = current_row [ci];            //distanceMap[ri*input_->width + ci];
+      const float lowerLeft  = next_row [ci - 1] + 1.0f;
+      const float lower      = next_row [ci] + 1.0f;
+      const float lowerRight = next_row [ci + 1] + 1.0f;
+      const float right      = current_row [ci + 1] + 1.0f;
+      const float center     = current_row [ci];
 
       const float minValue = std::min (std::min (lowerLeft, lower), std::min (right, lowerRight));
 
@@ -867,7 +902,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
+          float smoothing = (std::min)(distanceMap[index] * 2 + 1, normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
 
           if (smoothing > 2.0f)
           {
@@ -901,7 +936,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index] * 2 + 1, smoothing_constant);
 
           if (smoothing > 2.0f)
           {
@@ -941,7 +976,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
+          float smoothing = (std::min)(distanceMap[index] * 2 + 1, normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
 
           if (smoothing > 2.0f)
           {
@@ -977,7 +1012,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], smoothing_constant);
+          float smoothing = (std::min)(distanceMap[index] * 2 + 1, smoothing_constant);
 
           if (smoothing > 2.0f)
           {
