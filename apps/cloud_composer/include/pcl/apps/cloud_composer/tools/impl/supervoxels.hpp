@@ -35,18 +35,18 @@
 *
 */
 
-#ifndef IMPL_VOXEL_SUPERPIXELS_HPP_
-#define IMPL_VOXEL_SUPERPIXELS_HPP_
+#ifndef IMPL_SUPERVOXELS_HPP_
+#define IMPL_SUPERVOXELS_HPP_
 
-#include <pcl/apps/cloud_composer/tools/voxel_superpixels.h>
+#include <pcl/apps/cloud_composer/tools/supervoxels.h>
 #include <pcl/apps/cloud_composer/impl/cloud_item.hpp>
 #include <pcl/apps/cloud_composer/items/normals_item.h>
 #include <pcl/point_cloud.h>
-#include <pcl/segmentation/supervoxels.h>
+#include <pcl/segmentation/supervoxel_clustering.h>
 
 
 template <typename PointT> QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const CloudComposerItem*> input_data)
+pcl::cloud_composer::SupervoxelsTool::performTemplatedAction (QList <const CloudComposerItem*> input_data)
 {
   QList <CloudComposerItem*> output;  
   
@@ -54,7 +54,7 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
   {
    // if ( !input_item->isSanitized () )
   //  {
-  //    qCritical () << "VoxelSuperpixelsTool requires sanitized input!";
+  //    qCritical () << "SupervoxelsTool requires sanitized input!";
   //    return output;
   //  }
     QVariant variant = input_item->data (ItemDataRole::CLOUD_TEMPLATED);
@@ -83,63 +83,23 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
     float normal_weight = parameter_model_->getProperty("Normals Weight").toFloat ();
     float spatial_weight = parameter_model_->getProperty("Spatial Weight").toFloat ();
     
-    pcl::SuperVoxels<PointT> super (resolution, seed_resolution);
+  
+    pcl::SupervoxelClustering<PointT> super (resolution, seed_resolution);
     super.setInputCloud (input_cloud);
     super.setColorImportance (rgb_weight);
     super.setSpatialImportance (spatial_weight);
     super.setNormalImportance (normal_weight);
-    pcl::PointCloud<pcl::PointSuperVoxel>::Ptr supervoxel_cloud;
-    super.extract (supervoxel_cloud);
+    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+    super.extract (supervoxel_clusters);
     
+    std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
+    super.refineSupervoxels (3, refined_supervoxel_clusters);
+  
+    typename pcl::PointCloud<PointXYZRGBA>::Ptr color_segments;
+    color_segments= super.getColoredVoxelCloud ();
     
-    
-    typename pcl::PointCloud<PointXYZRGB>::Ptr color_segments;
-    color_segments = super.getColoredVoxelCloud ();
-    
-    typename pcl::PointCloud<pcl::PointXYZL>::Ptr label_cloud;
-    label_cloud = super.getLabeledVoxelCloud ();
-    
-    std::map<uint32_t, PointSuperVoxel> label_centers;
-    super.getSuperVoxelCenters (label_centers);
-    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-    std::map<uint32_t, PointSuperVoxel>::iterator itr_centers = label_centers.begin ();
-    
-    typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, pcl::PointSuperVoxel, pcl::octree::EdgeProperties> VoxelAdjacencyList;
-    typedef boost::graph_traits<VoxelAdjacencyList>::vertex_iterator VertexIterator;
-    VoxelAdjacencyList supervoxel_adjacency_list;  
-    super.getSuperVoxelAdjacencyList (supervoxel_adjacency_list);
-    //The vertices in the supervoxel adjacency list are the supervoxel centroids    
-    std::pair<VertexIterator, VertexIterator> vertex_iterator_range;
-    vertex_iterator_range = boost::vertices(supervoxel_adjacency_list);
-    for (VertexIterator itr=vertex_iterator_range.first ; itr != vertex_iterator_range.second; ++itr)
-    {
-      PointSuperVoxel label_centroid = supervoxel_adjacency_list[*itr];
-      std::cout << label_centroid<<std::endl;
-    }
-    
-    for (; itr_centers != label_centers.end () ; ++itr_centers)
-      std::cout << itr_centers->second<<std::endl;
-    for (int i = 0; i < label_cloud->points.size (); ++i)
-    {
-      pcl::PointXYZL point = label_cloud->points[i];
-      pcl::PointSuperVoxel super_center = label_centers[point.label];
-      
-      pcl::Normal normal_point;
-      //point.normal = itr_centers->second.normal;
-      normal_point.normal_x = super_center.normal_x;
-      normal_point.normal_y = super_center.normal_y;
-      normal_point.normal_z = super_center.normal_z;
-      normal_point.curvature = super_center.curvature;
-     // std::cout << point.x <<" "<< point.y <<" "<< point.z <<" "<< point.label<<"\n";
-    //  std::cout << super_center<< std::endl;
-     // std::cout << normal_point<<std::endl<<std::endl;
-      cloud_normals->points.push_back (normal_point);
-    }    
-    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGB>(input_item->text(),color_segments);
-    
-    NormalsItem* normals_item = new NormalsItem (tr("Normals r=%1").arg(0.03),cloud_normals,0.03);
-
-    cloud_item_out->addChild (normals_item);
+    CloudItem*  cloud_item_out = CloudItem::createCloudItemFromTemplate<PointXYZRGBA>(input_item->text(),color_segments);
+ 
     
     output.append (cloud_item_out);
     
@@ -155,8 +115,8 @@ pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction (QList <const 
 
 
 
-#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::VoxelSuperpixelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
+#define PCL_INSTANTIATE_performTemplatedAction(T) template PCL_EXPORTS void pcl::cloud_composer::SupervoxelsTool::performTemplatedAction<T> (QList <const CloudComposerItem*>);
 
 
 
-#endif //IMPL_VOXEL_SUPERPIXELS_HPP_
+#endif //IMPL_SUPERVOXELS_HPP_
