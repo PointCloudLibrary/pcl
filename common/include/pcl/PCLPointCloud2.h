@@ -2,7 +2,7 @@
 #define PCL_SENSOR_MSGS_MESSAGE_POINTCLOUD2_H
 
 #ifdef USE_ROS
-   #error USE_ROS setup requires PCL to compile against ROS message headers  
+   #error USE_ROS setup requires PCL to compile against ROS message headers, which is now deprecated
 #endif 
 
 #include <string>
@@ -11,15 +11,15 @@
 #include <boost/detail/endian.hpp>
 
 // Include the correct Header path here
-#include "std_msgs/Header.h"
-#include "sensor_msgs/PointField.h"
+#include <pcl/PCLHeader.h>
+#include <pcl/PCLPointField.h>
 
-namespace sensor_msgs
+namespace pcl
 {
 
-  struct PointCloud2
+  struct PCLPointCloud2
   {
-    PointCloud2 () : header (), height (0), width (0), fields (),
+    PCLPointCloud2 () : header (), height (0), width (0), fields (),
                      is_bigendian (false), point_step (0), row_step (0),
                      data (), is_dense (false)
     {
@@ -32,12 +32,12 @@ namespace sensor_msgs
 #endif
     }
 
-    ::std_msgs::Header header;
+    ::pcl::PCLHeader header;
 
     pcl::uint32_t height;
     pcl::uint32_t width;
 
-    std::vector< ::sensor_msgs::PointField>  fields;
+    std::vector< ::pcl::PCLPointField>  fields;
 
     pcl::uint8_t is_bigendian;
     pcl::uint32_t point_step;
@@ -48,14 +48,14 @@ namespace sensor_msgs
     pcl::uint8_t is_dense;
 
   public:
-    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2> Ptr;
-    typedef boost::shared_ptr< ::sensor_msgs::PointCloud2  const> ConstPtr;
-  }; // struct PointCloud2
+    typedef boost::shared_ptr< ::pcl::PCLPointCloud2> Ptr;
+    typedef boost::shared_ptr< ::pcl::PCLPointCloud2  const> ConstPtr;
+  }; // struct PCLPointCloud2
 
-  typedef boost::shared_ptr< ::sensor_msgs::PointCloud2> PointCloud2Ptr;
-  typedef boost::shared_ptr< ::sensor_msgs::PointCloud2 const> PointCloud2ConstPtr;
+  typedef boost::shared_ptr< ::pcl::PCLPointCloud2> PCLPointCloud2Ptr;
+  typedef boost::shared_ptr< ::pcl::PCLPointCloud2 const> PCLPointCloud2ConstPtr;
 
-  inline std::ostream& operator<<(std::ostream& s, const  ::sensor_msgs::PointCloud2 &v)
+  inline std::ostream& operator<<(std::ostream& s, const  ::pcl::PCLPointCloud2 &v)
   {
     s << "header: " << std::endl;
     s << v.header;
@@ -88,7 +88,7 @@ namespace sensor_msgs
     return (s);
   }
 
-} // namespace sensor_msgs
+} // namespace pcl
 
 #endif // PCL_SENSOR_MSGS_MESSAGE_POINTCLOUD2_H
 

@@ -40,122 +40,21 @@
 #ifndef PCL_ROS_CONVERSIONS_H_ 
 #define PCL_ROS_CONVERSIONS_H_
 
-#ifdef __GNUC__
-#pragma GCC system_header 
+#ifdef __DEPRECATED
+#warning The <pcl/ros/conversions.h> header is deprecated. please use \
+<pcl/conversions.h> instead.
 #endif
 
-#include <sensor_msgs/PointField.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <sensor_msgs/Image.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_traits.h>
-#include <pcl/for_each_type.h>
-#include <pcl/exceptions.h>
-#include <pcl/console/print.h>
-#include <boost/foreach.hpp>
+#include <pcl/conversions.h>
 
 namespace pcl
 {
-  namespace detail
-  {
-    // For converting template point cloud to message.
-    template<typename PointT>
-    struct FieldAdder
-    {
-      FieldAdder (std::vector<sensor_msgs::PointField>& fields) : fields_ (fields) {};
-      
-      template<typename U> void operator() ()
-      {
-        sensor_msgs::PointField f;
-        f.name = traits::name<PointT, U>::value;
-        f.offset = traits::offset<PointT, U>::value;
-        f.datatype = traits::datatype<PointT, U>::value;
-        f.count = traits::datatype<PointT, U>::size;
-        fields_.push_back (f);
-      }
-
-      std::vector<sensor_msgs::PointField>& fields_;
-    };
-
-    // For converting message to template point cloud.
-    template<typename PointT>
-    struct FieldMapper
-    {
-      FieldMapper (const std::vector<sensor_msgs::PointField>& fields,
-                   std::vector<FieldMapping>& map)
-        : fields_ (fields), map_ (map)
-      {
-      }
-      
-      template<typename Tag> void 
-      operator () ()
-      {
-        BOOST_FOREACH (const sensor_msgs::PointField& field, fields_)
-        {
-          if (FieldMatches<PointT, Tag>()(field))
-          {
-            FieldMapping mapping;
-            mapping.serialized_offset = field.offset;
-            mapping.struct_offset = traits::offset<PointT, Tag>::value;
-            mapping.size = sizeof (typename traits::datatype<PointT, Tag>::type);
-            map_.push_back (mapping);
-            return;
-          }
-        }
-        // Disable thrown exception per #595: http://dev.pointclouds.org/issues/595
-        PCL_WARN ("Failed to find match for field '%s'.\n", traits::name<PointT, Tag>::value);
-        //throw pcl::InvalidConversionException (ss.str ());
-      }
-
-      const std::vector<sensor_msgs::PointField>& fields_;
-      std::vector<FieldMapping>& map_;
-    };
-
-    inline bool 
-    fieldOrdering (const FieldMapping& a, const FieldMapping& b)
-    {
-      return (a.serialized_offset < b.serialized_offset);
-    }
-
-  } //namespace detail
-
-  template<typename PointT> void 
-  createMapping (const std::vector<sensor_msgs::PointField>& msg_fields, MsgFieldMap& field_map)
-  {
-    // Create initial 1-1 mapping between serialized data segments and struct fields
-    detail::FieldMapper<PointT> mapper (msg_fields, field_map);
-    for_each_type< typename traits::fieldList<PointT>::type > (mapper);
-
-    // Coalesce adjacent fields into single memcpy's where possible
-    if (field_map.size() > 1)
-    {
-      std::sort(field_map.begin(), field_map.end(), detail::fieldOrdering);
-      MsgFieldMap::iterator i = field_map.begin(), j = i + 1;
-      while (j != field_map.end())
-      {
-        // This check is designed to permit padding between adjacent fields.
-        /// @todo One could construct a pathological case where the struct has a
-        /// field where the serialized data has padding
-        if (j->serialized_offset - i->serialized_offset == j->struct_offset - i->struct_offset)
-        {
-          i->size += (j->struct_offset + j->size) - (i->struct_offset + i->size);
-          j = field_map.erase(j);
-        }
-        else
-        {
-          ++i;
-          ++j;
-        }
-      }
-    }
-  }
-
-  /** \brief Convert a PointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
-    * \param[in] msg the PointCloud2 binary blob
+  /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object using a field_map.
+    * \param[in] msg the PCLPointCloud2 binary blob
     * \param[out] cloud the resultant pcl::PointCloud<T>
     * \param[in] field_map a MsgFieldMap object
     *
-    * \note Use fromROSMsg (PointCloud2, PointCloud<T>) directly or create you
+    * \note Use fromROSMsg (PCLPointCloud2, PointCloud<T>) directly or create you
     * own MsgFieldMap using:
     *
     * \code
@@ -163,184 +62,71 @@ namespace pcl
     * createMapping<PointT> (msg.fields, field_map);
     * \endcode
     */
+  PCL_DEPRECATED (template <typename PointT> void fromROSMsg (
+        const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+        const MsgFieldMap& field_map),
+      "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
+
   template <typename PointT> void 
-  fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud,
+  fromROSMsg (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
               const MsgFieldMap& field_map)
   {
-    // Copy info fields
-    cloud.header   = msg.header;
-    cloud.width    = msg.width;
-    cloud.height   = msg.height;
-    cloud.is_dense = msg.is_dense == 1;
-
-    // Copy point data
-    uint32_t num_points = msg.width * msg.height;
-    cloud.points.resize (num_points);
-    uint8_t* cloud_data = reinterpret_cast<uint8_t*>(&cloud.points[0]);
-
-    // Check if we can copy adjacent points in a single memcpy
-    if (field_map.size() == 1 &&
-        field_map[0].serialized_offset == 0 &&
-        field_map[0].struct_offset == 0 &&
-        msg.point_step == sizeof(PointT))
-    {
-      uint32_t cloud_row_step = static_cast<uint32_t> (sizeof (PointT) * cloud.width);
-      const uint8_t* msg_data = &msg.data[0];
-      // Should usually be able to copy all rows at once
-      if (msg.row_step == cloud_row_step)
-      {
-        memcpy (cloud_data, msg_data, msg.data.size ());
-      }
-      else
-      {
-        for (uint32_t i = 0; i < msg.height; ++i, cloud_data += cloud_row_step, msg_data += msg.row_step)
-          memcpy (cloud_data, msg_data, cloud_row_step);
-      }
-
-    }
-    else
-    {
-      // If not, memcpy each group of contiguous fields separately
-      for (uint32_t row = 0; row < msg.height; ++row)
-      {
-        const uint8_t* row_data = &msg.data[row * msg.row_step];
-        for (uint32_t col = 0; col < msg.width; ++col)
-        {
-          const uint8_t* msg_data = row_data + col * msg.point_step;
-          BOOST_FOREACH (const detail::FieldMapping& mapping, field_map)
-          {
-            memcpy (cloud_data + mapping.struct_offset, msg_data + mapping.serialized_offset, mapping.size);
-          }
-          cloud_data += sizeof (PointT);
-        }
-      }
-    }
+    fromPCLPointCloud2 (msg, cloud, field_map);
   }
 
-  /** \brief Convert a PointCloud2 binary data blob into a pcl::PointCloud<T> object.
-    * \param[in] msg the PointCloud2 binary blob
+  /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object.
+    * \param[in] msg the PCLPointCloud2 binary blob
     * \param[out] cloud the resultant pcl::PointCloud<T>
     */
+  PCL_DEPRECATED (template<typename PointT> void fromROSMsg (
+        const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud),
+      "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename PointT> void 
-  fromROSMsg (const sensor_msgs::PointCloud2& msg, pcl::PointCloud<PointT>& cloud)
+  fromROSMsg (const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud)
   {
-    MsgFieldMap field_map;
-    createMapping<PointT> (msg.fields, field_map);
-    fromROSMsg (msg, cloud, field_map);
+    fromPCLPointCloud2 (msg, cloud);
   }
 
-  /** \brief Convert a pcl::PointCloud<T> object to a PointCloud2 binary data blob.
+  /** \brief Convert a pcl::PointCloud<T> object to a PCLPointCloud2 binary data blob.
     * \param[in] cloud the input pcl::PointCloud<T>
-    * \param[out] msg the resultant PointCloud2 binary blob
+    * \param[out] msg the resultant PCLPointCloud2 binary blob
     */
+  PCL_DEPRECATED (template<typename PointT> void toROSMsg (
+        const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg),
+      "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename PointT> void 
-  toROSMsg (const pcl::PointCloud<PointT>& cloud, sensor_msgs::PointCloud2& msg)
+  toROSMsg (const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg)
   {
-    // Ease the user's burden on specifying width/height for unorganized datasets
-    if (cloud.width == 0 && cloud.height == 0)
-    {
-      msg.width  = static_cast<uint32_t>(cloud.points.size ());
-      msg.height = 1;
-    }
-    else
-    {
-      assert (cloud.points.size () == cloud.width * cloud.height);
-      msg.height = cloud.height;
-      msg.width  = cloud.width;
-    }
-
-    // Fill point cloud binary data (padding and all)
-    size_t data_size = sizeof (PointT) * cloud.points.size ();
-    msg.data.resize (data_size);
-    memcpy (&msg.data[0], &cloud.points[0], data_size);
-
-    // Fill fields metadata
-    msg.fields.clear ();
-    for_each_type<typename traits::fieldList<PointT>::type> (detail::FieldAdder<PointT>(msg.fields));
-
-    msg.header     = cloud.header;
-    msg.point_step = sizeof (PointT);
-    msg.row_step   = static_cast<uint32_t> (sizeof (PointT) * msg.width);
-    msg.is_dense   = cloud.is_dense;
-    /// @todo msg.is_bigendian = ?;
+    toPCLPointCloud2 (cloud, msg);
   }
 
-   /** \brief Copy the RGB fields of a PointCloud into sensor_msgs::Image format
+   /** \brief Copy the RGB fields of a PointCloud into pcl::PCLImage format
      * \param[in] cloud the point cloud message
-     * \param[out] msg the resultant sensor_msgs::Image
+     * \param[out] msg the resultant pcl::PCLImage
      * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGBA>
      * \note will throw std::runtime_error if there is a problem
      */
+  PCL_DEPRECATED (template<typename CloudT> void toROSMsg (
+        const CloudT& cloud, pcl::PCLImage& msg),
+      "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename CloudT> void
-  toROSMsg (const CloudT& cloud, sensor_msgs::Image& msg)
+  toROSMsg (const CloudT& cloud, pcl::PCLImage& msg)
   {
-    // Ease the user's burden on specifying width/height for unorganized datasets
-    if (cloud.width == 0 && cloud.height == 0)
-      throw std::runtime_error("Needs to be a dense like cloud!!");
-    else
-    {
-      if (cloud.points.size () != cloud.width * cloud.height)
-        throw std::runtime_error("The width and height do not match the cloud size!");
-      msg.height = cloud.height;
-      msg.width = cloud.width;
-    }
-
-    // ensor_msgs::image_encodings::BGR8;
-    msg.encoding = "bgr8";
-    msg.step = msg.width * sizeof (uint8_t) * 3;
-    msg.data.resize (msg.step * msg.height);
-    for (size_t y = 0; y < cloud.height; y++)
-    {
-      for (size_t x = 0; x < cloud.width; x++)
-      {
-        uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &cloud (x, y).rgb, 3 * sizeof(uint8_t));
-      }
-    }
+    toPCLPointCloud2 (cloud, msg);
   }
 
-  /** \brief Copy the RGB fields of a PointCloud2 msg into sensor_msgs::Image format
+  /** \brief Copy the RGB fields of a PCLPointCloud2 msg into pcl::PCLImage format
     * \param cloud the point cloud message
-    * \param msg the resultant sensor_msgs::Image
+    * \param msg the resultant pcl::PCLImage
     * will throw std::runtime_error if there is a problem
     */
+  PCL_DEPRECATED (inline void toROSMsg (
+        const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg),
+      "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   inline void
-  toROSMsg (const sensor_msgs::PointCloud2& cloud, sensor_msgs::Image& msg)
+  toROSMsg (const pcl::PCLPointCloud2& cloud, pcl::PCLImage& msg)
   {
-    int rgb_index = -1;
-    // Get the index we need
-    for (size_t d = 0; d < cloud.fields.size (); ++d)
-      if (cloud.fields[d].name == "rgb")
-      {
-        rgb_index = static_cast<int>(d);
-        break;
-      }
-
-    if(rgb_index == -1)
-      throw std::runtime_error ("No rgb field!!");
-    if (cloud.width == 0 && cloud.height == 0)
-      throw std::runtime_error ("Needs to be a dense like cloud!!");
-    else
-    {
-      msg.height = cloud.height;
-      msg.width = cloud.width;
-    }
-    int rgb_offset = cloud.fields[rgb_index].offset;
-    int point_step = cloud.point_step;
-
-    // sensor_msgs::image_encodings::BGR8;
-    msg.encoding = "bgr8";
-    msg.step = static_cast<uint32_t>(msg.width * sizeof (uint8_t) * 3);
-    msg.data.resize (msg.step * msg.height);
-
-    for (size_t y = 0; y < cloud.height; y++)
-    {
-      for (size_t x = 0; x < cloud.width; x++, rgb_offset += point_step)
-      {
-        uint8_t * pixel = &(msg.data[y * msg.step + x * 3]);
-        memcpy (pixel, &(cloud.data[rgb_offset]), 3 * sizeof (uint8_t));
-      }
-    }
+    toPCLPointCloud2 (cloud, msg);
   }
 }
 

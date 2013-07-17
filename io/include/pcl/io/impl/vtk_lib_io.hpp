@@ -72,7 +72,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   cloud.points.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Check if XYZ is present
@@ -161,7 +161,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   cloud.points.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Check if XYZ is present
@@ -280,7 +280,7 @@ template <typename PointT> void
 pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyData* const pdata)
 {
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Coordinates (always must have coordinates)
@@ -392,7 +392,7 @@ template <typename PointT> void
 pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vtkStructuredGrid* const structured_grid)
 {
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   int dimensions[3] = {cloud.width, cloud.height, 1};

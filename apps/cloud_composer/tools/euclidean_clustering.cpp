@@ -45,10 +45,10 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       int min_cluster_size = parameter_model_->getProperty ("Min Cluster Size").toInt();
       int max_cluster_size = parameter_model_->getProperty ("Max Cluster Size").toInt();
     
-      sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+      pcl::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
       //Get the cloud in template form
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*input_cloud, *cloud); 
+      pcl::fromPCLPointCloud2 (*input_cloud, *cloud);
       
       //////////////// THE WORK - COMPUTING CLUSTERS ///////////////////
       // Creating the KdTree object for the search method of the extraction
@@ -72,7 +72,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
       //Put found clusters into new cloud_items!
       qDebug () << "Found "<<cluster_indices.size ()<<" clusters!";
       int cluster_count = 0;
-      pcl::ExtractIndices<sensor_msgs::PointCloud2> filter;
+      pcl::ExtractIndices<pcl::PCLPointCloud2> filter;
       for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
       {
         filter.setInputCloud (input_cloud);
@@ -82,7 +82,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
         extracted_indices->insert (extracted_indices->end (), it->indices.begin (), it->indices.end ());
         //This means remove the other points
         filter.setKeepOrganized (false);
-        sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
+        pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2);
         filter.filter (*cloud_filtered);
       
         qDebug() << "Cluster has " << cloud_filtered->width << " data points.";
@@ -94,7 +94,7 @@ pcl::cloud_composer::EuclideanClusteringTool::performAction (ConstItemList input
         ++cluster_count;
       } 
       //We copy input cloud over for special case that no clusters found, since ExtractIndices doesn't work for 0 length vectors
-      sensor_msgs::PointCloud2::Ptr remainder_cloud (new sensor_msgs::PointCloud2(*input_cloud));
+      pcl::PCLPointCloud2::Ptr remainder_cloud (new pcl::PCLPointCloud2(*input_cloud));
       if (cluster_indices.size () > 0)
       {
         //make a cloud containing all the remaining points

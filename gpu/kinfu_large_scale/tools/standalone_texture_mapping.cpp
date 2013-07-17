@@ -115,7 +115,7 @@ saveOBJFile (const std::string &file_name,
         count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
       // adding vertex
-      if ((tex_mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+      if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
                 tex_mesh.cloud.fields[d].name == "x" ||
                 tex_mesh.cloud.fields[d].name == "y" ||
                 tex_mesh.cloud.fields[d].name == "z"))
@@ -156,7 +156,7 @@ saveOBJFile (const std::string &file_name,
       count = 1;          // we simply cannot tolerate 0 counts (coming from older converter code)
       int c = 0;
       // adding vertex
-      if ((tex_mesh.cloud.fields[d].datatype == sensor_msgs::PointField::FLOAT32) && (
+      if ((tex_mesh.cloud.fields[d].datatype == pcl::PCLPointField::FLOAT32) && (
       tex_mesh.cloud.fields[d].name == "normal_x" ||
       tex_mesh.cloud.fields[d].name == "normal_y" ||
       tex_mesh.cloud.fields[d].name == "normal_z"))
@@ -427,7 +427,7 @@ main (int argc, char** argv)
   pcl::io::loadPolygonFilePLY(argv[1], triangles);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg(triangles.cloud, *cloud);
+  pcl::fromPCLPointCloud2(triangles.cloud, *cloud);
 
   // Create the texturemesh object that will contain our UV-mapped mesh
   TextureMesh mesh;
@@ -533,7 +533,7 @@ main (int argc, char** argv)
   pcl::concatenateFields (*cloud, *normals, *cloud_with_normals);
   PCL_INFO ("...Done.\n");
 
-  pcl::toROSMsg (*cloud_with_normals, mesh.cloud);
+  pcl::toPCLPointCloud2 (*cloud_with_normals, mesh.cloud);
 
   PCL_INFO ("\nSaving mesh to textured_mesh.obj\n");
 

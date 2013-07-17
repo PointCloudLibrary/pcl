@@ -44,7 +44,7 @@
   * The viewpoint can be set to 1 or multiple views on a sphere.
   */
 #include <string>
-#include <pcl/ros/register_point_struct.h>
+#include <pcl/register_point_struct.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/filters/voxel_grid.h>

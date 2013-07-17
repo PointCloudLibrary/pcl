@@ -948,13 +948,13 @@ int
   }
 
   // Load a standard PCD file from disk
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   if (loadPCDFile (argv[1], cloud_blob) < 0)
   {
     std::cerr << "Failed to read test file. Please download `sac_plane_test.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  fromROSMsg (cloud_blob, *cloud_);
+  fromPCLPointCloud2 (cloud_blob, *cloud_);
 
   indices_.resize (cloud_->points.size ());
   for (size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }

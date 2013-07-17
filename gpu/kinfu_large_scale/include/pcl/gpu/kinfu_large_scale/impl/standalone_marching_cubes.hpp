@@ -141,11 +141,11 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::getMeshesFromTSDFVector (con
     cloud_transform.translation ()[2] = originZ * cell_size;
     
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_tmp_ptr (new pcl::PointCloud<pcl::PointXYZ>);
-    fromROSMsg ( (meshes_vector.back () )->cloud, *cloud_tmp_ptr);
+    fromPCLPointCloud2 ( (meshes_vector.back () )->cloud, *cloud_tmp_ptr);
     
     transformPointCloud (*cloud_tmp_ptr, *cloud_tmp_ptr, cloud_transform);
     
-    toROSMsg (*cloud_tmp_ptr, (meshes_vector.back () )->cloud);
+    toPCLPointCloud2 (*cloud_tmp_ptr, (meshes_vector.back () )->cloud);
     
     std::stringstream name;
     name << "mesh_" << mesh_counter << ".ply";
@@ -230,7 +230,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::convertTrianglesToMesh (cons
 
   boost::shared_ptr<pcl::PolygonMesh> mesh_ptr ( new pcl::PolygonMesh () ); 
   
-  pcl::toROSMsg (cloud, mesh_ptr->cloud);  
+  pcl::toPCLPointCloud2 (cloud, mesh_ptr->cloud);
       
   mesh_ptr->polygons.resize (triangles.size () / 3);
   for (size_t i = 0; i < mesh_ptr->polygons.size (); ++i)
@@ -265,7 +265,7 @@ pcl::gpu::kinfuLS::StandaloneMarchingCubes<PointT>::runMarchingCubes ()
   if(mesh_ptr_ != 0)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_tmp_ptr (new pcl::PointCloud<pcl::PointXYZ>);
-    fromROSMsg ( mesh_ptr_->cloud, *cloud_tmp_ptr);
+    fromPCLPointCloud2 ( mesh_ptr_->cloud, *cloud_tmp_ptr);
   }
   return (mesh_ptr_);
 }

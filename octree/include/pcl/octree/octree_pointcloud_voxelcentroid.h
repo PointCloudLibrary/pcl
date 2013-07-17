@@ -44,7 +44,7 @@
 
 #include <pcl/common/point_operators.h>
 #include <pcl/point_types.h>
-#include <pcl/ros/register_point_struct.h>
+#include <pcl/register_point_struct.h>
 
 namespace pcl
 {

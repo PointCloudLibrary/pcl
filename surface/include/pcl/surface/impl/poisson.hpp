@@ -206,7 +206,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
     cloud.points[i].y = p.coords[1]*scale+center.coords[1];
     cloud.points[i].z = p.coords[2]*scale+center.coords[2];
   }
-  pcl::toROSMsg (cloud, output.cloud);
+  pcl::toPCLPointCloud2 (cloud, output.cloud);
   output.polygons.resize (mesh.polygonCount ());
 
   // Write faces

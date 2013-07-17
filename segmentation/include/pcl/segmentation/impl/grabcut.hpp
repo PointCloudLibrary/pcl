@@ -41,7 +41,7 @@ pcl::GrabCut<PointT>::initCompute ()
     return (false);
   }
 
-  std::vector<sensor_msgs::PointField> in_fields_;
+  std::vector<pcl::PCLPointField> in_fields_;
   if ((pcl::getFieldIndex<PointT> (*input_, "rgb", in_fields_) == -1) &&
       (pcl::getFieldIndex<PointT> (*input_, "rgba", in_fields_) == -1))
   {

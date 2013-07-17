@@ -47,7 +47,7 @@
 namespace pcl
 {
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud.
-    * \param[in] cloud the pointer to a sensor_msgs::PointCloud2 dataset
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
     * \param[in] x_idx the index of the X channel
     * \param[in] y_idx the index of the Y channel
     * \param[in] z_idx the index of the Z channel
@@ -55,12 +55,12 @@ namespace pcl
     * \param[out] max_pt the maximum data point
     */
   PCL_EXPORTS void 
-  getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
   /** \brief Obtain the maximum and minimum points in 3D from a given point cloud. 
     * \note Performs internal data filtering as well.
-    * \param[in] cloud the pointer to a sensor_msgs::PointCloud2 dataset
+    * \param[in] cloud the pointer to a pcl::PCLPointCloud2 dataset
     * \param[in] x_idx the index of the X channel
     * \param[in] y_idx the index of the Y channel
     * \param[in] z_idx the index of the Z channel
@@ -73,7 +73,7 @@ namespace pcl
     * considered, \b true otherwise.
     */
   PCL_EXPORTS void 
-  getMinMax3D (const sensor_msgs::PointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx, 
+  getMinMax3D (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
                const std::string &distance_field_name, float min_distance, float max_distance, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt, bool limit_negative = false);
 
@@ -493,14 +493,14 @@ namespace pcl
     * \ingroup filters
     */
   template <>
-  class PCL_EXPORTS VoxelGrid<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS VoxelGrid<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    using Filter<sensor_msgs::PointCloud2>::filter_name_;
-    using Filter<sensor_msgs::PointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
+    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
     public:
       /** \brief Empty constructor. */
@@ -815,7 +815,7 @@ namespace pcl
         * \param[out] output the resultant point cloud
         */
       void 
-      applyFilter (PointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output);
   };
 }
 

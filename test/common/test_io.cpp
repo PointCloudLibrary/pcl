@@ -155,15 +155,15 @@ TEST (PCL, concatenatePointCloud)
   cloud_xyz_rgba2.push_back (pt_xyz_rgba2);
   cloud_xyz_rgba2.push_back (pt_xyz_rgba2);
 
-  sensor_msgs::PointCloud2 cloud1, cloud2, cloud_out, cloud_out2, cloud_out3, cloud_out4;
-  pcl::toROSMsg (cloud_xyz_rgba, cloud1);
-  pcl::toROSMsg (cloud_xyz_rgba2, cloud2);
+  pcl::PCLPointCloud2 cloud1, cloud2, cloud_out, cloud_out2, cloud_out3, cloud_out4;
+  pcl::toPCLPointCloud2 (cloud_xyz_rgba, cloud1);
+  pcl::toPCLPointCloud2 (cloud_xyz_rgba2, cloud2);
 
   // Regular
   pcl::concatenatePointCloud (cloud1, cloud2, cloud_out);
   
   CloudXYZRGBA cloud_all;
-  pcl::fromROSMsg (cloud_out, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
@@ -192,10 +192,10 @@ TEST (PCL, concatenatePointCloud)
   cloud_xyz_rgb.push_back (pt_xyz_rgb);
   cloud_xyz_rgb.push_back (pt_xyz_rgb);
 
-  pcl::toROSMsg (cloud_xyz_rgb, cloud2);
+  pcl::toPCLPointCloud2 (cloud_xyz_rgb, cloud2);
   pcl::concatenatePointCloud (cloud1, cloud2, cloud_out2);
   
-  pcl::fromROSMsg (cloud_out2, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out2, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
@@ -224,7 +224,7 @@ TEST (PCL, concatenatePointCloud)
   cloud1.fields[rgb_idx].name = "_";
   pcl::concatenatePointCloud (cloud1, cloud2, cloud_out3);
   
-  pcl::fromROSMsg (cloud_out3, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out3, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
@@ -255,7 +255,7 @@ TEST (PCL, concatenatePointCloud)
   cloud2.fields[rgb_idx].name = "_";
   pcl::concatenatePointCloud (cloud1, cloud2, cloud_out4);
 
-  pcl::fromROSMsg (cloud_out4, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out4, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
@@ -283,13 +283,13 @@ TEST (PCL, concatenatePointCloud)
   // _ vs _
   rgb_idx = pcl::getFieldIndex (cloud1, "rgba");
   cloud1.fields[rgb_idx].name = "_";
-  pcl::toROSMsg (cloud_xyz_rgb, cloud2);
+  pcl::toPCLPointCloud2 (cloud_xyz_rgb, cloud2);
   rgb_idx = pcl::getFieldIndex (cloud2, "rgb");
   cloud2.fields[rgb_idx].name = "_";
 
   pcl::concatenatePointCloud (cloud1, cloud2, cloud_out3);
   
-  pcl::fromROSMsg (cloud_out3, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out3, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgba.size ()); ++i)
@@ -319,10 +319,10 @@ TEST (PCL, concatenatePointCloud)
   rgb_idx = pcl::getFieldIndex (cloud1, "rgba");
 
   cloud1.fields[rgb_idx].name = "_";
-  pcl::toROSMsg (cloud_xyz_rgb, cloud2);
+  pcl::toPCLPointCloud2 (cloud_xyz_rgb, cloud2);
   pcl::concatenatePointCloud (cloud2, cloud1, cloud_out3);
   
-  pcl::fromROSMsg (cloud_out3, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out3, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgb.size ()); ++i)
@@ -353,7 +353,7 @@ TEST (PCL, concatenatePointCloud)
   cloud2.fields[rgb_idx].name = "_";
   pcl::concatenatePointCloud (cloud2, cloud1, cloud_out4);
 
-  pcl::fromROSMsg (cloud_out4, cloud_all);
+  pcl::fromPCLPointCloud2 (cloud_out4, cloud_all);
 
   EXPECT_EQ (cloud_all.size (), cloud_xyz_rgba.size () + cloud_xyz_rgba2.size ());
   for (int i = 0; i < int (cloud_xyz_rgb.size ()); ++i)

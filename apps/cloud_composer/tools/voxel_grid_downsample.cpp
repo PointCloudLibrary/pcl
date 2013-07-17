@@ -44,17 +44,17 @@ pcl::cloud_composer::VoxelGridDownsampleTool::performAction (ConstItemList input
     double leaf_y = parameter_model_->getProperty("Leaf Size y").toDouble ();
     double leaf_z = parameter_model_->getProperty("Leaf Size z").toDouble ();
     
-    sensor_msgs::PointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <sensor_msgs::PointCloud2::ConstPtr> ();
+    pcl::PCLPointCloud2::ConstPtr input_cloud = input_item->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
     
     //////////////// THE WORK - FILTERING OUTLIERS ///////////////////
     // Create the filtering object
-    pcl::VoxelGrid<sensor_msgs::PointCloud2> vox_grid;
+    pcl::VoxelGrid<pcl::PCLPointCloud2> vox_grid;
     vox_grid.setInputCloud (input_cloud);
     vox_grid.setLeafSize (float (leaf_x), float (leaf_y), float (leaf_z));
     
     
     //Create output cloud
-    sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2);
+    pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2);
     //Filter!  
     vox_grid.filter (*cloud_filtered);
 
