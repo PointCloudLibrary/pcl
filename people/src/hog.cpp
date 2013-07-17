@@ -41,6 +41,16 @@
 
 #include <pcl/people/hog.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include <string.h>
+
+#if defined(__SSE2__)
+#include <pcl/sse.h>
+#else
+#include <cstdlib>
+#endif
+
 /** \brief Constructor. */
 pcl::people::HOG::HOG () 
 {
