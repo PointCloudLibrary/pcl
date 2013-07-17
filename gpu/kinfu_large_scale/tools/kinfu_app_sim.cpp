@@ -1206,19 +1206,22 @@ struct KinFuApp
   {      
     const SceneCloudView& view = scene_cloud_view_;
 
-    if(view.point_colors_ptr_->points.empty()) // no colors
-    {
-      if (view.valid_combined_)
-        writeCloudFile (format, view.combined_ptr_);
+    if (!view.cloud_ptr_->points.empty ())
+    {    
+      if(view.point_colors_ptr_->points.empty()) // no colors
+      {
+        if (view.valid_combined_)
+          writeCloudFile (format, view.combined_ptr_);
+        else
+          writeCloudFile (format, view.cloud_ptr_);
+      }
       else
-        writeCloudFile (format, view.cloud_ptr_);
-    }
-    else
-    {        
-      if (view.valid_combined_)
-        writeCloudFile (format, merge<PointXYZRGBNormal>(*view.combined_ptr_, *view.point_colors_ptr_));
-      else
-        writeCloudFile (format, merge<PointXYZRGB>(*view.cloud_ptr_, *view.point_colors_ptr_));
+      {        
+        if (view.valid_combined_)
+          writeCloudFile (format, merge<PointXYZRGBNormal>(*view.combined_ptr_, *view.point_colors_ptr_));
+        else
+          writeCloudFile (format, merge<PointXYZRGB>(*view.cloud_ptr_, *view.point_colors_ptr_));
+      }
     }
   }
 

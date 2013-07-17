@@ -78,33 +78,41 @@ main (int argc, char** argv)
     return (-1);
   }
   
-  // Creating world model object
-  pcl::kinfuLS::WorldModel<pcl::PointXYZI> wm;
+  try {
+
+    // Creating world model object
+    pcl::kinfuLS::WorldModel<pcl::PointXYZI> wm;
   
-  //Adding current cloud to the world model
-  wm.addSlice (cloud);
+    //Adding current cloud to the world model
+    wm.addSlice (cloud);
   
-  std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds;
-  std::vector<Eigen::Vector3f> transforms;
+    std::vector<pcl::PointCloud<pcl::PointXYZI>::Ptr> clouds;
+    std::vector<Eigen::Vector3f> transforms;
   
-  //Get world as a vector of cubes 
-  wm.getWorldAsCubes (pcl::device::kinfuLS::VOLUME_X, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
+    //Get world as a vector of cubes 
+    wm.getWorldAsCubes (pcl::device::kinfuLS::VOLUME_X, clouds, transforms, 0.025); // 2.5% overlapp (12 cells with a 512-wide cube)
 
-  //Creating the standalone marching cubes instance
-  float volume_size = pcl::device::kinfuLS::VOLUME_SIZE;
-  pcl::console::parse_argument (argc, argv, "--volume_size", volume_size);
-  pcl::console::parse_argument (argc, argv, "-vs", volume_size);
+    //Creating the standalone marching cubes instance
+    float volume_size = pcl::device::kinfuLS::VOLUME_SIZE;
+    pcl::console::parse_argument (argc, argv, "--volume_size", volume_size);
+    pcl::console::parse_argument (argc, argv, "-vs", volume_size);
 
-  PCL_WARN ("Processing world with volume size set to %.2f meters\n", volume_size);
+    PCL_WARN ("Processing world with volume size set to %.2f meters\n", volume_size);
 
-  pcl::gpu::kinfuLS::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes (pcl::device::kinfuLS::VOLUME_X, pcl::device::kinfuLS::VOLUME_Y, pcl::device::kinfuLS::VOLUME_Z, volume_size);
+    pcl::gpu::kinfuLS::StandaloneMarchingCubes<pcl::PointXYZI> m_cubes (pcl::device::kinfuLS::VOLUME_X, pcl::device::kinfuLS::VOLUME_Y, pcl::device::kinfuLS::VOLUME_Z, volume_size);
 
-  //~ //Creating the output
-  //~ boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
-  //~ std::vector< boost::shared_ptr<pcl::PolygonMesh> > meshes;
+    //~ //Creating the output
+    //~ boost::shared_ptr<pcl::PolygonMesh> mesh_ptr_;
+    //~ std::vector< boost::shared_ptr<pcl::PolygonMesh> > meshes;
 
-  m_cubes.getMeshesFromTSDFVector (clouds, transforms);
+    m_cubes.getMeshesFromTSDFVector (clouds, transforms);
 
- PCL_INFO ("Done!\n");
-  return (0);
+    PCL_INFO ("Done!\n");
+    return (0);
+  
+  }
+  catch (const pcl::PCLException& /*e*/) { PCL_ERROR ("PCLException... Exiting...\n"); }
+  catch (const std::bad_alloc& /*e*/) { PCL_ERROR ("Bad alloc... Exiting...\n"); }
+  catch (const std::exception& /*e*/) { PCL_ERROR ("Exception... Exiting...\n"); }
+  return (-1);
 }
