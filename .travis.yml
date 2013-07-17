@@ -9,4 +9,4 @@ before_install:
   - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev
 script: 
   - mkdir build && cd build
-  - cmake -DCMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2" -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2" -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j2 && make test
+  - cmake -DBUILD_global_tests=ON -DCMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2" -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2" -DPCL_ONLY_CORE_POINT_TYPES=ON .. && make -j2 && make test

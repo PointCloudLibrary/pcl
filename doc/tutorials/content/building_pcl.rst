@@ -40,7 +40,7 @@ You should see something like the following on screen::
  BUILD_common                     ON
  BUILD_features                   ON
  BUILD_filters                    ON
- BUILD_global_tests               ON
+ BUILD_global_tests               OFF
  BUILD_io                         ON
  BUILD_kdtree                     ON
  BUILD_keypoints                  ON
