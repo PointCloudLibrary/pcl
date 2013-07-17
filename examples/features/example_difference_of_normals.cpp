@@ -61,12 +61,12 @@ int main (int argc, char *argv[])
 	string outfile = argv[2];
 
 	// Load cloud in blob format
-	sensor_msgs::PointCloud2 blob;
+	pcl::PCLPointCloud2 blob;
 	pcl::io::loadPCDFile (infile.c_str(), blob);
 
 	pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
         cout << "Loading point cloud...";
-        pcl::fromROSMsg (blob, *cloud);
+        pcl::fromPCLPointCloud2 (blob, *cloud);
         cout << "done." << endl;
 
 	SearchPtr tree;

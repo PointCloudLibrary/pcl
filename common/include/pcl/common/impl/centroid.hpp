@@ -42,7 +42,7 @@
 #define PCL_COMMON_IMPL_CENTROID_H_
 
 #include <pcl/common/centroid.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <boost/mpl/size.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////

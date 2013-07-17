@@ -44,7 +44,7 @@ main (int, char* argv[])
 {
   // Load input file
   char* file_name = argv[1];
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   pcl::io::loadPCDFile (file_name, cloud_blob);
 
   // Declare variable to hold result
@@ -56,7 +56,7 @@ main (int, char* argv[])
   {
     // Estimate your favorite feature
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-    pcl::fromROSMsg (cloud_blob, *cloud);
+    pcl::fromPCLPointCloud2 (cloud_blob, *cloud);
     /// NOTE: make sure to use same radius as for training data
     pcl::PointCloud<pcl::VFHSignature308>::Ptr feature = pcl::computeVFH<pcl::PointXYZ> (cloud, 0.03);
 

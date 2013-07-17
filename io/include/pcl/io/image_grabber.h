@@ -48,7 +48,7 @@
 #include <pcl/common/time_trigger.h>
 #include <string>
 #include <vector>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 namespace pcl
 {
@@ -196,12 +196,12 @@ namespace pcl
     
     /** \brief Gets the cloud in ROS form at location idx */
     bool
-    getCloudAt (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+    getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
 
 
     private:
     virtual void 
-    publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
+    publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
 
 
     // to separate and hide the implementation from interface: PIMPL
@@ -241,7 +241,7 @@ namespace pcl
 
     protected:
     virtual void 
-    publish (const sensor_msgs::PointCloud2& blob, 
+    publish (const pcl::PCLPointCloud2& blob,
              const Eigen::Vector4f& origin, 
              const Eigen::Quaternionf& orientation) const;
     boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
@@ -283,12 +283,12 @@ namespace pcl
   template<typename PointT> const boost::shared_ptr< const pcl::PointCloud<PointT> >
   ImageGrabber<PointT>::operator[] (size_t idx) const
   {
-    sensor_msgs::PointCloud2 blob;
+    pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     getCloudAt (idx, blob, origin, orientation);
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
     return (cloud);
@@ -303,10 +303,10 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> void
-  ImageGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
+  ImageGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
 

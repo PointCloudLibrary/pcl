@@ -80,7 +80,7 @@ TEST (PCL, EarClipping)
     vertices.vertices[i] = i;
 
   PolygonMesh::Ptr mesh (new PolygonMesh);
-  toROSMsg (*cloud, mesh->cloud);
+  toPCLPointCloud2 (*cloud, mesh->cloud);
   mesh->polygons.push_back (vertices);
 
   EarClipping clipper;
@@ -117,9 +117,9 @@ main (int argc, char** argv)
   }
 
   // Load file
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   loadPCDFile (argv[1], cloud_blob);
-  fromROSMsg (cloud_blob, *cloud);
+  fromPCLPointCloud2 (cloud_blob, *cloud);
 
   // Create search tree
   tree.reset (new search::KdTree<PointXYZ> (false));
@@ -143,9 +143,9 @@ main (int argc, char** argv)
 
   // Process for update cloud
   if(argc == 3){
-    sensor_msgs::PointCloud2 cloud_blob1;
+    pcl::PCLPointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
-    fromROSMsg (cloud_blob1, *cloud1);
+    fromPCLPointCloud2 (cloud_blob1, *cloud1);
         // Create search tree
     tree3.reset (new search::KdTree<PointXYZ> (false));
     tree3->setInputCloud (cloud1);

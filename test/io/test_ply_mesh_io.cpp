@@ -39,7 +39,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
@@ -69,9 +69,9 @@ TEST (PCL, PLYPolygonMeshIO)
   pcl::io::loadPolygonFilePLY ("test_mesh_binary.ply", mesh_binary);
   // Compare the 3
   pcl::PointCloud<pcl::PointXYZ> verts, verts_ascii, verts_binary;
-  pcl::fromROSMsg (mesh.cloud, verts);
-  pcl::fromROSMsg (mesh_ascii.cloud, verts_ascii);
-  pcl::fromROSMsg (mesh_binary.cloud, verts_binary);
+  pcl::fromPCLPointCloud2 (mesh.cloud, verts);
+  pcl::fromPCLPointCloud2 (mesh_ascii.cloud, verts_ascii);
+  pcl::fromPCLPointCloud2 (mesh_binary.cloud, verts_binary);
   EXPECT_EQ (verts_ascii.size (), verts.size ());
   EXPECT_EQ (verts_binary.size (), verts.size ());
   for (size_t i = 0; i < verts.size (); i++)
@@ -106,8 +106,8 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   pcl::PolygonMesh mesh_rgba;
   pcl::PointCloud<pcl::PointXYZRGB> vertices_rgb;
   pcl::PointCloud<pcl::PointXYZRGBA> vertices_rgba;
-  pcl::fromROSMsg (mesh.cloud, vertices_rgb);
-  pcl::fromROSMsg (mesh.cloud, vertices_rgba);
+  pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgb);
+  pcl::fromPCLPointCloud2 (mesh.cloud, vertices_rgba);
   mesh_rgb.polygons = mesh.polygons;
   mesh_rgba.polygons = mesh.polygons;
   for (size_t i = 0; i < vertices_rgb.size (); ++i)
@@ -119,8 +119,8 @@ TEST (PCL, PLYPolygonMeshColoredIO)
     pt_rgb.b = pt_rgba.b = static_cast<uint8_t> (rand () % 256);
     pt_rgba.a = static_cast<uint8_t> (rand () % 256);
   }
-  pcl::toROSMsg (vertices_rgb, mesh_rgb.cloud);
-  pcl::toROSMsg (vertices_rgba, mesh_rgba.cloud);
+  pcl::toPCLPointCloud2 (vertices_rgb, mesh_rgb.cloud);
+  pcl::toPCLPointCloud2 (vertices_rgba, mesh_rgba.cloud);
   // Save ascii
   pcl::io::savePLYFile ("test_mesh_rgb_ascii.ply", mesh_rgb);
   pcl::io::savePLYFile ("test_mesh_rgba_ascii.ply", mesh_rgba);
@@ -139,10 +139,10 @@ TEST (PCL, PLYPolygonMeshColoredIO)
   // Compare the 5
   pcl::PointCloud<pcl::PointXYZRGBA> verts_rgba_ascii, verts_rgba_binary;
   pcl::PointCloud<pcl::PointXYZRGB> verts_rgb_ascii, verts_rgb_binary;
-  pcl::fromROSMsg (mesh_rgb_ascii.cloud,  verts_rgb_ascii);
-  pcl::fromROSMsg (mesh_rgba_ascii.cloud,  verts_rgba_ascii);
-  pcl::fromROSMsg (mesh_rgb_binary.cloud, verts_rgb_binary);
-  pcl::fromROSMsg (mesh_rgba_binary.cloud, verts_rgba_binary);
+  pcl::fromPCLPointCloud2 (mesh_rgb_ascii.cloud,  verts_rgb_ascii);
+  pcl::fromPCLPointCloud2 (mesh_rgba_ascii.cloud,  verts_rgba_ascii);
+  pcl::fromPCLPointCloud2 (mesh_rgb_binary.cloud, verts_rgb_binary);
+  pcl::fromPCLPointCloud2 (mesh_rgba_binary.cloud, verts_rgba_binary);
   ASSERT_EQ (verts_rgb_ascii.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgba_ascii.size (), vertices_rgba.size ());
   ASSERT_EQ (verts_rgb_binary.size (), vertices_rgba.size ());

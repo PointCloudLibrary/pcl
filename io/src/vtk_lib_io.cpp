@@ -37,7 +37,7 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/io/impl/vtk_lib_io.hpp>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
 #include <vtkDoubleArray.h>
@@ -250,7 +250,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     xyz_cloud->points[i].z = static_cast<float> (point_xyz[2]);
   }
   // And put it in the mesh cloud
-  pcl::toROSMsg (*xyz_cloud, mesh.cloud);
+  pcl::toPCLPointCloud2 (*xyz_cloud, mesh.cloud);
 
 
   // Then the color information, if any
@@ -283,9 +283,9 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
       rgb_cloud->points[i].b = point_color[2];
     }
 
-    sensor_msgs::PointCloud2 rgb_cloud2;
-    pcl::toROSMsg (*rgb_cloud, rgb_cloud2);
-    sensor_msgs::PointCloud2 aux;
+    pcl::PCLPointCloud2 rgb_cloud2;
+    pcl::toPCLPointCloud2 (*rgb_cloud, rgb_cloud2);
+    pcl::PCLPointCloud2 aux;
     pcl::concatenateFields (rgb_cloud2, mesh.cloud, aux);
     mesh.cloud = aux;
   }
@@ -312,9 +312,9 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
       normal_cloud->points[i].normal_z = normal[2];
     }
 
-    sensor_msgs::PointCloud2 normal_cloud2;
-    pcl::toROSMsg (*normal_cloud, normal_cloud2);
-    sensor_msgs::PointCloud2 aux;
+    pcl::PCLPointCloud2 normal_cloud2;
+    pcl::toPCLPointCloud2 (*normal_cloud, normal_cloud2);
+    pcl::PCLPointCloud2 aux;
     pcl::concatenateFields (normal_cloud2, mesh.cloud, aux);
     mesh.cloud = aux;
   }
@@ -517,7 +517,7 @@ pcl::io::saveRangeImagePlanarFilePNG (
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::io::pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data)
+pcl::io::pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data)
 {
   if (!poly_data.GetPointer())
     poly_data = vtkSmartPointer<vtkPolyData>::New (); // OR poly_data->Reset();

@@ -38,7 +38,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
@@ -70,7 +70,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const string &filename, sensor_msgs::PointCloud2 &cloud,
+loadCloud (const string &filename, pcl::PCLPointCloud2 &cloud,
            Eigen::Vector4f &translation, Eigen::Quaternionf &orientation)
 {
   if (loadPCDFile (filename, cloud, translation, orientation) < 0)
@@ -80,12 +80,12 @@ loadCloud (const string &filename, sensor_msgs::PointCloud2 &cloud,
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int k, double radius)
 {
   // Convert data to PointCloud<T>
   PointCloud<PointXYZ>::Ptr xyz (new PointCloud<PointXYZ>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   TicToc tt;
   tt.tic ();
@@ -115,13 +115,13 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   print_highlight ("Computed normals in "); print_value ("%g", tt.toc ()); print_info (" ms for "); print_value ("%d", normals.width * normals.height); print_info (" points.\n");
 
   // Convert data back
-  sensor_msgs::PointCloud2 output_normals;
-  toROSMsg (normals, output_normals);
+  pcl::PCLPointCloud2 output_normals;
+  toPCLPointCloud2 (normals, output_normals);
   concatenateFields (*input, output_normals, output);
 }
 
 void
-saveCloud (const string &filename, const sensor_msgs::PointCloud2 &output,
+saveCloud (const string &filename, const pcl::PCLPointCloud2 &output,
            const Eigen::Vector4f &translation, const Eigen::Quaternionf &orientation)
 {
   PCDWriter w;
@@ -139,12 +139,12 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int k, double
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
-    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
     if (!loadCloud (pcd_files[i], *cloud, translation, rotation)) 
       continue;
 
     // Perform the feature estimation
-    sensor_msgs::PointCloud2 output;
+    pcl::PCLPointCloud2 output;
     compute (cloud, output, k, radius);
 
     // Prepare output file name
@@ -211,12 +211,12 @@ main (int argc, char** argv)
     // Load the first file
     Eigen::Vector4f translation;
     Eigen::Quaternionf rotation;
-    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
     if (!loadCloud (argv[p_file_indices[0]], *cloud, translation, rotation)) 
       return (-1);
 
     // Perform the feature estimation
-    sensor_msgs::PointCloud2 output;
+    pcl::PCLPointCloud2 output;
     compute (cloud, output, k, radius);
 
     // Save into the second file

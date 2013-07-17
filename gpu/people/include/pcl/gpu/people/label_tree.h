@@ -54,7 +54,7 @@
 #include <stdexcept>
 
 // PCL specific includes
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>

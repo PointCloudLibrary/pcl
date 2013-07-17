@@ -38,7 +38,7 @@
  */
 
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -70,7 +70,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -85,11 +85,11 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int window_size, double sigma_color, double sigma_depth)
 {
   PointCloud<PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<PointXYZRGBA> ());
-  fromROSMsg (*input, *cloud);
+  fromPCLPointCloud2 (*input, *cloud);
 
   PointCloud<PointXYZRGBA>::Ptr cloud_upsampled (new PointCloud<PointXYZRGBA> ());
 
@@ -108,11 +108,11 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
   bu.process (*cloud_upsampled);
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud_upsampled->width * cloud_upsampled->height); print_info (" points]\n");
 
-  toROSMsg (*cloud_upsampled, output);
+  toPCLPointCloud2 (*cloud_upsampled, output);
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -156,12 +156,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-sigma_depth", sigma_depth);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Do the smoothing
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (cloud, output, window_size, sigma_color, sigma_depth);
 
   // Save into the second file

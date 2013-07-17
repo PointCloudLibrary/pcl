@@ -46,7 +46,7 @@
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
 #include <pcl/pcl_macros.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/range_image/range_image_planar.h>
 
@@ -218,13 +218,13 @@ namespace pcl
     pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, 
                              vtkPolyData* const polydata);
 
-    /** \brief Convert a PointCloud2 object to a VTK PolyData object.
-      * \param[in] cloud the input PointCloud2Ptr object
+    /** \brief Convert a PCLPointCloud2 object to a VTK PolyData object.
+      * \param[in] cloud the input PCLPointCloud2Ptr object
       * \param[out] poly_data the resultant VTK PolyData object
       * \ingroup io
       */
     PCL_EXPORTS void
-    pointCloudTovtkPolyData(const sensor_msgs::PointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data);
+    pointCloudTovtkPolyData(const pcl::PCLPointCloud2Ptr& cloud, vtkSmartPointer<vtkPolyData>& poly_data);
 
     /** \brief Convert a pcl::PointCloud object to a VTK StructuredGrid one.
       * \param[in] cloud the input pcl::PointCloud object

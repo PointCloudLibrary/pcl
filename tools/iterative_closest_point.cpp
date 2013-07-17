@@ -69,7 +69,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -84,15 +84,15 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &source,
-         const sensor_msgs::PointCloud2::ConstPtr &target,
-         sensor_msgs::PointCloud2 &transformed_source)
+compute (const pcl::PCLPointCloud2::ConstPtr &source,
+         const pcl::PCLPointCloud2::ConstPtr &target,
+         pcl::PCLPointCloud2 &transformed_source)
 {
   // Convert data to PointCloud<T>
   PointCloud<PointNormal>::Ptr src (new PointCloud<PointNormal>);
   PointCloud<PointNormal>::Ptr tgt (new PointCloud<PointNormal>);
-  fromROSMsg (*source, *src);
-  fromROSMsg (*target, *tgt);
+  fromPCLPointCloud2 (*source, *src);
+  fromPCLPointCloud2 (*target, *tgt);
 
   // Estimate
   TicToc tt;
@@ -156,13 +156,13 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &source,
       transformation (3, 0), transformation (3, 1), transformation (3, 2), transformation (3, 3));
 
   // Convert data back
-  sensor_msgs::PointCloud2 output_source;
-  toROSMsg (output, output_source);
+  pcl::PCLPointCloud2 output_source;
+  toPCLPointCloud2 (output, output_source);
   concatenateFields (*source, output_source, transformed_source);
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -202,13 +202,13 @@ main (int argc, char** argv)
   }
 
   // Load the input files
-  sensor_msgs::PointCloud2::Ptr src (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr src (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *src)) return (-1);
-  sensor_msgs::PointCloud2::Ptr tgt (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr tgt (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[1]], *tgt)) return (-1);
 
   // Perform the feature estimation
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (src, tgt, output);
 
   // Save into the output file

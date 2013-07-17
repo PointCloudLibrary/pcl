@@ -36,7 +36,7 @@
  * $Id$
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/common/distances.h>
 #include <pcl/io/pcd_io.h>
@@ -66,7 +66,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
 //  print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -81,17 +81,17 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_msgs::PointCloud2::ConstPtr &cloud_target,
-         sensor_msgs::PointCloud2 &output, std::string correspondence_type)
+compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointCloud2::ConstPtr &cloud_target,
+         pcl::PCLPointCloud2 &output, std::string correspondence_type)
 {
   // Estimate
   TicToc tt;
   tt.tic ();
 
   PointCloud<PointXYZ>::Ptr xyz_source (new PointCloud<PointXYZ> ());
-  fromROSMsg (*cloud_source, *xyz_source);
+  fromPCLPointCloud2 (*cloud_source, *xyz_source);
   PointCloud<PointXYZ>::Ptr xyz_target (new PointCloud<PointXYZ> ());
-  fromROSMsg (*cloud_target, *xyz_target);
+  fromPCLPointCloud2 (*cloud_target, *xyz_target);
 
   PointCloud<PointXYZI>::Ptr output_xyzi (new PointCloud<PointXYZI> ());
   output_xyzi->points.resize (xyz_source->points.size ());
@@ -162,7 +162,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
 //    print_highlight (stderr, "Computing using the nearest neighbor plane projection correspondence heuristic.\n");
 
     PointCloud<Normal>::Ptr normals_target (new PointCloud<Normal> ());
-    fromROSMsg (*cloud_target, *normals_target);
+    fromPCLPointCloud2 (*cloud_target, *normals_target);
 
     KdTreeFLANN<PointXYZ>::Ptr tree (new KdTreeFLANN<PointXYZ> ());
     tree->setInputCloud (xyz_target);
@@ -198,14 +198,14 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &cloud_source, const sensor_ms
     return;
   }
 
-  toROSMsg (*output_xyzi, output);
+  toPCLPointCloud2 (*output_xyzi, output);
 
 //  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" seconds]\n");
   print_highlight ("RMSE Error: %f\n", rmse);
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -243,15 +243,15 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-correspondence", correspondence_type);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud_source (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_source (new pcl::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[0]], *cloud_source))
     return (-1);
   // Load the second file
-  sensor_msgs::PointCloud2::Ptr cloud_target (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_target (new pcl::PCLPointCloud2 ());
   if (!loadCloud (argv[p_file_indices[1]], *cloud_target))
     return (-1);
 
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   // Perform the feature estimation
   compute (cloud_source, cloud_target, output, correspondence_type);
 
