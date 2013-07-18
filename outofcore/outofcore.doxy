@@ -14,7 +14,7 @@
 
   <b>pcl_outofcore</b> provides an interface to construct and query
   outofcore octrees via OutofcoreOctreeBase. The out of core octree
-  can be used with any PointCloud2 with point types containing ``x'',
+  can be used with any PCLPointCloud2 with point types containing ``x'',
   ``y'' and ``z'' fields. No internal checking is done to verify
   this. On the other hand, point clouds do not need to be filtered for
   NaN entries; the library will automatically ignore NaN points in the
@@ -33,7 +33,7 @@
   entire tree that gives direct access to the in-memory node
   datastructre, <b>OutofcoreOctreeBaseNode</b>. Please note that this
   library is still under development, and that interested users should
-  use the <b>PointCloud2</b>-based insertion and query methods.
+  use the <b>PCLPointCloud2</b>-based insertion and query methods.
 
   \section secOutofcore Example Usage
 

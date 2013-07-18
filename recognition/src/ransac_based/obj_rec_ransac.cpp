@@ -334,7 +334,7 @@ pcl::recognition::ObjRecRANSAC::groupHypotheses(list<HypothesisBase>& hypotheses
   int num_accepted = 0;
 
 #ifdef OBJ_REC_RANSAC_VERBOSE
-  printf("done\n  testing the cluster representatives ...\n", __func__); fflush (stdout);
+  printf("ObjRecRANSAC::%s(): done\n  testing the cluster representatives ...\n", __func__); fflush (stdout);
   // These are some variables needed when printing the recognition progress
   float progress_factor = 100.0f/static_cast<float> (transform_space.getNumberOfOccupiedRotationSpaces ());
   int num_done = 0;

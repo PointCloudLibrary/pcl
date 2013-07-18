@@ -59,11 +59,11 @@
 
 using namespace pcl::console;
 
-typedef pcl::visualization::PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+typedef pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
 typedef ColorHandler::Ptr ColorHandlerPtr;
 typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 
-typedef pcl::visualization::PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+typedef pcl::visualization::PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
 typedef GeometryHandler::Ptr GeometryHandlerPtr;
 typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
@@ -82,7 +82,7 @@ isValidFieldName (const std::string &field)
 }
 
 bool
-isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
+isMultiDimensionalFeatureField (const pcl::PCLPointField &field)
 {
   if (field.count > 1)
     return (true);
@@ -90,7 +90,7 @@ isMultiDimensionalFeatureField (const sensor_msgs::PointField &field)
 }
 
 bool
-isOnly2DImage (const sensor_msgs::PointField &field)
+isOnly2DImage (const pcl::PCLPointField &field)
 {
   if (field.name == "rgba" || field.name == "rgb")
     return (true);
@@ -148,7 +148,7 @@ pcl::visualization::PCLPlotter ph_global;
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
 std::vector<boost::shared_ptr<pcl::visualization::ImageViewer> > imgs;
 pcl::search::KdTree<pcl::PointXYZ> search;
-sensor_msgs::PointCloud2::Ptr cloud;
+pcl::PCLPointCloud2::Ptr cloud;
 pcl::PointCloud<pcl::PointXYZ>::Ptr xyzcloud;
 
 void
@@ -160,9 +160,9 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 
   if (!cloud)
   {
-    cloud = *reinterpret_cast<sensor_msgs::PointCloud2::Ptr*> (cookie);
+    cloud = *reinterpret_cast<pcl::PCLPointCloud2::Ptr*> (cookie);
     xyzcloud.reset (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg (*cloud, *xyzcloud);
+    pcl::fromPCLPointCloud2 (*cloud, *xyzcloud);
     search.setInputCloud (xyzcloud);
   }
   // Return the correct index in the cloud instead of the index on the screen
@@ -409,12 +409,12 @@ main (int argc, char** argv)
     }
   }
 
-  sensor_msgs::PointCloud2::Ptr cloud;
+  pcl::PCLPointCloud2::Ptr cloud;
   // Go through PCD files
   for (size_t i = 0; i < p_file_indices.size (); ++i)
   {
     tt.tic ();
-    cloud.reset (new sensor_msgs::PointCloud2);
+    cloud.reset (new pcl::PCLPointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     int version;
@@ -454,7 +454,7 @@ main (int argc, char** argv)
       name << "PCD Viewer :: " << argv[p_file_indices.at (i)];
       pcl::visualization::ImageViewer::Ptr img (new pcl::visualization::ImageViewer (name.str ()));
       pcl::PointCloud<pcl::RGB> rgb_cloud;
-      pcl::fromROSMsg (*cloud, rgb_cloud);
+      pcl::fromPCLPointCloud2 (*cloud, rgb_cloud);
 
       img->addRGBImage (rgb_cloud);
       imgs.push_back (img);
@@ -506,15 +506,15 @@ main (int argc, char** argv)
     if (fcolorparam)
     {
       if (fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)
-        color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]));
+        color_handler.reset (new pcl::visualization::PointCloudColorHandlerCustom<pcl::PCLPointCloud2> (cloud, fcolor_r[i], fcolor_g[i], fcolor_b[i]));
       else
-        color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
+        color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2> (cloud));
     }
     else
-      color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> (cloud));
+      color_handler.reset (new pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2> (cloud));
 
     // Add the dataset with a XYZ and a random handler
-    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<sensor_msgs::PointCloud2> (cloud));
+    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud));
     // Add the cloud to the renderer
     //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
     p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
@@ -537,12 +537,12 @@ main (int argc, char** argv)
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
       cloud_xyz->sensor_origin_ = origin;
       cloud_xyz->sensor_orientation_ = orientation;
 
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-      pcl::fromROSMsg (*cloud, *cloud_normals);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_normals);
       std::stringstream cloud_name_normals;
       cloud_name_normals << argv[p_file_indices.at (i)] << "-" << i << "-normals";
       p->addPointCloudNormals<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, normals, normals_scale, cloud_name_normals.str (), viewport);
@@ -571,13 +571,13 @@ main (int argc, char** argv)
       //
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-      pcl::fromROSMsg (*cloud, *cloud_xyz);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
       cloud_xyz->sensor_origin_ = origin;
       cloud_xyz->sensor_orientation_ = orientation;
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
-      pcl::fromROSMsg (*cloud, *cloud_normals);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_normals);
       pcl::PointCloud<pcl::PrincipalCurvatures>::Ptr cloud_pc (new pcl::PointCloud<pcl::PrincipalCurvatures>);
-      pcl::fromROSMsg (*cloud, *cloud_pc);
+      pcl::fromPCLPointCloud2 (*cloud, *cloud_pc);
       std::stringstream cloud_name_normals_pc;
       cloud_name_normals_pc << argv[p_file_indices.at (i)] << "-" << i << "-normals";
       int factor = (std::min)(normals, pc);
@@ -595,12 +595,12 @@ main (int argc, char** argv)
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
-          color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> (cloud));
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
         else
         {
           if (!isValidFieldName (cloud->fields[f].name))
             continue;
-          color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> (cloud, cloud->fields[f].name));
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
         //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
@@ -609,7 +609,7 @@ main (int argc, char** argv)
     }
 
     // Additionally, add normals as a handler
-    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<sensor_msgs::PointCloud2> (cloud));
+    geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2> (cloud));
     if (geometry_handler->isCapable ())
       //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
       p->addPointCloud (cloud, geometry_handler, origin, orientation, cloud_name.str (), viewport);

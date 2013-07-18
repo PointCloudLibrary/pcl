@@ -747,7 +747,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     cloud.points[i].y = surface_[i].y ();
     cloud.points[i].z = surface_[i].z ();
   }
-  pcl::toROSMsg (cloud, output.cloud);
+  pcl::toPCLPointCloud2 (cloud, output.cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

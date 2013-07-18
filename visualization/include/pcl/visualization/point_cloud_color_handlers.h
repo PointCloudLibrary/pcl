@@ -126,7 +126,7 @@ namespace pcl
         int field_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
-        std::vector<sensor_msgs::PointField> fields_;
+        std::vector<pcl::PCLPointField> fields_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -437,10 +437,10 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandler<pcl::PCLPointCloud2>
     {
       public:
-        typedef sensor_msgs::PointCloud2 PointCloud;
+        typedef pcl::PCLPointCloud2 PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -503,9 +503,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRandom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -515,7 +515,7 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerRandom (const PointCloudConstPtr &cloud) :
-          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud)
+          PointCloudColorHandler<pcl::PCLPointCloud2> (cloud)
         {
           capable_ = true;
         }
@@ -547,9 +547,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerCustom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -557,7 +557,7 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud,
                                       double r, double g, double b) :
-          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud),
+          PointCloudColorHandler<pcl::PCLPointCloud2> (cloud),
           r_ (r), g_ (g), b_ (b)
         {
           capable_ = true;
@@ -594,9 +594,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -634,9 +634,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerHSVField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -681,9 +681,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 

@@ -49,6 +49,7 @@ using namespace pcl;
 
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_pointcloud_adjacency.h>
 
 using namespace octree;
 
@@ -1619,6 +1620,85 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
 
 }
 
+TEST (PCL, Octree_Pointcloud_Adjacency)
+{
+
+  const unsigned int test_runs = 100;
+  unsigned int test_id;
+
+  
+
+
+  srand (static_cast<unsigned int> (time (NULL)));
+
+  for (test_id = 0; test_id < test_runs; test_id++)
+  {
+    // instantiate point cloud
+    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+    
+    float resolution = static_cast<float> (0.01 * rand () / RAND_MAX) + 0.00001f;
+    //Define a random point
+    PointXYZ point (static_cast<float> (0.5 * rand () / RAND_MAX), 
+                    static_cast<float> (0.5 * rand () / RAND_MAX),
+                    static_cast<float> (0.5 * rand () / RAND_MAX));
+    //This is done to define the grid
+    PointXYZ p1 (10,10,10);
+    PointXYZ p2 (-10,-10,-10);
+    cloudIn->push_back(p1);
+    cloudIn->push_back(p2);
+    cloudIn->push_back (point);
+
+    // generate neighbors
+    for (int dx = -1; dx <= 1; ++dx)
+    {
+      for (int dy = -1; dy <= 1; ++dy)
+      {
+        for (int dz = -1; dz <= 1; ++dz)
+        {
+          float factor = 1.0f;//*std::sqrt (dx*dx + dy*dy + dz*dz);          
+          PointXYZ neighbor (point.x+dx*resolution*factor, point.y+dy*resolution*factor, point.z+dz*resolution*factor); 
+          cloudIn->push_back (neighbor);
+        }
+      }
+    }
+    
+    //Add another point that isn't touching previous or neighbors
+    PointXYZ point2 (static_cast<float> (point.x + 10*resolution), 
+                     static_cast<float> (point.y + 10*resolution),
+                     static_cast<float> (point.z + 10*resolution));
+    cloudIn->push_back (point2);
+    // Add points which are not neighbors
+    for (int i = 0; i < 100; ++i)
+    {
+      PointXYZ not_neighbor_point (static_cast<float> (10.0 * rand () / RAND_MAX), 
+                     static_cast<float> (10.0 * rand () / RAND_MAX),
+                     static_cast<float> (10.0 * rand () / RAND_MAX));
+      if ( (point2.getVector3fMap () - not_neighbor_point.getVector3fMap ()).norm () > 3*resolution )
+      {
+        cloudIn->push_back(not_neighbor_point);
+      }
+    }
+    
+      
+
+    OctreePointCloudAdjacency<PointXYZ> octree (resolution);
+    octree.setInputCloud (cloudIn);
+    octree.addPointsFromInputCloud ();
+      
+    OctreePointCloudAdjacencyContainer<PointXYZ> *leaf_container;
+    
+    leaf_container = octree.getLeafContainerAtPoint (point);
+    //Point should have 26 neighbors, plus itself
+    ASSERT_EQ( leaf_container->size() == 27, true);
+
+    leaf_container = octree.getLeafContainerAtPoint (point2);
+  
+    //Other point should only have itself for neighbor
+    ASSERT_EQ( leaf_container->size() == 1, true);
+
+  }
+
+}
 /* ---[ */
 int
 main (int argc, char** argv)

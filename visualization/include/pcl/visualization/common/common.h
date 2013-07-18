@@ -47,7 +47,7 @@
 
 namespace pcl
 {
-  class RGB;
+  struct RGB;
 
   namespace visualization
   {

@@ -260,7 +260,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
         getNeighborList1D (leaf_node, index_3d);
         createSurface (leaf_node, index_3d, cloud);
       }
-  pcl::toROSMsg (cloud, output.cloud);
+  pcl::toPCLPointCloud2 (cloud, output.cloud);
 
   output.polygons.resize (cloud.size () / 3);
   for (size_t i = 0; i < output.polygons.size (); ++i)

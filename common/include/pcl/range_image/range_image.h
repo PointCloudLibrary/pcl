@@ -113,11 +113,11 @@ namespace pcl
       getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud);
       
       /** \brief Check if the provided data includes far ranges and add them to far_ranges
-        * \param point_cloud_data a PointCloud2 message containing the input cloud
+        * \param point_cloud_data a PCLPointCloud2 message containing the input cloud
         * \param far_ranges the resulting cloud containing those points with far ranges
         */
       PCL_EXPORTS static void
-      extractFarRanges (const sensor_msgs::PointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
+      extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data, PointCloud<PointWithViewpoint>& far_ranges);
       
       // =====METHODS=====
       /** \brief Get a boost shared pointer of a copy of this */

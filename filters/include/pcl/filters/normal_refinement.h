@@ -52,8 +52,8 @@ namespace pcl
    * \ingroup filters
    */
   template <typename NormalT> inline std::vector<float>
-  assignNormalWeights (const PointCloud<NormalT>& cloud,
-                       int index,
+  assignNormalWeights (const PointCloud<NormalT>&,
+                       int,
                        const std::vector<int>& k_indices,
                        const std::vector<float>& k_sqr_distances)
   {

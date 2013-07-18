@@ -42,7 +42,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   unsigned N = input_->width * input_->height;
   // If sample size is 0 or if the sample size is greater then input cloud size
@@ -98,7 +98,7 @@ pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
 ///////////////////////////////////////////////////////////////////////////////
 void
-pcl::RandomSample<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::RandomSample<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
   unsigned N = input_->width * input_->height;
   // If sample size is 0 or if the sample size is greater then input cloud size

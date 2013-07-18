@@ -86,7 +86,6 @@ TEST (PCL, findFeatureCorrespondences)
 {
   typedef Histogram<2> FeatureT;
   typedef PointCloud<FeatureT> FeatureCloud;
-  typedef FeatureCloud::ConstPtr FeatureCloudConstPtr;
 
   RegistrationWrapper <PointXYZ, PointXYZ> reg;
 
@@ -156,8 +155,11 @@ TEST (PCL, IterativeClosestPoint)
 {
   IterativeClosestPoint<PointXYZ, PointXYZ> reg;
   PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   reg.setInputCloud (source);     // test for PCL_DEPRECATED
   source = reg.getInputCloud ();  // test for PCL_DEPRECATED
+#pragma GCC diagnostic pop
   reg.setInputSource (source);
   reg.setInputTarget (cloud_target.makeShared ());
   reg.setMaximumIterations (50);
@@ -584,8 +586,11 @@ TEST (PCL, SampleConsensusPrerejective)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.0005);
+  
+  // Check output consistency and quality of alignment
+  EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
+  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+  EXPECT_GT (inlier_fraction, 0.95f);
   
   // Check again, for all possible caching schemes
   typedef pcl::PointXYZ PointT;
@@ -606,8 +611,11 @@ TEST (PCL, SampleConsensusPrerejective)
     
     // Register
     reg.align (cloud_reg);
+
+    // Check output consistency and quality of alignment
     EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.0005);
+    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+    EXPECT_GT (inlier_fraction, 0.95f);
   }
 }
 
