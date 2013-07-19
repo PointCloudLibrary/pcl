@@ -120,7 +120,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   update_fps_->decimated = false;
   ren->AddActor (txt);
 
-
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
@@ -256,8 +255,9 @@ pcl::visualization::PCLVisualizer::createInteractor ()
   timer_id_ = interactor_->CreateRepeatingTimer (5000L);
 #endif
 
-  // Set an AreaPicker
-  vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
+  // Set a simple PointPicker
+  vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
+  pp->SetTolerance (pp->GetTolerance () * 2);
   interactor_->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
@@ -297,12 +297,10 @@ pcl::visualization::PCLVisualizer::setupInteractor (
   timer_id_ = iren->CreateRepeatingTimer (5000L);
 #endif
 
-  // Set an AreaPicker
-  if (interactor_ != NULL)
-  {
-    vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
-    interactor_->SetPicker (pp);
-  }
+  // Set a simple PointPicker
+  vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
+  pp->SetTolerance (pp->GetTolerance () * 2);
+  iren->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;
@@ -343,9 +341,10 @@ pcl::visualization::PCLVisualizer::setupInteractor (
   timer_id_ = iren->CreateRepeatingTimer (5000L);
 #endif
 
-  // Set an AreaPicker
-  // vtkSmartPointer<vtkAreaPicker> pp = vtkSmartPointer<vtkAreaPicker>::New ();
-  // interactor_->SetPicker (pp);
+  // Set a simple PointPicker
+  // vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
+  // pp->SetTolerance (pp->GetTolerance () * 2);
+  // iren->SetPicker (pp);
 
   exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
   exit_main_loop_timer_callback_->pcl_visualizer = this;

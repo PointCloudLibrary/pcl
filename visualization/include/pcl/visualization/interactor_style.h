@@ -56,6 +56,7 @@ class vtkLegendScaleActor;
 class vtkScalarBarActor;
 class vtkPNGWriter;
 class vtkWindowToImageFilter;
+class vtkPointPicker;
 
 namespace pcl
 {
@@ -232,6 +233,8 @@ namespace pcl
         vtkSmartPointer<vtkPNGWriter> snapshot_writer_;
         /** \brief Internal window to image filter. Needed by \a snapshot_writer_. */
         vtkSmartPointer<vtkWindowToImageFilter> wif_;
+        /** \brief Stores the point picker when switching to an area picker. */
+        vtkSmartPointer<vtkPointPicker> point_picker_;
 
         boost::signals2::signal<void (const pcl::visualization::MouseEvent&)> mouse_signal_;
         boost::signals2::signal<void (const pcl::visualization::KeyboardEvent&)> keyboard_signal_;
