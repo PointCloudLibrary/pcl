@@ -158,10 +158,10 @@ namespace pcl
 
     protected:
 
-      /** \b distance threshold / maximum length of edges between vertices */
+      /** \brief distance tolerance for filtering out shadowed/occluded edges */
       float distance_tolerance_;
 
-      /**b flag whether or not \a distance_tolerance_ is distance dependent (multiplied by the squared distance to the point) or not. */
+      /** \brief flag whether or not \a distance_tolerance_ is distance dependent (multiplied by the squared distance to the point) or not. */
       bool depth_dependent_;
 
       /** \brief size of triangle edges (in pixels) */
