@@ -41,15 +41,7 @@
 #ifndef PCL_PEOPLE_HOG_H_
 #define PCL_PEOPLE_HOG_H_
 
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <string.h>
-
-#if defined(__SSE2__)
-#include <pcl/sse.h>
-#else
-#include <cstdlib>
-#endif
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 { 
@@ -60,9 +52,9 @@ namespace pcl
       * \author Matteo Munaro, Stefano Ghidoni, Stefano Michieletto
       * \ingroup people
       */
-    class HOG
+    class PCL_EXPORTS HOG
     {
-  public:
+    public:
 
       /** \brief Constructor. */
       HOG ();
@@ -168,7 +160,7 @@ namespace pcl
       void 
       alFree (void* aligned) const;
       
-        protected:
+    protected:
       
       /** \brief image height (default = 128) */
       int h_;

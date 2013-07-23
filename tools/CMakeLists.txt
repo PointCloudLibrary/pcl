@@ -57,6 +57,9 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_passthrough_filter ${SUBSYS_NAME} passthrough_filter.cpp)
   target_link_libraries (pcl_passthrough_filter pcl_common pcl_io pcl_filters)
 	
+  PCL_ADD_EXECUTABLE (pcl_radius_filter ${SUBSYS_NAME} radius_filter.cpp)
+  target_link_libraries (pcl_radius_filter pcl_common pcl_io pcl_filters)
+
   PCL_ADD_EXECUTABLE (pcl_extract_feature ${SUBSYS_NAME} extract_feature.cpp)
   target_link_libraries (pcl_extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
   

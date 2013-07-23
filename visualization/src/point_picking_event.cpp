@@ -113,29 +113,22 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 int
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
-  // Save the area picker
-  vtkSmartPointer<vtkAreaPicker> picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
-  if (!picker)
+  vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+  
+  if (!point_picker)
   {
     pcl::console::print_error ("Point picker not available, not selecting any points!\n");
     return -1;
   }
-  //iren->GetMousePosition (&mouse_x, &mouse_y);
+
   int mouse_x = iren->GetEventPosition ()[0];
   int mouse_y = iren->GetEventPosition ()[1];
 
-  // Switch picker to a point picker and get picked point index
-  vtkSmartPointer<vtkPointPicker> point_picker = vtkSmartPointer<vtkPointPicker>::New ();
-  point_picker->SetTolerance (point_picker->GetTolerance () * 2);
-  iren->SetPicker (point_picker);
   iren->StartPickCallback ();
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
-  int idx = static_cast<int> (point_picker->GetPointId ());
 
-  // Put back the area picker
-  iren->SetPicker (picker);
-  return (idx);
+  return (static_cast<int> (point_picker->GetPointId ()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -144,19 +137,17 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     vtkRenderWindowInteractor *iren,
     float &x, float &y, float &z)
 {
-  vtkSmartPointer<vtkAreaPicker> picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
-  if (!picker)
+  vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+
+  if (!point_picker)
   {
     pcl::console::print_error ("Point picker not available, not selecting any points!\n");
-    return -1;
+    return (-1);
   }
-  //iren->GetMousePosition (&mouse_x, &mouse_y);
+
   int mouse_x = iren->GetEventPosition ()[0];
   int mouse_y = iren->GetEventPosition ()[1];
 
-  vtkSmartPointer<vtkPointPicker> point_picker = vtkSmartPointer<vtkPointPicker>::New ();
-  point_picker->SetTolerance (point_picker->GetTolerance () * 2);
-  iren->SetPicker (point_picker);
   iren->StartPickCallback ();
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
@@ -169,8 +160,6 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     x = float (p[0]); y = float (p[1]); z = float (p[2]);
   }
 
-  // Put back the area picker
-  iren->SetPicker (picker);
   return (idx);
 }
 

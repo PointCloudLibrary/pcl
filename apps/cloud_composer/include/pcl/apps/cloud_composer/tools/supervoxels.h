@@ -35,8 +35,8 @@
   *
   */
  
- #ifndef VOXEL_SUPERPIXELS_H_
- #define VOXEL_SUPERPIXELS_H_
+ #ifndef SUPERVOXELS_H_
+ #define SUPERVOXELS_H_
  
  #include <pcl/apps/cloud_composer/tool_interface/abstract_tool.h>
  #include <pcl/apps/cloud_composer/tool_interface/tool_factory.h>
@@ -46,12 +46,12 @@
  {
    namespace cloud_composer
    {
-     class VoxelSuperpixelsTool : public SplitItemTool
+     class SupervoxelsTool : public SplitItemTool
      {
        Q_OBJECT
      public:
-       VoxelSuperpixelsTool (PropertiesModel* parameter_model, QObject* parent);
-       virtual ~VoxelSuperpixelsTool ();
+       SupervoxelsTool (PropertiesModel* parameter_model, QObject* parent);
+       virtual ~SupervoxelsTool ();
        
        virtual QList <CloudComposerItem*>
        performAction (QList <const CloudComposerItem*> input_data, PointTypeFlags::PointType type = PointTypeFlags::NONE);
@@ -66,7 +66,7 @@
     };
      
      
-     class VoxelSuperpixelsToolFactory : public QObject, public ToolFactory
+     class SupervoxelsToolFactory : public QObject, public ToolFactory
      {
        Q_OBJECT
        Q_INTERFACES (pcl::cloud_composer::ToolFactory)
@@ -74,20 +74,20 @@
        SplitItemTool*
        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 
        {
-         return new VoxelSuperpixelsTool(parameter_model, parent);
+         return new SupervoxelsTool(parameter_model, parent);
        }
        
        PropertiesModel*
        createToolParameterModel (QObject* parent);
        
        inline virtual QString 
-       getPluginName () const { return "Voxel Superpixels";}
+       getPluginName () const { return "Supervoxels";}
        
        inline virtual QString 
        getToolGroupName () const { return "Segmentation";}
        
        inline virtual QString
-       getIconName () const { return ":/voxel_superpixels.png"; }
+       getIconName () const { return ":/supervoxels.png"; }
        
        inline virtual CloudComposerItem::ItemType
        getInputItemType () const
@@ -113,4 +113,4 @@
  
  
  
- #endif //VOXEL_SUPERPIXELS_H_
+ #endif //SUPERVOXELS_H_

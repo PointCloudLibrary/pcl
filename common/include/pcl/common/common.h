@@ -160,6 +160,14 @@ namespace pcl
   template <typename PointT> inline void 
   getMinMax (const PointT &histogram, int len, float &min_p, float &max_p);
 
+  /** \brief Calculate the area of a polygon given a point cloud that defines the polygon 
+	  * \param polygon point cloud that contains those vertices that comprises the polygon. Vertices are stored in counterclockwise.
+	  * \return the polygon area 
+	  * \ingroup common
+	  */
+  template<typename PointT> inline float
+  calculatePolygonArea (const pcl::PointCloud<PointT> &polygon);
+
   /** \brief Get the minimum and maximum values on a point histogram
     * \param cloud the cloud containing multi-dimensional histograms
     * \param idx point index representing the histogram that we need to compute min/max for
