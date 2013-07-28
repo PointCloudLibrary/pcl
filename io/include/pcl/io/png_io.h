@@ -43,8 +43,11 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/console/print.h>
 #include <string>
 #include <vector>
+#include <pcl/io/point_cloud_image_extractors.h>
+#include <boost/make_shared.hpp>
 
 namespace pcl
 {
@@ -170,6 +173,57 @@ namespace pcl
       }
       saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
     }  
+
+    /** \brief Saves the data from the specified field of the point cloud as image to PNG file.
+     * \param[in] file_name the name of the file to write to disk
+     * \param[in] cloud point cloud to save
+     * \param[in] field_name the name of the field to extract data from
+     * \ingroup io
+     */
+    template <typename PointT> void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, const std::string& field_name)
+    {
+      typename PointCloudImageExtractor<PointT>::Ptr pcie;
+      if (field_name == "normal")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromNormalField<PointT> >();
+      }
+      else if (field_name == "rgb")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromRGBField<PointT> >();
+      }
+      else if (field_name == "label")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromLabelField<PointT> >();
+      }
+      else if (field_name == "z")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromZField<PointT> >();
+      }
+      else if (field_name == "curvature")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromCurvatureField<PointT> >();
+      }
+      else if (field_name == "intensity")
+      {
+        pcie = boost::make_shared<PointCloudImageExtractorFromIntensityField<PointT> >();
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported field \"%s\".\n", field_name.c_str ());
+        return;
+      }
+      pcl::PCLImage image;
+      if (pcie->extract (cloud, image))
+      {
+        savePNGFile(file_name, image);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n", field_name.c_str());
+      }
+    }
+
   }
 }
 
