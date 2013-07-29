@@ -88,8 +88,8 @@ namespace pcl
         : distance_tolerance_ (-1.0f)
         , depth_dependent_ (false)
         , triangle_pixel_size_ (1)
-        , triangulation_type_ (QUAD_MESH)
         , viewpoint_ (Eigen::Vector3f::Zero ())
+        , triangulation_type_ (QUAD_MESH)
         , store_shadowed_faces_ (false)
         , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
       {
