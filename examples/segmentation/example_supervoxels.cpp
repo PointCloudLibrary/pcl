@@ -11,6 +11,7 @@
 #include <vtkImageReader2.h>
 #include <vtkImageData.h>
 #include <vtkImageFlip.h>
+#include <vtkPolyLine.h>
 
 // Types
 typedef pcl::PointXYZRGBA PointT;
