@@ -53,17 +53,17 @@ pcl::keypoint::harrisCorner (ImageType &output, ImageType &input, const float si
   /*creating the gaussian kernels*/
   ImageType kernel_d;
   ImageType kernel_i;
-  conv_2d->gaussianKernel  (5, sigma_d, kernel_d);
-  conv_2d->gaussianKernel  (5, sigma_i, kernel_i);
+  conv_2d.gaussianKernel  (5, sigma_d, kernel_d);
+  conv_2d.gaussianKernel  (5, sigma_i, kernel_i);
 
   /*scaling the image with differentiation scale*/
   ImageType smoothed_image;
-  conv_2d->convolve  (smoothed_image, kernel_d, input);
+  conv_2d.convolve  (smoothed_image, kernel_d, input);
 
   /*image derivatives*/
   ImageType I_x, I_y;
-  edge_detection->ComputeDerivativeXCentral  (I_x, smoothed_image);
-  edge_detection->ComputeDerivativeYCentral  (I_y, smoothed_image);
+  edge_detection.ComputeDerivativeXCentral  (I_x, smoothed_image);
+  edge_detection.ComputeDerivativeYCentral  (I_y, smoothed_image);
 
   /*second moment matrix*/
   ImageType I_x2, I_y2, I_xI_y;
@@ -73,9 +73,9 @@ pcl::keypoint::harrisCorner (ImageType &output, ImageType &input, const float si
 
   /*scaling second moment matrix with integration scale*/
   ImageType M00, M10, M11;
-  conv_2d->convolve  (M00, kernel_i, I_x2);
-  conv_2d->convolve  (M10, kernel_i, I_xI_y);
-  conv_2d->convolve  (M11, kernel_i, I_y2);
+  conv_2d.convolve  (M00, kernel_i, I_x2);
+  conv_2d.convolve  (M10, kernel_i, I_xI_y);
+  conv_2d.convolve  (M11, kernel_i, I_y2);
 
   /*harris function*/
   const size_t height = input.size ();
@@ -117,22 +117,22 @@ void
 pcl::keypoint::hessianBlob (ImageType &output, ImageType &input, const float sigma, bool SCALED){
   /*creating the gaussian kernels*/
   ImageType kernel, cornerness;
-  conv_2d->gaussianKernel  (5, sigma, kernel);
+  conv_2d.gaussianKernel  (5, sigma, kernel);
 
   /*scaling the image with differentiation scale*/
   ImageType smoothed_image;
-  conv_2d->convolve  (smoothed_image, kernel, input);
+  conv_2d.convolve  (smoothed_image, kernel, input);
 
   /*image derivatives*/
   ImageType I_x, I_y;
-  edge_detection->ComputeDerivativeXCentral  (I_x, smoothed_image);
-  edge_detection->ComputeDerivativeYCentral  (I_y, smoothed_image);
+  edge_detection.ComputeDerivativeXCentral  (I_x, smoothed_image);
+  edge_detection.ComputeDerivativeYCentral  (I_y, smoothed_image);
 
   /*second moment matrix*/
   ImageType I_xx, I_yy, I_xy;
-  edge_detection->ComputeDerivativeXCentral  (I_xx, I_x);
-  edge_detection->ComputeDerivativeYCentral  (I_xy, I_x);
-  edge_detection->ComputeDerivativeYCentral  (I_yy, I_y);
+  edge_detection.ComputeDerivativeXCentral  (I_xx, I_x);
+  edge_detection.ComputeDerivativeYCentral  (I_xy, I_x);
+  edge_detection.ComputeDerivativeYCentral  (I_yy, I_y);
   /*Determinant of Hessian*/
   const size_t height = input.size ();
   const size_t width = input[0].size ();
