@@ -41,7 +41,7 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <GL/gl.h>
+#include <qgl.h>
 #include <GL/glu.h>
 #include <pcl/filters/filter.h>
 #include <pcl/io/pcd_io.h>

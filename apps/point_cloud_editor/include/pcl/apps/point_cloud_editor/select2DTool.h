@@ -41,7 +41,7 @@
 #ifndef SELECT_2D_TOOL_H_
 #define SELECT_2D_TOOL_H_
 
-#include <GL/gl.h>
+#include <qgl.h>
 #include <pcl/apps/point_cloud_editor/toolInterface.h>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
