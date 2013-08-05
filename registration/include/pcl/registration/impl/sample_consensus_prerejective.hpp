@@ -184,6 +184,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   correspondence_rejector_poly_->setInputSource (input_);
   correspondence_rejector_poly_->setInputTarget (target_);
   correspondence_rejector_poly_->setCardinality (nr_samples_);
+  std::vector<bool> accepted (input_->size (), false); // Indices of sampled points that passed prerejection
   int num_rejections = 0; // For debugging
   
   // Initialize results
@@ -220,7 +221,20 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     
     // Draw nr_samples_ random samples
     selectSamples (*input_, nr_samples_, sample_indices);
+    
+    // Check if all sampled points already been accepted
+    bool samples_accepted = true;
+    for (unsigned int j = 0; j < sample_indices.size(); ++j) {
+      if (!accepted[j]) {
+        samples_accepted = false;
+        break;
+      }
+    }
 
+    // All points have already been accepted, avoid
+    if (samples_accepted)
+      continue;
+    
     // Find corresponding features in the target cloud
     findSimilarFeatures (*input_features_, sample_indices, corresponding_indices);
     
@@ -254,6 +268,9 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     {
       // Restore previous result
       final_transformation_ = final_transformation_prev;
+      // Mark the sampled points accepted
+      for (int j = 0; j < nr_samples_; ++j)
+        accepted[j] = true;
     }
   }
 
