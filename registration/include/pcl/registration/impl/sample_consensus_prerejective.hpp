@@ -190,7 +190,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   // Initialize results
   final_transformation_ = guess;
   inliers_.clear ();
-  float highest_inlier_fraction = inlier_fraction_;
+  float lowest_error = std::numeric_limits<float>::max ();
   converged_ = false;
   
   // Temporaries
@@ -203,11 +203,12 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   {
     getFitness (inliers, error);
     inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
+    error /= static_cast<float> (inliers.size ());
     
-    if (inlier_fraction > highest_inlier_fraction)
+    if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
     {
       inliers_ = inliers;
-      highest_inlier_fraction = inlier_fraction;
+      lowest_error = error;
       converged_ = true;
     }
   }
@@ -239,7 +240,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     findSimilarFeatures (*input_features_, sample_indices, corresponding_indices);
     
     // Apply prerejection
-    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices)){
+    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices)) {
       ++num_rejections;
       continue;
     }
@@ -255,22 +256,25 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     
     // Transform the input and compute the error (uses input_ and final_transformation_)
     getFitness (inliers, error);
+    
+    // Restore previous result
+    final_transformation_ = final_transformation_prev;
 
     // If the new fit is better, update results
-    const float inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
-    if (inlier_fraction > highest_inlier_fraction)
-    {
-      inliers_ = inliers;
-      highest_inlier_fraction = inlier_fraction;
-      converged_ = true;
-    }
-    else
-    {
-      // Restore previous result
-      final_transformation_ = final_transformation_prev;
+    inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
+    
+    if (inlier_fraction >= inlier_fraction_) {
       // Mark the sampled points accepted
       for (int j = 0; j < nr_samples_; ++j)
         accepted[j] = true;
+      
+      // Update result if pose hypothesis is better
+      if (error < lowest_error) {
+        inliers_ = inliers;
+        lowest_error = error;
+        converged_ = true;
+        final_transformation_ = transformation_;
+      }
     }
   }
 
@@ -299,7 +303,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
   PointCloudSource input_transformed;
   input_transformed.resize (input_->size ());
   transformPointCloud (*input_, input_transformed, final_transformation_);
-
+  
   // For each point in the source dataset
   for (size_t i = 0; i < input_transformed.points.size (); ++i)
   {
