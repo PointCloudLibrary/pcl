@@ -119,88 +119,88 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
     ConstCloudIterator<PointTarget>& target_it,
     Matrix4 &transformation_matrix) const
 {
-  const int npts = static_cast <int> (source_it.size ());
+  const int npts = static_cast<int> (source_it.size ());
 
   transformation_matrix.setIdentity ();
 
   // dual quaternion optimization
-  Eigen::Matrix<double,4,4> C1 = Eigen::Matrix<double,4,4>::Zero();
-  Eigen::Matrix<double,4,4> C2 = Eigen::Matrix<double,4,4>::Zero();
-  double *c1 = C1.data();
-  double *c2 = C2.data();
+  Eigen::Matrix<double, 4, 4> C1 = Eigen::Matrix<double, 4, 4>::Zero ();
+  Eigen::Matrix<double, 4, 4> C2 = Eigen::Matrix<double, 4, 4>::Zero ();
+  double *c1 = C1.data ();
+  double *c2 = C2.data ();
 
-  for( int i=0; i<npts; i++ ) {
+  for ( int i = 0; i < npts; ++i ) {
     const PointSource &a = *source_it;
     const PointTarget &b = *target_it;
-    const double axbx = a.x*b.x;
-    const double ayby = a.y*b.y;
-    const double azbz = a.z*b.z;
-    const double axby = a.x*b.y;
-    const double aybx = a.y*b.x;
-    const double axbz = a.x*b.z;
-    const double azbx = a.z*b.x;
-    const double aybz = a.y*b.z;
-    const double azby = a.z*b.y;
-    c1[0] += axbx - azbz - ayby;
-    c1[5] += ayby - azbz - axbx;
-    c1[10]+= azbz - axbx - ayby;
-    c1[15]+= axbx + ayby + azbz;
-    c1[1] += axby + aybx;
-    c1[2] += axbz + azbx;
-    c1[3] += aybz - azby;
-    c1[6] += azby + aybz;
-    c1[7] += azbx - axbz;
-    c1[11]+= axby - aybx;
+    const double axbx = a.x * b.x;
+    const double ayby = a.y * b.y;
+    const double azbz = a.z * b.z;
+    const double axby = a.x * b.y;
+    const double aybx = a.y * b.x;
+    const double axbz = a.x * b.z;
+    const double azbx = a.z * b.x;
+    const double aybz = a.y * b.z;
+    const double azby = a.z * b.y;
+    c1[0]  += axbx - azbz - ayby;
+    c1[5]  += ayby - azbz - axbx;
+    c1[10] += azbz - axbx - ayby;
+    c1[15] += axbx + ayby + azbz;
+    c1[1]  += axby + aybx;
+    c1[2]  += axbz + azbx;
+    c1[3]  += aybz - azby;
+    c1[6]  += azby + aybz;
+    c1[7]  += azbx - axbz;
+    c1[11] += axby - aybx;
 
-    c2[1] += a.z + b.z;
-    c2[2] -= a.y + b.y;
-    c2[3] += a.x - b.x;
-    c2[6] += a.x + b.x;
-    c2[7] += a.y - b.y;
-    c2[11]+= a.z - b.z;
+    c2[1]  += a.z + b.z;
+    c2[2]  -= a.y + b.y;
+    c2[3]  += a.x - b.x;
+    c2[6]  += a.x + b.x;
+    c2[7]  += a.y - b.y;
+    c2[11] += a.z - b.z;
     source_it++;
     target_it++;
   }
 
-  c1[4] = c1[1];
-  c1[8] = c1[2];
-  c1[9] = c1[6];
-  c1[12]= c1[3];
-  c1[13]= c1[7];
-  c1[14]= c1[11];
-  c2[4] = -c2[1];
-  c2[8] = -c2[2];
-  c2[12]= -c2[3];
-  c2[9] = -c2[6];
-  c2[13]= -c2[7];
-  c2[14]= -c2[11];
+  c1[4]  = c1[1];
+  c1[8]  = c1[2];
+  c1[9]  = c1[6];
+  c1[12] = c1[3];
+  c1[13] = c1[7];
+  c1[14] = c1[11];
+  c2[4]  = -c2[1];
+  c2[8]  = -c2[2];
+  c2[12] = -c2[3];
+  c2[9]  = -c2[6];
+  c2[13] = -c2[7];
+  c2[14] = -c2[11];
 
   C1 *= -2.0f;
   C2 *= 2.0f;
 
-  const Eigen::Matrix<double,4,4> A = (0.25f/double(npts))*C2.transpose()*C2 - C1;
+  const Eigen::Matrix<double, 4, 4> A = (0.25 / double (npts)) * C2.transpose () * C2 - C1;
 
-  const Eigen::EigenSolver< Eigen::Matrix<double,4,4> > es(A);
+  const Eigen::EigenSolver<Eigen::Matrix<double, 4, 4> > es (A);
 
   ptrdiff_t i;
-  es.eigenvalues().real().maxCoeff(&i);
-  const Eigen::Matrix<double,4,1> qmat = es.eigenvectors().col(i).real();
-  const Eigen::Matrix<double,4,1> smat = -(0.5f/float(npts))*C2*qmat;
+  es.eigenvalues ().real ().maxCoeff (&i);
+  const Eigen::Matrix<double, 4, 1> qmat = es.eigenvectors ().col (i).real ();
+  const Eigen::Matrix<double, 4, 1> smat = - (0.5 / double (npts)) * C2 * qmat;
 
-  const Eigen::Quaternion<double> q( qmat(3), qmat(0), qmat(1), qmat(2) );
-  const Eigen::Quaternion<double> s( smat(3), smat(0), smat(1), smat(2) );
+  const Eigen::Quaternion<double> q (qmat (3), qmat (0), qmat (1), qmat (2));
+  const Eigen::Quaternion<double> s (smat (3), smat (0), smat (1), smat (2));
 
-  const Eigen::Quaternion<double> t = s*q.conjugate();
+  const Eigen::Quaternion<double> t = s * q.conjugate ();
 
-  const Eigen::Matrix<double,3,3> R( q.toRotationMatrix() );
+  const Eigen::Matrix<double, 3, 3> R (q.toRotationMatrix ());
 
-  for( int i=0; i<3; ++i )
-    for( int j=0; j<3; ++j)
-      transformation_matrix(i,j) = R(i,j);
+  for( int i = 0; i < 3; ++i )
+    for( int j = 0; j < 3; ++j )
+      transformation_matrix (i, j) = R (i, j);
 
-  transformation_matrix(0,3) = -t.x();
-  transformation_matrix(1,3) = -t.y();
-  transformation_matrix(2,3) = -t.z();
+  transformation_matrix (0, 3) = - t.x ();
+  transformation_matrix (1, 3) = - t.y ();
+  transformation_matrix (2, 3) = - t.z ();
 }
 
 #endif /* PCL_REGISTRATION_TRANSFORMATION_ESTIMATION_DQ_HPP_ */
