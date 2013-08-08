@@ -974,8 +974,10 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::Po
   voxels->clear ();
   voxels->resize (leaves_.size ());
   typename pcl::PointCloud<PointT>::iterator voxel_itr = voxels->begin ();
-  typename std::set<LeafContainerT*>::iterator leaf_itr;
-  for (leaf_itr = leaves_.begin (); leaf_itr != leaves_.end (); ++leaf_itr, ++voxel_itr)
+  //typename std::set<LeafContainerT*>::iterator leaf_itr;
+  for (std::set<LeafContainerT*>::const_iterator leaf_itr = leaves_.begin (); 
+	  leaf_itr != leaves_.end (); 
+	  ++leaf_itr, ++voxel_itr)
   {
     const VoxelData& leaf_data = (*leaf_itr)->getData ();
     leaf_data.getPoint (*voxel_itr);
@@ -989,7 +991,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNormals (typename pcl::P
   normals = boost::make_shared<pcl::PointCloud<Normal> > ();
   normals->clear ();
   normals->resize (leaves_.size ());
-  typename std::set<LeafContainerT*>::iterator leaf_itr;
+  typename std::set<LeafContainerT*>::const_iterator leaf_itr;
   typename pcl::PointCloud<Normal>::iterator normal_itr = normals->begin ();
   for (leaf_itr = leaves_.begin (); leaf_itr != leaves_.end (); ++leaf_itr, ++normal_itr)
   {
@@ -1004,7 +1006,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNeighborLabels (std::set
 {
   neighbor_labels.clear ();
   //For each leaf belonging to this supervoxel
-  typename std::set<LeafContainerT*>::iterator leaf_itr;
+  typename std::set<LeafContainerT*>::const_iterator leaf_itr;
   for (leaf_itr = leaves_.begin (); leaf_itr != leaves_.end (); ++leaf_itr)
   {
     //for each neighbor of the leaf
