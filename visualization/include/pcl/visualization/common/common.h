@@ -42,12 +42,13 @@
 #endif
 
 #include <pcl/pcl_macros.h>
-#include <pcl/point_types.h>
 #include <pcl/visualization/eigen.h>
 #include <vtkMatrix4x4.h>
 
 namespace pcl
 {
+  struct RGB;
+
   namespace visualization
   {
     /** \brief Get (good) random values for R/G/B.

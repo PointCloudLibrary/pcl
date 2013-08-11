@@ -132,7 +132,7 @@ namespace pcl
   } ;
 
   /** \class InvalidConversionException
-    * \brief An exception that is thrown when a PointCloud2 message cannot be converted into a PCL type
+    * \brief An exception that is thrown when a PCLPointCloud2 message cannot be converted into a PCL type
     */
   class InvalidConversionException : public PCLException
   {

@@ -605,8 +605,8 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PolygonMesh &output)
   pcl::PointCloud<PointInT> hull_points;
   performReconstruction (hull_points, output.polygons);
 
-  // Convert the PointCloud into a PointCloud2
-  pcl::toROSMsg (hull_points, output.cloud);
+  // Convert the PointCloud into a PCLPointCloud2
+  pcl::toPCLPointCloud2 (hull_points, output.cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

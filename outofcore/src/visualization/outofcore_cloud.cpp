@@ -78,7 +78,7 @@ OutofcoreCloud::pcdReaderThread ()
       {
         vtkSmartPointer<vtkPolyData> cloud_data = vtkSmartPointer<vtkPolyData>::New ();
 
-        sensor_msgs::PointCloud2Ptr cloud (new sensor_msgs::PointCloud2);
+        pcl::PCLPointCloud2Ptr cloud (new pcl::PCLPointCloud2);
 
         pcl::io::loadPCDFile (pcd_queue_item->pcd_file, *cloud);
         pcl::io::pointCloudTovtkPolyData (cloud, cloud_data);

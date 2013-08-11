@@ -34,11 +34,17 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  */
 
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
+
+#include <vtkContextActor.h>
+#include <vtkContextScene.h>
+#include <vtkImageData.h>
+#include <vtkImageFlip.h>
+#include <vtkPointData.h>
+#include <vtkImageViewer.h>
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/search/organized.h>

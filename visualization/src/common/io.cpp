@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,9 +34,11 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
+
+#include <vtkPolyData.h>
+#include <vtkCleanPolyData.h>
+#include <vtkSmartPointer.h>
 
 #include <pcl/visualization/common/io.h>
 #include <pcl/io/pcd_io.h>
@@ -115,7 +120,7 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
 
     pcl::console::print_debug ("  Load: %s ... ", file_name.c_str ());
     // Assume the name of the actor is the name of the file
-    sensor_msgs::PointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud;
     if (pcl::io::loadPCDFile (file_name, cloud) == -1)
     {
       pcl::console::print_error (stdout, "[failed]\n");
@@ -125,13 +130,13 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
       pcl::console::print_debug ("[success]\n");
  
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
-    pcl::fromROSMsg (cloud, cloud_xyz);
+    pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
     // Get the corresponding indices that we need to save from this point cloud
     std::vector<int> indices;
     getCorrespondingPointCloud (cleaner->GetOutput (), cloud_xyz, indices);
 
     // Copy the indices and save the file
-    sensor_msgs::PointCloud2 cloud_out;
+    pcl::PCLPointCloud2 cloud_out;
     pcl::copyPointCloud (cloud, indices, cloud_out);
     std::stringstream ss;
     ss << out_file << i++ << ".pcd";

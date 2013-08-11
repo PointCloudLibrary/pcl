@@ -40,9 +40,10 @@
 #define PCL_PCL_HISTOGRAM_VISUALIZER_H_
 
 #include <pcl/visualization/interactor_style.h>
-#include <pcl/visualization/vtk.h>
 #include <pcl/visualization/common/common.h>
 #include <pcl/visualization/common/ren_win_interact_map.h>
+
+class vtkRenderWindowInteractor;
 
 namespace pcl
 {
@@ -101,7 +102,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
@@ -128,7 +129,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
@@ -148,7 +149,7 @@ namespace pcl
           * \param[in] id the point cloud object id (default: cloud)
           */
         bool 
-        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        updateFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                                 const std::string &field_name, 
                                 const std::string &id = "cloud");
                              
@@ -171,7 +172,7 @@ namespace pcl
           * \param[in] id the point cloud object id (default: cloud)
           */
         bool 
-        updateFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        updateFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                                 const std::string &field_name, const int index,
                                 const std::string &id = "cloud");         
 
@@ -229,22 +230,8 @@ namespace pcl
             return (new ExitMainLoopTimerCallback);
           }
           virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
-          {
-            if (event_id != vtkCommand::TimerEvent)
-              return;
-            int timer_id = *(reinterpret_cast<int*> (call_data));
+          Execute (vtkObject*, unsigned long event_id, void* call_data);
 
-            if (timer_id != right_timer_id)
-              return;
-
-            // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interact->stopLoop ();
-#else
-            interact->TerminateApp ();
-#endif
-          }
           int right_timer_id;
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
           PCLVisualizerInteractor *interact;
@@ -263,12 +250,8 @@ namespace pcl
           }
 
           virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*)
-          {
-            if (event_id != vtkCommand::ExitEvent)
-              return;
-            his->stopped_ = true;
-          }
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           PCLHistogramVisualizer *his;
         };
 

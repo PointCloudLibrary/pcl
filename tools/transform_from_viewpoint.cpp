@@ -37,7 +37,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/console/print.h>
@@ -59,7 +59,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -74,7 +74,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-transform (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output)
+transform (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output)
 {
   // Check for 'normals'
   bool has_normals = false;
@@ -91,21 +91,21 @@ transform (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCl
   if (has_normals)
   {
     PointCloud<PointNormal> xyznormals;
-    fromROSMsg (*input, xyznormals);
+    fromPCLPointCloud2 (*input, xyznormals);
     pcl::transformPointCloud<PointNormal> (xyznormals, xyznormals, translation.head<3> (), orientation);
     // Copy back the xyz and normals
-    sensor_msgs::PointCloud2 output_xyznormals;
-    toROSMsg (xyznormals, output_xyznormals);
+    pcl::PCLPointCloud2 output_xyznormals;
+    toPCLPointCloud2 (xyznormals, output_xyznormals);
     concatenateFields (*input, output_xyznormals, output);
   }
   else
   {
     PointCloud<PointXYZ> xyz;
-    fromROSMsg (*input, xyz);
+    fromPCLPointCloud2 (*input, xyz);
     pcl::transformPointCloud<PointXYZ> (xyz, xyz, translation.head<3> (), orientation);
     // Copy back the xyz and normals
-    sensor_msgs::PointCloud2 output_xyz;
-    toROSMsg (xyz, output_xyz);
+    pcl::PCLPointCloud2 output_xyz;
+    toPCLPointCloud2 (xyz, output_xyz);
     concatenateFields (*input, output_xyz, output);
   }
 
@@ -116,7 +116,7 @@ transform (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCl
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -152,12 +152,12 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud)) 
     return (-1);
 
   // Perform the feature estimation
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   transform (cloud, output);
 
   // Save into the second file

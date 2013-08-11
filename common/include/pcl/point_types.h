@@ -41,7 +41,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <bitset>
-#include <pcl/ros/register_point_struct.h>
+#include <pcl/register_point_struct.h>
 
 /**
   * \file pcl/point_types.h
@@ -614,11 +614,11 @@ namespace pcl
   template<typename PointT>
   struct FieldMatches<PointT, fields::rgba>
   {
-    bool operator() (const sensor_msgs::PointField& field)
+    bool operator() (const pcl::PCLPointField& field)
     {
       if (field.name == "rgb")
       {
-        return (field.datatype == sensor_msgs::PointField::FLOAT32 &&
+        return (field.datatype == pcl::PCLPointField::FLOAT32 &&
                 field.count == 1);
       }
       else
@@ -632,11 +632,11 @@ namespace pcl
   template<typename PointT>
   struct FieldMatches<PointT, fields::rgb>
   {
-    bool operator() (const sensor_msgs::PointField& field)
+    bool operator() (const pcl::PCLPointField& field)
     {
       if (field.name == "rgba")
       {
-        return (field.datatype == sensor_msgs::PointField::UINT32 &&
+        return (field.datatype == pcl::PCLPointField::UINT32 &&
                 field.count == 1);
       }
       else

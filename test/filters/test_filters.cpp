@@ -56,18 +56,20 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/crop_box.h>
 #include <pcl/filters/median_filter.h>
+#include <pcl/filters/normal_refinement.h>
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/eigen.h>
 
+#include <pcl/segmentation/sac_segmentation.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
-using namespace sensor_msgs;
 using namespace Eigen;
 
 
-PointCloud2::Ptr cloud_blob (new PointCloud2);
+PCLPointCloud2::Ptr cloud_blob (new PCLPointCloud2);
 PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 vector<int> indices_;
 
@@ -144,15 +146,15 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].y, output.points[output.points.size () - 1].y);
   EXPECT_EQ (cloud->points[cloud->points.size () - 2].z, output.points[output.points.size () - 1].z);
 
-  // Test the sensor_msgs::PointCloud2 method
-  ExtractIndices<PointCloud2> ei2;
+  // Test the pcl::PCLPointCloud2 method
+  ExtractIndices<PCLPointCloud2> ei2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
   ei2.setInputCloud (cloud_blob);
   ei2.setIndices (indices);
   ei2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
@@ -169,7 +171,7 @@ TEST (ExtractIndices, Filters)
   ei2.setNegative (true);
   ei2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size () - 2);
   EXPECT_EQ (output.width, cloud->points.size () - 2);
@@ -378,14 +380,14 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[41].y, cloud->points[41].y, 1e-5);
   EXPECT_NEAR (output.points[41].z, cloud->points[41].z, 1e-5);
 
-  // Test the PointCloud2 method
-  PassThrough<PointCloud2> pt2;
+  // Test the PCLPointCloud2 method
+  PassThrough<PCLPointCloud2> pt2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
   pt2.setInputCloud (cloud_blob);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -395,7 +397,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimits (0.05, 0.1);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
@@ -413,7 +415,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimitsNegative (true);
   pt2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
@@ -428,11 +430,11 @@ TEST (PassThrough, Filters)
   EXPECT_NEAR (output.points[354].y, 0.17516, 1e-5);
   EXPECT_NEAR (output.points[354].z, -0.0444, 1e-5);
 
-  PassThrough<PointCloud2> pt2_(true);
+  PassThrough<PCLPointCloud2> pt2_(true);
   pt2_.setInputCloud (cloud_blob);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (pt2_.getRemovedIndices()->size(), 0);
   EXPECT_EQ (output.points.size (), cloud->points.size ());
@@ -443,7 +445,7 @@ TEST (PassThrough, Filters)
   pt2_.setFilterLimits (0.05, 0.1);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
@@ -462,7 +464,7 @@ TEST (PassThrough, Filters)
   pt2_.setFilterLimitsNegative (true);
   pt2_.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
@@ -482,7 +484,7 @@ TEST (PassThrough, Filters)
   pt2.setUserFilterValue (std::numeric_limits<float>::quiet_NaN ());
   pt2.setFilterFieldName ("");
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -495,7 +497,7 @@ TEST (PassThrough, Filters)
   pt2.setFilterLimitsNegative (false);
   pt2.setKeepOrganized (true);
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -512,7 +514,7 @@ TEST (PassThrough, Filters)
 
   pt2.setFilterLimitsNegative (true);
   pt2.filter (output_blob);
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (output.points.size (), cloud->points.size ());
   EXPECT_EQ (output.width, cloud->width);
@@ -605,16 +607,16 @@ TEST (VoxelGrid, Filters)
   EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE ( output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
-  // Test the sensor_msgs::PointCloud2 method
-  VoxelGrid<PointCloud2> grid2;
+  // Test the pcl::PCLPointCloud2 method
+  VoxelGrid<PCLPointCloud2> grid2;
 
-  PointCloud2 output_blob;
+  PCLPointCloud2 output_blob;
 
   grid2.setLeafSize (0.02f, 0.02f, 0.02f);
   grid2.setInputCloud (cloud_blob);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 103);
   EXPECT_EQ (int (output.width), 103);
@@ -625,7 +627,7 @@ TEST (VoxelGrid, Filters)
   grid2.setFilterLimits (0.05, 0.1);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 14);
   EXPECT_EQ (int (output.width), 14);
@@ -644,7 +646,7 @@ TEST (VoxelGrid, Filters)
   grid2.setSaveLeafLayout(true);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (int (output.points.size ()), 100);
   EXPECT_EQ (int (output.width), 100);
@@ -691,8 +693,8 @@ TEST (VoxelGrid, Filters)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid_RGB, Filters)
 {
-  PointCloud2 cloud_rgb_blob_;
-  PointCloud2::Ptr cloud_rgb_blob_ptr_;
+  PCLPointCloud2 cloud_rgb_blob_;
+  PCLPointCloud2::Ptr cloud_rgb_blob_ptr_;
   PointCloud<PointXYZRGB> cloud_rgb_;
   PointCloud<PointXYZRGB>::Ptr cloud_rgb_ptr_;
 
@@ -723,8 +725,8 @@ TEST (VoxelGrid_RGB, Filters)
     cloud_rgb_.points.push_back (pt);
   }
 
-  toROSMsg (cloud_rgb_, cloud_rgb_blob_);
-  cloud_rgb_blob_ptr_.reset (new PointCloud2 (cloud_rgb_blob_));
+  toPCLPointCloud2 (cloud_rgb_, cloud_rgb_blob_);
+  cloud_rgb_blob_ptr_.reset (new PCLPointCloud2 (cloud_rgb_blob_));
   cloud_rgb_ptr_.reset (new PointCloud<PointXYZRGB> (cloud_rgb_));
 
   PointCloud<PointXYZRGB> output_rgb;
@@ -751,14 +753,14 @@ TEST (VoxelGrid_RGB, Filters)
     EXPECT_NEAR (b, ave_b, 1.0);
   }
 
-  VoxelGrid<PointCloud2> grid2;
-  PointCloud2 output_rgb_blob;
+  VoxelGrid<PCLPointCloud2> grid2;
+  PCLPointCloud2 output_rgb_blob;
 
   grid2.setLeafSize (0.03f, 0.03f, 0.03f);
   grid2.setInputCloud (cloud_rgb_blob_ptr_);
   grid2.filter (output_rgb_blob);
 
-  fromROSMsg (output_rgb_blob, output_rgb);
+  fromPCLPointCloud2 (output_rgb_blob, output_rgb);
 
   EXPECT_EQ (int (output_rgb.points.size ()), 1);
   EXPECT_EQ (int (output_rgb.width), 1);
@@ -788,8 +790,8 @@ float getRandomNumber (float max = 1.0, float min = 0.0)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (VoxelGrid_XYZNormal, Filters)
 {
-  PointCloud2 cloud_blob_;
-  PointCloud2::Ptr cloud_blob_ptr_;
+  PCLPointCloud2 cloud_blob_;
+  PCLPointCloud2::Ptr cloud_blob_ptr_;
 
   PointCloud<PointNormal>::Ptr input (new PointCloud<PointNormal>);
   PointCloud<PointNormal> output;
@@ -931,18 +933,18 @@ TEST (VoxelGrid_XYZNormal, Filters)
     }
   }
   
-  toROSMsg (*input, cloud_blob_);
-  cloud_blob_ptr_.reset (new PointCloud2 (cloud_blob_));
+  toPCLPointCloud2 (*input, cloud_blob_);
+  cloud_blob_ptr_.reset (new PCLPointCloud2 (cloud_blob_));
   
-  VoxelGrid<PointCloud2> grid2;
-  PointCloud2 output_blob;
+  VoxelGrid<PCLPointCloud2> grid2;
+  PCLPointCloud2 output_blob;
 
   grid2.setLeafSize (1.0f, 1.0f, 1.0f);
   grid2.setFilterLimits (0.0f, 2.0f);
   grid2.setInputCloud (cloud_blob_ptr_);
   grid2.filter (output_blob);
 
-  fromROSMsg (output_blob, output);
+  fromPCLPointCloud2 (output_blob, output);
   // check the output
   for (unsigned idx = 0, zIdx = 0; zIdx < 2; ++zIdx)
   {
@@ -1074,17 +1076,17 @@ TEST (ProjectInliers, Filters)
   for (size_t i = 0; i < output.points.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
 
-    // Test the sensor_msgs::PointCloud2 method
-    ProjectInliers<PointCloud2> proj2;
+    // Test the pcl::PCLPointCloud2 method
+    ProjectInliers<PCLPointCloud2> proj2;
 
-    PointCloud2 output_blob;
+    PCLPointCloud2 output_blob;
 
     proj2.setModelType (SACMODEL_PLANE);
     proj2.setInputCloud (cloud_blob);
     proj2.setModelCoefficients (coefficients);
     proj2.filter (output_blob);
 
-    fromROSMsg (output_blob, output);
+    fromPCLPointCloud2 (output_blob, output);
 
     for (size_t i = 0; i < output.points.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
@@ -1109,15 +1111,15 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  PointCloud2 cloud_out2;
-  RadiusOutlierRemoval<PointCloud2> outrem2;
+  // Test the pcl::PCLPointCloud2 method
+  PCLPointCloud2 cloud_out2;
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
   outrem2.setRadiusSearch (0.02);
   outrem2.setMinNeighborsInRadius (15);
   outrem2.filter (cloud_out2);
 
-  fromROSMsg (cloud_out2, cloud_out);
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
@@ -1141,14 +1143,14 @@ TEST (RadiusOutlierRemoval, Filters)
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
   EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  RadiusOutlierRemoval<PointCloud2> outrem2_(true);
+  // Test the pcl::PCLPointCloud2 method
+  RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setRadiusSearch (0.02);
   outrem2_.setMinNeighborsInRadius (15);
   outrem2_.filter (cloud_out2);
 
-  fromROSMsg (cloud_out2, cloud_out);
+  fromPCLPointCloud2 (cloud_out2, cloud_out);
   EXPECT_EQ (int (cloud_out.points.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
@@ -1334,15 +1336,15 @@ TEST (CropBox, Filters)
   cropBoxFilter.filter (indices);
   EXPECT_EQ (int (indices.size ()), 9);
 
-  // PointCloud2
+  // PCLPointCloud2
   // -------------------------------------------------------------------------
 
   // Create cloud with center point and corner points
-  PointCloud2::Ptr input2 (new PointCloud2);
-  pcl::toROSMsg (*input, *input2);
+  PCLPointCloud2::Ptr input2 (new PCLPointCloud2);
+  pcl::toPCLPointCloud2 (*input, *input2);
 
   // Test the PointCloud<PointT> method
-  CropBox<PointCloud2> cropBoxFilter2(true);
+  CropBox<PCLPointCloud2> cropBoxFilter2(true);
   cropBoxFilter2.setInputCloud (input2);
 
   // Cropbox slighlty bigger then bounding box of points
@@ -1354,7 +1356,7 @@ TEST (CropBox, Filters)
   cropBoxFilter2.filter (indices2);
 
   // Cloud
-  PointCloud2 cloud_out2;
+  PCLPointCloud2 cloud_out2;
   cropBoxFilter2.filter (cloud_out2);
 
   // Should contain all
@@ -1366,7 +1368,7 @@ TEST (CropBox, Filters)
   EXPECT_EQ (int (removed_indices2->size ()), 0);
 
   // Test setNegative
-  PointCloud2 cloud_out2_negative;
+  PCLPointCloud2 cloud_out2_negative;
   cropBoxFilter2.setNegative (true);
   cropBoxFilter2.filter (cloud_out2_negative);
   EXPECT_EQ (int (cloud_out2_negative.width), 0);
@@ -1503,15 +1505,15 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  PointCloud2 output2;
-  StatisticalOutlierRemoval<PointCloud2> outrem2;
+  // Test the pcl::PCLPointCloud2 method
+  PCLPointCloud2 output2;
+  StatisticalOutlierRemoval<PCLPointCloud2> outrem2;
   outrem2.setInputCloud (cloud_blob);
   outrem2.setMeanK (50);
   outrem2.setStddevMulThresh (1.0);
   outrem2.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
@@ -1523,7 +1525,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2.setNegative (true);
   outrem2.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
@@ -1558,14 +1560,14 @@ TEST (StatisticalOutlierRemoval, Filters)
   EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
   EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
 
-  // Test the sensor_msgs::PointCloud2 method
-  StatisticalOutlierRemoval<PointCloud2> outrem2_(true);
+  // Test the pcl::PCLPointCloud2 method
+  StatisticalOutlierRemoval<PCLPointCloud2> outrem2_(true);
   outrem2_.setInputCloud (cloud_blob);
   outrem2_.setMeanK (50);
   outrem2_.setStddevMulThresh (1.0);
   outrem2_.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
@@ -1578,7 +1580,7 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem2_.setNegative (true);
   outrem2_.filter (output2);
 
-  fromROSMsg (output2, output);
+  fromPCLPointCloud2 (output2, output);
 
   EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
@@ -2178,6 +2180,184 @@ TEST (MedianFilter, Filters)
   EXPECT_NEAR (0.703000009f, out_3(428, 300).z, 1e-5);
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+#include <pcl/common/time.h>
+TEST (NormalRefinement, Filters)
+{
+  /*
+   * Initialization of parameters
+   */
+  
+  // Input without NaN
+  pcl::PointCloud<pcl::PointXYZRGB> cloud_organized_nonan;
+  std::vector<int> dummy;
+  pcl::removeNaNFromPointCloud<pcl::PointXYZRGB> (*cloud_organized, cloud_organized_nonan, dummy);
+  
+  // Viewpoint
+  const float vp_x = cloud_organized_nonan.sensor_origin_[0];
+  const float vp_y = cloud_organized_nonan.sensor_origin_[1];
+  const float vp_z = cloud_organized_nonan.sensor_origin_[2];
+  
+  // Search parameters
+  const int k = 5;
+  std::vector<std::vector<int> > k_indices;
+  std::vector<std::vector<float> > k_sqr_distances;
+  
+  // Estimated and refined normal containers
+  pcl::PointCloud<pcl::PointXYZRGBNormal> cloud_organized_normal;
+  pcl::PointCloud<pcl::PointXYZRGBNormal> cloud_organized_normal_refined;
+  
+  /*
+   * Neighbor search
+   */
+  
+  // Search for neighbors
+  pcl::search::KdTree<pcl::PointXYZRGB> kdtree;
+  kdtree.setInputCloud (cloud_organized_nonan.makeShared ());
+  kdtree.nearestKSearch (cloud_organized_nonan, std::vector<int> (), k, k_indices, k_sqr_distances);
+  
+  /*
+   * Estimate normals
+   */
+  
+  // Run estimation
+  pcl::NormalEstimation<pcl::PointXYZRGB, pcl::PointXYZRGBNormal> ne;
+  cloud_organized_normal.reserve (cloud_organized_nonan.size ());
+  for (unsigned int i = 0; i < cloud_organized_nonan.size (); ++i)
+  {
+    // Output point
+    pcl::PointXYZRGBNormal normali;
+    // XYZ and RGB
+    std::memcpy (normali.data, cloud_organized_nonan[i].data, 3*sizeof (float));
+    normali.rgba = cloud_organized_nonan[i].rgba;
+    // Normal
+    ne.computePointNormal (cloud_organized_nonan, k_indices[i], normali.normal_x, normali.normal_y, normali.normal_z, normali.curvature);
+    pcl::flipNormalTowardsViewpoint (cloud_organized_nonan[i], vp_x, vp_y, vp_z, normali.normal_x, normali.normal_y, normali.normal_z);
+    // Store
+    cloud_organized_normal.push_back (normali);
+  }
+  
+  /*
+   * Refine normals
+   */
+  
+  // Run refinement
+  pcl::NormalRefinement<pcl::PointXYZRGBNormal> nr (k_indices, k_sqr_distances);
+  nr.setInputCloud (cloud_organized_normal.makeShared());
+  nr.setMaxIterations (15);
+  nr.setConvergenceThreshold (0.00001f);
+  nr.filter (cloud_organized_normal_refined);
+  
+  /*
+   * Find dominant plane in the scene
+   */
+  
+  // Calculate SAC model
+  pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
+  pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
+  pcl::SACSegmentation<pcl::PointXYZRGBNormal> seg;
+  seg.setOptimizeCoefficients (true);
+  seg.setModelType (pcl::SACMODEL_PLANE);
+  seg.setMethodType (pcl::SAC_RANSAC);
+  seg.setDistanceThreshold (0.005);
+  seg.setInputCloud (cloud_organized_normal.makeShared ());
+  seg.segment (*inliers, *coefficients);
+  
+  // Read out SAC model
+  const std::vector<int>& idx_table = inliers->indices;
+  float a = coefficients->values[0];
+  float b = coefficients->values[1];
+  float c = coefficients->values[2];
+  const float d = coefficients->values[3];
+  
+  // Find a point on the plane [0 0 z] => z = -d / c
+  pcl::PointXYZ p_table;
+  p_table.x = 0.0f;
+  p_table.y = 0.0f;
+  p_table.z = -d / c;
+  
+  // Use the point to orient the SAC normal correctly
+  pcl::flipNormalTowardsViewpoint (p_table, vp_x, vp_y, vp_z, a, b, c);  
+  
+  /*
+   * Test: check that the refined table normals are closer to the SAC model normal
+   */
+  
+  // Errors for the two normal sets and their means
+  std::vector<float> errs_est;
+  float err_est_mean = 0.0f;
+  std::vector<float> errs_refined;
+  float err_refined_mean = 0.0f;
+  
+  // Number of zero or NaN vectors produced by refinement
+  int num_zeros = 0;
+  int num_nans = 0;
+  
+  // Loop
+  for (unsigned int i = 0; i < idx_table.size (); ++i)
+  {
+    float tmp;
+    
+    // Estimated (need to avoid zeros and NaNs)
+    const pcl::PointXYZRGBNormal& calci = cloud_organized_normal[idx_table[i]];
+    if ((fabsf (calci.normal_x) + fabsf (calci.normal_y) + fabsf (calci.normal_z)) > 0.0f)
+    {
+      tmp = 1.0f - (calci.normal_x * a + calci.normal_y * b + calci.normal_z * c);
+      if (pcl_isfinite (tmp))
+      {
+        errs_est.push_back (tmp);
+        err_est_mean += tmp;
+      }
+    }
+    
+    // Refined
+    const pcl::PointXYZRGBNormal& refinedi = cloud_organized_normal_refined[idx_table[i]];
+    if ((fabsf (refinedi.normal_x) + fabsf (refinedi.normal_y) + fabsf (refinedi.normal_z)) > 0.0f)
+    {
+      tmp = 1.0f - (refinedi.normal_x * a + refinedi.normal_y * b + refinedi.normal_z * c);
+      if (pcl_isfinite(tmp))
+      {
+        errs_refined.push_back (tmp);
+        err_refined_mean += tmp;
+      }
+      else
+      {
+        // Non-finite normal encountered
+        ++num_nans;
+      }
+    } else
+    {
+      // Zero normal encountered
+      ++num_zeros;
+    }
+  }
+  
+  // Mean errors
+  err_est_mean /= static_cast<float> (errs_est.size ());
+  err_refined_mean /= static_cast<float> (errs_refined.size ());
+  
+  // Error variance of estimated
+  float err_est_var = 0.0f;
+  for (unsigned int i = 0; i < errs_est.size (); ++i)
+    err_est_var = (errs_est[i] - err_est_mean) * (errs_est[i] - err_est_mean);
+  err_est_var /= static_cast<float> (errs_est.size () - 1);
+  
+  // Error variance of refined
+  float err_refined_var = 0.0f;
+  for (unsigned int i = 0; i < errs_refined.size (); ++i)
+    err_refined_var = (errs_refined[i] - err_refined_mean) * (errs_refined[i] - err_refined_mean);
+  err_refined_var /= static_cast<float> (errs_refined.size () - 1);
+  
+  // Refinement should not produce any zeros and NaNs
+  EXPECT_EQ(num_zeros, 0);
+  EXPECT_EQ(num_nans, 0);
+  
+  // Expect mean/variance of error of refined to be smaller, i.e. closer to SAC model
+  EXPECT_LT(err_refined_mean, err_est_mean);
+  EXPECT_LT(err_refined_var, err_est_var);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -2192,7 +2372,7 @@ main (int argc, char** argv)
   char* file_name = argv[1];
   // Load a standard PCD file from disk
   loadPCDFile (file_name, *cloud_blob);
-  fromROSMsg (*cloud_blob, *cloud);
+  fromPCLPointCloud2 (*cloud_blob, *cloud);
 
   indices_.resize (cloud->points.size ());
   for (int i = 0; i < static_cast<int> (indices_.size ()); ++i)

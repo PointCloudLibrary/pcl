@@ -56,11 +56,11 @@ int
 main (int, char ** argv)
 {
   pcl::PCDReader reader;
-  sensor_msgs::PointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   reader.read (argv[1], cloud);
   
   pcl::PointCloud<pcl::PointXYZ> xyz;
-  pcl::fromROSMsg (cloud, xyz);
+  pcl::fromPCLPointCloud2 (cloud, xyz);
   
   pcl::visualization::ImageViewer depth_image_viewer_;
   float* img = new float[cloud.width * cloud.height];

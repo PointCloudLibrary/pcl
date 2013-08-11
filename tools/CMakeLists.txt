@@ -57,6 +57,9 @@ if (build)
   PCL_ADD_EXECUTABLE (pcl_passthrough_filter ${SUBSYS_NAME} passthrough_filter.cpp)
   target_link_libraries (pcl_passthrough_filter pcl_common pcl_io pcl_filters)
 	
+  PCL_ADD_EXECUTABLE (pcl_radius_filter ${SUBSYS_NAME} radius_filter.cpp)
+  target_link_libraries (pcl_radius_filter pcl_common pcl_io pcl_filters)
+
   PCL_ADD_EXECUTABLE (pcl_extract_feature ${SUBSYS_NAME} extract_feature.cpp)
   target_link_libraries (pcl_extract_feature pcl_common pcl_io pcl_features pcl_kdtree)
   
@@ -71,10 +74,6 @@ if (build)
 
   PCL_ADD_EXECUTABLE (pcl_crf_segmentation ${SUBSYS_NAME} crf_segmentation.cpp)
   target_link_libraries (pcl_crf_segmentation pcl_common pcl_io pcl_segmentation)
-
-  PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png ${SUBSYS_NAME} organized_pcd_to_png.cpp)
-  target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
-    
 
   # NOTE: boost/uuid/uuid.hpp only exists for versions > 1.41
   if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 41)
@@ -162,6 +161,9 @@ if (build)
   
       PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
       target_link_libraries(pcl_png2pcd pcl_common pcl_io)
+
+      PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png ${SUBSYS_NAME} organized_pcd_to_png.cpp)
+      target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
 
       PCL_ADD_EXECUTABLE(pcl_tiff2pcd ${SUBSYS_NAME} tiff2pcd.cpp)
       target_link_libraries(pcl_tiff2pcd pcl_common pcl_io)

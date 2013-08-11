@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,26 +34,34 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <list>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkLODActor.h>
 #include <vtkPolyData.h>
-#include <vtkMapper.h>
 #include <vtkPolyDataMapper.h>
-#include <vtkPointData.h>
 #include <vtkCellArray.h>
-#include <vtkAppendPolyData.h>
 #include <vtkTextProperty.h>
-#include <vtkAbstractPicker.h>
 #include <vtkAbstractPropPicker.h>
-#include <vtkPlanes.h>
-#include <vtkMatrix4x4.h>
-#include <vtkInteractorObserver.h>
 #include <vtkCamera.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkScalarBarActor.h>
+#include <vtkPNGWriter.h>
+#include <vtkWindowToImageFilter.h>
+#include <vtkRendererCollection.h>
+#include <vtkActorCollection.h>
+#include <vtkLegendScaleActor.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkObjectFactory.h>
+#include <vtkProperty.h>
+#include <vtkPointData.h>
+#include <vtkAssemblyPath.h>
+#include <vtkAbstractPicker.h>
+#include <vtkPointPicker.h>
+#include <vtkAreaPicker.h>
 
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 
@@ -320,7 +331,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         act->geometry_handler_index_ = index;
 
         // Create the new geometry
-        PointCloudGeometryHandler<sensor_msgs::PointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
+        PointCloudGeometryHandler<pcl::PCLPointCloud2>::ConstPtr geometry_handler = act->geometry_handlers[index];
 
         // Use the handler to obtain the geometry
         vtkSmartPointer<vtkPoints> points;
@@ -366,7 +377,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         act->color_handler_index_ = index;
 
         // Get the new color
-        PointCloudColorHandler<sensor_msgs::PointCloud2>::ConstPtr color_handler = act->color_handlers[index];
+        PointCloudColorHandler<pcl::PCLPointCloud2>::ConstPtr color_handler = act->color_handlers[index];
 
         vtkSmartPointer<vtkDataArray> scalars;
         color_handler->getColor (scalars);
@@ -798,6 +809,19 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'x' : case 'X' :
     {
       CurrentMode = (CurrentMode == ORIENT_MODE) ? SELECT_MODE : ORIENT_MODE;
+      if (CurrentMode == SELECT_MODE)
+      {
+        // Save the point picker
+        point_picker_ = static_cast<vtkPointPicker*> (Interactor->GetPicker ());
+        // Switch for an area picker
+        vtkSmartPointer<vtkAreaPicker> area_picker = vtkSmartPointer<vtkAreaPicker>::New ();
+        Interactor->SetPicker (area_picker);
+      }
+      else
+      {
+        // Restore point picker
+        Interactor->SetPicker (point_picker_);
+      }
       break;
     }
 

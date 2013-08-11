@@ -39,10 +39,17 @@
 
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <vector>
+#include <map>
+#include <pcl/PCLPointCloud2.h>
+#include <boost/unordered_map.hpp>
 #include <vtkLODActor.h>
 #include <vtkSmartPointer.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/visualization/boost.h>
+
+template <typename T> class vtkSmartPointer;
+class vtkLODActor;
+class vtkProp;
 
 namespace pcl
 {
@@ -50,11 +57,11 @@ namespace pcl
   {
     class PCL_EXPORTS CloudActor
     {
-      typedef PointCloudGeometryHandler<sensor_msgs::PointCloud2> GeometryHandler;
+      typedef PointCloudGeometryHandler<pcl::PCLPointCloud2> GeometryHandler;
       typedef GeometryHandler::Ptr GeometryHandlerPtr;
       typedef GeometryHandler::ConstPtr GeometryHandlerConstPtr;
 
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2> ColorHandler;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2> ColorHandler;
       typedef ColorHandler::Ptr ColorHandlerPtr;
       typedef ColorHandler::ConstPtr ColorHandlerConstPtr;
 

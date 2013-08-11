@@ -50,6 +50,28 @@ namespace pcl
     {
       typedef double float_type;
 
+      template<int CTA_SIZE_, typename T>
+      static __device__ __forceinline__ void reduce(volatile T* buffer)
+      {
+        int tid = Block::flattenedThreadId();
+        T val =  buffer[tid];
+
+        if (CTA_SIZE_ >= 1024) { if (tid < 512) buffer[tid] = val = val + buffer[tid + 512]; __syncthreads(); }
+        if (CTA_SIZE_ >=  512) { if (tid < 256) buffer[tid] = val = val + buffer[tid + 256]; __syncthreads(); }
+        if (CTA_SIZE_ >=  256) { if (tid < 128) buffer[tid] = val = val + buffer[tid + 128]; __syncthreads(); }
+        if (CTA_SIZE_ >=  128) { if (tid <  64) buffer[tid] = val = val + buffer[tid +  64]; __syncthreads(); }
+
+        if (tid < 32)
+        {
+          if (CTA_SIZE_ >=   64) { buffer[tid] = val = val + buffer[tid +  32]; }
+          if (CTA_SIZE_ >=   32) { buffer[tid] = val = val + buffer[tid +  16]; }
+          if (CTA_SIZE_ >=   16) { buffer[tid] = val = val + buffer[tid +   8]; }
+          if (CTA_SIZE_ >=    8) { buffer[tid] = val = val + buffer[tid +   4]; }
+          if (CTA_SIZE_ >=    4) { buffer[tid] = val = val + buffer[tid +   2]; }
+          if (CTA_SIZE_ >=    2) { buffer[tid] = val = val + buffer[tid +   1]; }
+        }
+      }
+
       struct Combined
       {
         enum
@@ -57,15 +79,6 @@ namespace pcl
           CTA_SIZE_X = 32,
           CTA_SIZE_Y = 8,
           CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y
-        };
-
-        struct plus
-        {
-          __forceinline__ __device__ float
-          operator () (const float_type &lhs, const volatile float_type& rhs) const 
-          {
-            return (lhs + rhs);
-          }
         };
 
         Mat33 Rcurr;
@@ -184,7 +197,7 @@ namespace pcl
               smem[tid] = row[i] * row[j];
               __syncthreads ();
 
-              Block::reduce<CTA_SIZE>(smem, plus ());
+              reduce<CTA_SIZE>(smem);
 
               if (tid == 0)
                 gbuf.ptr (shift++)[blockIdx.x + gridDim.x * blockIdx.y] = smem[0];
@@ -234,7 +247,7 @@ namespace pcl
           smem[tid] = sum;
           __syncthreads ();
 
-                  Block::reduce<CTA_SIZE>(smem, Combined::plus ());
+          reduce<CTA_SIZE>(smem);
 
           if (tid == 0)
             output[blockIdx.x] = smem[0];

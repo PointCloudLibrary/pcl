@@ -37,7 +37,7 @@
 #ifndef PCL_STEREO_H_
 #define PCL_STEREO_H_
 
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_types.h>
 
 namespace pcl

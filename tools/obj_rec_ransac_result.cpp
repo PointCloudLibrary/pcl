@@ -54,6 +54,10 @@
 #include <vtkDataArray.h>
 #include <vtkPointData.h>
 #include <vtkHedgeHog.h>
+#include <vtkTransformPolyDataFilter.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkTransform.h>
 #include <cstdio>
 #include <vector>
 #include <list>

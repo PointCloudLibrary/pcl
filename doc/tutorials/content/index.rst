@@ -767,6 +767,22 @@ Registration
      .. |re_5| image:: images/ihs_lion_model.png
                :height: 100px
 
+  * :ref:`alignment_prerejective`
+
+     ======  ======
+     |re_6|  Title: **Robust pose estimation of rigid objects**
+
+             Author: *Anders Glent Buch*
+
+             Compatibility: >= PCL 1.7
+
+             In this tutorial, we show how to find the alignment pose of a rigid object in a scene with clutter and occlusions.
+
+     ======  ======
+
+     .. |re_6| image:: images/alignment_prerejective_1.png
+               :height: 100px
+
 
 .. _sample_consensus:
 
@@ -912,6 +928,21 @@ Segmentation
      ======  ======
 
      .. |se_8| image:: images/don_segmentation.png
+               :height: 100px
+
+  * :ref:`supervoxel_clustering`
+
+     ======  ======
+     |se_9|  Title: **Supervoxel Clustering**
+
+             Author: *Jeremie Papon*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial, we show to break a pointcloud into the mid-level supervoxel representation.
+     ======  ======
+
+     .. |se_9| image:: images/supervoxel_clustering_small.png
                :height: 100px
                
 .. _surface_tutorial:

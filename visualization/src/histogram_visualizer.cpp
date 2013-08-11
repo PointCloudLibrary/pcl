@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,8 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/common/common_headers.h>
@@ -44,6 +45,15 @@
 #endif
 #include <pcl/visualization/histogram_visualizer.h>
 #include <pcl/visualization/boost.h>
+
+#include <vtkXYPlotActor.h>
+#include <vtkDoubleArray.h>
+#include <vtkTextProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkDataObject.h>
+#include <vtkProperty2D.h>
+#include <vtkFieldData.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLHistogramVisualizer::PCLHistogramVisualizer () : 
@@ -361,7 +371,7 @@ pcl::visualization::PCLHistogramVisualizer::createActor (
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
+    const pcl::PCLPointCloud2 &cloud, const std::string &field_name,
     const std::string &id, int win_width, int win_height)
 {
   // Get the field
@@ -408,7 +418,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, 
+    const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
     const int index,
     const std::string &id, int win_width, int win_height)
@@ -468,7 +478,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, const std::string &field_name, 
+    const pcl::PCLPointCloud2 &cloud, const std::string &field_name,
     const std::string &id)
 {
   RenWinInteractMap::iterator am_it = wins_.find (id);
@@ -507,7 +517,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
 //////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
-    const sensor_msgs::PointCloud2 &cloud, 
+    const pcl::PCLPointCloud2 &cloud,
     const std::string &field_name, 
     const int index,
     const std::string &id)
@@ -553,5 +563,35 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   }
   reCreateActor(xy_array, renwinupd, cloud.fields[field_idx].count - 1);
   return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLHistogramVisualizer::ExitMainLoopTimerCallback::Execute (
+    vtkObject*, unsigned long event_id, void* call_data)
+{
+  if (event_id != vtkCommand::TimerEvent)
+    return;
+  int timer_id = *(reinterpret_cast<int*> (call_data));
+
+  if (timer_id != right_timer_id)
+    return;
+
+  // Stop vtk loop and send notification to app to wake it up
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
+  interact->stopLoop ();
+#else
+  interact->TerminateApp ();
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLHistogramVisualizer::ExitCallback::Execute (
+    vtkObject*, unsigned long event_id, void*)
+{
+  if (event_id != vtkCommand::ExitEvent)
+    return;
+  his->stopped_ = true;
 }
 

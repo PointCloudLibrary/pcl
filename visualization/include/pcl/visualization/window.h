@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,17 +34,23 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #ifndef PCL_VISUALIZER_WINDOW_H__
 #define	PCL_VISUALIZER_WINDOW_H__
 
 #include <pcl/pcl_macros.h>
-#include <pcl/console/print.h>
-#include <pcl/visualization/vtk.h>
-#include <pcl/visualization/interactor_style.h>
+#include <boost/signals2/signal.hpp>
+
+#include <vtkCommand.h>
+
+template <typename T> class vtkSmartPointer;
+class vtkObject;
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
+class vtkCallbackCommand;
+class vtkRendererCollection;
+class PCLVisualizerInteractorStyle;
 
 namespace pcl
 {
@@ -168,27 +175,18 @@ namespace pcl
       protected: // types
         struct ExitMainLoopTimerCallback : public vtkCommand
         {
-          static ExitMainLoopTimerCallback* New()
+          static ExitMainLoopTimerCallback* New ()
           {
             return (new ExitMainLoopTimerCallback);
           }
 
-          ExitMainLoopTimerCallback () : right_timer_id (), window () {}
-          ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src) : vtkCommand (), right_timer_id (src.right_timer_id), window (src.window) {}
-          ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src) { right_timer_id = src.right_timer_id; window = src.window; return (*this); }
+          ExitMainLoopTimerCallback ();
+          ExitMainLoopTimerCallback (const ExitMainLoopTimerCallback& src);
+          ExitMainLoopTimerCallback& operator = (const ExitMainLoopTimerCallback& src);
 
           virtual void 
-          Execute (vtkObject*, unsigned long event_id, void* call_data)
-          {
-            if (event_id != vtkCommand::TimerEvent)
-              return;
-            int timer_id = *static_cast<int*> (call_data);
-            //PCL_WARN ("[pcl::visualization::Window::ExitMainLoopTimerCallback] Timer %d called.\n", timer_id);
-            if (timer_id != right_timer_id)
-              return;
-            window->interactor_->TerminateApp ();
-//            window->interactor_->stopLoop ();
-          }
+          Execute (vtkObject*, unsigned long event_id, void* call_data);
+
           int right_timer_id;
           Window* window;
         };
@@ -200,18 +198,13 @@ namespace pcl
             return (new ExitCallback);
           }
 
-          ExitCallback () : window () {}
-          ExitCallback (const ExitCallback &src) : vtkCommand (), window (src.window) {}
-          ExitCallback& operator = (const ExitCallback &src) { window = src.window; return (*this); }
+          ExitCallback ();
+          ExitCallback (const ExitCallback &src);
+          ExitCallback& operator = (const ExitCallback &src);
  
           virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*)
-          {
-            if (event_id != vtkCommand::ExitEvent)
-              return;
-            window->interactor_->TerminateApp ();
-            window->stopped_ = true;
-          }
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           Window* window;
         };
 
