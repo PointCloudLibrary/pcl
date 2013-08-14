@@ -153,7 +153,7 @@ if(build)
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
       target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
     else()
-      target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree vtkCommon vtkWidgets vtkHybrid vtkCharts vtkFiltering vtkRendering ${OPENGL_LIBRARIES})
+      target_link_libraries(${LIB_NAME} pcl_common pcl_io pcl_kdtree ${VTK_LIBRARIES} ${OPENGL_LIBRARIES})
     endif()
 
     set(EXT_DEPS "")

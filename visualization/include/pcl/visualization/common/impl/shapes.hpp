@@ -67,7 +67,6 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
   poly_grid->Allocate (1, 1);
   poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
   poly_grid->SetPoints (poly_points);
-  poly_grid->Update ();
 
   return (poly_grid);
 }
@@ -104,7 +103,6 @@ pcl::visualization::createPolygon (const pcl::PlanarPolygon<PointT> &planar_poly
   poly_grid->Allocate (1, 1);
   poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
   poly_grid->SetPoints (poly_points);
-  poly_grid->Update ();
 
   return (poly_grid);
 }
