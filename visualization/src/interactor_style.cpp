@@ -39,6 +39,7 @@
 #include <list>
 #include <pcl/visualization/common/io.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkVersion.h>
 #include <vtkLODActor.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
@@ -357,7 +358,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         else
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
+#if VTK_MAJOR_VERSION <= 5
           mapper->SetInput (data);
+#else
+          mapper->SetInputData (data);
+#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }
@@ -386,7 +391,6 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         // Update the data
         vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
-        data->Update ();
         // Modify the mapper
         if (use_vbos_)
         {
@@ -402,7 +406,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);
           mapper->SetScalarModeToUsePointData ();
+#if VTK_MAJOR_VERSION <= 5
           mapper->SetInput (data);
+#else
+          mapper->SetInputData (data);
+#endif
           // Modify the actor
           act->actor->SetMapper (mapper);
         }
