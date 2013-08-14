@@ -78,10 +78,10 @@ if(build)
     target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_face_trainer ${SUBSYS_NAME} src/face_detection/face_trainer.cpp)
-    target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+    target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_fs_face_detector ${SUBSYS_NAME} src/face_detection//filesystem_face_detection.cpp)
-    target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+    target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
     PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation ${SUBSYS_NAME} src/stereo_ground_segmentation.cpp)
     target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
@@ -143,7 +143,7 @@ if(build)
       target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_face_detector ${SUBSYS_NAME} src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp)
-      target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+      target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
       if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo

@@ -3,6 +3,7 @@
 #include <pcl/outofcore/visualization/grid.h>
 
 // VTK
+#include <vtkVersion.h>
 #include <vtkActor.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkDoubleArray.h>

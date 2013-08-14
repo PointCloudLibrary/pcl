@@ -134,8 +134,8 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkImageData> image_data;
   vtkSmartPointer<vtkPNGReader> reader = vtkSmartPointer<vtkPNGReader>::New ();
   reader->SetFileName (argv[png_file_indices[0]]);
+  reader->Update();
   image_data = reader->GetOutput ();
-  image_data->Update ();
 
   // Retrieve the entries from the image data and copy them into the output RGB cloud
   int components = image_data->GetNumberOfScalarComponents();

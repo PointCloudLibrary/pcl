@@ -36,10 +36,15 @@
  *
  */
 
+#include <vtkVersion.h>
 #include <vtkImageViewer.h>
 #include <vtkCallbackCommand.h>
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
+
+#if VTK_MAJOR_VERSION >= 6
+#include <vtkImageSlice.h>
+#endif
 
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -117,7 +122,11 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 
   vtkSmartPointer<vtkImageData> empty_image = vtkSmartPointer<vtkImageData>::New ();
   vtkSmartPointer<vtkImageSliceMapper> map = vtkSmartPointer<vtkImageSliceMapper>::New ();
+#if VTK_MAJOR_VERSION <= 5
   map->SetInput (empty_image);
+#else
+  map->SetInputData (empty_image);
+#endif
   slice_->SetMapper (map);
   ren_->AddViewProp (slice_);
   interactor_->SetInteractorStyle (interactor_style_);
@@ -180,9 +189,13 @@ pcl::visualization::ImageViewer::addRGBImage (
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
+#if VTK_MAJOR_VERSION <= 5
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, 3 * width * height, 1);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
@@ -231,9 +244,13 @@ pcl::visualization::ImageViewer::addMonoImage (
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
+#if VTK_MAJOR_VERSION <= 5
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (1);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
 
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))

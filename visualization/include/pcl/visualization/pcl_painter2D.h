@@ -206,7 +206,7 @@ namespace pcl
       /** \brief Constructor of the class
        */
       PCLPainter2D (char const * name = "PCLPainter2D");
-      vtkTypeRevisionMacro (PCLPainter2D, vtkContextItem);
+      vtkTypeMacro (PCLPainter2D, vtkContextItem);
 
       /** \brief Paint event for the chart, called whenever the chart needs to be drawn
        *  \param[in] name Name of the window
