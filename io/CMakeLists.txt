@@ -7,7 +7,7 @@ PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 if(WIN32)
     PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
@@ -32,28 +32,28 @@ if(build)
             include/pcl/io/oni2_grabber.h
             )
         set(OPENNI2_INCLUDES
-			include/pcl/io/openni_camera/openni2_convert.h
-            include/pcl/io/openni_camera/openni2_device.h
-			include/pcl/io/openni_camera/openni2_device_info.h
-			include/pcl/io/openni_camera/openni2_device_manager.h
-            include/pcl/io/openni_camera/openni2_driver.h
-            include/pcl/io/openni_camera/openni2_exception.h
-			include/pcl/io/openni_camera/openni2_frame_listener.h
-			include/pcl/io/openni_camera/openni2_timer_filter.h
-			include/pcl/io/openni_camera/openni2_video_mode.h
+			include/pcl/io/openni2_camera/openni2_convert.h
+            include/pcl/io/openni2_camera/openni2_device.h
+			include/pcl/io/openni2_camera/openni2_device_info.h
+			include/pcl/io/openni2_camera/openni2_device_manager.h
+            include/pcl/io/openni2_camera/openni2_driver.h
+            include/pcl/io/openni2_camera/openni2_exception.h
+			include/pcl/io/openni2_camera/openni2_frame_listener.h
+			include/pcl/io/openni2_camera/openni2_timer_filter.h
+			include/pcl/io/openni2_camera/openni2_video_mode.h
             )
         set(OPENNI_GRABBER_SOURCES 
-			include/pcl/io/openni_camera/openni2_convert.cpp
-            include/pcl/io/openni_camera/openni2_device.cpp
-			include/pcl/io/openni_camera/openni2_device_info.cpp
-			include/pcl/io/openni_camera/openni2_device_manager.cpp
-            include/pcl/io/openni_camera/openni2_driver.cpp
-            include/pcl/io/openni_camera/openni2_exception.cpp
-			include/pcl/io/openni_camera/openni2_frame_listener.cpp
-			include/pcl/io/openni_camera/openni2_timer_filter.cpp
-			include/pcl/io/openni_camera/openni2_video_mode.cpp
-			include/pcl/io/openni2_grabber.h
-            include/pcl/io/oni2_grabber.h
+			src/openni2_camera/openni2_convert.cpp
+            src/openni2_camera/openni2_device.cpp
+			src/openni2_camera/openni2_device_info.cpp
+			src/openni2_camera/openni2_device_manager.cpp
+            src/openni2_camera/openni2_driver.cpp
+            src/openni2_camera/openni2_exception.cpp
+			src/openni2_camera/openni2_frame_listener.cpp
+			src/openni2_camera/openni2_timer_filter.cpp
+			src/openni2_camera/openni2_video_mode.cpp
+			src/openni2_grabber.cpp
+            src/oni2_grabber.cpp
             )
     endif(OPENNI2_FOUND)
 
@@ -171,6 +171,7 @@ if(build)
         src/robot_eye_grabber.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
+		${OPENNI2_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
         )
@@ -209,6 +210,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
+		${OPENNI2_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
         )
@@ -226,12 +228,12 @@ if(build)
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
-      if(OPENNI_FOUND)
+      if(OPENNI_FOUND OR OPENNI2_FOUND)
         set(compression_incs
           ${compression_incs}
           include/pcl/compression/organized_pointcloud_compression.h
           )
-      endif(OPENNI_FOUND)
+      endif(OPENNI_FOUND OR OPENNI2_FOUND)
     endif(PNG_FOUND)
 
     set(impl_incs 
@@ -242,18 +244,18 @@ if(build)
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
        )
-    if(PNG_FOUND AND OPENNI_FOUND)
+    if(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
      set(impl_incs
          ${impl_incs}
          include/pcl/compression/impl/organized_pointcloud_compression.hpp
         )
-    endif(PNG_FOUND AND OPENNI_FOUND)
+    endif(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     add_definitions(${VTK_DEFINES})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
     if(PNG_FOUND)
@@ -263,6 +265,10 @@ if(build)
     if(LIBUSB_1_FOUND)
       target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
     endif(LIBUSB_1_FOUND)
+
+	if(OPENNI2_FOUND)
+      target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
+    endif(OPENNI2_FOUND)
 
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
@@ -283,6 +289,9 @@ if(build)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
+	if(OPENNI2_FOUND)
+      list(APPEND EXT_DEPS openni2-dev)
+    endif(OPENNI2_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
@@ -290,6 +299,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
+	PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni2_camera ${OPENNI2_INCLUDEs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
                 
     add_subdirectory(tools)
