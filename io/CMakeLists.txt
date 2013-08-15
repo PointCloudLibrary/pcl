@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 vtk)
 else(WIN32)
     PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
 endif(WIN32)
@@ -13,6 +13,51 @@ endif(WIN32)
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
+	## Prevent building OpenNI and OpenNI2 at the same time
+	if( BUILD_OPENNI AND BUILD_OPENNI2 )
+		##message( FATAL_ERROR "Cannot build OpenNI and OpenNI2 at the same time." )
+	endif()
+
+	## OpenNI 2.x
+	OPTION(BUILD_OPENNI2 "Build the OpenNI 2 Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_OPENNI2)
+    if(NOT BUILD_OPENNI2)
+      # Set OPENNI2_FOUND to false locally to avoid building anything OpenNI 2 related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI2
+      set(OPENNI2_FOUND FALSE) 
+    endif()
+    if(OPENNI2_FOUND)
+        set(OPENNI2_GRABBER_INCLUDES
+            include/pcl/io/openni2_grabber.h
+            include/pcl/io/oni2_grabber.h
+            )
+        set(OPENNI2_INCLUDES
+			include/pcl/io/openni_camera/openni2_convert.h
+            include/pcl/io/openni_camera/openni2_device.h
+			include/pcl/io/openni_camera/openni2_device_info.h
+			include/pcl/io/openni_camera/openni2_device_manager.h
+            include/pcl/io/openni_camera/openni2_driver.h
+            include/pcl/io/openni_camera/openni2_exception.h
+			include/pcl/io/openni_camera/openni2_frame_listener.h
+			include/pcl/io/openni_camera/openni2_timer_filter.h
+			include/pcl/io/openni_camera/openni2_video_mode.h
+            )
+        set(OPENNI_GRABBER_SOURCES 
+			include/pcl/io/openni_camera/openni2_convert.cpp
+            include/pcl/io/openni_camera/openni2_device.cpp
+			include/pcl/io/openni_camera/openni2_device_info.cpp
+			include/pcl/io/openni_camera/openni2_device_manager.cpp
+            include/pcl/io/openni_camera/openni2_driver.cpp
+            include/pcl/io/openni_camera/openni2_exception.cpp
+			include/pcl/io/openni_camera/openni2_frame_listener.cpp
+			include/pcl/io/openni_camera/openni2_timer_filter.cpp
+			include/pcl/io/openni_camera/openni2_video_mode.cpp
+			include/pcl/io/openni2_grabber.h
+            include/pcl/io/oni2_grabber.h
+            )
+    endif(OPENNI2_FOUND)
+
+	## OpenNI 1.x
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     MARK_AS_ADVANCED(BUILD_OPENNI)
     if(NOT BUILD_OPENNI)
@@ -42,7 +87,8 @@ if(build)
             include/pcl/io/openni_camera/openni_image_rgb24.h
             include/pcl/io/openni_camera/openni_ir_image.h
             )
-        set(OPENNI_GRABBER_SOURCES src/openni_camera/openni_device.cpp
+        set(OPENNI_GRABBER_SOURCES
+			src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
             src/openni_camera/openni_image_bayer_grbg.cpp
             src/openni_camera/openni_depth_image.cpp
