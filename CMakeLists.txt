@@ -253,6 +253,13 @@ if (OPENNI_FOUND)
   include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
 endif()
 
+# OpenNI 2
+find_package(OpenNI2)
+if (OPENNI2_FOUND)
+  set(HAVE_OPENNI2 ON)
+  include_directories(SYSTEM ${OPENNI2_INCLUDE_DIRS})
+endif()
+
 # Fotonic (FZ_API)
 find_package(FZAPI)
 if (FZAPI_FOUND)
