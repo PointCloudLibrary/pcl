@@ -32,7 +32,7 @@
 #ifndef OPENNI2_FRAME_LISTENER_H_
 #define OPENNI2_FRAME_LISTENER_H_
 
-#include "openni2_camera/openni2_device.h"
+#include "pcl/io/openni2_camera/openni2_device.h"
 
 #include <sensor_msgs/Image.h>
 

@@ -29,7 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#include "openni2_camera/openni2_video_mode.h"
+#include "pcl/io/openni2_camera/openni2_video_mode.h"
 
 namespace openni2_wrapper
 {

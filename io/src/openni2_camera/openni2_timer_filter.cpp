@@ -29,7 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#include "openni2_camera/openni2_timer_filter.h"
+#include "pcl/io/openni2_camera/openni2_timer_filter.h"
 #include <algorithm>
 
 

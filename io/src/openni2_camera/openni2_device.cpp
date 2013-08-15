@@ -34,10 +34,10 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
-#include "openni2_camera/openni2_device.h"
-#include "openni2_camera/openni2_exception.h"
-#include "openni2_camera/openni2_convert.h"
-#include "openni2_camera/openni2_frame_listener.h"
+#include "pcl/io/openni2_camera/openni2_device.h"
+#include "pcl/io/openni2_camera/openni2_exception.h"
+#include "pcl/io/openni2_camera/openni2_convert.h"
+#include "pcl/io/openni2_camera/openni2_frame_listener.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>

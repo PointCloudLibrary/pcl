@@ -33,8 +33,8 @@
 #ifndef OPENNI2_CONVERT_H_
 #define OPENNI2_CONVERT_H_
 
-#include "openni2_camera/openni2_device_info.h"
-#include "openni2_camera/openni2_video_mode.h"
+#include "pcl/io/openni2_camera/openni2_device_info.h"
+#include "pcl/io/openni2_camera/openni2_video_mode.h"
 
 #include "OpenNI.h"
 

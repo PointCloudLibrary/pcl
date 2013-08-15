@@ -29,8 +29,8 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
-#include "openni2_camera/openni2_driver.h"
-#include "openni2_camera/openni2_exception.h"
+#include "pcl/io/openni2_camera/openni2_driver.h"
+#include "pcl/io/openni2_camera/openni2_exception.h"
 
 #include <sensor_msgs/image_encodings.h>
 #include <sensor_msgs/distortion_models.h>

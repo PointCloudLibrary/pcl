@@ -30,8 +30,8 @@
  */
 #include "OpenNI.h"
 
-#include "openni2_camera/openni2_frame_listener.h"
-#include "openni2_camera/openni2_timer_filter.h"
+#include "pcl/io/openni2_camera/openni2_frame_listener.h"
+#include "pcl/io/openni2_camera/openni2_timer_filter.h"
 
 #include <sensor_msgs/image_encodings.h>
 

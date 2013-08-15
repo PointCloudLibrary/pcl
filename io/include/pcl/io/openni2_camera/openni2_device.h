@@ -32,9 +32,9 @@
 #ifndef OPENNI2_DEVICE_H
 #define OPENNI2_DEVICE_H
 
-#include "openni2_camera/openni2_video_mode.h"
+#include "pcl/io/openni2_camera/openni2_video_mode.h"
 
-#include "openni2_camera/openni2_exception.h"
+#include "pcl/io/openni2_camera/openni2_exception.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/cstdint.hpp>

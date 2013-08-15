@@ -32,7 +32,7 @@
 #ifndef OPENNI2_DEVICE_MANAGER_H_
 #define OPENNI2_DEVICE_MANAGER_H_
 
-#include "openni2_camera/openni2_device_info.h"
+#include "pcl/io/openni2_camera/openni2_device_info.h"
 
 #include <boost/thread/mutex.hpp>
 
