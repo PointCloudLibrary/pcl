@@ -38,6 +38,7 @@
 
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkVersion.h>
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 #include <vtkRenderWindowInteractor.h>

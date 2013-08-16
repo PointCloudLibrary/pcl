@@ -215,13 +215,13 @@ if (build)
         target_link_libraries(pcl_octree_viewer pcl_common pcl_io pcl_octree pcl_visualization pcl_kdtree pcl_filters)
 
         PCL_ADD_EXECUTABLE(pcl_mesh2pcd ${SUBSYS_NAME} mesh2pcd.cpp)
-        target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+        target_link_libraries(pcl_mesh2pcd pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
         
         PCL_ADD_EXECUTABLE(pcl_mesh_sampling ${SUBSYS_NAME} mesh_sampling.cpp)
-        target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters vtkCommon)
+        target_link_libraries(pcl_mesh_sampling pcl_common pcl_io pcl_visualization pcl_filters ${VTK_LIBRARIES})
         
         PCL_ADD_EXECUTABLE(pcl_virtual_scanner ${SUBSYS_NAME} virtual_scanner.cpp)
-        target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization vtkCommon vtkGraphics)
+        target_link_libraries(pcl_virtual_scanner pcl_common pcl_io pcl_filters pcl_visualization ${VTK_LIBRARIES})
 
         PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
         target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)

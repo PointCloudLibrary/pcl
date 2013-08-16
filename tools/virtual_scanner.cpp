@@ -218,10 +218,10 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (subdiv_level);
   subdivide->SetInputConnection (icosa->GetOutputPort ());
+  subdivide->Update ();
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
-  sphere->Update ();
   if (!single_view)
     PCL_INFO ("Created %ld camera position points.\n", sphere->GetNumberOfPoints ());
 
