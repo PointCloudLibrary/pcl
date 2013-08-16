@@ -42,6 +42,8 @@
 #  pragma GCC system_header 
 #endif
 #ifndef __CUDACC__
+//https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifndef Q_MOC_RUN
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
@@ -72,6 +74,7 @@
 #define BOOST_PARAMETER_MAX_ARITY 7
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
+#endif
 #endif
 #endif    // _PCL_IO_BOOST_H_
 
