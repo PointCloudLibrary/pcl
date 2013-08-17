@@ -179,7 +179,7 @@ namespace pcl
     out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
     {
-      out.r = out.g = out.b = static_cast<uint8_t> (in.v);
+      out.r = out.g = out.b = static_cast<uint8_t> (255 * in.v);
       return;
     } 
     float a = in.h / 60;
