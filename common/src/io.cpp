@@ -425,7 +425,7 @@ pcl::copyPointCloud (
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.row_step;
+  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
@@ -448,7 +448,7 @@ pcl::copyPointCloud (
   cloud_out.fields       = cloud_in.fields;
   cloud_out.is_bigendian = cloud_in.is_bigendian;
   cloud_out.point_step   = cloud_in.point_step;
-  cloud_out.row_step     = cloud_in.row_step;
+  cloud_out.row_step     = cloud_in.point_step * static_cast<uint32_t> (indices.size ());
   cloud_out.is_dense     = cloud_in.is_dense;
 
   cloud_out.data.resize (cloud_out.width * cloud_out.height * cloud_out.point_step);
