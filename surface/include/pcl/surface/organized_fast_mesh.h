@@ -57,7 +57,7 @@ namespace pcl
     *   In Proceedings of the 12th International Conference on Intelligent Autonomous Systems (IAS),
     *   Jeju Island, Korea, June 26-29 2012.
     *   <a href="http://purl.org/holz/papers/holz_2012_ias.pdf">http://purl.org/holz/papers/holz_2012_ias.pdf</a>
-    * 
+    *
     * \author Dirk Holz, Radu B. Rusu
     * \ingroup surface
     */
@@ -85,11 +85,13 @@ namespace pcl
 
       /** \brief Constructor. Triangulation type defaults to \a QUAD_MESH. */
       OrganizedFastMesh ()
-      : max_edge_length_squared_ (0.025f)
-      , triangle_pixel_size_ (1)
-      , triangulation_type_ (QUAD_MESH)
-      , store_shadowed_faces_ (false)
-      , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
+        : distance_tolerance_ (-1.0f)
+        , depth_dependent_ (false)
+        , triangle_pixel_size_ (1)
+        , viewpoint_ (Eigen::Vector3f::Zero ())
+        , triangulation_type_ (QUAD_MESH)
+        , store_shadowed_faces_ (false)
+        , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
       {
         check_tree_ = false;
       };
@@ -97,14 +99,18 @@ namespace pcl
       /** \brief Destructor. */
       virtual ~OrganizedFastMesh () {};
 
-      /** \brief Set a maximum edge length. TODO: Implement!
-        * \param[in] max_edge_length the maximum edge length
+      PCL_DEPRECATED (inline void setMaxEdgeLength (float max_edge_length){PCL_WARN("setMaxEdgeLength is deprecated. Please use setDistanceTolerance instead. Value: %f", max_edge_length);},
+                      "[pcl::surface::OrganizedFastMesh::setMaxEdgeLength] setMaxEdgeLength is deprecated. Please use setDistanceTolerance instead.");
+
+      /** \brief Set a distance tolerance for filtering out occlusion edges. Occluded edges with a length within the tolerance are not filtered out.  
+        * \param[in] distance_tolerance Distance tolerance (not squared). In order to disable the distance tolerance, specify a negative value. Default: -1 (disabled).   
+        * \param[n] depth_dependent whether or not the distance threshold is depth dependent (and multiplied by the squared distance z*z).
         */
-      inline void
-      setMaxEdgeLength (float max_edge_length)
+      inline void setDistanceTolerance(float distance_tolerance, bool depth_dependent = false)
       {
-        max_edge_length_squared_ = max_edge_length * max_edge_length;
-      };
+        distance_tolerance_ = distance_tolerance;
+        depth_dependent_ = depth_dependent;
+      }
 
       /** \brief Set the edge length (in pixels) used for constructing the fixed mesh.
         * \param[in] triangle_size edge length in pixels
@@ -118,7 +124,7 @@ namespace pcl
 
       /** \brief Set the triangulation type (see \a TriangulationType)
         * \param[in] type quad mesh, triangle mesh with fixed left, right cut,
-        * or adaptive cut (splits a quad wrt. the depth (z) of the points)
+        * or adaptive cut (splits a quad w.r.t. the depth (z) of the points)
         */
       inline void
       setTriangulationType (TriangulationType type)
@@ -135,14 +141,36 @@ namespace pcl
         store_shadowed_faces_ = enable;
       }
 
-    protected:
-      /** \brief max (squared) length of edge */
-      float max_edge_length_squared_;
+      /** \brief Set the viewpoint from where the input point cloud has been acquired.
+        * \param[in] viewpoint Vector containing the viewpoint coordinates (in the coordinate system of the data 
+        */ 
+      inline void setViewpoint (const Eigen::Vector3f& viewpoint)
+      {
+        viewpoint_ = viewpoint;
+      }
 
-      /** \brief size of triangle endges (in pixels) */
+      /** \brief Get the viewpoint from where the input point cloud has been acquired. */
+      const inline Eigen::Vector3f& getViewpoint () const
+      {
+        return viewpoint_;
+      }
+
+
+    protected:
+
+      /** \brief distance tolerance for filtering out shadowed/occluded edges */
+      float distance_tolerance_;
+
+      /** \brief flag whether or not \a distance_tolerance_ is distance dependent (multiplied by the squared distance to the point) or not. */
+      bool depth_dependent_;
+
+      /** \brief size of triangle edges (in pixels) */
       int triangle_pixel_size_;
 
-      /** \brief Type of meshin scheme (quads vs. triangles, left cut vs. right cut ... */
+      /** \brief Viewpoint from which the point cloud has been acquired (in the same coordinate frame as the data). */  
+      Eigen::Vector3f viewpoint_;
+
+      /** \brief Type of meshing scheme (quads vs. triangles, left cut vs. right cut ... */
       TriangulationType triangulation_type_;
 
       /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
@@ -163,12 +191,12 @@ namespace pcl
       performReconstruction (std::vector<pcl::Vertices> &polygons);
 
       /** \brief Create the surface.
-        *
-        * Simply uses image indices to create an initial polygonal mesh for organized point clouds.
-        * \a indices_ are ignored!
-        *
-        * \param[out] output the resultant polygonal mesh
-        */
+       *
+       * Simply uses image indices to create an initial polygonal mesh for organized point clouds.
+       * \a indices_ are ignored!
+       *
+       * \param[out] output the resultant polygonal mesh
+       */
       void
       performReconstruction (pcl::PolygonMesh &output);
 
@@ -233,16 +261,28 @@ namespace pcl
       inline bool
       isShadowed (const PointInT& point_a, const PointInT& point_b)
       {
-        Eigen::Vector3f viewpoint = Eigen::Vector3f::Zero (); // TODO: allow for passing viewpoint information
-        Eigen::Vector3f dir_a = viewpoint - point_a.getVector3fMap ();
+        Eigen::Vector3f dir_a = viewpoint_ - point_a.getVector3fMap ();
         Eigen::Vector3f dir_b = point_b.getVector3fMap () - point_a.getVector3fMap ();
         float distance_to_points = dir_a.norm ();
         float distance_between_points = dir_b.norm ();
         float cos_angle = dir_a.dot (dir_b) / (distance_to_points*distance_between_points);
         if (cos_angle != cos_angle)
           cos_angle = 1.0f;
-        return (fabs (cos_angle) >= cos_angle_tolerance_);
-        // TODO: check for both: angle almost 0/180 _and_ distance between points larger than noise level
+        bool check_angle = fabs (cos_angle) >= cos_angle_tolerance_;
+        
+        bool check_distance = true;
+        if (distance_tolerance_ > 0)
+        {
+          const float z = std::max(point_a.z, point_b.z);
+
+          float dist_thresh = distance_tolerance_;
+          if (depth_dependent_)
+            dist_thresh *= z*z;
+          dist_thresh *= dist_thresh;
+          check_distance = (fabs(dir_b.norm()) > dist_thresh);
+        }
+        
+        return (check_angle && check_distance);
       }
 
       /** \brief Check if a triangle is valid.
