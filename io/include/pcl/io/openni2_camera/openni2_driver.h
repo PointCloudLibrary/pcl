@@ -37,22 +37,16 @@
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 
-#include <sensor_msgs/Image.h>
-
-#include <dynamic_reconfigure/server.h>
-#include <openni2_camera/OpenNI2Config.h>
-
-#include <image_transport/image_transport.h>
-#include <camera_info_manager/camera_info_manager.h>
+//#include <pcl/io/openni2_camera/OpenNI2Config.h>	// Is this suposed to hold defaults?
 
 #include <string>
 #include <vector>
 
-#include "openni2_camera/openni2_device_manager.h"
-#include "openni2_camera/openni2_device.h"
-#include "openni2_camera/openni2_video_mode.h"
+#include "pcl/io/openni2_camera/openni2_device_manager.h"
+#include "pcl/io/openni2_camera/openni2_device.h"
+#include "pcl/io/openni2_camera/openni2_video_mode.h"
 
-#include <ros/ros.h>
+//#include <ros/ros.h>	// ROS
 
 namespace openni2_wrapper
 {

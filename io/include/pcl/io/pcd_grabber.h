@@ -271,7 +271,7 @@ namespace pcl
     {
       rgba_index = fields[rgba_index].offset;
 
-      boost::shared_ptr<xn::ImageMetaData> image_meta_data (new xn::ImageMetaData);
+      boost::shared_ptr<openni::VideoFrameRef> image_meta_data (new openni::VideoFrameRef);
       image_meta_data->AllocateData (cloud->width, cloud->height, XN_PIXEL_FORMAT_RGB24);
       XnRGB24Pixel* image_map = image_meta_data->WritableRGB24Data ();
       k = 0;

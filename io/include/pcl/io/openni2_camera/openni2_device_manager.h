@@ -52,7 +52,7 @@ public:
   OpenNI2DeviceManager();
   virtual ~OpenNI2DeviceManager();
 
-  static boost::shared_ptr<OpenNI2DeviceManager> getSingelton();
+  static boost::shared_ptr<OpenNI2DeviceManager> getInstance();
 
   boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > getConnectedDeviceInfos() const;
   boost::shared_ptr<std::vector<std::string> > getConnectedDeviceURIs() const;
@@ -60,6 +60,8 @@ public:
 
   boost::shared_ptr<OpenNI2Device> getAnyDevice();
   boost::shared_ptr<OpenNI2Device> getDevice(const std::string& device_URI);
+  boost::shared_ptr<OpenNI2Device> getDeviceByIndex(int index);
+  boost::shared_ptr<OpenNI2Device> getFileDevice(const std::string& path);
 
 protected:
   boost::shared_ptr<OpenNI2DeviceListener> device_listener_;

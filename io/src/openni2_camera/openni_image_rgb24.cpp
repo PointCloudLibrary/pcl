@@ -1,0 +1,114 @@
+#include <pcl/pcl_config.h>
+#ifdef HAVE_OPENNI2
+
+#include <pcl/io/openni2_camera/openni_image_rgb24.h>
+
+namespace openni_wrapper
+{
+ImageRGB24::ImageRGB24 (boost::shared_ptr<openni::VideoFrameRef> image_meta_data) throw ()
+: Image (image_meta_data)
+{
+}
+
+ImageRGB24::~ImageRGB24 () throw ()
+{
+}
+
+void ImageRGB24::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
+{
+  if (width > image_md_->getWidth () || height > image_md_->getHeight ())
+    THROW_OPENNI_EXCEPTION ("Up-sampling not supported. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+
+  if (image_md_->getWidth () % width == 0 && image_md_->getHeight () % height == 0)
+  {
+    unsigned src_step = image_md_->getWidth () / width;
+    unsigned src_skip = (image_md_->getHeight () / height - 1) * image_md_->getWidth ();
+
+    if (gray_line_step == 0)
+      gray_line_step = width;
+
+    unsigned dst_skip = gray_line_step - width; // skip of padding values in bytes
+
+    unsigned char* dst_line = gray_buffer;
+	const OniRGB888Pixel* src_line = (OniRGB888Pixel*) image_md_->getData();
+
+    for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip, dst_line += dst_skip)
+    {
+      for (unsigned xIdx = 0; xIdx < width; ++xIdx, src_line += src_step, dst_line ++)
+      {
+		  *dst_line = static_cast<unsigned char>((static_cast<int> (src_line->r)   * 299 + 
+                                                static_cast<int> (src_line->g) * 587 +
+                                                static_cast<int> (src_line->b)  * 114) * 0.001);
+      }
+    }
+  }
+  else
+  {
+    THROW_OPENNI_EXCEPTION ("Down-sampling only possible for integer scale. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+  }
+}
+
+void ImageRGB24::fillRGB (unsigned width, unsigned height, unsigned char* rgb_buffer, unsigned rgb_line_step) const
+{
+  if (width > image_md_->getWidth () || height > image_md_->getHeight ())
+    THROW_OPENNI_EXCEPTION ("Up-sampling not supported. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+
+  if (width == image_md_->getWidth () && height == image_md_->getHeight ())
+  {
+    unsigned line_size = width * 3;
+    if (rgb_line_step == 0 || rgb_line_step == line_size)
+    {
+      memcpy (rgb_buffer, image_md_->getData(), image_md_->getDataSize());
+    }
+    else // line by line
+    {
+      unsigned char* rgb_line = rgb_buffer;
+      const unsigned char* src_line = static_cast<const unsigned char*> (image_md_->getData());
+      for (unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_line += rgb_line_step, src_line += line_size)
+      {
+        memcpy (rgb_line, src_line, line_size);
+      }
+    }
+  }
+  else if (image_md_->getWidth () % width == 0 && image_md_->getHeight () % height == 0) // downsamplig
+  {
+    unsigned src_step = image_md_->getWidth () / width;
+    unsigned src_skip = (image_md_->getHeight () / height - 1) * image_md_->getWidth ();
+
+    if (rgb_line_step == 0)
+      rgb_line_step = width * 3;
+
+    unsigned dst_skip = rgb_line_step - width * 3; // skip of padding values in bytes
+
+	OniRGB888Pixel* dst_line = reinterpret_cast<OniRGB888Pixel*> (rgb_buffer);
+	const OniRGB888Pixel* src_line = (OniRGB888Pixel*) image_md_->getData();
+
+    for (unsigned yIdx = 0; yIdx < height; ++yIdx, src_line += src_skip)
+    {
+      for (unsigned xIdx = 0; xIdx < width; ++xIdx, src_line += src_step, dst_line ++)
+      {
+        *dst_line = *src_line;
+      }
+
+      if (dst_skip != 0)
+      {
+        // use bytes to skip rather than XnRGB24Pixel's, since line_step does not need to be multiple of 3
+        unsigned char* temp = reinterpret_cast <unsigned char*> (dst_line);
+        dst_line = reinterpret_cast <OniRGB888Pixel*> (temp + dst_skip);
+      }
+    }
+  }
+  else
+  {
+    THROW_OPENNI_EXCEPTION ("Down-sampling only possible for integer scale. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+  }
+}
+
+bool ImageRGB24::isResizingSupported (unsigned input_width, unsigned input_height, unsigned output_width, unsigned output_height) const
+{
+  return ImageRGB24::resizingSupported (input_width, input_height, output_width, output_height);
+}
+}
+
+#endif //HAVE_OPENNI
+

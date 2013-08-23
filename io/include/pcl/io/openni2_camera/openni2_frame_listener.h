@@ -34,7 +34,7 @@
 
 #include "pcl/io/openni2_camera/openni2_device.h"
 
-#include <sensor_msgs/Image.h>
+//#include <sensor_msgs/Image.h>		// ROS
 
 #include <vector>
 
@@ -60,7 +60,7 @@ public:
     callback_ = callback;
   }
 
-  bool setUseDeviceTimer(bool enable);
+  void setUseDeviceTimer(bool enable);
 
 private:
   openni::VideoFrameRef m_frame;

@@ -37,7 +37,7 @@
  */
 
 #include <pcl/pcl_config.h>
-#ifdef HAVE_OPENNI
+#ifdef HAVE_OPENNI2
 
 #ifndef __PCL_IO_OPENNI_GRABBER__
 #define __PCL_IO_OPENNI_GRABBER__
@@ -45,11 +45,10 @@
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
-#include <pcl/io/openni_camera/openni_driver.h>
-#include <pcl/io/openni_camera/openni_device_kinect.h>
-#include <pcl/io/openni_camera/openni_image.h>
-#include <pcl/io/openni_camera/openni_depth_image.h>
-#include <pcl/io/openni_camera/openni_ir_image.h>
+#include <pcl/io/openni2_camera/openni2_device.h>
+#include <pcl/io/openni2_camera/openni_image.h>
+#include <pcl/io/openni2_camera/openni_depth_image.h>
+#include <pcl/io/openni2_camera/openni_ir_image.h>
 #include <string>
 #include <deque>
 #include <pcl/common/synchronizer.h>
@@ -130,15 +129,15 @@ namespace pcl
       getFramesPerSecond () const;
 
       /** \brief Get a boost shared pointer to the \ref OpenNIDevice object. */
-      inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
+      inline boost::shared_ptr<openni2_wrapper::OpenNIDevice>
       getDevice () const;
 
       /** \brief Obtain a list of the available depth modes that this device supports. */
-      std::vector<std::pair<int, XnMapOutputMode> >
+      std::vector<std::pair<int, openni::VideoMode> >
       getAvailableDepthModes () const;
 
       /** \brief Obtain a list of the available image modes that this device supports. */
-      std::vector<std::pair<int, XnMapOutputMode> >
+      std::vector<std::pair<int, openni::VideoMode> >
       getAvailableImageModes () const;
 
       /** \brief Set the RGB camera parameters (fx, fy, cx, cy)
@@ -303,7 +302,7 @@ namespace pcl
           std::size_t size) const
       {
         // get openni device instance
-        boost::shared_ptr<openni_wrapper::OpenNIDevice> openni_device =
+        boost::shared_ptr<openni2_wrapper::OpenNIDevice> openni_device =
               this->getDevice ();
 
         const uint16_t* shift_data_it = shift_data_ptr;
@@ -342,9 +341,10 @@ namespace pcl
       void
       stopSynchronization ();
 
+	  // TODO: rename to mapConfigMode2OniMode
       /** \brief Map config modes. */
       bool
-      mapConfigMode2XnMode (int mode, XnMapOutputMode &xnmode) const;
+	  mapConfigMode2XnMode (int mode, openni::VideoMode& videoMode) const;
 
       // callback methods
       /** \brief RGB image callback. */
@@ -419,7 +419,7 @@ namespace pcl
       Synchronizer<boost::shared_ptr<openni_wrapper::IRImage>, boost::shared_ptr<openni_wrapper::DepthImage> > ir_sync_;
 
       /** \brief The actual openni device. */
-      boost::shared_ptr<openni_wrapper::OpenNIDevice> device_;
+      boost::shared_ptr<openni2_wrapper::OpenNIDevice> device_;
 
       std::string rgb_frame_id_;
       std::string depth_frame_id_;
@@ -446,27 +446,27 @@ namespace pcl
       struct modeComp
       {
 
-        bool operator () (const XnMapOutputMode& mode1, const XnMapOutputMode & mode2) const
+        bool operator () (const openni::VideoMode& mode1, const openni::VideoMode & mode2) const
         {
-          if (mode1.nXRes < mode2.nXRes)
+			if (mode1.getResolutionX() < mode2.getResolutionX())
             return true;
-          else if (mode1.nXRes > mode2.nXRes)
+          else if (mode1.getResolutionX() > mode2.getResolutionX())
             return false;
-          else if (mode1.nYRes < mode2.nYRes)
+          else if (mode1.getResolutionY() < mode2.getResolutionY())
             return true;
-          else if (mode1.nYRes > mode2.nYRes)
+          else if (mode1.getResolutionY() > mode2.getResolutionY())
             return false;
-          else if (mode1.nFPS < mode2.nFPS)
+		  else if (mode1.getFps() < mode2.getFps() )
             return true;
           else
             return false;
         }
       } ;
-      std::map<int, XnMapOutputMode> config2xn_map_;
+      std::map<int, openni::VideoMode> config2xn_map_;
 
-      openni_wrapper::OpenNIDevice::CallbackHandle depth_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle image_callback_handle;
-      openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
+      openni2_wrapper::CallbackHandle depth_callback_handle;
+      openni2_wrapper::CallbackHandle image_callback_handle;
+      openni2_wrapper::CallbackHandle ir_callback_handle;
       bool running_;
 
       /** \brief The RGB image focal length (fx). */
@@ -490,7 +490,7 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
-  boost::shared_ptr<openni_wrapper::OpenNIDevice>
+  boost::shared_ptr<openni2_wrapper::OpenNIDevice>
   OpenNIGrabber::getDevice () const
   {
     return device_;

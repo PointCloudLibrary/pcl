@@ -86,9 +86,9 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
   if (!device_->hasDepthStream ())
     PCL_THROW_EXCEPTION (pcl::IOException, "Device does not provide 3D information.");
 
-  XnMapOutputMode depth_mode = device_->getDepthOutputMode();
-  depth_width_ = depth_mode.nXRes;
-  depth_height_ = depth_mode.nYRes;
+  openni::VideoMode depth_mode = device_->getDepthOutputMode();
+  depth_width_ = depth_mode.getResolutionX();
+  depth_height_ = depth_mode.getResolutionY();
 
   depth_image_signal_ = createSignal <sig_cb_openni_depth_image > ();
   point_cloud_signal_ = createSignal <sig_cb_openni_point_cloud > ();
@@ -102,9 +102,9 @@ ONIGrabber::ONIGrabber (const std::string& file_name, bool repeat, bool stream)
 
   if (device_->hasImageStream ())
   {
-    XnMapOutputMode depth_mode = device_->getImageOutputMode ();
-    image_width_ = depth_mode.nXRes;
-    image_height_ = depth_mode.nYRes;
+    openni::VideoMode depth_mode = device_->getImageOutputMode ();
+    image_width_ = depth_mode.getResolutionX();
+    image_height_ = depth_mode.getResolutionY();
 
     image_signal_             = createSignal <sig_cb_openni_image> ();
     image_depth_image_signal_ = createSignal <sig_cb_openni_image_depth_image> ();

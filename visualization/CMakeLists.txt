@@ -160,6 +160,9 @@ if(build)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
+	if(OPENNI2_FOUND)
+      list(APPEND EXT_DEPS openni2-dev)
+    endif(OPENNI2_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 

@@ -29,6 +29,7 @@
  *      Author: Julius Kammerl (jkammerl@willowgarage.com)
  */
 
+#include <string>
 #include "pcl/io/openni2_camera/openni2_device_info.h"
 
 namespace openni2_wrapper
