@@ -114,9 +114,9 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
                                      index_down += triangle_pixel_size_,
                                      index_down_right += triangle_pixel_size_)
     {
-      if (isValidQuad (i, index_down, index_right, index_down_right))
+      if (isValidQuad (i, index_right, index_down_right, index_down))
         if (store_shadowed_faces_ || !isShadowedQuad (i, index_right, index_down_right, index_down))
-          addQuad (i, index_down, index_right, index_down_right, idx++, polygons);
+          addQuad (i, index_right, index_down_right, index_down, idx++, polygons);
     }
   }
   polygons.resize (idx);
