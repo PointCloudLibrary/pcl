@@ -435,8 +435,8 @@ void
 	try
 	{
 		if (device_->isSynchronizationSupported () && !device_->isSynchronized () &&
-			device_->getImageOutputMode ().getFps() == device_->getDepthOutputMode ().getFps() &&
-			device_->isImageStreamRunning () && device_->isDepthStreamRunning ())
+			device_->getColorVideoMode().frame_rate_ == device_->getColorVideoMode().frame_rate_ &&
+			device_->isColorStreamStarted() && device_->isDepthStreamStarted())
 			device_->setSynchronization (true);
 	}
 	catch (const openni_wrapper::OpenNIException& exception)
@@ -929,7 +929,7 @@ std::vector<std::pair<int, openni::VideoMode> >
 float
 	pcl::OpenNIGrabber::getFramesPerSecond () const
 {
-	return (static_cast<float> (device_->getDepthOutputMode ().getFps()));
+	return (static_cast<float> (device_->getColorVideoMode().frame_rate_));
 }
 
 #endif

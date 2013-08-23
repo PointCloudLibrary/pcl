@@ -32,6 +32,7 @@
 #ifndef OPENNI2_DEVICE_H
 #define OPENNI2_DEVICE_H
 
+#include "openni.h"
 #include "pcl/io/openni2_camera/openni2_video_mode.h"
 #include "pcl/io/openni2_camera/openni2_exception.h"
 
@@ -65,7 +66,7 @@ namespace openni
 namespace openni2_wrapper
 {
 
-	typedef boost::function<void(boost::shared_ptr<openni::VideoFrameRef> image)> FrameCallbackFunction;
+	typedef boost::function<void(openni::VideoFrameRef& image)> FrameCallbackFunction;
 
 	typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
 	typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;

@@ -77,7 +77,7 @@ void IRImage::fillRaw (unsigned width, unsigned height, unsigned short* ir_buffe
   for (unsigned yIdx = 0; yIdx < height; ++yIdx, irIdx += ySkip)
   {
     for (unsigned xIdx = 0; xIdx < width; ++xIdx, irIdx += xStep, ++ir_buffer)
-      *ir_buffer = static_cast<unsigned short> (ir_md_->getData()[irIdx]);
+      *ir_buffer = static_cast<unsigned short> (  ((unsigned short*)ir_md_->getData())[irIdx]  );
 
     // if we have padding
     if (bufferSkip > 0)
