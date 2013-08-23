@@ -227,7 +227,11 @@ namespace pcl
 
         std::vector < std::pair<float, int> > scored_peaks (nr_bins_after_padding);
         for (int i = 0; i < nr_bins_after_padding; i++)
+#if defined(_WIN32) && _MSC_VER >= 1600
+          scored_peaks[i] = std::make_pair (invAB[i].r, i);
+#else
           scored_peaks[i] = std::make_pair<float, int> (invAB[i].r, i);
+#endif
 
         std::sort (scored_peaks.begin (), scored_peaks.end (), peaks_ordering ());
 
