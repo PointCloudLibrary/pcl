@@ -133,11 +133,11 @@ namespace pcl
       getDevice () const;
 
       /** \brief Obtain a list of the available depth modes that this device supports. */
-      std::vector<std::pair<int, openni::VideoMode> >
+	  std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> >
       getAvailableDepthModes () const;
 
       /** \brief Obtain a list of the available image modes that this device supports. */
-      std::vector<std::pair<int, openni::VideoMode> >
+      std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> >
       getAvailableImageModes () const;
 
       /** \brief Set the RGB camera parameters (fx, fy, cx, cy)
@@ -344,7 +344,7 @@ namespace pcl
 	  // TODO: rename to mapConfigMode2OniMode
       /** \brief Map config modes. */
       bool
-	  mapConfigMode2XnMode (int mode, openni::VideoMode& videoMode) const;
+		mapConfigMode2XnMode (int mode, openni2_wrapper::OpenNI2VideoMode& videoMode) const;
 
       // callback methods
       /** \brief RGB image callback. */
@@ -462,7 +462,7 @@ namespace pcl
             return false;
         }
       } ;
-      std::map<int, openni::VideoMode> config2xn_map_;
+      std::map<int, openni2_wrapper::OpenNI2VideoMode> config2xn_map_;
 
       openni2_wrapper::CallbackHandle depth_callback_handle;
       openni2_wrapper::CallbackHandle image_callback_handle;

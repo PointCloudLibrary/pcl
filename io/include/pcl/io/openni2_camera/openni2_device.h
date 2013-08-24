@@ -125,9 +125,17 @@ namespace openni2_wrapper
 		bool isColorVideoModeSupported(const OpenNI2VideoMode& video_mode) const;
 		bool isDepthVideoModeSupported(const OpenNI2VideoMode& video_mode) const;
 
+		bool findCompatibleIRMode(const OpenNI2VideoMode& check_mode, OpenNI2VideoMode& mode) const throw (OpenNI2Exception);
+		bool findCompatibleColorMode(const OpenNI2VideoMode& check_mode, OpenNI2VideoMode& mode) const throw (OpenNI2Exception);
+		bool findCompatibleDepthMode(const OpenNI2VideoMode& check_mode, OpenNI2VideoMode& mode) const throw (OpenNI2Exception);
+
 		void setIRVideoMode(const OpenNI2VideoMode& video_mode) throw (OpenNI2Exception);
 		void setColorVideoMode(const OpenNI2VideoMode& video_mode) throw (OpenNI2Exception);
 		void setDepthVideoMode(const OpenNI2VideoMode& video_mode) throw (OpenNI2Exception);
+
+		OpenNI2VideoMode getDefaultIRMode() const;
+		OpenNI2VideoMode getDefaultColorMode() const;
+		OpenNI2VideoMode getDefaultDepthMode() const;
 
 		void setIRFrameCallback(FrameCallbackFunction callback);
 		void setColorFrameCallback(FrameCallbackFunction callback);
@@ -140,6 +148,10 @@ namespace openni2_wrapper
 		void setAutoExposure(bool enable) throw (OpenNI2Exception);
 		void setAutoWhiteBalance(bool enable) throw (OpenNI2Exception);
 
+		bool isSynchronized() { return true; };
+		bool isSynchronizationSupported(){ return true; }
+		void setSynchronization(bool sync) { setDepthColorSync(true); }
+
 		bool getAutoExposure() const;
 		bool getAutoWhiteBalance() const;
 
@@ -151,6 +163,12 @@ namespace openni2_wrapper
 		boost::shared_ptr<openni::VideoStream> getIRVideoStream() const throw (OpenNI2Exception);
 		boost::shared_ptr<openni::VideoStream> getColorVideoStream() const throw (OpenNI2Exception);
 		boost::shared_ptr<openni::VideoStream> getDepthVideoStream() const throw (OpenNI2Exception);
+
+		bool findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes, 
+			const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
+		bool resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const;
+
+		// Members
 
 		boost::shared_ptr<openni::Device> openni_device_;
 		boost::shared_ptr<openni::DeviceInfo> device_info_;

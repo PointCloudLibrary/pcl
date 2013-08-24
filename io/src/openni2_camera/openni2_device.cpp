@@ -46,6 +46,8 @@
 
 namespace openni2_wrapper
 {
+	using openni::VideoMode;
+	typedef OpenNI2VideoMode WrapVideoMode;
 
 	OpenNI2Device::OpenNI2Device(const std::string& device_URI) throw (OpenNI2Exception) :
 		openni_device_(),
@@ -518,6 +520,100 @@ namespace openni2_wrapper
 			if (rc != openni::STATUS_OK)
 				THROW_OPENNI_EXCEPTION("Couldn't set depth video mode: \n%s\n", openni::OpenNI::getExtendedError());
 		}
+	}
+
+	OpenNI2VideoMode OpenNI2Device::getDefaultIRMode() const
+	{
+		return getSupportedIRVideoModes().at(0);
+	}
+	OpenNI2VideoMode OpenNI2Device::getDefaultColorMode() const
+	{
+		return getSupportedColorVideoModes().at(0);
+	}
+	OpenNI2VideoMode OpenNI2Device::getDefaultDepthMode() const
+	{
+		return getSupportedDepthVideoModes().at(0);
+	}
+
+	bool 
+	OpenNI2Device::findCompatibleIRMode (const WrapVideoMode& output_mode, WrapVideoMode& mode) const throw ()
+	{
+		if ( isIRVideoModeSupported(output_mode) )
+		{
+			mode = output_mode;
+			return (true);
+		}
+		else
+		{
+			// Find a resize-compatable mode
+			std::vector<WrapVideoMode> supportedModes = getSupportedIRVideoModes();
+			bool found = findCompatibleVideoMode(supportedModes, output_mode, mode);
+			return (found);
+		}
+	}
+
+	bool 
+	OpenNI2Device::findCompatibleColorMode (const WrapVideoMode& output_mode, WrapVideoMode& mode) const throw ()
+	{
+		if ( isColorVideoModeSupported(output_mode) )
+		{
+			mode = output_mode;
+			return (true);
+		}
+		else
+		{
+			// Find a resize-compatable mode
+			std::vector<WrapVideoMode> supportedModes = getSupportedColorVideoModes();
+			bool found = findCompatibleVideoMode(supportedModes, output_mode, mode);
+			return (found);
+		}
+	}
+
+	bool 
+	OpenNI2Device::findCompatibleDepthMode (const WrapVideoMode& output_mode, WrapVideoMode& mode) const throw ()
+	{
+		if ( isDepthVideoModeSupported(output_mode) )
+		{
+			mode = output_mode;
+			return (true);
+		}
+		else
+		{
+			// Find a resize-compatable mode
+			std::vector<WrapVideoMode> supportedModes = getSupportedDepthVideoModes();
+			bool found = findCompatibleVideoMode(supportedModes, output_mode, mode);
+			return (found);
+		}
+	}
+
+	// Generic support method for the above findCompatable...Mode calls above
+	bool 
+	OpenNI2Device::findCompatibleVideoMode (const std::vector<WrapVideoMode> supportedModes, const WrapVideoMode& output_mode, WrapVideoMode& mode) const throw ()
+	{
+		bool found = false;
+		for (std::vector<WrapVideoMode>::const_iterator modeIt = supportedModes.begin(); modeIt != supportedModes.end(); ++modeIt)
+		{
+			if (modeIt->frame_rate_ == output_mode.frame_rate_ 
+				&& resizingSupported(modeIt->x_resolution_, modeIt->y_resolution_, output_mode.x_resolution_, output_mode.y_resolution_))
+			{
+				if (found)
+				{ // check wheter the new mode is better -> smaller than the current one.
+					if (mode.x_resolution_ * mode.x_resolution_ > modeIt->x_resolution_ * modeIt->y_resolution_ )
+						mode = *modeIt;
+				}
+				else
+				{
+					mode = *modeIt;
+					found = true;
+				}
+			}
+		}
+		return (found);
+	}
+
+	bool OpenNI2Device::resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const
+	{
+		return (output_width <= input_width && output_height <= input_height && input_width % output_width == 0 && input_height % output_height == 0 );
 	}
 
 	void OpenNI2Device::setAutoExposure(bool enable) throw (OpenNI2Exception)

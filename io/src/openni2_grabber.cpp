@@ -236,9 +236,11 @@ void
 		if (depth_required_ && !device_->isDepthStreamStarted ())
 		{
 			block_signals ();
-			if (device_->hasColorSensor() && !device_->isDepthRegistered () && device_->isDepthRegistrationSupported ())
+			if (device_->hasColorSensor() 
+				//&& !device_->isDepthRegistered () 
+				&& device_->isImageRegistrationModeSupported ())
 			{
-				device_->setDepthRegistration (true);
+				device_->setImageRegistrationMode(true);
 			}
 			device_->startDepthStream ();
 			//startSynchronization ();
@@ -385,46 +387,48 @@ void
 		PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occured");
 	}
 
-	openni::VideoMode depth_md;
+	typedef openni2_wrapper::OpenNI2VideoMode VideoMode;
+
+	VideoMode depth_md;
 	// Set the selected output mode
 	if (depth_mode != OpenNI_Default_Mode)
 	{
-		openni::VideoMode actual_depth_md;
+		VideoMode actual_depth_md;
 		if (!mapConfigMode2XnMode (depth_mode, depth_md) || !device_->findCompatibleDepthMode (depth_md, actual_depth_md))
 			PCL_THROW_EXCEPTION (pcl::IOException, "could not find compatible depth stream mode " << static_cast<int> (depth_mode) );
 
-		openni::VideoMode current_depth_md =  device_->getDepthOutputMode ();
-		if (current_depth_md.getResolutionX() != actual_depth_md.getResolutionX() || current_depth_md.getResolutionY() != actual_depth_md.getResolutionY())
-			device_->setDepthOutputMode (actual_depth_md);
+		VideoMode current_depth_md =  device_->getDepthVideoMode ();
+		if (current_depth_md.x_resolution_ != actual_depth_md.x_resolution_ || current_depth_md.y_resolution_ != actual_depth_md.y_resolution_)
+			device_->setDepthVideoMode (actual_depth_md);
 	}
 	else
 	{
 		depth_md = device_->getDefaultDepthMode ();
 	}
 
-	depth_width_ = depth_md.getResolutionX();
-	depth_height_ = depth_md.getResolutionY();
+	depth_width_ = depth_md.x_resolution_;
+	depth_height_ = depth_md.y_resolution_;
 
 	if (device_->hasColorSensor())
 	{
-		openni::VideoMode image_md;
+		VideoMode image_md;
 		if (image_mode != OpenNI_Default_Mode)
 		{
-			openni::VideoMode actual_image_md;
-			if (!mapConfigMode2XnMode (image_mode, image_md) || !device_->findCompatibleImageMode (image_md, actual_image_md))
+			VideoMode actual_image_md;
+			if (!mapConfigMode2XnMode (image_mode, image_md) || !device_->findCompatibleColorMode (image_md, actual_image_md))
 				PCL_THROW_EXCEPTION (pcl::IOException, "could not find compatible image stream mode " << static_cast<int> (image_mode) );
 
-			openni::VideoMode current_image_md =  device_->getImageOutputMode ();
-			if (current_image_md.getResolutionX() != actual_image_md.getResolutionX() || current_image_md.getResolutionY() != actual_image_md.getResolutionY())
-				device_->setImageOutputMode (actual_image_md);
+			VideoMode current_image_md =  device_->getColorVideoMode ();
+			if (current_image_md.x_resolution_ != actual_image_md.x_resolution_ || current_image_md.y_resolution_ != actual_image_md.y_resolution_)
+				device_->setColorVideoMode (actual_image_md);
 		}
 		else
 		{
-			image_md = device_->getDefaultImageMode ();
+			image_md = device_->getDefaultColorMode ();
 		}
 
-		image_width_  = image_md.getResolutionX();
-		image_height_ = image_md.getResolutionY();
+		image_width_  = image_md.x_resolution_;
+		image_height_ = image_md.y_resolution_;
 	}
 }
 
@@ -572,7 +576,8 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr
 	if (pcl_isfinite (depth_principal_point_y_))
 		centerY =  static_cast<float> (depth_principal_point_y_);
 
-	if (device_->isDepthRegistered ())
+	//if (device_->isDepthRegistered ())
+	if (true)
 		cloud->header.frame_id = rgb_frame_id_;
 	else
 		cloud->header.frame_id = depth_frame_id_;
@@ -850,40 +855,29 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr
 void
 	pcl::OpenNIGrabber::updateModeMaps ()
 {
-	openni::VideoMode output_mode;
+	typedef openni2_wrapper::OpenNI2VideoMode VideoMode;
 
-	output_mode.setResolution(XN_SXGA_X_RES, XN_SXGA_Y_RES);
-	output_mode.setFps(15);
-	config2xn_map_[OpenNI_SXGA_15Hz] = output_mode;
+	openni2_wrapper::OpenNI2VideoMode output_mode;
 
-	output_mode.setResolution(XN_VGA_X_RES, XN_VGA_Y_RES);
-	output_mode.setFps(25);
-	config2xn_map_[OpenNI_VGA_25Hz] = output_mode;
-	output_mode.setFps(30);
-	config2xn_map_[OpenNI_VGA_30Hz] = output_mode;
+	config2xn_map_[OpenNI_SXGA_15Hz] = VideoMode(XN_SXGA_X_RES, XN_SXGA_Y_RES, 15);
 
-	output_mode.setResolution(XN_QVGA_X_RES, XN_QVGA_Y_RES);
-	output_mode.setFps(25);
-	config2xn_map_[OpenNI_QVGA_25Hz] = output_mode;
-	output_mode.setFps(30);
-	config2xn_map_[OpenNI_QVGA_30Hz] = output_mode;
-	output_mode.setFps(60);
-	config2xn_map_[OpenNI_QVGA_60Hz] = output_mode;
+	config2xn_map_[OpenNI_VGA_25Hz] = VideoMode(XN_VGA_X_RES, XN_VGA_Y_RES, 25);
+	config2xn_map_[OpenNI_VGA_30Hz] = VideoMode(XN_VGA_X_RES, XN_VGA_Y_RES, 30);
 
-	output_mode.setResolution(XN_QQVGA_X_RES, XN_QQVGA_Y_RES);
-	output_mode.setFps(25);
-	config2xn_map_[OpenNI_QQVGA_25Hz] = output_mode;
-	output_mode.setFps(30);
-	config2xn_map_[OpenNI_QQVGA_30Hz] = output_mode;
-	output_mode.setFps(60);
-	config2xn_map_[OpenNI_QQVGA_60Hz] = output_mode;
+	config2xn_map_[OpenNI_QVGA_25Hz] = VideoMode(XN_QVGA_X_RES, XN_QVGA_Y_RES, 25);
+	config2xn_map_[OpenNI_QVGA_30Hz] = VideoMode(XN_QVGA_X_RES, XN_QVGA_Y_RES, 30);
+	config2xn_map_[OpenNI_QVGA_60Hz] = VideoMode(XN_QVGA_X_RES, XN_QVGA_Y_RES, 60);
+
+	config2xn_map_[OpenNI_QQVGA_25Hz] = VideoMode(XN_QQVGA_X_RES, XN_QQVGA_Y_RES, 25);
+	config2xn_map_[OpenNI_QQVGA_30Hz] = VideoMode(XN_QQVGA_X_RES, XN_QQVGA_Y_RES, 30);
+	config2xn_map_[OpenNI_QQVGA_60Hz] = VideoMode(XN_QQVGA_X_RES, XN_QQVGA_Y_RES, 60);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-	pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, openni::VideoMode &xnmode) const
+	pcl::OpenNIGrabber::mapConfigMode2XnMode (int mode, openni2_wrapper::OpenNI2VideoMode &xnmode) const
 {
-	std::map<int, openni::VideoMode>::const_iterator it = config2xn_map_.find (mode);
+	std::map<int, openni2_wrapper::OpenNI2VideoMode>::const_iterator it = config2xn_map_.find (mode);
 	if (it != config2xn_map_.end ())
 	{
 		xnmode = it->second;
@@ -896,12 +890,12 @@ bool
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<std::pair<int, openni::VideoMode> >
+std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> >
 	pcl::OpenNIGrabber::getAvailableDepthModes () const
 {
-	openni::VideoMode dummy;
-	std::vector<std::pair<int, openni::VideoMode> > result;
-	for (std::map<int, openni::VideoMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+	openni2_wrapper::OpenNI2VideoMode dummy;
+	std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> > result;
+	for (std::map<int, openni2_wrapper::OpenNI2VideoMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
 	{
 		if (device_->findCompatibleDepthMode (it->second, dummy))
 			result.push_back (*it);
@@ -911,14 +905,14 @@ std::vector<std::pair<int, openni::VideoMode> >
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::vector<std::pair<int, openni::VideoMode> >
+std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> >
 	pcl::OpenNIGrabber::getAvailableImageModes () const
 {
-	openni::VideoMode dummy;
-	std::vector<std::pair<int, openni::VideoMode> > result;
-	for (std::map<int, openni::VideoMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
+	openni2_wrapper::OpenNI2VideoMode dummy;
+	std::vector<std::pair<int, openni2_wrapper::OpenNI2VideoMode> > result;
+	for (std::map<int, openni2_wrapper::OpenNI2VideoMode>::const_iterator it = config2xn_map_.begin (); it != config2xn_map_.end (); ++it)
 	{
-		if (device_->findCompatibleImageMode (it->second, dummy))
+		if (device_->findCompatibleColorMode (it->second, dummy))
 			result.push_back (*it);
 	}
 

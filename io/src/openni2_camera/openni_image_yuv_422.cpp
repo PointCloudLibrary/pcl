@@ -72,7 +72,7 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
       THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->getWidth(), image_md_->getHeight(), width, height);
 
     if ( image_md_->getWidth() % width != 0 || image_md_->getHeight () % height != 0
-		|| (image_md_->getWidth() () / width) & 0x01 || (image_md_->getHeight () / height & 0x01) )
+		|| (image_md_->getWidth() / width) & 0x01 || (image_md_->getHeight() / height & 0x01) )
         THROW_OPENNI_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
   }
 
