@@ -295,6 +295,7 @@ namespace pcl
         * \param[out] depth_data_ptr generated depth data
         * \param[in] size of shift and depth buffer
         */
+	  /* TODO: reenable this
       inline void
       convertShiftToDepth (
           const uint16_t* shift_data_ptr,
@@ -318,6 +319,7 @@ namespace pcl
         }
 
       }
+	  */
 
 
     protected:
