@@ -55,6 +55,8 @@ namespace openni2_wrapper
 
 	typedef std::set<OpenNI2DeviceInfo, OpenNI2DeviceInfoComparator> DeviceSet;
 
+
+
 	class OpenNI2DeviceListener : public openni::OpenNI::DeviceConnectedListener,
 		public openni::OpenNI::DeviceDisconnectedListener,
 		public openni::OpenNI::DeviceStateChangedListener
@@ -173,17 +175,10 @@ namespace openni2_wrapper
 		DeviceSet device_set_;
 	};
 
+
+
 	//////////////////////////////////////////////////////////////////////////
-
-	boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::singelton_;
-
-	boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::getInstance()
-	{
-		if (singelton_.get()==0)
-			singelton_ = boost::make_shared<OpenNI2DeviceManager>();
-
-		return singelton_;
-	}
+	//boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::singelton_;
 
 	OpenNI2DeviceManager::OpenNI2DeviceManager()
 	{

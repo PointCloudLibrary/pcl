@@ -32,6 +32,7 @@
 #ifndef OPENNI2_DEVICE_H
 #define OPENNI2_DEVICE_H
 
+#include <pcl/pcl_exports.h>
 #include "openni.h"
 #include "pcl/io/openni2_camera/openni2_video_mode.h"
 #include "pcl/io/openni2_camera/openni2_exception.h"
@@ -69,7 +70,7 @@ namespace openni2_wrapper
 
 	class OpenNI2FrameListener;
 
-	class OpenNI2Device
+	class PCL_EXPORTS OpenNI2Device
 	{
 	public:
 
@@ -305,7 +306,7 @@ namespace openni2_wrapper
 	// Name compatibility with OpenNI 1.x wrapper
 	typedef OpenNI2Device OpenNIDevice;
 
-	std::ostream& operator << (std::ostream& stream, const OpenNI2Device& device);
+	PCL_EXPORTS std::ostream& operator<< (std::ostream& stream, const OpenNI2Device& device);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	template<typename T> OpenNI2Device::CallbackHandle
