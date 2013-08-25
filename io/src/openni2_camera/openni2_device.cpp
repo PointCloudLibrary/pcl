@@ -813,52 +813,53 @@ namespace openni2_wrapper
 
 	}
 
-	
-	/************************************************************************************/
-	// ***** PCL callbacks, for compatibility with the OpenNI 1.x grabber interface *****
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	OpenNI2Device::CallbackHandle 
+	/*OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
 	{
-	  image_callback_[image_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
-	  return (image_callback_handle_counter_++);
-	}
+		image_callback_[image_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+		return (image_callback_handle_counter_++);
+	}*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 
-	OpenNI2Device::unregisterImageCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+	OpenNI2Device::unregisterImageCallback (const OpenNI2Device::CallbackHandle& callbackHandle) throw ()
 	{
-	  return (image_callback_.erase (callbackHandle) != 0);
+		return (image_callback_.erase (callbackHandle) != 0);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	OpenNI2Device::CallbackHandle 
+	/*OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) throw ()
 	{
-	  depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
-	  return (depth_callback_handle_counter_++);
-	}
+		depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+		return (depth_callback_handle_counter_++);
+	}*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 
-	OpenNI2Device::unregisterDepthCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+	openni2_wrapper::OpenNI2Device::unregisterDepthCallback (const OpenNI2Device::CallbackHandle& callbackHandle) throw ()
 	{
-	  return (depth_callback_.erase (callbackHandle) != 0);
+		return (depth_callback_.erase (callbackHandle) != 0);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	OpenNI2Device::CallbackHandle 
+	/*OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
 	{
-	  ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
-	  return (ir_callback_handle_counter_++);
-	}
+		ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
+		return (ir_callback_handle_counter_++);
+	}*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 
-	OpenNI2Device::unregisterIRCallback (const OpenNIDevice::CallbackHandle& callbackHandle) throw ()
+	OpenNI2Device::unregisterIRCallback (const OpenNI2Device::CallbackHandle& callbackHandle) throw ()
 	{
-	  return (ir_callback_.erase (callbackHandle) != 0);
+		return (ir_callback_.erase (callbackHandle) != 0);
 	}
+
+
 
 }

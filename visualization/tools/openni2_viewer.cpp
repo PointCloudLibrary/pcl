@@ -103,7 +103,7 @@ printHelp (int, char **argv)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointType>
-class OpenNIViewer
+class OpenNI2Viewer
 {
   public:
     typedef pcl::PointCloud<PointType> Cloud;

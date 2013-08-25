@@ -54,7 +54,7 @@ if(build)
             #include/pcl/io/openni2_camera/openni.h
             #include/pcl/io/openni2_camera/openni_depth_image.h
             #include/pcl/io/openni2_camera/openni_driver.h
-            #include/pcl/io/openni2_camera/openni_exception.h
+            include/pcl/io/openni2_camera/openni_exception.h
 			#include/pcl/io/openni2_camera/openni_image_bayer_grbg.h
 			#include/pcl/io/openni2_camera/openni_device_kinect.h
             #include/pcl/io/openni2_camera/openni_device_primesense.h
@@ -85,7 +85,7 @@ if(build)
             #src/openni2_camera/openni_device_xtion.cpp
             #src/openni2_camera/openni_device_oni.cpp
             #src/openni2_camera/openni_driver.cpp
-            #src/openni2_camera/openni_exception.cpp
+            src/openni2_camera/openni_exception.cpp
             
             src/openni2_grabber.cpp
             src/oni2_grabber.cpp

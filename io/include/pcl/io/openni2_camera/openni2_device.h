@@ -197,7 +197,11 @@ namespace openni2_wrapper
 		* \return a callback handler that can be used to remove the user callback from list of depth-stream callbacks.
 		*/
 		CallbackHandle 
-		registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ();
+		registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ()
+		{
+			depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, cookie);
+			return (depth_callback_handle_counter_++);
+		}
 
 		/** \brief registers a callback function for the depth stream with an optional user defined parameter.
 		*        This version is used to register a member function of any class.
@@ -302,6 +306,30 @@ namespace openni2_wrapper
 	typedef OpenNI2Device OpenNIDevice;
 
 	std::ostream& operator << (std::ostream& stream, const OpenNI2Device& device);
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	template<typename T> OpenNI2Device::CallbackHandle
+	OpenNI2Device::registerImageCallback (void (T::*callback)(boost::shared_ptr<Image>, void* cookie), T& instance, void* custom_data) throw ()
+	{
+		image_callback_[image_callback_handle_counter_] = boost::bind (callback, boost::ref (instance), _1, custom_data);
+		return (image_callback_handle_counter_++);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	template<typename T> OpenNI2Device::CallbackHandle
+	OpenNI2Device::registerDepthCallback (void (T::*callback)(boost::shared_ptr<DepthImage>, void* cookie), T& instance, void* custom_data) throw ()
+	{
+		depth_callback_[depth_callback_handle_counter_] = boost::bind ( callback,  boost::ref (instance), _1, custom_data);
+		return (depth_callback_handle_counter_++);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	template<typename T> OpenNI2Device::CallbackHandle
+	OpenNI2Device::registerIRCallback (void (T::*callback)(boost::shared_ptr<IRImage>, void* cookie), T& instance, void* custom_data) throw ()
+	{
+		ir_callback_[ir_callback_handle_counter_] = boost::bind ( callback,  boost::ref (instance), _1, custom_data);
+		return (ir_callback_handle_counter_++);
+	}
 
 }
 
