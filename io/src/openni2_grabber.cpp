@@ -648,8 +648,8 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 	cloud->points.resize (cloud->height * cloud->width);
 
 	//float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-	register float constant_x = 1.0f / device_->getImageFocalLength (depth_width_);
-	register float constant_y = 1.0f / device_->getImageFocalLength (depth_width_);
+	register float constant_x = 1.0f / device_->getColorFocalLength (depth_width_);
+	register float constant_y = 1.0f / device_->getColorFocalLength (depth_width_);
 	register float centerX = ((float)cloud->width - 1.f) / 2.f;
 	register float centerY = ((float)cloud->height - 1.f) / 2.f;
 
@@ -665,7 +665,7 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 	if (pcl_isfinite (rgb_principal_point_y_))
 		centerY =  static_cast<float> (rgb_principal_point_y_);
 
-	register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
+	register const OniGrayscale16Pixel* depth_map = (OniGrayscale16Pixel*) depth_image->getDepthMetaData().getData();
 	if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
 	{
 		static unsigned buffer_size = 0;

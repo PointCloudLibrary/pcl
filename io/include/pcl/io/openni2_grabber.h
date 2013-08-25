@@ -466,9 +466,9 @@ namespace pcl
       } ;
       std::map<int, openni2_wrapper::OpenNI2VideoMode> config2xn_map_;
 
-      openni2_wrapper::CallbackHandle depth_callback_handle;
-      openni2_wrapper::CallbackHandle image_callback_handle;
-      openni2_wrapper::CallbackHandle ir_callback_handle;
+      openni2_wrapper::OpenNI2Device::CallbackHandle depth_callback_handle;
+      openni2_wrapper::OpenNI2Device::CallbackHandle image_callback_handle;
+      openni2_wrapper::OpenNI2Device::CallbackHandle ir_callback_handle;
       bool running_;
 
       /** \brief The RGB image focal length (fx). */

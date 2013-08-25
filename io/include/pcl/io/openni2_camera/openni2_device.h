@@ -293,9 +293,9 @@ namespace openni2_wrapper
 		std::map<CallbackHandle, ActualDepthImageCallbackFunction> depth_callback_;
 		std::map<CallbackHandle, ActualIRImageCallbackFunction> ir_callback_;
 
-		OpenNIDevice::CallbackHandle image_callback_handle_counter_;
-		OpenNIDevice::CallbackHandle depth_callback_handle_counter_;
-		OpenNIDevice::CallbackHandle ir_callback_handle_counter_;
+		OpenNI2Device::CallbackHandle image_callback_handle_counter_;
+		OpenNI2Device::CallbackHandle depth_callback_handle_counter_;
+		OpenNI2Device::CallbackHandle ir_callback_handle_counter_;
 	};
 
 	// Name compatibility with OpenNI 1.x wrapper

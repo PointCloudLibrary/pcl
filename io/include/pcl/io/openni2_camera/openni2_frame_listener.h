@@ -55,7 +55,7 @@ public:
 
   void onNewFrame(openni::VideoStream& stream);
 
-  void setCallback(FrameCallbackFunction& callback)
+  void setCallback(OpenNI2Device::FrameCallbackFunction& callback)
   {
     callback_ = callback;
   }
@@ -65,7 +65,7 @@ public:
 private:
   openni::VideoFrameRef m_frame;
 
-  FrameCallbackFunction callback_;
+  OpenNI2Device::FrameCallbackFunction callback_;
 
   bool user_device_timer_;
   boost::shared_ptr<OpenNI2TimerFilter> timer_filter_;
