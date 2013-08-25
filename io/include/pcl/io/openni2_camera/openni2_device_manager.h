@@ -52,7 +52,7 @@ public:
   OpenNI2DeviceManager();
   virtual ~OpenNI2DeviceManager();
 
-  static boost::shared_ptr<OpenNI2DeviceManager> getInstance();
+	static inline boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::getInstance();
 
   boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > getConnectedDeviceInfos() const;
   boost::shared_ptr<std::vector<std::string> > getConnectedDeviceURIs() const;

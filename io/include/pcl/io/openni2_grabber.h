@@ -45,6 +45,7 @@
 #include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
+#include <pcl/io/openni2_camera/openni2_device_manager.h>
 #include <pcl/io/openni2_camera/openni2_device.h>
 #include <pcl/io/openni2_camera/openni_image.h>
 #include <pcl/io/openni2_camera/openni_depth_image.h>

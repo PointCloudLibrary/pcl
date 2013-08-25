@@ -177,6 +177,14 @@ namespace openni2_wrapper
 
 	boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::singelton_;
 
+	boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::getInstance()
+	{
+		if (singelton_.get()==0)
+			singelton_ = boost::make_shared<OpenNI2DeviceManager>();
+
+		return singelton_;
+	}
+
 	OpenNI2DeviceManager::OpenNI2DeviceManager()
 	{
 		openni::Status rc = openni::OpenNI::initialize();
@@ -188,14 +196,6 @@ namespace openni2_wrapper
 
 	OpenNI2DeviceManager::~OpenNI2DeviceManager()
 	{
-	}
-
-	boost::shared_ptr<OpenNI2DeviceManager> OpenNI2DeviceManager::getInstance()
-	{
-		if (singelton_.get()==0)
-			singelton_ = boost::make_shared<OpenNI2DeviceManager>();
-
-		return singelton_;
 	}
 
 	boost::shared_ptr<std::vector<OpenNI2DeviceInfo> > OpenNI2DeviceManager::getConnectedDeviceInfos() const

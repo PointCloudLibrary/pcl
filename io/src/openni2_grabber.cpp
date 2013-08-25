@@ -296,7 +296,7 @@ bool
 void
 	pcl::OpenNIGrabber::onInit (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
 {
-	updateModeMaps (); // registering mapping from config modes to XnModes and vice versa
+	updateModeMaps (); // registering mapping from config modes to VideoModes and vice versa
 	setupDevice (device_id, depth_mode, image_mode);
 
 	rgb_frame_id_ = "/openni_rgb_optical_frame";
