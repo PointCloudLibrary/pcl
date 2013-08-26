@@ -50,6 +50,9 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QKeyEvent>
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+#include <QtConcurrent/QtConcurrent>
+#endif
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
