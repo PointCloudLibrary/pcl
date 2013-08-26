@@ -51,6 +51,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
+#include <vtkVersion.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
