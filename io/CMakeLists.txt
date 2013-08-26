@@ -15,7 +15,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 if(build)
 	## Prevent building OpenNI and OpenNI2 at the same time
 	if( BUILD_OPENNI AND BUILD_OPENNI2 )
-		##message( FATAL_ERROR "Cannot build OpenNI and OpenNI2 at the same time." )
+		message( FATAL_ERROR "Cannot build OpenNI and OpenNI2 at the same time." )
 	endif()
 
 	## OpenNI 2.x
@@ -94,7 +94,7 @@ if(build)
     endif(OPENNI2_FOUND)
 
 	## OpenNI 1.x
-    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
+    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." OFF)
     MARK_AS_ADVANCED(BUILD_OPENNI)
     if(NOT BUILD_OPENNI)
       # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related

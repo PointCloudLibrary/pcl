@@ -481,6 +481,7 @@ void
 void
 	pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void*)
 {
+	//printf("Grabber depth callback hit");
 	if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
 		num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
 		num_slots<sig_cb_openni_image_depth_image> () > 0)
@@ -490,6 +491,7 @@ void
 		num_slots<sig_cb_openni_ir_depth_image> () > 0)
 		ir_sync_.add1 (depth_image, depth_image->getTimeStamp ());
 
+	// FIXME: these callbacks are not being called.
 	if (depth_image_signal_->num_slots () > 0)
 		depth_image_signal_->operator()(depth_image);
 

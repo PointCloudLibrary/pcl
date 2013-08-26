@@ -79,7 +79,7 @@ namespace openni2_wrapper
 
 		// Get depth calculation parameters
 		// Not sure what property codes to use, as OpenNI 1.x used strings
-		double baseline = 7.0;	// HACK
+		double baseline = 7.62;	// HACK
 		//status = depth_video_stream_->getProperty("LDDIS", baseline);
 		if (status != openni::STATUS_OK)
 			THROW_OPENNI_EXCEPTION ("reading the baseline failed. Reason: %s", openni::OpenNI::getExtendedError());
@@ -863,12 +863,13 @@ namespace openni2_wrapper
 	}
 	void OpenNI2Device::processDepthFrame(openni::VideoFrameRef& frame)
 	{
-		printf("processed depth frame %i\n", frame.getFrameIndex() );
+		//printf("processed depth frame %i\n", frame.getFrameIndex() );
 		int frameWidth = frame.getWidth();
+		float focalLength = getDepthFocalLength (frameWidth);
 
 		// Need: data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_
 		boost::shared_ptr<DepthImage> image = 
-			boost::make_shared<DepthImage> (frame, baseline_, getDepthFocalLength (frameWidth), shadow_value_, no_sample_value_);
+			boost::make_shared<DepthImage> (frame, baseline_, focalLength, shadow_value_, no_sample_value_);
 
 		// Notify listeners of new frame
 		for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin (); callbackIt != depth_callback_.end (); ++callbackIt)
