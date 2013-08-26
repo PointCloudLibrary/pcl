@@ -692,7 +692,7 @@ namespace openni2_wrapper
 			depth_frame_listener->setUseDeviceTimer(enable);
 	}
 
-	void OpenNI2Device::setIRFrameCallback(FrameCallbackFunction callback)
+	/*void OpenNI2Device::setIRFrameCallback(FrameCallbackFunction callback)
 	{
 		ir_frame_listener->setCallback(callback);
 	}
@@ -705,7 +705,7 @@ namespace openni2_wrapper
 	void OpenNI2Device::setDepthFrameCallback(FrameCallbackFunction callback)
 	{
 		depth_frame_listener->setCallback(callback);
-	}
+	}*/
 
 	boost::shared_ptr<openni::VideoStream> OpenNI2Device::getIRVideoStream() const throw (OpenNI2Exception)
 	{
@@ -816,12 +816,12 @@ namespace openni2_wrapper
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*OpenNI2Device::CallbackHandle 
+	OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerImageCallback (const ImageCallbackFunction& callback, void* custom_data) throw ()
 	{
 		image_callback_[image_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
 		return (image_callback_handle_counter_++);
-	}*/
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 
@@ -831,12 +831,12 @@ namespace openni2_wrapper
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*OpenNI2Device::CallbackHandle 
+	OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerDepthCallback (const DepthImageCallbackFunction& callback, void* custom_data) throw ()
 	{
 		depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
 		return (depth_callback_handle_counter_++);
-	}*/
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 
@@ -846,12 +846,12 @@ namespace openni2_wrapper
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	/*OpenNI2Device::CallbackHandle 
+	OpenNI2Device::CallbackHandle 
 	OpenNI2Device::registerIRCallback (const IRImageCallbackFunction& callback, void* custom_data) throw ()
 	{
 		ir_callback_[ir_callback_handle_counter_] = boost::bind (callback, _1, custom_data);
 		return (ir_callback_handle_counter_++);
-	}*/
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool 

@@ -118,7 +118,7 @@ public:
 	}
 
 	void
-		cloud_callback (const CloudConstPtr& cloud)
+	cloud_callback (const CloudConstPtr& cloud)
 	{
 		FPS_CALC ("cloud callback");
 		boost::mutex::scoped_lock lock (cloud_mutex_);
@@ -126,7 +126,7 @@ public:
 	}
 
 	void
-		image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
+	image_callback (const boost::shared_ptr<openni_wrapper::Image>& image)
 	{
 		FPS_CALC ("image callback");
 		boost::mutex::scoped_lock lock (image_mutex_);
@@ -146,7 +146,7 @@ public:
 	}
 
 	void 
-		keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
+	keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
 	{
 		if (event.getKeyCode ())
 			cout << "the key \'" << event.getKeyCode() << "\' (" << event.getKeyCode() << ") was";
@@ -159,7 +159,7 @@ public:
 	}
 
 	void 
-		mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
+	mouse_callback (const pcl::visualization::MouseEvent& mouse_event, void*)
 	{
 		if (mouse_event.getType() == pcl::visualization::MouseEvent::MouseButtonPress && mouse_event.getButton() == pcl::visualization::MouseEvent::LeftButton)
 		{
@@ -171,7 +171,7 @@ public:
 	* @brief starts the main loop
 	*/
 	void
-		run ()
+	run ()
 	{
 		cloud_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
 		cloud_viewer_->registerKeyboardCallback(&OpenNI2Viewer::keyboard_callback, *this);
@@ -276,7 +276,7 @@ boost::shared_ptr<pcl::visualization::ImageViewer> img;
 
 /* ---[ */
 int
-	main (int argc, char** argv)
+main (int argc, char** argv)
 {
 	std::string device_id("");
 	pcl::OpenNIGrabber::Mode depth_mode = pcl::OpenNIGrabber::OpenNI_Default_Mode;

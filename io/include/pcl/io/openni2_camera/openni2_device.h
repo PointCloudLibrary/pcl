@@ -74,8 +74,6 @@ namespace openni2_wrapper
 	{
 	public:
 
-		typedef boost::function<void(openni::VideoFrameRef& image)> FrameCallbackFunction;
-
 		// OpenNI 1.x interface
 		typedef boost::function<void(boost::shared_ptr<Image>, void* cookie) > ImageCallbackFunction;
 		typedef boost::function<void(boost::shared_ptr<DepthImage>, void* cookie) > DepthImageCallbackFunction;
@@ -141,9 +139,9 @@ namespace openni2_wrapper
 		OpenNI2VideoMode getDefaultColorMode() const;
 		OpenNI2VideoMode getDefaultDepthMode() const;
 
-		void setIRFrameCallback(FrameCallbackFunction callback);
-		void setColorFrameCallback(FrameCallbackFunction callback);
-		void setDepthFrameCallback(FrameCallbackFunction callback);
+		//void setIRFrameCallback(FrameCallbackFunction callback);
+		//void setColorFrameCallback(FrameCallbackFunction callback);
+		//void setDepthFrameCallback(FrameCallbackFunction callback);
 
 		float getIRFocalLength (int output_y_resolution) const;
 		float getColorFocalLength (int output_y_resolution) const;
@@ -198,11 +196,7 @@ namespace openni2_wrapper
 		* \return a callback handler that can be used to remove the user callback from list of depth-stream callbacks.
 		*/
 		CallbackHandle 
-		registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ()
-		{
-			depth_callback_[depth_callback_handle_counter_] = boost::bind (callback, _1, cookie);
-			return (depth_callback_handle_counter_++);
-		}
+		registerDepthCallback (const DepthImageCallbackFunction& callback, void* cookie = NULL) throw ();
 
 		/** \brief registers a callback function for the depth stream with an optional user defined parameter.
 		*        This version is used to register a member function of any class.
