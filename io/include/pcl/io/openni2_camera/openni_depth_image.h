@@ -68,7 +68,7 @@ namespace openni_wrapper
         * \param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
         * \attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
         */
-      inline DepthImage (boost::shared_ptr<openni::VideoFrameRef> depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ();
+      inline DepthImage (openni::VideoFrameRef depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ();
 
       /** \brief Destructor. Never throws an exception. */
       inline virtual ~DepthImage () throw ();
@@ -155,14 +155,14 @@ namespace openni_wrapper
       getTimeStamp () const throw ();
 
     protected:
-      boost::shared_ptr<openni::VideoFrameRef> depth_md_;
+      openni::VideoFrameRef depth_md_;
       float baseline_;
       float focal_length_;
       uint64_t shadow_value_;
       uint64_t no_sample_value_;
   } ;
 
-  DepthImage::DepthImage (boost::shared_ptr<openni::VideoFrameRef> depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ()
+  DepthImage::DepthImage (openni::VideoFrameRef depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ()
   : depth_md_ (depth_meta_data)
   , baseline_ (baseline)
   , focal_length_ (focal_length)
@@ -174,7 +174,7 @@ namespace openni_wrapper
   const openni::VideoFrameRef&
   DepthImage::getDepthMetaData () const throw ()
   {
-    return *depth_md_;
+    return depth_md_;
   }
 
   float
@@ -204,25 +204,25 @@ namespace openni_wrapper
   unsigned
   DepthImage::getWidth () const throw ()
   {
-    return depth_md_->getWidth();
+    return depth_md_.getWidth();
   }
 
   unsigned
   DepthImage::getHeight () const throw ()
   {
-    return depth_md_->getHeight ();
+    return depth_md_.getHeight ();
   }
 
   unsigned
   DepthImage::getFrameID () const throw ()
   {
-    return depth_md_->getFrameIndex ();
+    return depth_md_.getFrameIndex ();
   }
 
   unsigned long
   DepthImage::getTimeStamp () const throw ()
   {
-    return static_cast<unsigned long> (depth_md_->getTimestamp ());
+    return static_cast<unsigned long> (depth_md_.getTimestamp ());
   }
 } // namespace
 #endif

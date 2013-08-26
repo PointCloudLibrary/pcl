@@ -53,7 +53,7 @@ namespace openni_wrapper
   class PCL_EXPORTS ImageYUV422 : public Image
   {
   public:
-	ImageYUV422 (boost::shared_ptr<openni::VideoFrameRef> image_meta_data) throw ();
+	ImageYUV422 (openni::VideoFrameRef image_meta_data) throw ();
     virtual ~ImageYUV422 () throw ();
 
     inline virtual Encoding

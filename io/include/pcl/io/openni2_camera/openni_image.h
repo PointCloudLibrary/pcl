@@ -73,7 +73,7 @@ namespace openni_wrapper
      * @brief Constructor
      * @param[in] image_meta_data the actual image data from the OpenNI driver
      */
-	inline Image (boost::shared_ptr<openni::VideoFrameRef> image_meta_data) throw ();
+	inline Image (openni::VideoFrameRef image_meta_data) throw ();
 
     /**
      * @author Suat Gedikli
@@ -118,7 +118,7 @@ namespace openni_wrapper
     inline void
     fillRaw (unsigned char* rgb_buffer) const throw ()
     {
-		memcpy (rgb_buffer, image_md_->getData(), image_md_->getDataSize ());
+		memcpy (rgb_buffer, image_md_.getData(), image_md_.getDataSize ());
     }
 
     /**
@@ -165,10 +165,10 @@ namespace openni_wrapper
     inline const openni::VideoFrameRef& getMetaData () const throw ();
 
   protected:
-    boost::shared_ptr<openni::VideoFrameRef> image_md_;
+    openni::VideoFrameRef image_md_;		// This is already a reference, so we don't need another pointer wrapper.
   } ;
 
-  Image::Image (boost::shared_ptr<openni::VideoFrameRef> image_meta_data) throw ()
+  Image::Image (openni::VideoFrameRef image_meta_data) throw ()
   : image_md_ (image_meta_data)
   {
   }
@@ -178,31 +178,31 @@ namespace openni_wrapper
   unsigned
   Image::getWidth () const throw ()
   {
-    return image_md_->getWidth();
+    return image_md_.getWidth();
   }
 
   unsigned
   Image::getHeight () const throw ()
   {
-    return image_md_->getHeight();
+    return image_md_.getHeight();
   }
 
   unsigned
   Image::getFrameID () const throw ()
   {
-    return image_md_->getFrameIndex ();
+    return image_md_.getFrameIndex ();
   }
 
   unsigned long
   Image::getTimeStamp () const throw ()
   {
-    return static_cast<unsigned long> ( image_md_->getTimestamp() );
+    return static_cast<unsigned long> ( image_md_.getTimestamp() );
   }
 
   const openni::VideoFrameRef&
   Image::getMetaData () const throw ()
   {
-    return *image_md_;
+    return image_md_;
   }
 } // namespace
 #endif

@@ -248,6 +248,10 @@ namespace openni2_wrapper
 		boost::shared_ptr<openni::VideoStream> getColorVideoStream() const throw (OpenNI2Exception);
 		boost::shared_ptr<openni::VideoStream> getDepthVideoStream() const throw (OpenNI2Exception);
 
+		void processColorFrame(openni::VideoFrameRef& image);
+		void processDepthFrame(openni::VideoFrameRef& image);
+		void processIRFrame(openni::VideoFrameRef& image);
+
 		bool findCompatibleVideoMode (const std::vector<OpenNI2VideoMode> supportedModes, 
 			const OpenNI2VideoMode& output_mode, OpenNI2VideoMode& mode) const;
 		bool resizingSupported (size_t input_width, size_t input_height, size_t output_width, size_t output_height) const;

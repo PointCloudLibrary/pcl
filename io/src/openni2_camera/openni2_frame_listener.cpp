@@ -59,7 +59,6 @@ namespace openni2_wrapper
 
 		if (m_frame.isValid() && callback_)
 		{
-			// Do I want to callback with the VideoFrameRef, or a pcl::Image?
 			callback_(m_frame);
 		}
 

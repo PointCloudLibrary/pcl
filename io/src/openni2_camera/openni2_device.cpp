@@ -39,6 +39,8 @@
 #include "pcl/io/openni2_camera/openni2_convert.h"
 #include "pcl/io/openni2_camera/openni2_frame_listener.h"
 
+#include "pcl/io/openni2_camera/openni_image_yuv_422.h"
+
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
@@ -78,10 +80,14 @@ namespace openni2_wrapper
 		device_info_ = boost::make_shared<openni::DeviceInfo>();
 		*device_info_ = openni_device_->getDeviceInfo();
 
-		ir_frame_listener = boost::make_shared<OpenNI2FrameListener>();
 		color_frame_listener = boost::make_shared<OpenNI2FrameListener>();
-		depth_frame_listener = boost::make_shared<OpenNI2FrameListener>();
+		color_frame_listener->setCallback(boost::bind(&OpenNI2Device::processColorFrame, this, _1));
 
+		depth_frame_listener = boost::make_shared<OpenNI2FrameListener>();
+		depth_frame_listener->setCallback(boost::bind(&OpenNI2Device::processDepthFrame, this, _1));
+
+		ir_frame_listener = boost::make_shared<OpenNI2FrameListener>();
+		ir_frame_listener->setCallback(boost::bind(&OpenNI2Device::processIRFrame, this, _1));
 	}
 
 	OpenNI2Device::~OpenNI2Device()
@@ -813,6 +819,48 @@ namespace openni2_wrapper
 
 	}
 
+
+	// Convert VideoFrameRef into pcl::Image and forward to registered callbacks
+	void OpenNI2Device::processColorFrame(openni::VideoFrameRef& frame)
+	{
+		// RGB888
+		openni::PixelFormat format = frame.getVideoMode().getPixelFormat();
+		printf("processed color frame %i, (%i)\n", frame.getFrameIndex(), (int) format );
+
+		boost::shared_ptr<openni_wrapper::Image> image;
+		if (format == PixelFormat::PIXEL_FORMAT_YUV422)
+			image = boost::make_shared<openni_wrapper::ImageYUV422> (frame);
+		else //if (format == PixelFormat::PIXEL_FORMAT_RGB888)
+			image = boost::make_shared<openni_wrapper::ImageRGB24> (frame);
+
+		// Notify listeners of new frame
+		for (std::map< OpenNIDevice::CallbackHandle, ActualImageCallbackFunction >::iterator callbackIt = image_callback_.begin (); callbackIt != image_callback_.end (); ++callbackIt)
+		{
+			callbackIt->second.operator()(image);
+		}
+	}
+	void OpenNI2Device::processDepthFrame(openni::VideoFrameRef& frame)
+	{
+		printf("processed depth frame %i\n", frame.getFrameIndex() );
+		//boost::shared_ptr<DepthImage> image = boost::make_shared<DepthImage> (frame);
+
+		//// Notify listeners of new frame
+		//for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin (); callbackIt != depth_callback_.end (); ++callbackIt)
+		//{
+		//	callbackIt->second.operator()(image);
+		//}
+	}
+	void OpenNI2Device::processIRFrame(openni::VideoFrameRef& frame)
+	{
+		printf("processed IR frame %i\n", frame.getFrameIndex() );
+		//boost::shared_ptr<IRImage> image = boost::make_shared<openni_wrapper::IRImage> (frame);
+
+		//// Notify listeners of new frame
+		//for (std::map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin (); callbackIt != ir_callback_.end (); ++callbackIt)
+		//{
+		//	callbackIt->second.operator()(image);
+		//}
+	}
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////

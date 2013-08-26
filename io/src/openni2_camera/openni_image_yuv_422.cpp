@@ -47,7 +47,7 @@ using namespace std;
 namespace openni_wrapper
 {
 
-ImageYUV422::ImageYUV422 (boost::shared_ptr<openni::VideoFrameRef> image_meta_data) throw ()
+ImageYUV422::ImageYUV422 (openni::VideoFrameRef image_meta_data) throw ()
 : Image (image_meta_data)
 {
 }
@@ -66,23 +66,23 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
   // 0  1   2  3
   // u  y1  v  y2
 
-	if (image_md_->getWidth() != width && image_md_->getHeight() != height)
+	if (image_md_.getWidth() != width && image_md_.getHeight() != height)
   {
-    if (width > image_md_->getWidth() || height > image_md_->getHeight() )
-      THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->getWidth(), image_md_->getHeight(), width, height);
+    if (width > image_md_.getWidth() || height > image_md_.getHeight() )
+      THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_.getWidth(), image_md_.getHeight(), width, height);
 
-    if ( image_md_->getWidth() % width != 0 || image_md_->getHeight () % height != 0
-		|| (image_md_->getWidth() / width) & 0x01 || (image_md_->getHeight() / height & 0x01) )
-        THROW_OPENNI_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+    if ( image_md_.getWidth() % width != 0 || image_md_.getHeight () % height != 0
+		|| (image_md_.getWidth() / width) & 0x01 || (image_md_.getHeight() / height & 0x01) )
+        THROW_OPENNI_EXCEPTION ("Downsampling only possible for power of two scale in both dimensions. Request was %d x %d -> %d x %d.", image_md_.getWidth (), image_md_.getHeight (), width, height);
   }
 
-  register const uint8_t* yuv_buffer = (uint8_t*) image_md_->getData();
+  register const uint8_t* yuv_buffer = (uint8_t*) image_md_.getData();
 
   unsigned rgb_line_skip = 0;
   if (rgb_line_step != 0)
     rgb_line_skip = rgb_line_step - width * 3;
 
-  if (image_md_->getWidth() == width && image_md_->getHeight() == height)
+  if (image_md_.getWidth() == width && image_md_.getHeight() == height)
   {
     for( register unsigned yIdx = 0; yIdx < height; ++yIdx, rgb_buffer += rgb_line_skip )
     {
@@ -103,13 +103,13 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
   }
   else
   {
-    register unsigned yuv_step = image_md_->getWidth() / width;
+    register unsigned yuv_step = image_md_.getWidth() / width;
     register unsigned yuv_x_step = yuv_step << 1;
-    register unsigned yuv_skip = (image_md_->getHeight() / height - 1) * ( image_md_->getWidth() << 1 );
+    register unsigned yuv_skip = (image_md_.getHeight() / height - 1) * ( image_md_.getWidth() << 1 );
 
-    for( register unsigned yIdx = 0; yIdx < image_md_->getHeight(); yIdx += yuv_step, yuv_buffer += yuv_skip, rgb_buffer += rgb_line_skip )
+    for( register unsigned yIdx = 0; yIdx < image_md_.getHeight(); yIdx += yuv_step, yuv_buffer += yuv_skip, rgb_buffer += rgb_line_skip )
     {
-      for( register unsigned xIdx = 0; xIdx < image_md_->getWidth(); xIdx += yuv_step, rgb_buffer += 3, yuv_buffer += yuv_x_step )
+      for( register unsigned xIdx = 0; xIdx < image_md_.getWidth(); xIdx += yuv_step, rgb_buffer += 3, yuv_buffer += yuv_x_step )
       {
         int v = yuv_buffer[2] - 128;
         int u = yuv_buffer[0] - 128;
@@ -125,24 +125,24 @@ void ImageYUV422::fillRGB (unsigned width, unsigned height, unsigned char* rgb_b
 void ImageYUV422::fillGrayscale (unsigned width, unsigned height, unsigned char* gray_buffer, unsigned gray_line_step) const
 {
   // u y1 v y2
-  if (width > image_md_->getWidth () || height > image_md_->getHeight ())
-    THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_->getWidth (), image_md_->getHeight (), width, height);
+  if (width > image_md_.getWidth () || height > image_md_.getHeight ())
+    THROW_OPENNI_EXCEPTION ("Upsampling not supported. Request was: %d x %d -> %d x %d", image_md_.getWidth (), image_md_.getHeight (), width, height);
 
-  if (image_md_->getWidth () % width != 0 || image_md_->getHeight () % height != 0)
-      THROW_OPENNI_EXCEPTION ("Downsampling only possible for integer scales in both dimensions. Request was %d x %d -> %d x %d.", image_md_->getWidth (), image_md_->getHeight (), width, height);
+  if (image_md_.getWidth () % width != 0 || image_md_.getHeight () % height != 0)
+      THROW_OPENNI_EXCEPTION ("Downsampling only possible for integer scales in both dimensions. Request was %d x %d -> %d x %d.", image_md_.getWidth (), image_md_.getHeight (), width, height);
 
   unsigned gray_line_skip = 0;
   if (gray_line_step != 0)
     gray_line_skip = gray_line_step - width;
 
-  register unsigned yuv_step = image_md_->getWidth() / width;
+  register unsigned yuv_step = image_md_.getWidth() / width;
   register unsigned yuv_x_step = yuv_step << 1;
-  register unsigned yuv_skip = (image_md_->getHeight() / height - 1) * ( image_md_->getWidth() << 1 );
-  register const uint8_t* yuv_buffer = ( (uint8_t*) image_md_->getData() + 1);
+  register unsigned yuv_skip = (image_md_.getHeight() / height - 1) * ( image_md_.getWidth() << 1 );
+  register const uint8_t* yuv_buffer = ( (uint8_t*) image_md_.getData() + 1);
 
-  for( register unsigned yIdx = 0; yIdx < image_md_->getHeight(); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip )
+  for( register unsigned yIdx = 0; yIdx < image_md_.getHeight(); yIdx += yuv_step, yuv_buffer += yuv_skip, gray_buffer += gray_line_skip )
   {
-    for( register unsigned xIdx = 0; xIdx < image_md_->getWidth(); xIdx += yuv_step, ++gray_buffer, yuv_buffer += yuv_x_step )
+    for( register unsigned xIdx = 0; xIdx < image_md_.getWidth(); xIdx += yuv_step, ++gray_buffer, yuv_buffer += yuv_x_step )
     {
       *gray_buffer = *yuv_buffer;
     }

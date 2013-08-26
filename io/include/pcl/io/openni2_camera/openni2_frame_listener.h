@@ -34,22 +34,19 @@
 
 #include "pcl/io/openni2_camera/openni2_device.h"
 
-//#include <sensor_msgs/Image.h>		// ROS
-
 #include <vector>
 
 #include "OpenNI.h"
 
 namespace openni2_wrapper
 {
+	typedef boost::function<void(openni::VideoFrameRef& image)> FrameCallbackFunction;
 
 	class OpenNI2TimerFilter;
 
 	class OpenNI2FrameListener : public openni::VideoStream::NewFrameListener
 	{
 	public:
-
-		typedef boost::function<void(openni::VideoFrameRef& image)> FrameCallbackFunction;
 
 		OpenNI2FrameListener();
 
@@ -58,9 +55,9 @@ namespace openni2_wrapper
 
 		void onNewFrame(openni::VideoStream& stream);
 
-		void setCallback(FrameCallbackFunction& callback)
+		void setCallback(FrameCallbackFunction cb)
 		{
-			callback_ = callback;
+			callback_ = cb;
 		}
 
 		void setUseDeviceTimer(bool enable);
