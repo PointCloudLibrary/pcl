@@ -118,7 +118,7 @@ namespace pcl
 
       /** \brief Set the triangulation type (see \a TriangulationType)
         * \param[in] type quad mesh, triangle mesh with fixed left, right cut,
-        * or adaptive cut (splits a quad wrt. the depth (z) of the points)
+        * or adaptive cut (splits a quad w.r.t.. the depth (z) of the points)
         */
       inline void
       setTriangulationType (TriangulationType type)
@@ -139,15 +139,16 @@ namespace pcl
       /** \brief max (squared) length of edge */
       float max_edge_length_squared_;
 
-      /** \brief size of triangle endges (in pixels) */
+      /** \brief size of triangle edges (in pixels) */
       int triangle_pixel_size_;
 
-      /** \brief Type of meshin scheme (quads vs. triangles, left cut vs. right cut ... */
+      /** \brief Type of meshing scheme (quads vs. triangles, left cut vs. right cut ... */
       TriangulationType triangulation_type_;
 
       /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
       bool store_shadowed_faces_;
 
+      /** \brief (Cosine of the) angle tolerance used when checking whether or not an edge between two points is shadowed. */
       float cos_angle_tolerance_;
 
       /** \brief Perform the actual polygonal reconstruction.
