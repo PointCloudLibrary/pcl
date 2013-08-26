@@ -78,10 +78,10 @@ if(build)
     target_link_libraries(pcl_pcd_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
     PCL_ADD_EXECUTABLE(pcl_face_trainer ${SUBSYS_NAME} src/face_detection/face_trainer.cpp)
-    target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+    target_link_libraries(pcl_face_trainer pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_fs_face_detector ${SUBSYS_NAME} src/face_detection//filesystem_face_detection.cpp)
-    target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+    target_link_libraries(pcl_fs_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
     PCL_ADD_EXECUTABLE(pcl_stereo_ground_segmentation ${SUBSYS_NAME} src/stereo_ground_segmentation.cpp)
     target_link_libraries(pcl_stereo_ground_segmentation pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_features pcl_stereo)
@@ -143,37 +143,37 @@ if(build)
       target_link_libraries(pcl_openni_organized_edge_detection pcl_common pcl_io pcl_features pcl_visualization)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_face_detector ${SUBSYS_NAME} src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp)
-      target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree vtkRendering vtkIO)
+      target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
       if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo
         QT4_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
         QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE(pcl_openni_passthrough ${SUBSYS_NAME} ${openni_passthrough_ui} ${openni_passthrough_moc} src/openni_passthrough.cpp)
-        target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization QVTK ${QT_LIBRARIES})
+        target_link_libraries(pcl_openni_passthrough pcl_common pcl_io pcl_filters pcl_visualization ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
         # OpenNI Organized Connected Component application demo
         QT4_WRAP_UI(organized_segmentation_demo_ui src/organized_segmentation_demo.ui)
         QT4_WRAP_CPP(organized_segmentation_demo_moc include/pcl/apps/organized_segmentation_demo.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_organized_segmentation_demo ${SUBSYS_NAME} ${organized_segmentation_demo_ui} ${organized_segmentation_demo_moc} src/organized_segmentation_demo.cpp)
-        target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+        target_link_libraries(pcl_organized_segmentation_demo pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
         # Manual registration demo
         QT4_WRAP_UI(manual_registration_ui src/manual_registration/manual_registration.ui)
         QT4_WRAP_CPP(manual_registration_moc include/pcl/apps/manual_registration.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_manual_registration ${SUBSYS_NAME} ${manual_registration_ui} ${manual_registration_moc} src/manual_registration/manual_registration.cpp)
-        target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+        target_link_libraries(pcl_manual_registration pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
         QT4_WRAP_UI(pcd_video_player_ui src/pcd_video_player/pcd_video_player.ui)
         QT4_WRAP_CPP(pcd_video_player_moc include/pcl/apps/pcd_video_player.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_video_player ${SUBSYS_NAME} ${pcd_video_player_ui} ${pcd_video_player_moc} src/pcd_video_player/pcd_video_player.cpp)
-        target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+        target_link_libraries(pcl_pcd_video_player pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
         # Database processing (integration) demo
 #        QT4_WRAP_UI(db_proc_ui src/db_proc/db_proc.ui)
 #        QT4_WRAP_CPP(db_proc_moc include/pcl/apps/db_proc.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED)
 #        PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_db_proc ${SUBSYS_NAME} ${db_proc_ui} ${db_proc_moc} src/db_proc/db_proc.cpp)
-#        target_link_libraries(pcl_db_proc pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface QVTK ${QT_LIBRARIES})
+#        target_link_libraries(pcl_db_proc pcl_common pcl_io pcl_visualization pcl_segmentation pcl_features pcl_surface ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
       endif ()
 

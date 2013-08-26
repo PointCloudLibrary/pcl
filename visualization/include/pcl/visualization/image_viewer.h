@@ -51,6 +51,7 @@
 
 #include <boost/shared_array.hpp>
 
+#include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
 
 class vtkImageSlice;
@@ -952,7 +953,7 @@ namespace pcl
         /** \brief The renderer. */
         vtkSmartPointer<vtkRenderer> ren_;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
         /** \brief Global prop. This is the actual "actor". */
         vtkSmartPointer<vtkImageSlice> slice_;
 #endif

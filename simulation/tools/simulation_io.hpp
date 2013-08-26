@@ -23,7 +23,7 @@ namespace pcl
 {
   namespace simulation
   {
-    class SimExample
+    class PCL_EXPORTS SimExample
     {
       public:
         typedef boost::shared_ptr<SimExample> Ptr;
