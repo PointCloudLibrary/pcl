@@ -49,7 +49,7 @@ namespace pcl
 
   /** \brief Simple triangulation/surface reconstruction for organized point
     * clouds. Neighboring points (pixels in image space) are connected to
-    * construct a triangular mesh.
+    * construct a triangular (or quad) mesh.
     *
     * \note If you use this code in any academic work, please cite:
     *   D. Holz and S. Behnke.
@@ -118,7 +118,7 @@ namespace pcl
 
       /** \brief Set the triangulation type (see \a TriangulationType)
         * \param[in] type quad mesh, triangle mesh with fixed left, right cut,
-        * or adaptive cut (splits a quad w.r.t.. the depth (z) of the points)
+        * or adaptive cut (splits a quad w.r.t. the depth (z) of the points)
         */
       inline void
       setTriangulationType (TriangulationType type)
