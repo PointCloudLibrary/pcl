@@ -59,23 +59,45 @@ namespace openni2_wrapper
 		image_registration_activated_(false),
 		use_device_time_(false)
 	{
-		openni::Status rc = openni::OpenNI::initialize();
-		if (rc != openni::STATUS_OK)
+		openni::Status status = openni::OpenNI::initialize();
+		if (status != openni::STATUS_OK)
 			THROW_OPENNI_EXCEPTION("Initialize failed\n%s\n", openni::OpenNI::getExtendedError());
 
 		openni_device_ = boost::make_shared<openni::Device>();
 
 		if (device_URI.length() > 0)
 		{
-			rc = openni_device_->open(device_URI.c_str());
+			status = openni_device_->open(device_URI.c_str());
 		}
 		else
 		{
-			rc = openni_device_->open(openni::ANY_DEVICE);
+			status = openni_device_->open(openni::ANY_DEVICE);
 		}
 
-		if (rc != openni::STATUS_OK)
+		if (status != openni::STATUS_OK)
 			THROW_OPENNI_EXCEPTION("Initialize failed\n%s\n", openni::OpenNI::getExtendedError());
+
+		// Get depth calculation parameters
+		// Not sure what property codes to use, as OpenNI 1.x used strings
+		double baseline = 7.0;	// HACK
+		//status = depth_video_stream_->getProperty("LDDIS", baseline);
+		if (status != openni::STATUS_OK)
+			THROW_OPENNI_EXCEPTION ("reading the baseline failed. Reason: %s", openni::OpenNI::getExtendedError());
+		// baseline from cm -> meters
+		baseline_ = static_cast<float> (baseline * 0.01);
+
+		//status = depth_video_stream_->getProperty("ShadowValue", shadow_value_);
+		if (status != openni::STATUS_OK)
+			THROW_OPENNI_EXCEPTION ("reading the value for pixels in shadow regions failed. Reason: %s", openni::OpenNI::getExtendedError());
+		shadow_value_ = 0; // HACK
+
+		//status = depth_video_stream_->getProperty("NoSampleValue", no_sample_value_);
+		if (status != openni::STATUS_OK)
+			THROW_OPENNI_EXCEPTION ("reading the value for pixels with no depth estimation failed. Reason: %s", openni::OpenNI::getExtendedError());
+		no_sample_value_ = 0;	// HACK
+		
+
+
 
 		device_info_ = boost::make_shared<openni::DeviceInfo>();
 		*device_info_ = openni_device_->getDeviceInfo();
@@ -823,11 +845,11 @@ namespace openni2_wrapper
 	// Convert VideoFrameRef into pcl::Image and forward to registered callbacks
 	void OpenNI2Device::processColorFrame(openni::VideoFrameRef& frame)
 	{
-		// RGB888
 		openni::PixelFormat format = frame.getVideoMode().getPixelFormat();
-		printf("processed color frame %i, (%i)\n", frame.getFrameIndex(), (int) format );
-
 		boost::shared_ptr<openni_wrapper::Image> image;
+		//printf("processed color frame %i, (%i)\n", frame.getFrameIndex(), (int) format );
+
+		// Convert frame to PCL image type, based on pixel format
 		if (format == PixelFormat::PIXEL_FORMAT_YUV422)
 			image = boost::make_shared<openni_wrapper::ImageYUV422> (frame);
 		else //if (format == PixelFormat::PIXEL_FORMAT_RGB888)
@@ -842,24 +864,28 @@ namespace openni2_wrapper
 	void OpenNI2Device::processDepthFrame(openni::VideoFrameRef& frame)
 	{
 		printf("processed depth frame %i\n", frame.getFrameIndex() );
-		//boost::shared_ptr<DepthImage> image = boost::make_shared<DepthImage> (frame);
+		int frameWidth = frame.getWidth();
 
-		//// Notify listeners of new frame
-		//for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin (); callbackIt != depth_callback_.end (); ++callbackIt)
-		//{
-		//	callbackIt->second.operator()(image);
-		//}
+		// Need: data, baseline_, getDepthFocalLength (), shadow_value_, no_sample_value_
+		boost::shared_ptr<DepthImage> image = 
+			boost::make_shared<DepthImage> (frame, baseline_, getDepthFocalLength (frameWidth), shadow_value_, no_sample_value_);
+
+		// Notify listeners of new frame
+		for (std::map< OpenNIDevice::CallbackHandle, ActualDepthImageCallbackFunction >::iterator callbackIt = depth_callback_.begin (); callbackIt != depth_callback_.end (); ++callbackIt)
+		{
+			callbackIt->second.operator()(image);
+		}
 	}
 	void OpenNI2Device::processIRFrame(openni::VideoFrameRef& frame)
 	{
 		printf("processed IR frame %i\n", frame.getFrameIndex() );
-		//boost::shared_ptr<IRImage> image = boost::make_shared<openni_wrapper::IRImage> (frame);
+		boost::shared_ptr<IRImage> image = boost::make_shared<openni_wrapper::IRImage> (frame);
 
-		//// Notify listeners of new frame
-		//for (std::map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin (); callbackIt != ir_callback_.end (); ++callbackIt)
-		//{
-		//	callbackIt->second.operator()(image);
-		//}
+		// Notify listeners of new frame
+		for (std::map< OpenNIDevice::CallbackHandle, ActualIRImageCallbackFunction >::iterator callbackIt = ir_callback_.begin (); callbackIt != ir_callback_.end (); ++callbackIt)
+		{
+			callbackIt->second.operator()(image);
+		}
 	}
 
 

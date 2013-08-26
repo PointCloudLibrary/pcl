@@ -49,10 +49,11 @@ if(build)
             include/pcl/io/openni2_camera/openni_image_yuv_422.h
             include/pcl/io/openni2_camera/openni_image_rgb24.h
             include/pcl/io/openni2_camera/openni_ir_image.h
+			include/pcl/io/openni2_camera/openni_depth_image.h
 			
 			#include/pcl/io/openni2_camera/openni_shift_to_depth_conversion.h
             #include/pcl/io/openni2_camera/openni.h
-            #include/pcl/io/openni2_camera/openni_depth_image.h
+            
             #include/pcl/io/openni2_camera/openni_driver.h
             include/pcl/io/openni2_camera/openni_exception.h
 			#include/pcl/io/openni2_camera/openni_image_bayer_grbg.h

@@ -281,7 +281,13 @@ namespace openni2_wrapper
 
 		bool use_device_time_;
 
-
+		// For depth calculations
+		/** \brief distance between the projector and the IR camera*/
+		float baseline_;
+		/** the value for shadow (occluded pixels) */
+		uint64_t shadow_value_;
+		/** the value for pixels without a valid disparity measurement */
+		uint64_t no_sample_value_;
 
 
 		// OpenNI 1.x wrapper interface

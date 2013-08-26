@@ -54,7 +54,7 @@ public:
   typedef boost::shared_ptr<IRImage> Ptr;
   typedef boost::shared_ptr<const IRImage> ConstPtr;
 
-  inline IRImage (boost::shared_ptr<openni::VideoFrameRef> ir_meta_data) throw ();
+  inline IRImage (openni::VideoFrameRef ir_meta_data) throw ();
   inline virtual ~IRImage () throw ();
 
   void fillRaw (unsigned width, unsigned height, unsigned short* ir_buffer, unsigned line_step = 0) const;
@@ -66,10 +66,10 @@ public:
   inline const openni::VideoFrameRef& getMetaData () const throw ();
 
 protected:
-  boost::shared_ptr<openni::VideoFrameRef> ir_md_;
+  openni::VideoFrameRef ir_md_;
 };
 
-IRImage::IRImage (boost::shared_ptr<openni::VideoFrameRef> ir_meta_data) throw ()
+IRImage::IRImage (openni::VideoFrameRef ir_meta_data) throw ()
 : ir_md_ (ir_meta_data)
 {
 }
@@ -80,27 +80,27 @@ IRImage::~IRImage () throw ()
 
 unsigned IRImage::getWidth () const throw ()
 {
-	return ir_md_->getWidth();
+	return ir_md_.getWidth();
 }
 
 unsigned IRImage::getHeight () const throw ()
 {
-	return ir_md_->getHeight();
+	return ir_md_.getHeight();
 }
 
 unsigned IRImage::getFrameID () const throw ()
 {
-	return ir_md_->getFrameIndex();
+	return ir_md_.getFrameIndex();
 }
 
 unsigned long IRImage::getTimeStamp () const throw ()
 {
-	return static_cast<unsigned long> (ir_md_->getTimestamp ());
+	return static_cast<unsigned long> (ir_md_.getTimestamp ());
 }
 
 const openni::VideoFrameRef& IRImage::getMetaData () const throw ()
 {
-	return *ir_md_;
+	return ir_md_;
 }
 } // namespace
 #endif //__OPENNI_IR_IMAGE__
