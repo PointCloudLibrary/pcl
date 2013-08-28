@@ -29,7 +29,6 @@ if(build)
     if(OPENNI2_FOUND)
         set(OPENNI2_GRABBER_INCLUDES
             include/pcl/io/openni2_grabber.h
-            include/pcl/io/oni2_grabber.h
             )
         set(OPENNI2_INCLUDES
 			# New includes
@@ -75,9 +74,7 @@ if(build)
             src/openni2_camera/openni_image_rgb24.cpp
 			#src/openni2_camera/openni_image_bayer_grbg.cpp
             
-            
             src/openni2_grabber.cpp
-            src/oni2_grabber.cpp
             )
     endif(OPENNI2_FOUND)
 
