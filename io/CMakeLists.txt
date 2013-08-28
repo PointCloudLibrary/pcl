@@ -47,8 +47,8 @@ if(build)
 			include/pcl/io/openni2_camera/openni_image.h
             include/pcl/io/openni2_camera/openni_image_yuv_422.h
             include/pcl/io/openni2_camera/openni_image_rgb24.h
-            include/pcl/io/openni2_camera/openni_ir_image.h
-			include/pcl/io/openni2_camera/openni_depth_image.h
+            include/pcl/io/openni2_camera/openni_image_ir.h
+			include/pcl/io/openni2_camera/openni_image_depth.h
 			
 			# Not sure if these are needed or not
 			#include/pcl/io/openni2_camera/openni_shift_to_depth_conversion.h
@@ -68,8 +68,8 @@ if(build)
 			
 			# Legacy sources
 			src/openni2_camera/openni_exception.cpp
-            src/openni2_camera/openni_depth_image.cpp
-            src/openni2_camera/openni_ir_image.cpp
+            src/openni2_camera/openni_image_depth.cpp
+            src/openni2_camera/openni_image_ir.cpp
 			src/openni2_camera/openni_image_yuv_422.cpp
             src/openni2_camera/openni_image_rgb24.cpp
 			#src/openni2_camera/openni_image_bayer_grbg.cpp

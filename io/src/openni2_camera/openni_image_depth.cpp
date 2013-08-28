@@ -38,7 +38,7 @@
 #include <pcl/pcl_config.h>
 #ifdef HAVE_OPENNI2
 
-#include <pcl/io/openni2_camera/openni_depth_image.h>
+#include <pcl/io/openni2_camera/openni_image_depth.h>
 #include <sstream>
 #include <limits>
 #include <iostream>

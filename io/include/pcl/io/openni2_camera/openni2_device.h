@@ -44,8 +44,8 @@
 
 // Frame conversion classes from openni 1.x wrapper
 #include <pcl/io/openni2_camera/openni_image.h>
-#include <pcl/io/openni2_camera/openni_depth_image.h>
-#include <pcl/io/openni2_camera/openni_ir_image.h>
+#include <pcl/io/openni2_camera/openni_image_depth.h>
+#include <pcl/io/openni2_camera/openni_image_ir.h>
 #include <pcl/io/openni2_camera/openni_image_yuv_422.h>
 #include <pcl/io/openni2_camera/openni_image_rgb24.h>
 

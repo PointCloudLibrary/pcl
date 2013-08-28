@@ -48,8 +48,8 @@
 #include <pcl/io/openni2_camera/openni2_device_manager.h>
 #include <pcl/io/openni2_camera/openni2_device.h>
 #include <pcl/io/openni2_camera/openni_image.h>
-#include <pcl/io/openni2_camera/openni_depth_image.h>
-#include <pcl/io/openni2_camera/openni_ir_image.h>
+#include <pcl/io/openni2_camera/openni_image_depth.h>
+#include <pcl/io/openni2_camera/openni_image_ir.h>
 #include <string>
 #include <deque>
 #include <pcl/common/synchronizer.h>
