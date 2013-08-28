@@ -33,7 +33,7 @@ if(build)
             )
         set(OPENNI2_INCLUDES
 			# New includes
-			#include/pcl/io/openni2_camera/openni2_driver.h		# Only used for ROS?
+			include/pcl/io/openni2_camera/openni.h
 			include/pcl/io/openni2_camera/openni2_exception.h
 			include/pcl/io/openni2_camera/openni2_frame_listener.h
 			include/pcl/io/openni2_camera/openni2_timer_filter.h
@@ -43,29 +43,21 @@ if(build)
 			include/pcl/io/openni2_camera/openni2_device_info.h
 			include/pcl/io/openni2_camera/openni2_device_manager.h
 			
-			
 			# Legacy includes
+			include/pcl/io/openni2_camera/openni_exception.h
 			include/pcl/io/openni2_camera/openni_image.h
             include/pcl/io/openni2_camera/openni_image_yuv_422.h
             include/pcl/io/openni2_camera/openni_image_rgb24.h
             include/pcl/io/openni2_camera/openni_ir_image.h
 			include/pcl/io/openni2_camera/openni_depth_image.h
 			
+			# Not sure if these are needed or not
 			#include/pcl/io/openni2_camera/openni_shift_to_depth_conversion.h
-            #include/pcl/io/openni2_camera/openni.h
-            
-            #include/pcl/io/openni2_camera/openni_driver.h
-            include/pcl/io/openni2_camera/openni_exception.h
 			#include/pcl/io/openni2_camera/openni_image_bayer_grbg.h
-			#include/pcl/io/openni2_camera/openni_device_kinect.h
-            #include/pcl/io/openni2_camera/openni_device_primesense.h
-            #include/pcl/io/openni2_camera/openni_device_xtion.h
-            #include/pcl/io/openni2_camera/openni_device_oni.h
 			
             )
         set(OPENNI2_GRABBER_SOURCES
 			# New sources
-			#src/openni2_camera/openni2_driver.cpp		# Only used for ROS?
 			src/openni2_camera/openni2_exception.cpp
 			src/openni2_camera/openni2_frame_listener.cpp
 			src/openni2_camera/openni2_timer_filter.cpp
@@ -76,17 +68,13 @@ if(build)
 			src/openni2_camera/openni2_device_manager.cpp
 			
 			# Legacy sources
+			src/openni2_camera/openni_exception.cpp
             src/openni2_camera/openni_depth_image.cpp
             src/openni2_camera/openni_ir_image.cpp
 			src/openni2_camera/openni_image_yuv_422.cpp
             src/openni2_camera/openni_image_rgb24.cpp
 			#src/openni2_camera/openni_image_bayer_grbg.cpp
-			#src/openni2_camera/openni_device_primesense.cpp
-            #src/openni2_camera/openni_device_kinect.cpp
-            #src/openni2_camera/openni_device_xtion.cpp
-            #src/openni2_camera/openni_device_oni.cpp
-            #src/openni2_camera/openni_driver.cpp
-            src/openni2_camera/openni_exception.cpp
+            
             
             src/openni2_grabber.cpp
             src/oni2_grabber.cpp
