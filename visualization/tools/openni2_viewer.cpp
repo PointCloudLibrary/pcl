@@ -223,7 +223,10 @@ public:
 				{
 					cloud_viewer_->addPointCloud (cloud, "OpenNICloud");
 					cloud_viewer_->resetCameraViewpoint ("OpenNICloud");
-					cloud_viewer_->setCameraPosition(0,0,-5,0,1,0);
+					cloud_viewer_->setCameraPosition(
+						0,0,0,		// Position
+						0,0,1,		// Viewpoint
+						0,-1,0);	// Up
 				}          
 			}
 
