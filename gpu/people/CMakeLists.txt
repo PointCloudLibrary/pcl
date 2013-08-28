@@ -15,7 +15,15 @@ if(build)
   
   #find NPP
   unset(CUDA_npp_LIBRARY CACHE)
-  find_cuda_helper_libs(npp)
+  if(${CUDA_VERSION} VERSION_LESS "5.5")
+	find_cuda_helper_libs(npp)
+  else()
+    find_cuda_helper_libs(nppc)
+    find_cuda_helper_libs(nppi)
+    find_cuda_helper_libs(npps)
+
+    set(CUDA_npp_LIBRARY "${CUDA_nppc_LIBRARY};${CUDA_nppi_LIBRARY};${CUDA_npps_LIBRARY}" CACHE STRING "npp library")
+  endif()
 
   #Label_skeleton
 

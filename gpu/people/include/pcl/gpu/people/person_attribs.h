@@ -6,13 +6,15 @@
 #include <iosfwd>
 #include <boost/shared_ptr.hpp>
 
+#include <pcl/pcl_exports.h>
+
 namespace pcl
 {
   namespace gpu
   {
     namespace people
     {
-      class PersonAttribs
+      class PCL_EXPORTS PersonAttribs
       {
         public:
           typedef boost::shared_ptr<PersonAttribs> Ptr;
