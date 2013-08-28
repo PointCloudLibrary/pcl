@@ -45,6 +45,8 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 
+#include "pcl/io/openni2_camera/openni.h"
+
 #define SHOW_FPS 1
 #if SHOW_FPS
 #define FPS_CALC(_WHAT_) \
@@ -110,7 +112,7 @@ public:
 	typedef typename Cloud::ConstPtr CloudConstPtr;
 
 	OpenNI2Viewer (pcl::Grabber& grabber)
-		: cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI cloud"))
+		: cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
 		, image_viewer_ ()
 		, grabber_ (grabber)
 		, rgb_data_ (0), rgb_data_size_ (0)
@@ -221,6 +223,7 @@ public:
 				{
 					cloud_viewer_->addPointCloud (cloud, "OpenNICloud");
 					cloud_viewer_->resetCameraViewpoint ("OpenNICloud");
+					cloud_viewer_->setCameraPosition(0,0,-5,0,1,0);
 				}          
 			}
 
@@ -298,23 +301,6 @@ main (int argc, char** argv)
 				pcl::OpenNIGrabber grabber(argv[2]);
 				boost::shared_ptr<openni2_wrapper::OpenNIDevice> device = grabber.getDevice();
 				cout << *device;		// Prints out all sensor data, including supported video modes
-
-				/*cout << "Supported depth modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
-				std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes();
-				for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
-				{
-				cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
-				}*/
-
-				/*if (device->hasColorSensor())
-				{
-					cout << endl << "Supported image modes for device: " << device->getVendorName() << " , " << device->getProductName() << endl;
-					modes = grabber.getAvailableImageModes();
-					for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin(); it != modes.end(); ++it)
-					{
-						cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
-					}
-				}*/
 			}
 			else
 			{
@@ -323,9 +309,8 @@ main (int argc, char** argv)
 				{
 					for (unsigned deviceIdx = 0; deviceIdx < deviceManager->getNumOfConnectedDevices(); ++deviceIdx)
 					{
-						cout << deviceManager->getDeviceByIndex(deviceIdx);
-						//cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName(deviceIdx) << ", product: " << driver.getProductName(deviceIdx)
-						//	<< ", connected: " << driver.getBus(deviceIdx) << " @ " << driver.getAddress(deviceIdx) << ", serial number: \'" << driver.getSerialNumber(deviceIdx) << "\'" << endl;
+						boost::shared_ptr<openni2_wrapper::OpenNI2Device> device = deviceManager->getDeviceByIndex(deviceIdx);
+						cout << "Device " << device->getStringID() << "connected." << endl;
 					}
 
 				}
@@ -341,7 +326,10 @@ main (int argc, char** argv)
 	{
 		boost::shared_ptr<openni2_wrapper::OpenNI2DeviceManager> deviceManager = openni2_wrapper::OpenNI2DeviceManager::getInstance();
 		if (deviceManager->getNumOfConnectedDevices() > 0)
-			cout << "Device Id not set, using first device." << endl;
+		{
+			boost::shared_ptr<openni2_wrapper::OpenNI2Device> device = deviceManager->getAnyDevice();
+			cout << "Device ID not set, using default device: " << device->getStringID() << endl;
+		}
 	}
 
 	unsigned mode;

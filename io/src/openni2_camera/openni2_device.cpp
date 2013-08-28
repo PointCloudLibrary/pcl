@@ -95,8 +95,6 @@ namespace openni2_wrapper
 		if (status != openni::STATUS_OK)
 			THROW_OPENNI_EXCEPTION ("reading the value for pixels with no depth estimation failed. Reason: %s", openni::OpenNI::getExtendedError());
 		no_sample_value_ = 0;	// HACK
-		
-
 
 
 		device_info_ = boost::make_shared<openni::DeviceInfo>();
@@ -863,7 +861,6 @@ namespace openni2_wrapper
 	}
 	void OpenNI2Device::processDepthFrame(openni::VideoFrameRef& frame)
 	{
-		//printf("processed depth frame %i\n", frame.getFrameIndex() );
 		int frameWidth = frame.getWidth();
 		float focalLength = getDepthFocalLength (frameWidth);
 

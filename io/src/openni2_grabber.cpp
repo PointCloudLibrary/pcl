@@ -105,8 +105,8 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
 	point_cloud_signal_    = createSignal<sig_cb_openni_point_cloud> ();
 	point_cloud_i_signal_  = createSignal<sig_cb_openni_point_cloud_i> ();
 	ir_depth_image_signal_ = createSignal<sig_cb_openni_ir_depth_image> ();
-
 	ir_sync_.addCallback (boost::bind (&OpenNIGrabber::irDepthImageCallback, this, _1, _2));
+
 	if (device_->hasColorSensor())
 	{
 		// create callback signals
@@ -120,6 +120,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
 		//  kinect->setDebayeringMethod (openni_wrapper::ImageBayerGRBG::EdgeAware);
 	}
 
+	// Register callbacks from the sensor to the grabber
 	image_callback_handle = device_->registerImageCallback (&OpenNIGrabber::imageCallback, *this);
 	depth_callback_handle = device_->registerDepthCallback (&OpenNIGrabber::depthCallback, *this);
 	ir_callback_handle    = device_->registerIRCallback (&OpenNIGrabber::irCallback, *this);
@@ -473,7 +474,8 @@ void
 		num_slots<sig_cb_openni_image_depth_image> () > 0)
 		rgb_sync_.add0 (image, image->getTimeStamp ());
 
-	if (image_signal_->num_slots () > 0)
+	int numImageSlots = image_signal_->num_slots();
+	if (numImageSlots > 0)
 		image_signal_->operator()(image);
 }
 
@@ -481,7 +483,6 @@ void
 void
 	pcl::OpenNIGrabber::depthCallback (boost::shared_ptr<openni_wrapper::DepthImage> depth_image, void*)
 {
-	//printf("Grabber depth callback hit");
 	if (num_slots<sig_cb_openni_point_cloud_rgb>   () > 0 ||
 		num_slots<sig_cb_openni_point_cloud_rgba>  () > 0 ||
 		num_slots<sig_cb_openni_image_depth_image> () > 0)
@@ -491,11 +492,10 @@ void
 		num_slots<sig_cb_openni_ir_depth_image> () > 0)
 		ir_sync_.add1 (depth_image, depth_image->getTimeStamp ());
 
-	// FIXME: these callbacks are not being called.
-	if (depth_image_signal_->num_slots () > 0)
+	if (depth_image_signal_->num_slots() > 0)
 		depth_image_signal_->operator()(depth_image);
 
-	if (point_cloud_signal_->num_slots () > 0)
+	if (point_cloud_signal_->num_slots() > 0)
 		point_cloud_signal_->operator()(convertToXYZPointCloud(depth_image));
 }
 
@@ -667,7 +667,7 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 	if (pcl_isfinite (rgb_principal_point_y_))
 		centerY =  static_cast<float> (rgb_principal_point_y_);
 
-	register const OniGrayscale16Pixel* depth_map = (OniGrayscale16Pixel*) depth_image->getDepthMetaData().getData();
+	register const OniDepthPixel* depth_map = (OniDepthPixel*) depth_image->getDepthMetaData().getData();
 	if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
 	{
 		static unsigned buffer_size = 0;
@@ -680,7 +680,7 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 		}
 
 		depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
-		depth_map = depth_buffer.get ();
+		depth_map = depth_buffer.get();
 	}
 
 	// here we need exact the size of the point cloud for a one-one correspondence!
@@ -717,9 +717,10 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 			/// @todo Different values for these cases
 			// Check for invalid measurements
 
-			if (depth_map[value_idx] != 0 &&
-				depth_map[value_idx] != depth_image->getNoSampleValue () &&
-				depth_map[value_idx] != depth_image->getShadowValue ())
+			OniDepthPixel pixel = depth_map[value_idx];
+			if (pixel != 0 &&
+				pixel != depth_image->getNoSampleValue() &&
+				pixel != depth_image->getShadowValue() )
 			{
 				pt.z = depth_map[value_idx] * 0.001f;
 				pt.x = (static_cast<float> (u) - centerX) * pt.z * constant_x;

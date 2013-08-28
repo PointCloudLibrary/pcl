@@ -150,8 +150,8 @@ namespace openni2_wrapper
 		void setAutoExposure(bool enable) throw (OpenNI2Exception);
 		void setAutoWhiteBalance(bool enable) throw (OpenNI2Exception);
 
-		bool isSynchronized() { return true; };
-		bool isSynchronizationSupported(){ return true; }
+		bool isSynchronized() { return false; };
+		bool isSynchronizationSupported(){ return false; }
 		void setSynchronization(bool sync) { setDepthColorSync(true); }
 
 		bool getAutoExposure() const;
