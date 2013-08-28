@@ -271,7 +271,7 @@ pcl::Poisson<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
 
   // Write output PolygonMesh
   // Write vertices
-  points.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
+  points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
   for (int i = 0; i < int(mesh.inCorePoints.size ()); i++)
   {
