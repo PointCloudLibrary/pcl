@@ -154,6 +154,14 @@ namespace openni_wrapper
       inline unsigned long 
       getTimeStamp () const throw ();
 
+	  // Get a const pointer to the raw depth buffer
+	  inline const void*
+	  getData() { return depth_md_.getData(); }
+
+	  // Data buffer size in bytes
+	  inline int
+	  getDataSize() { return depth_md_.getDataSize(); }
+
     protected:
       openni::VideoFrameRef depth_md_;
       float baseline_;

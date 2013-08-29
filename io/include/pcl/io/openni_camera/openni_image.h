@@ -206,4 +206,9 @@ namespace openni_wrapper
   }
 } // namespace
 #endif
+#elif HAVE_OPENNI2
+// Passthrough to openni2_wrapper
+#include <pcl/io/openni2_camera/openni_image.h>
+//typedef openni_wrapper::Image openni2_wrapper::Image;
+
 #endif //__OPENNI_IMAGE__

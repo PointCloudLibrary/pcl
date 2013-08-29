@@ -254,8 +254,8 @@ namespace pcl
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
     //	thrust::device_vector<unsigned char> bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
-    	thrust::copy ((unsigned char*)(bayer_image->getMetaData().Data()),
-    	              (unsigned char*)(bayer_image->getMetaData().Data() + bayer_image->getMetaData().DataSize()), 
+    	thrust::copy ((unsigned char*)(bayer_image->getData()),
+    	              (unsigned char*)(bayer_image->getData()) + bayer_image->getDataSize(), 
     	              bayer_data.begin ());
     //	thrust::device_vector<int> indices(bayer_image->getWidth () * bayer_image->getHeight ());
     //	thrust::sequence (indices.begin(), indices.end() );
@@ -273,10 +273,10 @@ namespace pcl
     template<template <typename> class Storage>
     void YUV2RGB<Storage>::compute (const boost::shared_ptr<openni_wrapper::Image>& yuv_image, RGBImageType& rgb_image) const
     {
-    	typename Storage<unsigned char>::type yuv_data (yuv_image->getMetaData().DataSize());
-    	thrust::copy ((unsigned char*)(yuv_image->getMetaData().Data()),
-    	              (unsigned char*)(yuv_image->getMetaData().Data() + yuv_image->getMetaData().DataSize()), 
-    	              yuv_data.begin ());
+    	typename Storage<unsigned char>::type yuv_data (yuv_image->getDataSize());
+		thrust::copy ((const unsigned char*)( yuv_image->getData() ),
+    	              (const unsigned char*)( yuv_image->getData()) + yuv_image->getDataSize(), 
+    	              yuv_data.begin() );
     	thrust::counting_iterator<int> first (0);
     	thrust::transform (first,
       	                 first + (int)(yuv_image->getWidth () * yuv_image->getHeight ()),
@@ -312,8 +312,8 @@ namespace pcl
     	//pcl::ScopeTime t ("computeBilinear");
     	typename Storage<unsigned char>::type bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
     //	thrust::device_vector<unsigned char> bayer_data (bayer_image->getWidth () * bayer_image->getHeight ());
-    	thrust::copy ((unsigned char*)(bayer_image->getMetaData().Data()),
-    	              (unsigned char*)(bayer_image->getMetaData().Data() + bayer_image->getMetaData().DataSize()), 
+    	thrust::copy ((unsigned char*)(bayer_image->getData()),
+    	              (unsigned char*)(bayer_image->getData()) + bayer_image->getDataSize(), 
     	              bayer_data.begin ());
     
     	thrust::counting_iterator<int> first (0);

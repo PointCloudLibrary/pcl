@@ -164,6 +164,12 @@ namespace openni_wrapper
      */
     inline const openni::VideoFrameRef& getMetaData () const throw ();
 
+	// Get a const pointer to the raw depth buffer
+	inline const void* getData();
+
+	// Data buffer size in bytes
+	inline int getDataSize();
+
   protected:
     openni::VideoFrameRef image_md_;		// This is already a reference, so we don't need another pointer wrapper.
   } ;
@@ -174,6 +180,18 @@ namespace openni_wrapper
   }
 
   Image::~Image () throw () { }
+
+  const void*
+  Image::getData()
+  {
+	  return image_md_.getData();
+  }
+
+  int
+  Image::getDataSize()
+  {
+	  return image_md_.getDataSize();
+  }
 
   unsigned
   Image::getWidth () const throw ()

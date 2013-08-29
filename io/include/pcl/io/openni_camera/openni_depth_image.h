@@ -78,6 +78,15 @@ namespace openni_wrapper
         */
       inline const xn::DepthMetaData& 
       getDepthMetaData () const throw ();
+	  
+	  /** \brief method to access the raw internal data structure from OpenNI. If the data is accessed just read-only, then this method is faster than a fillXXX method
+        * \return a pointer to the actual depth data buffer.
+        */
+      inline const void*
+      getData () const throw ();
+	  
+	  inline int
+      getDataSize () const throw ();
 
       /** \brief fills a user given block of memory with the disparity values with additional nearest-neighbor down-scaling.
         * \param[in] width the width of the desired disparity image.
@@ -176,6 +185,18 @@ namespace openni_wrapper
   {
     return *depth_md_;
   }
+  
+  const void*
+  DepthImage::getData () const throw ()
+  {
+    return depth_md_->Data();
+  }
+  
+  int
+  DepthImage::getDataSize () const throw ()
+  {
+    return depth_md_->DataSize();
+  }
 
   float
   DepthImage::getBaseline () const throw ()
@@ -226,4 +247,9 @@ namespace openni_wrapper
   }
 } // namespace
 #endif
-#endif //__OPENNI_DEPTH_IMAGE
+#elif HAVE_OPENNI2
+// Passthrough to openni2_wrapper
+#include <pcl/io/openni2_camera/openni_image_depth.h>
+//typedef openni_wrapper::DepthImage openni2_wrapper::DepthImage;
+
+#endif //__OPENNI_DEPTH_IMAGE__

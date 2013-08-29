@@ -284,7 +284,7 @@ DisparityToCloud::compute (const boost::shared_ptr<openni_wrapper::DepthImage>& 
 
   // Copy the depth data and the RGB data on the card
   typename Storage<float>::type depth (output->width * output->height);
-  unsigned short* depth_buffer = (unsigned short*)depth_image->getDepthMetaData ().Data ();
+  unsigned short* depth_buffer = (unsigned short*)depth_image->getData ();
 
   if (downsample)
   {
