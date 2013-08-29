@@ -44,6 +44,7 @@
 
 #if VTK_MAJOR_VERSION >= 6
 #include <vtkImageSlice.h>
+#include <vtkImageSliceMapper.h>
 #endif
 
 #include <pcl/visualization/image_viewer.h>
