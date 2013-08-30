@@ -198,12 +198,15 @@ pcl::visualization::ImageViewer::addRGBImage (
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 3);
 #endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, 3 * width * height, 1);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if VTK_MAJOR_VERSION == 6
+  algo_->SetInputData (image);
+  algo_->Update ();
+#elif ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
-  algo_->SetInput (image);
+  algo_->SetInputData (image);
   algo_->Update ();
 #  if (VTK_MINOR_VERSION <= 6)
-    image_viewer_->SetInput (algo_->GetOutput ());
+    image_viewer_->SetInputData (algo_->GetOutput ());
 #  else
     image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
@@ -253,13 +256,15 @@ pcl::visualization::ImageViewer::addMonoImage (
   image->AllocateScalars(VTK_UNSIGNED_CHAR, 1);
 #endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
-
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if VTK_MAJOR_VERSION == 6
+  algo_->SetInputData (image);
+  algo_->Update ();
+#elif ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
-  algo_->SetInput (image);
+  algo_->SetInputData (image);
   algo_->Update ();
 #  if (VTK_MINOR_VERSION <= 6)
-    image_viewer_->SetInput (algo_->GetOutput ());
+    image_viewer_->SetInputData (algo_->GetOutput ());
 #  else
     image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
@@ -616,7 +621,11 @@ pcl::visualization::ImageViewer::createLayer (
     rect->set (0, 0, static_cast<float> (width), static_cast<float> (height));
     l.actor->GetScene ()->AddItem (rect);
   }
+#if VTK_MAJOR_VERSION == 6
+  ren_->AddActor (l.actor);
+#else
   image_viewer_->GetRenderer ()->AddActor (l.actor);
+#endif
   // Add another element
   layer_map_.push_back (l);
 
@@ -652,7 +661,11 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     PCL_DEBUG ("[pcl::visualization::ImageViewer::removeLayer] No layer with ID='%s' found.\n", layer_id.c_str ());
     return;
   }
+#if VTK_MAJOR_VERSION == 6
+  ren_->RemoveActor (am_it->actor);
+#else
   image_viewer_->GetRenderer ()->RemoveActor (am_it->actor);
+#endif
   layer_map_.erase (am_it);
 }
 
@@ -1064,9 +1077,9 @@ void
 pcl::visualization::ImageViewer::setWindowTitle (const std::string& name)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetWindowName (name.c_str ());
-#else
   image_viewer_->GetRenderWindow ()->SetWindowName (name.c_str ());
+#else
+  win_->SetWindowName (name.c_str ());
 #endif
 }
 
@@ -1075,9 +1088,9 @@ void
 pcl::visualization::ImageViewer::setPosition (int x, int y)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetPosition (x, y);
-#else
   image_viewer_->GetRenderWindow ()->SetPosition (x, y);
+#else
+  win_->SetPosition (x, y);
 #endif
 }
 
@@ -1086,9 +1099,10 @@ int*
 pcl::visualization::ImageViewer::getSize ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  return (win_->GetSize ());
-#else
   return (image_viewer_->GetRenderWindow ()->GetSize ());
+	
+#else
+  return (win_->GetSize ());
 #endif
 }
 
@@ -1097,9 +1111,10 @@ void
 pcl::visualization::ImageViewer::setSize (int xw, int yw)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetSize (xw, yw);
-#else
   image_viewer_->GetRenderWindow ()->SetSize (xw, yw);
+#else
+	win_->SetSize (xw, yw);
+  
 #endif
 }
 
