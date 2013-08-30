@@ -121,7 +121,7 @@ if(MSVC)
     endif(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
-    if(MSVC90 OR MSVC10 OR MSVC11 AND NOT ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8 AND NOT ${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} LESS 8.6)
+    if(MSVC90 OR MSVC10 AND NOT ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8 AND NOT ${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} LESS 8.6)
       include(ProcessorCount)
       ProcessorCount(N)
       if(NOT N EQUAL 0)
@@ -258,6 +258,13 @@ find_package(FZAPI)
 if (FZAPI_FOUND)
   set(HAVE_FZAPI ON)
   include_directories(SYSTEM ${FZAPI_INCLUDE_DIR})
+endif()
+
+# Intel Perceptional Computing Interface (PXCAPI)
+find_package(PXCAPI)
+if (PXCAPI_FOUND)
+  set(HAVE_PXCAPI ON)
+  include_directories(SYSTEM ${PXCAPI_INCLUDE_DIRS})
 endif()
 
 # LibPNG

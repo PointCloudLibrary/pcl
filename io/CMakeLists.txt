@@ -71,6 +71,15 @@ if(build)
             )
     endif(FZAPI_FOUND)
 	
+	if(PXCAPI_FOUND)
+		set(PXC_GRABBER_INCLUDES
+			include/pcl/io/pxc_grabber.h
+			)
+		set(PXC_GRABBER_SOURCES
+			src/pxc_grabber.cpp
+			)
+	endif(PXCAPI_FOUND)
+	
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -127,6 +136,7 @@ if(build)
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
+		${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       set(srcs
@@ -228,6 +238,11 @@ if(build)
 		target_link_libraries(${LIB_NAME} Version.lib)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
+	
+	if(PXCAPI_FOUND)
+	  link_directories(${PXCAPI_LIB_DIRS})
+	  target_link_libraries(${LIB_NAME} ${PXCAPI_LIBS})
+	endif(PXCAPI_FOUND)
     
     if (PCAP_FOUND)
       target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})
