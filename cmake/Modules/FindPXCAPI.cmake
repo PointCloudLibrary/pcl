@@ -1,5 +1,5 @@
 ###############################################################################
-# Find Fotonic FZAPI
+# Find Intel Perceptual Computing SDK PXCAPI
 #
 # This sets the following variables:
 # PXCAPI_FOUND - True if PXCAPI was found.
