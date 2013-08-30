@@ -98,10 +98,6 @@ namespace pcl
       /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
       virtual ~PXCGrabber () throw ();
 
-      /** \brief Searches for available devices. */
-//      static std::vector<FZ_DEVICE_INFO>
-//      enumDevices ();
-
       /** \brief Start the data acquisition. */
       virtual void
       start ();
