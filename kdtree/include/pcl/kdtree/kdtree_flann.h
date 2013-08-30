@@ -42,6 +42,7 @@
 #define PCL_KDTREE_KDTREE_FLANN_H_
 
 #include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/flann.h>
 
 // Forward declarations
 namespace flann
@@ -224,10 +225,10 @@ namespace pcl
       int total_nr_points_;
 
       /** \brief The KdTree search parameters for K-nearest neighbors. */
-      boost::shared_ptr<flann::SearchParams> param_k_;
+      ::flann::SearchParams param_k_;
 
       /** \brief The KdTree search parameters for radius search. */
-      boost::shared_ptr<flann::SearchParams> param_radius_;
+      ::flann::SearchParams param_radius_;
   };
 }
 
