@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -80,8 +79,8 @@ bool
 pcl::PXCGrabber::init ()
 {
   // enable rgb and 3d data and initialize
-  pp_.EnableImage(PXCImage::COLOR_FORMAT_RGB32);
-  pp_.EnableImage(PXCImage::COLOR_FORMAT_VERTICES);
+  pp_.EnableImage (PXCImage::COLOR_FORMAT_RGB32);
+  pp_.EnableImage (PXCImage::COLOR_FORMAT_VERTICES);
   pp_.Init ();
 
   return (true);
@@ -101,7 +100,7 @@ pcl::PXCGrabber::start ()
   init ();
   running_ = true;
 
-  grabber_thread_ = boost::thread(&pcl::PXCGrabber::processGrabbing, this); 
+  grabber_thread_ = boost::thread (&pcl::PXCGrabber::processGrabbing, this); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,30 +153,15 @@ pcl::PXCGrabber::processGrabbing ()
   pxcUID prj_value;
   PXCSmartPtr<PXCProjection> projection;
 
-
-  //PXCCapture::VideoStream::ProfileInfo rgbStreamInfo;
-  //PXCCapture::VideoStream::ProfileInfo depthStreamInfo;
-
-  // stream profile for the color stream
-  //cap->QueryVideoStream(0)->QueryProfile(&rgbStreamInfo);
-  //cout << "rgbStreamInfo.imageInfo.width: " << rgbStreamInfo.imageInfo.width << endl;
-
-  // stream profile for the depth stream
-  //cap->QueryVideoStream(1)->QueryProfile(&depthStreamInfo);
-  //cout << "depthStreamInfo.imageInfo.width: " << depthStreamInfo.imageInfo.width << endl;
-
-  // set the desired value for smoothing the depth data
-  //cap->QueryDevice()->SetProperty(PXCCapture::Device::PROPERTY_DEPTH_SMOOTHING, 1);
-
   // setup the projection info for getting a nice depth map
-  pxcStatus sts = cap->QueryDevice()->QueryPropertyAsUID(PXCCapture::Device::PROPERTY_PROJECTION_SERIALIZABLE, &prj_value);
+  pxcStatus sts = cap->QueryDevice ()->QueryPropertyAsUID (PXCCapture::Device::PROPERTY_PROJECTION_SERIALIZABLE, &prj_value);
   if (sts >= PXC_STATUS_NO_ERROR) 
   {
     // create properties for checking if depth values are bad (by low confidence and by saturation)
-    cap->QueryDevice()->QueryProperty(PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, &dvalues[0]);
-    cap->QueryDevice()->QueryProperty(PXCCapture::Device::PROPERTY_DEPTH_SATURATION_VALUE, &dvalues[1]);
+    cap->QueryDevice ()->QueryProperty (PXCCapture::Device::PROPERTY_DEPTH_LOW_CONFIDENCE_VALUE, &dvalues[0]);
+    cap->QueryDevice ()->QueryProperty (PXCCapture::Device::PROPERTY_DEPTH_SATURATION_VALUE, &dvalues[1]);
 
-    session->DynamicCast<PXCMetadata>()->CreateSerializable<PXCProjection>(prj_value, &projection);
+    session->DynamicCast<PXCMetadata> ()->CreateSerializable<PXCProjection> (prj_value, &projection);
   }
 
   pcl::StopWatch stop_watch;
@@ -189,48 +173,48 @@ pcl::PXCGrabber::processGrabbing ()
   bool continue_grabbing = true;
   while (continue_grabbing) 
   {
-    if (!pp_.AcquireFrame(true))
+    if (!pp_.AcquireFrame (true))
     {
-      boost::this_thread::sleep (boost::posix_time::milliseconds(1));
+      boost::this_thread::sleep (boost::posix_time::milliseconds (1));
       continue;
     }
 
     // query rgb and 3d data
-    PXCImage *color_image=pp_.QueryImage(PXCImage::IMAGE_TYPE_COLOR);
-    PXCImage *vertex_image=pp_.QueryImage(PXCImage::IMAGE_TYPE_DEPTH);
+    PXCImage *color_image=pp_.QueryImage (PXCImage::IMAGE_TYPE_COLOR);
+    PXCImage *vertex_image=pp_.QueryImage (PXCImage::IMAGE_TYPE_DEPTH);
 
     // acquiure access to data
     PXCImage::ImageData ddata;
-    vertex_image->AcquireAccess(PXCImage::ACCESS_READ, &ddata); 
+    vertex_image->AcquireAccess (PXCImage::ACCESS_READ, &ddata); 
     short * vertices = (short*) ddata.planes[0];
 
     PXCImage::ImageData idata;
-    color_image->AcquireAccess(PXCImage::ACCESS_READ, &idata);
+    color_image->AcquireAccess (PXCImage::ACCESS_READ, &idata);
     unsigned char * rgb_image_data = (unsigned char*) idata.planes[0];
     
     // get image information
     PXCImage::ImageInfo vertImageInfo;
-    pxcStatus stat = vertex_image->QueryInfo(&vertImageInfo);
+    pxcStatus stat = vertex_image->QueryInfo (&vertImageInfo);
     const int w = vertImageInfo.width;
     const int h = vertImageInfo.height;
 
     PXCImage::ImageInfo rgb_image_info;
-    stat = color_image->QueryInfo(&rgb_image_info);
+    stat = color_image->QueryInfo (&rgb_image_info);
     const int image_width = rgb_image_info.width;
     const int image_height = rgb_image_info.height;
 
     // convert to point cloud
     const float nan_value = std::numeric_limits<float>::quiet_NaN ();
 
-    int dwidth2=ddata.pitches[0]/sizeof(pxcU16);
-    float *uvmap=(float*)ddata.planes[2];
+    int dwidth2 = ddata.pitches[0] / sizeof (pxcU16);
+    float *uvmap = (float*)ddata.planes[2];
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> (w, h));
     for (int j = 0, k = 0; j < h; j++)
     {
       for (int i = 0; i < w; i++, k++)
       {
-        int xx=(int)(uvmap[(j*w+i)*2+0]*image_width+0.5f);
-        int yy=(int)(uvmap[(j*w+i)*2+1]*image_height+0.5f);
+        int xx = (int) (uvmap[(j*w+i)*2+0]*image_width+0.5f);
+        int yy = (int) (uvmap[(j*w+i)*2+1]*image_height+0.5f);
 
         unsigned int idx = 3*(j*w + i);
         short x = vertices[idx];
