@@ -498,4 +498,6 @@ namespace pcl
 
 } // namespace pcl
 #endif // __PCL_IO_OPENNI_GRABBER__
+#elif HAVE_OPENNI2
+	#include "pcl/io/openni2_grabber.h"
 #endif // HAVE_OPENNI

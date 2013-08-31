@@ -66,7 +66,7 @@ namespace pcl
   /** */
   struct PointXYZI;
 
-  /** \brief A simple ONI grabber.
+  /** \brief A simple ONI file grabber.
     * \author Suat Gedikli
     * \ingroup io
     */
