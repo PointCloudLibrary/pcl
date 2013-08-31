@@ -76,6 +76,11 @@ if(build)
             
             src/openni2_grabber.cpp
             )
+		
+		# Copy OpenNI2 redist directory to bin. Only tested on Windows.
+		if(MSVC)
+			file(COPY ${OPENNI2_REDIST_DIR} DESTINATION ${CMAKE_BINARY_DIR}/bin PATTERN *.*)
+		endif(MSVC)
     endif(OPENNI2_FOUND)
 
 	## OpenNI 1.x
