@@ -56,12 +56,13 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
+#include <pcl/exceptions.h>
+
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
-#include <pcl/exceptions.h>
+//#include "openni_capture.h"
 
-#include "openni_capture.h"
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include "evaluation.h"
 
@@ -698,7 +699,8 @@ struct KinFuApp
   void
   initRegistration ()
   {        
-    registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+    //registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+	registration_ = capture_.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_image_depth_image>();
     cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
   }
 
@@ -905,7 +907,9 @@ struct KinFuApp
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_oni = boost::bind (&KinFuApp::source_cb2_oni, this, _1, _2, _3);
     boost::function<void (const DepthImagePtr&)> func2_oni = boost::bind (&KinFuApp::source_cb1_oni, this, _1);
     
-    bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
+	// Check if using an oni file grabber
+    //bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
+	bool is_oni = dynamic_cast<pcl::OpenNIGrabber*>(&capture_) != 0;
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
     boost::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
@@ -1171,7 +1175,8 @@ main (int argc, char* argv[])
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
+      //capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
+	  capture.reset (new pcl::OpenNIGrabber(oni_file) );
     }
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
