@@ -19,12 +19,12 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 
 if(build)
-  if(VTK_FOUND AND OPENNI_FOUND AND BUILD_OPENNI)
+  if(VTK_FOUND AND ((OPENNI_FOUND AND BUILD_OPENNI) OR (OPENNI2_FOUND AND BUILD_OPENNI2)) )
 
     PCL_CUDA_ADD_EXECUTABLE(kinect_viewer_cuda ${SUBSYS_NAME} src/kinect_viewer_cuda.cpp)
     target_link_libraries (kinect_viewer_cuda pcl_io pcl_cuda_io pcl_visualization pcl_common pcl_kdtree)
 
-  endif(VTK_FOUND AND OPENNI_FOUND AND BUILD_OPENNI)
+  endif(VTK_FOUND AND ((OPENNI_FOUND AND BUILD_OPENNI) OR (OPENNI2_FOUND AND BUILD_OPENNI2)) )
 endif(build)
 
 

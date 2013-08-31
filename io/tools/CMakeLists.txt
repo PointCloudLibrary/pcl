@@ -1,4 +1,4 @@
-if(OPENNI_FOUND)
+if(OPENNI_FOUND OR OPENNI2_FOUND)
   PCL_ADD_EXECUTABLE(pcl_openni_grabber_example ${SUBSYS_NAME} openni_grabber_example.cpp)
   target_link_libraries(pcl_openni_grabber_example pcl_common pcl_io)
 
@@ -9,7 +9,7 @@ if(OPENNI_FOUND)
   PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder ${SUBSYS_NAME} openni_pcd_recorder.cpp)
   target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
 
-endif(OPENNI_FOUND)
+endif(OPENNI_FOUND OR OPENNI2_FOUND)
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan ${SUBSYS_NAME} pcd_convert_NaN_nan.cpp)
 PCL_ADD_EXECUTABLE(pcl_convert_pcd_ascii_binary ${SUBSYS_NAME} convert_pcd_ascii_binary.cpp)

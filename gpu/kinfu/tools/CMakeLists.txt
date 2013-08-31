@@ -1,4 +1,4 @@
-if(OPENNI_FOUND)
+if(OPENNI_FOUND OR OPENNI2_FOUND)
 	if(NOT VTK_FOUND)
 		set(DEFAULT FALSE)
 		set(REASON "VTK was not found.")
@@ -11,7 +11,7 @@ if(OPENNI_FOUND)
 	endif(NOT VTK_FOUND)
 
 	FILE(GLOB hdrs "*.h*")
-	include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS})       
+	include_directories(${VTK_INCLUDE_DIRS} ${OPENNI_INCLUDE_DIRS} ${OPENNI2_INCLUDE_DIRS})
 
 	## KINECT FUSION
 	set(the_target pcl_kinfu_app)
@@ -20,7 +20,11 @@ if(OPENNI_FOUND)
 	source_group("Source Files" FILES ${srcs} )
 
 	PCL_ADD_EXECUTABLE_OPT_BUNDLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
-	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
+	if (OPENNI_FOUND)
+		target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
+	elseif(OPENNI2_FOUND)
+		target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI2_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
+	endif()
   
 	if(OpenCV_FOUND)
 		target_link_libraries(${the_target} ${OpenCV_LIBS})
@@ -31,7 +35,11 @@ if(OPENNI_FOUND)
 	set(srcs record_tsdfvolume.cpp capture.cpp)
 
 	PCL_ADD_EXECUTABLE(${the_target} ${SUBSYS_NAME} ${srcs} ${hdrs})
-	target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
+	if(OPENNI_FOUND)
+		target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu)  
+	elseif(OPENNI2_FOUND)
+		target_link_libraries(${the_target} pcl_common pcl_io ${OPENNI2_LIBRARIES} pcl_visualization pcl_gpu_kinfu)
+	endif()
 
 	## KINECT FUSION SIMULATION - DISABLED FOR NOW
 	#find_package(GLEW)
@@ -57,4 +65,4 @@ if(OPENNI_FOUND)
 	#	endif(GLUT_FOUND)
 	#endif (GLEW_FOUND)
 
-endif(OPENNI_FOUND)
+endif(OPENNI_FOUND OR OPENNI2_FOUND)
