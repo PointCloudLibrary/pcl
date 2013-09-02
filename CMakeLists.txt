@@ -268,6 +268,13 @@ if (FZAPI_FOUND)
   include_directories(SYSTEM ${FZAPI_INCLUDE_DIR})
 endif()
 
+# Intel Perceptional Computing Interface (PXCAPI)
+find_package(PXCAPI)
+if (PXCAPI_FOUND)
+  set(HAVE_PXCAPI ON)
+  include_directories(SYSTEM ${PXCAPI_INCLUDE_DIRS})
+endif()
+
 # LibPNG
 find_package(PNG)
 if (PNG_FOUND)
