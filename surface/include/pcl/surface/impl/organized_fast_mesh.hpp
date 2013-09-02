@@ -89,30 +89,30 @@ pcl::OrganizedFastMesh<PointInT>::reconstructPolygons (std::vector<pcl::Vertices
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& polygons)
 {
-  int last_column = input_->width - triangle_pixel_size_;
-  int last_row = input_->height - triangle_pixel_size_;
+  int last_column = input_->width - triangle_pixel_size_columns_;
+  int last_row = input_->height - triangle_pixel_size_rows_;
 
   int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
-  int y_big_incr = triangle_pixel_size_ * input_->width,
-      x_big_incr = y_big_incr + triangle_pixel_size_;
+  int y_big_incr = triangle_pixel_size_rows_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
   polygons.resize (input_->width * input_->height);
 
   // Go over the rows first
-  for (int y = 0; y < last_row; y += triangle_pixel_size_)
+  for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
     i = y * input_->width;
-    index_right = i + triangle_pixel_size_;
+    index_right = i + triangle_pixel_size_columns_;
     index_down = i + y_big_incr;
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_,
-                                     i += triangle_pixel_size_,
-                                     index_right += triangle_pixel_size_,
-                                     index_down += triangle_pixel_size_,
-                                     index_down_right += triangle_pixel_size_)
+    for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
+                                     i += triangle_pixel_size_columns_,
+                                     index_right += triangle_pixel_size_columns_,
+                                     index_down += triangle_pixel_size_columns_,
+                                     index_down_right += triangle_pixel_size_columns_)
     {
       if (isValidQuad (i, index_right, index_down_right, index_down))
         if (store_shadowed_faces_ || !isShadowedQuad (i, index_right, index_down_right, index_down))
@@ -126,30 +126,30 @@ pcl::OrganizedFastMesh<PointInT>::makeQuadMesh (std::vector<pcl::Vertices>& poly
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  int last_column = input_->width - triangle_pixel_size_;
-  int last_row = input_->height - triangle_pixel_size_;
+  int last_column = input_->width - triangle_pixel_size_columns_;
+  int last_row = input_->height - triangle_pixel_size_rows_;
 
   int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
-  int y_big_incr = triangle_pixel_size_ * input_->width,
-      x_big_incr = y_big_incr + triangle_pixel_size_;
+  int y_big_incr = triangle_pixel_size_rows_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
   polygons.resize (input_->width * input_->height * 2);
 
   // Go over the rows first
-  for (int y = 0; y < last_row; y += triangle_pixel_size_)
+  for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
     i = y * input_->width;
-    index_right = i + triangle_pixel_size_;
+    index_right = i + triangle_pixel_size_columns_;
     index_down = i + y_big_incr;
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_,
-                                     i += triangle_pixel_size_,
-                                     index_right += triangle_pixel_size_,
-                                     index_down += triangle_pixel_size_,
-                                     index_down_right += triangle_pixel_size_)
+    for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
+                                     i += triangle_pixel_size_columns_,
+                                     index_right += triangle_pixel_size_columns_,
+                                     index_down += triangle_pixel_size_columns_,
+                                     index_down_right += triangle_pixel_size_columns_)
     {
       if (isValidTriangle (i, index_down_right, index_right))
         if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down_right, index_right))
@@ -167,30 +167,30 @@ pcl::OrganizedFastMesh<PointInT>::makeRightCutMesh (std::vector<pcl::Vertices>& 
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  int last_column = input_->width - triangle_pixel_size_;
-  int last_row = input_->height - triangle_pixel_size_;
+  int last_column = input_->width - triangle_pixel_size_columns_;
+  int last_row = input_->height - triangle_pixel_size_rows_;
 
   int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
-  int y_big_incr = triangle_pixel_size_ * input_->width,
-      x_big_incr = y_big_incr + triangle_pixel_size_;
+  int y_big_incr = triangle_pixel_size_rows_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
   polygons.resize (input_->width * input_->height * 2);
 
   // Go over the rows first
-  for (int y = 0; y < last_row; y += triangle_pixel_size_)
+  for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
     i = y * input_->width;
-    index_right = i + triangle_pixel_size_;
+    index_right = i + triangle_pixel_size_columns_;
     index_down = i + y_big_incr;
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_,
-                                     i += triangle_pixel_size_,
-                                     index_right += triangle_pixel_size_,
-                                     index_down += triangle_pixel_size_,
-                                     index_down_right += triangle_pixel_size_)
+    for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
+                                     i += triangle_pixel_size_columns_,
+                                     index_right += triangle_pixel_size_columns_,
+                                     index_down += triangle_pixel_size_columns_,
+                                     index_down_right += triangle_pixel_size_columns_)
     {
       if (isValidTriangle (i, index_down, index_right))
         if (store_shadowed_faces_ || !isShadowedTriangle (i, index_down, index_right))
@@ -208,30 +208,30 @@ pcl::OrganizedFastMesh<PointInT>::makeLeftCutMesh (std::vector<pcl::Vertices>& p
 template <typename PointInT> void
 pcl::OrganizedFastMesh<PointInT>::makeAdaptiveCutMesh (std::vector<pcl::Vertices>& polygons)
 {
-  int last_column = input_->width - triangle_pixel_size_;
-  int last_row = input_->height - triangle_pixel_size_;
+  int last_column = input_->width - triangle_pixel_size_columns_;
+  int last_row = input_->height - triangle_pixel_size_rows_;
 
   int i = 0, index_down = 0, index_right = 0, index_down_right = 0, idx = 0;
-  int y_big_incr = triangle_pixel_size_ * input_->width,
-      x_big_incr = y_big_incr + triangle_pixel_size_;
+  int y_big_incr = triangle_pixel_size_rows_ * input_->width,
+      x_big_incr = y_big_incr + triangle_pixel_size_columns_;
   // Reserve enough space
-  polygons.resize (input_->width * input_->height * 4);
+  polygons.resize (input_->width * input_->height * 2);
 
   // Go over the rows first
-  for (int y = 0; y < last_row; y += triangle_pixel_size_)
+  for (int y = 0; y < last_row; y += triangle_pixel_size_rows_)
   {
     // Initialize a new row
     i = y * input_->width;
-    index_right = i + triangle_pixel_size_;
+    index_right = i + triangle_pixel_size_columns_;
     index_down = i + y_big_incr;
     index_down_right = i + x_big_incr;
 
     // Go over the columns
-    for (int x = 0; x < last_column; x += triangle_pixel_size_,
-                                     i += triangle_pixel_size_,
-                                     index_right += triangle_pixel_size_,
-                                     index_down += triangle_pixel_size_,
-                                     index_down_right += triangle_pixel_size_)
+    for (int x = 0; x < last_column; x += triangle_pixel_size_columns_,
+                                     i += triangle_pixel_size_columns_,
+                                     index_right += triangle_pixel_size_columns_,
+                                     index_down += triangle_pixel_size_columns_,
+                                     index_down_right += triangle_pixel_size_columns_)
     {
       const bool right_cut_upper = isValidTriangle (i, index_down_right, index_right);
       const bool right_cut_lower = isValidTriangle (i, index_down, index_down_right);
