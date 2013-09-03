@@ -122,7 +122,7 @@ namespace pcl
         *
         * \param[in] file_name The name of the file that stores the templates.
         *
-        * \return true, if the operation was succesful, false otherwise.
+        * \return true, if the operation was successful, false otherwise.
         */
       bool
       loadTemplates (const std::string &file_name, size_t object_id = 0);
