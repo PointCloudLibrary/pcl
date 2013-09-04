@@ -175,6 +175,7 @@ if(build)
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
+		${PXC_GRABBER_INCLUDES}
         )
 
     set(compression_incs
