@@ -36,6 +36,19 @@ if(build)
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
       	include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
+		include/pcl/${SUBSYS_NAME}/auxiliary.h
+		include/pcl/${SUBSYS_NAME}/hypothesis.h
+        include/pcl/${SUBSYS_NAME}/model_library.h
+        include/pcl/${SUBSYS_NAME}/rigid_transform_space.h
+        include/pcl/${SUBSYS_NAME}/obj_rec_ransac.h
+        include/pcl/${SUBSYS_NAME}/orr_graph.h
+        include/pcl/${SUBSYS_NAME}/orr_octree_zprojection.h
+        include/pcl/${SUBSYS_NAME}/trimmed_icp.h
+        include/pcl/${SUBSYS_NAME}/orr_octree.h
+        include/pcl/${SUBSYS_NAME}/simple_octree.h
+        include/pcl/${SUBSYS_NAME}/voxel_structure.h
+        include/pcl/${SUBSYS_NAME}/bvh.h
+	
         )
 
 	set (ransac_based_incs 
