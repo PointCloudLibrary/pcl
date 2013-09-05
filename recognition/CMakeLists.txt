@@ -35,7 +35,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/sparse_quantized_multi_mod_template.h
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
-        include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
+      	include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
+        )
+
+	set (ransac_based_incs 
+		include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
+		include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
         include/pcl/${SUBSYS_NAME}/ransac_based/rigid_transform_space.h
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
@@ -46,8 +51,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ransac_based/simple_octree.h
         include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
         include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h
-	     	include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
-        )
+	)
+
         
     set(hv_incs
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
@@ -73,10 +78,17 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
-        include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
-        include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
-		    include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
+        #include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
+		include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
         )
+
+
+	set(ransac_based_impl_incs
+		include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
+	)
+
         
     set(hv_impl_incs
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
@@ -125,16 +137,18 @@ if(build)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
+	PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/ransac_based ${ransac_based_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/hv ${hv_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/cg ${cg_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/face_detection ${face_detection_incs})
     
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/ransac_based ${ransac_based_impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/hv ${hv_impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl/cg ${cg_impl_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/linemod ${LINEMOD_INCLUDES})
