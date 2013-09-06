@@ -126,12 +126,13 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   // dual quaternion optimization
   Eigen::Matrix<double, 4, 4> C1 = Eigen::Matrix<double, 4, 4>::Zero ();
   Eigen::Matrix<double, 4, 4> C2 = Eigen::Matrix<double, 4, 4>::Zero ();
-  double *c1 = C1.data ();
-  double *c2 = C2.data ();
+  double* c1 = C1.data ();
+  double* c2 = C2.data ();
 
-  for ( int i = 0; i < npts; ++i ) {
-    const PointSource &a = *source_it;
-    const PointTarget &b = *target_it;
+  for (int i = 0; i < npts; ++i)
+  {
+    const PointSource& a = *source_it;
+    const PointTarget& b = *target_it;
     const double axbx = a.x * b.x;
     const double ayby = a.y * b.y;
     const double azbz = a.z * b.z;
@@ -175,8 +176,8 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
   c2[13] = -c2[7];
   c2[14] = -c2[11];
 
-  C1 *= -2.0f;
-  C2 *= 2.0f;
+  C1 *= -2.0;
+  C2 *= 2.0;
 
   const Eigen::Matrix<double, 4, 4> A = (0.25 / double (npts)) * C2.transpose () * C2 - C1;
 
@@ -194,8 +195,8 @@ pcl::registration::TransformationEstimationDualQuaternion<PointSource, PointTarg
 
   const Eigen::Matrix<double, 3, 3> R (q.toRotationMatrix ());
 
-  for( int i = 0; i < 3; ++i )
-    for( int j = 0; j < 3; ++j )
+  for (int i = 0; i < 3; ++i)
+    for (int j = 0; j < 3; ++j)
       transformation_matrix (i, j) = R (i, j);
 
   transformation_matrix (0, 3) = - t.x ();
