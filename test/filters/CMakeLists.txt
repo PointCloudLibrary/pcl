@@ -16,4 +16,8 @@ PCL_ADD_TEST(filters_bilateral test_filters_bilateral
              ARGUMENTS ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
     
+PCL_ADD_TEST(filters_model_outlier_removal test_model_outlier_removal
+             FILES test_model_outlier_removal.cpp
+             LINK_WITH pcl_gtest pcl_filters pcl_io pcl_sample_consensus pcl_kdtree pcl_features
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd)
 
