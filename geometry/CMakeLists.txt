@@ -37,11 +37,11 @@ if(build)
 #      src/geometry.cpp
 #     )
 
-#  set(LIB_NAME pcl_${SUBSYS_NAME})
+set(LIB_NAME pcl_${SUBSYS_NAME})
   include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-#  PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
+# PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs})
 #  target_link_libraries(${LIB_NAME} pcl_common)
-#  PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
+PCL_MAKE_PKGCONFIG_HEADER_ONLY(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "")
 
   # Install include files
   PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
