@@ -47,7 +47,6 @@
 #include <string>
 #include <vector>
 #include <pcl/io/point_cloud_image_extractors.h>
-#include <boost/make_shared.hpp>
 
 namespace pcl
 {
@@ -183,30 +182,31 @@ namespace pcl
     template <typename PointT> void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, const std::string& field_name)
     {
-      typename PointCloudImageExtractor<PointT>::Ptr pcie;
+      typedef typename PointCloudImageExtractor<PointT>::Ptr PointCloudImageExtractorPtr;
+      PointCloudImageExtractorPtr pcie;
       if (field_name == "normal")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromNormalField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromNormalField<PointT>);
       }
       else if (field_name == "rgb")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromRGBField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromRGBField<PointT>);
       }
       else if (field_name == "label")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromLabelField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromLabelField<PointT>);
       }
       else if (field_name == "z")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromZField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromZField<PointT>);
       }
       else if (field_name == "curvature")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromCurvatureField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromCurvatureField<PointT>);
       }
       else if (field_name == "intensity")
       {
-        pcie = boost::make_shared<PointCloudImageExtractorFromIntensityField<PointT> >();
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromIntensityField<PointT>);
       }
       else
       {
