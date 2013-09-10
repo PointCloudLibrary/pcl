@@ -60,30 +60,34 @@ void
 printHelp (int, char **argv)
 {
   std::cout << std::endl;
-  std::cout << "***************************************************************************" << std::endl;
-  std::cout << "*                                                                         *" << std::endl;
-  std::cout << "*                      PCD 2 PNG CONVERTER - Usage Guide                  *" << std::endl;
-  std::cout << "*                                                                         *" << std::endl;
-  std::cout << "***************************************************************************" << std::endl;
+  std::cout << "****************************************************************************" << std::endl;
+  std::cout << "*                                                                          *" << std::endl;
+  std::cout << "*                       PCD 2 PNG CONVERTER - Usage Guide                  *" << std::endl;
+  std::cout << "*                                                                          *" << std::endl;
+  std::cout << "****************************************************************************" << std::endl;
   std::cout << std::endl;
   std::cout << "Usage: " << argv[0] << " [Options] input.pcd output.png" << std::endl;
   std::cout << std::endl;
   std::cout << "Options:" << std::endl;
-  std::cout << "     --help  : Show this help" << std::endl;
-  std::cout << "     --field : Set the field to extract data from. Supported fields:"       << std::endl;
-  std::cout << "               * normal"                                                    << std::endl;
-  std::cout << "               * rgb"                                                       << std::endl;
-  std::cout << "               * label"                                                     << std::endl;
-  std::cout << "               * z"                                                         << std::endl;
-  std::cout << "               * curvature"                                                 << std::endl;
-  std::cout << "               * intensity"                                                 << std::endl;
-  std::cout << "     --scale : Apply scaling to extracted data (only for z, curvature, and" << std::endl;
-  std::cout << "               intensity fields). Supported options:"                       << std::endl;
-  std::cout << "               * <float> : Scale by a fixed number"                         << std::endl;
-  std::cout << "               * auto    : Auto-scale to the full range"                    << std::endl;
-  std::cout << "               * no      : No scaling"                                      << std::endl;
-  std::cout << "               If the option is omitted then default scaling (depends on"   << std::endl;
-  std::cout << "               the field type) will be used."                               << std::endl;
+  std::cout << "     --help   : Show this help" << std::endl;
+  std::cout << "     --field  : Set the field to extract data from. Supported fields:"       << std::endl;
+  std::cout << "                - normal"                                                    << std::endl;
+  std::cout << "                * rgb (default)"                                             << std::endl;
+  std::cout << "                - label"                                                     << std::endl;
+  std::cout << "                - z"                                                         << std::endl;
+  std::cout << "                - curvature"                                                 << std::endl;
+  std::cout << "                - intensity"                                                 << std::endl;
+  std::cout << "     --scale  : Apply scaling to extracted data (only for z, curvature, and" << std::endl;
+  std::cout << "                intensity fields). Supported options:"                       << std::endl;
+  std::cout << "                - <float> : Scale by a fixed number"                         << std::endl;
+  std::cout << "                - auto    : Auto-scale to the full range"                    << std::endl;
+  std::cout << "                - no      : No scaling"                                      << std::endl;
+  std::cout << "                If the option is omitted then default scaling (depends on"   << std::endl;
+  std::cout << "                the field type) will be used."                               << std::endl;
+  std::cout << "     --colors : Choose color mapping mode for labels (only for label"        << std::endl;
+  std::cout << "                field). Supported options:"                                  << std::endl;
+  std::cout << "                * mono    : Use shades of gray (default)"                    << std::endl;
+  std::cout << "                - rgb     : Use randomly generated RGB colors"               << std::endl;
   std::cout << std::endl;
   std::cout << "Note: The converter will try to use RGB field if '--field' option is not"    << std::endl;
   std::cout << "      supplied."                                                             << std::endl;
@@ -145,6 +149,27 @@ parseScaleOption (int argc, char** argv, T& pcie)
       print_error ("The value of --scale option should be \"no\", \"auto\", or a floating point number.\n");
       return false;
     }
+  }
+  return true;
+}
+
+template<typename T> bool
+parseColorsOption (int argc, char** argv, T& pcie)
+{
+  std::string colors = "mono";
+  pcl::console::parse_argument (argc, argv, "--colors", colors);
+  print_info ("Colors: "); print_value ("%s\n", colors.c_str());
+  if (colors == "mono")
+  {
+    pcie.setColorMode(pcie.COLORS_MONO);
+  }
+  else if (colors == "rgb")
+  {
+    pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
+  }
+  else
+  {
+    return false;
   }
   return true;
 }
@@ -214,6 +239,8 @@ main (int argc, char** argv)
     PointCloud<Label> cloud;
     fromPCLPointCloud2 (*blob, cloud);
     PointCloudImageExtractorFromLabelField<Label> pcie;
+    if (!parseColorsOption(argc, argv, pcie))
+      return (-1);
     extracted = pcie.extract(cloud, image);
   }
   else if (field_name == "z")

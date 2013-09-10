@@ -38,6 +38,10 @@
 #ifndef PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
 #define PCL_POINT_CLOUD_IMAGE_EXTRACTORS_IMPL_HPP_
 
+#include <map>
+#include <ctime>
+#include <cstdlib>
+
 #include <pcl/common/io.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -127,18 +131,53 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointClo
     return (false);
   const size_t offset = fields[field_idx].offset;
 
-  img.encoding = "mono16";
-  img.width = cloud.width;
-  img.height = cloud.height;
-  img.step = img.width * sizeof (unsigned short);
-  img.data.resize (img.step * img.height);
-  unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
-
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  switch (color_mode_)
   {
-    uint32_t val;
-    pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
-    data[i] = static_cast<unsigned short>(val);
+    case COLORS_MONO:
+    {
+      img.encoding = "mono16";
+      img.width = cloud.width;
+      img.height = cloud.height;
+      img.step = img.width * sizeof (unsigned short);
+      img.data.resize (img.step * img.height);
+      unsigned short* data = reinterpret_cast<unsigned short*>(&img.data[0]);
+      for (size_t i = 0; i < cloud.points.size (); ++i)
+      {
+        uint32_t val;
+        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        data[i] = static_cast<unsigned short>(val);
+      }
+      break;
+    }
+    case COLORS_RGB_RANDOM:
+    {
+      img.encoding = "rgb8";
+      img.width = cloud.width;
+      img.height = cloud.height;
+      img.step = img.width * sizeof (unsigned char) * 3;
+      img.data.resize (img.step * img.height);
+
+      std::srand(std::time(0));
+      std::map<uint32_t, size_t> colormap;
+
+      for (size_t i = 0; i < cloud.points.size (); ++i)
+      {
+        uint32_t val;
+        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        if (colormap.count (val) == 0)
+        {
+          colormap[val] = i * 3;
+          img.data[i * 3 + 0] = static_cast<uint8_t> ((std::rand () % 256));
+          img.data[i * 3 + 1] = static_cast<uint8_t> ((std::rand () % 256));
+          img.data[i * 3 + 2] = static_cast<uint8_t> ((std::rand () % 256));
+        }
+        else
+        {
+          memcpy (&img.data[i * 3], &img.data[colormap[val]], 3);
+        }
+      }
+      break;
+    }
   }
 
   return (true);

@@ -214,7 +214,9 @@ namespace pcl
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Image Extractor which uses the data present in the "label" field to produce
-      * a monochrome image which different labels correspond to different shades of gray.
+      * either monochrome or RGB image where different labels correspond to different
+      * colors. In the monochrome case colors are shades of gray, in the RGB case the
+      * colors are generated randomly.
       * \author Sergey Alexandrov
       * \ingroup io
       */
@@ -227,21 +229,47 @@ namespace pcl
         typedef boost::shared_ptr<PointCloudImageExtractorFromLabelField<PointT> > Ptr;
         typedef boost::shared_ptr<const PointCloudImageExtractorFromLabelField<PointT> > ConstPtr;
 
+        /** \brief Different modes for color mapping.
+          * <ul>
+          *   <li><b>COLORS_MONO</b> - shades of gray (according to label id).</li>
+          *   <li><b>COLORS_RGB_RANDOM</b> - randomly generated RGB colors.</li>
+          * </ul>
+          */
+        enum ColorMode
+        {
+          COLORS_MONO,
+          COLORS_RGB_RANDOM,
+        };
+
         /** \brief Constructor. */
-        PointCloudImageExtractorFromLabelField () {}
+        PointCloudImageExtractorFromLabelField (const ColorMode color_mode = COLORS_MONO)
+          : color_mode_ (color_mode)
+        {
+        }
 
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractorFromLabelField () {}
 
         /** \brief Obtain the label image from the given cloud.
           * The cloud should contain "label" field.
-          * \note Labels using more than 16 bits will cause problems.
+          * \note Labels using more than 16 bits will cause problems in COLORS_MONO mode.
           * \param[in] cloud organized point cloud to extract image from
           * \param[out] image the output image
           * \return true if the operation was successful, false otherwise
           */
         virtual bool
         extract (const PointCloud& cloud, pcl::PCLImage& img) const;
+
+        /** \brief Set color mapping mode. */
+        inline void
+        setColorMode (const ColorMode color_mode)
+        {
+          color_mode_ = color_mode;
+        }
+
+      private:
+
+        ColorMode color_mode_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////

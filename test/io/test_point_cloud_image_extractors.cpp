@@ -162,7 +162,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, PointCloudImageExtractorFromLabelField)
+TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 {
   typedef PointXYZL PointT;
   PointCloud<PointT> cloud;
@@ -175,6 +175,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelField)
 
   pcl::PCLImage image;
   PointCloudImageExtractorFromLabelField<PointT> pcie;
+  pcie.setColorMode (pcie.COLORS_MONO);
 
   ASSERT_TRUE (pcie.extract(cloud, image));
   unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
@@ -185,6 +186,44 @@ TEST (PCL, PointCloudImageExtractorFromLabelField)
 
   for (size_t i = 0; i < cloud.points.size (); i++)
     EXPECT_EQ (i, data[i]);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
+{
+  typedef PointXYZL PointT;
+  PointCloud<PointT> cloud;
+  cloud.width = 2;
+  cloud.height = 2;
+  cloud.is_dense = true;
+  cloud.points.resize (cloud.width * cloud.height);
+  for (size_t i = 0; i < cloud.points.size (); i++)
+    cloud.points[i].label = i % 2;
+
+  pcl::PCLImage image;
+  PointCloudImageExtractorFromLabelField<PointT> pcie;
+  pcie.setColorMode (pcie.COLORS_RGB_RANDOM);
+
+  ASSERT_TRUE (pcie.extract(cloud, image));
+
+  EXPECT_EQ ("rgb8", image.encoding);
+  EXPECT_EQ (cloud.width, image.width);
+  EXPECT_EQ (cloud.height, image.height);
+
+  // Make sure same labels got the same random color
+  uint8_t r0 = image.data[0 * 3 + 0];
+  uint8_t g0 = image.data[0 * 3 + 1];
+  uint8_t b0 = image.data[0 * 3 + 2];
+  uint8_t r1 = image.data[1 * 3 + 0];
+  uint8_t g1 = image.data[1 * 3 + 1];
+  uint8_t b1 = image.data[1 * 3 + 2];
+
+  EXPECT_EQ (r0, image.data[2 * 3 + 0]);
+  EXPECT_EQ (g0, image.data[2 * 3 + 1]);
+  EXPECT_EQ (b0, image.data[2 * 3 + 2]);
+  EXPECT_EQ (r1, image.data[3 * 3 + 0]);
+  EXPECT_EQ (g1, image.data[3 * 3 + 1]);
+  EXPECT_EQ (b1, image.data[3 * 3 + 2]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
