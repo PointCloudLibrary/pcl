@@ -73,7 +73,7 @@ saveImage (const std::string &filename, const PointCloud<RGB> &image)
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  io::savePNGFile (filename, image);
+  io::savePNGFile (filename, image, "rgb");
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", image.width * image.height); print_info (" points]\n");
 }
