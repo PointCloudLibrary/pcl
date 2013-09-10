@@ -333,6 +333,8 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<uint32_t,typename S
     sv_itr->getVoxels (supervoxel_clusters[label]->voxels_);
     sv_itr->getNormals (supervoxel_clusters[label]->normals_);
   }
+  //Make sure that color vector is big enough
+  initializeLabelColors ();
 }
 
 
@@ -544,10 +546,8 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-pcl::SupervoxelClustering<PointT>::getColoredCloud ()
+pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 {
-  initializeLabelColors ();
-  
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZRGBA> >();
   pcl::copyPointCloud (*input_,*colored_cloud);
   
@@ -576,10 +576,8 @@ pcl::SupervoxelClustering<PointT>::getColoredCloud ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud ()
+pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud () const
 {
-  initializeLabelColors ();
-  
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGBA> > ();
   for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
   {

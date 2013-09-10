@@ -254,7 +254,7 @@ namespace pcl
         * \note This will expand the label_colors_ vector so that it can accomodate all labels
         */
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
-      getColoredCloud ();
+      getColoredCloud () const;
       
       /** \brief Returns a deep copy of the voxel centroid cloud */
       typename pcl::PointCloud<PointT>::Ptr
@@ -275,7 +275,7 @@ namespace pcl
        * \note This will expand the label_colors_ vector so that it can accomodate all labels
        */
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-      getColoredVoxelCloud ();
+      getColoredVoxelCloud () const;
       
       /** \brief Returns labeled voxelized cloud
        * Points that belong to the same supervoxel have the same label.
