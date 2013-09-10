@@ -141,6 +141,10 @@ namespace pcl
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
+    PCL_DEPRECATED (template <typename T> void savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud),
+    "pcl::io::savePNGFile<typename T> (file_name, cloud) is deprecated, please use a new generic "
+    "function pcl::io::savePNGFile (file_name, cloud, field_name) with \"rgb\" as the field name."
+    );
     template <typename T> void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud)
     {
@@ -153,7 +157,7 @@ namespace pcl
         data[i*3 + 2] = cloud.points[i].b;        
       }
       saveRgbPNGFile(file_name, &data[0], cloud.width, cloud.height);
-    } 
+    }
     
     /** \brief Saves Labeled Point cloud as image to PNG file. 
      * \param[in] file_name the name of the file to write to disk
@@ -161,17 +165,20 @@ namespace pcl
      * \ingroup io
      * Warning: Converts to 16 bit (for png), labels using more than 16 bits will cause problems
      */
+    PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud),
+    "pcl::io::savePNGFile (file_name, cloud) is deprecated, please use a new generic function "
+    "pcl::io::savePNGFile (file_name, cloud, field_name) with \"label\" as the field name."
+    );
     void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud)
     {
       std::vector<unsigned short> data(cloud.width * cloud.height);
-      
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
         data[i] = static_cast<unsigned short> (cloud.points[i].label);      
       }
       saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
-    }  
+    }
 
     /** \brief Saves the data from the specified field of the point cloud as image to PNG file.
      * \param[in] file_name the name of the file to write to disk
