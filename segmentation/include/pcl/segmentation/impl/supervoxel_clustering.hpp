@@ -54,18 +54,6 @@ pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution,
   normal_importance_(1.0f),
   label_colors_ (0)
 {
-  label_colors_.reserve (MAX_LABEL);
-  label_colors_.push_back (static_cast<uint32_t>(255) << 16 | static_cast<uint32_t>(0) << 8 | static_cast<uint32_t>(0));
-  
-  srand (static_cast<unsigned int> (time (0)));
-  for (size_t i_segment = 0; i_segment < MAX_LABEL - 1; i_segment++)
-  {
-    uint8_t r = static_cast<uint8_t>( (rand () % 256));
-    uint8_t g = static_cast<uint8_t>( (rand () % 256));
-    uint8_t b = static_cast<uint8_t>( (rand () % 256));
-    label_colors_.push_back (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
-  }
-  
   adjacency_octree_ = boost::make_shared <OctreeAdjacencyT> (resolution_);
   if (use_single_camera_transform)
     adjacency_octree_->setTransformFunction (boost::bind (&SupervoxelClustering::transformFunction, this, _1));  
@@ -300,6 +288,8 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<uint32_t,typename S
     sv_itr->getVoxels (supervoxel_clusters[label]->voxels_);
     sv_itr->getNormals (supervoxel_clusters[label]->normals_);
   }
+  //Make sure that color vector is big enough
+  initializeLabelColors ();
 }
 
 
@@ -513,7 +503,6 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 {
-  
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZRGBA> >();
   pcl::copyPointCloud (*input_,*colored_cloud);
   
@@ -692,6 +681,40 @@ pcl::SupervoxelClustering<PointT>::setNormalImportance (float val)
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::SupervoxelClustering<PointT>::initializeLabelColors ()
+{
+  int max_label = getMaxLabel ();
+  //If we already have enough colors, return
+  if (label_colors_.size () > max_label) 
+    return;
+  
+  //Otherwise, generate new colors until we have enough
+  label_colors_.reserve (max_label + 1);
+  srand (static_cast<unsigned int> (time (0)));
+  while (label_colors_.size () <= max_label )
+  {
+    uint8_t r = static_cast<uint8_t>( (rand () % 256));
+    uint8_t g = static_cast<uint8_t>( (rand () % 256));
+    uint8_t b = static_cast<uint8_t>( (rand () % 256));
+    label_colors_.push_back (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> int
+pcl::SupervoxelClustering<PointT>::getMaxLabel () const
+{
+  int max_label = 0;
+  for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
+  {
+    int temp = sv_itr->getLabel ();
+    if (temp > max_label)
+      max_label = temp;
+  }
+  return max_label;
+}
 
 namespace pcl
 { 
