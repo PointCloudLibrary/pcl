@@ -17,7 +17,7 @@ If this number is less than the user-defined value than current cluster is merge
 The code
 --------
 
-This tutorial requires colored cloud. You can use `this one <http://svn.pointclouds.org/data/tutorials/region_growing_rgb_tutorial.pcd>`_.
+This tutorial requires colored cloud. You can use `this one <https://raw.github.com/PointCloudLibrary/data/master/tutorials/region_growing_rgb_tutorial.pcd>`_.
 Next what you need to do is to create a file ``region_growing_rgb_segmentation.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/region_growing_rgb_segmentation/region_growing_rgb_segmentation.cpp

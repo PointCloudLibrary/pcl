@@ -8,7 +8,7 @@ for a set of points supported by a plane.
 
 The following video shows a demonstration of the code given below on the test
 dataset `table_scene_mug_stereo_textured.pcd 
-<http://svn.pointclouds.org/data/tutorials/table_scene_mug_stereo_textured.pcd>`_.
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/table_scene_mug_stereo_textured.pcd>`_.
 
 .. raw:: html
   
@@ -18,7 +18,7 @@ The code
 --------
 
 First, download the dataset `table_scene_mug_stereo_textured.pcd
-<http://svn.pointclouds.org/data/tutorials/table_scene_mug_stereo_textured.pcd>`_
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/table_scene_mug_stereo_textured.pcd>`_
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``convex_hull_2d.cpp`` in your favorite

@@ -11,7 +11,7 @@ The code
 --------
 
 First, download the dataset `table_scene_mug_stereo_textured.pcd
-<http://svn.pointclouds.org/data/tutorials/table_scene_mug_stereo_textured.pcd>`_
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/table_scene_mug_stereo_textured.pcd>`_
 and save it somewhere to disk.
 
 Then, create a file, let's say, ``concave_hull_2d.cpp`` or

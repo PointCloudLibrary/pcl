@@ -55,7 +55,7 @@ The Code
 --------
 
 First, download the dataset `table_scene_lms400.pcd
-<http://svn.pointclouds.org/data/tutorials/table_scene_lms400.pcd>`_ and save it somewhere to disk.
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/table_scene_lms400.pcd>`_ and save it somewhere to disk.
 
 Then, create a file, let's say, ``cluster_extraction.cpp`` in your favorite
 editor, and place the following inside it:

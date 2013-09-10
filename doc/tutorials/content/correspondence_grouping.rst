@@ -10,7 +10,7 @@ For each cluster, representing a possible model instance in the scene, the Corre
 The code
 --------
 
-Before you begin, you should download the dataset used in this tutorial from `svn.pointclouds.org/data/tutorials/correspondence_grouping <http://svn.pointclouds.org/data/tutorials/correspondence_grouping>`_
+Before you begin, you should download the dataset used in this tutorial from `github.com/PointCloudLibrary/data/tree/master/tutorials/correspondence_grouping <https://raw.github.com/PointCloudLibrary/data/master/tutorials/correspondence_grouping>`_
 and extract the files in a folder of your convenience.
 
 Also, copy and paste the following code into your editor and save it as ``correspondence_grouping.cpp`` (or download the source file :download:`here <./sources/correspondence_grouping/correspondence_grouping.cpp>`).

@@ -86,7 +86,7 @@ The code
 --------
 
 First of all you will need the point cloud for this tutorial.
-`This <http://svn.pointclouds.org/data/tutorials/region_growing_tutorial.pcd>`_ is a good one for the purposes of the algorithm.
+`This <https://raw.github.com/PointCloudLibrary/data/master/tutorials/region_growing_tutorial.pcd>`_ is a good one for the purposes of the algorithm.
 Next what you need to do is to create a file ``region_growing_segmentation.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/region_growing_segmentation/region_growing_segmentation.cpp

@@ -53,18 +53,18 @@ First of all you will need the set of point clouds for this tutorial - training 
 Below is the list of clouds that are well suited for this tutorial (they were borrowed from the Ohio dataset).
 
 Clouds for training:
-  * `Cat <http://svn.pointclouds.org/data/tutorials/ism_train_cat.pcd>`_
-  * `Horse <http://svn.pointclouds.org/data/tutorials/ism_train_horse.pcd>`_
-  * `Lioness <http://svn.pointclouds.org/data/tutorials/ism_train_lioness.pcd>`_
-  * `Michael <http://svn.pointclouds.org/data/tutorials/ism_train_michael.pcd>`_
-  * `Wolf <http://svn.pointclouds.org/data/tutorials/ism_train_wolf.pcd>`_
+  * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_cat.pcd>`_
+  * `Horse <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_horse.pcd>`_
+  * `Lioness <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_lioness.pcd>`_
+  * `Michael <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_michael.pcd>`_
+  * `Wolf <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_wolf.pcd>`_
 
 Clouds for testing:
-  * `Cat <http://svn.pointclouds.org/data/tutorials/ism_test_cat.pcd>`_
-  * `Horse <http://svn.pointclouds.org/data/tutorials/ism_test_horse.pcd>`_
-  * `Lioness <http://svn.pointclouds.org/data/tutorials/ism_test_lioness.pcd>`_
-  * `Michael <http://svn.pointclouds.org/data/tutorials/ism_test_michael.pcd>`_
-  * `Wolf <http://svn.pointclouds.org/data/tutorials/ism_test_wolf.pcd>`_
+  * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_cat.pcd>`_
+  * `Horse <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_horse.pcd>`_
+  * `Lioness <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_lioness.pcd>`_
+  * `Michael <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_michael.pcd>`_
+  * `Wolf <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_wolf.pcd>`_
 
 Next what you need to do is to create a file ``implicit_shape_model.cpp`` in any editor you prefer and copy the following code inside of it:
 
