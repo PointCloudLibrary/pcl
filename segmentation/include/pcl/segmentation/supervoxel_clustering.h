@@ -233,6 +233,12 @@ namespace pcl
       virtual void
       setInputCloud (typename pcl::PointCloud<PointT>::ConstPtr cloud);
       
+      /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
+      * \param[in] cloud The input normals                         
+      */
+      virtual void
+      setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud);
+      
       /** \brief This method refines the calculated supervoxels - may only be called after extract
        * \param[in] num_itr The number of iterations of refinement to be done (2 or 3 is usually sufficient)
        * \param[out] supervoxel_clusters The resulting refined supervoxels
@@ -354,6 +360,9 @@ namespace pcl
       
       /** \brief Contains the Voxelized centroid Cloud */
       typename PointCloudT::Ptr voxel_centroid_cloud_;
+      
+      /** \brief Contains the Voxelized centroid Cloud */
+      typename NormalCloudT::ConstPtr input_normals_;
       
       /** \brief Importance of color in clustering */
       float color_importance_;
