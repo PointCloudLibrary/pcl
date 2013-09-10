@@ -50,12 +50,13 @@
 #include <pcl/common/io.h>
 
 class PCLVisualizerInteractor;
-template <typename T> class vtkSmartPointer;
+class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkContextView;
 class vtkChartXY;
 class vtkColorSeries;
 
+#include <vtkSmartPointer.h>
 #include <vtkCommand.h>
 #include <vtkChart.h>
 

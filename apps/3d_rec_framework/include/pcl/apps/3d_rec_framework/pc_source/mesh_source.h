@@ -14,6 +14,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/3d_rec_framework/utils/vtk_model_sampling.h>
 #include <boost/function.hpp>
+#include <vtkTransformPolyDataFilter.h>
 
 namespace pcl
 {
@@ -99,11 +100,6 @@ namespace pcl
           model.assembled_.reset (new pcl::PointCloud<pcl::PointXYZ>);
           uniform_sampling (model_path, 100000, *model.assembled_, model_scale_);
 
-          /*pcl::visualization::PCLVisualizer vis("results");
-           pcl::visualization::PointCloudColorHandlerCustom<PointInT> random_handler (model.assembled_, 255, 0, 0);
-           vis.addPointCloud<PointInT> (model.assembled_, random_handler, "points");
-           vis.spin();*/
-
           if (bf::exists (trained_dir))
           {
             //load views, poses and self-occlusions
@@ -181,24 +177,23 @@ namespace pcl
           }
           else
           {
-
             //load PLY model and scale it
-            vtkSmartPointer < vtkPLYReader > reader = vtkSmartPointer<vtkPLYReader>::New ();
+            vtkSmartPointer<vtkPLYReader> reader = vtkSmartPointer<vtkPLYReader>::New ();
             reader->SetFileName (model_path.c_str ());
 
-            vtkSmartPointer < vtkTransform > trans = vtkSmartPointer<vtkTransform>::New ();
+            vtkSmartPointer<vtkTransform> trans = vtkSmartPointer<vtkTransform>::New ();
             trans->Scale (model_scale_, model_scale_, model_scale_);
             trans->Modified ();
+            trans->Update ();
 
-            vtkSmartPointer < vtkTransformFilter > filter_scale = vtkSmartPointer<vtkTransformFilter>::New ();
+            vtkSmartPointer<vtkTransformPolyDataFilter> filter_scale = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
             filter_scale->SetTransform (trans);
             filter_scale->SetInputConnection (reader->GetOutputPort ());
+            filter_scale->Update ();
 
-            vtkSmartPointer < vtkPolyDataMapper > mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-            mapper->SetInputConnection (filter_scale->GetOutputPort ());
+            vtkSmartPointer<vtkPolyData> mapper = filter_scale->GetOutput ();
             mapper->Update ();
-            vtkSmartPointer < vtkPolyData > poly_data = vtkSmartPointer<vtkPolyData>::New ();
-            poly_data->Allocate(mapper->GetInput ());
+
             //generate views
             pcl::apps::RenderViewsTesselatedSphere render_views;
             render_views.setResolution (resolution_);
@@ -207,9 +202,9 @@ namespace pcl
             render_views.setComputeEntropies (true);
             render_views.setTesselationLevel (tes_level_);
             render_views.setViewAngle (view_angle_);
-            render_views.addModelFromPolyData (poly_data);
-            render_views.setGenOrganized(gen_organized_);
-            render_views.setCamPosConstraints(campos_constraints_func_);
+            render_views.addModelFromPolyData (mapper);
+            render_views.setGenOrganized (gen_organized_);
+            render_views.setCamPosConstraints (campos_constraints_func_);
             render_views.generateViews ();
 
             std::vector<typename PointCloud<PointInT>::Ptr> views_xyz_orig;
