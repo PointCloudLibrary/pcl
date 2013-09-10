@@ -85,6 +85,8 @@ printHelp (int, char **argv)
   std::cout << "               If the option is omitted then default scaling (depends on"   << std::endl;
   std::cout << "               the field type) will be used."                               << std::endl;
   std::cout << std::endl;
+  std::cout << "Note: The converter will try to use RGB field if '--field' option is not"    << std::endl;
+  std::cout << "      supplied."                                                             << std::endl;
 }
 
 bool
@@ -187,7 +189,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  std::string field_name = "";
+  std::string field_name = "rgb";
   parse_argument (argc, argv, "--field", field_name);
   print_info ("Field name: "); print_value ("%s\n", field_name.c_str());
 
