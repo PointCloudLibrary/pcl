@@ -41,6 +41,7 @@
 #ifndef __OPENNI_SHIFT_TO_DEPTH_CONVERSION
 #define __OPENNI_SHIFT_TO_DEPTH_CONVERSION
 
+#include <stdint.h>
 #include <vector>
 #include <limits>
 
