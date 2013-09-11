@@ -121,7 +121,6 @@ namespace pcl
     //Forward declaration of friended helper class
     class SupervoxelHelper;
     friend class SupervoxelHelper;
-    #define MAX_LABEL 16384
     public:
       /** \brief VoxelData is a structure used for storing data within a pcl::octree::OctreePointCloudAdjacencyContainer
        *  \note It stores xyz, rgb, normal, distance, an index, and an owner.
@@ -246,6 +245,7 @@ namespace pcl
         * Points that belong to the same supervoxel have the same color.
         * But this function doesn't guarantee that different segments will have different
         * color(it's random). Points that are unlabeled will be black
+        * \note This will expand the label_colors_ vector so that it can accomodate all labels
         */
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const;
@@ -266,6 +266,7 @@ namespace pcl
        * Points that belong to the same supervoxel have the same color.
        * But this function doesn't guarantee that different segments will have different
        * color(it's random). Points that are unlabeled will be black
+       * \note This will expand the label_colors_ vector so that it can accomodate all labels
        */
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const;
@@ -296,7 +297,18 @@ namespace pcl
        */
       static pcl::PointCloud<pcl::PointNormal>::Ptr
       makeSupervoxelNormalCloud (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      
+      /** \brief Returns the current maximum (highest) label */
+      int
+      getMaxLabel () const;
+      
     private:
+      
+      /** \brief This method initializes the label_colors_ vector (assigns random colors to labels)
+       * \note Checks to see if it is already big enough - if so, does not reinitialize it
+       */
+      void
+      initializeLabelColors ();
       
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
         * the current settings. If it is possible then it returns true.
