@@ -944,8 +944,10 @@ namespace pcl
         vtkSmartPointer<ExitMainLoopTimerCallback> exit_main_loop_timer_callback_;
         vtkSmartPointer<ExitCallback> exit_callback_;
 
+#if VTK_MAJOR_VERSION <= 5
         /** \brief The ImageViewer widget. */
         vtkSmartPointer<vtkImageViewer> image_viewer_;
+#endif
 
         /** \brief The render window. */
         vtkSmartPointer<vtkRenderWindow> win_;
