@@ -226,7 +226,7 @@ if (build)
         PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation ${SUBSYS_NAME} voxel_grid_occlusion_estimation.cpp)
         target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
         
-        if( (OPENNI_FOUND AND BUILD_OPENNI) OR (OPENNI2_FOUND AND BUILD_OPENNI2) )
+        if(OPENNI_FOUND AND BUILD_OPENNI)
           PCL_ADD_EXECUTABLE(pcl_openni_save_image ${SUBSYS_NAME} openni_save_image.cpp)
           target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)
         endif()
