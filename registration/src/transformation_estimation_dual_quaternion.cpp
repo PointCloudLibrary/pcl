@@ -1,9 +1,8 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *
+ *  Copyright (c) 2011, Alexandru-Eugen Ichim
+ *                      Willow Garage, Inc
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,43 +32,8 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  keypoint.h
+ * $Id: transformation_estimation_svd.cpp 7153 2012-09-16 22:24:29Z aichim $
  *
- *  Created on: May 28, 2012
- *      Author: somani
  */
 
-#ifndef PCL_2D_KEYPOINT_H_
-#define PCL_2D_KEYPOINT_H_
-
-#include <pcl/2d/edge.h>
-
-namespace pcl
-{
-  class Keypoint
-  {
-    private:
-      Edge edge_detection;
-      Convolution conv_2d;
-    public:
-      Keypoint  ()
-      {
-      }
-      
-      void 
-      harrisCorner  (ImageType &output, ImageType &input, const float sigma_d, const float sigma_i, const float alpha, const float thresh);
-      
-      void 
-      hessianBlob  (ImageType &output, ImageType &input, const float sigma, bool SCALE);
-      
-      void 
-      hessianBlob  (ImageType &output, ImageType &input, const float start_scale, const float scaling_factor, const int num_scales);
-
-      void 
-      imageElementMultiply  (ImageType &output, ImageType &input1, ImageType &input2);
-  };
-}
-
-#include <pcl/2d/impl/keypoint.hpp>
-
-#endif    // PCL_2D_KEYPOINT_H_
+#include <pcl/registration/transformation_estimation_dual_quaternion.h>

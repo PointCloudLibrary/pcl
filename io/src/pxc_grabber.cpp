@@ -180,8 +180,8 @@ pcl::PXCGrabber::processGrabbing ()
     }
 
     // query rgb and 3d data
-    PXCImage *color_image=pp_.QueryImage (PXCImage::IMAGE_TYPE_COLOR);
-    PXCImage *vertex_image=pp_.QueryImage (PXCImage::IMAGE_TYPE_DEPTH);
+    PXCImage *color_image = pp_.QueryImage (PXCImage::IMAGE_TYPE_COLOR);
+    PXCImage *vertex_image = pp_.QueryImage (PXCImage::IMAGE_TYPE_DEPTH);
 
     // acquiure access to data
     PXCImage::ImageData ddata;
@@ -292,8 +292,11 @@ pcl::PXCGrabber::processGrabbing ()
 
       point_cloud_signal_->operator() (cloud_tmp);
     }
-
-    pp_.ReleaseFrame();
+    
+    vertex_image->ReleaseAccess (&ddata);
+    color_image->ReleaseAccess (&idata);
+    
+    pp_.ReleaseFrame ();
 
     const double capture_time = stop_watch.getTimeSeconds ();
     total_time += capture_time;

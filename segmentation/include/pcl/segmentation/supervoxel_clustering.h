@@ -121,7 +121,6 @@ namespace pcl
     //Forward declaration of friended helper class
     class SupervoxelHelper;
     friend class SupervoxelHelper;
-    #define MAX_LABEL 16384
     public:
       /** \brief VoxelData is a structure used for storing data within a pcl::octree::OctreePointCloudAdjacencyContainer
        *  \note It stores xyz, rgb, normal, distance, an index, and an owner.
@@ -233,6 +232,12 @@ namespace pcl
       virtual void
       setInputCloud (typename pcl::PointCloud<PointT>::ConstPtr cloud);
       
+      /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
+      * \param[in] cloud The input normals                         
+      */
+      virtual void
+      setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud);
+      
       /** \brief This method refines the calculated supervoxels - may only be called after extract
        * \param[in] num_itr The number of iterations of refinement to be done (2 or 3 is usually sufficient)
        * \param[out] supervoxel_clusters The resulting refined supervoxels
@@ -246,6 +251,7 @@ namespace pcl
         * Points that belong to the same supervoxel have the same color.
         * But this function doesn't guarantee that different segments will have different
         * color(it's random). Points that are unlabeled will be black
+        * \note This will expand the label_colors_ vector so that it can accomodate all labels
         */
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
       getColoredCloud () const;
@@ -266,6 +272,7 @@ namespace pcl
        * Points that belong to the same supervoxel have the same color.
        * But this function doesn't guarantee that different segments will have different
        * color(it's random). Points that are unlabeled will be black
+       * \note This will expand the label_colors_ vector so that it can accomodate all labels
        */
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredVoxelCloud () const;
@@ -296,7 +303,18 @@ namespace pcl
        */
       static pcl::PointCloud<pcl::PointNormal>::Ptr
       makeSupervoxelNormalCloud (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      
+      /** \brief Returns the current maximum (highest) label */
+      int
+      getMaxLabel () const;
+      
     private:
+      
+      /** \brief This method initializes the label_colors_ vector (assigns random colors to labels)
+       * \note Checks to see if it is already big enough - if so, does not reinitialize it
+       */
+      void
+      initializeLabelColors ();
       
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
         * the current settings. If it is possible then it returns true.
@@ -354,6 +372,9 @@ namespace pcl
       
       /** \brief Contains the Voxelized centroid Cloud */
       typename PointCloudT::Ptr voxel_centroid_cloud_;
+      
+      /** \brief Contains the Voxelized centroid Cloud */
+      typename NormalCloudT::ConstPtr input_normals_;
       
       /** \brief Importance of color in clustering */
       float color_importance_;
