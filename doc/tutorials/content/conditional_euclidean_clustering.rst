@@ -113,7 +113,7 @@ After you have made the executable, you can run it. Simply do:
 
 The resulting output point cloud can be opened like so:
 
- $ ./pcd_viewer output.pcd
+ $ ./pcl_viewer output.pcd
 
 You should see something similar to this:
 

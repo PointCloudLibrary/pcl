@@ -72,9 +72,9 @@ PCD Viewer
 ----------
 
 A quick way for visualizing PCD (Point Cloud Data) files is by using
-**pcd_viewer**. As of 0.2.7, pcd_viewer's help screen looks like::
+**pcl_viewer**. As of 0.2.7, pcl_viewer's help screen looks like::
 
-  Syntax is: pcd_viewer <file_name 1..N>.pcd <options>
+  Syntax is: pcl_viewer <file_name 1..N>.pcd <options>
     where options are:
                        -bc r,g,b                = background color
                        -fc r,g,b                = foreground color
@@ -103,7 +103,7 @@ Usage examples
 
 .. code-block:: bash
 
-  $ pcd_viewer -multiview 1 data/partial_cup_model.pcd data/partial_cup_model.pcd data/partial_cup_model.pcd
+  $ pcl_viewer -multiview 1 data/partial_cup_model.pcd data/partial_cup_model.pcd data/partial_cup_model.pcd
 
 
 The above will load the ``partial_cup_model.pcd`` file 3 times, and will create a
@@ -148,7 +148,7 @@ Switching to a ``normal_xyz`` geometric handler using ``ALT+1`` and then
 pressing ``8`` to switch to a curvature color handler, should result in the
 following::
 
-  $ pcd_viewer -normals 100 data/partial_cup_model.pcd
+  $ pcl_viewer -normals 100 data/partial_cup_model.pcd
 
 .. image:: images/visualization/ex2.jpg
 
@@ -158,7 +158,7 @@ The above will load the ``partial_cup_model.pcd`` file and render its every
 
 .. code-block:: bash
 
-  $ pcd_viewer -pc 100 data/partial_cup_model.pcd
+  $ pcl_viewer -pc 100 data/partial_cup_model.pcd
 
 .. image:: images/visualization/ex3.jpg
 
@@ -169,7 +169,7 @@ The above will load the ``partial_cup_model.pcd`` file and render its every
 
 .. code-block:: bash
 
-  $ pcd_viewer data/bun000.pcd data/bun045.pcd -ax 0.5 -ps 3 -ps 1
+  $ pcl_viewer data/bun000.pcd data/bun045.pcd -ax 0.5 -ps 3 -ps 1
 
 The above assumes that the ``bun000.pcd`` and ``bun045.pcd`` datasets have been
 downloaded and are available. The results shown in the following picture were

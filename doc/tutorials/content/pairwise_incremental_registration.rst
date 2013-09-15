@@ -207,7 +207,7 @@ You will see something similar to:
   
 Visualize the final results by running::
 
-  $ pcd_viewer [1-4].pcd	
+  $ pcl_viewer 1.pcd 2.pcd 3.pcd 4.pcd
   
 .. image:: images/pairwise_incremental_registration/4.png
   :height: 300
