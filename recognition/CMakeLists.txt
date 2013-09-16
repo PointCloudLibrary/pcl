@@ -91,8 +91,8 @@ if(build)
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
-        #include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
-        #include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
+        include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
 		include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
         )
 
