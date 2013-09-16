@@ -3746,11 +3746,12 @@ pcl::visualization::PCLVisualizer::updateCells (vtkSmartPointer<vtkIdTypeArray> 
       cells->SetNumberOfComponents (2);
       cells->SetNumberOfTuples (nr_points);
       vtkIdType *cell = cells->GetPointer (0);
-      // Fill it with 1s
-      std::fill_n (cell, nr_points * 2, 1);
-      cell++;
       for (vtkIdType i = 0; i < nr_points; ++i, cell += 2)
-        *cell = i;
+      {
+        *cell = 1;
+        *(cell+1) = i;
+      }
+
       // Save the results in initcells
       initcells = vtkSmartPointer<vtkIdTypeArray>::New ();
       initcells->DeepCopy (cells);
