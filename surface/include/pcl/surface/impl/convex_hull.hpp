@@ -144,7 +144,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   FILE *errfile = stderr;
 
   // Array of coordinates for each point
-  coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
+  coordT *points = new coordT[indices_->size () * dimension];
 
   // Build input data, using appropriate projection
   int j = 0;
@@ -302,7 +302,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   FILE *errfile = stderr;
 
   // Array of coordinates for each point
-  coordT *points = reinterpret_cast<coordT*> (calloc (indices_->size () * dimension, sizeof (coordT)));
+  coordT *points = new coordT[indices_->size () * dimension];
 
   int j = 0;
   for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
