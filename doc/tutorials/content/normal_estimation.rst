@@ -246,7 +246,7 @@ Speeding Normal Estimation with OpenMP
 For the speed-savvy users, PCL provides an additional implementation of surface
 normal estimation which uses multi-core/multi-threaded paradigms using OpenMP
 to speed the computation. The name of the class is
-**pcl::NormaleEstimationOMP**, and its API is 100% compatible to the
+**pcl::NormalEstimationOMP**, and its API is 100% compatible to the
 single-threaded **pcl::NormalEstimation**, which makes it suitable as a drop-in
 replacement. On a system with 8 cores, you should get anything between 6-8
 times faster computation times.
