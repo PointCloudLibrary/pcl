@@ -56,13 +56,12 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/vtk_io.h>
-#include <pcl/exceptions.h>
-
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/oni_grabber.h>
 #include <pcl/io/pcd_grabber.h>
-//#include "openni_capture.h"
+#include <pcl/exceptions.h>
 
+#include "openni_capture.h"
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include "evaluation.h"
 
@@ -698,9 +697,13 @@ struct KinFuApp
 
   void
   initRegistration ()
-  {        
-    //registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+  {
+#ifdef HAVE_OPENNI2
 	registration_ = capture_.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_image_depth_image>();
+#else
+	registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
+#endif
+    
     cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
   }
 
@@ -907,9 +910,11 @@ struct KinFuApp
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1_oni = boost::bind (&KinFuApp::source_cb2_oni, this, _1, _2, _3);
     boost::function<void (const DepthImagePtr&)> func2_oni = boost::bind (&KinFuApp::source_cb1_oni, this, _1);
     
-	// Check if using an oni file grabber
-    //bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
-	bool is_oni = dynamic_cast<pcl::OpenNIGrabber*>(&capture_) != 0;
+#ifdef HAVE_OPENNI
+    bool is_oni = dynamic_cast<pcl::ONIGrabber*>(&capture_) != 0;
+#else
+	bool is_oni = false;
+#endif
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
     boost::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
@@ -1171,13 +1176,14 @@ main (int argc, char* argv[])
     {
       capture.reset (new pcl::OpenNIGrabber (openni_device));
     }
+#ifdef HAVE_OPENNI
     else if (pc::parse_argument (argc, argv, "-oni", oni_file) > 0)
     {
       triggered_capture = true;
       bool repeat = false; // Only run ONI file once
-      //capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
-	  capture.reset (new pcl::OpenNIGrabber(oni_file) );
+      capture.reset (new pcl::ONIGrabber (oni_file, repeat, ! triggered_capture));
     }
+#endif
     else if (pc::parse_argument (argc, argv, "-pcd", pcd_dir) > 0)
     {
       float fps_pcd = 15.0f;
