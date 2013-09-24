@@ -30,6 +30,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
         include/pcl/${SUBSYS_NAME}/linear_least_squares_normal.h
         include/pcl/${SUBSYS_NAME}/moment_invariants.h
+	include/pcl/${SUBSYS_NAME}/moment_of_inertia_estimation.h
         include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h
         include/pcl/${SUBSYS_NAME}/narf.h
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
@@ -49,6 +50,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/spin_image.h
         include/pcl/${SUBSYS_NAME}/principal_curvatures.h
         include/pcl/${SUBSYS_NAME}/rift.h
+	include/pcl/${SUBSYS_NAME}/rops_estimation.h
         #include/pcl/${SUBSYS_NAME}/rsd.h
         include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h
         include/pcl/${SUBSYS_NAME}/vfh.h
@@ -76,6 +78,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
         include/pcl/${SUBSYS_NAME}/impl/linear_least_squares_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
+	include/pcl/${SUBSYS_NAME}/impl/moment_of_inertia_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
@@ -93,6 +96,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/spin_image.hpp
         include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp
         include/pcl/${SUBSYS_NAME}/impl/rift.hpp
+	include/pcl/${SUBSYS_NAME}/impl/rops_estimation.hpp
         #include/pcl/${SUBSYS_NAME}/impl/rsd.hpp
         include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp
         include/pcl/${SUBSYS_NAME}/impl/vfh.hpp
@@ -118,6 +122,7 @@ if(build)
         src/intensity_spin.cpp
         src/linear_least_squares_normal.cpp
         src/moment_invariants.cpp
+	src/moment_of_inertia_estimation.cpp
         src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/normal_3d.cpp
@@ -130,6 +135,7 @@ if(build)
         src/spin_image.cpp
         src/principal_curvatures.cpp
         src/rift.cpp
+	src/rops_estimation.cpp
         #src/rsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp

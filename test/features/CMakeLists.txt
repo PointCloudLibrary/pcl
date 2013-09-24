@@ -69,3 +69,11 @@ PCL_ADD_TEST(a_ii_normals_test test_ii_normals
              FILES test_ii_normals.cpp
              LINK_WITH pcl_gtest pcl_io pcl_features
              ARGUMENTS ${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd)
+PCL_ADD_TEST(feature_rops_estimation test_rops_estimation
+             FILES test_rops_estimation.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_features
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/rops_cloud.pcd ${PCL_SOURCE_DIR}/test/rops_indices.txt ${PCL_SOURCE_DIR}/test/rops_triangles.txt)
+PCL_ADD_TEST(feature_moment_of_inertia_estimation test_moment_of_inertia_estimation
+             FILES test_moment_of_inertia_estimation.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_features
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/lamppost.pcd)
