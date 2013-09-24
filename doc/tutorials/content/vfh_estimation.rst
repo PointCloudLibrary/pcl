@@ -112,7 +112,7 @@ Visualizing VFH signatures
 --------------------------
 
 *libpcl_visualization* contains a special **PCLHistogramVisualization** class,
-which is also used by **pcd_viewer** to automaticall display the VFH
+which is also used by **pcl_viewer** to automaticall display the VFH
 descriptors as a histogram of float values. For more information, please see
 http://www.pointclouds.org/documentation/overview/visualization.php.
 

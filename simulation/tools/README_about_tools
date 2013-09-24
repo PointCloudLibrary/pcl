@@ -2,7 +2,7 @@ Test and Example Programs for pcl_simulation
 mfallon and hordurj march 2012
 
 1. sim_viewer.cpp
-purpose: simulate in viewer which is almost the same as pcl_pcd_viewer
+purpose: simulate in viewer which is almost the same as pcl_viewer
 status : use the mouse to drive around, and 'v' to capture a cloud. reads vtk and obj. 
          visualizes vtk and makes pcd of obj. conflict between RL and VTK means doesnt visualize/simulate properly
 was    : range_pcd_viewer.cpp
