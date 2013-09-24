@@ -34,6 +34,8 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+#ifdef HAVE_OPENNI
+
 #include <pcl/io/openni_camera/openni.h>
 
 #include "openni_capture.h"
@@ -374,3 +376,5 @@ pcl::gpu::CaptureOpenNI::setRegistration (bool value)
   getParams ();
   return rc == XN_STATUS_OK;
 }
+
+#endif

@@ -8,7 +8,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL "")
   set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "build type default to RelWithDebInfo, set to Release to improve performance" FORCE)
 endif("${CMAKE_BUILD_TYPE}" STREQUAL "")
 
-project(PCL)
+project(PCL)	# This call sets CMAKE_CXX_FLAGS, so more specific flags below are never set. Error?
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
@@ -110,9 +110,9 @@ endif()
 if(MSVC)
   SET(CMAKE_COMPILER_IS_MSVC 1)
   add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX /bigobj")
-  if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "/bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
-
+  if("${CMAKE_CXX_FLAGS}" STREQUAL " /DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
+	
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
       SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")
@@ -121,11 +121,11 @@ if(MSVC)
     endif(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
     # /MANIFEST:NO") # please, don't disable manifest generation, otherwise crash at start for vs2008
 
-    if(MSVC90 OR MSVC10 OR MSVC11 AND NOT ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} LESS 2.8 AND NOT ${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} LESS 8.6)
+    if( MSVC_VERSION GREATER 1500 AND ${CMAKE_VERSION} VERSION_GREATER "2.8.6")
       include(ProcessorCount)
       ProcessorCount(N)
       if(NOT N EQUAL 0)
-        SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   /MP${N} ")
+        SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /MP${N} ")
         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP${N} ")
       endif()
     endif()
@@ -251,6 +251,13 @@ find_package(OpenNI)
 if (OPENNI_FOUND)
   set(HAVE_OPENNI ON)
   include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
+endif()
+
+# OpenNI 2
+find_package(OpenNI2)
+if (OPENNI2_FOUND)
+  set(HAVE_OPENNI2 ON)
+  include_directories(SYSTEM ${OPENNI2_INCLUDE_DIRS})
 endif()
 
 # Fotonic (FZ_API)

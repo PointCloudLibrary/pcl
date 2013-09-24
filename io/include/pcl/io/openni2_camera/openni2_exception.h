@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2011 Willow Garage, Inc.
+ *    Suat Gedikli <gedikli@willowgarage.com>
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,62 +33,58 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
+#ifndef __OPENNI2_EXCEPTION__
+#define __OPENNI2_EXCEPTION__
 
-#pragma once
-
-#ifdef HAVE_OPENNI
-
-#include <pcl/gpu/containers/device_array.h>
-#include <pcl/gpu/containers/kernel_containers.h>
-
-#include <boost/shared_ptr.hpp>
+#include <cstdarg>
+#include <cstdio>
+#include <exception>
 #include <string>
 
-#include <pcl/gpu/kinfu/kinfu.h>
+#if defined _WIN32 && defined _MSC_VER
+# define __PRETTY_FUNCTION__ __FUNCTION__
+#endif
+#define THROW_OPENNI_EXCEPTION(format,...) throwOpenNIException( __PRETTY_FUNCTION__, __FILE__, __LINE__, format , ##__VA_ARGS__ )
 
-namespace pcl
+namespace openni2_wrapper
 {
-  namespace gpu
-  {
-    class CaptureOpenNI
-    {
+/**
+ * @brief General exception class
+ * @author Suat Gedikli
+ * @date 02.january 2011
+ */
+class OpenNI2Exception : public std::exception
+{
 public:
-    typedef KinfuTracker::PixelRGB RGB;
+  OpenNI2Exception(const std::string& function_name,
+                   const std::string& file_name,
+                   unsigned line_number,
+                   const std::string& message) throw ();
 
-    enum { PROP_OPENNI_REGISTRATION_ON  = 104 };
+  virtual ~OpenNI2Exception() throw ();
+  OpenNI2Exception & operator=(const OpenNI2Exception& exception) throw ();
+  virtual const char* what() const throw ();
 
+  const std::string& getFunctionName() const throw ();
+  const std::string& getFileName() const throw ();
+  unsigned getLineNumber() const throw ();
 
-    CaptureOpenNI();
-    CaptureOpenNI(int device);
-    CaptureOpenNI(const std::string& oni_filename);
-
-    void open(int device);
-    void open(const std::string& oni_filename);
-    void release();
-
-    ~CaptureOpenNI();
-
-    bool grab (PtrStepSz<const unsigned short>& depth, PtrStepSz<const RGB>& rgb24);
-
-    //parameters taken from camera/oni
-    float depth_focal_length_VGA;
-    float baseline;         // mm
-    int shadow_value;
-    int no_sample_value;
-    double pixelSize;         //mm
-
-    unsigned short max_depth;         //mm
-
-    bool setRegistration (bool value = false);
-private:
-    struct Impl;
-    boost::shared_ptr<Impl> impl_;
-    void getParams ();
-
-    };
-  }
+protected:
+  std::string function_name_;
+  std::string file_name_;
+  unsigned line_number_;
+  std::string message_;
+  std::string message_long_;
 };
 
+inline void throwOpenNIException(const char* function, const char* file, unsigned line, const char* format, ...)
+{
+  static char msg[1024];
+  va_list args;
+  va_start(args, format);
+  vsprintf(msg, format, args);
+  throw OpenNI2Exception(function, file, line, msg);
+}
+} // namespace openni_camera
 #endif

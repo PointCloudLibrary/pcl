@@ -34,7 +34,7 @@
  *
  */
 #include <pcl/pcl_config.h>
-#ifdef HAVE_OPENNI
+#ifdef HAVE_OPENNI2
 
 #ifndef __OPENNI_IMAGE__
 #define __OPENNI_IMAGE__
@@ -73,7 +73,7 @@ namespace openni_wrapper
      * @brief Constructor
      * @param[in] image_meta_data the actual image data from the OpenNI driver
      */
-    inline Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ();
+	inline Image (openni::VideoFrameRef image_meta_data) throw ();
 
     /**
      * @author Suat Gedikli
@@ -118,7 +118,7 @@ namespace openni_wrapper
     inline void
     fillRaw (unsigned char* rgb_buffer) const throw ()
     {
-      memcpy (rgb_buffer, image_md_->Data (), image_md_->DataSize ());
+		memcpy (rgb_buffer, image_md_.getData(), image_md_.getDataSize ());
     }
 
     /**
@@ -162,53 +162,66 @@ namespace openni_wrapper
      * @author Suat Gedikli
      * @return the actual data in native OpenNI format.
      */
-    inline const xn::ImageMetaData& getMetaData () const throw ();
+    inline const openni::VideoFrameRef& getMetaData () const throw ();
+
+	// Get a const pointer to the raw depth buffer
+	inline const void* getData();
+
+	// Data buffer size in bytes
+	inline int getDataSize();
 
   protected:
-    boost::shared_ptr<xn::ImageMetaData> image_md_;
+    openni::VideoFrameRef image_md_;		// This is already a reference, so we don't need another pointer wrapper.
   } ;
 
-  Image::Image (boost::shared_ptr<xn::ImageMetaData> image_meta_data) throw ()
+  Image::Image (openni::VideoFrameRef image_meta_data) throw ()
   : image_md_ (image_meta_data)
   {
   }
 
   Image::~Image () throw () { }
 
+  const void*
+  Image::getData()
+  {
+	  return image_md_.getData();
+  }
+
+  int
+  Image::getDataSize()
+  {
+	  return image_md_.getDataSize();
+  }
+
   unsigned
   Image::getWidth () const throw ()
   {
-    return image_md_->XRes ();
+    return image_md_.getWidth();
   }
 
   unsigned
   Image::getHeight () const throw ()
   {
-    return image_md_->YRes ();
+    return image_md_.getHeight();
   }
 
   unsigned
   Image::getFrameID () const throw ()
   {
-    return image_md_->FrameID ();
+    return image_md_.getFrameIndex ();
   }
 
   unsigned long
   Image::getTimeStamp () const throw ()
   {
-    return static_cast<unsigned long> (image_md_->Timestamp ());
+    return static_cast<unsigned long> ( image_md_.getTimestamp() );
   }
 
-  const xn::ImageMetaData&
+  const openni::VideoFrameRef&
   Image::getMetaData () const throw ()
   {
-    return *image_md_;
+    return image_md_;
   }
 } // namespace
 #endif
-#elif HAVE_OPENNI2
-// Passthrough to openni2_wrapper
-#include <pcl/io/openni2_camera/openni_image.h>
-//typedef openni_wrapper::Image openni2_wrapper::Image;
-
 #endif //__OPENNI_IMAGE__

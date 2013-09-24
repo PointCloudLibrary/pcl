@@ -36,7 +36,7 @@
  *
  */
 #include <pcl/pcl_config.h>
-#ifdef HAVE_OPENNI
+#ifdef HAVE_OPENNI2
 
 #ifndef __OPENNI_DEPTH_IMAGE__
 #define __OPENNI_DEPTH_IMAGE__
@@ -68,25 +68,16 @@ namespace openni_wrapper
         * \param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
         * \attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
         */
-      inline DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ();
+      inline DepthImage (openni::VideoFrameRef depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ();
 
       /** \brief Destructor. Never throws an exception. */
       inline virtual ~DepthImage () throw ();
 
       /** \brief method to access the internal data structure from OpenNI. If the data is accessed just read-only, then this method is faster than a fillXXX method
-        * \return the actual depth data of type xn::DepthMetaData.
+        * \return the actual depth data of type openni::VideoFrameRef.
         */
-      inline const xn::DepthMetaData& 
+      inline const openni::VideoFrameRef& 
       getDepthMetaData () const throw ();
-	  
-	  /** \brief method to access the raw internal data structure from OpenNI. If the data is accessed just read-only, then this method is faster than a fillXXX method
-        * \return a pointer to the actual depth data buffer.
-        */
-      inline const void*
-      getData () const throw ();
-	  
-	  inline int
-      getDataSize () const throw ();
 
       /** \brief fills a user given block of memory with the disparity values with additional nearest-neighbor down-scaling.
         * \param[in] width the width of the desired disparity image.
@@ -133,13 +124,13 @@ namespace openni_wrapper
       /** \brief method to access the shadow value, that indicates pixels lying in shadow in the depth image.
         * \return shadow value
         */
-      inline XnUInt64 
+      inline uint64_t
       getShadowValue () const throw ();
 
       /** \brief method to access the no-sample value, that indicates pixels where no disparity could be determined for the depth image.
         * \return no-sample value
         */
-      inline XnUInt64 
+      inline uint64_t
       getNoSampleValue () const throw ();
 
       /** \return the width of the depth image */
@@ -163,15 +154,23 @@ namespace openni_wrapper
       inline unsigned long 
       getTimeStamp () const throw ();
 
+	  // Get a const pointer to the raw depth buffer
+	  inline const void*
+	  getData() { return depth_md_.getData(); }
+
+	  // Data buffer size in bytes
+	  inline int
+	  getDataSize() { return depth_md_.getDataSize(); }
+
     protected:
-      boost::shared_ptr<xn::DepthMetaData> depth_md_;
+      openni::VideoFrameRef depth_md_;
       float baseline_;
       float focal_length_;
-      XnUInt64 shadow_value_;
-      XnUInt64 no_sample_value_;
+      uint64_t shadow_value_;
+      uint64_t no_sample_value_;
   } ;
 
-  DepthImage::DepthImage (boost::shared_ptr<xn::DepthMetaData> depth_meta_data, float baseline, float focal_length, XnUInt64 shadow_value, XnUInt64 no_sample_value) throw ()
+  DepthImage::DepthImage (openni::VideoFrameRef depth_meta_data, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value) throw ()
   : depth_md_ (depth_meta_data)
   , baseline_ (baseline)
   , focal_length_ (focal_length)
@@ -180,22 +179,10 @@ namespace openni_wrapper
 
   DepthImage::~DepthImage () throw () { }
 
-  const xn::DepthMetaData&
+  const openni::VideoFrameRef&
   DepthImage::getDepthMetaData () const throw ()
   {
-    return *depth_md_;
-  }
-  
-  const void*
-  DepthImage::getData () const throw ()
-  {
-    return depth_md_->Data();
-  }
-  
-  int
-  DepthImage::getDataSize () const throw ()
-  {
-    return depth_md_->DataSize();
+    return depth_md_;
   }
 
   float
@@ -210,13 +197,13 @@ namespace openni_wrapper
     return focal_length_;
   }
 
-  XnUInt64
+  uint64_t
   DepthImage::getShadowValue () const throw ()
   {
     return shadow_value_;
   }
 
-  XnUInt64
+  uint64_t
   DepthImage::getNoSampleValue () const throw ()
   {
     return no_sample_value_;
@@ -225,31 +212,26 @@ namespace openni_wrapper
   unsigned
   DepthImage::getWidth () const throw ()
   {
-    return depth_md_->XRes ();
+    return depth_md_.getWidth();
   }
 
   unsigned
   DepthImage::getHeight () const throw ()
   {
-    return depth_md_->YRes ();
+    return depth_md_.getHeight ();
   }
 
   unsigned
   DepthImage::getFrameID () const throw ()
   {
-    return depth_md_->FrameID ();
+    return depth_md_.getFrameIndex ();
   }
 
   unsigned long
   DepthImage::getTimeStamp () const throw ()
   {
-    return static_cast<unsigned long> (depth_md_->Timestamp ());
+    return static_cast<unsigned long> (depth_md_.getTimestamp ());
   }
 } // namespace
 #endif
-#elif HAVE_OPENNI2
-// Passthrough to openni2_wrapper
-#include <pcl/io/openni2_camera/openni_image_depth.h>
-//typedef openni_wrapper::DepthImage openni2_wrapper::DepthImage;
-
-#endif //__OPENNI_DEPTH_IMAGE__
+#endif //__OPENNI_DEPTH_IMAGE

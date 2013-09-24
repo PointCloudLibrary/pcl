@@ -16,6 +16,8 @@
 
 #cmakedefine HAVE_OPENNI 1
 
+#cmakedefine HAVE_OPENNI2 1
+
 #cmakedefine HAVE_QHULL 1
 
 #cmakedefine HAVE_QHULL_2011 1
@@ -42,6 +44,10 @@
 
 #ifdef DISABLE_OPENNI
 #undef HAVE_OPENNI
+#endif
+
+#ifdef DISABLE_OPENNI2
+#undef HAVE_OPENNI2
 #endif
 
 #ifdef DISABLE_QHULL

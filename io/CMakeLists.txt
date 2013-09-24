@@ -5,15 +5,86 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
-    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
+	## Prevent building OpenNI and OpenNI2 at the same time
+	if( BUILD_OPENNI AND BUILD_OPENNI2 )
+		message( FATAL_ERROR "Cannot build OpenNI and OpenNI2 at the same time." )
+	endif()
+
+	## OpenNI 2.x
+	OPTION(BUILD_OPENNI2 "Build the OpenNI 2 Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_OPENNI2)
+    if(NOT BUILD_OPENNI2)
+      # Set OPENNI2_FOUND to false locally to avoid building anything OpenNI 2 related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI2
+      set(OPENNI2_FOUND FALSE) 
+    endif()
+    if(OPENNI2_FOUND)
+        set(OPENNI2_GRABBER_INCLUDES
+            include/pcl/io/openni2_grabber.h
+            )
+        set(OPENNI2_INCLUDES
+			# New includes
+			include/pcl/io/openni2_camera/openni.h
+			include/pcl/io/openni2_camera/openni2_exception.h
+			include/pcl/io/openni2_camera/openni2_frame_listener.h
+			include/pcl/io/openni2_camera/openni2_timer_filter.h
+			include/pcl/io/openni2_camera/openni2_video_mode.h
+			include/pcl/io/openni2_camera/openni2_convert.h
+			include/pcl/io/openni2_camera/openni2_device.h
+			include/pcl/io/openni2_camera/openni2_device_info.h
+			include/pcl/io/openni2_camera/openni2_device_manager.h
+			
+			# Legacy includes
+			include/pcl/io/openni2_camera/openni_exception.h
+			include/pcl/io/openni2_camera/openni_image.h
+            include/pcl/io/openni2_camera/openni_image_yuv_422.h
+            include/pcl/io/openni2_camera/openni_image_rgb24.h
+            include/pcl/io/openni2_camera/openni_image_ir.h
+			include/pcl/io/openni2_camera/openni_image_depth.h
+			
+			# Not sure if these are needed or not
+			#include/pcl/io/openni2_camera/openni_shift_to_depth_conversion.h
+			#include/pcl/io/openni2_camera/openni_image_bayer_grbg.h
+			
+            )
+        set(OPENNI2_GRABBER_SOURCES
+			# New sources
+			src/openni2_camera/openni2_exception.cpp
+			src/openni2_camera/openni2_frame_listener.cpp
+			src/openni2_camera/openni2_timer_filter.cpp
+			src/openni2_camera/openni2_video_mode.cpp
+			src/openni2_camera/openni2_convert.cpp
+			src/openni2_camera/openni2_device.cpp
+			src/openni2_camera/openni2_device_info.cpp
+			src/openni2_camera/openni2_device_manager.cpp
+			
+			# Legacy sources
+			src/openni2_camera/openni_exception.cpp
+            src/openni2_camera/openni_image_depth.cpp
+            src/openni2_camera/openni_image_ir.cpp
+			src/openni2_camera/openni_image_yuv_422.cpp
+            src/openni2_camera/openni_image_rgb24.cpp
+			#src/openni2_camera/openni_image_bayer_grbg.cpp
+            
+            src/openni2_grabber.cpp
+            )
+		
+		# Copy OpenNI2 redist directory to bin. Only tested on Windows.
+		if(MSVC)
+			file(COPY ${OPENNI2_REDIST_DIR} DESTINATION ${CMAKE_BINARY_DIR}/bin PATTERN *.*)
+		endif(MSVC)
+    endif(OPENNI2_FOUND)
+
+	## OpenNI 1.x
+    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." OFF)
     MARK_AS_ADVANCED(BUILD_OPENNI)
     if(NOT BUILD_OPENNI)
       # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
@@ -42,7 +113,8 @@ if(build)
             include/pcl/io/openni_camera/openni_image_rgb24.h
             include/pcl/io/openni_camera/openni_ir_image.h
             )
-        set(OPENNI_GRABBER_SOURCES src/openni_camera/openni_device.cpp
+        set(OPENNI_GRABBER_SOURCES
+			src/openni_camera/openni_device.cpp
             src/openni_camera/openni_device_primesense.cpp
             src/openni_camera/openni_image_bayer_grbg.cpp
             src/openni_camera/openni_depth_image.cpp
@@ -63,9 +135,6 @@ if(build)
         set(FZAPI_GRABBER_INCLUDES
             include/pcl/io/fotonic_grabber.h
             )
-#        set(FZAPI_INCLUDES
-#            include/pcl/io/openni_camera/openni.h
-#            )
         set(FZAPI_GRABBER_SOURCES 
             src/fotonic_grabber.cpp
             )
@@ -134,6 +203,7 @@ if(build)
         src/robot_eye_grabber.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
+		${OPENNI2_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
 		${PXC_GRABBER_SOURCES}
@@ -173,6 +243,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
+		${OPENNI2_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
 		${PXC_GRABBER_INCLUDES}
@@ -191,12 +262,12 @@ if(build)
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
-      if(OPENNI_FOUND)
+      if(OPENNI_FOUND OR OPENNI2_FOUND)
         set(compression_incs
           ${compression_incs}
           include/pcl/compression/organized_pointcloud_compression.h
           )
-      endif(OPENNI_FOUND)
+      endif(OPENNI_FOUND OR OPENNI2_FOUND)
     endif(PNG_FOUND)
 
     set(impl_incs 
@@ -207,18 +278,18 @@ if(build)
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
        )
-    if(PNG_FOUND AND OPENNI_FOUND)
+    if(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
      set(impl_incs
          ${impl_incs}
          include/pcl/compression/impl/organized_pointcloud_compression.hpp
         )
-    endif(PNG_FOUND AND OPENNI_FOUND)
+    endif(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
     add_definitions(${VTK_DEFINES})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
+    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
     if(PNG_FOUND)
@@ -228,6 +299,10 @@ if(build)
     if(LIBUSB_1_FOUND)
       target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
     endif(LIBUSB_1_FOUND)
+
+	if(OPENNI2_FOUND)
+      target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
+    endif(OPENNI2_FOUND)
 
     if(OPENNI_FOUND)
       target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
@@ -253,6 +328,9 @@ if(build)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
+	if(OPENNI2_FOUND)
+      list(APPEND EXT_DEPS openni2-dev)
+    endif(OPENNI2_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
@@ -260,6 +338,7 @@ if(build)
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
+	PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni2_camera ${OPENNI2_INCLUDEs})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
                 
     add_subdirectory(tools)

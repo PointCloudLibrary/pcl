@@ -61,6 +61,8 @@
 #include <thrust/gather.h>
 
 using namespace thrust;
+using thrust::tuple;
+
 using namespace std;
 
 namespace pcl

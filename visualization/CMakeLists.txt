@@ -14,7 +14,7 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 
 PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni)
+PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2)
 
 if (ANDROID)
   set (build FALSE)
@@ -160,6 +160,9 @@ if(build)
     if(OPENNI_FOUND)
       list(APPEND EXT_DEPS openni-dev)
     endif(OPENNI_FOUND)
+	if(OPENNI2_FOUND)
+      list(APPEND EXT_DEPS openni2-dev)
+    endif(OPENNI2_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
