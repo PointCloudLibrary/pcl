@@ -34,9 +34,9 @@ The code
 For this tutorial we will use the model from the Queen's Dataset. You can choose any other point cloud, but in order to make the
 code work you will need to use the triangulation algorithm in order to obtain polygons. You can find the proposed model here:
 
-  * `points <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains the point cloud
-  * `indices <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains indices of the points for which RoPs must be computed
-  * `triangles <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains the polygons
+  * `points <https://raw.github.com/PointCloudLibrary/data/master/tutorials/rops_tutorial/points.pcd>`_ - contains the point cloud
+  * `indices <https://raw.github.com/PointCloudLibrary/data/master/tutorials/indices.txt>`_ - contains indices of the points for which RoPs must be computed
+  * `triangles <https://raw.github.com/PointCloudLibrary/data/master/tutorials/triangles.txt>`_ - contains the polygons
 
 Next what you need to do is to create a file ``rops_feature.cpp`` in any editor you prefer and copy the following code inside of it:
 
