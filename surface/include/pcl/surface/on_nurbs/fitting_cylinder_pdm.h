@@ -38,6 +38,7 @@
 #ifndef NURBS_FITTING_CYLINDER_H
 #define NURBS_FITTING_CYLINDER_H
 
+#include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
@@ -52,7 +53,7 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingCylinder
+    class PCL_EXPORTS FittingCylinder
     {
     public:
 
