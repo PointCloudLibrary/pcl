@@ -448,15 +448,15 @@ pcl::visualization::ImageViewer::registerMouseCallback (
   // just add observer at first time when a callback is registered
   if (mouse_signal_.empty ())
   {
-    interactor_->AddObserver (vtkCommand::MouseMoveEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MiddleButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MiddleButtonReleaseEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MouseWheelBackwardEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MouseWheelForwardEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::LeftButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::RightButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::RightButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseMoveEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MiddleButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MiddleButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseWheelBackwardEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseWheelForwardEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::LeftButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::RightButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::RightButtonReleaseEvent, mouse_command_);
   }
   return (mouse_signal_.connect (callback));
 }
