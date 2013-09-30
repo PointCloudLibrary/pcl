@@ -267,7 +267,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -277,7 +277,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g), 
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));  
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
   am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
@@ -332,7 +332,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -342,7 +342,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g), 
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
   am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);

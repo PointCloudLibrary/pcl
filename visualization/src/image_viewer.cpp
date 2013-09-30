@@ -743,12 +743,12 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
-             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
+             static_cast<float> (x_max), static_cast<float> (y_max));
 #else
   rect->set (static_cast<float> (x_min), static_cast<float> (getSize ()[1] - y_min),
-             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
+             static_cast<float> (x_max), static_cast<float> (getSize ()[1] - y_max));
 #endif
   am_it->actor->GetScene ()->AddItem (rect);
 
@@ -786,10 +786,10 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
-  rect->set (min_pt.x, min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
+  rect->set (min_pt.x, min_pt.y, max_pt.x, max_pt.y);
 #else
-  rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
+  rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, max_pt.x, max_pt.y);
 #endif
   am_it->actor->GetScene ()->AddItem (rect);
 
