@@ -360,9 +360,11 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
   // Compute target cloud covariance matrices
-  computeCovariances<PointTarget> (target_, tree_, target_covariances_);
+  if (target_covariances_.empty ())
+    computeCovariances<PointTarget> (target_, tree_, target_covariances_);
   // Compute input cloud covariance matrices
-  computeCovariances<PointSource> (input_, tree_reciprocal_, input_covariances_);
+  if (input_covariances_.empty ())
+    computeCovariances<PointSource> (input_, tree_reciprocal_, input_covariances_);
 
   base_transformation_ = guess;
   nr_iterations_ = 0;
