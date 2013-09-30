@@ -150,9 +150,9 @@ pcl::visualization::context_items::Rectangle::Paint (vtkContext2D *painter)
   float p[] = 
   { 
     params[0], params[1], 
-    params[0]+params[2], params[1],
-    params[0]+params[2], params[1]+params[3],
-    params[0],       params[1]+params[3],
+    params[2], params[1],
+    params[2], params[3],
+    params[0], params[3],
     params[0], params[1]
   };
 
