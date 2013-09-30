@@ -127,6 +127,17 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~ImageViewer ();
        
+#if ((VTK_MAJOR_VERSION > 5) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 4)))
+        /** \brief Set up the interactor style. By default the interactor style is set to
+          * vtkInteractorStyleImage you can use this to set it to another type.
+          * \param[in] style user set interactor style.
+          */
+        void
+        setInteractorStyle (vtkInteractorObserver *style)
+        {
+          interactor_->SetInteractorStyle (style);
+        }
+#endif
         /** \brief Show a monochrome 2D image on screen.
           * \param[in] data the input data representing the image
           * \param[in] width the width of the image

@@ -283,8 +283,8 @@ find_package(Qhull)
 # Cuda
 include(${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake)
 
-# Find Qt5
-include(cmake/pcl_find_qt5.cmake)
+# # Find Qt5
+# include(cmake/pcl_find_qt5.cmake)
 
 # Find QT4
 if(NOT QT5_FOUND)
