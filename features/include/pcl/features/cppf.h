@@ -50,17 +50,17 @@ namespace pcl
     * \param[in] n1
     * \param[in] p2 
     * \param[in] n2
-	* \param[in] c1
-	* \param[in] c2
+    * \param[in] c1
+    * \param[in] c2
     * \param[out] f1
     * \param[out] f2
     * \param[out] f3
     * \param[out] f4
-	* \param[out] f5
+    * \param[out] f5
     * \param[out] f6
     * \param[out] f7
     * \param[out] f8
-	* \param[out] f9
+    * \param[out] f9
     * \param[out] f10
     */
   PCL_EXPORTS bool
