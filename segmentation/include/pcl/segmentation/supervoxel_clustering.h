@@ -105,6 +105,9 @@ namespace pcl
       typename pcl::PointCloud<PointT>::Ptr voxels_;
       /** \brief A Pointcloud of the normals for the points in the supervoxel */
       typename pcl::PointCloud<Normal>::Ptr normals_;
+                
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
   };
   
   /** \brief Implements a supervoxel algorithm based on voxel structure, normals, and rgb values
@@ -155,6 +158,9 @@ namespace pcl
           float distance_;
           int idx_;
           SupervoxelHelper* owner_;
+          
+        public:
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
       
       typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
