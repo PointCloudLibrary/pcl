@@ -227,6 +227,11 @@ namespace pcl
     */
   struct PPFSignature;
 
+  /** \brief Members: float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10, alpha_m
+    * \ingroup common
+    */
+  struct CPPFSignature;
+
   /** \brief Members: float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio, alpha_m
     * \ingroup common
     */
@@ -515,6 +520,20 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::PPFSignature,
     (float, f2, f2)
     (float, f3, f3)
     (float, f4, f4)
+    (float, alpha_m, alpha_m)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::CPPFSignature,
+    (float, f1, f1)
+    (float, f2, f2)
+    (float, f3, f3)
+    (float, f4, f4)
+    (float, f5, f5)
+    (float, f6, f6)
+    (float, f7, f7)
+    (float, f8, f8)
+    (float, f9, f9)
+    (float, f10, f10)
     (float, alpha_m, alpha_m)
 )
 
