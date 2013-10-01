@@ -283,7 +283,7 @@ FittingCylinder::initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, E
   Eigen::Vector3d mean;
 
   unsigned s = unsigned (data->interior.size ());
-  mean = NurbsTools::computeMean(data->interior);
+  mean = NurbsTools::computeMean (data->interior);
 
   data->mean = mean;
 
