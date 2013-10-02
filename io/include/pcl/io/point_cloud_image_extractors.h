@@ -46,6 +46,31 @@ namespace pcl
   {
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Image Extractor class for organized point clouds.
+      *
+      * This is an abstract class that declares an interface for image extraction from
+      * organized point clouds. The family of its subclasses provide functionality to
+      * extract images from particular fields.
+      *
+      * The following piece of code demonstrates typical usage of a PointCloudImageExtractor
+      * subclass. Here the data are extracted from the "label" field and are saved as a
+      * PNG image file.
+      *
+      * \code
+      *   // Source point cloud (needs to be filled with data of course)
+      *   pcl::PointCloud<pcl::PointXYZLabel> cloud;
+      *   // Target image
+      *   pcl::PCLImage image;
+      *   // Create PointCloudImageExtractor subclass that can handle "label" field
+      *   pcl::io::PointCloudImageExtractorFromLabelField<pcl::XYZLabel> pcie;
+      *   // Set it up if not happy with the defaults
+      *   pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
+      *   // Try to extract an image
+      *   bool success = pcie.extract(cloud, image);
+      *   // Save to file if succeeded
+      *   if (success)
+      *     pcl::io::saveImage ("filename.png", image);
+      * \endcode
+      *
       * \author Sergey Alexandrov
       * \ingroup io
       */
