@@ -287,10 +287,10 @@ main (int argc, char ** argv)
   super.getSupervoxelAdjacency (label_adjacency);
    
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS
-  pcl::io::savePNGFile (out_path, *full_colored_cloud);
-  pcl::io::savePNGFile (refined_out_path, *refined_full_colored_cloud);
-  pcl::io::savePNGFile (out_label_path, *full_labeled_cloud);
-  pcl::io::savePNGFile (refined_out_label_path, *refined_full_labeled_cloud);
+  pcl::io::savePNGFile (out_path, *full_colored_cloud, "rgb");
+  pcl::io::savePNGFile (refined_out_path, *refined_full_colored_cloud, "rgb");
+  pcl::io::savePNGFile (out_label_path, *full_labeled_cloud, "label");
+  pcl::io::savePNGFile (refined_out_label_path, *refined_full_labeled_cloud, "label");
   
   std::cout << "Constructing Boost Graph Library Adjacency List...\n";
   typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float> VoxelAdjacencyList;

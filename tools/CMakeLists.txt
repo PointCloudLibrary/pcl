@@ -162,6 +162,9 @@ if (build)
       PCL_ADD_EXECUTABLE(pcl_png2pcd ${SUBSYS_NAME} png2pcd.cpp)
       target_link_libraries(pcl_png2pcd pcl_common pcl_io)
 
+      PCL_ADD_EXECUTABLE(pcl_pcd2png ${SUBSYS_NAME} pcd2png.cpp)
+      target_link_libraries(pcl_pcd2png pcl_common pcl_io)
+
       PCL_ADD_EXECUTABLE (pcl_organized_pcd_to_png ${SUBSYS_NAME} organized_pcd_to_png.cpp)
       target_link_libraries (pcl_organized_pcd_to_png pcl_common pcl_io)
 
