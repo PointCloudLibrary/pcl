@@ -147,6 +147,15 @@ namespace pcl
         static Polygon *New();
         virtual bool Paint (vtkContext2D *painter);
       };
+
+      struct PCL_EXPORTS Text : public PCLContextItem
+      {
+        vtkTypeMacro (Text, PCLContextItem);
+        static Text *New ();
+        virtual bool Paint (vtkContext2D *painter);
+        virtual void set (float x, float y, const std::string& _text);
+        std::string text;
+      };
     }
   }
 }

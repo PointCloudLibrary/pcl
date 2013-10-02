@@ -41,6 +41,7 @@
 #include <vtkImageData.h>
 #include <vtkPen.h>
 #include <vtkBrush.h>
+#include <vtkTextProperty.h>
 
 #include <pcl/visualization/vtk/pcl_context_item.h>
 
@@ -61,6 +62,7 @@ namespace pcl
       vtkStandardNewMacro (FilledRectangle);
       vtkStandardNewMacro (Points);
       vtkStandardNewMacro (Polygon);
+      vtkStandardNewMacro (Text);
     }
   }
 }
@@ -120,6 +122,15 @@ pcl::visualization::context_items::Line::set (float start_x, float start_y, floa
 {
   params.resize (4);
   params[0] = start_x; params[1] = start_y; params[2] = end_x; params[3] = end_y;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::context_items::Text::set (float x, float y, const std::string& _text)
+{
+  params.resize (2);
+  params[0] = x; params[1] = y;
+  text = _text;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -208,8 +219,22 @@ pcl::visualization::context_items::Points::Paint (vtkContext2D *painter)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::context_items::Text::Paint (vtkContext2D *painter)
+{
+  vtkTextProperty *text_property = painter->GetTextProp ();
+  text_property->SetColor (255.0 * colors[0], 255.0 * colors[1], 255.0 * colors[2]);
+  text_property->SetFontFamilyToArial ();
+  text_property->SetFontSize (10);
+  text_property->SetJustificationToLeft ();
+  text_property->BoldOff ();
+  text_property->ShadowOff ();
+  painter->DrawString (params[0], params[1], text.c_str ());
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLContextImageItem::PCLContextImageItem ()
 {
   image = vtkSmartPointer<vtkImageData>::New ();
 }
-

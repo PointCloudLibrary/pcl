@@ -850,6 +850,47 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y,
+                                          const std::string& text_string,
+                                          double r, double g, double b,
+                                          const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addText] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
+#if ((VTK_MAJOR_VERSION == 5) && (VTKOR_VERSION > 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
+  }
+
+  vtkSmartPointer<context_items::Text> text = vtkSmartPointer<context_items::Text>::New ();
+  text->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  text->setOpacity (opacity);
+#if ((VTK_MAJOR_VERSION == 5) && (VTKOR_VERSION > 10))
+  text->set (static_cast<float> (x), static_cast<float> (y), text_string);
+#else
+  text->set (static_cast<float> (x), static_cast<float> (getSize ()[1] - y), text_string);
+#endif
+  am_it->actor->GetScene ()->AddItem (text);
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y, const std::string& text,
+                                          const std::string &layer_id, double opacity)
+{
+  return (addText (x, y, text, 0.0, 1.0, 0.0, layer_id, opacity));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::ImageViewer::markPoint (
     size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color, double radius,
