@@ -43,8 +43,10 @@
 #include <pcl/pcl_macros.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/console/print.h>
 #include <string>
 #include <vector>
+#include <pcl/io/point_cloud_image_extractors.h>
 
 namespace pcl
 {
@@ -101,11 +103,37 @@ namespace pcl
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-
     void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
     {
       saveShortPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
+    }
+
+    /** \brief Saves a PCLImage (formely ROS sensor_msgs::Image) to PNG file.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] image image to save
+      * \ingroup io
+      * \note Currently only "rgb8", "mono8", and "mono16" image encodings are supported.
+      */
+    void
+    savePNGFile (const std::string& file_name, const pcl::PCLImage& image)
+    {
+      if (image.encoding == "rgb8")
+      {
+        saveRgbPNGFile(file_name, &image.data[0], image.width, image.height);
+      }
+      else if (image.encoding == "mono8")
+      {
+        saveCharPNGFile(file_name, &image.data[0], image.width, image.height, 1);
+      }
+      else if (image.encoding == "mono16")
+      {
+        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(&image.data[0]), image.width, image.height, 1);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported image encoding \"%s\".\n", image.encoding.c_str ());
+      }
     }
 
     /** \brief Saves RGB fields of cloud as image to PNG file. 
@@ -113,6 +141,10 @@ namespace pcl
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
+    PCL_DEPRECATED (template <typename T> void savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud),
+    "pcl::io::savePNGFile<typename T> (file_name, cloud) is deprecated, please use a new generic "
+    "function pcl::io::savePNGFile (file_name, cloud, field_name) with \"rgb\" as the field name."
+    );
     template <typename T> void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud)
     {
@@ -125,7 +157,7 @@ namespace pcl
         data[i*3 + 2] = cloud.points[i].b;        
       }
       saveRgbPNGFile(file_name, &data[0], cloud.width, cloud.height);
-    } 
+    }
     
     /** \brief Saves Labeled Point cloud as image to PNG file. 
      * \param[in] file_name the name of the file to write to disk
@@ -133,17 +165,72 @@ namespace pcl
      * \ingroup io
      * Warning: Converts to 16 bit (for png), labels using more than 16 bits will cause problems
      */
+    PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud),
+    "pcl::io::savePNGFile (file_name, cloud) is deprecated, please use a new generic function "
+    "pcl::io::savePNGFile (file_name, cloud, field_name) with \"label\" as the field name."
+    );
     void
     savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud)
     {
       std::vector<unsigned short> data(cloud.width * cloud.height);
-      
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
         data[i] = static_cast<unsigned short> (cloud.points[i].label);      
       }
       saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
-    }  
+    }
+
+    /** \brief Saves the data from the specified field of the point cloud as image to PNG file.
+     * \param[in] file_name the name of the file to write to disk
+     * \param[in] cloud point cloud to save
+     * \param[in] field_name the name of the field to extract data from
+     * \ingroup io
+     */
+    template <typename PointT> void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, const std::string& field_name)
+    {
+      typedef typename PointCloudImageExtractor<PointT>::Ptr PointCloudImageExtractorPtr;
+      PointCloudImageExtractorPtr pcie;
+      if (field_name == "normal")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromNormalField<PointT>);
+      }
+      else if (field_name == "rgb")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromRGBField<PointT>);
+      }
+      else if (field_name == "label")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromLabelField<PointT>);
+      }
+      else if (field_name == "z")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromZField<PointT>);
+      }
+      else if (field_name == "curvature")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromCurvatureField<PointT>);
+      }
+      else if (field_name == "intensity")
+      {
+        pcie = PointCloudImageExtractorPtr (new PointCloudImageExtractorFromIntensityField<PointT>);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported field \"%s\".\n", field_name.c_str ());
+        return;
+      }
+      pcl::PCLImage image;
+      if (pcie->extract (cloud, image))
+      {
+        savePNGFile(file_name, image);
+      }
+      else
+      {
+        PCL_ERROR ("[pcl::io::savePNGFile] Failed to extract an image from \"%s\" field.\n", field_name.c_str());
+      }
+    }
+
   }
 }
 
