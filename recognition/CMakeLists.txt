@@ -20,8 +20,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/boost.h
         include/pcl/${SUBSYS_NAME}/color_gradient_dot_modality.h
         include/pcl/${SUBSYS_NAME}/color_gradient_modality.h
-		    include/pcl/${SUBSYS_NAME}/color_modality.h
-		    include/pcl/${SUBSYS_NAME}/crh_alignment.h
+        include/pcl/${SUBSYS_NAME}/color_modality.h
+        include/pcl/${SUBSYS_NAME}/crh_alignment.h
         include/pcl/${SUBSYS_NAME}/linemod.h
         include/pcl/${SUBSYS_NAME}/dotmod.h
         include/pcl/${SUBSYS_NAME}/quantizable_modality.h
@@ -36,8 +36,8 @@ if(build)
         include/pcl/${SUBSYS_NAME}/surface_normal_modality.h
         include/pcl/${SUBSYS_NAME}/linemod/line_rgbd.h
       	include/pcl/${SUBSYS_NAME}/implicit_shape_model.h
-		include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
-		include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
         include/pcl/${SUBSYS_NAME}/ransac_based/rigid_transform_space.h
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
@@ -48,12 +48,11 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ransac_based/simple_octree.h
         include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h
         include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h
-	
         )
 
-	set (ransac_based_incs 
-		include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
-		include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h
+    set(ransac_based_incs 
+        include/pcl/${SUBSYS_NAME}/ransac_based/auxiliary.h
+        include/pcl/${SUBSYS_NAME}/ransac_based/hypothesis.h
         include/pcl/${SUBSYS_NAME}/ransac_based/model_library.h
         include/pcl/${SUBSYS_NAME}/ransac_based/rigid_transform_space.h
         include/pcl/${SUBSYS_NAME}/ransac_based/obj_rec_ransac.h
@@ -66,50 +65,46 @@ if(build)
         include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h
 	)
 
-        
     set(hv_incs
         include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h
         include/pcl/${SUBSYS_NAME}/hv/hypotheses_verification.h
         include/pcl/${SUBSYS_NAME}/hv/hv_papazov.h
         include/pcl/${SUBSYS_NAME}/hv/hv_go.h
         include/pcl/${SUBSYS_NAME}/hv/greedy_verification.h    
-      )
-      
+        )
+
     set(face_detection_incs
-      include/pcl/${SUBSYS_NAME}/face_detection/face_common.h
-      include/pcl/${SUBSYS_NAME}/face_detection/face_detector_data_provider.h
-      include/pcl/${SUBSYS_NAME}/face_detection/rf_face_detector_trainer.h
-      include/pcl/${SUBSYS_NAME}/face_detection/rf_face_utils.h    
-    )
-      
+        include/pcl/${SUBSYS_NAME}/face_detection/face_common.h
+        include/pcl/${SUBSYS_NAME}/face_detection/face_detector_data_provider.h
+        include/pcl/${SUBSYS_NAME}/face_detection/rf_face_detector_trainer.h
+        include/pcl/${SUBSYS_NAME}/face_detection/rf_face_utils.h    
+        ) 
+
     set(cg_incs
         include/pcl/${SUBSYS_NAME}/cg/correspondence_grouping.h
         include/pcl/${SUBSYS_NAME}/cg/hough_3d.h    
         include/pcl/${SUBSYS_NAME}/cg/geometric_consistency.h
         )
-    
 
     set(impl_incs 
         include/pcl/${SUBSYS_NAME}/impl/linemod/line_rgbd.hpp
         include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
         include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
-		include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
+        include/pcl/${SUBSYS_NAME}/impl/implicit_shape_model.hpp
         )
 
-
-	set(ransac_based_impl_incs
-		include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
+    set(ransac_based_impl_incs
+        include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp
         include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp
 	)
 
-        
     set(hv_impl_incs
         include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_papazov.hpp        
         include/pcl/${SUBSYS_NAME}/impl/hv/greedy_verification.hpp
         include/pcl/${SUBSYS_NAME}/impl/hv/hv_go.hpp
-    )
-    
+        )
+
     set(cg_impl_incs
         include/pcl/${SUBSYS_NAME}/impl/cg/correspondence_grouping.hpp
         include/pcl/${SUBSYS_NAME}/impl/cg/hough_3d.hpp
@@ -133,7 +128,7 @@ if(build)
         src/ransac_based/orr_octree_zprojection.cpp
         src/face_detection/face_detector_data_provider.cpp
         src/face_detection/rf_face_detector_trainer.cpp
-		    src/implicit_shape_model.cpp
+        src/implicit_shape_model.cpp
         )
         
     if (HAVE_METSLIB)
@@ -149,7 +144,7 @@ if(build)
             include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh
             include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh
             include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh
-    )
+            )
     endif(HAVE_METSLIB)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
