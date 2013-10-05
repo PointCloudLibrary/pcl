@@ -136,20 +136,29 @@ if(build)
 		    src/implicit_shape_model.cpp
         )
         
-    set(metslib_incs
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh
-        include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh
+    if (HAVE_METSLIB)
+        set(metslib_incs "")
+    else(HAVE_METSLIB)
+        set(metslib_incs
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh
+            include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh
     )
+    endif(HAVE_METSLIB)
 
     set(LIB_NAME pcl_${SUBSYS_NAME})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+    if (HAVE_METSLIB)
+        include_directories(${METSLIB_INCLUDE_DIRS})
+    else(HAVE_METSLIB)
+        include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/pcl/recognition/3rdparty/)
+    endif(HAVE_METSLIB)
     PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${impl_incs} ${face_detection_incs} ${ransac_based_incs} ${ransac_based_impl_incs} ${hv_incs} ${hv_impl_incs} ${cg_incs} ${cg_impl_incs} ${metslib_incs})
     target_link_libraries(${LIB_NAME} pcl_common pcl_kdtree pcl_octree pcl_search pcl_features pcl_registration pcl_sample_consensus pcl_filters pcl_ml pcl_io)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
