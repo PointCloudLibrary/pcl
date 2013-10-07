@@ -62,7 +62,7 @@ The Data Set
 ============
 For this tutorial we suggest the use of publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
 
-.. For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<http://svn.pointclouds.org/data/tutorials/don_segmentation_tutorial.pcd>`_.
+.. For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<https://raw.github.com/PointCloudLibrary/data/master/tutorials/don_segmentation_tutorial.pcd>`_.
 
 The Code
 ========
