@@ -25,6 +25,7 @@ if(build)
         src/unary_classifier.cpp
         src/conditional_euclidean_clustering.cpp
         src/supervoxel_clustering.cpp
+	src/grabcut_segmentation.cpp
        )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -62,6 +63,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/unary_classifier.h
         include/pcl/${SUBSYS_NAME}/conditional_euclidean_clustering.h
         include/pcl/${SUBSYS_NAME}/supervoxel_clustering.h
+	include/pcl/${SUBSYS_NAME}/grabcut_segmentation.h
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -88,6 +90,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/crf_normal_segmentation.hpp
         include/pcl/${SUBSYS_NAME}/impl/conditional_euclidean_clustering.hpp
         include/pcl/${SUBSYS_NAME}/impl/supervoxel_clustering.hpp
+	include/pcl/${SUBSYS_NAME}/impl/grabcut_segmentation.hpp
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
