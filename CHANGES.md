@@ -1,5 +1,11 @@
 # ChangeList
 
+## *= 1.7.1 (07.10.2013) =*
+ * New pcl::io::savePNGFile() functions and pcd2png tool (deprecates organized_pcd_to_png).
+ * Support for Intel Perceptual Computing SDK cameras.
+ * New Dual quaternion transformation estimation algorithm.
+ * Bugfixes.
+
 ## *= 1.7.0 (23.07.2013) =*
 
 ### `libpcl_common:`
