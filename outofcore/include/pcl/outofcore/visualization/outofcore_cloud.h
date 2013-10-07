@@ -1,6 +1,8 @@
 #ifndef PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
 #define PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
 
+#include <stdint.h>
+
 // PCL
 //#include <pcl/common/time.h>
 //#include <pcl/point_cloud.h>

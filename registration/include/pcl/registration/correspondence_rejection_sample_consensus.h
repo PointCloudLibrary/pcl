@@ -81,6 +81,7 @@ namespace pcl
           , target_ ()
           , best_transformation_ ()
           , refine_ (false)
+          , save_inliers_ (false)
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
         }
@@ -189,6 +190,24 @@ namespace pcl
         {
           return (refine_);
         }
+
+        /** \brief Get the inlier indices found by the correspondence rejector. This information is only saved if setSaveInliers(true) was called in advance.
+          * \param[out] inlier_indices Indices for the inliers
+          */
+        inline void
+        getInliersIndices (std::vector<int> &inlier_indices) { inlier_indices = inlier_indices_; }
+
+        /** \brief Set whether to save inliers or not
+          * \param[in] s True to save inliers / False otherwise
+          */
+        inline void
+        setSaveInliers (bool s) { save_inliers_ = s; }
+
+        /** \brief Get whether the rejector is configured to save inliers */
+        inline bool
+        getSaveInliers () { return save_inliers_; }
+
+
       protected:
 
         /** \brief Apply the rejection algorithm.
@@ -211,6 +230,9 @@ namespace pcl
         Eigen::Matrix4f best_transformation_;
 
         bool refine_;
+        std::vector<int> inlier_indices_;
+        bool save_inliers_;
+
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

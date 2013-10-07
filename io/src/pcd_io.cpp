@@ -78,7 +78,7 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
   // For mandatory locking, the filesystem must be mounted with the "mand" option in Linux (see http://www.hackinglinuxexposed.com/articles/20030623.html)
   lock = boost::interprocess::file_lock (file_name.c_str ());
   if (lock.try_lock ())
-    PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s locked succesfully.\n", file_name.c_str ());
+    PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s locked successfully.\n", file_name.c_str ());
   else
     PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
 

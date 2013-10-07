@@ -605,7 +605,7 @@ class ObjectSelection
       {
         w.writeBinaryCompressed (object_file, *object_);
         w.writeBinaryCompressed (plane_file, *plane_);
-        print_highlight ("Object succesfully segmented. Saving results in: %s, and %s.\n", object_file.c_str (), plane_file.c_str ());
+        print_highlight ("Object successfully segmented. Saving results in: %s, and %s.\n", object_file.c_str (), plane_file.c_str ());
       }
     }
 

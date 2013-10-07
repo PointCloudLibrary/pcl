@@ -298,6 +298,7 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   }
 
   clusters_ = std::vector<pcl::PointIndices> (clusters.begin (), cluster_iter_input);
+  clusters.resize(clusters_.size());
 
   deinitCompute ();
 }

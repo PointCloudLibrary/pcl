@@ -448,15 +448,15 @@ pcl::visualization::ImageViewer::registerMouseCallback (
   // just add observer at first time when a callback is registered
   if (mouse_signal_.empty ())
   {
-    interactor_->AddObserver (vtkCommand::MouseMoveEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MiddleButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MiddleButtonReleaseEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MouseWheelBackwardEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::MouseWheelForwardEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::LeftButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::RightButtonPressEvent, mouse_command_);
-    interactor_->AddObserver (vtkCommand::RightButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseMoveEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MiddleButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MiddleButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseWheelBackwardEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::MouseWheelForwardEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::LeftButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::LeftButtonReleaseEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::RightButtonPressEvent, mouse_command_);
+    interactor_->GetInteractorStyle ()->AddObserver (vtkCommand::RightButtonReleaseEvent, mouse_command_);
   }
   return (mouse_signal_.connect (callback));
 }
@@ -743,12 +743,12 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
-             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
+             static_cast<float> (x_max), static_cast<float> (y_max));
 #else
   rect->set (static_cast<float> (x_min), static_cast<float> (getSize ()[1] - y_min),
-             static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
+             static_cast<float> (x_max), static_cast<float> (getSize ()[1] - y_max));
 #endif
   am_it->actor->GetScene ()->AddItem (rect);
 
@@ -786,10 +786,10 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
-  rect->set (min_pt.x, min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
+  rect->set (min_pt.x, min_pt.y, max_pt.x, max_pt.y);
 #else
-  rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, (max_pt.x - min_pt.x), (max_pt.y - min_pt.y));
+  rect->set (min_pt.x, static_cast<float> (getSize ()[1]) - min_pt.y, max_pt.x, max_pt.y);
 #endif
   am_it->actor->GetScene ()->AddItem (rect);
 
@@ -847,6 +847,47 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
                                           const std::string &layer_id, double opacity)
 {
   return (addLine (x_min, y_min, x_max, y_max, 0.0, 1.0, 0.0, layer_id, opacity));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y,
+                                          const std::string& text_string,
+                                          double r, double g, double b,
+                                          const std::string &layer_id, double opacity)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::addText] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
+#if ((VTK_MAJOR_VERSION == 5) && (VTKOR_VERSION > 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
+  }
+
+  vtkSmartPointer<context_items::Text> text = vtkSmartPointer<context_items::Text>::New ();
+  text->setColors (static_cast<unsigned char> (255.0 * r),
+                   static_cast<unsigned char> (255.0 * g),
+                   static_cast<unsigned char> (255.0 * b));
+  text->setOpacity (opacity);
+#if ((VTK_MAJOR_VERSION == 5) && (VTKOR_VERSION > 10))
+  text->set (static_cast<float> (x), static_cast<float> (y), text_string);
+#else
+  text->set (static_cast<float> (x), static_cast<float> (getSize ()[1] - y), text_string);
+#endif
+  am_it->actor->GetScene ()->AddItem (text);
+
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y, const std::string& text,
+                                          const std::string &layer_id, double opacity)
+{
+  return (addText (x, y, text, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

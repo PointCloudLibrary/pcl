@@ -55,7 +55,7 @@ The Code
 --------
 
 First, download the dataset `table_scene_lms400.pcd
-<http://svn.pointclouds.org/data/tutorials/table_scene_lms400.pcd>`_ and save it somewhere to disk.
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/table_scene_lms400.pcd>`_ and save it somewhere to disk.
 
 Then, create a file, let's say, ``cluster_extraction.cpp`` in your favorite
 editor, and place the following inside it:
@@ -174,7 +174,7 @@ You will see something similar to::
 You can also look at your outputs cloud_cluster_0.pcd, cloud_cluster_1.pcd,
 cloud_cluster_2.pcd, cloud_cluster_3.pcd and cloud_cluster_4.pcd::
 
-	$ ./pcd_viewer cloud_cluster_0.pcd cloud_cluster_1.pcd cloud_cluster_2.pcd cloud_cluster_3.pcd cloud_cluster_4.pcd
+	$ ./pcl_viewer cloud_cluster_0.pcd cloud_cluster_1.pcd cloud_cluster_2.pcd cloud_cluster_3.pcd cloud_cluster_4.pcd
 
 You are now able to see the different clusters in one viewer. You should see
 something similar to this:

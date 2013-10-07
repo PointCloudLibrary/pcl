@@ -92,13 +92,14 @@ After you have made the executable, you can run it like so::
 
 After a few seconds, you will see a visualization and a terminal output similar to::
   
-       |  0.027 -0.977  0.212 | 
-   R = | -0.991 -0.055 -0.124 | 
-       |  0.133 -0.207 -0.969 | 
+      | -0.003 -0.972  0.235 | 
+  R = | -0.993 -0.026 -0.119 | 
+      |  0.122 -0.233 -0.965 | 
 
-   t = < 0.084, -0.024, 0.069 >
+  t = < 0.095, -0.022, 0.069 >
 
-   Inliers: 912/3432
+  Inliers: 890/3432
+
 
 The visualization window should look something like the below figures. The scene is shown with green color, and the aligned object model is shown with blue color. Note the high number of non-visible object points.
 

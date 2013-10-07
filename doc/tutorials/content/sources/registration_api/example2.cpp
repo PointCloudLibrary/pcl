@@ -39,8 +39,8 @@ estimateKeypoints (const PointCloud<PointXYZ>::Ptr &src,
   uniform.compute (keypoints_tgt_idx);
   copyPointCloud<PointXYZ, PointXYZ> (*tgt, keypoints_tgt_idx.points, keypoints_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10
   savePCDFileBinary ("keypoints_src.pcd", keypoints_src);
   savePCDFileBinary ("keypoints_tgt.pcd", keypoints_tgt);
 }
@@ -60,8 +60,8 @@ estimateNormals (const PointCloud<PointXYZ>::Ptr &src,
   normal_est.setInputCloud (tgt);
   normal_est.compute (normals_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer normals_src.pcd 
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer normals_src.pcd
   PointCloud<PointNormal> s, t;
   copyPointCloud<PointXYZ, PointNormal> (*src, s);
   copyPointCloud<Normal, PointNormal> (normals_src, s);
@@ -94,8 +94,8 @@ estimateFPFH (const PointCloud<PointXYZ>::Ptr &src,
   fpfh_est.setSearchSurface (tgt);
   fpfh_est.compute (fpfhs_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer fpfhs_src.pcd 
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer fpfhs_src.pcd
   PCLPointCloud2 s, t, out;
   toPCLPointCloud2 (*keypoints_src, s); toPCLPointCloud2 (fpfhs_src, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_src.pcd", out);

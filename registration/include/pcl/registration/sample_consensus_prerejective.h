@@ -56,9 +56,9 @@ namespace pcl
    * constraints, as also implemented in the class
    * \ref registration::CorrespondenceRejectorPoly "CorrespondenceRejectorPoly".
    * 
-   * In order to robustly align partial/occluded models, this routine does not
-   * try to minimize the fit error, but instead tries to maximize the inlier rate,
-   * above a threshold specifiable using \ref setInlierFraction().
+   * In order to robustly align partial/occluded models, this routine performs
+   * fit error evaluation using only inliers, i.e. points closer than a
+   * Euclidean threshold, which is specifiable using \ref setInlierFraction().
    * 
    * The amount of prerejection or "greedyness" of the algorithm can be specified
    * using \ref setSimilarityThreshold() in [0,1[, where a value of 0 means disabled,

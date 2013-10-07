@@ -2478,7 +2478,7 @@ protected:
   Description:
     Force Write() to flush any buffered data to physical archive.
   Returns:
-    True if succesful or if there is nothing to flush.  False if
+    True if successful or if there is nothing to flush.  False if
     information could not be flushed.
   */
   virtual

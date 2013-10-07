@@ -38,7 +38,7 @@
 /// @author  Yue Li and Matthew Hielsberg
 
 #include <algorithm>
-#include <GL/gl.h>
+#include <qgl.h>
 #include <pcl/apps/point_cloud_editor/select1DTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 #include <pcl/apps/point_cloud_editor/selection.h>

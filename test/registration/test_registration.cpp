@@ -548,7 +548,7 @@ TEST (PCL, SampleConsensusPrerejective)
   // Normal estimator
   NormalEstimation<PointXYZ, Normal> norm_est;
   norm_est.setSearchMethod (tree);
-  norm_est.setRadiusSearch (0.05);
+  norm_est.setRadiusSearch (0.005);
   PointCloud<Normal> normals;
 
   // FPFH estimator

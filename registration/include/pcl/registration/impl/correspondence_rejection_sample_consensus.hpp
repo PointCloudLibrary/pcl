@@ -156,6 +156,13 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        for (size_t i = 0; i < inliers.size (); ++i)
          remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
 
+       if (save_inliers_)
+       {
+         inlier_indices_.reserve (inliers.size ());
+         for (size_t i = 0; i < inliers.size (); ++i)
+           inlier_indices_.push_back (index_to_correspondence[inliers[i]]);
+       }
+
        // get best transformation
        Eigen::VectorXf model_coefficients;
        sac.getModelCoefficients (model_coefficients);

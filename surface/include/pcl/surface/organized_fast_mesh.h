@@ -49,7 +49,7 @@ namespace pcl
 
   /** \brief Simple triangulation/surface reconstruction for organized point
     * clouds. Neighboring points (pixels in image space) are connected to
-    * construct a triangular mesh.
+    * construct a triangular (or quad) mesh.
     *
     * \note If you use this code in any academic work, please cite:
     *   D. Holz and S. Behnke.
@@ -86,7 +86,8 @@ namespace pcl
       /** \brief Constructor. Triangulation type defaults to \a QUAD_MESH. */
       OrganizedFastMesh ()
       : max_edge_length_squared_ (0.025f)
-      , triangle_pixel_size_ (1)
+      , triangle_pixel_size_rows_ (1)
+      , triangle_pixel_size_columns_ (1)
       , triangulation_type_ (QUAD_MESH)
       , store_shadowed_faces_ (false)
       , cos_angle_tolerance_ (fabsf (cosf (pcl::deg2rad (12.5f))))
@@ -113,12 +114,33 @@ namespace pcl
       inline void
       setTrianglePixelSize (int triangle_size)
       {
-        triangle_pixel_size_ = std::max (1, (triangle_size - 1));
+        setTrianglePixelSizeRows (triangle_size);
+        setTrianglePixelSizeColumns (triangle_size);
+      }
+
+      /** \brief Set the edge length (in pixels) used for iterating over rows when constructing the fixed mesh.
+        * \param[in] triangle_size edge length in pixels
+        * (Default: 1 = neighboring pixels are connected)
+        */
+      inline void
+      setTrianglePixelSizeRows (int triangle_size)
+      {
+        triangle_pixel_size_rows_ = std::max (1, (triangle_size - 1));
+      }
+
+      /** \brief Set the edge length (in pixels) used for iterating over columns when constructing the fixed mesh.
+        * \param[in] triangle_size edge length in pixels
+        * (Default: 1 = neighboring pixels are connected)
+        */
+      inline void
+      setTrianglePixelSizeColumns (int triangle_size)
+      {
+        triangle_pixel_size_columns_ = std::max (1, (triangle_size - 1));
       }
 
       /** \brief Set the triangulation type (see \a TriangulationType)
         * \param[in] type quad mesh, triangle mesh with fixed left, right cut,
-        * or adaptive cut (splits a quad wrt. the depth (z) of the points)
+        * or adaptive cut (splits a quad w.r.t. the depth (z) of the points)
         */
       inline void
       setTriangulationType (TriangulationType type)
@@ -139,15 +161,19 @@ namespace pcl
       /** \brief max (squared) length of edge */
       float max_edge_length_squared_;
 
-      /** \brief size of triangle endges (in pixels) */
-      int triangle_pixel_size_;
+      /** \brief size of triangle edges (in pixels) for iterating over rows. */
+      int triangle_pixel_size_rows_;
 
-      /** \brief Type of meshin scheme (quads vs. triangles, left cut vs. right cut ... */
+      /** \brief size of triangle edges (in pixels) for iterating over columns*/
+      int triangle_pixel_size_columns_;
+
+      /** \brief Type of meshing scheme (quads vs. triangles, left cut vs. right cut ... */
       TriangulationType triangulation_type_;
 
       /** \brief Whether or not shadowed faces are stored, e.g., for exploration */
       bool store_shadowed_faces_;
 
+      /** \brief (Cosine of the) angle tolerance used when checking whether or not an edge between two points is shadowed. */
       float cos_angle_tolerance_;
 
       /** \brief Perform the actual polygonal reconstruction.

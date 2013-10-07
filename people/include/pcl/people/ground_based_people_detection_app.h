@@ -230,7 +230,7 @@ namespace pcl
        * 
        * \param[out] clusters Vector of PersonCluster.
        * 
-       * \return true if the compute operation is succesful, false otherwise.
+       * \return true if the compute operation is successful, false otherwise.
        */
       bool
       compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters);

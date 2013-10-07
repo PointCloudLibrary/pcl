@@ -197,7 +197,7 @@ macro(PCL_CHECK_FOR_SSE4_1)
         _mm_storeu_ps(vals,b);
         return 0;
       }"
-      HAVE_SSE4_1_EXTENSIONS)
+      HAVE_SSE4_1_EXTENSIONS "CHECK_FOR_SSE4_1")
 endmacro(PCL_CHECK_FOR_SSE4_1)
 
 ###############################################################################

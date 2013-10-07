@@ -796,6 +796,7 @@ point type `MyPointType` to work with. For example, say you want to use
 
 .. code-block:: cpp
 
+   #define PCL_NO_PRECOMPILE
    #include <pcl/filters/passthrough.h>
    #include <pcl/filters/impl/passthrough.hpp>
 
@@ -804,6 +805,10 @@ point type `MyPointType` to work with. For example, say you want to use
 If your code is part of the library, which gets used by others, it might also
 make sense to try to use explicit instantiations for your `MyPointType` types,
 for any classes that you expose (from PCL our outside PCL).
+
+.. note::
+Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
+any PCL headers to include the templated algorithms as well.
 
 Example
 -------
@@ -814,37 +819,38 @@ data (SSE padded), together with a test float.
 .. code-block:: cpp
    :linenos:
 
-    #include <pcl/point_types.h>
-    #include <pcl/point_cloud.h>
-    #include <pcl/io/pcd_io.h>
+   #define PCL_NO_PRECOMPILE
+   #include <pcl/point_types.h>
+   #include <pcl/point_cloud.h>
+   #include <pcl/io/pcd_io.h>
 
-    struct MyPointType
-    { 
-      PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
-      float test;
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW   // make sure our new allocators are aligned
-    } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
+   struct MyPointType
+   {
+     PCL_ADD_POINT4D;                  // preferred way of adding a XYZ+padding
+     float test;
+     EIGEN_MAKE_ALIGNED_OPERATOR_NEW   // make sure our new allocators are aligned
+   } EIGEN_ALIGN16;                    // enforce SSE padding for correct memory alignment
 
-    POINT_CLOUD_REGISTER_POINT_STRUCT (MyPointType,           // here we assume a XYZ + "test" (as fields)
-                                       (float, x, x)
-                                       (float, y, y)
-                                       (float, z, z) 
-                                       (float, test, test)
-    )
-          
+   POINT_CLOUD_REGISTER_POINT_STRUCT (MyPointType,           // here we assume a XYZ + "test" (as fields)
+                                      (float, x, x)
+                                      (float, y, y)
+                                      (float, z, z)
+                                      (float, test, test)
+   )
 
-    int  
-    main (int argc, char** argv)
-    { 
-      pcl::PointCloud<MyPointType> cloud;
-      cloud.points.resize (2);
-      cloud.width = 2;
-      cloud.height = 1;
-      
-      cloud.points[0].test = 1;
-      cloud.points[1].test = 2;
-      cloud.points[0].x = cloud.points[0].y = cloud.points[0].z = 0;
-      cloud.points[1].x = cloud.points[1].y = cloud.points[1].z = 3;
-      
-      pcl::io::savePCDFile ("test.pcd", cloud);
-    }
+
+   int
+   main (int argc, char** argv)
+   {
+     pcl::PointCloud<MyPointType> cloud;
+     cloud.points.resize (2);
+     cloud.width = 2;
+     cloud.height = 1;
+
+     cloud.points[0].test = 1;
+     cloud.points[1].test = 2;
+     cloud.points[0].x = cloud.points[0].y = cloud.points[0].z = 0;
+     cloud.points[1].x = cloud.points[1].y = cloud.points[1].z = 3;
+
+     pcl::io::savePCDFile ("test.pcd", cloud);
+   }

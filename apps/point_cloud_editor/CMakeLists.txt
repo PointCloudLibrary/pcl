@@ -115,8 +115,6 @@ IF(BUILD)
 						pcl_filters
     )
 
-  SET(CMAKE_CXX_FLAGS "-Wno-invalid-offsetof -Wno-extra-tokens")
-
   PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${INCS})
   PCL_MAKE_PKGCONFIG(${EXE_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" "" "" "" "")
 

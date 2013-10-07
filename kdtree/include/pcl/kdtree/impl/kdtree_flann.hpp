@@ -51,8 +51,8 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   , flann_index_ (), cloud_ (NULL)
   , index_mapping_ (), identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
-  , param_k_ (new ::flann::SearchParams (-1 , epsilon_))
-  , param_radius_ (new ::flann::SearchParams (-1, epsilon_, sorted))
+  , param_k_ (::flann::SearchParams (-1 , epsilon_))
+  , param_radius_ (::flann::SearchParams (-1, epsilon_, sorted))
 {
 }
 
@@ -63,8 +63,8 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT> &k)
   , flann_index_ (), cloud_ (NULL)
   , index_mapping_ (), identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
-  , param_k_ (new ::flann::SearchParams (-1 , epsilon_))
-  , param_radius_ (new ::flann::SearchParams (-1, epsilon_, false))
+  , param_k_ (::flann::SearchParams (-1 , epsilon_))
+  , param_radius_ (::flann::SearchParams (-1, epsilon_, false))
 {
   *this = k;
 }
@@ -74,8 +74,8 @@ template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::setEpsilon (float eps)
 {
   epsilon_ = eps;
-  param_k_.reset (new ::flann::SearchParams (-1 , epsilon_));
-  param_radius_.reset (new ::flann::SearchParams (-1 , epsilon_, sorted_));
+  param_k_ =  ::flann::SearchParams (-1 , epsilon_);
+  param_radius_ = ::flann::SearchParams (-1 , epsilon_, sorted_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -83,8 +83,8 @@ template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::setSortedResults (bool sorted)
 {
   sorted_ = sorted;
-  param_k_.reset (new ::flann::SearchParams (-1, epsilon_));
-  param_radius_.reset (new ::flann::SearchParams (-1, epsilon_, sorted_));
+  param_k_ = ::flann::SearchParams (-1, epsilon_);
+  param_radius_ = ::flann::SearchParams (-1, epsilon_, sorted_);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ pcl::KdTreeFLANN<PointT, Dist>::nearestKSearch (const PointT &point, int k,
   // Wrap the k_indices and k_distances vectors (no data copy)
   flann_index_->knnSearch (::flann::Matrix<float> (&query[0], 1, dim_), 
                            k_indices_mat, k_distances_mat,
-                           k, *param_k_);
+                           k, param_k_);
 
   // Do mapping to original point cloud
   if (!identity_mapping_) 
@@ -181,7 +181,7 @@ pcl::KdTreeFLANN<PointT, Dist>::radiusSearch (const PointT &point, double radius
   std::vector<std::vector<int> > indices(1);
   std::vector<std::vector<float> > dists(1);
 
-  ::flann::SearchParams params (*param_radius_);
+  ::flann::SearchParams params (param_radius_);
   if (max_nn == static_cast<unsigned int>(total_nr_points_))
     params.max_neighbors = -1;  // return all neighbors in radius
   else

@@ -126,7 +126,7 @@ namespace pcl
         vtkRenderWindowInteractor* render_window_interactor_;
         vtkSmartPointer<vtkRendererCollection> rens_;
         
-        vtkSmartPointer<vtkInteractorStyle> current_style_;
+        vtkInteractorStyle* current_style_;
         vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle> pcl_vis_style_;
         vtkSmartPointer<RectangularFrustumSelector> rectangular_frustum_selector_;
         

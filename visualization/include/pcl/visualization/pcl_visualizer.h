@@ -470,7 +470,7 @@ namespace pcl
 
         /** \brief Set the pose of an existing shape. 
           * 
-          * Returns false if the shape doesn't exist, true if the pose was succesfully 
+          * Returns false if the shape doesn't exist, true if the pose was successfully 
           * updated.
           *
           * \param[in] id the shape or cloud object id (i.e., given on \a addLine etc.)
@@ -482,7 +482,7 @@ namespace pcl
 
         /** \brief Set the pose of an existing point cloud.
           *
-          * Returns false if the point cloud doesn't exist, true if the pose was succesfully
+          * Returns false if the point cloud doesn't exist, true if the pose was successfully
           * updated.
           *
           * \param[in] id the point cloud object id (i.e., given on \a addPointCloud etc.)

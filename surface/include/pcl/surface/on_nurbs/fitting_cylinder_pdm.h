@@ -38,6 +38,7 @@
 #ifndef NURBS_FITTING_CYLINDER_H
 #define NURBS_FITTING_CYLINDER_H
 
+#include <pcl/pcl_exports.h>
 #include <pcl/surface/on_nurbs/nurbs_tools.h>
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
@@ -52,7 +53,7 @@ namespace pcl
      *  Based on paper: TODO
      * \author Thomas Mörwald
      * \ingroup surface     */
-    class FittingCylinder
+    class PCL_EXPORTS FittingCylinder
     {
     public:
 
@@ -120,6 +121,10 @@ namespace pcl
       /** \brief Initializing a cylindric B-Spline surface using principal-component-analysis and eigen values */
       static ON_NurbsSurface
       initNurbsPCACylinder (int order, NurbsDataSurface *data);
+
+      /** \brief Initializing a cylindric B-Spline surface using given axes. First axis provided becomes cylinder axis */
+      static ON_NurbsSurface
+        initNurbsCylinderWithAxes (int order, NurbsDataSurface *data, Eigen::Matrix3d &axes);
 
       /** \brief Get the elements of a cylindric B-Spline surface.*/
       static std::vector<double>

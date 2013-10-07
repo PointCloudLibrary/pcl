@@ -688,9 +688,9 @@ Binaries
 This section provides a quick reference for some of the common tools in PCL. 
 
 
-	* ``pcd_viewer``: a quick way for visualizing PCD (Point Cloud Data) files. More information about PCD files can be found in the `PCD file format tutorial <http://pointclouds.org/documentation/tutorials/pcd_file_format.php>`_.
+	* ``pcl_viewer``: a quick way for visualizing PCD (Point Cloud Data) files. More information about PCD files can be found in the `PCD file format tutorial <http://pointclouds.org/documentation/tutorials/pcd_file_format.php>`_.
 
-		**Syntax is: pcd_viewer <file_name 1..N>.<pcd or vtk> <options>**, where options are:
+		**Syntax is: pcl_viewer <file_name 1..N>.<pcd or vtk> <options>**, where options are:
 		
 		                     -bc r,g,b                = background color
 		
@@ -722,7 +722,7 @@ This section provides a quick reference for some of the common tools in PCL.
 							
 		**Usage example:**
 							
-		``pcd_viewer -multiview 1 data/partial_cup_model.pcd data/partial_cup_model.pcd data/partial_cup_model.pcd``
+		``pcl_viewer -multiview 1 data/partial_cup_model.pcd data/partial_cup_model.pcd data/partial_cup_model.pcd``
 
 		The above will load the partial_cup_model.pcd file 3 times, and will create a multi-viewport rendering (-multiview 1).
 		

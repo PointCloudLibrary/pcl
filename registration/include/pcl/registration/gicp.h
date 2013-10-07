@@ -142,6 +142,7 @@ namespace pcl
           input[i].data[3] = 1.0;
         
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
+        input_covariances_.clear ();
         input_covariances_.reserve (input_->size ());
       }
 
@@ -152,6 +153,7 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
+        target_covariances_.clear ();
         target_covariances_.reserve (target_->size ());
       }
 

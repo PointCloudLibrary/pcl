@@ -22,3 +22,7 @@ if (VTK_FOUND AND NOT ANDROID)
                 LINK_WITH pcl_gtest pcl_io
                 ARGUMENTS ${PCL_SOURCE_DIR}/test/tum_rabbit.vtk)
 endif ()
+
+PCL_ADD_TEST(point_cloud_image_extractors test_point_cloud_image_extractors
+             FILES test_point_cloud_image_extractors.cpp
+             LINK_WITH pcl_gtest pcl_io)

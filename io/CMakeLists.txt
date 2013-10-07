@@ -71,6 +71,15 @@ if(build)
             )
     endif(FZAPI_FOUND)
 	
+	if(PXCAPI_FOUND)
+		set(PXC_GRABBER_INCLUDES
+			include/pcl/io/pxc_grabber.h
+			)
+		set(PXC_GRABBER_SOURCES
+			src/pxc_grabber.cpp
+			)
+	endif(PXCAPI_FOUND)
+	
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -127,6 +136,7 @@ if(build)
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
+		${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       set(srcs
@@ -161,10 +171,12 @@ if(build)
         include/pcl/${SUBSYS_NAME}/image_grabber.h 
         include/pcl/${SUBSYS_NAME}/hdl_grabber.h
         include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
+        include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
+		${PXC_GRABBER_INCLUDES}
         )
 
     set(compression_incs
@@ -192,6 +204,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
         include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp
         include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp
+        include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
@@ -228,15 +241,17 @@ if(build)
 		target_link_libraries(${LIB_NAME} Version.lib)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
+	
+	if(PXCAPI_FOUND)
+	  link_directories(${PXCAPI_LIB_DIRS})
+	  target_link_libraries(${LIB_NAME} ${PXCAPI_LIBS})
+	endif(PXCAPI_FOUND)
     
     if (PCAP_FOUND)
       target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})
     endif(PCAP_FOUND)
 
     set(EXT_DEPS eigen3)
-    if(OPENNI_FOUND)
-      list(APPEND EXT_DEPS openni-dev)
-    endif(OPENNI_FOUND)
     PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
