@@ -400,23 +400,21 @@ namespace pcl
       bool
       initCompute ();    
       typedef pcl::segmentation::grabcut::BoykovKolmogorov::vertex_descriptor vertex_descriptor;
-      // /** Update hard segmentation after running GraphCut, \return the number of pixels that have
-      //   * changed from foreground to background or vice versa. 
-      //   */
-      // int 
-      // updateHardSegmentation ();
       /// Compute beta from image
       void 
-      computeBeta ();
+      computeBetaOrganized ();
+      /// Compute beta from cloud
+      void
+      computeBetaNonOrganized ();
       /// Compute L parameter from given lambda
       void 
       computeL ();
-      /// Compute NLinks 
+      /// Compute NLinks from image
       void 
-      computeNLinks ();
-      /// Compute NLinks at a specific rectangular location
-      float 
-      computeNLink (uint32_t x1, uint32_t y1, uint32_t x2, uint32_t y2);
+      computeNLinksOrganized ();
+      /// Compute NLinks from cloud
+      void
+      computeNLinksNonOrganized ();
       /// Edit Trimap
       void 
       setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t);
