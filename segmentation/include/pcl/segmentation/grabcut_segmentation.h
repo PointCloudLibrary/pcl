@@ -171,22 +171,10 @@ namespace pcl
         Color (const pcl::RGB& color) : r (color.r), g (color.g), b (color.b) {}
         
         template<typename PointT>
-        Color (const PointT& p)
-        {
-          r = static_cast<float> (p.r);
-          g = static_cast<float> (p.g);
-          b = static_cast<float> (p.b);
-        }
-        
+        Color (const PointT& p);
+
         template<typename PointT> 
-        operator PointT () const
-        { 
-          PointT p;
-          p.r = static_cast<uint32_t> (r);
-          p.g = static_cast<uint32_t> (g);
-          p.b = static_cast<uint32_t> (b);
-          return (p);
-        }
+        operator PointT () const;
         
         float r, g, b;
       };
@@ -486,6 +474,6 @@ namespace pcl
   };
 }
 
-#include <pcl/segmentation/impl/grabcut.hpp>
+#include <pcl/segmentation/impl/grabcut_segmentation.hpp>
 
 #endif

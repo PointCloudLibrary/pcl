@@ -37,7 +37,7 @@
  *
  */
 
-#include <pcl/segmentation/grabcut.h>
+#include <pcl/segmentation/grabcut_segmentation.h>
 
 #include <cstdlib>
 #include <cassert>
