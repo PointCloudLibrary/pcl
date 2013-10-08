@@ -67,6 +67,18 @@ pcl::segmentation::grabcut::BoykovKolmogorov::operator() (int u, int v) const
   return it->second;
 }
 
+double
+pcl::segmentation::grabcut::BoykovKolmogorov::getSourceEdgeCapacity (int u) const
+{
+  return (source_edges_[u]);
+}
+
+double
+pcl::segmentation::grabcut::BoykovKolmogorov::getTargetEdgeCapacity (int u) const
+{
+  return (target_edges_[u]);
+}
+
 void 
 pcl::segmentation::grabcut::BoykovKolmogorov::preAugmentPaths ()
 {

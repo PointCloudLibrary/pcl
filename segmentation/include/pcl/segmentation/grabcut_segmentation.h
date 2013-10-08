@@ -106,6 +106,12 @@ namespace pcl
           double
           operator() (int u, int v) const;
 
+          double
+          getSourceEdgeCapacity (int u) const;
+
+          double
+          getTargetEdgeCapacity (int u) const;
+
         protected:
           /// tree states
           typedef enum { FREE = 0x00, SOURCE = 0x01, TARGET = 0x02 } nodestate;
