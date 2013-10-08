@@ -141,7 +141,8 @@ namespace pcl
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-    PCL_DEPRECATED (template <typename T> void savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud),
+	template <typename T>
+    PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud),
     "pcl::io::savePNGFile<typename T> (file_name, cloud) is deprecated, please use a new generic "
     "function pcl::io::savePNGFile (file_name, cloud, field_name) with \"rgb\" as the field name."
     );
