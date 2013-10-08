@@ -59,8 +59,6 @@
 #include <vtkPoints2D.h>
 #include "vtkCommand.h"
 
-#include <vtkRegressionTestImage.h>
-
 namespace pcl
 {
   namespace visualization
