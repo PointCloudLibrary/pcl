@@ -320,6 +320,21 @@ Features
      .. |fe_7| image:: images/narf_keypoint_extraction.png
                :height: 100px
 
+  * :ref:`moment_of_inertia`
+
+     ======  ======
+     |fe_8|  Title: **Moment of inertia and eccentricity based descriptors**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to compute moment of inertia and eccentricity of the cloud. In addition to this we will learn how to extract AABB and OBB.
+     ======  ======
+
+     .. |fe_8| image:: images/moment_of_inertia.png
+               :height: 100px
+
 .. _filtering_tutorial:
 
 Filtering
