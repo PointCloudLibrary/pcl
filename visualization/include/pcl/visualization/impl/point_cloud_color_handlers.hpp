@@ -392,5 +392,74 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
   return (true);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
+    const PointCloudConstPtr &cloud)
+{
+  PointCloudColorHandler<PointT>::setInputCloud (cloud);
+  // Handle the 24-bit packed RGBA values
+  field_idx_ = pcl::getFieldIndex (*cloud, "rgba", fields_);
+  if (field_idx_ != -1)
+    capable_ = true;
+  else
+    capable_ = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_ || !cloud_)
+    return (false);
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  scalars->SetNumberOfComponents (4);
+
+  vtkIdType nr_points = cloud_->points.size ();
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
+  unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
+
+  int j = 0;
+  // If XYZ present, check if the points are invalid
+  int x_idx = -1;
+  for (size_t d = 0; d < fields_.size (); ++d)
+    if (fields_[d].name == "x")
+      x_idx = static_cast<int> (d);
+
+  if (x_idx != -1)
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      // Copy the value at the specified field
+      if (!pcl_isfinite (cloud_->points[cp].x) ||
+          !pcl_isfinite (cloud_->points[cp].y) ||
+          !pcl_isfinite (cloud_->points[cp].z))
+        continue;
+
+      colors[j    ] = cloud_->points[cp].r;
+      colors[j + 1] = cloud_->points[cp].g;
+      colors[j + 2] = cloud_->points[cp].b;
+      colors[j + 3] = cloud_->points[cp].a;
+      j += 4;
+    }
+  }
+  else
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      int idx = static_cast<int> (cp) * 4;
+      colors[idx    ] = cloud_->points[cp].r;
+      colors[idx + 1] = cloud_->points[cp].g;
+      colors[idx + 2] = cloud_->points[cp].b;
+      colors[idx + 3] = cloud_->points[cp].a;
+    }
+  }
+  return (true);
+}
+
 #endif      // PCL_POINT_CLOUD_COLOR_HANDLERS_IMPL_HPP_
 
