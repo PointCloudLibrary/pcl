@@ -46,6 +46,7 @@ foreach(subdir
           registration_api
           remove_outliers
           resampling
+          rops_feature
           statistical_removal
           stick_segmentation
           supervoxel_clustering
