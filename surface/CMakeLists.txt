@@ -44,7 +44,12 @@ if(build)
             src/vtk_smoothing/vtk_mesh_quadric_decimation.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_laplacian.cpp
             src/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.cpp)
-        set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
+        
+		if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
+			set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommon vtkWidgets vtkGraphics)
+		else("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
+			set(VTK_SMOOTHING_TARGET_LINK_LIBRARIES vtkCommonCore vtkCommonDataModel vtkCommonExecutionModel vtkFiltersModeling)
+		endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "6.0")
     endif()
     
     SET(BUILD_surface_on_nurbs 0 CACHE BOOL "Fitting NURBS to point-clouds using openNURBS" )

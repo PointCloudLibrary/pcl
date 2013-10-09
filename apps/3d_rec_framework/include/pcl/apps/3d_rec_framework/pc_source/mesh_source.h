@@ -196,7 +196,6 @@ namespace pcl
 
             vtkSmartPointer < vtkPolyDataMapper > mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
             mapper->SetInputConnection (filter_scale->GetOutputPort ());
-            mapper->Update ();
             vtkSmartPointer < vtkPolyData > poly_data = vtkSmartPointer<vtkPolyData>::New ();
             poly_data->Allocate(mapper->GetInput ());
             //generate views
