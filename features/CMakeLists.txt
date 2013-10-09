@@ -30,6 +30,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/intensity_spin.h
         include/pcl/${SUBSYS_NAME}/linear_least_squares_normal.h
         include/pcl/${SUBSYS_NAME}/moment_invariants.h
+        include/pcl/${SUBSYS_NAME}/moment_of_inertia_estimation.h
         include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h
         include/pcl/${SUBSYS_NAME}/narf.h
         include/pcl/${SUBSYS_NAME}/narf_descriptor.h
@@ -76,6 +77,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp
         include/pcl/${SUBSYS_NAME}/impl/linear_least_squares_normal.hpp
         include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp
+        include/pcl/${SUBSYS_NAME}/impl/moment_of_inertia_estimation.hpp
         include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp
         include/pcl/${SUBSYS_NAME}/impl/narf.hpp
         include/pcl/${SUBSYS_NAME}/impl/normal_3d.hpp
@@ -118,6 +120,7 @@ if(build)
         src/intensity_spin.cpp
         src/linear_least_squares_normal.cpp
         src/moment_invariants.cpp
+        src/moment_of_inertia_estimation.cpp
         src/multiscale_feature_persistence.cpp
         src/narf.cpp
         src/normal_3d.cpp
