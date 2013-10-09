@@ -75,7 +75,7 @@ estimateNormals(pcl::PointCloud<PointT>::Ptr cloud, pcl::PointCloud<pcl::Normal>
 
       // Use all neighbors in a sphere of radius 1m
       // experiments with tensors dataset show that the points are as far apart as 1m from each other
-      ne.setRadiusSearch (2);
+      ne.setRadiusSearch (0.03);
 
       // Compute the features
       ne.compute (*cloud_normals);
@@ -89,10 +89,10 @@ estimateNormals(pcl::PointCloud<PointT>::Ptr cloud, pcl::PointCloud<pcl::Normal>
 
 TEST (ORROctreeTest, OctreeSphereIntersection)
 {
-  float voxel_size = 5.0f;
-  float pair_width = 20.0f;
+  float voxel_size = 0.02f;
+  float pair_width = 0.05f;
   float frac_of_points_for_registration = 0.3f;
-  std::string object_name = "cheff";
+  std::string object_name = "test_object";
 
   ModelLibrary::Model* new_model = new ModelLibrary::Model (*model_cloud, *model_cloud_normals, voxel_size, object_name, frac_of_points_for_registration);
 
@@ -124,14 +124,14 @@ int
 {
   if (argc < 2)
   {
-    std::cerr << "No test file given. Please download `cheff.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "No test file given. Please download `bunny.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
   // Load a standard PCD file from disk
   if (pcl::io::loadPCDFile (argv[1], *model_cloud) < 0)
   {
-    std::cerr << "Failed to read test file. Please download `noisy_slice_displaced.pcd` and pass its path to the test." << std::endl;
+    std::cerr << "Failed to read test file. Please download `bunny.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 
