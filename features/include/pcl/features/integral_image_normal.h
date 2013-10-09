@@ -50,6 +50,18 @@
 namespace pcl
 {
   /** \brief Surface normal estimation on organized data using integral images.
+    *
+    *        For detailed information about this method see:
+    *
+    *        S. Holzer and R. B. Rusu and M. Dixon and S. Gedikli and N. Navab, 
+    *        Adaptive Neighborhood Selection for Real-Time Surface Normal Estimation 
+    *        from Organized Point Cloud Data Using Integral Images, IROS 2012.
+    *
+    *        D. Holz, S. Holzer, R. B. Rusu, and S. Behnke (2011, July). 
+    *        Real-Time Plane Segmentation using RGB-D Cameras. In Proceedings of 
+    *        the 15th RoboCup International Symposium, Istanbul, Turkey.
+    *        http://www.ais.uni-bonn.de/~holz/papers/holz_2011_robocup.pdf 
+    *
     * \author Stefan Holzer
     */
   template <typename PointInT, typename PointOutT>
