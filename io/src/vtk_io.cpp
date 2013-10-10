@@ -131,7 +131,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
       if (triangles.cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
       {
         pcl::RGB color;
-        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+        memcpy (&color, &triangles.cloud.data[i * point_size + triangles.cloud.fields[field_index].offset + c * sizeof (float)], sizeof (pcl::RGB));
         int r = color.r;
         int g = color.g;
         int b = color.b;
@@ -204,6 +204,12 @@ pcl::io::saveVTKFile (const std::string &file_name,
   for (unsigned int i = 0; i < nr_points; ++i)
       fs << "1 " << i << std::endl;
 
+  /**
+   * The following variable (PointDataPrinted) checks if the line 'POINT_DATA
+   * NumPoints' has already been written or not. As this line should only be
+   * written once according to VTK Legacy File Format, when there are multiple
+   * Fields (like COLOR_SCALARS, SCALARS, NORMALS, etc.) to be written.
+   */
   bool PointDataPrinted = false;
 
   // Write RGB values
@@ -225,7 +231,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
           if (cloud.fields[field_index].datatype == pcl::PCLPointField::FLOAT32)
           {
               pcl::RGB color;
-              memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset + c * sizeof (float)], sizeof (RGB));
+              memcpy (&color, &cloud.data[i * point_size + cloud.fields[field_index].offset + c * sizeof (float)], sizeof (pcl::RGB));
               int r = color.r;
               int g = color.g;
               int b = color.b;
