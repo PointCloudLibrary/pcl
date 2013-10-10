@@ -494,7 +494,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
     }
     inline Eigen::Vector3i getRGBVector3i ()
     {
