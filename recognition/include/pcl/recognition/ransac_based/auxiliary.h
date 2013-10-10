@@ -142,7 +142,7 @@ namespace pcl
 	  
       /** \brief a = b */
       template <typename T> bool
-      equal3(const T a[3], const T b[3])
+      equal3 (const T a[3], const T b[3])
       {
 	return (a[0] == b[0] && a[1] == b[1] && a[2] == b[2]);
       }
