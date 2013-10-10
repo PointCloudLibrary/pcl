@@ -431,6 +431,70 @@ namespace pcl
         std::string field_name_;
     };
 
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as
+      * the color at each point. Transparency is handled.
+      * \author Nizar Sallem
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerRGBAField : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointT> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField ()
+        {
+          capable_ = false;
+        }
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud)
+          : PointCloudColorHandler<PointT> (cloud)
+        {
+          setInputCloud (cloud);
+        }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerRGBAField () {}
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("rgba"); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
+
+      protected:
+        /** \brief Class getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerRGBAField"); }
+
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::field_idx_;
+        using PointCloudColorHandler<PointT>::fields_;
+    };
+
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors.
       * \author Radu B. Rusu 
@@ -718,6 +782,47 @@ namespace pcl
       private:
         /** \brief Name of the field used to create the color handler. */
         std::string field_name_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as
+      * the color at each point. Transparency is handled.
+      * \author Nizar Sallem
+      * \ingroup visualization
+      */
+    template <>
+    class PCL_EXPORTS PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
+    {
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointCloud> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointCloud> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud);
+
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerRGBAField () {}
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Get the name of the class. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerRGBAField"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("rgba"); }
     };
   }
 }
