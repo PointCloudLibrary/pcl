@@ -289,7 +289,7 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
   for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin (); cluster_iter != clusters_.end (); cluster_iter++)
   {
-    if ((cluster_iter->indices.size () >= min_pts_per_cluster_) && 
+    if ((cluster_iter->indices.size () >= min_pts_per_cluster_) &&
         (cluster_iter->indices.size () <= max_pts_per_cluster_))
     {
       *cluster_iter_input = *cluster_iter;
@@ -737,6 +737,55 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
   }
 
   return (colored_cloud);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename NormalT> pcl::PointCloud <pcl::PointXYZL>::Ptr
+pcl::RegionGrowing<PointT, NormalT>::getLabeledCloud ()
+{
+  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_cloud;
+
+  if (!clusters_.empty ())
+  {
+    labeled_cloud = (new pcl::PointCloud<pcl::PointXYZL>)->makeShared ();
+
+    //    std::vector<int> labels;
+    //    for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
+    //    {
+    //      labels.push_back (static_cast<int> (rand () % 256));
+    //      labels.push_back (static_cast<int> (rand () % 256));
+    //      labels.push_back (static_cast<int> (rand () % 256));
+    //    }
+
+    labeled_cloud->width = input_->width;
+    labeled_cloud->height = input_->height;
+    labeled_cloud->is_dense = input_->is_dense;
+    for (size_t i_point = 0; i_point < input_->points.size (); i_point++)
+    {
+      pcl::PointXYZL point;
+      point.x = *(input_->points[i_point].data);
+      point.y = *(input_->points[i_point].data + 1);
+      point.z = *(input_->points[i_point].data + 2);
+      point.label = -1;
+      labeled_cloud->points.push_back (point);
+    }
+
+    std::vector< pcl::PointIndices >::iterator i_segment;
+    int next_label = 0;
+    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    {
+      std::vector<int>::iterator i_point;
+      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      {
+        int index;
+        index = *i_point;
+        labeled_cloud->points[index].label = next_label;
+      }
+      next_label++;
+    }
+  }
+
+  return (labeled_cloud);
 }
 
 #define PCL_INSTANTIATE_RegionGrowing(T) template class pcl::RegionGrowing<T, pcl::Normal>;

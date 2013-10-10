@@ -233,6 +233,13 @@ namespace pcl
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
       getColoredCloudRGBA ();
 
+      /** \brief If the cloud was successfully segmented, then function
+        * returns labeled cloud. Otherwise it returns an empty pointer.
+        * Points that belong to the same segment have the same label.
+        */
+      pcl::PointCloud <pcl::PointXYZL>::Ptr
+      getLabeledCloud ();
+
     protected:
 
       /** \brief This method simply checks if it is possible to execute the segmentation algorithm with
