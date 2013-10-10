@@ -62,7 +62,8 @@ namespace pcl
     * createMapping<PointT> (msg.fields, field_map);
     * \endcode
     */
-  PCL_DEPRECATED (template <typename PointT> void fromROSMsg (
+  template <typename PointT>
+  PCL_DEPRECATED (void fromROSMsg (
         const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud,
         const MsgFieldMap& field_map),
       "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
@@ -78,7 +79,8 @@ namespace pcl
     * \param[in] msg the PCLPointCloud2 binary blob
     * \param[out] cloud the resultant pcl::PointCloud<T>
     */
-  PCL_DEPRECATED (template<typename PointT> void fromROSMsg (
+  template<typename PointT>
+  PCL_DEPRECATED (void fromROSMsg (
         const pcl::PCLPointCloud2& msg, pcl::PointCloud<PointT>& cloud),
       "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename PointT> void 
@@ -91,7 +93,8 @@ namespace pcl
     * \param[in] cloud the input pcl::PointCloud<T>
     * \param[out] msg the resultant PCLPointCloud2 binary blob
     */
-  PCL_DEPRECATED (template<typename PointT> void toROSMsg (
+  template<typename PointT>
+  PCL_DEPRECATED (void toROSMsg (
         const pcl::PointCloud<PointT>& cloud, pcl::PCLPointCloud2& msg),
       "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename PointT> void 
@@ -106,7 +109,8 @@ namespace pcl
      * CloudT cloud type, CloudT should be akin to pcl::PointCloud<pcl::PointXYZRGBA>
      * \note will throw std::runtime_error if there is a problem
      */
-  PCL_DEPRECATED (template<typename CloudT> void toROSMsg (
+  template<typename CloudT> 
+  PCL_DEPRECATED (void toROSMsg (
         const CloudT& cloud, pcl::PCLImage& msg),
       "pcl::fromROSMsg is deprecated, please use fromPCLPointCloud2 instead.");
   template<typename CloudT> void
