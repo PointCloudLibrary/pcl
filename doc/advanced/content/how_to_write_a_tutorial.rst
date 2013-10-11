@@ -25,8 +25,8 @@ beautiful HTML documents.
 
 
 Both documentation sources are stored in our `Source repository
-<http://svn.pointclouds.org/pcl/>`_ and the web pages are generated hourly by
-our server via `crontab` jobs.
+<https://github.com/PointCloudLibrary/pcl>`_ and the web pages are generated
+hourly by our server via `crontab` jobs.
 
 In the next two sections we will address both of the above, and present a small
 example for each. We'll begin with the easiest of the two: adding a new
@@ -44,12 +44,12 @@ you read the following resources:
  * http://www.siafoo.net/help/reST - has a nice tutorial/set of examples
 
 Once you understand how reST works, look over our current set of tutorials for
-examples at http://svn.pointclouds.org/pcl/trunk/doc/tutorials/content/. 
+examples at https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content.
 
 To add a new tutorial, simply create a new file, and send it to us together
 with the images/videos that you want included in the tutorial. The best way to
-do this is to login to http://dev.pointclouds.org, create an issue on the
-tracker, and add the new tutorial as an attachement.
+do this is to login to https://github.com/PointCloudLibrary/pcl and send it as
+a pull request.
 
 
 Improving the API documentation
@@ -69,7 +69,7 @@ To help us improve the API documentation, all that you need to do is simply
 check out the source code of PCL (we recommend trunk if you're going to start
 editing the sources), like::
 
-  svn co http://svn.pointclouds.org/pcl/trunk pcl
+  git clone https://github.com/PointCloudLibrary/pcl
 
 Then, edit the file containing the function/class that you want to improve the
 documentation for, say *common/include/pcl/point_cloud.h*, and go to the
@@ -81,11 +81,7 @@ element that you want to improve. Let's take *points* for example::
 What you have to modify is the Doxygen-style comment starting with /\*\* and
 ending with \*/. See http://www.doxygen.org for more information.
 
-To send us the modification, please login to http://dev.pointclouds.org, create
-an issue on the tracker, and add the output of the following command to the
-issue::
-
-  svn diff common/include/pcl/point_cloud.h
+To send us the modification, please send a pull request through Github.
 
 Testing the modified API documentation
 --------------------------------------

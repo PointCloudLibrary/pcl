@@ -235,9 +235,9 @@ Building PCL
 At this point you should have everything needed installed to build PCL with
 almost no additional configuration.
 
-Checkout the PCL source from the trunk::
+Checkout the PCL source from the Github:
 
-   $ svn co http://svn.pointclouds.org/pcl/trunk pcl
+   $ git clone https://github.com/PointCloudLibrary/pcl
    $ cd pcl
    
 Create the build directories, configure CMake, build and install::

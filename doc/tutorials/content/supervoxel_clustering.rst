@@ -63,7 +63,7 @@ Oh, and for a more complicated example which uses Supervoxels, see ``pcl/example
 
 The code
 --------
-First, grab a pcd file made from a kinect or similar device - here we shall use ``milk_cartoon_all_small_clorox.pcd`` which is available in the pcl trunk :download:`here <http://github.com/PointCloudLibrary/pcl/blob/master/test/milk_cartoon_all_small_clorox.pcd?raw=true>`).
+First, grab a pcd file made from a kinect or similar device - here we shall use ``milk_cartoon_all_small_clorox.pcd`` which is available in the pcl git :download:`here <http://github.com/PointCloudLibrary/pcl/blob/master/test/milk_cartoon_all_small_clorox.pcd?raw=true>`).
 
 Next, copy and paste the following code into your editor and save it as ``supervoxel_clustering.cpp`` (or download the source file :download:`here <./sources/supervoxel_clustering/supervoxel_clustering.cpp>`).
 

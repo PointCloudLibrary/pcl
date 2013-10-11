@@ -3,7 +3,7 @@
 The following links describe a set of basic PCL tutorials. Please note that
 their source codes may already be provided as part of the PCL regular releases,
 so check there before you start copy & pasting the code. The list of tutorials
-below is automatically generated from reST files located in our SVN repository.
+below is automatically generated from reST files located in our git repository.
 
 .. note::
 
@@ -162,13 +162,13 @@ Basic Usage
   * :ref:`using_pcl_with_eclipse`
 
      ======  ======
-     |mi_7|  Title: **Using Eclipse as your PCL trunk editor**
+     |mi_7|  Title: **Using Eclipse as your PCL editor**
 
              Author: *Koen Buys*
 
-             Compatibility: > PCL 1.7
+             Compatibility: PCL git master
 
-             This tutorial shows you how to get your PCL trunk as a project in Eclipse.
+             This tutorial shows you how to get your PCL as a project in Eclipse.
      ======  ======
 
      .. |mi_7| image:: images/pcl_logo.png
@@ -759,7 +759,7 @@ Registration
 
              Author: *Martin Saelzle*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              This document shows how to use the In-hand scanner applications to obtain colored models of small objects with RGB-D cameras.
      ======  ======
@@ -861,7 +861,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use region growing segmentation algorithm.
      ======  ======
@@ -876,7 +876,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use color-based region growing segmentation algorithm.
      ======  ======
@@ -891,7 +891,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use min-cut based segmentation algorithm.
      ======  ======
@@ -906,7 +906,7 @@ Segmentation
 
              Author: *Frits Florentinus*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              This tutorial describes how to use the Conditional Euclidean Clustering class in PCL:
              A segmentation algorithm that clusters points based on Euclidean distance and a user-customizable condition that needs to hold.
@@ -922,7 +922,7 @@ Segmentation
 
              Author: *Yani Ioannou*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use the difference of normals feature for segmentation.
      ======  ======
@@ -937,7 +937,7 @@ Segmentation
 
              Author: *Jeremie Papon*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial, we show to break a pointcloud into the mid-level supervoxel representation.
      ======  ======
@@ -1110,21 +1110,6 @@ Applications
      .. |ap_3| image:: images/mobile_streaming_1.jpg
                :height: 100px
                
-  * :ref:`using_kinfu_large_scale`
-     
-     ======  ======
-     |ap_4|  Title: **Using Kinfu Large Scale to generate a textured mesh**
-
-             Author: *Francisco Heredia and Raphael Favier*
-
-             Compatibility: > PCL 1.5
-
-             This tutorial demonstrates how to use KinFu Large Scale to produce a mesh from a room, and apply texture information in post-processing for a more appealing visual result.
-     ======  ======
-     
-     .. |ap_4| image:: images/using_kinfu_large_scale.jpg
-               :height: 100px
-
   * :ref:`ground_based_rgbd_people_detection`
      
      ======  ======
@@ -1132,7 +1117,7 @@ Applications
 
              Author: *Matteo Munaro*
 
-             Compatibility: > PCL 1.7 trunk
+             Compatibility: >= PCL 1.7
 
              This tutorial presents a method for detecting people on a ground plane with RGB-D data.
      ======  ======
@@ -1151,12 +1136,27 @@ GPU
 
              Author: *Koen Buys*
 
-             Compatibility: > PCL 1.7 trunk
+             Compatibility: PCL git master
 
              This tutorial explains how to configure PCL to use with a Nvidia GPU
      ======  ======
      
      .. |gp_1| image:: images/PCD_icon.png
+               :height: 100px
+
+  * :ref:`using_kinfu_large_scale`
+
+     ======  ======
+     |ap_4|  Title: **Using Kinfu Large Scale to generate a textured mesh**
+
+             Author: *Francisco Heredia and Raphael Favier*
+
+             Compatibility: PCL git master
+
+             This tutorial demonstrates how to use KinFu Large Scale to produce a mesh from a room, and apply texture information in post-processing for a more appealing visual result.
+     ======  ======
+
+     .. |ap_4| image:: images/using_kinfu_large_scale.jpg
                :height: 100px
 
   * :ref:`gpu_people`
@@ -1166,7 +1166,7 @@ GPU
 
              Author: *Koen Buys*
 
-             Compatibility: > PCL 1.7 trunk
+             Compatibility: PCL git master
 
              This tutorial presents a method for people and pose detection.
      ======  ======

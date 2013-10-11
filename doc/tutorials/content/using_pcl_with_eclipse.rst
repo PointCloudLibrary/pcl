@@ -1,6 +1,6 @@
 .. _using_pcl_with_eclipse:
 
-Using PCL from trunk with Eclipse
+Using PCL with Eclipse
 ---------------------------------
 
 This tutorial explains how to use Eclipse as a PCL editor
@@ -8,7 +8,7 @@ This tutorial explains how to use Eclipse as a PCL editor
 Prerequisites
 -------------
 
-We assume you have downloaded, compiled and installed PCL from trunk (see Downloads, experimental) on your machine.
+We assume you have downloaded, compiled and installed PCL trunk (see Downloads, experimental) on your machine.
 
 Creating the eclipse project files
 ----------------------------------

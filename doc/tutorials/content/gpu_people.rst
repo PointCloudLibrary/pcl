@@ -12,7 +12,7 @@ has been presented on ICRA2012 and IROS2012 and an official reference for a jour
      <iframe width="560" height="315" src="http://www.youtube.com/embed/Wd4OM8wOO1E?rel=0" frameborder="0" allowfullscreen></iframe>
 
 This shows how to detect people with an Primesense device, the full version 
-working on oni and pcd files can be found in trunk.
+working on oni and pcd files can be found in the git master.
 The code assumes a organised and projectable pointcloud, and should work with other 
 sensors then the Primesense device.
 
@@ -28,7 +28,7 @@ at the GPU installation tutorial to get up and running with your GPU installatio
 
 The code
 --------
-The full version of this code can be found in PCL trunk/gpu/people/tools, 
+The full version of this code can be found in PCL gpu/people/tools,
 the following is a reduced version for the tutorial.
 This version can be found in doc/tutorials/content/sources/gpu/people_detect.
 
