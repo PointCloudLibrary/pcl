@@ -638,7 +638,8 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    //colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
 
     srand (static_cast<unsigned int> (time (0)));
     std::vector<unsigned char> colors;
@@ -692,8 +693,8 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
 
   if (!clusters_.empty ())
   {
-    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGBA>)->makeShared ();
-
+    //colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGBA>)->makeShared ();
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
     srand (static_cast<unsigned int> (time (0)));
     std::vector<unsigned char> colors;
     for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
@@ -747,16 +748,8 @@ pcl::RegionGrowing<PointT, NormalT>::getLabeledCloud ()
 
   if (!clusters_.empty ())
   {
-    labeled_cloud = (new pcl::PointCloud<pcl::PointXYZL>)->makeShared ();
-
-    //    std::vector<int> labels;
-    //    for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
-    //    {
-    //      labels.push_back (static_cast<int> (rand () % 256));
-    //      labels.push_back (static_cast<int> (rand () % 256));
-    //      labels.push_back (static_cast<int> (rand () % 256));
-    //    }
-
+    //labeled_cloud = (new pcl::PointCloud<pcl::PointXYZL>)->makeShared ();
+    labeled_cloud.reset(new pcl::PointCloud<pcl::PointXYZL>);
     labeled_cloud->width = input_->width;
     labeled_cloud->height = input_->height;
     labeled_cloud->is_dense = input_->is_dense;
