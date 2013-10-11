@@ -61,7 +61,7 @@ namespace pcl
         inline bool
         getPointsIndices (std::vector<int>& indices) const
         {
-          if (nb_points_ == -1)
+          if (nb_points_ == 0)
             return (false);
           indices = indices_;
           return (true);
