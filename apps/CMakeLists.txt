@@ -228,17 +228,12 @@ if(build)
 
   endif() # VTK_FOUND
 
-  add_subdirectory(3d_rec_framework)
-  add_subdirectory(modeler)
-  add_subdirectory(cloud_composer)
-  if(OPENNI_FOUND)
-    add_subdirectory(in_hand_scanner)
-  endif(OPENNI_FOUND)
-  add_subdirectory(point_cloud_editor)
-  if(FZAPI_FOUND)
-    add_subdirectory(optronic_viewer)
-  endif(FZAPI_FOUND)
+collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS ${SUBSYS_NAME})
+set(PCL_APPS_MODULES_NAMES_UNSORTED ${PCL_APPS_MODULES_NAMES})
+topological_sort(PCL_APPS_MODULES_NAMES PCL_APPS_ _DEPENDS)
+sort_relative(PCL_APPS_MODULES_NAMES_UNSORTED PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS)
+foreach(subdir ${PCL_APPS_MODULES_DIRS})
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/${subdir})
+endforeach(subdir)
 
 endif(build)
-
-
