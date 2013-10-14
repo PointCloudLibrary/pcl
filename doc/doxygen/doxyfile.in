@@ -115,8 +115,7 @@ FILE_PATTERNS          = *.h \
                          *.hpp \
                          *.doxy
 RECURSIVE              = YES
-EXCLUDE                = */.svn \
-                         "@PCL_SOURCE_DIR@/cmake" \
+EXCLUDE                = "@PCL_SOURCE_DIR@/cmake" \
                          "@PCL_SOURCE_DIR@/3rdparty" \
                          "@PCL_SOURCE_DIR@/test" \
                          "@PCL_SOURCE_DIR@/android" \

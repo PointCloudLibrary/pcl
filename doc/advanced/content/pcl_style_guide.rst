@@ -350,7 +350,7 @@ You can find a semi-finished config for `Uncrustify <http://uncrustify.sourcefor
 2.6.3 Eclipse
 """""""""""""
 
-You can find a PCL code style file for Eclipse here: `http://svn.pointclouds.org/pcl/trunk/doc/advanced/content/files/`
+You can find a PCL code style file for Eclipse here: `https://github.com/PointCloudLibrary/pcl/tree/master/doc/advanced/content/files`
 Be warned that this can still contain errors, please mention on the user mailing list if this file needs changes. (feel free to patch)
 
 3. Structuring

@@ -82,7 +82,7 @@ Now create the symlinks in your bin folder:
 
 If you use colorgcc these links all need to point to /usr/bin/colorgcc.
 
-Now you can get the latest trunk version (or another one) of PCL and configure your
+Now you can get the latest git master (or another one) of PCL and configure your
 installation to use the CUDA functions.
 
 Go to your PCL root folder and do::

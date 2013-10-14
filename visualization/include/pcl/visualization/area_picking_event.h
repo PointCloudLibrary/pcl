@@ -49,7 +49,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (std::size_t nb_points, const std::vector<int>& indices)
+        AreaPickingEvent (int nb_points, const std::vector<int>& indices)
           : nb_points_ (nb_points)
           , indices_ (indices)
         {}
@@ -61,14 +61,14 @@ namespace pcl
         inline bool
         getPointsIndices (std::vector<int>& indices) const
         {
-          if (nb_points_ == -1)
+          if (nb_points_ <= 0)
             return (false);
           indices = indices_;
           return (true);
         }
 
       private:
-        std::size_t nb_points_;
+        int nb_points_;
         std::vector<int> indices_;
     };
   } //namespace visualization

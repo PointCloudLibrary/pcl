@@ -106,6 +106,79 @@ TEST (PCL, EarClipping)
   }
 }
 
+TEST (PCL, EarClippingCubeTest)
+{
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
+  cloud->height = 1;
+  //bottom of cube (z=0)
+  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.f));
+  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 0.f));
+  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 0.f));
+  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 0.f));
+  //top of cube (z=1.0)
+  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 1.f));
+  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 1.f));
+  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 1.f));
+  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 1.f));
+  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+
+  Vertices vertices;
+  vertices.vertices.resize(4);
+
+  const int squares[][4] = { {1, 5, 6, 2},
+                           {2, 6, 7, 3},
+                           {3, 7, 4, 0},
+                           {0, 4, 5, 1},
+                           {4, 7, 6, 5},       
+                           {0, 1, 2, 3} };
+
+  const int truth[][3] = { {2, 1, 5},
+                           {6, 2, 5},
+                           {3, 2, 6}, 
+                           {7, 3, 6},
+                           {0, 3, 7}, 
+                           {4, 0, 7},
+                           {1, 0, 4}, 
+                           {5, 1, 4},
+                           {5, 4, 7}, 
+                           {6, 5, 7},       
+                           {3, 0, 1}, 
+                           {2, 3, 1} };
+
+  PolygonMesh::Ptr mesh (new PolygonMesh);
+  toPCLPointCloud2 (*cloud, mesh->cloud);
+
+  for (int i = 0; i < 6; ++i)
+  {
+    vertices.vertices[0] = squares[i][0];
+    vertices.vertices[1] = squares[i][1];
+    vertices.vertices[2] = squares[i][2];
+    vertices.vertices[3] = squares[i][3];
+    mesh->polygons.push_back (vertices);
+  }
+
+  EarClipping clipper;
+  PolygonMesh::ConstPtr mesh_aux (mesh);
+  clipper.setInputMesh (mesh_aux);
+
+  PolygonMesh triangulated_mesh;
+  clipper.process (triangulated_mesh);
+
+  EXPECT_EQ (triangulated_mesh.polygons.size (), 12);
+  for (int i = 0; i < static_cast<int> (triangulated_mesh.polygons.size ()); ++i)
+    EXPECT_EQ (triangulated_mesh.polygons[i].vertices.size (), 3);
+
+  
+
+  for (int pi = 0; pi < static_cast<int> (triangulated_mesh.polygons.size ()); ++pi)
+  {
+      for (int vi = 0; vi < 3; ++vi)
+      {
+        EXPECT_EQ (triangulated_mesh.polygons[pi].vertices[vi], truth[pi][vi]);
+      }
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
