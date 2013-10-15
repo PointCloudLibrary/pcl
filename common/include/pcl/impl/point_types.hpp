@@ -414,6 +414,11 @@ namespace pcl
       data[3] = 1.0f;
       intensity = _intensity;
     }
+    inline PointXYZI (float _x, float _y, float _z, float _intensity)
+    {
+      x = _x; y = _y; z = _z; intensity = _intensity;
+      data[3] = 1.0f;
+    }
     friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   };
   
@@ -440,7 +445,11 @@ namespace pcl
       data[3] = 1.0f;
       label = 0;
     }
-  
+    inline PointXYZL (float _x, float _y, float _z, float _label)
+    {
+      x = _x; y = _y; z = _z; label = _label;
+      data[3] = 1.0f;
+    }    
     friend std::ostream& operator << (std::ostream& os, const PointXYZL& p);
   };
 
