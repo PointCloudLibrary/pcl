@@ -1,7 +1,3 @@
-///////////////////////////////////////////////////////
-// grabCut->initialize (xstart, ystart, xend, yend); //
-// grabCut->fitGMMs ();                              //
-///////////////////////////////////////////////////////
 #ifndef PCL_SEGMENTATION_IMPL_GRABCUT_HPP
 #define PCL_SEGMENTATION_IMPL_GRABCUT_HPP
 
