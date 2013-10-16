@@ -133,6 +133,12 @@ namespace pcl
       inline double
       getRadiusSearch () { return (search_radius_); }
 
+      /** \brief \return the keypoints indices in the input cloud.
+        * \note not all the daughter classes populate the keypoints indices so check emptiness before use.
+        */
+      pcl::PointIndicesConstPtr
+      getKeypointsIndices () { return (keypoints_indices_); }
+
       /** \brief Base method for key point detection for all points given in <setInputCloud (), setIndices ()> using
         * the surface in setSearchSurface () and the spatial locator in setSearchMethod ()
         * \param output the resultant point cloud model dataset containing the estimated features
@@ -186,6 +192,9 @@ namespace pcl
 
       /** \brief The number of K nearest neighbors to use for each point. */
       int k_;
+
+      /** \brief Indices of the keypoints in the input cloud. */
+      pcl::PointIndicesPtr keypoints_indices_;
 
       /** \brief Get a string representation of the name of this class. */
       inline const std::string&
