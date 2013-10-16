@@ -76,7 +76,7 @@ namespace pcl
         typedef typename KdTree::Ptr KdTreePtr;
 
         typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-        typedef typename KdTree::Ptr KdTreeReciprocalPtr;
+        typedef typename KdTreeReciprocal::Ptr KdTreeReciprocalPtr;
 
         typedef pcl::PointCloud<PointSource> PointCloudSource;
         typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
@@ -87,7 +87,9 @@ namespace pcl
         typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
 
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+        typedef typename KdTreeReciprocal::PointRepresentationConstPtr ReciprocalPointRepresentationConstPtr;
 
+        
         /** \brief Empty constructor. */
         CorrespondenceEstimationBase () 
           : corr_name_ ("CorrespondenceEstimationBase")
@@ -96,6 +98,7 @@ namespace pcl
           , target_ ()
           , target_indices_ ()
           , point_representation_ ()
+          , point_representation_source_ ()
           , input_transformed_ ()
           , input_fields_ ()
           , target_cloud_updated_ (true)
@@ -278,6 +281,18 @@ namespace pcl
         {
           point_representation_ = point_representation;
         }
+        
+        /** \brief Provide a boost shared pointer to the PointRepresentation to be used 
+          * when searching for nearest neighbors in the source cloud (only needed for reciprocal).
+          *
+          * \param[in] point_representation the PointRepresentation to be used by the 
+          * source k-D tree for nearest neighbor search
+          */
+        inline void
+        setSourcePointRepresentation (const ReciprocalPointRepresentationConstPtr &point_representation)
+        {
+          point_representation_source_ = point_representation;
+        }
 
         /** \brief Clone and cast to CorrespondenceEstimationBase */
         virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
@@ -303,6 +318,9 @@ namespace pcl
         /** \brief The point representation used (internal). */
         PointRepresentationConstPtr point_representation_;
 
+        /** \brief The point representation used for reciprocal search (internal). */
+        ReciprocalPointRepresentationConstPtr point_representation_source_;
+        
         /** \brief The transformed input source point cloud dataset. */
         PointCloudTargetPtr input_transformed_;
 

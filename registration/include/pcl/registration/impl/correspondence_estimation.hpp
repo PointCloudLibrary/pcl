@@ -40,8 +40,22 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
+#include <pcl/common/concatenate.h>
 #include <pcl/common/io.h>
-#include <pcl/common/copy_point.h>
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::setInputCloud (const typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr &cloud)
+{
+  setInputSource (cloud); 
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> typename pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr const
+pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getInputCloud ()
+{
+  return (getInputSource ()); 
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
@@ -94,8 +108,8 @@ pcl::registration::CorrespondenceEstimationBase<PointSource, PointTarget, Scalar
   // Only update source kd-tree if a new target cloud was set
   if (source_cloud_updated_ && !force_no_recompute_reciprocal_)
   {
-    if (point_representation_)
-      tree_reciprocal_->setPointRepresentation (point_representation_);
+    if (point_representation_source_)
+      tree_reciprocal_->setPointRepresentation (point_representation_source_);
     // If the target indices have been given via setIndicesTarget
     if (indices_)
       tree_reciprocal_->setInputCloud (getInputSource(), getIndicesSource());
@@ -118,6 +132,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 
   double max_dist_sqr = max_distance * max_distance;
 
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
   correspondences.resize (indices_->size ());
 
   std::vector<int> index (1);
@@ -127,7 +142,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  if (isSamePointType<PointSource, PointTarget> ())
+ /* if (isSamePointType<PointSource, PointTarget> ())
   {
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
@@ -142,16 +157,15 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
       correspondences[nr_valid_correspondences++] = corr;
     }
   }
-  else
+  else*/
   {
-    PointTarget pt;
-    
+    // Copy the source data to a target PointTarget format so we can search in the tree
+    PointCloudTargetPtr source_copy (new PointCloudTarget);
+    copyPointCloud (*input_, *source_copy);
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
-      // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt);
-
+      PointTarget pt = source_copy->points[*idx];
       tree_->nearestKSearch (pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
@@ -173,7 +187,11 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 {
   if (!initCompute ())
     return;
-
+  
+  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
+  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
+  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
+  
   // setup tree for reciprocal search
   // Set the internal point representation of choice
   if (!initComputeReciprocal())
@@ -191,7 +209,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 
   // Check if the template types are the same. If true, avoid a copy.
   // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  if (isSamePointType<PointSource, PointTarget> ())
+  /*if (isSamePointType<PointSource, PointTarget> ())
   {
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
@@ -212,26 +230,25 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
       correspondences[nr_valid_correspondences++] = corr;
     }
   }
-  else
+  else*/
   {
-    PointTarget pt_src;
-    PointSource pt_tgt;
-   
+    // Copy the source data to a target PointTarget format so we can search in the tree
+    PointCloudTargetPtr source_copy (new PointCloudTarget);
+    copyPointCloud (*input_, *source_copy);
+    // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
+    PointCloudSourcePtr target_copy (new PointCloudSource);
+    copyPointCloud (*target_, *target_copy);
     // Iterate over the input set of source indices
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
-      // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt_src);
-
+      PointTarget pt_src = source_copy->points[*idx];
       tree_->nearestKSearch (pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
         continue;
 
       target_idx = index[0];
 
-      // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
-      copyPoint (target_->points[target_idx], pt_tgt);
-
+      PointSource pt_tgt = target_copy->points[target_idx];
       tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
         continue;
