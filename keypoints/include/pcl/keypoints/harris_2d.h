@@ -65,6 +65,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI} ResponseMethod;
 

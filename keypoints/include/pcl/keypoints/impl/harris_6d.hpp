@@ -219,6 +219,8 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output = *response;
     // we do not change the denseness in this case
     output.is_dense = input_->is_dense;
+    for (size_t i = 0; i < response->size (); ++i)
+      keypoints_indices_->indices.push_back (i);
   }
   else
   {
@@ -249,7 +251,10 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
         #pragma omp critical
 #endif
+      {
         output.points.push_back (response->points[idx]);
+        keypoints_indices_->indices.push_back (idx);
+      }
     }
 
     if (refine_)
@@ -259,8 +264,6 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output.width = static_cast<uint32_t> (output.points.size());
     output.is_dense = true;
   }
-
-  
 }
 
 template <typename PointInT, typename PointOutT, typename NormalT> void

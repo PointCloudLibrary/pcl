@@ -223,6 +223,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str (), method_);
     return (false);
   }
+
   return (true);
 }
 
@@ -258,6 +259,8 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     output = *response;
     // we do not change the denseness in this case
     output.is_dense = input_->is_dense;
+    for (size_t i = 0; i < response->size (); ++i)
+      keypoints_indices_->indices.push_back (i);
   }
   else
   {
@@ -290,7 +293,10 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #ifdef _OPENMP
 #pragma omp critical
 #endif
+      {
         output.points.push_back (response->points[idx]);
+        keypoints_indices_->indices.push_back (idx);
+      }
     }
 
     if (refine_)

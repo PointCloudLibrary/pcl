@@ -246,6 +246,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::initCompute ()
     PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
     return (false);
   }
+
   return (true);
 }
 
@@ -413,7 +414,13 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   response->width = static_cast<uint32_t> (response->size ());
   
   if (!nonmax_)
+  {
     output = *response;
+    for (size_t i = 0; i < response->size (); ++i)
+      keypoints_indices_->indices.push_back (i);
+    // we don not change the denseness
+    output.is_dense = input_->is_dense;
+  }
   else
   {
     output.points.clear ();
@@ -447,14 +454,16 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
 //#ifdef _OPENMP
 //#pragma omp critical
 //#endif
+      {
         output.points.push_back (response->points[idx]);
+        keypoints_indices_->indices.push_back (idx);
+      }
     }
     
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());  
+    output.width = static_cast<uint32_t> (output.points.size());
+    output.is_dense = true;
   }
-  // we don not change the denseness
-  output.is_dense = input_->is_dense;
 }
 
 #define PCL_INSTANTIATE_SUSAN(T,U,N) template class PCL_EXPORTS pcl::SUSANKeypoint<T,U,N>;
