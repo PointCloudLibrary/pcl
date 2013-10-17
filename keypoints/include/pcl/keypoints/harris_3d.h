@@ -72,6 +72,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::k_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
       using Keypoint<PointInT, PointOutT>::initCompute;
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI, CURVATURE} ResponseMethod;

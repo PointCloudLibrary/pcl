@@ -437,6 +437,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       PointOutT p;
       p.getVector3fMap () = input_->points[index].getVector3fMap ();
       output.points.push_back(p);
+      keypoints_indices_->indices.push_back (index);
     }
   }
 

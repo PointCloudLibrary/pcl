@@ -147,7 +147,10 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 
       // check if point was minimum/maximum over all the scales
       if (passed_min || passed_max)
+      {
         output.points.push_back (input_->points[point_i]);
+        keypoints_indices_->indices.push_back (point_i);
+      }
     }
   }
 
@@ -238,7 +241,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::initCompute ()
   for (size_t i = 0; i < scales_.size (); ++i) PCL_INFO ("(%d %f), ", scales_[i].second, scales_[i].first);
   PCL_INFO ("\n");
 
-  return true;
+  return (true);
 }
 
 
