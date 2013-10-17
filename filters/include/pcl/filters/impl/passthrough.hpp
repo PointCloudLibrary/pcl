@@ -144,7 +144,7 @@ pcl::PassThrough<PointT>::applyFilterIndices (std::vector<int> &indices)
       }
 
       // Inside of the field limits are passed to removed indices if negative was set
-      if (negative_ && field_value > filter_limit_min_ && field_value < filter_limit_max_)
+      if (negative_ && field_value >= filter_limit_min_ && field_value <= filter_limit_max_)
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = (*indices_)[iii];
