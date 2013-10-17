@@ -6,6 +6,10 @@ PCL_ADD_TEST(feature_base test_base_feature
              FILES test_base_feature.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
              ARGUMENTS ${PCL_SOURCE_DIR}/test/bun0.pcd)
+PCL_ADD_TEST(feature_cppf_estimation test_cppf_estimation
+             FILES test_cppf_estimation.cpp
+             LINK_WITH pcl_gtest pcl_features pcl_io
+             ARGUMENTS ${PCL_SOURCE_DIR}/test/colored_cloud.pcd)
 PCL_ADD_TEST(feature_normal_estimation test_normal_estimation
              FILES test_normal_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
