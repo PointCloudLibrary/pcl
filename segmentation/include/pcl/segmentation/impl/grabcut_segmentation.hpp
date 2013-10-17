@@ -377,10 +377,8 @@ pcl::GrabCut<PointT>::computeBetaNonOrganized ()
       }
     }
   }
-  std::cout << "result " << result << std::endl;
-  std::cout << "edges " << edges << std::endl;
+
   beta_ = 1e5 / (2*result / edges);
-  std::cout << "beta " << beta_ << std::endl;
 }
 
 template <typename PointT> void
@@ -450,10 +448,7 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
     }
   }
 
-  std::cout << "result " << result << std::endl;
-  std::cout << "edges " << edges << std::endl;
   beta_ = 1e5 / (2*result / edges);
-  std::cout << "beta " << beta_ << std::endl;
 }
 
 template <typename PointT> void
