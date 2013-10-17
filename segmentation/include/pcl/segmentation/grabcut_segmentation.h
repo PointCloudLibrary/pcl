@@ -329,8 +329,8 @@ namespace pcl
       GrabCut (uint32_t K = 5, float lambda = 50.f)
         : K_ (K)
         , lambda_ (lambda)
-        , initialized_ (false)
         , nb_neighbours_ (9)
+        , initialized_ (false)
       {}
       /// Desctructor
       virtual ~GrabCut () {};
