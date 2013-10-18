@@ -250,7 +250,11 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   }
   
   if (!nonmax_)
+  {
     output = *response_;
+    for (size_t i = 0; i < response->size (); ++i)
+      keypoints_indices_->indices.push_back (i);
+  }
   else
   {    
     threshold_*= highest_response_;
@@ -276,7 +280,10 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
 #ifdef _OPENMP
 #pragma omp critical
 #endif
-      output.push_back (response_->at (indices_->at (idx)));
+      {
+        output.push_back (response_->at (indices_->at (idx)));
+        keypoints_indices_->indices.push_back (indices_->at (idx));
+      }
       
 			int u_end = std::min (width, indices_->at (idx) % width + min_distance_);
 			int v_end = std::min (height, indices_->at (idx) / width + min_distance_);

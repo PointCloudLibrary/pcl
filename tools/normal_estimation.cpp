@@ -205,7 +205,7 @@ main (int argc, char** argv)
       return (-1);
     }
 
-    print_info ("Estimating normals with a radius/k/smoothing size of: "); 
+    print_info ("Estimating normals with a k/radius/smoothing size of: "); 
     print_value ("%d / %f / %f\n", k, radius, radius); 
 
     // Load the first file
