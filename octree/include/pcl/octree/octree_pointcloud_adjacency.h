@@ -162,9 +162,7 @@ namespace pcl
        */
       void 
       addPointsFromInputCloud ();
-      
-
-        
+            
       /** \brief Gets the leaf container for a given point 
        *  \param[in] point_arg Point to search for
        *  \returns Pointer to the leaf container - null if no leaf container found
