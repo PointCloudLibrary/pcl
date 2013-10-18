@@ -167,23 +167,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   const PointT& point = this->input_->points[pointIdx_arg];
   if (!pcl::isFinite (point))
     return;
-  
-  //if (transform_func_)
- // { 
- //   PointT temp (point);
- //   transform_func_ (temp);
-   // this->adoptBoundingBoxToPoint (temp);
- // }
-  //else  
-   // this->adoptBoundingBoxToPoint (point);
-    
+   
   // generate key
   this->genOctreeKeyforPoint (point, key);
   // add point to octree at key
   LeafContainerT* container = this->createLeaf(key);
   container->addPoint (point);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
