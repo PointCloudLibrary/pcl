@@ -228,6 +228,16 @@ if(build)
 
   endif() # VTK_FOUND
 
+  # OpenGL and GLUT
+  find_package(OpenGL)
+  find_package(GLUT)
+  if(OPENGL_FOUND AND GLUT_FOUND)
+    include_directories(${OPENGL_INCLUDE_DIR})
+    include_directories(${GLUT_INCLUDE_DIR})
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE (pcl_grabcut_2d ${SUBSYS_NAME} src/grabcut_2d.cpp)
+    target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
+  endif(OPENGL_FOUND AND GLUT_FOUND)
+
 collect_subproject_directory_names(${CMAKE_CURRENT_SOURCE_DIR} "CMakeLists.txt" PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS ${SUBSYS_NAME})
 set(PCL_APPS_MODULES_NAMES_UNSORTED ${PCL_APPS_MODULES_NAMES})
 topological_sort(PCL_APPS_MODULES_NAMES PCL_APPS_ _DEPENDS)

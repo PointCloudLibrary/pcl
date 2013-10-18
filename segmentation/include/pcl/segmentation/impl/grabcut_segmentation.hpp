@@ -1,7 +1,3 @@
-///////////////////////////////////////////////////////
-// grabCut->initialize (xstart, ystart, xend, yend); //
-// grabCut->fitGMMs ();                              //
-///////////////////////////////////////////////////////
 #ifndef PCL_SEGMENTATION_IMPL_GRABCUT_HPP
 #define PCL_SEGMENTATION_IMPL_GRABCUT_HPP
 
@@ -12,11 +8,29 @@
 namespace pcl
 {
   template <>
-  float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1, 
+  float squaredEuclideanDistance (const pcl::segmentation::grabcut::Color &c1,
                                   const pcl::segmentation::grabcut::Color &c2)
   {
     return ((c1.r-c2.r)*(c1.r-c2.r)+(c1.g-c2.g)*(c1.g-c2.g)+(c1.b-c2.b)*(c1.b-c2.b));
   }
+}
+
+template <typename PointT>
+pcl::segmentation::grabcut::Color::Color (const PointT& p)
+{
+  r = static_cast<float> (p.r) / 255.0;
+  g = static_cast<float> (p.g) / 255.0;
+  b = static_cast<float> (p.b) / 255.0;
+}
+
+template <typename PointT>
+pcl::segmentation::grabcut::Color::operator PointT () const
+{
+  PointT p;
+  p.r = static_cast<uint32_t> (r * 255);
+  p.g = static_cast<uint32_t> (g * 255);
+  p.b = static_cast<uint32_t> (b * 255);
+  return (p);
 }
 
 template <typename PointT> void
@@ -34,12 +48,6 @@ pcl::GrabCut<PointT>::initCompute ()
     PCL_ERROR ("[pcl::GrabCut::initCompute ()] Init failed!");
     return (false);
   }
-  
-  if (!input_->isOrganized ())
-  {
-    PCL_ERROR ("[pcl::GrabCut::initCompute ()] Need an organized point cloud to proceed!");
-    return (false);
-  }
 
   std::vector<pcl::PCLPointField> in_fields_;
   if ((pcl::getFieldIndex<PointT> (*input_, "rgb", in_fields_) == -1) &&
@@ -48,7 +56,7 @@ pcl::GrabCut<PointT>::initCompute ()
     PCL_ERROR ("[pcl::GrabCut::initCompute ()] No RGB data available, aborting!");
     return (false);
   }
-  
+
   // Initialize the working image
   image_.reset (new Image (input_->width, input_->height));
   for (std::size_t i = 0; i < input_->size (); ++i)
@@ -59,28 +67,37 @@ pcl::GrabCut<PointT>::initCompute ()
   height_ = image_->height;
 
   // Initialize the spatial locator
-  if (!tree_)
+  if (!tree_ && !input_->isOrganized ())
   {
-    if (input_->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
-    else
-      tree_.reset (new pcl::search::KdTree<PointT> (false));
+    tree_.reset (new pcl::search::KdTree<PointT> (true));
     tree_->setInputCloud (input_);
   }
+
   const std::size_t indices_size = indices_->size ();
   trimap_ = std::vector<segmentation::grabcut::TrimapValue> (indices_size, TrimapUnknown);
-  hard_segmentation_ = std::vector<segmentation::grabcut::SegmentationValue> (indices_size, 
+  hard_segmentation_ = std::vector<segmentation::grabcut::SegmentationValue> (indices_size,
                                                                               SegmentationBackground);
   GMM_component_.resize (indices_size);
   n_links_.resize (indices_size);
+
   //  soft_segmentation_ = 0;		// Not yet implemented
   foreground_GMM_.resize (K_);
   background_GMM_.resize (K_);
+
   //set some constants
   computeL ();
-  computeBeta ();
-  computeNLinks ();
-  
+
+  if (image_->isOrganized ())
+  {
+    computeBetaOrganized ();
+    computeNLinksOrganized ();
+  }
+  else
+  {
+    computeBetaNonOrganized ();
+    computeNLinksNonOrganized ();
+  }
+
   initialized_ = false;
   return (true);
 }
@@ -98,31 +115,12 @@ pcl::GrabCut<PointT>::setTerminalWeights (vertex_descriptor v, float source_capa
   graph_.addTargetEdge (v, sink_capacity);
 }
 
-// template <typename PointT> void 
-// pcl::GrabCut<PointT>::setBackgroundPointsIndices (int x1, int y1, int x2, int y2)
-// {
-//   using namespace pcl::segmentation::grabcut;
-  
-//   // Step 1: User creates inital Trimap with rectangle, Background outside, Unknown inside
-//   fill (trimap_.begin (), trimap_.end (), TrimapBackground);  
-//   fillRectangle (trimap_, width_, height_, x1, y1, x2, y2, TrimapUnknown);
-
-//   // Step 2: Initial segmentation, Background where Trimap is Background, Foreground where Trimap is Unknown.
-//   fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
-//   fillRectangle (hard_segmentation_, width_, height_, x1, y1, x2, y2, SegmentationForeground);
-//   if (!initialized_)
-//   {
-//     fitGMMs ();
-//     initialized_ = true;
-//   }
-// }
-
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &indices)
 {
   using namespace pcl::segmentation::grabcut;
   if (!initCompute ())
-    return;  
+    return;
 
   std::fill (trimap_.begin (), trimap_.end (), TrimapBackground);
   std::fill (hard_segmentation_.begin (), hard_segmentation_.end (), SegmentationBackground);
@@ -139,17 +137,17 @@ pcl::GrabCut<PointT>::setBackgroundPointsIndices (const PointIndicesConstPtr &in
   }
 }
 
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::fitGMMs ()
 {
   // Step 3: Build GMMs using Orchard-Bouman clustering algorithm
   buildGMMs (*image_, *indices_, hard_segmentation_, GMM_component_, background_GMM_, foreground_GMM_);
 
   // Initialize the graph for graphcut (do this here so that the T-Link debugging image will be initialized)
-  initGraph ();  
+  initGraph ();
 }
 
-template <typename PointT> int 
+template <typename PointT> int
 pcl::GrabCut<PointT>::refineOnce ()
 {
   // Steps 4 and 5: Learn new GMMs from current segmentation
@@ -166,7 +164,7 @@ pcl::GrabCut<PointT>::refineOnce ()
   return (changed);
 }
 
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::refine ()
 {
   std::size_t changed = indices_->size ();
@@ -175,21 +173,21 @@ pcl::GrabCut<PointT>::refine ()
     changed = refineOnce ();
 }
 
-template <typename PointT> int 
+template <typename PointT> int
 pcl::GrabCut<PointT>::updateHardSegmentation ()
 {
   using namespace pcl::segmentation::grabcut;
-  
+
   int changed = 0;
 
   const int number_of_indices = static_cast<int> (indices_->size ());
   for (int i_point = 0; i_point < number_of_indices; ++i_point)
   {
     SegmentationValue old_value = hard_segmentation_ [i_point];
-                        
+
     if (trimap_ [i_point] == TrimapBackground)
       hard_segmentation_ [i_point] = SegmentationBackground;
-    else 
+    else
       if (trimap_ [i_point] == TrimapForeground)
         hard_segmentation_ [i_point] = SegmentationForeground;
       else	// TrimapUnknown
@@ -199,14 +197,14 @@ pcl::GrabCut<PointT>::updateHardSegmentation ()
         else
           hard_segmentation_ [i_point] = SegmentationBackground;
       }
-    
+
     if (old_value != hard_segmentation_ [i_point])
       ++changed;
   }
   return (changed);
 }
 
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentation::grabcut::TrimapValue t)
 {
   using namespace pcl::segmentation::grabcut;
@@ -218,17 +216,17 @@ pcl::GrabCut<PointT>::setTrimap (const PointIndicesConstPtr &indices, segmentati
   if (t == TrimapForeground)
     for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
       hard_segmentation_[*idx] = SegmentationForeground;
-  else 
+  else
     if (t == TrimapBackground)
       for (idx = indices->indices.begin (); idx != indices->indices.end (); ++idx)
         hard_segmentation_[*idx] = SegmentationBackground;
 }
 
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::initGraph ()
 {
   using namespace pcl::segmentation::grabcut;
-  const int number_of_indices = static_cast<int> (indices_->size ());  
+  const int number_of_indices = static_cast<int> (indices_->size ());
   // Set up the graph (it can only be used once, so we have to recreate it each time the graph is updated)
   graph_.clear ();
   graph_nodes_.clear ();
@@ -245,7 +243,7 @@ pcl::GrabCut<PointT>::initGraph ()
   {
     int point_index = (*indices_) [i_point];
     float back, fore;
-    
+
     switch (trimap_[point_index])
     {
       case TrimapUnknown :
@@ -264,9 +262,9 @@ pcl::GrabCut<PointT>::initGraph ()
       {
         fore = L_;
         back = 0;
-      }  
+      }
     }
-    
+
     setTerminalWeights (graph_nodes_[i_point], fore, back);
   }
 
@@ -281,7 +279,7 @@ pcl::GrabCut<PointT>::initGraph ()
       std::vector<float>::const_iterator weights_it  = n_link.weights.begin ();
       for (; indices_it != n_link.indices.end (); ++indices_it, ++weights_it)
       {
-        if (*indices_it != point_index)
+        if ((*indices_it != point_index) && (*indices_it > -1))
         {
           addEdge (graph_nodes_[i_point], graph_nodes_[*indices_it], *weights_it, *weights_it);
         }
@@ -290,8 +288,8 @@ pcl::GrabCut<PointT>::initGraph ()
   }
 }
 
-template <typename PointT> void 
-pcl::GrabCut<PointT>::computeNLinks ()
+template <typename PointT> void
+pcl::GrabCut<PointT>::computeNLinksNonOrganized ()
 {
   const int number_of_indices = static_cast<int> (indices_->size ());
   for (int i_point = 0; i_point < number_of_indices; ++i_point)
@@ -317,14 +315,41 @@ pcl::GrabCut<PointT>::computeNLinks ()
   }
 }
 
-template <typename PointT> void 
-pcl::GrabCut<PointT>::computeBeta ()
+template <typename PointT> void
+pcl::GrabCut<PointT>::computeNLinksOrganized ()
+{
+	for( unsigned int y = 0; y < image_->height; ++y )
+	{
+    for( unsigned int x = 0; x < image_->width; ++x )
+    {
+      // We saved the color and euclidean distance previously at the computeBeta stage for
+      // optimization purpose but here we compute the real weight
+      std::size_t point_index = y * input_->width + x;
+      NLinks &links = n_links_[point_index];
+
+      if( x > 0 && y < image_->height-1 )
+        links.weights[0] = lambda_ * exp (-beta_ * links.weights[0]) / links.dists[0];
+
+      if( y < image_->height-1 )
+        links.weights[1] = lambda_ * exp (-beta_ * links.weights[1]) / links.dists[1];
+
+      if( x < image_->width-1 && y < image_->height-1 )
+        links.weights[2] = lambda_ * exp (-beta_ * links.weights[2]) / links.dists[2];
+
+      if( x < image_->width-1 )
+        links.weights[3] = lambda_ * exp (-beta_ * links.weights[3]) / links.dists[3];
+    }
+	}
+}
+
+template <typename PointT> void
+pcl::GrabCut<PointT>::computeBetaNonOrganized ()
 {
   float result = 0;
   std::size_t edges = 0;
 
   const int number_of_indices = static_cast<int> (indices_->size ());
-  
+
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
     int point_index = (*indices_)[i_point];
@@ -352,19 +377,87 @@ pcl::GrabCut<PointT>::computeBeta ()
       }
     }
   }
-  std::cout << "result " << result << std::endl;
-  std::cout << "edges " << edges << std::endl;
+
   beta_ = 1e5 / (2*result / edges);
-  std::cout << "beta " << beta_ << std::endl;
 }
 
-template <typename PointT> void 
+template <typename PointT> void
+pcl::GrabCut<PointT>::computeBetaOrganized ()
+{
+  float result = 0;
+  std::size_t edges = 0;
+
+  for (unsigned int y = 0; y < input_->height; ++y)
+  {
+    for (unsigned int x = 0; x < input_->width; ++x)
+    {
+      std::size_t point_index = y * input_->width + x;
+      NLinks &links = n_links_[point_index];
+      links.nb_links = 4;
+      links.weights.resize (links.nb_links, 0);
+      links.dists.resize (links.nb_links, 0);
+      links.indices.resize (links.nb_links, -1);
+
+      if (x > 0 && y < input_->height-1)
+      {
+        std::size_t upleft = (y+1)  * input_->width + x - 1;
+        links.indices[0] = upleft;
+        links.dists[0] = sqrt (2);
+        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
+                                                      image_->points[upleft]);
+        links.weights[0] = color_dist;
+        result+= color_dist;
+        edges++;
+      }
+
+      if (y < input_->height-1)
+      {
+        std::size_t up = (y+1) * input_->width + x;
+        links.indices[1] = up;
+        links.dists[1] = 1;
+        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
+                                                      image_->points[up]);
+        links.weights[1] = color_dist;
+        result+= color_dist;
+        edges++;
+      }
+
+      if (x < input_->width-1 && y < input_->height-1)
+      {
+        std::size_t upright = (y+1) * input_->width + x + 1;
+        links.indices[2] = upright;
+        links.dists[2] = sqrt (2);
+        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
+                                                      image_->points [upright]);
+        links.weights[2] = color_dist;
+        result+= color_dist;
+        edges++;
+      }
+
+      if (x < input_->width-1)
+      {
+        std::size_t right = y * input_->width + x + 1;
+        links.indices[3] = right;
+        links.dists[3] = 1;
+        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
+                                                      image_->points[right]);
+        links.weights[3] = color_dist;
+        result+= color_dist;
+        edges++;
+      }
+    }
+  }
+
+  beta_ = 1e5 / (2*result / edges);
+}
+
+template <typename PointT> void
 pcl::GrabCut<PointT>::computeL ()
 {
   L_ = 8*lambda_ + 1;
 }
 
-template <typename PointT> void 
+template <typename PointT> void
 pcl::GrabCut<PointT>::extract (std::vector<pcl::PointIndices>& clusters)
 {
   using namespace pcl::segmentation::grabcut;
@@ -374,7 +467,7 @@ pcl::GrabCut<PointT>::extract (std::vector<pcl::PointIndices>& clusters)
   clusters[1].indices.reserve (indices_->size ());
   refine ();
   assert (hard_segmentation_.size () == indices_->size ());
-  const int indices_size = static_cast<int> (indices_->size ());  
+  const int indices_size = static_cast<int> (indices_->size ());
   for (int i = 0; i < indices_size; ++i)
     if (hard_segmentation_[i] == SegmentationForeground)
       clusters[1].indices.push_back (i);
