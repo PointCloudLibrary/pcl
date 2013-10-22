@@ -204,8 +204,10 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     return;
   }
 
+  double sqr_dist_threshold = corr_dist_threshold_*corr_dist_threshold_;
+
   if (!error_functor_)
-    error_functor_.reset (new TruncatedError (static_cast<float> (corr_dist_threshold_)));
+    error_functor_.reset (new TruncatedError (static_cast<float> (sqr_dist_threshold)));
 
 
   std::vector<int> sample_indices (nr_samples_);
@@ -220,7 +222,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   {
     // If guess is not the Identity matrix we check it.
     transformPointCloud (*input_, input_transformed, final_transformation_);
-    lowest_error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
+    lowest_error = computeErrorMetric (input_transformed, static_cast<float> (sqr_dist_threshold));
     i_iter = 1;
   }
 
@@ -237,7 +239,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
     // Tranform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);
-    error = computeErrorMetric (input_transformed, static_cast<float> (corr_dist_threshold_));
+    error = computeErrorMetric (input_transformed, static_cast<float> (sqr_dist_threshold));
 
     // If the new error is lower, update the final transformation
     if (i_iter == 0 || error < lowest_error)

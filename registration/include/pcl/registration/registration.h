@@ -380,11 +380,11 @@ namespace pcl
       }
 
       /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
-        * \param[in] max_range maximum allowable distance between a point and its correspondence in the target 
+        * \param[in] max_distance maximum allowable distance between a point and its correspondence in the target 
         * (default: double::max)
         */
       inline double 
-      getFitnessScore (double max_range = std::numeric_limits<double>::max ());
+      getFitnessScore (double max_distance = std::sqrt (std::numeric_limits<double>::max ()));
 
       /** \brief Obtain the Euclidean fitness score (e.g., sum of squared distances from the source to the target)
         * from two sets of correspondence distances (distances between source and target points)
