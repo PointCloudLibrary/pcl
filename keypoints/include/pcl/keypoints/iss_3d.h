@@ -104,6 +104,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::tree_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       /** \brief Constructor.
         * \param[in] salient_radius the radius of the spherical neighborhood used to compute the scatter matrix.

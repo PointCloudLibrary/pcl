@@ -72,6 +72,7 @@
   (pcl::PFHSignature125)        \
   (pcl::PFHRGBSignature250)     \
   (pcl::PPFSignature)           \
+  (pcl::CPPFSignature)          \
   (pcl::PPFRGBSignature)        \
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
@@ -132,6 +133,7 @@
   (pcl::PFHSignature125)        \
   (pcl::PFHRGBSignature250)     \
   (pcl::PPFSignature)           \
+  (pcl::CPPFSignature)          \
   (pcl::PPFRGBSignature)        \
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
@@ -1147,6 +1149,18 @@ namespace pcl
     float alpha_m;
   
     friend std::ostream& operator << (std::ostream& os, const PPFSignature& p);
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
+  /** \brief A point structure for storing the Point Pair Feature (CPPF) values
+    * \ingroup common
+    */
+  struct CPPFSignature
+  {
+    float f1, f2, f3, f4, f5, f6, f7, f8, f9, f10;
+    float alpha_m;
+  
+    friend std::ostream& operator << (std::ostream& os, const CPPFSignature& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PPFRGBSignature& p);
