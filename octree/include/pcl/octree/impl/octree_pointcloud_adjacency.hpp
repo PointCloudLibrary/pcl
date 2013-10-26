@@ -54,7 +54,28 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT> vo
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ()
 {
   //double t1,t2;
+  float minX = std::numeric_limits<float>::max (), minY = std::numeric_limits<float>::max (), minZ = std::numeric_limits<float>::max ();
+  float maxX = std::numeric_limits<float>::min (), maxY = std::numeric_limits<float>::min (), maxZ = std::numeric_limits<float>::min ();
   
+  for (int i = 0; i < input_->size (); ++i)
+  {
+    PointT temp (input_->points[i]);
+    if (transform_func_) //Search for point with 
+      transform_func_ (temp);
+    if (temp.x < minX)
+      minX = temp.x;
+    if (temp.y < minY)
+      minY = temp.y;
+    if (temp.z < minZ)
+      minZ = temp.z;
+    if (temp.x > maxX)
+      maxX = temp.x;
+    if (temp.y > maxY)
+      maxY = temp.y;
+    if (temp.z > maxZ)
+      maxZ = temp.z;
+  }
+  this->defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
   //t1 = timer_.getTime ();
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
 
@@ -125,7 +146,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     key_arg.x = static_cast<unsigned int> ((temp.x - this->min_x_) / this->resolution_);
     key_arg.y = static_cast<unsigned int> ((temp.y - this->min_y_) / this->resolution_);
     key_arg.z = static_cast<unsigned int> ((temp.z - this->min_z_) / this->resolution_);
-    
   }
   else 
   {
@@ -147,23 +167,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   const PointT& point = this->input_->points[pointIdx_arg];
   if (!pcl::isFinite (point))
     return;
-  
-  if (transform_func_)
-  { 
-    PointT temp (point);
-    transform_func_ (temp);
-    this->adoptBoundingBoxToPoint (temp);
-  }
-  else  
-    this->adoptBoundingBoxToPoint (point);
-    
+   
   // generate key
   this->genOctreeKeyforPoint (point, key);
   // add point to octree at key
   LeafContainerT* container = this->createLeaf(key);
   container->addPoint (point);
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void

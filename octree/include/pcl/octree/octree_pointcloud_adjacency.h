@@ -96,11 +96,23 @@ namespace pcl
       typedef typename OctreePointCloudT::BranchNode BranchNode;
       
       typedef pcl::PointCloud<PointT> CloudT;
-      
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef boost::shared_ptr<PointCloud> PointCloudPtr;
+      typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
+        
+      // public typedefs
+      typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
+      typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
       //So we can access input
       using OctreePointCloudT::input_;
       using OctreePointCloudT::resolution_;
-      
+      using OctreePointCloudT::min_x_; 
+      using OctreePointCloudT::min_y_;
+      using OctreePointCloudT::min_z_;
+      using OctreePointCloudT::max_x_;
+      using OctreePointCloudT::max_y_;
+      using OctreePointCloudT::max_z_;
+
       // iterators are friends
       friend class OctreeIteratorBase<OctreeAdjacencyT> ;
       friend class OctreeDepthFirstIterator<OctreeAdjacencyT> ;
@@ -150,7 +162,7 @@ namespace pcl
        */
       void 
       addPointsFromInputCloud ();
-      
+            
       /** \brief Gets the leaf container for a given point 
        *  \param[in] point_arg Point to search for
        *  \returns Pointer to the leaf container - null if no leaf container found
@@ -207,7 +219,14 @@ namespace pcl
       void
       genOctreeKeyforPoint (const PointT& point_arg,OctreeKey & key_arg) const;
       
-          private:
+    private:
+      /** \brief Add point at given index from input point cloud to octree. Index will be also added to indices vector. -- This functionality is not enabled for adjacency octree
+       */
+      OctreePointCloudT::addPointFromCloud;
+
+      /** \brief Add point simultaneously to octree and input point cloud. -- This functionality is not enabled for adjacency octree
+       */
+      OctreePointCloudT::addPointToCloud;
 
       StopWatch timer_;
 
