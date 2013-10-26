@@ -821,9 +821,30 @@ namespace pcl
       data_.xyz_[1] /= (static_cast<float> (num_points_));
       data_.xyz_[2] /= (static_cast<float> (num_points_));
     }
-    
+
+    //Explicit overloads for XYZ types
+    template<>
+    void
+    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ,pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData>::addPoint (const pcl::PointXYZ &new_point)
+    {
+      ++num_points_;
+      //Same as before here
+      data_.xyz_[0] += new_point.x;
+      data_.xyz_[1] += new_point.y;
+      data_.xyz_[2] += new_point.z;
+    }
+
+    template<> void
+    pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ,pcl::SupervoxelClustering<pcl::PointXYZ>::VoxelData>::computeData ()
+    {
+      data_.xyz_[0] /= (static_cast<float> (num_points_));
+      data_.xyz_[1] /= (static_cast<float> (num_points_));
+      data_.xyz_[2] /= (static_cast<float> (num_points_));
+    }
+
   }
 }
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
