@@ -521,8 +521,8 @@ inline void pcl::io::ply::ply_parser::parse_list_property_definition (const std:
 {
   typedef SizeType size_type;
   typedef ScalarType scalar_type;
-  typename list_property_definition_callback_type<size_type, scalar_type>::type& list_property_definition_callback = 
-    list_property_definition_callbacks_.get<size_type, scalar_type> ();
+  typedef typename  list_property_definition_callback_type<size_type, scalar_type>::type list_property_definition_callback_type;
+  list_property_definition_callback_type& list_property_definition_callback = list_property_definition_callbacks_.get<size_type, scalar_type> ();
   typedef typename list_property_begin_callback_type<size_type, scalar_type>::type list_property_begin_callback_type;
   typedef typename list_property_element_callback_type<size_type, scalar_type>::type list_property_element_callback_type;
   typedef typename list_property_end_callback_type<size_type, scalar_type>::type list_property_end_callback_type;
