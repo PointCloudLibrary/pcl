@@ -136,16 +136,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
 
   // Transform the input dataset using the final transformation
   PointCloudSource input_transformed;
-  //transformPointCloud (*input_, input_transformed, final_transformation_);
-  input_transformed.resize (input_->size ());
-  for (size_t i = 0; i < input_->size (); ++i)
-  {
-    const PointSource &src = input_->points[i];
-    PointTarget &tgt = input_transformed.points[i];
-    tgt.x = static_cast<float> (final_transformation_ (0, 0) * src.x + final_transformation_ (0, 1) * src.y + final_transformation_ (0, 2) * src.z + final_transformation_ (0, 3));
-    tgt.y = static_cast<float> (final_transformation_ (1, 0) * src.x + final_transformation_ (1, 1) * src.y + final_transformation_ (1, 2) * src.z + final_transformation_ (1, 3));
-    tgt.z = static_cast<float> (final_transformation_ (2, 0) * src.x + final_transformation_ (2, 1) * src.y + final_transformation_ (2, 2) * src.z + final_transformation_ (2, 3));
-  }
+  transformPointCloud (*input_, input_transformed, final_transformation_);
 
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
@@ -154,22 +145,16 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
   int nr = 0;
   for (size_t i = 0; i < input_transformed.points.size (); ++i)
   {
-    Eigen::Vector4f p1 = Eigen::Vector4f (input_transformed.points[i].x,
-                                          input_transformed.points[i].y,
-                                          input_transformed.points[i].z, 0);
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
     
     // Deal with occlusions (incomplete targets)
-    if (nn_dists[0] > max_range)
-      continue;
-
-    Eigen::Vector4f p2 = Eigen::Vector4f (target_->points[nn_indices[0]].x,
-                                          target_->points[nn_indices[0]].y,
-                                          target_->points[nn_indices[0]].z, 0);
-    // Calculate the fitness score
-    fitness_score += fabs ((p1-p2).squaredNorm ());
-    nr++;
+    if (nn_dists[0] <= max_range)
+    {
+      // Add to the fitness score
+      fitness_score += nn_dists[0];
+      nr++;
+    }
   }
 
   if (nr > 0)
