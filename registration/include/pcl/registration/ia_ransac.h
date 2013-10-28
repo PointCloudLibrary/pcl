@@ -65,6 +65,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::max_iterations_;
       using Registration<PointSource, PointTarget>::tree_;
       using Registration<PointSource, PointTarget>::transformation_estimation_;
+      using Registration<PointSource, PointTarget>::converged_;
       using Registration<PointSource, PointTarget>::getClassName;
 
       typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
