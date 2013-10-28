@@ -82,32 +82,23 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS void 
-    saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_image, int width, int height)
-    {
-      saveCharPNGFile(file_name, rgb_image, width, height, 3);
-    }
+    saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_image, int width, int height);
 
     /** \brief Saves 8-bit grayscale cloud as image to PNG file.
       * \param[in] file_name the name of the file to write to disk
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-    void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud)
-    {
-      saveCharPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
-    }
+    PCL_EXPORTS void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud);
 
     /** \brief Saves 16-bit grayscale cloud as image to PNG file.
       * \param[in] file_name the name of the file to write to disk
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-    void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
-    {
-      saveShortPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
-    }
+    PCL_EXPORTS void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud);
 
     /** \brief Saves a PCLImage (formely ROS sensor_msgs::Image) to PNG file.
       * \param[in] file_name the name of the file to write to disk
@@ -115,33 +106,15 @@ namespace pcl
       * \ingroup io
       * \note Currently only "rgb8", "mono8", and "mono16" image encodings are supported.
       */
-    void
-    savePNGFile (const std::string& file_name, const pcl::PCLImage& image)
-    {
-      if (image.encoding == "rgb8")
-      {
-        saveRgbPNGFile(file_name, &image.data[0], image.width, image.height);
-      }
-      else if (image.encoding == "mono8")
-      {
-        saveCharPNGFile(file_name, &image.data[0], image.width, image.height, 1);
-      }
-      else if (image.encoding == "mono16")
-      {
-        saveShortPNGFile(file_name, reinterpret_cast<const unsigned short*>(&image.data[0]), image.width, image.height, 1);
-      }
-      else
-      {
-        PCL_ERROR ("[pcl::io::savePNGFile] Unsupported image encoding \"%s\".\n", image.encoding.c_str ());
-      }
-    }
+    PCL_EXPORTS void
+    savePNGFile (const std::string& file_name, const pcl::PCLImage& image);
 
     /** \brief Saves RGB fields of cloud as image to PNG file. 
       * \param[in] file_name the name of the file to write to disk
       * \param[in] cloud point cloud to save
       * \ingroup io
       */
-	template <typename T>
+    template <typename T>
     PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<T>& cloud),
     "pcl::io::savePNGFile<typename T> (file_name, cloud) is deprecated, please use a new generic "
     "function pcl::io::savePNGFile (file_name, cloud, field_name) with \"rgb\" as the field name."
@@ -170,16 +143,8 @@ namespace pcl
     "pcl::io::savePNGFile (file_name, cloud) is deprecated, please use a new generic function "
     "pcl::io::savePNGFile (file_name, cloud, field_name) with \"label\" as the field name."
     );
-    void
-    savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud)
-    {
-      std::vector<unsigned short> data(cloud.width * cloud.height);
-      for (size_t i = 0; i < cloud.points.size (); ++i)
-      {
-        data[i] = static_cast<unsigned short> (cloud.points[i].label);      
-      }
-      saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
-    }
+    PCL_EXPORTS void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud);
 
     /** \brief Saves the data from the specified field of the point cloud as image to PNG file.
      * \param[in] file_name the name of the file to write to disk
