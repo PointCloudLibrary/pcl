@@ -208,7 +208,6 @@ pcl::ROPSEstimation <PointInT, PointOutT>::buildListOfPointsTriangles ()
 {
   triangles_of_the_point_.clear ();
 
-  const unsigned int number_of_points = static_cast <unsigned int> (surface_->points.size ());
   const unsigned int number_of_triangles = static_cast <unsigned int> (triangles_.size ());
 
   std::vector <unsigned int> dummy;

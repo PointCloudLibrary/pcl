@@ -123,9 +123,6 @@ namespace pcl
       virtual void
       computeFeature (PointCloudOut& output);
 
-      virtual void
-      computeFeatureEigen (pcl::PointCloud<Eigen::MatrixXf> &output) {};
-
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.
         * The only purpose of this method is to improve perfomance of the algorithm.

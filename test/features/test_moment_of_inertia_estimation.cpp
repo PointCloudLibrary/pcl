@@ -81,7 +81,6 @@ TEST (MomentOfInertia, InvalidParameters)
 {
   float angle_step = 0.0f;
   float point_mass = 0.0f;
-  bool normalization_flag = true;
 
   pcl::MomentOfInertiaEstimation <pcl::PointXYZ> feature_extractor;
   feature_extractor.setInputCloud (cloud);
