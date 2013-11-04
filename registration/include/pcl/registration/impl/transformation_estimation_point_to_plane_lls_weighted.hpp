@@ -186,9 +186,6 @@ estimateRigidTransformation (ConstCloudIterator<PointSource>& source_it,
     if (!pcl_isfinite (source_it->x) ||
         !pcl_isfinite (source_it->y) ||
         !pcl_isfinite (source_it->z) ||
-        !pcl_isfinite (source_it->normal_x) ||
-        !pcl_isfinite (source_it->normal_y) ||
-        !pcl_isfinite (source_it->normal_z) ||
         !pcl_isfinite (target_it->x) ||
         !pcl_isfinite (target_it->y) ||
         !pcl_isfinite (target_it->z) ||
