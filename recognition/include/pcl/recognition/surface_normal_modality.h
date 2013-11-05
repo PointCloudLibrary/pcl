@@ -319,7 +319,7 @@ namespace pcl
           * \param[in] rhs the candidate to compare with. 
           */
         bool 
-        operator< (const Candidate & rhs)
+        operator< (const Candidate & rhs) const
         {
           return (distance > rhs.distance);
         }
