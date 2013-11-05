@@ -75,7 +75,7 @@ namespace pcl
         /** \brief Operator for comparing to candidates (by magnitude of the gradient).
           * \param[in] rhs the candidate to compare with.
           */
-        bool operator< (const Candidate & rhs)
+        bool operator< (const Candidate & rhs) const
         {
           return (gradient.magnitude > rhs.gradient.magnitude);
         }
