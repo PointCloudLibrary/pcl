@@ -938,7 +938,7 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
   // Add it to all renderers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we remove the actor from all renderers?
@@ -1242,7 +1242,7 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers?
@@ -1775,7 +1775,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1799,7 +1799,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1843,7 +1843,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
 
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1869,7 +1869,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1886,6 +1886,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization
       win_->SetSize (static_cast<int> (camera.window_size[0]),
                      static_cast<int> (camera.window_size[1]));
     }
+    ++i;
   }
 }
 
@@ -1895,7 +1896,7 @@ pcl::visualization::PCLVisualizer::setCameraClipDistances (double near, double f
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1904,6 +1905,7 @@ pcl::visualization::PCLVisualizer::setCameraClipDistances (double near, double f
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
       cam->SetClippingRange (near, far);
     }
+    ++i;
   }
 }
 
@@ -1913,7 +1915,7 @@ pcl::visualization::PCLVisualizer::setCameraFieldOfView (double fovy, int viewpo
 {
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Modify all renderer's cameras
@@ -1923,6 +1925,7 @@ pcl::visualization::PCLVisualizer::setCameraFieldOfView (double fovy, int viewpo
       cam->SetUseHorizontalViewAngle (0);
       cam->SetViewAngle (fovy * 180.0 / M_PI);
     }
+    ++i;
   }
 }
 
