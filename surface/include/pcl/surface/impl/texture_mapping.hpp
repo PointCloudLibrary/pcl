@@ -37,6 +37,7 @@
 
 #ifndef PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
 #define PCL_SURFACE_IMPL_TEXTURE_MAPPING_HPP_
+
 #include <pcl/common/distances.h>
 #include <pcl/surface/texture_mapping.h>
 
@@ -1041,25 +1042,25 @@ pcl::TextureMapping<PointInT>::getPointUVCoordinates(const pcl::PointXYZ &pt, co
     // compute image center and dimension
     double sizeX = cam.width;
     double sizeY = cam.height;
-	double cx, cy;
-	if (cam.center_w>0)
-		cx = cam.center_w;
-	else
-	  	cx = sizeX / 2.0;
-	if (cam.center_h>0)
-		cy = cam.center_h;
-	else
-	    cy = sizeY / 2.0;
+    double cx, cy;
+    if (cam.center_w > 0)
+      cx = cam.center_w;
+    else
+      cx = sizeX / 2.0;
+    if (cam.center_h > 0)
+      cy = cam.center_h;
+    else
+      cy = sizeY / 2.0;
 
-	double focal_x, focal_y; 
-	if (cam.focal_length_w>0)
-		focal_x = cam.focal_length_w;
-	else
-		focal_x = cam.focal_length;
-	if (cam.focal_length_h>0)
-		focal_y = cam.focal_length_h;
-	else
-		focal_y = cam.focal_length;
+    double focal_x, focal_y; 
+    if (cam.focal_length_w > 0)
+      focal_x = cam.focal_length_w;
+    else
+      focal_x = cam.focal_length;
+    if (cam.focal_length_h > 0)
+      focal_y = cam.focal_length_h;
+    else
+      focal_y = cam.focal_length;
 
     // project point on camera's image plane
     UV_coordinates.x = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
