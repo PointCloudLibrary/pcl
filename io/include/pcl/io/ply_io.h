@@ -298,61 +298,12 @@ namespace pcl
       inline void
       vertexListPropertyEndCallback ();
 
-      /** Callback function for an anonymous vertex double property.
+      /** Callback function for an anonymous vertex scalar property.
         * Writes down a double value in cloud data.
         * param[in] value double value parsed
         */
-      inline void
-      vertexDoublePropertyCallback (pcl::io::ply::float64 value);
-
-      /** Callback function for an anonymous vertex float property.
-        * Writes down a float value in cloud data.
-        * param[in] value float value parsed
-        */
-      inline void
-      vertexFloatPropertyCallback (pcl::io::ply::float32 value);
-
-      /** Callback function for an anonymous vertex int property.
-        * Writes down a int value in cloud data.
-        * param[in] value int value parsed
-        */
-      inline void
-      vertexIntPropertyCallback (pcl::io::ply::int32 value);
-
-      /** Callback function for an anonymous vertex uint property.
-        * Writes down a uint value in cloud data.
-        * param[in] value uint value parsed
-        */
-      inline void
-      vertexUnsignedIntPropertyCallback (pcl::io::ply::uint32 value);
-
-      /** Callback function for an anonymous vertex short property.
-        * Writes down a short value in cloud data.
-        * param[in] value short value parsed
-        */
-      inline void
-      vertexShortPropertyCallback (pcl::io::ply::int16 value);
-
-      /** Callback function for an anonymous vertex ushort property.
-        * Writes down a ushort value in cloud data.
-        * param[in] value ushort value parsed
-        */
-      inline void
-      vertexUnsignedShortPropertyCallback (pcl::io::ply::uint16 value);
-
-      /** Callback function for an anonymous vertex char property.
-        * Writes down a char value in cloud data.
-        * param[in] value char value parsed
-        */
-      inline void
-      vertexCharPropertyCallback (pcl::io::ply::int8 value);
-
-      /** Callback function for an anonymous vertex uchar property.
-        * Writes down a uchar value in cloud data.
-        * param[in] value uchar value parsed
-        */
-      inline void
-      vertexUnsignedCharPropertyCallback (pcl::io::ply::uint8 value);
+      template<typename Scalar> void
+      vertexScalarPropertyCallback (Scalar value);
 
       /** Callback function for vertex RGB color.
         * This callback is in charge of packing red green and blue in a single int
@@ -461,69 +412,13 @@ namespace pcl
       inline void
       cloudWidthCallback (const int &width) { cloud_->width = width; }
         
-      /** Append a double property to the cloud fields.
+      /** Append a scalar property to the cloud fields.
         * param[in] name property name
         * param[in] count property count: 1 for scalar properties and higher for a
         * list property.
         */
-      void
-      appendDoubleProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a float property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendFloatProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append an unsigned int property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendIntProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append an unsigned int property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedIntProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a short property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendShortProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a short property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedShortProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a char property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendCharProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a char property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedCharProperty (const std::string& name, const size_t& count = 1);
+      template<typename Scalar> void
+      appendScalarProperty (const std::string& name, const size_t& count = 1);
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
