@@ -52,6 +52,7 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
+set (PCL_SHARED_LIBS OFF)
 # ---[ Android check
 if (ANDROID)
   set (PCL_SHARED_LIBS OFF)
