@@ -53,6 +53,8 @@ namespace pcl
     /** \brief Structure to store camera pose and focal length. */
     struct Camera
     {
+      Camera () : pose (), focal_length (), focal_length_w (-1), focal_length_h (-1),
+        center_w (-1), center_h (-1), height (), width (), texture_file () {}
       Eigen::Affine3f pose;
       double focal_length;
       double focal_length_w;	// optional
@@ -64,16 +66,6 @@ namespace pcl
       std::string texture_file;
 
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-     
-      /** \brief Default constructor*/
-      Camera ()
-	  {
-		/* Default usage is to set camera focal_length, width and height.
-		 * Applications requiring more precise mapping can set (optionally)
-		 * focal lengths and center of focus along height and width axes. */
-		center_w=-1.0; center_h=-1.0;
-		focal_length_w=-1.0; focal_length_h=-1.0;
-	  }
     };
 
     /** \brief Structure that links a uv coordinate to its 3D point and face.
@@ -200,25 +192,25 @@ namespace pcl
           // compute image center and dimension
           double sizeX = cam.width;
           double sizeY = cam.height;
-		  double cx, cy;
-		  if (cam.center_w>0)
-			  cx = cam.center_w;
-		  else
-			  cx = (sizeX) / 2.0;
-		  if (cam.center_h>0)
-			  cy = cam.center_h;
-		  else
-			  cy = (sizeY) / 2.0;
-		  
-		  double focal_x, focal_y;
-		  if (cam.focal_length_w>0)
-			  focal_x = cam.focal_length_w;
-		  else
-			  focal_x = cam.focal_length;
-		  if (cam.focal_length_h>0)
-			  focal_y = cam.focal_length_h;
-		  else
-			  focal_y = cam.focal_length;
+          double cx, cy;
+          if (cam.center_w > 0)
+            cx = cam.center_w;
+          else
+            cx = (sizeX) / 2.0;
+          if (cam.center_h > 0)
+            cy = cam.center_h;
+          else
+            cy = (sizeY) / 2.0;
+
+          double focal_x, focal_y;
+          if (cam.focal_length_w > 0)
+            focal_x = cam.focal_length_w;
+          else
+            focal_x = cam.focal_length;
+          if (cam.focal_length_h>0)
+            focal_y = cam.focal_length_h;
+          else
+            focal_y = cam.focal_length;
 
           // project point on image frame
           UV_coordinates[0] = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
