@@ -71,6 +71,7 @@
 #if BOOST_VERSION >= 104900
 #include <boost/interprocess/permissions.hpp>
 #endif
+#include <boost/iostreams/device/mapped_file.hpp>
 #define BOOST_PARAMETER_MAX_ARITY 7
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
