@@ -169,13 +169,8 @@ namespace pcl
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version, const int offset = 0);
 
-      /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a pcl/PCLPointCloud2.
-        *
-        * \note This function is provided for backwards compatibility only and
-        * it can only read PLY_V6 files correctly, as pcl::PCLPointCloud2
-        * does not contain a sensor origin/orientation. Reading any file
-        * > PLY_V6 will generate a warning.
-        *
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PCLPointCloud2.
+        * \note This function is provided for backwards compatibility only
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         * \param[in] offset the offset in the file where to expect the true header to begin.
