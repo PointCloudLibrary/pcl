@@ -93,8 +93,6 @@ namespace pcl
         , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
-        , range_count_ (0)
-        , range_grid_vertex_indices_element_index_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
       {}
@@ -109,8 +107,6 @@ namespace pcl
         , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
-        , range_count_ (0)
-        , range_grid_vertex_indices_element_index_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
       {
@@ -476,7 +472,6 @@ namespace pcl
       int vertex_offset_before_;
       //range element artifacts
       std::vector<std::vector <int> > *range_grid_;
-      size_t range_count_, range_grid_vertex_indices_element_index_;
       size_t rgb_offset_before_;
       bool do_resize_;
     public:

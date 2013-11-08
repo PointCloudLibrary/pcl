@@ -80,8 +80,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   }
   else if (element_name == "range_grid")
   {
-    (*range_grid_).resize (count);
-    range_count_ = 0;
+    range_grid_->reserve (count);
     return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
               boost::bind (&pcl::PLYReader::rangeGridBeginCallback, this),
               boost::bind (&pcl::PLYReader::rangeGridEndCallback, this)));
@@ -435,27 +434,28 @@ pcl::PLYReader::vertexEndCallback ()
 }
 
 void
-pcl::PLYReader::rangeGridBeginCallback () { }
+pcl::PLYReader::rangeGridBeginCallback ()
+{
+  range_grid_->push_back (std::vector <int> ());
+}
 
 void
 pcl::PLYReader::rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size)
 {
-  (*range_grid_)[range_count_].reserve (size);
-}
-
-void pcl::PLYReader::rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
-{
-  (*range_grid_)[range_count_].push_back (vertex_index);
+  range_grid_->back ().reserve (size);
 }
 
 void
-pcl::PLYReader::rangeGridVertexIndicesEndCallback () { }
+pcl::PLYReader::rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
+{
+  range_grid_->back ().push_back (vertex_index);
+}
 
 void
-pcl::PLYReader::rangeGridEndCallback ()
-{
-  ++range_count_;
-}
+pcl::PLYReader::rangeGridVertexIndicesEndCallback () {}
+
+void
+pcl::PLYReader::rangeGridEndCallback () {}
 
 void
 pcl::PLYReader::objInfoCallback (const std::string& line)
