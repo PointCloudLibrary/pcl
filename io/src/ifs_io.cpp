@@ -226,6 +226,105 @@ pcl::IFSReader::read (const std::string &file_name,
   return (0);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int &ifs_version)
+{
+  pcl::console::TicToc tt;
+  tt.tic ();
+
+  unsigned int data_idx;
+
+  int res = readHeader (file_name, mesh.cloud, ifs_version, data_idx);
+
+  if (res < 0)
+    return (res);
+
+  // Get the number of points the mesh.cloud should have
+  unsigned int nr_points = mesh.cloud.width * mesh.cloud.height;
+
+  // Setting the is_dense property to true by default
+  mesh.cloud.is_dense = true;
+
+  boost::iostreams::mapped_file_source mapped_file;
+
+  size_t data_size = data_idx + mesh.cloud.data.size ();
+
+  try
+  {
+    mapped_file.open (file_name, data_size, 0);
+  }
+  catch (const char *exception)
+  {
+    PCL_ERROR ("[pcl::IFSReader::read] Error : %s!\n", file_name.c_str (), exception);
+    mapped_file.close ();
+    return (-1);
+  }
+
+  if(!mapped_file.is_open ())
+  {
+    PCL_ERROR ("[pcl::IFSReader::read] File mapping failure\n");
+    mapped_file.close ();
+    return (-1);
+  }
+
+  // Copy the data
+  memcpy (&mesh.cloud.data[0], mapped_file.data () + data_idx, mesh.cloud.data.size ());
+
+  mapped_file.close ();
+
+  // Reopen the file to load the facets
+  std::ifstream fs;
+  fs.open (file_name.c_str (), std::ios::binary);
+  if (!fs.is_open () || fs.fail ())
+  {
+    PCL_ERROR ("[pcl::IFSReader::read] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno));
+    fs.close ();
+    return (-1);
+  }
+  // Jump to the end of cloud data
+  fs.seekg (data_size);
+  // Read the TRIANGLES keyword
+  uint32_t length_of_keyword;
+  fs.read ((char*)&length_of_keyword, sizeof (uint32_t));
+  char *keyword = new char [length_of_keyword];
+  fs.read (keyword, sizeof (char) * length_of_keyword);
+  if (strcmp (keyword, "TRIANGLES"))
+  {
+    PCL_ERROR ("[pcl::IFSReader::read] File %s is does not contain facets!\n", file_name.c_str ());
+    fs.close ();
+    return (-1);
+  }
+  delete[] keyword;
+  // Read the number of facets
+  uint32_t nr_facets;
+  fs.read ((char*)&nr_facets, sizeof (uint32_t));
+  if ((nr_facets == 0) || (nr_facets > 10000000))
+  {
+    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %zu!\n", nr_facets);
+    fs.close ();
+    return (-1);
+  }
+  // Resize the mesh polygons
+  mesh.polygons.resize (nr_facets);
+  // Fill each polygon
+  for (uint32_t i = 0; i < nr_facets; ++i)
+  {
+    pcl::Vertices &facet = mesh.polygons[i];
+    facet.vertices.resize (3);
+    fs.read ((char*)&(facet.vertices[0]), sizeof (uint32_t));
+    fs.read ((char*)&(facet.vertices[1]), sizeof (uint32_t));
+    fs.read ((char*)&(facet.vertices[2]), sizeof (uint32_t));
+  }
+  // We are done, close the file
+  fs.close ();
+  // Display statistics
+  double total_time = tt.toc ();
+  PCL_DEBUG ("[pcl::IFSReader::read] Loaded %s as a polygon mesh in %g ms with %d points and %d facets.\n",
+             file_name.c_str (), total_time, mesh.cloud.width * mesh.cloud.height, mesh.polygons.size ());
+  return (0);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud, const std::string& cloud_name)

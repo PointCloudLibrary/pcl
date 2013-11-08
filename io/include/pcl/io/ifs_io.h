@@ -42,6 +42,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl/io/boost.h>
+#include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
@@ -98,6 +99,18 @@ namespace pcl
         */
       int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, int &ifs_version);
+
+      /** \brief Read a point cloud data from a IFS file and store it into a PolygonMesh.
+        * \param[in] file_name the name of the file containing the mesh data
+        * \param[out] mesh the resultant PolygonMesh
+        * \param[out] ifs_version the IFS version of the file (either IFS_V1_0 or IFS_V1_1)
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh, int &ifs_version);
 
       /** \brief Read a point cloud data from any IFS file, and convert it to the
         * given template format.
@@ -193,6 +206,19 @@ namespace pcl
     {
       pcl::IFSReader p;
       return (p.read<PointT> (file_name, cloud));
+    }
+
+    /** \brief Load any IFS file into a PolygonMesh
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant mesh
+      * \ingroup io
+      */
+    inline int
+    loadIFSFile (const std::string &file_name, pcl::PolygonMesh &mesh)
+    {
+      pcl::IFSReader p;
+      int ifs_version;
+      return (p.read (file_name, mesh, ifs_version));
     }
 
     /** \brief Save point cloud data to a IFS file containing n-D points
