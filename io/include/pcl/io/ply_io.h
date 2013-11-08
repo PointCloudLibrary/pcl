@@ -95,6 +95,7 @@ namespace pcl
         , range_grid_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
+        , polygons_ (0)
       {}
 
       PLYReader (const PLYReader &p)
@@ -109,6 +110,7 @@ namespace pcl
         , range_grid_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
+        , polygons_ (0)
       {
         *this = p;
       }
@@ -119,6 +121,7 @@ namespace pcl
         origin_ = p.origin_;
         orientation_ = p.orientation_;
         range_grid_ = p.range_grid_;
+        polygons_ = p.polygons_;
         return (*this);
       }
 
@@ -214,6 +217,37 @@ namespace pcl
         return (0);
       }
       
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PolygonMesh.
+        *
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] mesh the resultant PolygonMesh message read from disk
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] ply_version the PLY version read from the file
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+            int& ply_version, const int offset = 0);
+
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PolygonMesh.
+        *
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] mesh the resultant PolygonMesh message read from disk
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh, const int offset = 0);
+
     private:
       ::pcl::io::ply::ply_parser parser_;
 
@@ -460,6 +494,30 @@ namespace pcl
       void
       objInfoCallback (const std::string& line);
 
+      /** Callback function for the begin of face line */
+      void
+      faceBeginCallback ();
+
+      /** Callback function for the begin of face vertex_indices property
+        * param[in] size vertex_indices list size
+        */
+      void
+      faceVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+
+      /** Callback function for each face vertex_indices element
+        * param[in] vertex_index index of the vertex in vertex_indices
+        */
+      void
+      faceVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+
+      /** Callback function for the end of a face vertex_indices property */
+      void
+      faceVertexIndicesEndCallback ();
+
+      /** Callback function for the end of a face element end */
+      void
+      faceEndCallback ();
+
       /// origin
       Eigen::Vector4f origin_;
 
@@ -474,6 +532,8 @@ namespace pcl
       std::vector<std::vector <int> > *range_grid_;
       size_t rgb_offset_before_;
       bool do_resize_;
+      //face element artifact
+      std::vector<pcl::Vertices> *polygons_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -720,6 +780,22 @@ namespace pcl
     {
       pcl::PLYReader p;
       return (p.read (file_name, cloud));
+    }
+
+    /** \brief Load a PLY file into a PolygonMesh type.
+      *
+      * Any PLY files containg sensor data will generate a warning as a
+      * pcl/PolygonMesh message cannot hold the sensor origin.
+      *
+      * \param[in] file_name the name of the file to load
+      * \param[in] mesh the resultant polygon mesh
+      * \ingroup io
+      */
+    inline int
+    loadPLYFile (const std::string &file_name, pcl::PolygonMesh &mesh)
+    {
+      pcl::PLYReader p;
+      return (p.read (file_name, mesh));
     }
 
     /** \brief Save point cloud data to a PLY file containing n-D points

@@ -67,12 +67,13 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
               boost::bind (&pcl::PLYReader::vertexBeginCallback, this),
               boost::bind (&pcl::PLYReader::vertexEndCallback, this)));
   }
-  // else if (element_name == "face")
-  // {
-  //   return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
-  //             boost::bind (&pcl::PLYReader::faceBegin, this),
-  //             boost::bind (&pcl::PLYReader::faceEnd, this)));
-  // }
+  else if ((element_name == "face") && polygons_)
+  {
+    polygons_->reserve (count);
+    return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
+            boost::bind (&pcl::PLYReader::faceBeginCallback, this),
+            boost::bind (&pcl::PLYReader::faceEndCallback, this)));
+  }
   else if (element_name == "camera")
   {
     cloud_->is_dense = true;
@@ -308,6 +309,14 @@ namespace pcl
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
       );
     }
+    else if ((element_name == "face") && (property_name == "vertex_indices"))
+    {
+      return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
+        boost::bind (&pcl::PLYReader::faceVertexIndicesBeginCallback, this, _1),
+        boost::bind (&pcl::PLYReader::faceVertexIndicesElementCallback, this, _1),
+        boost::bind (&pcl::PLYReader::faceVertexIndicesEndCallback, this)
+      );
+    }
     else if (element_name == "vertex")
     {
       cloud_->fields.push_back (pcl::PCLPointField ());
@@ -458,6 +467,30 @@ void
 pcl::PLYReader::rangeGridEndCallback () {}
 
 void
+pcl::PLYReader::faceBeginCallback ()
+{
+  polygons_->push_back (pcl::Vertices ());
+}
+
+void
+pcl::PLYReader::faceVertexIndicesBeginCallback (pcl::io::ply::uint8 size)
+{
+  polygons_->back ().vertices.reserve (size);
+}
+
+void
+pcl::PLYReader::faceVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
+{
+  polygons_->back ().vertices.push_back (vertex_index);
+}
+
+void
+pcl::PLYReader::faceVertexIndicesEndCallback () { }
+
+void
+pcl::PLYReader::faceEndCallback () {}
+
+void
 pcl::PLYReader::objInfoCallback (const std::string& line)
 {
   std::vector<std::string> st;
@@ -602,7 +635,76 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
+                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+                      int &ply_version, const int offset)
+{
+  // kept only for backward compatibility
+  int data_type;
+  unsigned int data_idx;
+  polygons_ = &(mesh.polygons);
+  if (this->readHeader (file_name, mesh.cloud, origin, orientation, ply_version, data_type, data_idx, offset))
+  {
+    PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
+    return (-1);
+  }
 
+  // a range_grid element was found ?
+  size_t r_size;
+  if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
+  {
+    //cloud.header = cloud_->header;
+    std::vector<pcl::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
+    const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
+    const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
+    for (size_t r = 0; r < r_size; ++r)
+    {
+      if ((*range_grid_)[r].size () == 0)
+      {
+        for (size_t f = 0; f < cloud_->fields.size (); ++f)
+          if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT32)
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+                    reinterpret_cast<const char*> (&f_nan), sizeof (float));
+          else if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT64)
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+                    reinterpret_cast<const char*> (&d_nan), sizeof (double));
+          else
+            memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
+                    pcl::getFieldSize (cloud_->fields[f].datatype) * cloud_->fields[f].count);
+      }
+      else
+        memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
+    }
+    cloud_->data.swap (data);
+  }
+
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
+
+  for (size_t i = 0; i < cloud_->fields.size (); ++i)
+  {
+    if (cloud_->fields[i].name == "nx")
+      cloud_->fields[i].name = "normal_x";
+    if (cloud_->fields[i].name == "ny")
+      cloud_->fields[i].name = "normal_y";
+    if (cloud_->fields[i].name == "nz")
+      cloud_->fields[i].name = "normal_z";
+  }
+  return (0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, const int offset)
+{
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int ply_version;
+  return read (file_name, mesh, origin, orientation, ply_version, offset);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
                                 const Eigen::Vector4f &origin,
