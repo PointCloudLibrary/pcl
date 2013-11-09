@@ -42,6 +42,7 @@
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/conversions.h>
 #include <pcl/io/boost.h>
+#include <pcl/PolygonMesh.h>
 
 namespace pcl
 {
@@ -68,7 +69,7 @@ namespace pcl
         IFS_V1_1 = 1
       };
 
-      /** \brief Read a point cloud data header from a IFS file.
+      /** \brief Read a point cloud data header from an IFS file.
         *
         * Load only the meta information (number of points, their types, etc),
         * and not the points themselves, from a given IFS file. Useful for fast
@@ -87,10 +88,10 @@ namespace pcl
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   int &ifs_version, unsigned int &data_idx);
 
-      /** \brief Read a point cloud data from a IFS file and store it into a pcl/PCLPointCloud2.
+      /** \brief Read a point cloud data from an IFS file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
-        * \param[out] cloud the resultant PointCloud message read from disk
-        * \param[out] ifs_version the IFS version of the file (either IFS_V6 or IFS_V7)
+        * \param[out] cloud the resultant PCLPointCloud2 blob read from disk
+        * \param[out] ifs_version the IFS version of the file (either IFS_V1_0 or IFS_V1_1)
         *
         * \return
         *  * < 0 (-1) on error
@@ -99,8 +100,20 @@ namespace pcl
       int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, int &ifs_version);
 
-      /** \brief Read a point cloud data from any IFS file, and convert it to the
-        * given template format.
+      /** \brief Read a point cloud data from an IFS file and store it into a PolygonMesh.
+        * \param[in] file_name the name of the file containing the mesh data
+        * \param[out] mesh the resultant PolygonMesh
+        * \param[out] ifs_version the IFS version of the file (either IFS_V1_0 or IFS_V1_1)
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh, int &ifs_version);
+
+      /** \brief Read a point cloud data from an IFS file, and convert it to the
+        * given template pcl::PointCloud format.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         *
@@ -134,10 +147,11 @@ namespace pcl
       IFSWriter() {}
       ~IFSWriter() {}
 
-      /** \brief Save point cloud data to a IFS file containing n-D points
+      /** \brief Save point cloud data to an IFS file containing 3D points.
         * \param[in] file_name the output file name
-        * \param[in] cloud the point cloud data message
-        * \param[in] cloud_name the point cloud name to be stored insude the IFS file.
+        * \param[in] cloud the point cloud data
+        * \param[in] cloud_name the point cloud name to be stored inside the IFS file.
+        *
         * \return
         * * 0 on success
         * * < 0 on error
@@ -146,10 +160,11 @@ namespace pcl
       write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
              const std::string &cloud_name = "cloud");
 
-      /** \brief Save point cloud data to a IFS file containing n-D points
+      /** \brief Save point cloud data to an IFS file containing 3D points.
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud
-        * \param[in] cloud_name the point cloud name to be stored insude the IFS file.
+        * \param[in] cloud_name the point cloud name to be stored inside the IFS file.
+        *
         * \return
         * * 0 on success
         * * < 0 on error
@@ -166,13 +181,11 @@ namespace pcl
 
   namespace io
   {
-    /** \brief Load a IFS v.6 file into a templated PointCloud type.
-      *
-      * Any IFS files > v.6 will generate a warning as a
-      * pcl/PCLPointCloud2 message cannot hold the sensor origin.
-      *
+    /** \brief Load an IFS file into a PCLPointCloud2 blob type.
       * \param[in] file_name the name of the file to load
       * \param[out] cloud the resultant templated point cloud
+      * \return 0 on success < 0 on error
+      *
       * \ingroup io
       */
     inline int
@@ -183,9 +196,11 @@ namespace pcl
       return (p.read (file_name, cloud, ifs_version));
     }
 
-    /** \brief Load any IFS file into a templated PointCloud type
+    /** \brief Load any IFS file into a templated PointCloud type.
       * \param[in] file_name the name of the file to load
       * \param[out] cloud the resultant templated point cloud
+      * \return 0 on success < 0 on error
+      *
       * \ingroup io
       */
     template<typename PointT> inline int
@@ -195,9 +210,25 @@ namespace pcl
       return (p.read<PointT> (file_name, cloud));
     }
 
-    /** \brief Save point cloud data to a IFS file containing n-D points
+    /** \brief Load any IFS file into a PolygonMesh type.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant mesh
+      * \return 0 on success < 0 on error
+      *
+      * \ingroup io
+      */
+    inline int
+    loadIFSFile (const std::string &file_name, pcl::PolygonMesh &mesh)
+    {
+      pcl::IFSReader p;
+      int ifs_version;
+      return (p.read (file_name, mesh, ifs_version));
+    }
+
+    /** \brief Save point cloud data to an IFS file containing 3D points
       * \param[in] file_name the output file name
       * \param[in] cloud the point cloud data message
+      * \return 0 on success < 0 on error
       *
       * \ingroup io
       */
@@ -208,9 +239,10 @@ namespace pcl
       return (w.write (file_name, cloud));
     }
 
-    /** \brief Save point cloud data to a IFS file containing n-D points
+    /** \brief Save point cloud data to an IFS file containing 3D points
       * \param[in] file_name the output file name
       * \param[in] cloud the point cloud
+      * \return 0 on success < 0 on error
       *
       * \ingroup io
       */
