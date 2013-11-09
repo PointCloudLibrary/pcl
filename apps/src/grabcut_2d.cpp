@@ -446,7 +446,7 @@ keyboard_callback (unsigned char key, int, int)
     //   save ();
     //   break;
     case 'q': case 'Q':
-      glutLeaveMainLoop ();
+      exit (0);
       break;
     case 27:
       refining_ = false;
