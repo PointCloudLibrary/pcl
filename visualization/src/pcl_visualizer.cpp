@@ -1860,6 +1860,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
 
       renderer->Render ();
     }
+    ++i;
   }
 }
 
