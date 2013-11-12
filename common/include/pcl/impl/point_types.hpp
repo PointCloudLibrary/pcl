@@ -350,7 +350,12 @@ namespace pcl
       intensity = 0;
     }
   
-    operator unsigned char() const { return intensity; }
+#ifdef _LIBCPP_VERSION
+    operator unsigned char() const
+    {
+      return intensity;
+    }
+#endif
   
     friend std::ostream& operator << (std::ostream& os, const Intensity8u& p);
   };
@@ -1085,8 +1090,13 @@ namespace pcl
   {
     uint8_t boundary_point;
 
-    operator unsigned char() const { return boundary_point; }
-    
+#ifdef _LIBCPP_VERSION
+    operator unsigned char() const
+	{
+      return boundary_point;
+	}
+#endif
+	  
     friend std::ostream& operator << (std::ostream& os, const Boundary& p);
   };
 

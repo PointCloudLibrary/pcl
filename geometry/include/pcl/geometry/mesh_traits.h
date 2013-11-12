@@ -50,7 +50,12 @@ namespace pcl
     /** \brief No data is associated with the vertices / half-edges / edges / faces. */
     struct NoData 
     {
-          operator unsigned char() const { return 0; }
+#ifdef _LIBCPP_VERSION
+	  operator unsigned char() const
+      {
+        return 0;
+      }
+#endif
     };
 
     /** \brief The mesh traits are used to set up compile time settings for the mesh.
