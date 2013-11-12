@@ -4,9 +4,16 @@
 #include <boost/shared_ptr.hpp>
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+
+#ifdef __APPLE__
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+# include <GLUT/glut.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <GL/glut.h>
+#endif
 
 // define the following in order to eliminate the deprecated headers warning
 #define VTK_EXCLUDE_STRSTREAM_HEADERS
