@@ -48,7 +48,15 @@ namespace pcl
   namespace geometry
   {
     /** \brief No data is associated with the vertices / half-edges / edges / faces. */
-    struct NoData {};
+    struct NoData
+    {
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION <= 1101
+      operator unsigned char() const
+      {
+        return 0;
+      }
+#endif
+    };
 
     /** \brief The mesh traits are used to set up compile time settings for the mesh.
       * \tparam VertexDataT   Data stored for each vertex. Defaults to pcl::NoData.
