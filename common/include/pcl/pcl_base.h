@@ -96,7 +96,7 @@ namespace pcl
 
       /** \brief Get a pointer to the input point cloud dataset. */
       inline PointCloudConstPtr const 
-      getInputCloud () { return (input_); }
+      getInputCloud () const { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
@@ -131,12 +131,16 @@ namespace pcl
       inline IndicesPtr const 
       getIndices () { return (indices_); }
 
+      /** \brief Get a pointer to the vector of indices used. */
+      inline IndicesConstPtr const 
+      getIndices () const { return (indices_); }
+
       /** \brief Override PointCloud operator[] to shorten code
         * \note this method can be called instead of (*input_)[(*indices_)[pos]]
         * or input_->points[(*indices_)[pos]]
         * \param[in] pos position in indices_ vector
         */
-      inline const PointT& operator[] (size_t pos)
+      inline const PointT& operator[] (size_t pos) const 
       {
         return ((*input_)[(*indices_)[pos]]);
       }
