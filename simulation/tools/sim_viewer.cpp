@@ -45,8 +45,14 @@
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 #endif
+
 #include <GL/glew.h>
-#include <GL/gl.h>
+
+#ifdef __APPLE__
+# include <OpenGL/gl.h>
+#else
+# include <GL/gl.h>
+#endif
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>

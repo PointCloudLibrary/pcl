@@ -5,9 +5,16 @@
 # define WIN32_LEAN_AND_MEAN 1
 # include <windows.h>
 #endif
+
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
+#ifdef __APPLE__
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+#endif
 
 #include <boost/shared_ptr.hpp>
 #include <pcl/pcl_macros.h>

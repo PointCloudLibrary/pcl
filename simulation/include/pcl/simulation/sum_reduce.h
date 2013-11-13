@@ -9,7 +9,13 @@
 #define PCL_SIMULATION_SUM_REDUCE
 
 #include <GL/glew.h>
-#include <GL/gl.h>
+
+#ifdef __APPLE__
+# include <OpenGL/gl.h>
+#else
+# include <GL/gl.h>
+#endif
+
 #include <pcl/simulation/glsl_shader.h>
 #include <pcl/simulation/model.h>
 

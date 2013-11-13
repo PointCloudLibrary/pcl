@@ -49,10 +49,16 @@
 
 // need to include GLEW net the top to avoid linking errors FOR PCL::SIMULATION:
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-//
+
+#ifdef __APPLE__
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+# include <GLUT/glut.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+# include <GL/glut.h>
+#endif
 
 #include <pcl/console/parse.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
