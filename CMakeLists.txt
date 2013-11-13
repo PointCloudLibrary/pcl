@@ -145,7 +145,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     SET(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "-Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+    SET(CMAKE_CXX_FLAGS " -ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
   endif()
   SET(CLANG_LIBRARIES "stdc++")
 endif()
