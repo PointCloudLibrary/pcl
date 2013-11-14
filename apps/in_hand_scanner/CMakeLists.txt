@@ -14,7 +14,6 @@ else()
 endif()
 
 # OpenGL
-find_package(OpenGL)
 if(NOT OPENGL_FOUND AND NOT OPENGL_GLU_FOUND)
   set(DEFAULT AUTO_OFF)
   message(REASON "OpenGL & GLU are required for the in_hand_scanner app!")

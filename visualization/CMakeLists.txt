@@ -21,7 +21,6 @@ if (ANDROID)
   message("VTK was found, but cannot be compiled for Android. Please use VES instead.")
 endif ()
 
-find_package(OpenGL)
 if (OPENGL_FOUND)
   if(OPENGL_INCLUDE_DIR)
     include_directories("${OPENGL_INCLUDE_DIR}")
