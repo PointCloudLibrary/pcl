@@ -64,7 +64,7 @@ main (int argc, char ** argv)
 {
   int viewport_source, viewport_convolved = 0;
   int direction = -1;
-  int nb_threads = 0;
+  int nb_threads = 1;
   char border_policy = 'Z';
   double threshold = 0.001;
   pcl::filters::Convolution<pcl::PointXYZRGB, pcl::PointXYZRGB> convolution;
