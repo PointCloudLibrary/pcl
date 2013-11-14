@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 
-#ifdef __APPLE__
+#include <pcl/pcl_config.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
 #else

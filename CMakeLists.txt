@@ -318,13 +318,18 @@ if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying espe
     include_directories(SYSTEM ${MPI_INCLUDE_PATH})
   endif(MPI_CXX_FOUND)
 endif()
+
 #Find Doxygen and html help compiler if any
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
   find_package(HTMLHelp)
 endif(DOXYGEN_FOUND)
+
 #Find PCAP
 find_package(Pcap)
+
+# OpenGL and GLUT
+include(${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")

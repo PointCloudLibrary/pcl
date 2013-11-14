@@ -6,16 +6,14 @@
 #include <pcl/point_types.h>
 #include <pcl/PCLPointCloud2.h>
 
+#ifdef GLUT_IS_A_FRAMEWORK
+#include <GLUT/glut.h>
+#else
 #include <GL/glut.h>
 #if defined (FREEGLUT)
 #include <GL/freeglut_ext.h>
 #elif defined (GLUI_OPENGLUT)
 #include <GL/openglut.h>
-#else
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-#include "../../freeglut/GL/glut.h"
 #endif
 #endif
 
@@ -446,7 +444,11 @@ keyboard_callback (unsigned char key, int, int)
     //   save ();
     //   break;
     case 'q': case 'Q':
+#if defined (FREEGLUT) || defined (GLUI_OPENGLUT)
+      exit ();
+#else
       glutLeaveMainLoop ();
+#endif
       break;
     case 27:
       refining_ = false;
