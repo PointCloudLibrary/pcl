@@ -37,8 +37,8 @@ if (${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
-pcl_subsubsys_option(BUILD ${SUBSYS_NAME} ${SUBSUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
-pcl_subsubsys_depend(BUILD ${SUBSYS_NAME} ${SUBSUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS Qt4 OpenGL OpenGL_GLU openni)
+pcl_subsubsys_option(build ${SUBSYS_NAME} ${SUBSUBSYS_NAME} ${SUBSYS_DESC} ${DEFAULT} ${REASON})
+pcl_subsubsys_depend(build ${SUBSYS_NAME} ${SUBSUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS Qt4 OpenGL OpenGL_GLU openni)
 
 pcl_add_doc(${SUBSUBSYS_NAME})
 
