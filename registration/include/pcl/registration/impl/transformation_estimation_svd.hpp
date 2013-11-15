@@ -123,24 +123,26 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
   // Convert to Eigen format
   const int npts = static_cast <int> (source_it.size ());
 
-  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
-  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
 
-  for (int i = 0; i < npts; ++i)
-  {
-    cloud_src (0, i) = source_it->x;
-    cloud_src (1, i) = source_it->y;
-    cloud_src (2, i) = source_it->z;
-    ++source_it;
-
-    cloud_tgt (0, i) = target_it->x;
-    cloud_tgt (1, i) = target_it->y;
-    cloud_tgt (2, i) = target_it->z;
-    ++target_it;
-  }
 
   if (use_umeyama_)
   {
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
+
+    for (int i = 0; i < npts; ++i)
+    {
+      cloud_src (0, i) = source_it->x;
+      cloud_src (1, i) = source_it->y;
+      cloud_src (2, i) = source_it->z;
+      ++source_it;
+
+      cloud_tgt (0, i) = target_it->x;
+      cloud_tgt (1, i) = target_it->y;
+      cloud_tgt (2, i) = target_it->z;
+      ++target_it;
+    }
+    
     // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
     transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
   }
