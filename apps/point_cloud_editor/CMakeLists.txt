@@ -65,7 +65,6 @@ ELSE(NOT QT4_FOUND)
 ENDIF(NOT QT4_FOUND)
 
 # Find OpenGL
-find_package(OpenGL)
 IF(NOT OPENGL_FOUND)
   SET(DEFAULT AUTO_OFF)
   SET(REASON "OpenGL was not found.")

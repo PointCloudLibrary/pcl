@@ -26,13 +26,17 @@
 #endif
 #include <GL/glew.h>
 
-#ifdef __APPLE__
+#include <pcl/pcl_config.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
-# include <GLUT/glut.h>
 #else
 # include <GL/gl.h>
 # include <GL/glu.h>
+#endif
+#ifdef GLUT_IS_A_FRAMEWORK
+# include <GLUT/glut.h>
+#else
 # include <GL/glut.h>
 #endif
 
