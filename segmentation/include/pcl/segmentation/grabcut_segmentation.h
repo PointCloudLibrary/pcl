@@ -58,7 +58,7 @@ namespace pcl
         * <stephen.gould@anu.edu.au> in DARWIN under BSD does the trick however solwer than original
         * implementation.
         */
-      class BoykovKolmogorov
+      class PCL_EXPORTS BoykovKolmogorov
       {
         public:
           typedef int vertex_descriptor;
