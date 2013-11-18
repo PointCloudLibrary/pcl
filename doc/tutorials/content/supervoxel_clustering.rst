@@ -101,6 +101,10 @@ Next we check the input arguments and set default values. You can play with the 
 
 We are now ready to setup the supervoxel clustering. We use the class :pcl:`SupervoxelClustering <pcl::SupervoxelClustering>`, which implements the clustering process and give it the parameters.
 
+.. important::
+
+  You MUST set use_transform to false if you are using a cloud which doesn't have the camera at (0,0,0). The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your data is artificial, made from combining multiple clouds from cameras at different viewpoints, or doesn't have the camera at (0,0,0), the transform MUST be set to false. 
+
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
    :lines: 73-77
