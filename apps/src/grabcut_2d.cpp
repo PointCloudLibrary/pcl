@@ -445,9 +445,9 @@ keyboard_callback (unsigned char key, int, int)
     //   break;
     case 'q': case 'Q':
 #if defined (FREEGLUT) || defined (GLUI_OPENGLUT)
-      exit ();
-#else
       glutLeaveMainLoop ();
+#else
+      exit (0);
 #endif
       break;
     case 27:
