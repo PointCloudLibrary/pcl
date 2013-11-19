@@ -60,12 +60,25 @@ size_t
 getTotalSystemMemory ()
 {
   size_t memory = std::numeric_limits<size_t>::max ();
-  
+
+#ifdef _SC_AVPHYS_PAGES
   uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
   uint64_t page_size = sysconf (_SC_PAGE_SIZE);
   
   memory = pages * page_size;
   
+#elif defined(HAVE_SYSCTL) && defined(HW_PHYSMEM)
+  // This works on *bsd and darwin.
+  unsigned int physmem;
+  size_t len = sizeof physmem;
+  static int mib[2] = { CTL_HW, HW_PHYSMEM };
+
+  if (sysctl (mib, ARRAY_SIZE (mib), &physmem, &len, NULL, 0) == 0 && len == sizeof (physmem))
+  {
+    memory = physmem;
+  }
+#endif
+
   if (memory > std::numeric_limits<size_t>::max ())
   {
     memory = std::numeric_limits<size_t>::max ();
