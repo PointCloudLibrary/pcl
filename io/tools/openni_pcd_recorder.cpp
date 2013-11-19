@@ -59,17 +59,20 @@ boost::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
+  size_t memory = std::numeric_limits<size_t>::max ();
+  
   uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
   uint64_t page_size = sysconf (_SC_PAGE_SIZE);
-  print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  
+  memory = pages * page_size;
+  
+  if (memory > std::numeric_limits<size_t>::max ())
   {
-    return std::numeric_limits<size_t>::max ();
+    memory = std::numeric_limits<size_t>::max ();
   }
-  else
-  {
-    return size_t (pages * page_size);
-  }
+  
+  print_info ("Total available memory size: %lluMB.\n", memory / 1048576);
+  return memory;
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480));
