@@ -59,17 +59,33 @@ boost::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
+  size_t memory = std::numeric_limits<size_t>::max ();
+
+#ifdef _SC_AVPHYS_PAGES
   uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
   uint64_t page_size = sysconf (_SC_PAGE_SIZE);
-  print_info ("Total available memory size: %lluMB.\n", (pages * page_size) / 1048576);
-  if (pages * page_size > uint64_t (std::numeric_limits<size_t>::max ()))
+  
+  memory = pages * page_size;
+  
+#elif defined(HAVE_SYSCTL) && defined(HW_PHYSMEM)
+  // This works on *bsd and darwin.
+  unsigned int physmem;
+  size_t len = sizeof physmem;
+  static int mib[2] = { CTL_HW, HW_PHYSMEM };
+
+  if (sysctl (mib, ARRAY_SIZE (mib), &physmem, &len, NULL, 0) == 0 && len == sizeof (physmem))
   {
-    return std::numeric_limits<size_t>::max ();
+    memory = physmem;
   }
-  else
+#endif
+
+  if (memory > std::numeric_limits<size_t>::max ())
   {
-    return size_t (pages * page_size);
+    memory = std::numeric_limits<size_t>::max ();
   }
+  
+  print_info ("Total available memory size: %lluMB.\n", memory / 1048576);
+  return memory;
 }
 
 const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480));
