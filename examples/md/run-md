@@ -1,0 +1,1 @@
+./md inputCloud0.pcd inputCloud1.pcd 25 5 2 70 70  0.01 0.2 0.1 0.01 0 1 0 perf01.txt results01.txt
