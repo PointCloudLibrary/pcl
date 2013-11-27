@@ -905,7 +905,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -918,7 +917,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -945,7 +943,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -958,7 +955,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -983,12 +979,10 @@ pcl::visualization::PCLVisualizer::addActorToRenderer (const vtkSmartPointer<vtk
     if (viewport == 0)
     {
       renderer->AddActor (actor);
-//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
       renderer->AddActor (actor);
-//      renderer->Render ();
     }
     ++i;
   }
@@ -1010,7 +1004,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
     if (viewport == 0)
     {
       renderer->RemoveActor (actor);
-//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
@@ -1023,7 +1016,6 @@ pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointe
         if (current_actor != actor_to_remove)
           continue;
         renderer->RemoveActor (actor);
-//        renderer->Render ();
         // Found the correct viewport and removed the actor
         return (true);
       }
@@ -1249,12 +1241,10 @@ pcl::visualization::PCLVisualizer::setBackgroundColor (
     if (viewport == 0)
     {
       renderer->SetBackground (r, g, b);
-//      renderer->Render ();
     }
     else if (viewport == i)               // add the actor only to the specified viewport
     {
       renderer->SetBackground (r, g, b);
-//      renderer->Render ();
     }
     ++i;
   }
@@ -1629,9 +1619,7 @@ pcl::visualization::PCLVisualizer::updateCamera ()
   PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
   rens_->InitTraversal ();
   // Update the camera parameters
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
-    renderer->Render ();
+  _win->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1785,10 +1773,10 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
       cam->SetPosition (pos_x, pos_y, pos_z);
       cam->SetFocalPoint (view_x, view_y, view_z);
       cam->SetViewUp (up_x, up_y, up_z);
-      renderer->Render ();
     }
     ++i;
   }
+  _win->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1808,10 +1796,10 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
       vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
       cam->SetPosition (pos_x, pos_y, pos_z);
       cam->SetViewUp (up_x, up_y, up_z);
-      renderer->Render ();
     }
     ++i;
   }
+  _win->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1857,11 +1845,10 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
       cam->SetViewAngle (fovy);
       cam->SetClippingRange (0.01, 1000.01);
       win_->SetSize (window_size[0], window_size[1]);
-
-      renderer->Render ();
     }
     ++i;
   }
+  _win->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1965,8 +1952,8 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 
     renderer->SetActiveCamera (cam);
     renderer->ResetCameraClippingRange ();
-    renderer->Render ();
   }
+  _win->Render ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
