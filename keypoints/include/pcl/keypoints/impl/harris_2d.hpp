@@ -256,23 +256,24 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
 #ifdef _OPENMP
 #pragma omp parallel for shared (output, occupency_map) private (width, height) num_threads(threads_)   
 #endif
-    for (int idx = 0; idx < occupency_map_size; ++idx)
+    for (int i = 0; i < occupency_map_size; ++i)
     {
-      if (occupency_map[idx] || response_->points [indices_->at (idx)].intensity < threshold || !isFinite (response_->points[idx]))
+      int idx = indices_->at (i);
+      if (occupency_map[idx] || response_->points [idx].intensity < threshold || !isFinite (response_->points[idx]))
         continue;
         
 #ifdef _OPENMP
 #pragma omp critical
 #endif
       {
-        output.push_back (response_->at (indices_->at (idx)));
-        keypoints_indices_->indices.push_back (indices_->at (idx));
+        output.push_back (response_->at (idx));
+        keypoints_indices_->indices.push_back (idx);
       }
       
-			int u_end = std::min (width, indices_->at (idx) % width + min_distance_);
-			int v_end = std::min (height, indices_->at (idx) / width + min_distance_);
-      for(int u = std::max (0, indices_->at (idx) % width - min_distance_); u < u_end; ++u)
-        for(int v = std::max (0, indices_->at (idx) / width - min_distance_); v < v_end; ++v)
+			int u_end = std::min (width, idx % width + min_distance_);
+			int v_end = std::min (height, idx / width + min_distance_);
+      for(int u = std::max (0, idx % width - min_distance_); u < u_end; ++u)
+        for(int v = std::max (0, idx / width - min_distance_); v < v_end; ++v)
           occupency_map[v*input_->width+u] = true;
     }
 
