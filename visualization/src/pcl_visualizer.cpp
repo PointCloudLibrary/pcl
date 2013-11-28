@@ -3283,10 +3283,10 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   first_cam_pos[2] = cam_positions[0][2] * radius_sphere;
 
   //create renderer and window
-  vtkSmartPointer<vtkRenderWindow> renderwin_ = vtkSmartPointer<vtkRenderWindow>::New ();
+  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New ();
-  renderwin_->AddRenderer (renderer);
-  renderwin_->SetSize (xres, yres);
+  render_win->AddRenderer (renderer);
+  render_win->SetSize (xres, yres);
   renderer->SetBackground (1.0, 0, 0);
 
   //create picker
@@ -3375,7 +3375,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     renderer->AddActor (actor_view);
     renderer->Modified ();
     //renderer->ResetCameraClippingRange ();
-    renderwin_->Render ();
+    render_win->Render ();
 
     //back to real scale transform
     vtkSmartPointer<vtkTransform> backToRealScale = vtkSmartPointer<vtkTransform>::New ();
@@ -3403,7 +3403,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     double coords[3];
     float * depth = new float[xres * yres];
-    renderwin_->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
+    render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
     int count_valid_depth_pixels = 0;
     size_t xresolution (xres);
