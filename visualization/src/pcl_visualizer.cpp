@@ -1619,7 +1619,7 @@ pcl::visualization::PCLVisualizer::updateCamera ()
   PCL_WARN ("[pcl::visualization::PCLVisualizer::updateCamera()] This method was deprecated, just re-rendering all scenes now.");
   rens_->InitTraversal ();
   // Update the camera parameters
-  _win->Render ();
+  win_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1776,7 +1776,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
     }
     ++i;
   }
-  _win->Render ();
+  win_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1799,7 +1799,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
     }
     ++i;
   }
-  _win->Render ();
+  win_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1848,7 +1848,7 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
     }
     ++i;
   }
-  _win->Render ();
+  win_->Render ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1953,7 +1953,7 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
     renderer->SetActiveCamera (cam);
     renderer->ResetCameraClippingRange ();
   }
-  _win->Render ();
+  win_->Render ();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -3283,10 +3283,10 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   first_cam_pos[2] = cam_positions[0][2] * radius_sphere;
 
   //create renderer and window
-  vtkSmartPointer<vtkRenderWindow> render_win = vtkSmartPointer<vtkRenderWindow>::New ();
+  vtkSmartPointer<vtkRenderWindow> renderwin_ = vtkSmartPointer<vtkRenderWindow>::New ();
   vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New ();
-  render_win->AddRenderer (renderer);
-  render_win->SetSize (xres, yres);
+  renderwin_->AddRenderer (renderer);
+  renderwin_->SetSize (xres, yres);
   renderer->SetBackground (1.0, 0, 0);
 
   //create picker
@@ -3375,7 +3375,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     renderer->AddActor (actor_view);
     renderer->Modified ();
     //renderer->ResetCameraClippingRange ();
-    render_win->Render ();
+    renderwin_->Render ();
 
     //back to real scale transform
     vtkSmartPointer<vtkTransform> backToRealScale = vtkSmartPointer<vtkTransform>::New ();
@@ -3403,7 +3403,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     double coords[3];
     float * depth = new float[xres * yres];
-    render_win->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
+    renderwin_->GetZbufferData (0, 0, xres - 1, yres - 1, &(depth[0]));
 
     int count_valid_depth_pixels = 0;
     size_t xresolution (xres);
