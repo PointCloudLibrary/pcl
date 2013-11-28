@@ -137,13 +137,13 @@ namespace pcl
       detectKeypoints (PointCloudOut &output);
       /** \brief gets the corner response for valid input points*/
       void 
-      responseHarris (PointCloudOut &output, float& highest_response) const;
+      responseHarris (PointCloudOut &output) const;
       void 
-      responseNoble (PointCloudOut &output, float& highest_response) const;
+      responseNoble (PointCloudOut &output) const;
       void 
-      responseLowe (PointCloudOut &output, float& highest_response) const;
+      responseLowe (PointCloudOut &output) const;
       void 
-      responseTomasi (PointCloudOut &output, float& highest_response) const;
+      responseTomasi (PointCloudOut &output) const;
 //      void refineCorners (PointCloudOut &corners) const;
       /** \brief calculates the upper triangular part of unnormalized 
         * covariance matrix over intensities given by the 2D coordinates 
