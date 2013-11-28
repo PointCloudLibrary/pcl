@@ -259,14 +259,15 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     for (int i = 0; i < occupency_map_size; ++i)
     {
       int idx = indices_->at (i);
-      if (occupency_map[idx] || response_->points [idx].intensity < threshold || !isFinite (response_->points[idx]))
+      const PointOutT& point_out = response_->points [idx];
+      if (occupency_map[idx] || point_out.intensity < threshold || !isFinite (point_out))
         continue;
         
 #ifdef _OPENMP
 #pragma omp critical
 #endif
       {
-        output.push_back (response_->at (idx));
+        output.push_back (point_out);
         keypoints_indices_->indices.push_back (idx);
       }
       
