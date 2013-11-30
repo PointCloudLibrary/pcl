@@ -199,6 +199,9 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_planar_convex_hull ${SUBSYS_NAME} src/openni_planar_convex_hull.cpp)
       target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
 
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_linemod ${SUBSYS_NAME} src/ni_linemod.cpp)
+      target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
+
       endif() # QHULL_FOUND
 
       # Install include files
@@ -217,9 +220,6 @@ if(build)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_brisk ${SUBSYS_NAME} src/ni_brisk.cpp)
       target_link_libraries(pcl_ni_brisk pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
-
-      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_linemod ${SUBSYS_NAME} src/ni_linemod.cpp)
-      target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_susan ${SUBSYS_NAME} src/ni_susan.cpp)
       target_link_libraries(pcl_ni_susan pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
