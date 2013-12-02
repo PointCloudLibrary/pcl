@@ -38,6 +38,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
+#include <vector>
 
 #include <pcl/console/parse.h>
 
@@ -701,6 +702,25 @@ struct KinFuApp
     registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
     cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
   }
+  
+  void
+  setDepthIntrinsics(std::vector<float> depth_intrinsics)
+  {
+    float fx = depth_intrinsics[0];
+    float fy = depth_intrinsics[1];
+    
+    if (depth_intrinsics.size() == 4)
+    {
+        float cx = depth_intrinsics[2];
+        float cy = depth_intrinsics[3];
+        kinfu_.setDepthIntrinsics(fx, fy, cx, cy);
+        cout << "Depth intrinsics changed to fx="<< fx << " fy=" << fy << " cx=" << cx << " cy=" << cy << endl;
+    }
+    else {
+        kinfu_.setDepthIntrinsics(fx, fy);
+        cout << "Depth intrinsics changed to fx="<< fx << " fy=" << fy << endl;
+    }
+  }
 
   void 
   toggleColorIntegration()
@@ -1206,6 +1226,7 @@ main (int argc, char* argv[])
   pc::parse_argument (argc, argv, "-volume_size", volume_size);
 
   int icp = 1, visualization = 1;
+  std::vector<float> depth_intrinsics;
   pc::parse_argument (argc, argv, "--icp", icp);
   pc::parse_argument (argc, argv, "--viz", visualization);
         
@@ -1228,6 +1249,19 @@ main (int argc, char* argv[])
 
   if (pc::find_switch (argc, argv, "--scale-truncation") || pc::find_switch (argc, argv, "-st"))
     app.enableTruncationScaling();
+  
+  if (pc::parse_x_arguments (argc, argv, "--depth-intrinsics", depth_intrinsics) > 0)
+  {
+    if ((depth_intrinsics.size() == 4) || (depth_intrinsics.size() == 2))
+    {
+       app.setDepthIntrinsics(depth_intrinsics);
+    }
+    else
+    {
+        pc::print_error("Depth intrinsics must be given on the form fx,fy[,cx,cy].\n");
+        return -1;
+    }   
+  }
 
   // executing
   try { app.startMainLoop (triggered_capture); }
