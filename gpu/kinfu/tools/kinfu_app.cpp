@@ -1151,6 +1151,7 @@ print_cli_help ()
   cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;   
   cout << "    --scale-truncation, -st         : scale the truncation distance and raycaster based on the volume size" << endl;
   cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
+  cout << "    --depth-intrinsics <fx>,<fy>[,<cx>,<cy> : Set the intrinsics of the depth camera" << endl;
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
   cout << "";
