@@ -107,16 +107,6 @@ pcl::PPFHashMapSearch::nearestNeighborSearch (float &f1, float &f2, float &f3, f
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget> void
-pcl::PPFRegistration<PointSource, PointTarget>::setInputTarget (const PointCloudTargetConstPtr &cloud)
-{
-  Registration<PointSource, PointTarget>::setInputTarget (cloud);
-
-  scene_search_tree_ = typename pcl::KdTreeFLANN<PointTarget>::Ptr (new pcl::KdTreeFLANN<PointTarget>);
-  scene_search_tree_->setInputCloud (target_);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
 pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess)
 {
   if (!search_method_)
@@ -158,7 +148,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     // For every other point in the scene => now have pair (s_r, s_i) fixed
     std::vector<int> indices;
     std::vector<float> distances;
-    scene_search_tree_->radiusSearch (target_->points[scene_reference_index],
+    tree_->radiusSearch (target_->points[scene_reference_index],
                                      search_method_->getModelDiameter () /2,
                                      indices,
                                      distances);

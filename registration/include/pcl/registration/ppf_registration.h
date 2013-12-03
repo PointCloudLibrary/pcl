@@ -234,12 +234,6 @@ namespace pcl
       inline PPFHashMapSearch::Ptr
       getSearchMethod () { return search_method_; }
 
-      /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
-       * \param cloud the input point cloud target
-       */
-      void
-      setInputTarget (const PointCloudTargetConstPtr &cloud);
-
 
     private:
       /** \brief Method that calculates the transformation between the input_ and target_ point clouds, based on the PPF features */
@@ -256,9 +250,6 @@ namespace pcl
       /** \brief position and rotation difference thresholds below which two
         * poses are considered to be in the same cluster (for the clustering phase of the algorithm) */
       float clustering_position_diff_threshold_, clustering_rotation_diff_threshold_;
-
-      /** \brief use a kd-tree with range searches of range max_dist to skip an O(N) pass through the point cloud */
-      typename pcl::KdTreeFLANN<PointTarget>::Ptr scene_search_tree_;
 
       /** \brief static method used for the std::sort function to order two PoseWithVotes
        * instances by their number of votes*/
