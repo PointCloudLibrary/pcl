@@ -49,10 +49,18 @@
 #include <Eigen/Core>
 #include <vector>
 
+// Focal lengths of RGB camera
+#define KINFU_DEFAULT_RGB_FOCAL_X 525.f
+#define KINFU_DEFAULT_RGB_FOCAL_Y 525.f
+
+// Focal lengths of depth (i.e. NIR) camera
+#define KINFU_DEFAULT_DEPTH_FOCAL_X 585.f
+#define KINFU_DEFAULT_DEPTH_FOCAL_Y 585.f
+
 namespace pcl
 {
   namespace gpu
-  {        
+  {
     /** \brief KinfuTracker class encapsulates implementation of Microsoft Kinect Fusion algorithm
       * \author Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
       */
@@ -82,6 +90,16 @@ namespace pcl
           */
         void
         setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
+        
+        /** \brief Get Depth camera intrinsics
+          * \param[out] fx focal length x 
+          * \param[out] fy focal length y
+          * \param[out] cx principal point x
+          * \param[out] cy principal point y
+          */
+        void
+        getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
+        
 
         /** \brief Sets initial camera pose relative to volume coordiante space
           * \param[in] pose Initial camera pose
