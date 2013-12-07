@@ -121,13 +121,13 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
       {
-      mls_results_.resize (input_->size ());
       break;
       }
     default:
       break;
   }
-
+  
+  mls_results_.resize (input_->size ());
   // Perform the actual surface reconstruction
   performProcessing (output);
 
