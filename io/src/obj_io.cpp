@@ -795,7 +795,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
         for (std::size_t i = 1; i < st.size (); ++i)
         {
           int v;
-          sscanf (st[i].c_str (), "%d/", &v);
+          sscanf (st[i].c_str (), "%d", &v);
           v = (v < 0) ? v_idx + v : v - 1;
           face_v.vertices[i-1] = v;
         }
@@ -943,7 +943,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
         for (std::size_t i = 1; i < st.size (); ++i)
         {
           int v;
-          sscanf (st[i].c_str (), "%d/", &v);
+          sscanf (st[i].c_str (), "%d", &v);
           v = (v < 0) ? v_idx + v : v - 1;
           face_vertices.vertices[i - 1] = v;
         }
