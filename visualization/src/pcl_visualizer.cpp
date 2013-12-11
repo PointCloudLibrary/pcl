@@ -104,7 +104,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
-  , coordinate_actor_map_ ()
+  , coordinate_actor_map_ (new CoordinateActorMap)
   , camera_set_ ()
 {
   // Create a Renderer
@@ -492,7 +492,7 @@ pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewport)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
@@ -524,14 +524,14 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewpo
   axes_actor->SetMapper (axes_mapper);
 
   // Save the ID and actor pair to the global actor map
-  coordinate_actor_map_[viewport] = axes_actor;
+  (*coordinate_actor_map_) [id] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, int viewport)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, const std::string& id, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
@@ -564,7 +564,7 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, f
   axes_actor->SetPosition (x, y, z);
 
   // Save the ID and actor pair to the global actor map
-  coordinate_actor_map_[viewport] = axes_actor;
+  (*coordinate_actor_map_) [id] = axes_actor;
 
   addActorToRenderer (axes_actor, viewport);
 }
@@ -601,7 +601,7 @@ double q[4];
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport)
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string& id, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
@@ -647,25 +647,25 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
   //WAS:  axes_actor->SetOrientation (roll, pitch, yaw);
 
   // Save the ID and actor pair to the global actor map
-  coordinate_actor_map_[viewport] = axes_actor;
+  (*coordinate_actor_map_) [id] = axes_actor;
   addActorToRenderer (axes_actor, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
+pcl::visualization::PCLVisualizer::removeCoordinateSystem (const std::string& id, int viewport)
 {
   // Check to see if the given ID entry exists
-  CoordinateActorMap::iterator am_it = coordinate_actor_map_.find (viewport);
+  CoordinateActorMap::iterator am_it = coordinate_actor_map_->find (id);
 
-  if (am_it == coordinate_actor_map_.end ())
+  if (am_it == coordinate_actor_map_->end ())
     return (false);
 
   // Remove it from all renderers
   if (removeActorFromRenderer (am_it->second, viewport))
   {
     // Remove the ID pair to the global actor map
-    coordinate_actor_map_.erase (am_it);
+    coordinate_actor_map_->erase (am_it);
     return (true);
   }
   return (false);

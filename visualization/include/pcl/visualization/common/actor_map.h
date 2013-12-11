@@ -102,7 +102,8 @@ namespace pcl
     typedef boost::unordered_map<std::string, vtkSmartPointer<vtkProp> > ShapeActorMap;
     typedef boost::shared_ptr<ShapeActorMap> ShapeActorMapPtr;
 
-    typedef std::map<int, vtkSmartPointer<vtkProp> > CoordinateActorMap;
+    typedef boost::unordered_map<std::string, vtkSmartPointer<vtkProp> > CoordinateActorMap;
+    typedef boost::shared_ptr<CoordinateActorMap> CoordinateActorMapPtr;
   }
 }
 
