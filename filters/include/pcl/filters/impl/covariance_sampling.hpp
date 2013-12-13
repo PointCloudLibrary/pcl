@@ -93,7 +93,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber ()
 
   Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
 
-  double max_ev = std::numeric_limits<double>::min (),
+  double max_ev = -std::numeric_limits<double>::max (),
       min_ev = std::numeric_limits<double>::max ();
   for (size_t i = 0; i < 6; ++i)
   {
@@ -117,7 +117,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber (const Eigen::M
 
   Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
 
-  double max_ev = std::numeric_limits<double>::min (),
+  double max_ev = -std::numeric_limits<double>::max (),
       min_ev = std::numeric_limits<double>::max ();
   for (size_t i = 0; i < 6; ++i)
   {
