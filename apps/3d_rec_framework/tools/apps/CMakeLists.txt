@@ -1,5 +1,7 @@
-add_executable(pcl_global_classification src/global_classification.cpp)
-target_link_libraries(pcl_global_classification pcl_apps pcl_3d_rec_framework pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+if (QHULL_FOUND)
+  add_executable(pcl_global_classification src/global_classification.cpp)
+  target_link_libraries(pcl_global_classification pcl_apps pcl_3d_rec_framework pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
+endif()
 
 add_executable(pcl_local_or_mian src/local_recognition_mian_dataset.cpp)
 target_link_libraries(pcl_local_or_mian pcl_apps pcl_3d_rec_framework pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints)
