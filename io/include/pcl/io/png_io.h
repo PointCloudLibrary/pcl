@@ -139,7 +139,7 @@ namespace pcl
      * \ingroup io
      * Warning: Converts to 16 bit (for png), labels using more than 16 bits will cause problems
      */
-    PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud),
+    PCL_EXPORTS PCL_DEPRECATED (void savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud),
     "pcl::io::savePNGFile (file_name, cloud) is deprecated, please use a new generic function "
     "pcl::io::savePNGFile (file_name, cloud, field_name) with \"label\" as the field name."
     );
