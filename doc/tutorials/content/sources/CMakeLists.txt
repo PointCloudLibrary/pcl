@@ -20,6 +20,7 @@ foreach(subdir
           iterative_closest_point
           kdtree_search
           min_cut_segmentation
+          moment_of_inertia
           #narf_descriptor_visualization
           narf_feature_extraction
           narf_keypoint_extraction
@@ -45,6 +46,7 @@ foreach(subdir
           registration_api
           remove_outliers
           resampling
+          rops_feature
           statistical_removal
           stick_segmentation
           supervoxel_clustering
