@@ -111,7 +111,7 @@ pcl::PlaneClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) 
  * @attention untested code
  */
 template<typename PointT> void
-pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT>& polygon, std::vector<PointT>& clipped_polygon) const
+pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const
 {
   clipped_polygon.clear ();
   clipped_polygon.reserve (polygon.size ());
@@ -140,9 +140,9 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT>& pol
   if (previous_distance > 0)
     clipped_polygon.push_back (polygon [0]);
 
-  typename std::vector<PointT>::const_iterator prev_it = polygon.begin ();
+  typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator prev_it = polygon.begin ();
 
-  for (typename std::vector<PointT>::const_iterator pIt = prev_it + 1; pIt != polygon.end (); prev_it = pIt++)
+  for (typename std::vector<PointT, Eigen::aligned_allocator<PointT> >::const_iterator pIt = prev_it + 1; pIt != polygon.end (); prev_it = pIt++)
   {
     // if we intersect plane
     float distance = getDistance (*pIt);
@@ -168,9 +168,9 @@ pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT>& pol
  * @attention untested code
  */
 template<typename PointT> void
-pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT>& polygon) const
+pcl::PlaneClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::aligned_allocator<PointT> > &polygon) const
 {
-  std::vector<PointT> clipped;
+  std::vector<PointT, Eigen::aligned_allocator<PointT> > clipped;
   clipPlanarPolygon3D (polygon, clipped);
   polygon = clipped;
 }
