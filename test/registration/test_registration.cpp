@@ -45,6 +45,7 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/registration.h>
 #include <pcl/registration/icp.h>
+#include <pcl/registration/joint_icp.h>
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/gicp.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
@@ -190,6 +191,69 @@ TEST (PCL, IterativeClosestPoint)
 //  EXPECT_EQ (transformation (3, 1), 0);
 //  EXPECT_EQ (transformation (3, 2), 0);
 //  EXPECT_EQ (transformation (3, 3), 1);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
+{
+    // Sample random transform
+    Eigen::Vector3f axis((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    axis.normalize();
+    float angle = (float)rand() / RAND_MAX * max_angle;
+    Eigen::Vector3f translation((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
+    translation *= max_trans;
+    Eigen::Affine3f rotation(Eigen::AngleAxis<float>(angle, axis));
+    trans = Eigen::Translation3f(translation) * rotation;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, JointIterativeClosestPoint)
+{
+  // Set up
+  JointIterativeClosestPoint<PointXYZ, PointXYZ> reg;
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+  reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
+  size_t ntransforms = 10;
+  for (size_t t = 0; t < ntransforms; t++)
+  {
+    
+    // Sample a fixed offset between cloud pairs
+    Eigen::Affine3f delta_transform;
+    // No rotation, since at a random offset this could make it converge to a wrong (but still reasonable) result
+    sampleRandomTransform (delta_transform, 0., 0.10);
+    // Make a few transformed versions of the data, plus noise
+    size_t nclouds = 5;
+    for (size_t i = 0; i < nclouds; i++)
+    {
+      PointCloud<PointXYZ>::ConstPtr source (cloud_source.makeShared ());
+      // Sample random global transform for each pair
+      Eigen::Affine3f net_transform;
+      sampleRandomTransform (net_transform, 2*M_PI, 10.);
+      // And apply it to the source and target
+      PointCloud<PointXYZ>::Ptr source_trans (new PointCloud<PointXYZ>);
+      PointCloud<PointXYZ>::Ptr target_trans (new PointCloud<PointXYZ>);
+      pcl::transformPointCloud (*source, *source_trans, delta_transform.inverse () * net_transform);
+      pcl::transformPointCloud (*source, *target_trans, net_transform);
+      // Add these to the joint solver
+      reg.addInputSource (source_trans);
+      reg.addInputTarget (target_trans);
+
+    }
+
+    // Register
+    reg.align (cloud_reg);
+    Eigen::Matrix4f trans_final = reg.getFinalTransformation ();
+    for (int y = 0; y < 4; y++)
+      for (int x = 0; x < 4; x++)
+        EXPECT_NEAR (trans_final (y, x), delta_transform (y, x), 1E-2);
+
+    EXPECT_TRUE (cloud_reg.empty ()); // By definition, returns an empty cloud
+    // Clear
+    reg.clearInputSources ();
+    reg.clearInputTargets ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
