@@ -96,6 +96,12 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/time.h>
 
+#if defined(_WIN32)
+  // Remove macros defined in Windows.h
+  #undef near
+  #undef far
+#endif
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const bool create_interactor)
   : interactor_ ()
@@ -4374,35 +4380,35 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
   if ((extension == ".jpg") || (extension == ".JPG"))
   {
     vtkSmartPointer<vtkJPEGReader> jpeg_reader = vtkSmartPointer<vtkJPEGReader>::New ();
-    jpeg_reader->SetFileName (full_path.c_str ());
+    jpeg_reader->SetFileName (full_path.string ().c_str ());
     jpeg_reader->Update ();
     vtk_tex->SetInputConnection (jpeg_reader->GetOutputPort ());
   }
   else if ((extension == ".bmp") || (extension == ".BMP"))
   {
     vtkSmartPointer<vtkBMPReader> bmp_reader = vtkSmartPointer<vtkBMPReader>::New ();
-    bmp_reader->SetFileName (full_path.c_str ());
+    bmp_reader->SetFileName (full_path.string ().c_str ());
     bmp_reader->Update ();
     vtk_tex->SetInputConnection (bmp_reader->GetOutputPort ());
   }
   else if ((extension == ".pnm") || (extension == ".PNM"))
   {
     vtkSmartPointer<vtkPNMReader> pnm_reader = vtkSmartPointer<vtkPNMReader>::New ();
-    pnm_reader->SetFileName (full_path.c_str ());
+    pnm_reader->SetFileName (full_path.string ().c_str ());
     pnm_reader->Update ();
     vtk_tex->SetInputConnection (pnm_reader->GetOutputPort ());
   }
   else if ((extension == ".png") || (extension == ".PNG"))
   {
     vtkSmartPointer<vtkPNGReader> png_reader = vtkSmartPointer<vtkPNGReader>::New ();
-    png_reader->SetFileName (full_path.c_str ());
+    png_reader->SetFileName (full_path.string ().c_str ());
     png_reader->Update ();
     vtk_tex->SetInputConnection (png_reader->GetOutputPort ());
   }
   else if ((extension == ".tiff") || (extension == ".TIFF"))
   {
     vtkSmartPointer<vtkTIFFReader> tiff_reader = vtkSmartPointer<vtkTIFFReader>::New ();
-    tiff_reader->SetFileName (full_path.c_str ());
+    tiff_reader->SetFileName (full_path.string ().c_str ());
     tiff_reader->Update ();
     vtk_tex->SetInputConnection (tiff_reader->GetOutputPort ());
   }
