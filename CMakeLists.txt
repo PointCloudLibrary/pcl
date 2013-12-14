@@ -14,6 +14,9 @@ string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 ### ---[ Find universal dependencies
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
+# ---[ Include pkgconfig
+include (FindPkgConfig)
+
 # ---[ Release/Debug specific flags
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
   add_definitions("-DBOOST_DISABLE_ASSERTS -DEIGEN_NO_DEBUG")
@@ -265,6 +268,14 @@ find_package(PXCAPI)
 if (PXCAPI_FOUND)
   set(HAVE_PXCAPI ON)
   include_directories(SYSTEM ${PXCAPI_INCLUDE_DIRS})
+endif()
+
+# metslib
+if (PKG_CONFIG_FOUND)
+  pkg_check_modules(METSLIB metslib)
+  if (METSLIB_FOUND)
+    set (HAVE_METSLIB ON)
+  endif()
 endif()
 
 # LibPNG
