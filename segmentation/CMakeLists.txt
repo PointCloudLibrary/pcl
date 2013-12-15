@@ -64,13 +64,19 @@ if(build)
         include/pcl/${SUBSYS_NAME}/conditional_euclidean_clustering.h
         include/pcl/${SUBSYS_NAME}/supervoxel_clustering.h
 	include/pcl/${SUBSYS_NAME}/grabcut_segmentation.h
-        include/pcl/${SUBSYS_NAME}/random_walker.h
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
     set(incs
         ${incs}
         include/pcl/${SUBSYS_NAME}/min_cut_segmentation.h
+       )
+    endif()
+    # Random walker requires Eigen::Sparse module that is available since 3.1.0
+    if(NOT (${EIGEN_VERSION} VERSION_LESS 3.1.0))
+    set(incs
+        ${incs}
+        include/pcl/${SUBSYS_NAME}/random_walker.h
        )
     endif()
 
@@ -92,13 +98,19 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/conditional_euclidean_clustering.hpp
         include/pcl/${SUBSYS_NAME}/impl/supervoxel_clustering.hpp
 	include/pcl/${SUBSYS_NAME}/impl/grabcut_segmentation.hpp
-        include/pcl/${SUBSYS_NAME}/impl/random_walker.hpp
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
     set(impl_incs
         ${impl_incs}
         include/pcl/${SUBSYS_NAME}/impl/min_cut_segmentation.hpp
+       )
+    endif()
+    # Random walker requires Eigen::Sparse module that is available since 3.1.0
+    if(NOT (${EIGEN_VERSION} VERSION_LESS 3.1.0))
+    set(impl_incs
+        ${impl_incs}
+        include/pcl/${SUBSYS_NAME}/impl/random_walker.hpp
        )
     endif()
 
