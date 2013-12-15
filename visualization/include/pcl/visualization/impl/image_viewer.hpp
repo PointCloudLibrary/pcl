@@ -258,7 +258,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {
@@ -323,7 +323,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {

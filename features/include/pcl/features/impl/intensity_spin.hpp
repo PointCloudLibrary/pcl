@@ -58,7 +58,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
 
   // Find the min and max intensity values in the given neighborhood
   float min_intensity = std::numeric_limits<float>::max ();
-  float max_intensity = std::numeric_limits<float>::min ();
+  float max_intensity = -std::numeric_limits<float>::max ();
   for (int idx = 0; idx < k; ++idx)
   {
     min_intensity = (std::min) (min_intensity, cloud.points[indices[idx]].intensity);

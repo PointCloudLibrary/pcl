@@ -55,7 +55,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 {
   //double t1,t2;
   float minX = std::numeric_limits<float>::max (), minY = std::numeric_limits<float>::max (), minZ = std::numeric_limits<float>::max ();
-  float maxX = std::numeric_limits<float>::min (), maxY = std::numeric_limits<float>::min (), maxZ = std::numeric_limits<float>::min ();
+  float maxX = -std::numeric_limits<float>::max(), maxY = -std::numeric_limits<float>::max(), maxZ = -std::numeric_limits<float>::max();
   
   for (int i = 0; i < input_->size (); ++i)
   {
