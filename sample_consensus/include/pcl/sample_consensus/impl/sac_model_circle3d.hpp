@@ -280,7 +280,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff;
   int info = lm.minimize (coeff);
-  for (size_t i = 0; i < coeff.size (); ++i)
+  for (int i = 0; i < coeff.size (); ++i)
     optimized_coefficients[i] = static_cast<float> (coeff[i]);
 
   // Compute the L2 norm of the residuals
