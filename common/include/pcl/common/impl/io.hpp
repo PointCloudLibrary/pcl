@@ -272,7 +272,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
       rgb_idx_in = int (i);
       break;
     }
-  for (size_t i = 0; int (i) < fields_out.size (); ++i)
+  for (size_t i = 0; i < fields_out.size (); ++i)
     if (fields_out[i].name == "rgb" || fields_out[i].name == "rgba")
     {
       rgb_idx_out = int (i);
