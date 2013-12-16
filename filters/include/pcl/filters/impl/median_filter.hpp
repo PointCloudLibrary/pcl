@@ -55,8 +55,10 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
   // Copy everything from the input cloud to the output cloud (takes care of all the fields)
   copyPointCloud (*input_, output);
 
-  for (int y = 0; y < output.height; ++y)
-    for (int x = 0; x < output.width; ++x)
+  int height = static_cast<int> (output.height);
+  int width = static_cast<int> (output.width);
+  for (int y = 0; y < height; ++y)
+    for (int x = 0; x < width; ++x)
       if (pcl::isFinite ((*input_)(x, y)))
       {
         std::vector<float> vals;
@@ -65,8 +67,8 @@ pcl::MedianFilter<PointT>::applyFilter (PointCloud &output)
         for (int y_dev = -window_size_/2; y_dev <= window_size_/2; ++y_dev)
           for (int x_dev = -window_size_/2; x_dev <= window_size_/2; ++x_dev)
           {
-            if (x + x_dev >= 0 && x + x_dev < output.width &&
-                y + y_dev >= 0 && y + y_dev < output.height &&
+            if (x + x_dev >= 0 && x + x_dev < width &&
+                y + y_dev >= 0 && y + y_dev < height &&
                 pcl::isFinite ((*input_)(x+x_dev, y+y_dev)))
               vals.push_back ((*input_)(x+x_dev, y+y_dev).z);
           }
