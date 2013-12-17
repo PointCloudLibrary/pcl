@@ -101,6 +101,8 @@ pcl::io::load (const std::string& file_name, pcl::PCLPointCloud2& blob)
     result = pcl::io::loadPLYFile (file_name, blob);
   else if (extension == ".ifs")
     result = pcl::io::loadIFSFile (file_name, blob);
+  else if (extension == ".obj")
+    result = pcl::io::loadOBJFile (file_name, blob);
   else
   {
     PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s", extension.c_str ());
@@ -119,6 +121,24 @@ pcl::io::load (const std::string& file_name, pcl::PolygonMesh& mesh)
     result = pcl::io::loadPLYFile (file_name, mesh);
   else if (extension == ".ifs")
     result = pcl::io::loadIFSFile (file_name, mesh);
+  else if (extension == ".obj")
+    result = pcl::io::loadOBJFile (file_name, mesh);
+  else
+  {
+    PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s", extension.c_str ());
+    result = -1;
+  }
+  return (result);
+}
+
+int
+pcl::io::load (const std::string& file_name, pcl::TextureMesh& mesh)
+{
+  boost::filesystem::path p (file_name.c_str ());
+  std::string extension = p.extension ().string ();
+  int result = -1;
+  if (extension == ".obj")
+    result = pcl::io::loadOBJFile (file_name, mesh);
   else
   {
     PCL_ERROR ("[pcl::io::load] Don't know how to handle file with extension %s", extension.c_str ());

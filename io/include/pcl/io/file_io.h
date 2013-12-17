@@ -416,6 +416,14 @@ namespace pcl
     PCL_EXPORTS int
     load (const std::string& file_name, pcl::PolygonMesh& mesh);
 
+    /** \brief Load a file into a TextureMesh according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant pcl::TextureMesh
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::TextureMesh& mesh);
+
     /** \brief Save point cloud data to a binary file when available else to ASCII.
       * \param[in] file_name the output file name
       * \param[in] cloud the point cloud data message
