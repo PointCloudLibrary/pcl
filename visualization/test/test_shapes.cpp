@@ -22,7 +22,7 @@ main (int , char **)
   // Start the visualizer
   pcl::visualization::PCLVisualizer p ("test_shapes");
   p.setBackgroundColor (1, 1, 1);
-  p.addCoordinateSystem (1.0);
+  p.addCoordinateSystem (1.0, "first");
 
   //p.addPolygon (cloud, "polygon");
   p.addPolygon<PointXYZ> (cloud, 1.0, 0.0, 0.0, "polygon", 0);
@@ -39,10 +39,10 @@ main (int , char **)
   
   p.addText3D ("text3D", cloud->points[0], 1.0, 1.0, 0.0, 0.0);
   p.spin ();
-  p.removeCoordinateSystem (0);
+  p.removeCoordinateSystem ("first", 0);
   p.spin ();
-  p.addCoordinateSystem (1.0, 5, 3, 1);
+  p.addCoordinateSystem (1.0, 5, 3, 1, "second");
   p.spin ();
-  p.removeCoordinateSystem (0);
+  p.removeCoordinateSystem ("second", 0);
   p.spin ();
 }

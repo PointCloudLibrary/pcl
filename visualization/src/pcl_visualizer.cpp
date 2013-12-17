@@ -492,6 +492,31 @@ pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewport)
+{
+  addCoordinateSystem (scale, "reference", viewport);
+}
+
+void
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, int viewport)
+{
+  addCoordinateSystem (scale, x, y, z, "reference", viewport);
+}
+
+void
+pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport)
+{
+  addCoordinateSystem (scale, t, "reference", viewport);
+}
+
+bool
+pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
+{
+  return (removeCoordinateSystem ("reference", viewport));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport)
 {
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();

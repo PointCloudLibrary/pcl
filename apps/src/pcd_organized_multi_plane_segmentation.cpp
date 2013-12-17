@@ -68,7 +68,7 @@ class PCDOrganizedMultiPlaneSegmentation
       viewer.setBackgroundColor (0, 0, 0);
       //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "cloud");
       //viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.15, "cloud");
-      viewer.addCoordinateSystem (1.0);
+      viewer.addCoordinateSystem (1.0, "global");
       viewer.initCameraParameters ();
       viewer.registerKeyboardCallback(&PCDOrganizedMultiPlaneSegmentation::keyboard_callback, *this, 0);
     }

@@ -180,7 +180,7 @@ struct pcl::visualization::CloudViewer::CloudViewer_impl
     viewer_ = boost::shared_ptr<PCLVisualizer>(new PCLVisualizer (window_name_, true));
 #endif
     viewer_->setBackgroundColor (0.1, 0.1, 0.1);
-    viewer_->addCoordinateSystem (0.1);
+    viewer_->addCoordinateSystem (0.1, "global");
 
     while (!quit_)
     {
