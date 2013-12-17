@@ -141,6 +141,22 @@ namespace pcl
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
             int &file_version, const int offset = 0);
 
+
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/PCLPointCloud2.
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] cloud the resultant PointCloud message read from disk
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        *
+        * \return 0 on success.
+        */
+      int
+      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0);
+
       /** \brief Read a point cloud data from a FILE file and store it into a
         * pcl/TextureMesh.
         * \param[in] file_name the name of the file containing data
@@ -247,6 +263,20 @@ namespace pcl
       return (p.read (file_name, cloud, origin, orientation, obj_version));
     }
 
+    /** \brief Load an OBJ file into a PCLPointCloud2 blob type.
+      * \param[in] file_name the name of the file to load
+      * \param[out] cloud the resultant templated point cloud
+      * \return 0 on success < 0 on error
+      *
+      * \ingroup io
+      */
+    inline int
+    loadOBJFile (const std::string &file_name, pcl::PCLPointCloud2 &cloud)
+    {
+      pcl::OBJReader p;
+      return (p.read (file_name, cloud));
+    }
+
     /** \brief Load any OBJ file into a templated PointCloud type
       * \param[in] file_name the name of the file to load
       * \param[out] cloud the resultant templated point cloud
@@ -257,6 +287,34 @@ namespace pcl
     {
       pcl::OBJReader p;
       return (p.read (file_name, cloud));
+    }
+
+    /** \brief Load any OBJ file into a PolygonMesh type.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant mesh
+      * \return 0 on success < 0 on error
+      *
+      * \ingroup io
+      */
+    inline int
+    loadOBJFile (const std::string &file_name, pcl::PolygonMesh &mesh)
+    {
+      pcl::OBJReader p;
+      return (p.read (file_name, mesh));
+    }
+
+    /** \brief Load any OBJ file into a TextureMesh type.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant mesh
+      * \return 0 on success < 0 on error
+      *
+      * \ingroup io
+      */
+    inline int
+    loadOBJFile (const std::string &file_name, pcl::TextureMesh &mesh)
+    {
+      pcl::OBJReader p;
+      return (p.read (file_name, mesh));
     }
 
     /** \brief Saves a TextureMesh in ascii OBJ format.

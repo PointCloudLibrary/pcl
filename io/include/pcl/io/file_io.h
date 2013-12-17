@@ -43,6 +43,8 @@
 #include <pcl/io/boost.h>
 #include <cmath>
 #include <sstream>
+#include <pcl/PolygonMesh.h>
+#include <pcl/TextureMesh.h>
 
 namespace pcl
 {
@@ -386,6 +388,77 @@ namespace pcl
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
                         fields_count * sizeof (uint8_t)], reinterpret_cast<char*> (&value), sizeof (uint8_t));
+  }
+
+  namespace io
+  {
+    /** \brief Load a file into a PointCloud2 according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] blob the resultant pcl::PointCloud2 blob
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::PCLPointCloud2& blob);
+
+    /** \brief Load a file into a template PointCloud type according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] cloud the resultant templated point cloud
+      * \ingroup io
+      */
+    template<typename PointT> int
+    load (const std::string& file_name, pcl::PointCloud<PointT>& cloud);
+
+    /** \brief Load a file into a PolygonMesh according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant pcl::PolygonMesh
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::PolygonMesh& mesh);
+
+    /** \brief Load a file into a TextureMesh according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant pcl::TextureMesh
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::TextureMesh& mesh);
+
+    /** \brief Save point cloud data to a binary file when available else to ASCII.
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud data message
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string& file_name, const pcl::PCLPointCloud2& blob, unsigned precision = 5);
+
+    /** \brief Save point cloud to a binary file when available else to ASCII.
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    template<typename PointT> int
+    save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, unsigned precision = 5);
+
+    /** \brief Saves a TextureMesh to a binary file when available else to ASCII.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] tex_mesh the texture mesh to save
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string &file_name, const pcl::TextureMesh &tex_mesh, unsigned precision = 5);
+
+    /** \brief Saves a PolygonMesh to a binary file when available else to ASCII.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] mesh the polygonal mesh to save
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
   }
 }
 
