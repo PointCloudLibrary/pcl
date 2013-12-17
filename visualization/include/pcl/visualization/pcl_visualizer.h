@@ -298,7 +298,7 @@ namespace pcl
           */
         PCL_DEPRECATED (void addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0),
         "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, id, x, y, z, viewport) with id a unique string identifier.");
+        "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.");
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
