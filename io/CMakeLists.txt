@@ -137,7 +137,8 @@ if(build)
         ${OPENNI_GRABBER_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
-		${PXC_GRABBER_SOURCES}
+	${PXC_GRABBER_SOURCES}
+	src/file_io.cpp
         )
     if(PNG_FOUND)
       set(srcs
