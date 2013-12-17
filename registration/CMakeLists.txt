@@ -35,6 +35,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/correspondence_types.h
         include/pcl/${SUBSYS_NAME}/ia_ransac.h
         include/pcl/${SUBSYS_NAME}/icp.h
+        include/pcl/${SUBSYS_NAME}/joint_icp.h
         include/pcl/${SUBSYS_NAME}/icp_nl.h
         include/pcl/${SUBSYS_NAME}/lum.h
         include/pcl/${SUBSYS_NAME}/elch.h
@@ -90,6 +91,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/correspondence_types.hpp
         include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp.hpp
+        include/pcl/${SUBSYS_NAME}/impl/joint_icp.hpp
         include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp
         include/pcl/${SUBSYS_NAME}/impl/elch.hpp
         include/pcl/${SUBSYS_NAME}/impl/lum.hpp
@@ -134,6 +136,7 @@ if(build)
         #src/pairwise_graph_registration.cpp
         src/ia_ransac.cpp
         src/icp.cpp
+        src/joint_icp.cpp
         src/gicp.cpp
         src/icp_nl.cpp
         src/elch.cpp

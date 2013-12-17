@@ -38,6 +38,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
+#include <vector>
 
 #include <pcl/console/parse.h>
 
@@ -700,6 +701,27 @@ struct KinFuApp
   {        
     registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
     cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
+    if (registration_)
+        kinfu_.setDepthIntrinsics(KINFU_DEFAULT_RGB_FOCAL_X, KINFU_DEFAULT_RGB_FOCAL_Y);
+  }
+  
+  void
+  setDepthIntrinsics(std::vector<float> depth_intrinsics)
+  {
+    float fx = depth_intrinsics[0];
+    float fy = depth_intrinsics[1];
+    
+    if (depth_intrinsics.size() == 4)
+    {
+        float cx = depth_intrinsics[2];
+        float cy = depth_intrinsics[3];
+        kinfu_.setDepthIntrinsics(fx, fy, cx, cy);
+        cout << "Depth intrinsics changed to fx="<< fx << " fy=" << fy << " cx=" << cx << " cy=" << cy << endl;
+    }
+    else {
+        kinfu_.setDepthIntrinsics(fx, fy);
+        cout << "Depth intrinsics changed to fx="<< fx << " fy=" << fy << endl;
+    }
   }
 
   void 
@@ -1124,13 +1146,14 @@ int
 print_cli_help ()
 {
   cout << "\nKinFu parameters:" << endl;
-  cout << "    --help, -h                      : print this message" << endl;  
-  cout << "    --registration, -r              : try to enable registration (source needs to support this)" << endl;
-  cout << "    --current-cloud, -cc            : show current frame cloud" << endl;
-  cout << "    --save-views, -sv               : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
-  cout << "    --integrate-colors, -ic         : enable color integration mode (allows to get cloud with colors)" << endl;   
-  cout << "    --scale-truncation, -st         : scale the truncation distance and raycaster based on the volume size" << endl;
-  cout << "    -volume_size <size_in_meters>   : define integration volume size" << endl;
+  cout << "    --help, -h                              : print this message" << endl;  
+  cout << "    --registration, -r                      : try to enable registration (source needs to support this)" << endl;
+  cout << "    --current-cloud, -cc                    : show current frame cloud" << endl;
+  cout << "    --save-views, -sv                       : accumulate scene view and save in the end ( Requires OpenCV. Will cause 'bad_alloc' after some time )" << endl;  
+  cout << "    --integrate-colors, -ic                 : enable color integration mode (allows to get cloud with colors)" << endl;   
+  cout << "    --scale-truncation, -st                 : scale the truncation distance and raycaster based on the volume size" << endl;
+  cout << "    -volume_size <size_in_meters>           : define integration volume size" << endl;
+  cout << "    --depth-intrinsics <fx>,<fy>[,<cx>,<cy> : set the intrinsics of the depth camera" << endl;
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
   cout << "";
@@ -1206,6 +1229,7 @@ main (int argc, char* argv[])
   pc::parse_argument (argc, argv, "-volume_size", volume_size);
 
   int icp = 1, visualization = 1;
+  std::vector<float> depth_intrinsics;
   pc::parse_argument (argc, argv, "--icp", icp);
   pc::parse_argument (argc, argv, "--viz", visualization);
         
@@ -1228,6 +1252,19 @@ main (int argc, char* argv[])
 
   if (pc::find_switch (argc, argv, "--scale-truncation") || pc::find_switch (argc, argv, "-st"))
     app.enableTruncationScaling();
+  
+  if (pc::parse_x_arguments (argc, argv, "--depth-intrinsics", depth_intrinsics) > 0)
+  {
+    if ((depth_intrinsics.size() == 4) || (depth_intrinsics.size() == 2))
+    {
+       app.setDepthIntrinsics(depth_intrinsics);
+    }
+    else
+    {
+        pc::print_error("Depth intrinsics must be given on the form fx,fy[,cx,cy].\n");
+        return -1;
+    }   
+  }
 
   // executing
   try { app.startMainLoop (triggered_capture); }

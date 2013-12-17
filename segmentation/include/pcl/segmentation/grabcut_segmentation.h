@@ -217,7 +217,7 @@ namespace pcl
         Eigen::Vector3f eigenvector;
       };
 
-      class GMM
+      class PCL_EXPORTS GMM
       {
         public:
           /// Initialize GMM with ddesired number of gaussians.
@@ -289,14 +289,14 @@ namespace pcl
       };
 
       /** Build the initial GMMs using the Orchard and Bouman color clustering algorithm */
-      void
+      PCL_EXPORTS void
       buildGMMs (const Image &image,
                  const std::vector<int>& indices,
                  const std::vector<SegmentationValue> &hardSegmentation,
                  std::vector<std::size_t> &components,
                  GMM &background_GMM, GMM &foreground_GMM);
       /** Iteratively learn GMMs using GrabCut updating algorithm */
-      void
+      PCL_EXPORTS void
       learnGMMs (const Image& image,
                  const std::vector<int>& indices,
                  const std::vector<SegmentationValue>& hard_segmentation,

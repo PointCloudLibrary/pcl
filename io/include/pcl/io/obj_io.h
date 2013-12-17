@@ -65,11 +65,13 @@ namespace pcl
         * \return 0 on success < 0 else.
         */
       int
-      read (const std::string& obj_file_name,
-            const std::string& mtl_file_name);
+      read (const std::string& obj_file_name, const std::string& mtl_file_name);
 
       std::vector<pcl::TexMaterial>::const_iterator
       getMaterial (const std::string& material_name) const;
+
+      /// materials array
+      std::vector<pcl::TexMaterial> materials_;
 
     private:
       /// converts CIE XYZ to RGB
@@ -81,8 +83,6 @@ namespace pcl
       /// fill a pcl::TexMaterial::RGB from a split line containing r g b values
       int
       fillRGBfromRGB (const std::vector<std::string>& split_line, pcl::TexMaterial::RGB& rgb);
-      /// materials array
-      std::vector<pcl::TexMaterial> materials_;
       /// matrix to convert CIE to RGB
       Eigen::Matrix3f xyz_to_rgb_matrix_;
 
@@ -121,7 +121,8 @@ namespace pcl
                   int &file_version, int &data_type, unsigned int &data_idx,
                   const int offset);
 
-      /** \brief Read a point cloud data from a FILE file and store it into a pcl/PCLPointCloud2.
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         * \param[out] origin the sensor acquisition origin always null
@@ -137,10 +138,68 @@ namespace pcl
         */
       int
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version,
-            const int offset = 0);
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+            int &file_version, const int offset = 0);
 
-      /** \brief Read a point cloud data from any FILE file, and convert it to the given 
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/TextureMesh.
+        * \param[in] file_name the name of the file containing data
+        * \param[out] mesh the resultant TextureMesh read from disk
+        * \param[out] origin the sensor origin always null
+        * \param[out] orientation the sensor orientation always identity
+        * \param[out] file_version always 0
+        * \param[in] offset the offset in the file where to expect the true
+        * header to begin.
+        *
+        * \return 0 on success.
+        */
+      int
+      read (const std::string &file_name, pcl::TextureMesh &mesh,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+            int &file_version, const int offset = 0);
+
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/TextureMesh.
+        * \param[in] file_name the name of the file containing data
+        * \param[out] mesh the resultant TextureMesh read from disk
+        * \param[in] offset the offset in the file where to expect the true
+        * header to begin.
+        *
+        * \return 0 on success.
+        */
+      int
+      read (const std::string &file_name, pcl::TextureMesh &mesh, const int offset = 0);
+
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/PolygonMesh.
+        * \param[in] file_name the name of the file containing data
+        * \param[out] mesh the resultant PolygonMesh read from disk
+        * \param[out] origin the sensor origin always null
+        * \param[out] orientation the sensor orientation always identity
+        * \param[out] file_version always 0
+        * \param[in] offset the offset in the file where to expect the true
+        * header to begin.
+        *
+        * \return 0 on success.
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+            int &file_version, const int offset = 0);
+
+      /** \brief Read a point cloud data from a FILE file and store it into a
+        * pcl/PolygonMesh.
+        * \param[in] file_name the name of the file containing data
+        * \param[out] mesh the resultant PolygonMesh read from disk
+        * \param[in] offset the offset in the file where to expect the true
+        * header to begin.
+        *
+        * \return 0 on success.
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh, const int offset = 0);
+
+      /** \brief Read a point cloud data from any FILE file, and convert it to the given
         * template format.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
@@ -166,8 +225,8 @@ namespace pcl
       }
 
     private:
-      /// Usually OBJ files come with a MTL file where texture material are stored
-      pcl::MTLReader companion_;
+      /// Usually OBJ files come MTL files where texture materials are stored
+      std::vector<pcl::MTLReader> companions_;
   };
 
   namespace io
@@ -207,8 +266,8 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS int
-    saveOBJFile (const std::string &file_name, 
-                 const pcl::TextureMesh &tex_mesh, 
+    saveOBJFile (const std::string &file_name,
+                 const pcl::TextureMesh &tex_mesh,
                  unsigned precision = 5);
 
     /** \brief Saves a PolygonMesh in ascii PLY format.
@@ -218,8 +277,8 @@ namespace pcl
       * \ingroup io
       */
     PCL_EXPORTS int
-    saveOBJFile (const std::string &file_name, 
-                 const pcl::PolygonMesh &mesh, 
+    saveOBJFile (const std::string &file_name,
+                 const pcl::PolygonMesh &mesh,
                  unsigned precision = 5);
 
   }

@@ -171,6 +171,7 @@ namespace pcl
     protected:
       using Filter<PointT>::initCompute;
       using Filter<PointT>::deinitCompute;
+      using Filter<PointT>::applyFilter;
 
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
@@ -280,6 +281,9 @@ namespace pcl
       }
 
     protected:
+
+      using Filter<pcl::PCLPointCloud2>::applyFilter;
+
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
 

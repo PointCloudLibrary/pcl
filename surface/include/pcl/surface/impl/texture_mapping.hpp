@@ -1042,12 +1042,29 @@ pcl::TextureMapping<PointInT>::getPointUVCoordinates(const pcl::PointXYZ &pt, co
     // compute image center and dimension
     double sizeX = cam.width;
     double sizeY = cam.height;
-    double cx = sizeX / 2.0;
-    double cy = sizeY / 2.0;
+    double cx, cy;
+    if (cam.center_w > 0)
+      cx = cam.center_w;
+    else
+      cx = sizeX / 2.0;
+    if (cam.center_h > 0)
+      cy = cam.center_h;
+    else
+      cy = sizeY / 2.0;
+
+    double focal_x, focal_y; 
+    if (cam.focal_length_w > 0)
+      focal_x = cam.focal_length_w;
+    else
+      focal_x = cam.focal_length;
+    if (cam.focal_length_h > 0)
+      focal_y = cam.focal_length_h;
+    else
+      focal_y = cam.focal_length;
 
     // project point on camera's image plane
-    UV_coordinates.x = static_cast<float> ((cam.focal_length * (pt.x / pt.z) + cx) / sizeX); //horizontal
-    UV_coordinates.y = 1.0f - static_cast<float> ((cam.focal_length * (pt.y / pt.z) + cy) / sizeY); //vertical
+    UV_coordinates.x = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
+    UV_coordinates.y = 1.0f - static_cast<float> ((focal_y * (pt.y / pt.z) + cy) / sizeY); //vertical
 
     // point is visible!
     if (UV_coordinates.x >= 0.0 && UV_coordinates.x <= 1.0 && UV_coordinates.y >= 0.0 && UV_coordinates.y <= 1.0)

@@ -42,6 +42,7 @@
 #include <pcl/correspondence.h>
 #include <pcl/ModelCoefficients.h>
 #include <pcl/PolygonMesh.h>
+#include <pcl/TextureMesh.h>
 //
 #include <pcl/console/print.h>
 #include <pcl/visualization/common/actor_map.h>
@@ -901,6 +902,17 @@ namespace pcl
                             const std::vector<int> & correspondences,
                             const std::string &id = "correspondences",
                             int viewport = 0);
+
+        /** \brief Add a TextureMesh object to screen
+          * \param[in] polymesh the textured polygonal mesh
+          * \param[in] path_to_tex_files path to texture files (usuallay same directory as your mesh file)
+          * \param[in] id the texture mesh object id (default: "texture")
+          * \param[in] viewport the view port where the TextureMesh should be added (default: all)
+          */
+        bool
+        addTextureMesh (const pcl::TextureMesh &polymesh,
+                        const std::string &id = "texture",
+                        int viewport = 0);
 
         /** \brief Add the specified correspondences to the display.
           * \param[in] source_points The source points
@@ -1969,6 +1981,17 @@ namespace pcl
                                  const Eigen::Quaternion<float> &orientation,
                                  Eigen::Matrix4f &transformation);
 
+        /** \brief Fills a vtkTexture structure from pcl::TexMaterial.
+          * \param[in] tex_mat texture material in PCL format
+          * \param[out] vtk_tex texture material in VTK format
+          * \return 0 on success and -1 else.
+          * \note for now only image based textures are supported, image file must be in 
+          * tex_file attribute of \a tex_mat.
+          */
+        int
+        textureFromTexMaterial (const pcl::TexMaterial& tex_mat,
+                                vtkTexture* vtk_tex) const;
+        
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:
         /** \brief Convert Eigen::Matrix4f to vtkMatrix4x4

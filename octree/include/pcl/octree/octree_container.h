@@ -93,7 +93,7 @@ namespace pcl
        * \return number of points/indices stored in leaf node container.
        */
       virtual size_t
-      getSize ()
+      getSize () const
       {
         return 0u;
       }
