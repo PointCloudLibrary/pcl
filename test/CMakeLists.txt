@@ -40,6 +40,7 @@ if(build)
     add_subdirectory(search)
     add_subdirectory(keypoints)
     add_subdirectory(surface)
+    add_subdirectory(segmentation)
 
 	PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
                  FILES test_recognition_ism.cpp

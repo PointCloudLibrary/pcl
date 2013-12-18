@@ -1,0 +1,32 @@
+; Graph 5
+; -------
+;
+; No edges
+;
+; [0] [1] [2] [3]
+
+Size 4
+
+Topology
+{
+}
+
+Seeds
+{
+  Seed "0 1"
+  Seed "1 2"
+  Seed "2 3"
+  Seed "3 4"
+}
+
+Segmentation "1 2 3 4"
+
+Dimensions "0 0"
+
+Potentials
+{
+  1 "1 0 0 0"
+  2 "0 1 0 0"
+  3 "0 0 1 0"
+  4 "0 0 0 1"
+}
