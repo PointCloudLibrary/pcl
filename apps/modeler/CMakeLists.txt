@@ -109,7 +109,7 @@ if(build)
   # Generate executable
   set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
   PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${ui_srcs} ${moc_srcs} ${resource_srcs} ${srcs} ${incs} ${impl_incs})
-  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search QVTK ${QT_LIBRARIES})
+  target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_kdtree pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
   # Put the ui in the windows project file
   IF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
