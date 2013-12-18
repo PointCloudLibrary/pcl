@@ -27,6 +27,8 @@ if(build)
     enable_testing()
     include_directories(${PCL_INCLUDE_DIRS})
 
+    add_custom_target(tests ${CMAKE_CTEST_COMMAND})
+
     add_subdirectory(2d)
     add_subdirectory(common)
     add_subdirectory(features)
