@@ -290,6 +290,7 @@ namespace pcl
           point_representation_ = point_representation;
         }
 
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
         virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
 
       protected:
@@ -434,6 +435,7 @@ namespace pcl
                                             double max_distance = std::numeric_limits<double>::max ());
 
         
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
         virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
         clone () const
         {
