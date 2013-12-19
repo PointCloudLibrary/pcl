@@ -149,6 +149,37 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   //   if (target_has_normals_)
   //     correspondence_rejectors_[i]->setTargetNormals (target_);
   // }
+  PCLPointCloud2::Ptr target_blob (new PCLPointCloud2);
+  if (!correspondence_rejectors_.empty ())
+    pcl::toPCLPointCloud2 (*target_, *target_blob);
+  bool rejectors_need_target = false;
+  bool rejectors_need_source = false;
+  for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+  {
+    registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+    if (rej->requiresTargetPoints ())
+    {
+      rej->setTargetPoints (target_blob);
+      rejectors_need_target = true;
+    }
+    if (rej->requiresTargetNormals () && target_has_normals_)
+    {
+      rej->setTargetNormals (target_blob);
+      rejectors_need_target = true;
+    }
+    if (rej->requiresSourcePoints () || rej->requiresSourceNormals ())
+    {
+      rejectors_need_source = true;
+    }
+    if (rej->requiresSourceNormals () && !source_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects source normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+    if (rej->requiresTargetNormals () && !target_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects target normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+  }
 
   convergence_criteria_->setMaximumIterations (max_iterations_);
   convergence_criteria_->setRelativeMSE (euclidean_fitness_epsilon_);
@@ -170,16 +201,31 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
+    PCLPointCloud2::Ptr input_transformed_blob;
+    if (rejectors_need_source)
+    {
+      input_transformed_blob.reset (new PCLPointCloud2);
+      toPCLPointCloud2 (*input_transformed, *input_transformed_blob);
+    }
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
     for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
-      PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
+      registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+      PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", rej->getClassName ().c_str ());
       // We should be doing something like this
       // correspondence_rejectors_[i]->setInputSource (input_transformed);
       // if (source_has_normals_)
       //   correspondence_rejectors_[i]->setInputNormals (input_transformed);
-      correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
-      correspondence_rejectors_[i]->getCorrespondences (*correspondences_);
+      if (rej->requiresSourcePoints ())
+      {
+        rej->setSourcePoints (input_transformed_blob);
+      }
+      if (rej->requiresSourceNormals () && source_has_normals_)
+      {
+        rej->setSourceNormals (input_transformed_blob);
+      }
+      rej->setInputCorrespondences (temp_correspondences);
+      rej->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
       if (i < correspondence_rejectors_.size () - 1)
         *temp_correspondences = *correspondences_;

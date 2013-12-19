@@ -134,6 +134,35 @@ namespace pcl
         inline PointCloudConstPtr const 
         getInputTarget () { return (target_ ); }
 
+
+        /** \brief See if this rejector requires source points */
+        bool
+        requiresSourcePoints () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source cloud */
+        void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudPtr cloud (new PointCloud);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputSource (cloud);
+        }
+        
+        /** \brief See if this rejector requires a target cloud */
+        bool
+        requiresTargetPoints () const
+        { return (true); }
+
+        /** \brief Method for setting the target cloud */
+        void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudPtr cloud (new PointCloud);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputTarget (cloud);
+        }
+
         /** \brief Set the maximum distance between corresponding points.
           * Correspondences with distances below the threshold are considered as inliers.
           * \param[in] threshold Distance threshold in the same dimension as source and target data sets.

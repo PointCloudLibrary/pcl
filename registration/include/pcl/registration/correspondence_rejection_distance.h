@@ -135,6 +135,35 @@ namespace pcl
           boost::static_pointer_cast<DataContainer<PointT> > (data_container_)->setInputTarget (target);
         }
 
+
+        /** \brief See if this rejector requires source points */
+        bool
+        requiresSourcePoints () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source cloud */
+        void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputSource<PointXYZ> (cloud);
+        }
+        
+        /** \brief See if this rejector requires a target cloud */
+        bool
+        requiresTargetPoints () const
+        { return (true); }
+
+        /** \brief Method for setting the target cloud */
+        void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputTarget<PointXYZ> (cloud);
+        }
+
         /** \brief Provide a pointer to the search object used to find correspondences in
           * the target cloud.
           * \param[in] tree a pointer to the spatial search object.

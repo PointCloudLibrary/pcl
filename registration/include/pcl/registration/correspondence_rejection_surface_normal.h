@@ -234,6 +234,71 @@ namespace pcl
           return (boost::static_pointer_cast<DataContainer<pcl::PointXYZ, NormalT> > (data_container_)->getTargetNormals ());
         }
 
+
+        /** \brief See if this rejector requires source points */
+        bool
+        requiresSourcePoints () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source cloud */
+        void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          if (!data_container_)
+            initializeDataContainer<PointXYZ, Normal> ();
+          PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputSource<PointXYZ> (cloud);
+        }
+        
+        /** \brief See if this rejector requires a target cloud */
+        bool
+        requiresTargetPoints () const
+        { return (true); }
+
+        /** \brief Method for setting the target cloud */
+        void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          if (!data_container_)
+            initializeDataContainer<PointXYZ, Normal> ();
+          PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputTarget<PointXYZ> (cloud);
+        }
+        
+        /** \brief See if this rejector requires source normals */
+        bool
+        requiresSourceNormals () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source normals */
+        void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          if (!data_container_)
+            initializeDataContainer<PointXYZ, Normal> ();
+          PointCloud<Normal>::Ptr cloud (new PointCloud<Normal>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputNormals<PointXYZ, Normal> (cloud);
+        }
+        
+        /** \brief See if this rejector requires target normals*/
+        bool
+        requiresTargetNormals () const
+        { return (true); }
+
+        /** \brief Method for setting the target normals */
+        void
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          if (!data_container_)
+            initializeDataContainer<PointXYZ, Normal> ();
+          PointCloud<Normal>::Ptr cloud (new PointCloud<Normal>);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setTargetNormals<PointXYZ, Normal> (cloud);
+        }
+
       protected:
 
         /** \brief Apply the rejection algorithm.
