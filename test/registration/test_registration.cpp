@@ -53,6 +53,7 @@
 #include <pcl/registration/correspondence_rejection_median_distance.h>
 #include <pcl/registration/correspondence_rejection_sample_consensus.h>
 #include <pcl/registration/correspondence_rejection_surface_normal.h>
+#include <pcl/registration/correspondence_estimation_normal_shooting.h>
 #include <pcl/registration/ia_ransac.h>
 #include <pcl/registration/pyramid_feature_matching.h>
 #include <pcl/features/ppf.h>
@@ -217,6 +218,14 @@ TEST (PCL, IterativeClosestPointWithRejectors)
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.15);
+  // Add a median distance rejector
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  rej_med->setMedianFactor (4.0);
+  reg.addCorrespondenceRejector (rej_med);
+  // Also add a SaC rejector
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  reg.addCorrespondenceRejector (rej_samp);
+
   size_t ntransforms = 10;
   for (size_t t = 0; t < ntransforms; t++)
   {
@@ -236,13 +245,6 @@ TEST (PCL, IterativeClosestPointWithRejectors)
 
     reg.setInputSource (source_trans);
     reg.setInputTarget (target_trans);
-    // Add a median distance rejector
-    pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
-    rej_med->setMedianFactor (4.0);
-    reg.addCorrespondenceRejector (rej_med);
-    // Also add a SaC rejector
-    pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
-    reg.addCorrespondenceRejector (rej_samp);
     
     // Register
     reg.align (cloud_reg);
@@ -410,15 +412,18 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   reg.setInputTarget (tgt);
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
+  // Use a correspondence estimator which needs normals
+  registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>::Ptr ce (new registration::CorrespondenceEstimationNormalShooting<PointT, PointT, PointT>);
+  reg.setCorrespondenceEstimation (ce);
   // Add rejector
   registration::CorrespondenceRejectorSurfaceNormal::Ptr rej (new registration::CorrespondenceRejectorSurfaceNormal);
-  rej->setThreshold (0); //Could be a lot of rotation -- just make sure they're at least within 90 degrees
+  rej->setThreshold (0); //Could be a lot of rotation -- just make sure they're at least within 0 degrees
   reg.addCorrespondenceRejector (rej);
 
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -439,7 +444,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
     // Register
     reg.align (output);
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-    EXPECT_LT (reg.getFitnessScore (), 0.001);
+    EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
   
 

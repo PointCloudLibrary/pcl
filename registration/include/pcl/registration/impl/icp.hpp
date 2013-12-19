@@ -140,39 +140,24 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
  
   transformation_ = Matrix4::Identity ();
 
+  // Make blobs if necessary
+  determineRequiredBlobData ();
+  PCLPointCloud2::Ptr target_blob (new PCLPointCloud2);
+  if (need_target_blob_)
+    pcl::toPCLPointCloud2 (*target_, *target_blob);
+
   // Pass in the default target for the Correspondence Estimation/Rejection code
   correspondence_estimation_->setInputTarget (target_);
+  if (correspondence_estimation_->requiresTargetNormals ())
+    correspondence_estimation_->setTargetNormals (target_blob);
   // Correspondence Rejectors need a binary blob
-  PCLPointCloud2::Ptr target_blob (new PCLPointCloud2);
-  if (!correspondence_rejectors_.empty ())
-    pcl::toPCLPointCloud2 (*target_, *target_blob);
-  bool rejectors_need_target = false;
-  bool rejectors_need_source = false;
   for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
   {
     registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
     if (rej->requiresTargetPoints ())
-    {
       rej->setTargetPoints (target_blob);
-      rejectors_need_target = true;
-    }
     if (rej->requiresTargetNormals () && target_has_normals_)
-    {
       rej->setTargetNormals (target_blob);
-      rejectors_need_target = true;
-    }
-    if (rej->requiresSourcePoints () || rej->requiresSourceNormals ())
-    {
-      rejectors_need_source = true;
-    }
-    if (rej->requiresSourceNormals () && !source_has_normals_)
-    {
-      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects source normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
-    }
-    if (rej->requiresTargetNormals () && !target_has_normals_)
-    {
-      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects target normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
-    }
   }
 
   convergence_criteria_->setMaximumIterations (max_iterations_);
@@ -183,11 +168,20 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   // Repeat until convergence
   do
   {
+    // Get blob data if needed
+    PCLPointCloud2::Ptr input_transformed_blob;
+    if (need_source_blob_)
+    {
+      input_transformed_blob.reset (new PCLPointCloud2);
+      toPCLPointCloud2 (*input_transformed, *input_transformed_blob);
+    }
     // Save the previously estimated transformation
     previous_transformation_ = transformation_;
 
     // Set the source each iteration, to ensure the dirty flag is updated
     correspondence_estimation_->setInputSource (input_transformed);
+    if (correspondence_estimation_->requiresSourceNormals ())
+      correspondence_estimation_->setSourceNormals (input_transformed_blob);
     // Estimate correspondences
     if (use_reciprocal_correspondence_)
       correspondence_estimation_->determineReciprocalCorrespondences (*correspondences_, corr_dist_threshold_);
@@ -195,25 +189,15 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
       correspondence_estimation_->determineCorrespondences (*correspondences_, corr_dist_threshold_);
 
     //if (correspondence_rejectors_.empty ())
-    PCLPointCloud2::Ptr input_transformed_blob;
-    if (rejectors_need_source)
-    {
-      input_transformed_blob.reset (new PCLPointCloud2);
-      toPCLPointCloud2 (*input_transformed, *input_transformed_blob);
-    }
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
     for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
       registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", rej->getClassName ().c_str ());
       if (rej->requiresSourcePoints ())
-      {
         rej->setSourcePoints (input_transformed_blob);
-      }
       if (rej->requiresSourceNormals () && source_has_normals_)
-      {
         rej->setSourceNormals (input_transformed_blob);
-      }
       rej->setInputCorrespondences (temp_correspondences);
       rej->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
@@ -263,6 +247,42 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
   transformCloud (*input_, output, final_transformation_);
 }
 
+template <typename PointSource, typename PointTarget, typename Scalar> void
+pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::determineRequiredBlobData ()
+{
+  need_source_blob_ = false;
+  need_target_blob_ = false;
+  // Check estimator
+  need_source_blob_ |= correspondence_estimation_->requiresSourceNormals ();
+  need_target_blob_ |= correspondence_estimation_->requiresTargetNormals ();
+  // Add warnings if necessary
+  if (correspondence_estimation_->requiresSourceNormals () && !source_has_normals_)
+  {
+      PCL_WARN("[pcl::%s::determineRequiredBlobData] Estimator expects source normals, but we can't provide them.\n", getClassName ().c_str ());
+  }
+  if (correspondence_estimation_->requiresTargetNormals () && !target_has_normals_)
+  {
+      PCL_WARN("[pcl::%s::determineRequiredBlobData] Estimator expects target normals, but we can't provide them.\n", getClassName ().c_str ());
+  }
+  // Check rejectors
+  for (size_t i = 0; i < correspondence_rejectors_.size (); i++)
+  {
+    registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+    need_source_blob_ |= rej->requiresSourcePoints ();
+    need_source_blob_ |= rej->requiresSourceNormals ();
+    need_target_blob_ |= rej->requiresTargetPoints ();
+    need_target_blob_ |= rej->requiresTargetNormals ();
+    if (rej->requiresSourceNormals () && !source_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::determineRequiredBlobData] Rejector %s expects source normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+    if (rej->requiresTargetNormals () && !target_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::determineRequiredBlobData] Rejector %s expects target normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+  }
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
 pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transformCloud (
@@ -272,5 +292,6 @@ pcl::IterativeClosestPointWithNormals<PointSource, PointTarget, Scalar>::transfo
 {
   pcl::transformPointCloudWithNormals (input, output, transform);
 }
+      
 
 #endif /* PCL_REGISTRATION_IMPL_ICP_HPP_ */
