@@ -103,7 +103,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     if (guess != Matrix4::Identity ())
     {
        // Apply guessed transformation prior to search for neighbours
-      pcl::transformPointCloud (*sources_[i], *inputs_transformed[i], guess);
+      this->transformCloud (*sources_[i], *inputs_transformed[i], guess);
     }
     else
     {
@@ -126,13 +126,35 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   {
     correspondence_estimations_[i]->setInputTarget (targets_[i]);
   }
-  // We should be doing something like this
-  // for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
-  // {
-  //   correspondence_rejectors_[i]->setTargetCloud (target_);
-  //   if (target_has_normals_)
-  //     correspondence_rejectors_[i]->setTargetNormals (target_);
-  // }
+
+  PCLPointCloud2::Ptr targets_combined_blob (new PCLPointCloud2);
+  if (!correspondence_rejectors_.empty ())
+    pcl::toPCLPointCloud2 (*targets_combined, *targets_combined_blob);
+  bool rejectors_need_source = false;
+  for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
+  {
+    registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+    if (rej->requiresTargetPoints ())
+    {
+      rej->setTargetPoints (targets_combined_blob);
+    }
+    if (rej->requiresTargetNormals () && target_has_normals_)
+    {
+      rej->setTargetNormals (targets_combined_blob);
+    }
+    if (rej->requiresSourcePoints () || rej->requiresSourceNormals ())
+    {
+      rejectors_need_source = true;
+    }
+    if (rej->requiresSourceNormals () && !source_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects source normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+    if (rej->requiresTargetNormals () && !target_has_normals_)
+    {
+      PCL_WARN("[pcl::%s::computeTransform] Rejector %s expects target normals, but we can't provide them.\n", getClassName ().c_str (), rej->getClassName ().c_str ());
+    }
+  }
 
   convergence_criteria_->setMaximumIterations (max_iterations_);
   convergence_criteria_->setRelativeMSE (euclidean_fitness_epsilon_);
@@ -179,17 +201,29 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
       }
     }
     PCL_DEBUG ("[pcl::%s::computeTransformation] Total correspondences: %d\n", getClassName ().c_str (), correspondences_->size ());
-
+    
+    PCLPointCloud2::Ptr inputs_transformed_combined_blob;
+    if (rejectors_need_source)
+    {
+      inputs_transformed_combined_blob.reset (new PCLPointCloud2);
+      toPCLPointCloud2 (*inputs_transformed_combined, *inputs_transformed_combined_blob);
+    }
     CorrespondencesPtr temp_correspondences (new Correspondences (*correspondences_));
     for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
     {
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", correspondence_rejectors_[i]->getClassName ().c_str ());
-      // We should be doing something like this
-      // correspondence_rejectors_[i]->setInputSource (input_transformed);
-      // if (source_has_normals_)
-      //   correspondence_rejectors_[i]->setInputNormals (input_transformed);
-      correspondence_rejectors_[i]->setInputCorrespondences (temp_correspondences);
-      correspondence_rejectors_[i]->getCorrespondences (*correspondences_);
+      registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
+      PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", rej->getClassName ().c_str ());
+      if (rej->requiresSourcePoints ())
+      {
+        rej->setSourcePoints (inputs_transformed_combined_blob);
+      }
+      if (rej->requiresSourceNormals () && source_has_normals_)
+      {
+        rej->setSourceNormals (inputs_transformed_combined_blob);
+      }
+      rej->setInputCorrespondences (temp_correspondences);
+      rej->getCorrespondences (*correspondences_);
       // Modify input for the next iteration
       if (i < correspondence_rejectors_.size () - 1)
         *temp_correspondences = *correspondences_;
@@ -209,11 +243,11 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     transformation_estimation_->estimateRigidTransformation (*inputs_transformed_combined, *targets_combined, *correspondences_, transformation_);
 
     // Tranform the combined data
-    pcl::transformPointCloud (*inputs_transformed_combined, *inputs_transformed_combined, transformation_);
+    this->transformCloud (*inputs_transformed_combined, *inputs_transformed_combined, transformation_);
     // And all its components
     for (size_t i = 0; i < sources_.size (); i++)
     {
-      pcl::transformPointCloud (*inputs_transformed[i], *inputs_transformed[i], transformation_);
+      this->transformCloud (*inputs_transformed[i], *inputs_transformed[i], transformation_);
     }
 
     // Obtain the final transformation    

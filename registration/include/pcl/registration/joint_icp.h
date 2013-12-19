@@ -107,12 +107,14 @@ namespace pcl
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::use_reciprocal_correspondence_;
       
       using IterativeClosestPoint<PointSource, PointTarget, Scalar>::convergence_criteria_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::source_has_normals_;
+      using IterativeClosestPoint<PointSource, PointTarget, Scalar>::target_has_normals_;
 
 
       typedef typename IterativeClosestPoint<PointSource, PointTarget, Scalar>::Matrix4 Matrix4;
 
       /** \brief Empty constructor. */
-      JointIterativeClosestPoint () 
+      JointIterativeClosestPoint ()
       {
         IterativeClosestPoint<PointSource, PointTarget, Scalar> ();
         reg_name_ = "JointIterativeClosestPoint";

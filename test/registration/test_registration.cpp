@@ -266,6 +266,14 @@ TEST (PCL, JointIterativeClosestPoint)
   reg.setMaximumIterations (50);
   reg.setTransformationEpsilon (1e-8);
   reg.setMaxCorrespondenceDistance (0.25); // Making sure the correspondence distance > the max translation
+  // Add a median distance rejector
+  pcl::registration::CorrespondenceRejectorMedianDistance::Ptr rej_med (new pcl::registration::CorrespondenceRejectorMedianDistance);
+  rej_med->setMedianFactor (4.0);
+  reg.addCorrespondenceRejector (rej_med);
+  // Also add a SaC rejector
+  pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>::Ptr rej_samp (new pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ>);
+  reg.addCorrespondenceRejector (rej_samp);
+
   size_t ntransforms = 10;
   for (size_t t = 0; t < ntransforms; t++)
   {
