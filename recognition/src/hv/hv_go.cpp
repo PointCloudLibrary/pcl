@@ -34,14 +34,13 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/recognition/hv/hv_go.h>
 #include <pcl/recognition/impl/hv/hv_go.hpp>
 
-//template class PCL_EXPORTS pcl::GlobalHypothesesVerification<pcl::PointXYZ, pcl::PointXYZ>;
-//template class PCL_EXPORTS pcl::GlobalHypothesesVerification<pcl::PointXYZRGB, pcl::PointXYZRGB>;
-
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_types.h>
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZ))((pcl::PointXYZ)))
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZRGB))((pcl::PointXYZRGB)))
 PCL_INSTANTIATE_PRODUCT(GoHV, ((pcl::PointXYZRGBA))((pcl::PointXYZRGBA)))
+#endif    // PCL_NO_PRECOMPILE
+
