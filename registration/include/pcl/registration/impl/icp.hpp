@@ -142,13 +142,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
 
   // Pass in the default target for the Correspondence Estimation/Rejection code
   correspondence_estimation_->setInputTarget (target_);
-  // We should be doing something like this
-  // for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
-  // {
-  //   correspondence_rejectors_[i]->setTargetCloud (target_);
-  //   if (target_has_normals_)
-  //     correspondence_rejectors_[i]->setTargetNormals (target_);
-  // }
+  // Correspondence Rejectors need a binary blob
   PCLPointCloud2::Ptr target_blob (new PCLPointCloud2);
   if (!correspondence_rejectors_.empty ())
     pcl::toPCLPointCloud2 (*target_, *target_blob);
@@ -212,10 +206,6 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     {
       registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
       PCL_DEBUG ("Applying a correspondence rejector method: %s.\n", rej->getClassName ().c_str ());
-      // We should be doing something like this
-      // correspondence_rejectors_[i]->setInputSource (input_transformed);
-      // if (source_has_normals_)
-      //   correspondence_rejectors_[i]->setInputNormals (input_transformed);
       if (rej->requiresSourcePoints ())
       {
         rej->setSourcePoints (input_transformed_blob);
