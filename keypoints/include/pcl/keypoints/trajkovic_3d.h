@@ -174,10 +174,9 @@ namespace pcl
       inline float
       normalsDiff (const NormalT& a, const NormalT& b) const
       {
-        double nx = a.normal_x;
-        double ny = a.normal_y;
-        double nz = a.normal_z;
-        return (static_cast<float> (1.0 - (nx*nx + ny*ny + nz*nz)));
+        double nx = a.normal_x; double ny = a.normal_y; double nz = a.normal_z;
+        double mx = b.normal_x; double my = b.normal_y; double mz = b.normal_z;
+        return (static_cast<float> (1.0 - (nx*mx + ny*my + nz*mz)));
       }
       /// \return squared difference of two normals vectors
       inline float
