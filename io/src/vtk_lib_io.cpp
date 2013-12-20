@@ -80,18 +80,18 @@ pcl::io::savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& 
   // TODO: what about sensor position and orientation?!?!?!?
   // TODO: how to adequately catch exceptions thrown by the vtk writers?!
   std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
-  if (extension == ".pcd") // no Polygon, but only a point cloud
+  if (extension == "pcd") // no Polygon, but only a point cloud
   {
     int error_code = pcl::io::savePCDFile (file_name, mesh.cloud);
     if (error_code != 0)
       return (0);
     return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
   }
-  else if (extension == ".vtk")
+  else if (extension == "vtk")
    return (pcl::io::savePolygonFileVTK (file_name, mesh));
-  else if (extension == ".ply")
+  else if (extension == "ply")
    return (pcl::io::savePolygonFilePLY (file_name, mesh));
-  else if (extension == ".stl" )
+  else if (extension == "stl" )
     return (pcl::io::savePolygonFileSTL (file_name, mesh));
   else
   {
