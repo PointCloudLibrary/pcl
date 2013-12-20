@@ -10,6 +10,7 @@ PCL_ADD_DOC(${SUBSYS_NAME})
 
 if(build)
     set(range_image_incs
+        include/pcl/range_image/bearing_angle_image.h
         include/pcl/range_image/range_image.h
         include/pcl/range_image/range_image_planar.h
         include/pcl/range_image/range_image_spherical.h
@@ -22,6 +23,7 @@ if(build)
         )
 
     set(range_image_srcs
+        src/bearing_angle_image.cpp
         src/range_image.cpp
         src/range_image_planar.cpp
         )
