@@ -1042,7 +1042,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::Po
   voxels->resize (leaves_.size ());
   typename pcl::PointCloud<PointT>::iterator voxel_itr = voxels->begin ();
   //typename std::set<LeafContainerT*>::iterator leaf_itr;
-  for (std::set<LeafContainerT*>::const_iterator leaf_itr = leaves_.begin (); 
+  for (typename std::set<LeafContainerT*>::const_iterator leaf_itr = leaves_.begin (); 
 	  leaf_itr != leaves_.end (); 
 	  ++leaf_itr, ++voxel_itr)
   {
