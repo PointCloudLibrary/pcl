@@ -134,6 +134,54 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (rejection_name_); }
 
+
+        /** \brief See if this rejector requires source points */
+        virtual bool
+        requiresSourcePoints () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source cloud */
+        virtual void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setSourcePoints] This class does not require an input source cloud", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires source normals */
+        virtual bool
+        requiresSourceNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source normals */
+        virtual void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+        }
+        /** \brief See if this rejector requires a target cloud */
+        virtual bool
+        requiresTargetPoints () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target cloud */
+        virtual void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setTargetPoints] This class does not require an input target cloud", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires target normals */
+        virtual bool
+        requiresTargetNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target normals */
+        virtual void
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+        }
+
       protected:
 
         /** \brief The name of the rejection method. */

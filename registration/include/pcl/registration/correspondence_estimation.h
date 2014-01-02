@@ -150,6 +150,31 @@ namespace pcl
         inline PointCloudTargetConstPtr const 
         getInputTarget () { return (target_ ); }
 
+
+        /** \brief See if this rejector requires source normals */
+        virtual bool
+        requiresSourceNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the source normals */
+        virtual void
+        setSourceNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setSourceNormals] This class does not require input source normals", getClassName ().c_str ());
+        }
+        
+        /** \brief See if this rejector requires target normals */
+        virtual bool
+        requiresTargetNormals () const
+        { return (false); }
+
+        /** \brief Abstract method for setting the target normals */
+        virtual void
+        setTargetNormals (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PCL_WARN ("[pcl::registration::%s::setTargetNormals] This class does not require input target normals", getClassName ().c_str ());
+        }
+
         /** \brief Provide a pointer to the vector of indices that represent the 
           * input source point cloud.
           * \param[in] indices a pointer to the vector of indices 
@@ -264,6 +289,9 @@ namespace pcl
         {
           point_representation_ = point_representation;
         }
+
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > clone () const = 0;
 
       protected:
         /** \brief The correspondence estimation method name. */
@@ -405,6 +433,15 @@ namespace pcl
         virtual void 
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
                                             double max_distance = std::numeric_limits<double>::max ());
+
+        
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        clone () const
+        {
+          CorrespondenceEstimation<PointSource, PointTarget, Scalar>::Ptr copy (new CorrespondenceEstimation<PointSource, PointTarget, Scalar> (*this));
+          return (copy);
+        }
      };
   }
 }

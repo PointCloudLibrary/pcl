@@ -175,6 +175,14 @@ namespace pcl
           */
         void
         determineReciprocalCorrespondences (Correspondences &correspondences, double max_distance);
+        
+        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
+        clone () const
+        {
+          CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar>::Ptr copy (new CorrespondenceEstimationOrganizedProjection<PointSource, PointTarget, Scalar> (*this));
+          return (copy);
+        }
 
       protected:
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
