@@ -449,6 +449,8 @@ macro(PCL_ADD_TEST _name _exename)
     else(${CMAKE_VERSION} VERSION_LESS 2.8.4)
       add_test(NAME ${_name} COMMAND ${_exename} ${PCL_ADD_TEST_ARGUMENTS})
     endif(${CMAKE_VERSION} VERSION_LESS 2.8.4)
+
+    add_dependencies(tests ${_exename})
 endmacro(PCL_ADD_TEST)
 
 ###############################################################################
