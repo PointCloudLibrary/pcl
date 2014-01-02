@@ -122,8 +122,6 @@ namespace pcl
   };
 }
 
-#ifdef PCL_NO_PRECOMPILE
 #include <pcl/filters/impl/box_clipper3D.hpp>
-#endif
 
 #endif // PCL_BOX_CLIPPER3D_H_
