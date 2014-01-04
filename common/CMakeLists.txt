@@ -3,10 +3,10 @@ set(SUBSYS_DESC "Point cloud common library")
 set(SUBSYS_DEPS)
 
 set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
-PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS eigen boost)
 
-PCL_ADD_DOC(${SUBSYS_NAME})
+PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
     set(range_image_incs
@@ -158,22 +158,22 @@ if(build)
         src/fft/kiss_fft.c
         src/fft/kiss_fftr.c)
 
-    set(LIB_NAME pcl_${SUBSYS_NAME})
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-    #PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}" "" ""
+    set(LIB_NAME "pcl_${SUBSYS_NAME}")
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+    PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+    #PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+    PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "" ""
         "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} "" ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common ${common_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/fft ${kissfft_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} common/impl ${common_incs_impl})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} impl ${impl_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ros ${ros_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} console ${tools_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image ${range_image_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} range_image/impl ${range_image_incs_impl})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "" ${incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common ${common_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/fft ${kissfft_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/impl ${common_incs_impl})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" ros ${ros_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
 
 endif(build)
