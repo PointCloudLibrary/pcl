@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
-set(SUBSYS_DEPS common visualization io gpu_containers geometry search)
+set(SUBSYS_DEPS common io gpu_containers geometry search)
 
 set(build FALSE)
 
@@ -72,8 +72,10 @@ if (build)
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_PATH} ${incs})
 
-    add_subdirectory(test)
-    add_subdirectory(tools)
+    if (BUILD_visualization)
+        add_subdirectory(test)
+        add_subdirectory(tools)
+    endif()
 endif()
 
 
