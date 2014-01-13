@@ -224,6 +224,9 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_susan ${SUBSYS_NAME} src/ni_susan.cpp)
       target_link_libraries(pcl_ni_susan pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
 
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_trajkovic ${SUBSYS_NAME} src/ni_trajkovic.cpp)
+      target_link_libraries(pcl_ni_trajkovic pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
+
     endif() # OPENNI_FOUND + BUILD_OPENNI
 
   endif() # VTK_FOUND
