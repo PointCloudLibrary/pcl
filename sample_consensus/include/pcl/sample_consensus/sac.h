@@ -300,7 +300,7 @@ namespace pcl
       getInliers (std::vector<int> &inliers) { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
-        * \param[out] model_coefficients the resultant model coefficients
+        * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
         */
       inline void 
       getModelCoefficients (Eigen::VectorXf &model_coefficients) { model_coefficients = model_coefficients_; }
