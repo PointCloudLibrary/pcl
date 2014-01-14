@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+project(PCL_Wrapper)
+find_package(PCL 1.7 REQUIRED COMPONENTS common io features filters kdtree octree regestration segmentation surface visualization)
+find_package(JNI REQUIRED)
+
+
+if (JNI_FOUND)
+    message (STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
+    message (STATUS "JNI_LIBRARIES=${JNI_LIBRARIES}")
+endif()
+
+include_directories(${PCL_INCLUDE_DIRS} ${JNI_INCLUDE_DIRS})
+link_directories(${PCL_LIBRARY_DIRS}  ${JNI_LIBRARIES})
+add_definitions(${PCL_DEFINITIONS})
+add_library(PCL_Wrapper SHARED wrap_pcl.cxx)
+target_link_libraries(PCL_Wrapper ${PCL_COMMON_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_FILTERS_LIBRARIES} ${PCL_KDTREE_LIBRARIES} ${PCL_OCTREE_LIBRARIES} ${PCL_REGESTRATION_LIBRARIES} ${PCL_SURFACE_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES})

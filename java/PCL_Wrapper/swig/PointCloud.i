@@ -1,0 +1,119 @@
+%nspace pcl::PointCloud;
+
+%include <stdint.i>
+%include <std_vector.i>
+
+%{
+#include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
+%}
+
+%rename (Add) operator+;
+%rename (Add_To_Self) operator+=;
+%rename (at) operator();//will be ignored by swig , but to facilate using file with other languages
+%rename (at) operator[];//same as above
+typedef unsigned int size_t;
+//make shared pointers definition here
+%shared_ptr(pcl::PointCloud<pcl::PointXYZ>) //will map boost::shared_ptr<PointCloud<PointXYZ> > and boost::shared_ptr<const PointCloud<PointXYZ> > to pcl::PointCloud<pcl::PointXYZ> which is a good thing, elaminates the use of pointers, elmainates incomplete type SWIGTYPE_p_.....  
+%shared_ptr(pcl::PointCloud<pcl::Normal>)
+
+namespace pcl
+{
+  template <typename PointT>
+  class PointCloud
+  {
+  public:
+      typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > VectorType;
+      typedef std::vector<PointCloud<PointT>, Eigen::aligned_allocator<PointCloud<PointT> > > CloudVectorType;
+      typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
+      typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
+
+      // iterators
+      typedef typename VectorType::iterator iterator;
+      typedef typename VectorType::const_iterator const_iterator;
+      
+    PointCloud ();
+    PointCloud (PointCloud<PointT> &pc);
+    PointCloud (const PointCloud<PointT> &pc);
+    PointCloud (const PointCloud<PointT> &pc, const std::vector<int> &indices);
+    PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ());
+    virtual ~PointCloud ();
+    PointCloud& operator+= (const PointCloud& rhs);
+    const PointCloud operator+ (const PointCloud& rhs);
+    const PointT& at (int column, int row) const;
+    PointT& at (int column, int row);
+    const PointT & 	operator() (size_t column, size_t row) const;
+    PointT & 	operator() (size_t column, size_t row);
+    bool 	isOrganized () const ;
+     //causes strange compilation error
+     /*
+     Eigen::Map< Eigen::MatrixXf,Eigen::Aligned,Eigen::OuterStride<> > 	
+		getMatrixXfMap (int dim, int stride, int offset);
+     const Eigen::Map< constEigen::MatrixXf,Eigen::Aligned,Eigen::OuterStride<> >
+     	getMatrixXfMap (int dim, int stride, int offset) const ;
+	Eigen::Map< Eigen::MatrixXf,Eigen::Aligned,Eigen::OuterStride<> >
+		getMatrixXfMap ();
+	const Eigen::Map< const Eigen::MatrixXf,Eigen::Aligned,Eigen::OuterStride<> >
+	 	getMatrixXfMap () const ;
+	*/ 
+	iterator 	begin ();
+	iterator 	end ();
+	const_iterator 	begin () const;
+	const_iterator 	end () const;
+		
+    size_t 	size () const;
+    void 	reserve (size_t n);
+    bool 	empty () const ;
+    void 	resize (size_t n);
+    const PointT & 	operator[] (size_t n) const ;
+    PointT & 	operator[] (size_t n);
+    const PointT & 	at (size_t n) const;
+    PointT & 	at (size_t n);
+    const PointT & 	front () const ;
+    PointT & 	front ();
+    const PointT & 	back () const ;
+    PointT & 	back ();
+    void 	push_back (const PointT &pt);
+    iterator 	insert (iterator position, const PointT &pt);
+    void 	insert (iterator position, size_t n, const PointT &pt);
+ 
+    template<class InputIterator >
+		void 	insert (iterator position, InputIterator first, InputIterator last);
+	/**/
+	iterator 	erase (iterator position);
+	iterator 	erase (iterator first, iterator last);
+	void 	swap (PointCloud< PointT > &rhs);
+	void 	clear ();
+	Ptr 	makeShared () const;
+	pcl::PCLHeader 	header;
+	std::vector< PointT,Eigen::aligned_allocator< PointT > > 
+		points;
+	
+	uint32_t 	width;
+	uint32_t 	height;
+	bool 	is_dense;
+	Eigen::Vector4f 	sensor_origin_;
+	Eigen::Quaternionf 	sensor_orientation_;
+   };
+}
+
+//using namespace pcl;
+//typedef std::vector<PointT, Eigen::aligned_allocator<PointT> > VectorType;
+//typedef typename VectorType::iterator iterator;
+//%template(insert_iterator) pcl::PointCloud::insert<iterator>; //make template deduction failed problem
+
+//%import <Eigen/src/Core/Map.h>
+
+//%template(Eign_Map_MatrixXf) Eigen::Map< const Eigen::MatrixXf,Eigen::Aligned,Eigen::OuterStride<> >;
+
+%import "swig/point_types/PointXYZ.i"
+%template(PointCloud_PointXYZ) pcl::PointCloud<pcl::PointXYZ>;
+
+/*
+%template(PointCloud_PointXYZ_insert_iterator) pcl::PointCloud<pcl::PointXYZ>::insert<pcl::PointCloud::iterator>();
+*/
+//don't forget to use shared_ptr macro like in line 17
+
+%import "swig/point_types/Normal.i"
+%template(PointCloud_Normal) pcl::PointCloud<pcl::Normal>;
+//don't forget to use shared_ptr macro like in line 17

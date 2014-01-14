@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>Testing App</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/RGB.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/java/RGB.class</locationURI>
+		</link>
+		<link>
+			<name>src/SWIGTYPE_p__RGB.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/java/SWIGTYPE_p__RGB.class</locationURI>
+		</link>
+		<link>
+			<name>src/SWIGTYPE_p_namespace.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/java/SWIGTYPE_p_namespace.class</locationURI>
+		</link>
+		<link>
+			<name>src/pcl.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/java/pcl.class</locationURI>
+		</link>
+		<link>
+			<name>src/pclJNI.class</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/java/pclJNI.class</locationURI>
+		</link>
+	</linkedResources>
+</projectDescription>
