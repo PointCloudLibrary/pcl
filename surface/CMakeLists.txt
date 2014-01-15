@@ -52,39 +52,6 @@ if(build)
         include(src/3rdparty/opennurbs/openNURBS.cmake)
         include(src/on_nurbs/on_nurbs.cmake) 
     ENDIF(BUILD_surface_on_nurbs)
-
-    set(POISSON_INCLUDES
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/allocator.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/binary_node.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/bspline_data.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/factor.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/function_data.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/geometry.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/hash.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/marching_cubes_poisson.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/mat.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/multi_grid_octree_data.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/octree_poisson.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/polynomial.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.h
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/bspline_data.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/function_data.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/geometry.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/mat.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/multi_grid_octree_data.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/octree_poisson.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/polynomial.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/ppolynomial.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/sparse_matrix.hpp
-        include/pcl/${SUBSYS_NAME}/3rdparty/poisson4/vector.hpp
-        )
-    set(POISSON_SOURCES
-        src/3rdparty/poisson4/factor.cpp
-        src/3rdparty/poisson4/geometry.cpp
-        src/3rdparty/poisson4/marching_cubes_poisson.cpp
-        )
    
     set(srcs 
         src/processing.cpp 
@@ -101,7 +68,6 @@ if(build)
         src/surfel_smoothing.cpp
         src/texture_mapping.cpp
         ${VTK_SMOOTHING_SOURCE}
-        src/poisson.cpp
         ${HULL_SOURCES}
         ${POISSON_SOURCES}
         ${OPENNURBS_SOURCES}
@@ -125,7 +91,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/simplification_remove_unused_vertices.h
         include/pcl/${SUBSYS_NAME}/surfel_smoothing.h        
         include/pcl/${SUBSYS_NAME}/texture_mapping.h
-        include/pcl/${SUBSYS_NAME}/poisson.h
         ${HULL_INCLUDES}
       #  ${VTK_SMOOTHING_INCLUDES}
       #  ${POISSON_INCLUDES}
@@ -146,7 +111,6 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/processing.hpp
         include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp
         include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp
-        include/pcl/${SUBSYS_NAME}/impl/poisson.hpp
         ${HULL_IMPLS}
         )
 
@@ -162,7 +126,6 @@ if(build)
 
     # Install include files
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/3rdparty/poisson4 ${POISSON_INCLUDES})
     PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
 
     if(BUILD_surface_on_nurbs)
