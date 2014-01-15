@@ -58,7 +58,7 @@ pcl::getApproximateIndices (
   indices.resize (cloud_in->points.size ());
   for (size_t i = 0; i < cloud_in->points.size (); ++i)
   {
-    tree.nearestKSearch (*cloud_in, i, 1, nn_idx, nn_dists);
+    tree.nearestKSearchT ((*cloud_in)[i], 1, nn_idx, nn_dists);
     indices[i] = nn_idx[0];
   }
 }
