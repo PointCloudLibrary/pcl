@@ -140,7 +140,7 @@ pcl::kernel<PointT>::gaussianKernel (pcl::PointCloud<PointT> &kernel)
   }
 
   // Normalizing the kernel
-  for (int i = 0; i < kernel.size (); ++i)
+  for (size_t i = 0; i < kernel.size (); ++i)
     kernel[i].intensity /= sum;
 }
 
@@ -169,7 +169,7 @@ pcl::kernel<PointT>::loGKernel (pcl::PointCloud<PointT> &kernel)
   }
 
   // Normalizing the kernel
-  for (int i = 0; i < kernel.size (); ++i)
+  for (size_t i = 0; i < kernel.size (); ++i)
     kernel[i].intensity /= sum;
 }
 
