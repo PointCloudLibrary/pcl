@@ -46,8 +46,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename Point1T, typename Point2T> void
 pcl::getApproximateIndices (
-    const typename pcl::PointCloud<Point1T>::Ptr &cloud_in, 
-    const typename pcl::PointCloud<Point2T>::Ptr &cloud_ref, 
+    const typename pcl::PointCloud<Point1T>::ConstPtr &cloud_in,
+    const typename pcl::PointCloud<Point2T>::ConstPtr &cloud_ref,
     std::vector<int> &indices)
 {
   pcl::KdTreeFLANN<Point2T> tree;
@@ -66,8 +66,8 @@ pcl::getApproximateIndices (
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::getApproximateIndices (
-    const typename pcl::PointCloud<PointT>::Ptr &cloud_in, 
-    const typename pcl::PointCloud<PointT>::Ptr &cloud_ref, 
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+    const typename pcl::PointCloud<PointT>::ConstPtr &cloud_ref,
     std::vector<int> &indices)
 {
   pcl::KdTreeFLANN<PointT> tree;
