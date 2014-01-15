@@ -326,7 +326,7 @@ pcl::io::LZFYUV422ImageReader::read (
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
   
   register int y_idx = 0;
-  for (size_t i = 0; i < wh2; ++i, y_idx += 2)
+  for (int i = 0; i < wh2; ++i, y_idx += 2)
   {
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;
