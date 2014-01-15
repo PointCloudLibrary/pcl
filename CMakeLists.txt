@@ -55,6 +55,7 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
+set (PCL_SHARED_LIBS OFF)
 # ---[ Android check
 if (ANDROID)
   set (PCL_SHARED_LIBS OFF)
@@ -309,22 +310,8 @@ if(NOT QT5_FOUND)
 endif()
 
 # Find VTK
-find_package(VTK)
-if(VTK_FOUND)
-  if (PCL_SHARED_LIBS OR 
-      (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
-    set(VTK_FOUND TRUE)
-    find_package (QVTK)
-    message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
-    link_directories(${VTK_LIBRARY_DIRS})
-    set(HAVE_VTK ON)
-  else ()
-    set(VTK_FOUND OFF)
-    set(HAVE_VTK OFF)
-    message ("Warning: You are to build PCL in STATIC but VTK is SHARED!")
-    message ("Warning: VTK disabled!")
-  endif ()
-endif(VTK_FOUND)
+set(VTK_FOUND OFF)
+set(HAVE_VTK OFF)
 # Find MPI
 if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
   find_package(MPI)
