@@ -42,9 +42,7 @@
 
 #include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
-#include <pcl/octree/octree_base.h>
-#include <pcl/octree/octree_iterator.h>
-#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree_impl.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
 #include <set>
