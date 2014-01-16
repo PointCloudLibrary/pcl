@@ -222,11 +222,11 @@ namespace pcl
     private:
       /** \brief Add point at given index from input point cloud to octree. Index will be also added to indices vector. -- This functionality is not enabled for adjacency octree
        */
-      OctreePointCloudT::addPointFromCloud;
+      using OctreePointCloudT::addPointFromCloud;
 
       /** \brief Add point simultaneously to octree and input point cloud. -- This functionality is not enabled for adjacency octree
        */
-      OctreePointCloudT::addPointToCloud;
+      using OctreePointCloudT::addPointToCloud;
 
       StopWatch timer_;
 
