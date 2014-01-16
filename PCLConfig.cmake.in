@@ -504,6 +504,14 @@ if(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/pcl
   if(EXISTS "${PCL_ROOT}/3rdParty")
     set(PCL_ALL_IN_ONE_INSTALLER ON)
   endif(EXISTS "${PCL_ROOT}/3rdParty")
+elseif(EXISTS "${PCL_ROOT}/include/pcl/pcl_config.h")
+  # Found a non-standard (likely ANDROID) PCL installation
+  # pcl_message("Found a PCL installation")
+  set(PCL_INCLUDE_DIRS "${PCL_ROOT}/include")
+  set(PCL_LIBRARY_DIRS "${PCL_ROOT}/lib")
+  if(EXISTS "${PCL_ROOT}/3rdParty")
+    set(PCL_ALL_IN_ONE_INSTALLER ON)
+  endif(EXISTS "${PCL_ROOT}/3rdParty")
 elseif(EXISTS "${PCL_DIR}/include/pcl/pcl_config.h")
   # Found PCLConfig.cmake in a build tree of PCL
   # pcl_message("PCL found into a build tree.")
