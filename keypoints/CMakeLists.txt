@@ -33,6 +33,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/susan.h
         include/pcl/${SUBSYS_NAME}/iss_3d.h
         include/pcl/${SUBSYS_NAME}/brisk_2d.h
+	include/pcl/${SUBSYS_NAME}/susan_3d.h
         )
     set(impl_incs
         include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp
@@ -45,6 +46,7 @@ if(build)
         include/pcl/${SUBSYS_NAME}/impl/susan.hpp
         include/pcl/${SUBSYS_NAME}/impl/iss_3d.hpp
         include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp
+	include/pcl/${SUBSYS_NAME}/impl/susan_3d.hpp
         )
     
     set(LIB_NAME pcl_${SUBSYS_NAME})
