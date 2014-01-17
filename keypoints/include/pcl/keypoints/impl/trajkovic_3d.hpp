@@ -72,7 +72,6 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   if (!normals_)
   {
     NormalsPtr normals (new Normals ());
-    normals->reserve (normals->size ());
     pcl::IntegralImageNormalEstimation<PointInT, NormalT> normal_estimation;
     normal_estimation.setNormalEstimationMethod (pcl::IntegralImageNormalEstimation<PointInT, NormalT>::SIMPLE_3D_GRADIENT);
     normal_estimation.setInputCloud (input_);
@@ -83,7 +82,7 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
 
   if (normals_->size () != input_->size ())
   {
-    PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str (), method_);
+    PCL_ERROR ("[pcl::%s::initCompute] normals given, but the number of normals does not match the number of input points!\n", name_.c_str ());
     return (false);
   }
 
