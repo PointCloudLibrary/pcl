@@ -173,7 +173,11 @@ namespace pcl
   }
 }
 
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/search/impl/kdtree.hpp>
+#else
 #define PCL_INSTANTIATE_KdTree(T) template class PCL_EXPORTS pcl::search::KdTree<T>;
+#endif
 
 #endif    // PCL_SEARCH_KDTREE_H_
 

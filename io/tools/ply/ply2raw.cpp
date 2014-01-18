@@ -313,11 +313,11 @@ ply_to_raw_converter::convert (std::istream&, const std::string& istream_filenam
   ply_parser.element_definition_callback (boost::bind (&ply_to_raw_converter::element_definition_callback, this, _1, _2));
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&ply_to_raw_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&ply_to_raw_converter::scalar_property_definition_callback<pcl::io::ply::float32>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&ply_to_raw_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&ply_to_raw_converter::list_property_definition_callback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
   ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   ostream_ = &ostream;

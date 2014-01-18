@@ -126,6 +126,34 @@ namespace pcl
           target_ = target;
         }
         
+        /** \brief See if this rejector requires source points */
+        bool
+        requiresSourcePoints () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source cloud */
+        void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudSourcePtr cloud (new PointCloudSource);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputSource (cloud);
+        }
+        
+        /** \brief See if this rejector requires a target cloud */
+        bool
+        requiresTargetPoints () const
+        { return (true); }
+
+        /** \brief Method for setting the target cloud */
+        void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudTargetPtr cloud (new PointCloudTarget);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputTarget (cloud);
+        }
+        
         /** \brief Set the polygon cardinality
           * \param cardinality polygon cardinality
           */

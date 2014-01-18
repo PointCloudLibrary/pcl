@@ -503,6 +503,15 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 }
 
 int
+pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset)
+{
+  int file_version;
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  return (read (file_name, cloud, origin, orientation, file_version, offset));
+}
+
+int
 pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                       Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                       int &file_version, const int offset)

@@ -1948,7 +1948,7 @@ namespace pcl
 
       int i , j , d , tIter=0;
       SparseSymmetricMatrix< Real > _M;
-      Vector< Real > B , _B , _X;
+      Vector< Real > B , B_ , X_;
       AdjacencySetFunction asf;
       AdjacencyCountFunction acf;
       double systemTime = 0 , solveTime = 0 , memUsage = 0 , evaluateTime = 0 , gTime = 0, sTime = 0;
@@ -2025,14 +2025,14 @@ namespace pcl
         }
 
         // Get the associated constraint vector
-        _B.Resize( asf.adjacencyCount );
-        for( j=0 ; j<asf.adjacencyCount ; j++ ) _B[j] = B[ asf.adjacencies[j]-sNodes.nodeCount[depth] ];
+        B_.Resize( asf.adjacencyCount );
+        for( j=0 ; j<asf.adjacencyCount ; j++ ) B_[j] = B[ asf.adjacencies[j]-sNodes.nodeCount[depth] ];
 
-        _X.Resize( asf.adjacencyCount );
+        X_.Resize( asf.adjacencyCount );
 #pragma omp parallel for num_threads( threads ) schedule( static )
         for( j=0 ; j<asf.adjacencyCount ; j++ )
         {
-          _X[j] = sNodes.treeNodes[ asf.adjacencies[j] ]->nodeData.solution;
+          X_[j] = sNodes.treeNodes[ asf.adjacencies[j] ]->nodeData.solution;
         }
         // Get the associated matrix
         SparseSymmetricMatrix< Real >::internalAllocator.rollBack();
@@ -2040,19 +2040,19 @@ namespace pcl
 #pragma omp parallel for num_threads( threads ) schedule( static )
         for( j=0 ; j<asf.adjacencyCount ; j++ )
         {
-          _B[j] += sNodes.treeNodes[asf.adjacencies[j]]->nodeData.constraint;
+          B_[j] += sNodes.treeNodes[asf.adjacencies[j]]->nodeData.constraint;
           sNodes.treeNodes[ asf.adjacencies[j] ]->nodeData.constraint = 0;
         }
 
         // Solve the matrix
         // Since we don't have the full matrix, the system shouldn't be singular, so we shouldn't have to correct it
-        iter += SparseSymmetricMatrix< Real >::Solve( _M , _B , std::max< int >( int( pow( _M.rows , ITERATION_POWER ) ) , minIters ) , _X , mrVector , Real(accuracy) , 0 );
+        iter += SparseSymmetricMatrix< Real >::Solve( _M , B_ , std::max< int >( int( pow( _M.rows , ITERATION_POWER ) ) , minIters ) , X_ , mrVector , Real(accuracy) , 0 );
 
         if( showResidual )
         {
           double mNorm = 0;
           for( int i=0 ; i<_M.rows ; i++ ) for( int j=0 ; j<_M.rowSizes[i] ; j++ ) mNorm += _M[i][j].Value * _M[i][j].Value;
-          double bNorm = _B.Norm( 2 ) , rNorm = ( _B - _M * _X ).Norm( 2 );
+          double bNorm = B_.Norm( 2 ) , rNorm = ( B_ - _M * X_ ).Norm( 2 );
           printf( "\t\tResidual: (%d %g) %g -> %g (%f) [%d]\n" , _M.Entries() , sqrt(mNorm) , bNorm , rNorm , rNorm/bNorm , iter );
         }
 
@@ -2061,7 +2061,7 @@ namespace pcl
         {
           TreeOctNode* temp=sNodes.treeNodes[ asf.adjacencies[j] ];
           while( temp->depth()>sNodes.treeNodes[i]->depth() ) temp=temp->parent;
-          if( temp->nodeData.nodeIndex>=sNodes.treeNodes[i]->nodeData.nodeIndex ) sNodes.treeNodes[ asf.adjacencies[j] ]->nodeData.solution = Real( _X[j] );
+          if( temp->nodeData.nodeIndex>=sNodes.treeNodes[i]->nodeData.nodeIndex ) sNodes.treeNodes[ asf.adjacencies[j] ]->nodeData.solution = Real( X_[j] );
         }
         systemTime += gTime;
         solveTime += sTime;
