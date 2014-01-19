@@ -184,13 +184,22 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   
   for (int dx = -1; dx <= 1; ++dx)
   {
+    int x = dx + key_arg.x;
+    if (x < 0 || x > this->max_key_.x)
+      continue;
+    neighbor_key.x = static_cast<uint32_t> (x);
     for (int dy = -1; dy <= 1; ++dy)
     {
+      int y = dy + key_arg.y;
+      if (y < 0 || y > this->max_key_.y)
+        continue;
+      neighbor_key.y = static_cast<uint32_t> (y);
       for (int dz = -1; dz <= 1; ++dz)
       {
-        neighbor_key.x = key_arg.x + dx;
-        neighbor_key.y = key_arg.y + dy;
-        neighbor_key.z = key_arg.z + dz;
+        int z = dz + key_arg.z;
+        if (z < 0 || z > this->max_key_.z)
+          continue;
+        neighbor_key.z = static_cast<uint32_t> (z);
         LeafContainerT *neighbor = this->findLeaf (neighbor_key);
         if (neighbor)
         {
