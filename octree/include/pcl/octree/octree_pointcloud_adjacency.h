@@ -40,6 +40,7 @@
 #ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 #define PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 
+#include <pcl/console/print.h>
 #include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
 #include <pcl/octree/octree_base.h>
@@ -52,8 +53,6 @@
 
 //DEBUG TODO REMOVE
 #include <pcl/common/time.h>
-
-
 
 namespace pcl
 { 
