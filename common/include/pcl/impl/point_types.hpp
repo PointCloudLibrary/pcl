@@ -193,7 +193,11 @@ namespace pcl
       float rgb; \
     }; \
     uint32_t rgba; \
-  };
+  }; \
+  inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); } \
+  inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); } \
+  inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); } \
+  inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
 
 #define PCL_ADD_INTENSITY \
     struct \
@@ -506,17 +510,7 @@ namespace pcl
       r = g = b = 0;
       a = 255;
     }
-    inline Eigen::Vector3i getRGBVector3i ()
-    {
-      return (Eigen::Vector3i (r, g, b));
-    }
-    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i ()
-    {
-      return (Eigen::Vector4i (r, g, b, a));
-    }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
-  
+
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGBA& p);
   };
 
@@ -592,18 +586,6 @@ namespace pcl
       a = 0;
     }
 
-    inline Eigen::Vector3i getRGBVector3i ()
-    {
-      return (Eigen::Vector3i (r, g, b));
-    }
-    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i ()
-    {
-      return (Eigen::Vector4i (r, g, b, a));
-    }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
-
-  
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -876,6 +858,12 @@ namespace pcl
       };
       float data_c[4];
     };
+
+    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -928,17 +916,6 @@ namespace pcl
       curvature = 0;
     }
 
-    inline Eigen::Vector3i getRGBVector3i ()
-    {
-      return (Eigen::Vector3i (r, g, b));
-    }
-    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i ()
-    {
-      return (Eigen::Vector4i (r, g, b, a));
-    }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
-  
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGBNormal& p);
   };
 
@@ -1494,6 +1471,12 @@ namespace pcl
       };
       float data_c[4];
     };
+
+    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
+    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
+    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
+    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
+
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
