@@ -179,27 +179,30 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::computeNeighbors (OctreeKey &key_arg, LeafContainerT* leaf_container)
 { 
+  //Make sure requested key is valid
+  if (key_arg.x > this->max_key_.x || key_arg.y > this->max_key_.y || key_arg.z > this->max_key_.z)
+  {
+    PCL_ERROR ("OctreePointCloudAdjacency::computeNeighbors Requested neighbors for invalid octree key\n");
+    return;
+  }
   
   OctreeKey neighbor_key;
-  
-  for (int dx = -1; dx <= 1; ++dx)
+  int dx_min = (key_arg.x > 0) ? -1 : 0;
+  int dy_min = (key_arg.y > 0) ? -1 : 0;
+  int dz_min = (key_arg.z > 0) ? -1 : 0;
+  int dx_max = (key_arg.x == this->max_key_.x) ? 0 : 1;
+  int dy_max = (key_arg.y == this->max_key_.y) ? 0 : 1;
+  int dz_max = (key_arg.z == this->max_key_.z) ? 0 : 1;
+    
+  for (int dx = dx_min; dx <= dx_max; ++dx)
   {
-    int x = dx + key_arg.x;
-    if (x < 0 || x > this->max_key_.x)
-      continue;
-    neighbor_key.x = static_cast<uint32_t> (x);
-    for (int dy = -1; dy <= 1; ++dy)
+    for (int dy = dy_min; dy <= dy_max; ++dy)
     {
-      int y = dy + key_arg.y;
-      if (y < 0 || y > this->max_key_.y)
-        continue;
-      neighbor_key.y = static_cast<uint32_t> (y);
-      for (int dz = -1; dz <= 1; ++dz)
+      for (int dz = dz_min; dz <= dz_max; ++dz)
       {
-        int z = dz + key_arg.z;
-        if (z < 0 || z > this->max_key_.z)
-          continue;
-        neighbor_key.z = static_cast<uint32_t> (z);
+        neighbor_key.x = static_cast<uint32_t> (key_arg.x + dx);
+        neighbor_key.y = static_cast<uint32_t> (key_arg.y + dy);
+        neighbor_key.z = static_cast<uint32_t> (key_arg.z + dz);
         LeafContainerT *neighbor = this->findLeaf (neighbor_key);
         if (neighbor)
         {
