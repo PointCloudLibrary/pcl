@@ -42,39 +42,39 @@
 #include <pcl/search/impl/search.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT>
-pcl::search::KdTree<PointT>::KdTree (bool sorted)
+template <typename PointT, class Tree>
+pcl::search::KdTree<PointT,Tree>::KdTree (bool sorted)
   : pcl::search::Search<PointT> ("KdTree", sorted)
-  , tree_ (new pcl::KdTreeFLANN<PointT> (sorted))
+  , tree_ (new Tree (sorted))
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::KdTree<PointT>::setPointRepresentation (
+template <typename PointT, class Tree> void
+pcl::search::KdTree<PointT,Tree>::setPointRepresentation (
     const PointRepresentationConstPtr &point_representation)
 {
   tree_->setPointRepresentation (point_representation);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::KdTree<PointT>::setSortedResults (bool sorted_results)
+template <typename PointT, class Tree> void
+pcl::search::KdTree<PointT,Tree>::setSortedResults (bool sorted_results)
 {
   sorted_results_ = sorted_results;
   tree_->setSortedResults (sorted_results);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::KdTree<PointT>::setEpsilon (float eps)
+template <typename PointT, class Tree> void
+pcl::search::KdTree<PointT,Tree>::setEpsilon (float eps)
 {
   tree_->setEpsilon (eps);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::search::KdTree<PointT>::setInputCloud (
+template <typename PointT, class Tree> void
+pcl::search::KdTree<PointT,Tree>::setInputCloud (
     const PointCloudConstPtr& cloud, 
     const IndicesConstPtr& indices)
 {
@@ -84,8 +84,8 @@ pcl::search::KdTree<PointT>::setInputCloud (
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::search::KdTree<PointT>::nearestKSearch (
+template <typename PointT, class Tree> int
+pcl::search::KdTree<PointT,Tree>::nearestKSearch (
     const PointT &point, int k, std::vector<int> &k_indices, 
     std::vector<float> &k_sqr_distances) const
 {
@@ -93,8 +93,8 @@ pcl::search::KdTree<PointT>::nearestKSearch (
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int
-pcl::search::KdTree<PointT>::radiusSearch (
+template <typename PointT, class Tree> int
+pcl::search::KdTree<PointT,Tree>::radiusSearch (
     const PointT& point, double radius, 
     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
