@@ -298,6 +298,72 @@ TEST (PCL, PointTypes)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T> class XYZPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
+TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getVector3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getVector4fMap () (i));
+}
+
+TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getArray3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getArray4fMap () (i));
+}
+
+template <typename T> class NormalPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)> NormalPointTypes;
+TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
+TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector4fMap () (i));
+}
+
+template <typename T> class RGBPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)> RGBPointTypes;
+TYPED_TEST_CASE(RGBPointTypesTest, RGBPointTypes);
+TYPED_TEST(RGBPointTypesTest, GetRGBVectorXi)
+{
+  TypeParam pt; pt.r = 1; pt.g = 2; pt.b = 3; pt.a = 4;
+  EXPECT_EQ (pt.r, pt.getRGBVector3i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBVector3i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBVector3i () (2));
+  EXPECT_EQ (pt.r, pt.getRGBVector4i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBVector4i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBVector4i () (2));
+  EXPECT_EQ (pt.a, pt.getRGBVector4i () (3));
+  EXPECT_EQ (pt.r, pt.getRGBAVector4i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBAVector4i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBAVector4i () (2));
+  EXPECT_EQ (pt.a, pt.getRGBAVector4i () (3));
+}
+
+TYPED_TEST(RGBPointTypesTest, GetBGRVectorXcMap)
+{
+  TypeParam pt;
+  EXPECT_EQ (&pt.b, &pt.getBGRVector3cMap () (0));
+  EXPECT_EQ (&pt.g, &pt.getBGRVector3cMap () (1));
+  EXPECT_EQ (&pt.r, &pt.getBGRVector3cMap () (2));
+  EXPECT_EQ (&pt.b, &pt.getBGRAVector4cMap () (0));
+  EXPECT_EQ (&pt.g, &pt.getBGRAVector4cMap () (1));
+  EXPECT_EQ (&pt.r, &pt.getBGRAVector4cMap () (2));
+  EXPECT_EQ (&pt.a, &pt.getBGRAVector4cMap () (3));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Intersections)
 {
   Eigen::VectorXf zline (6), yline (6);
