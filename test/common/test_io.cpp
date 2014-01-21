@@ -379,6 +379,27 @@ TEST (PCL, concatenatePointCloud)
   }
 }
 
+TEST (PCL, CopyPointCloudWithIndicesAndRGBToRGBA)
+{
+  CloudXYZRGB cloud_xyz_rgb;
+  CloudXYZRGBA cloud_xyz_rgba (5, 1, pt_xyz_rgba);
+
+  std::vector<int> indices;
+  indices.push_back (2);
+  indices.push_back (3);
+
+  pcl::copyPointCloud (cloud_xyz_rgba, indices, cloud_xyz_rgb);
+
+  EXPECT_EQ (indices.size (), cloud_xyz_rgb.size ());
+  for (size_t i = 0; i < indices.size (); ++i)
+  {
+    EXPECT_FLOAT_EQ (cloud_xyz_rgb[i].x, cloud_xyz_rgba[indices[i]].x);
+    EXPECT_FLOAT_EQ (cloud_xyz_rgb[i].y, cloud_xyz_rgba[indices[i]].y);
+    EXPECT_FLOAT_EQ (cloud_xyz_rgb[i].z, cloud_xyz_rgba[indices[i]].z);
+    EXPECT_EQ (cloud_xyz_rgb[i].rgba, cloud_xyz_rgba[indices[i]].rgba);
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
