@@ -80,9 +80,12 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   //initializing default state values
   win_width_ = 640;
   win_height_ = 480;
+  win_x_ = 0;
+  win_y_ = 0;
   bkg_color_[0] = 1; bkg_color_[1] = 1; bkg_color_[2] = 1;
   current_plot_ = -1;
   color_series_->SetColorScheme (vtkColorSeries::SPECTRUM);
+  win_name_ = "PCL Plotter";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -394,8 +397,11 @@ pcl::visualization::PCLPlotter::plot ()
   //apply current states
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
-  
+  view_->GetRenderWindow ()->SetPosition(win_x_, win_y_);
   view_->GetInteractor ()->Initialize ();
+  
+  //according to vtk bug 976, SetWindowName must be called after RenderWindow Initialize();
+  view_->GetRenderWindow ()->SetWindowName(win_name_.c_str());
   view_->GetRenderWindow ()->Render();
   view_->GetInteractor ()->Start ();
 }
@@ -542,6 +548,21 @@ pcl::visualization::PCLPlotter::getWindowSize ()
   sz[0] = win_width_;
   sz[1] = win_height_;
   return (sz);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setWindowPosition (int x, int y)
+{
+    win_x_ = x;
+    win_y_ = y;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setWindowName (const std::string &name)
+{
+    win_name_ = name;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

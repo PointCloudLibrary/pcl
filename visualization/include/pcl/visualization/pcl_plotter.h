@@ -355,6 +355,19 @@ namespace pcl
         void
         setWindowSize (int w, int h);
         
+        /** \brief Set the position in screen coordinates.
+        * \param[in] x where to move the window to (X)
+        * \param[in] y where to move the window to (Y)
+        */
+        void
+        setWindowPosition(int x, int y);
+        
+        /** \brief Set the visualizer window name.
+        * \param[in] name the name of the window
+        */
+        void
+        setWindowName(const std::string &name);
+        
         /** \brief set/get method for the window size.
           * \return[in] array containing the width and height of the window
           */
@@ -392,7 +405,9 @@ namespace pcl
         //extra state variables
         int current_plot_;          //stores the id of the current (most recent) plot, used in automatic coloring and other state change schemes 
         int win_width_, win_height_;
+        int win_x_, win_y_; //window position according to screen coordinate
         double bkg_color_[3];
+        std::string win_name_;
           
         //####event callback class####
         struct ExitMainLoopTimerCallback : public vtkCommand
