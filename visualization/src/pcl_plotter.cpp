@@ -564,7 +564,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
 
   //find min and max in the data
   double min = data[0], max = data[0];
-  for (int i = 1; i < data.size (); i++)
+  for (size_t i = 1; i < data.size (); i++)
   {
     if (data[i] < min) min = data[i];
     if (data[i] > max) max = data[i];
@@ -581,7 +581,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (int i = 0; i < data.size (); i++)
+  for (size_t i = 0; i < data.size (); i++)
   {
     int index = int (floor ((data[i] - min) / size));
     if (index == nbins) index = nbins - 1; //including right boundary

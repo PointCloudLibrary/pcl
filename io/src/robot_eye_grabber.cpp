@@ -166,7 +166,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *dataPacket, size_t lengt
   const size_t bytesPerPoint = 8;
   const size_t totalPoints = length / bytesPerPoint;
 
-  for (int i = 0; i < totalPoints; ++i)
+  for (size_t i = 0; i < totalPoints; ++i)
   {
     PointXYZI xyzi;
     computeXYZI (xyzi, dataPacket + i*bytesPerPoint);
