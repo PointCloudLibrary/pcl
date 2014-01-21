@@ -42,6 +42,9 @@
 #include <pcl/pcl_macros.h>
 #include <bitset>
 #include <pcl/register_point_struct.h>
+#include <boost/mpl/contains.hpp>
+#include <boost/mpl/fold.hpp>
+#include <boost/mpl/vector.hpp>
 
 /**
   * \file pcl/point_types.h
@@ -666,6 +669,79 @@ namespace pcl
       }
     }
   };
+
+  namespace traits
+  {
+
+    /** \brief Metafunction to check if a given point type has a given field.
+     *
+     *  Example usage at run-time:
+     *
+     *  \code
+     *  bool curvature_available = pcl::traits::has_field<PointT, pcl::fields::curvature>::value;
+     *  \endcode
+     *
+     *  Example usage at compile-time:
+     *
+     *  \code
+     *  BOOST_MPL_ASSERT_MSG ((pcl::traits::has_field<PointT, pcl::fields::label>::value),
+     *                        POINT_TYPE_SHOULD_HAVE_LABEL_FIELD,
+     *                        (PointT));
+     *  \endcode
+     */
+    template <typename PointT, typename Field>
+    struct has_field : boost::mpl::contains<typename pcl::traits::fieldList<PointT>::type, Field>::type
+    { };
+
+    /** Metafunction to check if a given point type has all given fields. */
+    template <typename PointT, typename Field>
+    struct has_all_fields : boost::mpl::fold<Field,
+                                             boost::mpl::bool_<true>,
+                                             boost::mpl::and_<boost::mpl::_1,
+                                                              has_field<PointT, boost::mpl::_2> > >::type
+    { };
+
+    /** Metafunction to check if a given point type has any of the given fields. */
+    template <typename PointT, typename Field>
+    struct has_any_field : boost::mpl::fold<Field,
+                                            boost::mpl::bool_<false>,
+                                            boost::mpl::or_<boost::mpl::_1,
+                                                            has_field<PointT, boost::mpl::_2> > >::type
+    { };
+
+    /** Metafunction to check if a given point type has x, y, and z fields. */
+    template <typename PointT>
+    struct has_xyz : has_all_fields<PointT, boost::mpl::vector<pcl::fields::x,
+                                                               pcl::fields::y,
+                                                               pcl::fields::z> >
+    { };
+
+    /** Metafunction to check if a given point type has normal_x, normal_y, and
+      * normal_z fields. */
+    template <typename PointT>
+    struct has_normal : has_all_fields<PointT, boost::mpl::vector<pcl::fields::normal_x,
+                                                                  pcl::fields::normal_y,
+                                                                  pcl::fields::normal_z> >
+    { };
+
+    /** Metafunction to check if a given point type has curvature field. */
+    template <typename PointT>
+    struct has_curvature : has_field<PointT, pcl::fields::curvature>
+    { };
+
+    /** Metafunction to check if a given point type has either rgb or rgba field. */
+    template <typename PointT>
+    struct has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,
+                                                                pcl::fields::rgba> >
+    { };
+
+    /** Metafunction to check if a given point type has label field. */
+    template <typename PointT>
+    struct has_label : has_field<PointT, pcl::fields::label>
+    { };
+
+  }
+
 } // namespace pcl
 
 #if defined _MSC_VER
