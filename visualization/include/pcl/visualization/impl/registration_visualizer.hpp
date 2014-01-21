@@ -100,7 +100,7 @@ pcl::RegistrationVisualizer<PointSource, PointTarget>::runDisplay ()
   size_t  correspondeces_old_size = 0;
 
   // Add coordinate system to both ports
-  viewer_->addCoordinateSystem (1.0);
+  viewer_->addCoordinateSystem (1.0, "global");
 
   // The root name of correspondence lines
   std::string line_root_ = "line";

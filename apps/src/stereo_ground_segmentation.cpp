@@ -123,7 +123,7 @@ class HRCSSegmentation
       
       // Set up a 3D viewer
       viewer->setBackgroundColor (0, 0, 0);
-      viewer->addCoordinateSystem (1.0);
+      viewer->addCoordinateSystem (1.0, "global");
       viewer->initCameraParameters ();
       viewer->registerKeyboardCallback (&HRCSSegmentation::keyboardCallback, *this, 0);
       

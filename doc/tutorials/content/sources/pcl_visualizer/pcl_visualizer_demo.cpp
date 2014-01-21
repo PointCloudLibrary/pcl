@@ -40,7 +40,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addPointCloud<pcl::PointXYZ> (cloud, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "sample cloud");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
   return (viewer);
 }
@@ -56,7 +56,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> rgbVis (pcl::PointCloud<pcl
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
   viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
   return (viewer);
 }
@@ -72,7 +72,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> customColourVis (pcl::Point
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> single_color(cloud, 0, 255, 0);
   viewer->addPointCloud<pcl::PointXYZ> (cloud, single_color, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
   return (viewer);
 }
@@ -90,7 +90,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> normalsVis (
   viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
   viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals, 10, 0.05, "normals");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
   return (viewer);
 }
@@ -106,7 +106,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> shapesVis (pcl::PointCloud<
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(cloud);
   viewer->addPointCloud<pcl::PointXYZRGB> (cloud, rgb, "sample cloud");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
   viewer->initCameraParameters ();
 
   //------------------------------------
@@ -164,7 +164,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> viewportsVis (
 
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud1");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "sample cloud2");
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
 
   viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals1, 10, 0.05, "normals1", v1);
   viewer->addPointCloudNormals<pcl::PointXYZRGB, pcl::Normal> (cloud, normals2, 10, 0.05, "normals2", v2);
@@ -211,7 +211,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> interactionCustomizationVis
 {
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
   viewer->setBackgroundColor (0, 0, 0);
-  viewer->addCoordinateSystem (1.0);
+  viewer->addCoordinateSystem (1.0, "global");
 
   viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
   viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
