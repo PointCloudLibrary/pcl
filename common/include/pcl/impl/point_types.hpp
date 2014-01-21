@@ -190,7 +190,7 @@ namespace pcl
   PCL_ADD_UNION_NORMAL4D \
   PCL_ADD_EIGEN_MAPS_NORMAL4D
 
-#define PCL_ADD_RGB \
+#define PCL_ADD_UNION_RGB \
   union \
   { \
     union \
@@ -205,11 +205,16 @@ namespace pcl
       float rgb; \
     }; \
     uint32_t rgba; \
-  }; \
+  };
+
+#define PCL_ADD_EIGEN_MAPS_RGB \
   inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); } \
   inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); } \
   inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); } \
   inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
+#define PCL_ADD_RGB \
+  PCL_ADD_UNION_RGB \
+  PCL_ADD_EIGEN_MAPS_RGB
 
 #define PCL_ADD_INTENSITY \
     struct \
@@ -853,29 +858,12 @@ namespace pcl
     {
       struct
       {
-        // RGB union
-        union
-        {
-          struct
-          {
-            uint8_t b;
-            uint8_t g;
-            uint8_t r;
-            uint8_t a;
-          };
-          float rgb;
-          uint32_t rgba;
-        };
+        PCL_ADD_UNION_RGB;
         float curvature;
       };
       float data_c[4];
     };
-
-    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
-    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
-
+    PCL_ADD_EIGEN_MAPS_RGB;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
@@ -1464,31 +1452,14 @@ namespace pcl
     {
       struct
       {
-        // RGB union
-        union
-        {
-          struct
-          {
-            uint8_t b;
-            uint8_t g;
-            uint8_t r;
-            uint8_t a;
-          };
-          float rgb;
-          uint32_t rgba;
-        };
+        PCL_ADD_UNION_RGB;
         float radius;
         float confidence;
         float curvature;
       };
       float data_c[4];
     };
-
-    inline Eigen::Vector3i getRGBVector3i () { return (Eigen::Vector3i (r, g, b)); }
-    inline const Eigen::Vector3i getRGBVector3i () const { return (Eigen::Vector3i (r, g, b)); }
-    inline Eigen::Vector4i getRGBVector4i () { return (Eigen::Vector4i (r, g, b, a)); }
-    inline const Eigen::Vector4i getRGBVector4i () const { return (Eigen::Vector4i (r, g, b, a)); }
-
+    PCL_ADD_EIGEN_MAPS_RGB;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 
