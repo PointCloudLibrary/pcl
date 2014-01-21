@@ -145,7 +145,7 @@
 namespace pcl
 {
 
-#define PCL_ADD_POINT4D \
+#define PCL_ADD_UNION_POINT4D \
   union EIGEN_ALIGN16 { \
     float data[4]; \
     struct { \
@@ -153,7 +153,9 @@ namespace pcl
       float y; \
       float z; \
     }; \
-  }; \
+  };
+
+#define PCL_ADD_EIGEN_MAPS_POINT4D \
   inline Eigen::Map<Eigen::Vector3f> getVector3fMap () { return (Eigen::Vector3f::Map (data)); } \
   inline const Eigen::Map<const Eigen::Vector3f> getVector3fMap () const { return (Eigen::Vector3f::Map (data)); } \
   inline Eigen::Map<Eigen::Vector4f, Eigen::Aligned> getVector4fMap () { return (Eigen::Vector4f::MapAligned (data)); } \
@@ -163,7 +165,11 @@ namespace pcl
   inline Eigen::Map<Eigen::Array4f, Eigen::Aligned> getArray4fMap () { return (Eigen::Array4f::MapAligned (data)); } \
   inline const Eigen::Map<const Eigen::Array4f, Eigen::Aligned> getArray4fMap () const { return (Eigen::Array4f::MapAligned (data)); }
 
-#define PCL_ADD_NORMAL4D \
+#define PCL_ADD_POINT4D \
+  PCL_ADD_UNION_POINT4D \
+  PCL_ADD_EIGEN_MAPS_POINT4D
+
+#define PCL_ADD_UNION_NORMAL4D \
   union EIGEN_ALIGN16 { \
     float data_n[4]; \
     float normal[3]; \
@@ -172,11 +178,17 @@ namespace pcl
       float normal_y; \
       float normal_z; \
     }; \
-  }; \
+  };
+
+#define PCL_ADD_EIGEN_MAPS_NORMAL4D \
   inline Eigen::Map<Eigen::Vector3f> getNormalVector3fMap () { return (Eigen::Vector3f::Map (data_n)); } \
   inline const Eigen::Map<const Eigen::Vector3f> getNormalVector3fMap () const { return (Eigen::Vector3f::Map (data_n)); } \
   inline Eigen::Map<Eigen::Vector4f, Eigen::Aligned> getNormalVector4fMap () { return (Eigen::Vector4f::MapAligned (data_n)); } \
   inline const Eigen::Map<const Eigen::Vector4f, Eigen::Aligned> getNormalVector4fMap () const { return (Eigen::Vector4f::MapAligned (data_n)); }
+
+#define PCL_ADD_NORMAL4D \
+  PCL_ADD_UNION_NORMAL4D \
+  PCL_ADD_EIGEN_MAPS_NORMAL4D
 
 #define PCL_ADD_RGB \
   union \
