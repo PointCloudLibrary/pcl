@@ -44,7 +44,11 @@ if(build)
     add_subdirectory(surface)
     add_subdirectory(segmentation)
 
-	PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
+    PCL_ADD_TEST(a_bearing_angle_image_test test_bearing_angle_image
+                 FILES test_bearing_angle_image.cpp
+                 LINK_WITH pcl_gtest pcl_common pcl_io)
+
+	  PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
                  FILES test_recognition_ism.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_features
                  ARGUMENTS ${PCL_SOURCE_DIR}/test/ism_train.pcd ${PCL_SOURCE_DIR}/test/ism_test.pcd)
