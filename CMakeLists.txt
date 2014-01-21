@@ -61,9 +61,9 @@ if (ANDROID)
   message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
 endif()
 
-include(${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake)
-include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
-include(${PCL_SOURCE_DIR}/cmake/pcl_options.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
+include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
+include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
 
 # Enable verbose timing display?
 if(CMAKE_TIMING_VERBOSE AND UNIX)
@@ -72,7 +72,7 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
 # check for SSE flags
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
 if (PCL_ENABLE_SSE)
   PCL_CHECK_FOR_SSE()
 endif (PCL_ENABLE_SSE)
@@ -160,21 +160,21 @@ if(USE_PROJECT_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif(USE_PROJECT_FOLDERS)
 
-include(${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
 set(PCL_VERSION 1.7.1 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
 
 if(WIN32)
-  set(PCL_RESOURCES_DIR ${PCL_SOURCE_DIR}/resources)
-  set(PCL_POINTCLOUDS_DIR ${PCL_RESOURCES_DIR}/pointclouds)
+  set(PCL_RESOURCES_DIR "${PCL_SOURCE_DIR}/resources")
+  set(PCL_POINTCLOUDS_DIR "${PCL_RESOURCES_DIR}/pointclouds")
 endif(WIN32)
 
-set(PCL_OUTPUT_LIB_DIR ${PCL_BINARY_DIR}/${LIB_INSTALL_DIR})
-set(PCL_OUTPUT_BIN_DIR ${PCL_BINARY_DIR}/${BIN_INSTALL_DIR})
-make_directory(${PCL_OUTPUT_LIB_DIR})
-make_directory(${PCL_OUTPUT_BIN_DIR})
+set(PCL_OUTPUT_LIB_DIR "${PCL_BINARY_DIR}/${LIB_INSTALL_DIR}")
+set(PCL_OUTPUT_BIN_DIR "${PCL_BINARY_DIR}/${BIN_INSTALL_DIR}")
+make_directory("${PCL_OUTPUT_LIB_DIR}")
+make_directory("${PCL_OUTPUT_BIN_DIR}")
 if(WIN32)
   foreach(config ${CMAKE_CONFIGURATION_TYPES})
     string(TOUPPER ${config} CONFIG)
@@ -230,7 +230,7 @@ else(OPENMP_FOUND)
   message (STATUS "Not found OpenMP")
 endif()
 # Boost (required)
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 # Eigen (required)
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
@@ -246,7 +246,7 @@ include_directories(${FLANN_INCLUDE_DIRS})
 # libusb-1.0
 find_package(libusb-1.0)
 if(LIBUSB_1_FOUND)
-  include_directories(${LIBUSB_1_INCLUDE_DIR})
+  include_directories("${LIBUSB_1_INCLUDE_DIR}")
 endif(LIBUSB_1_FOUND)
 
 # OpenNI
@@ -260,7 +260,7 @@ endif()
 find_package(FZAPI)
 if (FZAPI_FOUND)
   set(HAVE_FZAPI ON)
-  include_directories(SYSTEM ${FZAPI_INCLUDE_DIR})
+  include_directories(SYSTEM "${FZAPI_INCLUDE_DIR}")
 endif()
 
 # Intel Perceptional Computing Interface (PXCAPI)
@@ -277,7 +277,7 @@ if (PKG_CONFIG_FOUND)
     set (HAVE_METSLIB ON)
     include_directories(${METSLIB_INCLUDE_DIRS})
   else()
-    include_directories(${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
+    include_directories("${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/")
   endif()
 else()
     include_directories(${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
@@ -287,7 +287,7 @@ endif()
 find_package(PNG)
 if (PNG_FOUND)
   set (HAVE_PNG ON)
-  include_directories(${PNG_INCLUDE_DIR})
+  include_directories("${PNG_INCLUDE_DIR}")
 endif(PNG_FOUND)
 
 # Qhull
@@ -297,7 +297,7 @@ endif(NOT PCL_SHARED_LIBS OR WIN32)
 find_package(Qhull)
 
 # Cuda
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_cuda.cmake")
 
 # Find Qt5
 include(cmake/pcl_find_qt5.cmake)
@@ -306,7 +306,7 @@ include(cmake/pcl_find_qt5.cmake)
 if(NOT QT5_FOUND)
     find_package(Qt4)
     if (QT4_FOUND)
-      include(${QT_USE_FILE})
+      include("${QT_USE_FILE}")
     endif (QT4_FOUND)
 endif()
 
@@ -331,7 +331,7 @@ endif(VTK_FOUND)
 if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
   find_package(MPI)
   if(MPI_CXX_FOUND)
-    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+    include_directories(SYSTEM "${MPI_INCLUDE_PATH}")
   endif(MPI_CXX_FOUND)
 endif()
 
@@ -345,41 +345,41 @@ endif(DOXYGEN_FOUND)
 find_package(Pcap)
 
 # OpenGL and GLUT
-include(${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
-configure_file(${pcl_config_h_in} ${pcl_config_h})
-PCL_ADD_INCLUDES(common "" ${pcl_config_h})
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+configure_file("${pcl_config_h_in}" "${pcl_config_h}")
+PCL_ADD_INCLUDES(common "" "${pcl_config_h}")
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 ### ---[ Set up for tests
 enable_testing()
 
 ### ---[ Set up for examples
-#include(${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake)
+#include("${PCL_SOURCE_DIR}/cmake/pcl_examples.cmake")
 
 ### ---[ Add the libraries subdirectories
-include(${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 
-collect_subproject_directory_names(${PCL_SOURCE_DIR} "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
+collect_subproject_directory_names("${PCL_SOURCE_DIR}" "CMakeLists.txt" PCL_MODULES_NAMES PCL_MODULES_DIRS doc)
 set(PCL_MODULES_NAMES_UNSORTED ${PCL_MODULES_NAMES})
 topological_sort(PCL_MODULES_NAMES PCL_ _DEPENDS)
 sort_relative(PCL_MODULES_NAMES_UNSORTED PCL_MODULES_NAMES PCL_MODULES_DIRS)
 foreach(subdir ${PCL_MODULES_DIRS})
-  add_subdirectory(${PCL_SOURCE_DIR}/${subdir})  
+  add_subdirectory("${PCL_SOURCE_DIR}/${subdir}")
 endforeach(subdir)
 
 ### ---[ Documentation
 add_subdirectory(doc)
 
 ### ---[ Configure PCLConfig.cmake
-include(${PCL_SOURCE_DIR}/cmake/pcl_pclconfig.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_pclconfig.cmake")
 
 ### ---[ Package creation
-include(${PCL_SOURCE_DIR}/cmake/pcl_all_in_one_installer.cmake)
-include(${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake)
+include("${PCL_SOURCE_DIR}/cmake/pcl_all_in_one_installer.cmake")
+include("${PCL_SOURCE_DIR}/cmake/pcl_cpack.cmake")
 
 if(CPACK_GENERATOR)
   message(STATUS "Found CPack generators: ${CPACK_GENERATOR}")
@@ -388,7 +388,7 @@ if(CPACK_GENERATOR)
   include(CPack)
 endif(CPACK_GENERATOR)
 ### ---[ Make a pretty picture of the dependency graph
-include(${PCL_SOURCE_DIR}/cmake/dep_graph.cmake)
+include("${PCL_SOURCE_DIR}/cmake/dep_graph.cmake")
 MAKE_DEP_GRAPH()
 
 ### ---[ Finish up

@@ -8,8 +8,8 @@ if(SPHINX_FOUND)
   endif()
   file(TO_CMAKE_PATH "${TMPDIR}" TMPDIR)
   add_custom_target(Tutorials 
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory "${TMPDIR}/doctrees"
-                    COMMAND ${SPHINX_EXECUTABLE} -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/content" html
+                    COMMAND "${CMAKE_COMMAND}" -E remove_directory "${TMPDIR}/doctrees"
+                    COMMAND "${SPHINX_EXECUTABLE}" -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/content" html
                     )
   if(USE_PROJECT_FOLDERS)
     set_target_properties(Tutorials PROPERTIES FOLDER "Documentation")
