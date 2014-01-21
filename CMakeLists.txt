@@ -279,6 +279,8 @@ if (PKG_CONFIG_FOUND)
   else()
     include_directories(${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
   endif()
+else()
+    include_directories(${PCL_SOURCE_DIR}/recognition/include/pcl/recognition/3rdparty/)
 endif()
 
 # LibPNG
