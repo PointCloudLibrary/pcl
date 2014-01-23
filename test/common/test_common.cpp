@@ -1140,6 +1140,37 @@ TEST (PCL, IsSamePointType)
   EXPECT_FALSE (status);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, HasField)
+{
+  // has_field
+  EXPECT_TRUE ((pcl::traits::has_field<pcl::Normal, pcl::fields::curvature>::value));
+  EXPECT_FALSE ((pcl::traits::has_field<pcl::PointXYZ, pcl::fields::curvature>::value));
+  // has_all_fields
+  EXPECT_TRUE ((pcl::traits::has_all_fields<pcl::PointXYZRGB, boost::mpl::vector<pcl::fields::x, pcl::fields::rgb> >::value));
+  EXPECT_FALSE ((pcl::traits::has_all_fields<pcl::PointXYZ, boost::mpl::vector<pcl::fields::x, pcl::fields::rgb> >::value));
+  // has_any_field
+  EXPECT_TRUE ((pcl::traits::has_any_field<pcl::PointXYZ, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  EXPECT_TRUE ((pcl::traits::has_any_field<pcl::Normal, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  EXPECT_FALSE ((pcl::traits::has_any_field<pcl::RGB, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  // has_xyz
+  EXPECT_TRUE ((pcl::traits::has_xyz<pcl::PointXYZ>::value));
+  EXPECT_FALSE ((pcl::traits::has_xyz<pcl::Normal>::value));
+  // has_normal
+  EXPECT_TRUE ((pcl::traits::has_normal<pcl::PointNormal>::value));
+  EXPECT_FALSE ((pcl::traits::has_normal<pcl::PointXYZ>::value));
+  // has_curvature
+  EXPECT_TRUE ((pcl::traits::has_curvature<pcl::PointNormal>::value));
+  EXPECT_FALSE ((pcl::traits::has_curvature<pcl::RGB>::value));
+  // has_color
+  EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGB>::value));
+  EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGBA>::value));
+  EXPECT_FALSE ((pcl::traits::has_color<pcl::PointXYZ>::value));
+  // has_label
+  EXPECT_TRUE ((pcl::traits::has_label<pcl::PointXYZL>::value));
+  EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
