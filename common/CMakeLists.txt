@@ -84,6 +84,7 @@ if(build)
         include/pcl/common/common_headers.h
         include/pcl/common/distances.h
         include/pcl/common/eigen.h
+        include/pcl/common/copy_point.h
         include/pcl/common/io.h
         include/pcl/common/file_io.h
         include/pcl/common/intersections.h
@@ -116,6 +117,7 @@ if(build)
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
         include/pcl/common/impl/eigen.hpp
+        include/pcl/common/impl/copy_point.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
         include/pcl/common/impl/norms.hpp
