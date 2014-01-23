@@ -39,7 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 
 #include <pcl/segmentation/segment_differences.h>
-#include <pcl/common/concatenate.h>
+#include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -85,11 +85,7 @@ pcl::getPointCloudDifference (
     //output.is_dense = false;
 
   // Copy all the data fields from the input cloud to the output one
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-  // Iterate over each point
-  for (size_t i = 0; i < src_indices.size (); ++i)
-    // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (src.points[src_indices[i]], output.points[i]));
+  copyPointCloud (src, src_indices, output);
 }
 
 //////////////////////////////////////////////////////////////////////////
