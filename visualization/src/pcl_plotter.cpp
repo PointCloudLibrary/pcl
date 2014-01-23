@@ -397,12 +397,12 @@ pcl::visualization::PCLPlotter::plot ()
   //apply current states
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
-  view_->GetRenderWindow ()->SetPosition(win_x_, win_y_);
+  view_->GetRenderWindow ()->SetPosition (win_x_, win_y_);
   view_->GetInteractor ()->Initialize ();
   
   //according to vtk bug 976, SetWindowName must be called after RenderWindow Initialize();
-  view_->GetRenderWindow ()->SetWindowName(win_name_.c_str());
-  view_->GetRenderWindow ()->Render();
+  view_->GetRenderWindow ()->SetWindowName (win_name_.c_str());
+  view_->GetRenderWindow ()->Render ();
   view_->GetInteractor ()->Start ();
 }
 

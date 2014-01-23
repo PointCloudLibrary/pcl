@@ -360,13 +360,13 @@ namespace pcl
         * \param[in] y where to move the window to (Y)
         */
         void
-        setWindowPosition(int x, int y);
+        setWindowPosition (int x, int y);
         
         /** \brief Set the visualizer window name.
         * \param[in] name the name of the window
         */
         void
-        setWindowName(const std::string &name);
+        setWindowName (const std::string &name);
         
         /** \brief set/get method for the window size.
           * \return[in] array containing the width and height of the window
