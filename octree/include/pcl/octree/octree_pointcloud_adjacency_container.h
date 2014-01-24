@@ -45,12 +45,20 @@ namespace pcl
   
   namespace octree
   {
-    /** \brief @b Octree adjacency leaf container class- stores set of pointers to neighbors, number of points added, and a DataT value
-    *    \note This class implements a leaf node that stores pointers to neighboring leaves
-    *   \note This class also has a virtual computeData function, which is called by octreePointCloudAdjacency::addPointsFromInputCloud.
-    *   \note You should make explicit instantiations of it for your pointtype/datatype combo (if needed) see supervoxel_clustering.hpp for an example of this
-    */
-    template<typename PointInT, typename DataT = PointInT>
+
+    template <typename PointT> class AveragePoint;
+
+    /** \brief @b Octree adjacency leaf container class - stores set of pointers to neighbors, number of points added, and a DataT value.
+      * \note This class implements a leaf node that stores pointers to neighboring leaves.
+      * \note This class also has a virtual computeData function, which is called by OctreePointCloudAdjacency::addPointsFromInputCloud.
+      * \note If you are not happy with the default data type (which is AveragePoint<PointInT>) and its behavior (averaging of XYZ,
+      * normal, and RGB fields), then you should implement your own and either:
+      *
+      * - make sure it has add() and compute() functions (like AveragePoint does)
+      *   or
+      * - make explicit instantiations of addPoint() and computeData() functions of this class (supervoxel_clustering.hpp for an example).
+      */
+    template<typename PointInT, typename DataT = AveragePoint<PointInT> >
     class OctreePointCloudAdjacencyContainer : public OctreeContainerBase
     {
     public:
@@ -97,7 +105,7 @@ namespace pcl
       void 
       addPoint (const PointInT& new_point)
       {
-        using namespace pcl::common;
+        data_.add (new_point);
         ++num_points_;
       }
       
@@ -106,6 +114,7 @@ namespace pcl
       void
       computeData ()
       {
+        data_.compute ();
       }
       
       /** \brief Gets the number of points contributing to this leaf */
@@ -176,7 +185,7 @@ namespace pcl
        * \return number of points added to leaf node container.
        */
       virtual size_t
-      getSize ()
+      getSize () const
       {
         return num_points_;
       }
@@ -190,4 +199,7 @@ namespace pcl
   }
 }
 
+#include <pcl/octree/impl/octree_pointcloud_adjacency_container.hpp>
+
 #endif
+
