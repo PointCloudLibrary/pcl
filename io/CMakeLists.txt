@@ -141,8 +141,7 @@ if(build)
         src/file_io.cpp
         )
     if(PNG_FOUND)
-      set(srcs
-          ${srcs}
+      list(APPEND srcs
           src/libpng_wrapper.cpp
           )
     endif(PNG_FOUND)
@@ -190,14 +189,12 @@ if(build)
         include/pcl/compression/point_coding.h
        )
     if(PNG_FOUND)
-      set(compression_incs
-          ${compression_incs}
+      list(APPEND compression_incs
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
       if(OPENNI_FOUND)
-        set(compression_incs
-          ${compression_incs}
+        list(APPEND compression_incs
           include/pcl/compression/organized_pointcloud_compression.h
           )
       endif(OPENNI_FOUND)
@@ -213,8 +210,7 @@ if(build)
         ${VTK_IO_INCLUDES_IMPL}
        )
     if(PNG_FOUND AND OPENNI_FOUND)
-     set(impl_incs
-         ${impl_incs}
+     list(APPEND impl_incs
          include/pcl/compression/impl/organized_pointcloud_compression.hpp
         )
     endif(PNG_FOUND AND OPENNI_FOUND)

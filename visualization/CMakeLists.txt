@@ -56,13 +56,12 @@ if(build)
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
         # A custom interactor is necessary on VTK 5.4 and below
-        set(srcs ${srcs} src/interactor.cpp)
+        list(APPEND srcs src/interactor.cpp)
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
     
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
         # PCLPainter2D uses some functions not present in vtk 5.6
-        set(srcs 
-            ${srcs} 
+        list(APPEND srcs
             src/pcl_painter2D.cpp
             src/pcl_plotter.cpp
             )
@@ -92,8 +91,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/simple_buffer_visualizer.h"
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
-        set(incs
-            ${incs} 
+        list(APPEND incs
             "include/pcl/${SUBSYS_NAME}/pcl_plotter.h"
             )
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
@@ -117,8 +115,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_geometry_handlers.hpp"
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
-        set(impl_incs
-            ${impl_incs} 
+        list(APPEND impl_incs
             "include/pcl/${SUBSYS_NAME}/impl/pcl_plotter.hpp"
             )
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")

@@ -94,9 +94,9 @@ if(build)
 
   # Put the ui in the windows project file
   IF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
-    SET (srcs ${srcs} ${uis})
+    LIST(APPEND srcs ${uis})
   ELSEIF("${CMAKE_BUILD_TOOL}" MATCHES "devenv")
-    SET (srcs ${srcs} ${uis})
+    LIST(APPEND srcs ${uis})
   ENDIF("${CMAKE_BUILD_TOOL}" MATCHES "msdev")
 
   # Install include files
