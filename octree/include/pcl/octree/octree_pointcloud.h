@@ -39,8 +39,8 @@
 #ifndef PCL_OCTREE_POINTCLOUD_H
 #define PCL_OCTREE_POINTCLOUD_H
 
-#include "octree_base.h"
-//#include "octree2buf_base.h"
+#include <pcl/octree/octree_base.h>
+#include <pcl/octree/octree_container.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -70,8 +70,8 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeContainerPointIndices,
-        typename BranchContainerT = OctreeContainerEmpty,
+    template<typename PointT, typename LeafContainerT = OctreeIndicesContainer<>,
+        typename BranchContainerT = OctreeEmptyContainer,
         typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
 
     class OctreePointCloud : public OctreeT

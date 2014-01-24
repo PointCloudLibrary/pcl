@@ -545,7 +545,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
       BranchNode* newBranchParent;
       this->createLeafRecursive (new_index_key, depth_mask, childBranch, newLeaf, newBranchParent);
 
-      (*newLeaf)->addPointIndex(*it);
+      //(*newLeaf)->addPointIndex(*it);
+      //(*newLeaf)->insert (*it, point_from_index);
+      LeafContainerTraits<LeafContainerT>::insert (newLeaf->getContainer (), *it, point_from_index);
     }
   }
 
@@ -593,8 +595,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     }
 
   }
-
-  (*leaf_node)->addPointIndex (point_idx_arg);
+  //(*leaf_node)->addPointIdx (point_idx_arg)
+  //(*leaf_node)->insert (point_idx_arg, point);
+  LeafContainerTraits<LeafContainerT>::insert (leaf_node->getContainer (), point_idx_arg, point);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

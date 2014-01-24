@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,368 +34,571 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: octree_nodes.h 5596 2012-04-17 15:09:31Z jkammerl $
  */
 
 #ifndef PCL_OCTREE_CONTAINER_H
 #define PCL_OCTREE_CONTAINER_H
 
-#include <string.h>
 #include <vector>
 #include <cstddef>
+#include <set>
+
+#include <boost/blank.hpp>
 
 #include <pcl/pcl_macros.h>
+#include <pcl/octree/octree_leaf_data.h>
 
 namespace pcl
 {
   namespace octree
   {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that can serve as a base to construct own leaf node container classes.
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
-    class OctreeContainerBase
+
+    /** \brief An octree leaf container class that serves as a base to construct
+      * specialized leaf node container classes.
+      *
+      * Has a single template parameter UserDataT, which allows the user to
+      * store some arbitrary piece of information inside a leaf.
+      *
+      * Deriving container classes should specialize LeafContainerTraits, see
+      * its documentation. */
+    template <typename UserDataT = boost::blank>
+    class OctreeLeafContainer
     {
-    public:
-      /** \brief Empty constructor. */
-      OctreeContainerBase ()
-      {
-      }
 
-      /** \brief Empty constructor. */
-      OctreeContainerBase (const OctreeContainerBase&)
-      {
-      }
-
-      /** \brief Empty deconstructor. */
-      virtual
-      ~OctreeContainerBase ()
-      {
-      }
-
-      /** \brief Equal comparison operator
-       */
-      virtual bool
-      operator== (const OctreeContainerBase&) const
-      {
-        return false;
-      }
-
-      /** \brief Inequal comparison operator
-       * \param[in] other OctreeContainerBase to compare with
-       */
-      bool
-      operator!= (const OctreeContainerBase& other) const
-      {
-        return (!operator== (other));
-      }
-
-      /** \brief Pure abstract method to get size of container (number of indices)
-       * \return number of points/indices stored in leaf node container.
-       */
-      virtual size_t
-      getSize () const
-      {
-        return 0u;
-      }
-
-      /** \brief Pure abstract reset leaf node implementation. */
-      virtual void
-      reset () = 0;
-
-      /** \brief Empty addPointIndex implementation. This leaf node does not store any point indices.
-       */
-      void
-      addPointIndex (const int&)
-      {
-      }
-
-      /** \brief Empty getPointIndex implementation as this leaf node does not store any point indices.
-       */
-      void
-      getPointIndex (int&) const
-      {
-      }
-
-      /** \brief Empty getPointIndices implementation as this leaf node does not store any data. \
-            */
-      void
-      getPointIndices (std::vector<int>&) const
-      {
-      }
-
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that does not store any information.
-     * \note Can be used for occupancy trees that are used for checking only the existence of leaf nodes in the tree
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-
-    class OctreeContainerEmpty : public OctreeContainerBase
-    {
-    public:
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty () :
-          OctreeContainerBase ()
-      {
-      }
-
-      /** \brief Empty constructor. */
-      OctreeContainerEmpty (const OctreeContainerEmpty&) :
-          OctreeContainerBase ()
-      {
-      }
-
-      /** \brief Empty deconstructor. */
-      virtual
-      ~OctreeContainerEmpty ()
-      {
-      }
-
-      /** \brief Octree deep copy method */
-      virtual OctreeContainerEmpty *
-      deepCopy () const
-      {
-        return (new OctreeContainerEmpty (*this));
-      }
-
-      /** \brief Abstract get size of container (number of DataT objects)
-       * \return number of DataT elements in leaf node container.
-       */
-      virtual size_t
-      getSize () const
-      {
-        return 0;
-      }
-
-      /** \brief Abstract reset leaf node implementation. */
-      virtual void
-      reset ()
-      {
-
-      }
-
-      /** \brief Empty addPointIndex implementation. This leaf node does not store any point indices.
-       */
-      void
-      addPointIndex (int)
-      {
-      }
-
-      /** \brief Empty getPointIndex implementation as this leaf node does not store any point indices.
-       */
-      int
-      getPointIndex () const
-      {
-        assert("getPointIndex: undefined point index");
-        return -1;
-      }
-
-      /** \brief Empty getPointIndices implementation as this leaf node does not store any data. \
-            */
-      void
-      getPointIndices (std::vector<int>&) const
-      {
-      }
-
-    };
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that does store a single point index.
-     * \note Enables the octree to store a single DataT element within its leaf nodes.
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-      class OctreeContainerPointIndex : public OctreeContainerBase
-      {
       public:
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndex () :
-            OctreeContainerBase (), data_ ()
-        {
-          reset ();
-        }
+
+        /// Point type stored in this leaf container. In fact, nothing is known
+        /// about point type so far. A deriving leaf container that actually
+        /// stores points will have to redefine it. Here semantically it would
+        /// be better to typedef point_type to e.g. void, however it would
+        /// result in issues with LeafContainerTraits on older boost versions
+        /// ( < 1.53). So we typedef to some non-sense.
+        typedef PointXY point_type;
+
+        /// User data type stored in this leaf container.
+        typedef UserDataT data_type;
 
         /** \brief Empty constructor. */
-        OctreeContainerPointIndex (const OctreeContainerPointIndex& source) :
-            OctreeContainerBase (), data_ (source.data_)
+        OctreeLeafContainer ()
         {
         }
 
         /** \brief Empty deconstructor. */
         virtual
-        ~OctreeContainerPointIndex ()
+        ~OctreeLeafContainer ()
         {
         }
 
-        /** \brief Octree deep copy method */
-        virtual OctreeContainerPointIndex*
+        /** \brief Deep copy of the leaf - copies all internal data. */
+        virtual OctreeLeafContainer*
         deepCopy () const
         {
-          return (new OctreeContainerPointIndex (*this));
+          OctreeLeafContainer* new_container = new OctreeLeafContainer;
+          new_container->user_data_ = user_data_;
+          return new_container;
         }
 
-        /** \brief Equal comparison operator
-         * \param[in] other OctreeContainerBase to compare with
-         */
+        /** \brief Equal comparison operator.
+          *
+          * \param[in] other OctreeLeafContainer to compare with
+          *
+          * \note This function always returns false. A deriving container
+          * class should override this if it has any reasonable way to compare
+          * itself to another container. */
         virtual bool
-        operator== (const OctreeContainerBase& other) const
+        operator== (const OctreeLeafContainer&) const
         {
-          const OctreeContainerPointIndex* otherConDataT = dynamic_cast<const OctreeContainerPointIndex*> (&other);
-
-          return (this->data_ == otherConDataT->data_);
+          return false;
         }
 
-        /** \brief Add point index to container memory. This container stores a only a single point index.
-         * \param[in] data_arg index to be stored within leaf node.
+        /** \brief Inequal comparison operator.
+          *
+          * \param[in] other OctreeLeafContainer to compare with */
+        bool
+        operator!= (const OctreeLeafContainer& other) const
+        {
+          return (!operator== (other));
+        }
+
+        /** \brief Clear the data contained in the node. */
+        virtual void
+        reset ()
+        {
+          user_data_ = UserDataT ();
+        }
+
+        /** \brief Returns reference to the internal user data member. */
+        UserDataT&
+        getUserData ()
+        {
+          return user_data_;
+        }
+
+        size_t
+        getSize () const
+        {
+          return (0);
+        }
+
+        /** DEPRECATED This is maintained because of octree_pointcloud.hpp:521 TODO Investigate...
+         * \brief Empty getPointIndices implementation as this leaf node does not store any data. \
          */
         void
-        addPointIndex (int data_arg)
+        getPointIndices (std::vector<int>&) const
         {
-          data_ = data_arg;
         }
 
-        /** \brief Retrieve point index from container. This container stores a only a single point index
-         * \return index stored within container.
-         */
+      protected:
+
+        UserDataT user_data_;
+
+    };
+
+    /** An empty octree leaf container.
+      *
+      * We need this to be a separate type (not a typedef) because otherwise we
+      * might run into issues with traits. */
+    class OctreeEmptyContainer : public OctreeLeafContainer<boost::blank>
+    {
+
+        typedef OctreeLeafContainer<boost::blank> OctreeLeafContainerT;
+
+      public:
+
+        OctreeEmptyContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+    };
+
+    /** \brief @b Octree adjacency leaf container class - stores set of pointers to neighbors, number of points added, and a DataT value.
+     * \note This class implements a leaf node that stores pointers to neighboring leaves.
+     * \note This class also has a virtual computeData function, which is called by OctreePointCloudAdjacency::addPointsFromInputCloud.
+     * \note If you are not happy with the default data type (which is AveragePoint<PointInT>) and its behavior (averaging of XYZ,
+     * normal, and RGB fields), then you should implement your own and either:
+     *
+     * - make sure it has add() and compute() functions (like AveragePoint does)
+     *   or
+     * - make explicit instantiations of addPoint() and computeData() functions of this class (supervoxel_clustering.hpp for an example).
+     */
+    template <typename OctreeLeafContainerT = OctreeEmptyContainer>
+    class OctreeAdjacencyContainer : public OctreeLeafContainerT
+    {
+
+      public:
+
+        typedef OctreeAdjacencyContainer<OctreeLeafContainerT> OctreeAdjacencyContainerT;
+
+        typedef std::set<OctreeAdjacencyContainerT*> NeighborSetT;
+
+        /** Iterator for neighbors of this leaf */
+        typedef typename NeighborSetT::iterator iterator;
+        /** Const iterator for neighbors of this leaf */
+        typedef typename NeighborSetT::const_iterator const_iterator;
+        inline iterator begin () { return (neighbors_.begin ()); }
+        inline iterator end ()   { return (neighbors_.end ()); }
+        inline const_iterator begin () const { return (neighbors_.begin ()); }
+        inline const_iterator end () const  { return (neighbors_.end ()); }
+
+        OctreeAdjacencyContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+        /** \brief Deep copy of the leaf - copies all internal data. */
+        virtual OctreeAdjacencyContainerT*
+        deepCopy () const
+        {
+          OctreeAdjacencyContainerT *new_data = new OctreeAdjacencyContainerT;
+          new_data->neighbors_ = this->neighbors_;
+          new_data->user_data_ = this->user_data_;
+          return (new_data);
+        }
+
+        /** \brief Add a new neighbor to the container.
+          * \param[in] neighbor the new neighbor to add */
+        void
+        addNeighbor (OctreeAdjacencyContainerT *neighbor)
+        {
+          neighbors_.insert (neighbor);
+        }
+
+        /** \brief Remove neighbor from neighbor set.
+          * \param[in] neighbor the neighbor to remove */
+        void
+        removeNeighbor (OctreeAdjacencyContainerT *neighbor)
+        {
+          neighbors_.erase (neighbor);
+        }
+
+        /** Returns the number of neighbors this leaf has. */
+        inline size_t
+        getNumNeighbors () const
+        {
+          return (neighbors_.size ());
+        }
+
+        /** \brief Sets the whole neighbor set.
+          * \param[in] neighbor_arg the new set */
+        void
+        setNeighbors (const NeighborSetT &neighbor_arg)
+        {
+          neighbors_ = neighbor_arg;
+        }
+
+        virtual void
+        reset ()
+        {
+          OctreeLeafContainerT::reset ();
+          neighbors_.clear ();
+        }
+
+      protected:
+
+        NeighborSetT neighbors_;
+
+    };
+
+    /** \brief An octree leaf container that stores indices of the points that
+      * are inserted into it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeIndicesContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        OctreeIndicesContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+        /** Add a new point (index). */
+        void
+        insertPointIndex (int index_arg)
+        {
+          indices_.push_back (index_arg);
+        }
+
+        std::vector<int>
+        getPointIndicesVector () const
+        {
+          return (indices_);
+        }
+
+        void
+        getPointIndices (std::vector<int>& indices) const
+        {
+          indices.insert (indices.end (), indices_.begin (), indices_.end ());
+        }
+
+        size_t
+        getSize () const
+        {
+          return (indices_.size ());
+        }
+
+        virtual void
+        reset ()
+        {
+          indices_.clear ();
+        }
+
+      protected:
+
+        std::vector<int> indices_;
+
+    };
+
+    /** \brief An octree leaf container that stores the index of the very last
+      * point that was added to it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeIndexContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        OctreeIndexContainer ()
+        : OctreeLeafContainerT ()
+        , last_index_ (-1)
+        {
+        }
+
+        /** Add a new point (index). */
+        void
+        insertPointIndex (int index_arg)
+        {
+          last_index_ = index_arg;
+        }
+
+        /** \brief Retrieve the index of the last point. */
         int
         getPointIndex () const
         {
-          return data_;
+          return (last_index_);
         }
 
-        /** \brief Retrieve point indices from container. This container stores only a single point index
-         * \param[out] data_vector_arg vector of point indices to be stored within data vector
-         */
-        void
-        getPointIndices (std::vector<int>& data_vector_arg) const
-        {
-          if (data_>=0)
-          data_vector_arg.push_back (data_);
-        }
-
-        /** \brief Get size of container (number of DataT objects)
-         * \return number of DataT elements in leaf node container.
-         */
-        size_t
-        getSize () const
-        {
-          return data_<0 ? 0 : 1;
-        }
-
-        /** \brief Reset leaf node memory to zero. */
         virtual void
         reset ()
         {
-          data_ = -1;
+          last_index_ = -1;
         }
-      protected:
-        /** \brief Point index stored in octree. */
-        int data_;
-      };
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree container class that does store a vector of point indices.
-     * \note Enables the octree to store multiple DataT elements within its leaf nodes.
-     * \author Julius Kammerl (julius@kammerl.de)
-     */
-      class OctreeContainerPointIndices : public OctreeContainerBase
-      {
+      protected:
+
+        int last_index_;
+
+    };
+
+    /** \brief An octree leaf container that stores the number of points
+      * that were added to it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeDensityContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
       public:
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices () :
-          OctreeContainerBase (), leafDataTVector_ ()
+
+        OctreeDensityContainer ()
+        : OctreeLeafContainerT ()
+        , num_points_ (0)
         {
         }
 
-        /** \brief Empty constructor. */
-        OctreeContainerPointIndices (const OctreeContainerPointIndices& source) :
-            OctreeContainerBase (), leafDataTVector_ (source.leafDataTVector_)
-        {
-        }
-
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeContainerPointIndices ()
-        {
-        }
-
-        /** \brief Octree deep copy method */
-        virtual OctreeContainerPointIndices *
-        deepCopy () const
-        {
-          return (new OctreeContainerPointIndices (*this));
-        }
-
-        /** \brief Equal comparison operator
-         * \param[in] other OctreeContainerDataTVector to compare with
-         */
-        virtual bool
-        operator== (const OctreeContainerBase& other) const
-        {
-          const OctreeContainerPointIndices* otherConDataTVec = dynamic_cast<const OctreeContainerPointIndices*> (&other);
-
-          return (this->leafDataTVector_ == otherConDataTVec->leafDataTVector_);
-        }
-
-        /** \brief Add point index to container memory. This container stores a vector of point indices.
-         * \param[in] data_arg index to be stored within leaf node.
-         */
+        /** Add a new point. */
         void
-        addPointIndex (int data_arg)
+        insertPoint ()
         {
-          leafDataTVector_.push_back (data_arg);
+          ++num_points_;
         }
 
-        /** \brief Retrieve point index from container. This container stores a vector of point indices.
-         * \return index stored within container.
-         */
-        int
-        getPointIndex ( ) const
-        {
-          return leafDataTVector_.back ();
-        }
-
-        /** \brief Retrieve point indices from container. This container stores a vector of point indices.
-         * \param[out] data_vector_arg vector of point indices to be stored within data vector
-         */
-        void
-        getPointIndices (std::vector<int>& data_vector_arg) const
-        {
-          data_vector_arg.insert (data_vector_arg.end (), leafDataTVector_.begin (), leafDataTVector_.end ());
-        }
-
-        /** \brief Retrieve reference to point indices vector. This container stores a vector of point indices.
-         * \return reference to vector of point indices to be stored within data vector
-         */
-        std::vector<int>&
-        getPointIndicesVector ()
-        {
-          return leafDataTVector_;
-        }
-
-        /** \brief Get size of container (number of indices)
-         * \return number of point indices in container.
-         */
+        /** \brief Get the number of points that have been inserted. */
         size_t
         getSize () const
         {
-          return leafDataTVector_.size ();
+          return (num_points_);
         }
 
-        /** \brief Reset leaf node. Clear DataT vector.*/
         virtual void
         reset ()
         {
-          leafDataTVector_.clear ();
+          num_points_ = 0;
         }
 
       protected:
-        /** \brief Leaf node DataT vector. */
-        std::vector<int> leafDataTVector_;
-      };
+
+        size_t num_points_;
+
+    };
+
+    /** \brief An octree leaf container that computes the cenrtoid of the points
+      * that were inserted into it. */
+    template <typename PointT = pcl::PointXYZ,
+              typename UserDataT = boost::blank>
+    class OctreeCentroidContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        typedef PointT point_type;
+        typedef UserDataT data_type;
+
+        OctreeCentroidContainer ()
+        : OctreeLeafContainerT ()
+        , num_points_ (0)
+        {
+        }
+
+        /** Add a new point. */
+        void
+        insertPoint (const PointT& point_arg)
+        {
+          ++num_points_;
+          xyz_.add (point_arg);
+          normal_.add (point_arg);
+          color_.add (point_arg);
+        }
+
+        /** \brief Retrieve the computed average (centroid) point.
+          *
+          * This container maintains the sum of all fields of the
+          * inserted points. When this function is called it will divide the
+          * sum by the actual number of inserted points. */
+        void
+        getCentroid (PointT& point_arg) const
+        {
+          xyz_.get (point_arg, num_points_);
+          normal_.get (point_arg, num_points_);
+          color_.get (point_arg, num_points_);
+        }
+
+        /** \brief Get the number of points that have been inserted. */
+        size_t
+        getSize () const
+        {
+          return (num_points_);
+        }
+
+        virtual void
+        reset ()
+        {
+          xyz_ = detail::xyz_accumulator<PointT> ();
+          normal_ = detail::normal_accumulator<PointT> ();
+          color_ = detail::color_accumulator<PointT> ();
+          num_points_ = 0;
+        }
+
+      protected:
+
+        detail::xyz_accumulator<PointT> xyz_;
+        detail::normal_accumulator<PointT> normal_;
+        detail::color_accumulator<PointT> color_;
+
+        size_t num_points_;
+
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    };
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeEmptyContainer OctreeContainerEmpty;
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeIndexContainer<boost::blank> OctreeContainerPointIndex;
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeIndicesContainer<boost::blank> OctreeContainerPointIndices;
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeDensityContainer<boost::blank> OctreePointCloudDensityContainer;
+
+    /** Wrapper class to preserve existing interface. */
+    template <typename PointT>
+    class OctreePointCloudVoxelCentroidContainer : public OctreeCentroidContainer<PointT, boost::blank>
+    {
+
+      public:
+
+        OctreePointCloudVoxelCentroidContainer ()
+        : OctreeCentroidContainer<PointT, boost::blank> ()
+        {
+        }
+
+    };
+
+    /** LeafContainerTraits serves as an adapter for different leaf containers
+      * that provides a uniform interface for point insertion.
+      *
+      * Various containers may or may not store points and/or their indices, so
+      * their functions for point insertion have different signatures. This
+      * adapter provides a single insert() function that takes leaf container,
+      * point index, and point value, and calls appropriate insert function of
+      * the container forwarding arguments as needed. Example usage:
+      *
+      * \code
+      * int idx;
+      * PointXYZ p;
+      * OctreeIndexContainer container;
+      * LeafContainerTraits<OctreeIndexContainer>::insert (container, idx, p);
+      * \endcode
+      *
+      * This traits structure has to be specialized for each leaf container
+      * type. Note that it is not necessary to specialize for a container that
+      * derives from a container that already has a specialization. */
+    template <typename LeafContainerT, typename Enable = void>
+    struct LeafContainerTraits;
+
+    template<typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeEmptyContainer
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT&, int, const PointT&)
+      {
+      }
+    };
+
+    template<typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeIndicesContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int idx, const PointT&)
+      {
+        container.insertPointIndex (idx);
+      }
+    };
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeIndexContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int idx, const PointT&)
+      {
+        container.insertPointIndex (idx);
+      }
+    };
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeDensityContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int, const PointT&)
+      {
+        container.insertPoint ();
+      }
+    };
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeCentroidContainer<
+                                     typename LeafContainerT::point_type
+                                   , typename LeafContainerT::data_type
+                                   >
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      static void insert (LeafContainerT& container, int, const typename LeafContainerT::point_type& point)
+      {
+        container.insertPoint (point);
+      }
+    };
 
   }
+
 }
 
 #endif
+

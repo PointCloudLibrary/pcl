@@ -44,6 +44,7 @@
 #include <pcl/octree/octree2buf_base.h>
 #include <pcl/octree/octree_iterator.h>
 #include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree_container.h>
 
 #include <pcl/octree/octree_pointcloud_density.h>
 #include <pcl/octree/octree_pointcloud_occupancy.h>

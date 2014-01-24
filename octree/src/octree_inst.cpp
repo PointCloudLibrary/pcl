@@ -46,15 +46,15 @@ template class PCL_EXPORTS pcl::octree::Octree2BufBase<int>;
 
 template class PCL_EXPORTS pcl::octree::OctreeBase<
     pcl::octree::OctreeContainerPointIndices,
-    pcl::octree::OctreeContainerEmpty >;
+    pcl::octree::OctreeEmptyContainer >;
 
 template class PCL_EXPORTS pcl::octree::Octree2BufBase<
     pcl::octree::OctreeContainerPointIndices,
-    pcl::octree::OctreeContainerEmpty >;
+    pcl::octree::OctreeEmptyContainer >;
     
 template class PCL_EXPORTS pcl::octree::OctreeBase<
-    pcl::octree::OctreeContainerEmpty,
-    pcl::octree::OctreeContainerEmpty >;
+    pcl::octree::OctreeEmptyContainer,
+    pcl::octree::OctreeEmptyContainer >;
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>

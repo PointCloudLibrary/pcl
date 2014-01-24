@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -45,69 +46,6 @@ namespace pcl
 {
   namespace octree
   {
-    /** \brief @b Octree pointcloud density leaf node class
-      * \note This class implements a leaf node that counts the amount of points which fall into its voxel space.
-      * \author Julius Kammerl (julius@kammerl.de)
-      */
-    class OctreePointCloudDensityContainer : public OctreeContainerBase
-    {
-      public:
-        /** \brief Class initialization. */
-        OctreePointCloudDensityContainer () : point_counter_ (0)
-        {
-        }
-
-        /** \brief Empty class deconstructor. */
-        virtual ~OctreePointCloudDensityContainer ()
-        {
-        }
-
-        /** \brief deep copy function */
-        virtual OctreePointCloudDensityContainer *
-        deepCopy () const
-        {
-          return (new OctreePointCloudDensityContainer (*this));
-        }
-
-        /** \brief Equal comparison operator
-         * \param[in] other OctreePointCloudDensityContainer to compare with
-         */
-        virtual bool operator==(const OctreeContainerBase& other) const
-        {
-          const OctreePointCloudDensityContainer* otherContainer =
-              dynamic_cast<const OctreePointCloudDensityContainer*>(&other);
-
-          return (this->point_counter_==otherContainer->point_counter_);
-        }
-
-        /** \brief Read input data. Only an internal counter is increased.
-          */
-        void
-        addPointIndex (int)
-        {
-          point_counter_++;
-        }
-
-        /** \brief Return point counter.
-          * \return Amount of points
-          */
-        unsigned int
-        getPointCounter ()
-        {
-          return (point_counter_);
-        }
-
-        /** \brief Reset leaf node. */
-        virtual void
-        reset ()
-        {
-          point_counter_ = 0;
-        }
-
-      private:
-        unsigned int point_counter_;
-
-    };
 
     /** \brief @b Octree pointcloud density class
       * \note This class generate an octrees from a point cloud (zero-copy). Only the amount of points that fall into the leaf node voxel are stored.
@@ -117,16 +55,21 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafContainerT = OctreePointCloudDensityContainer, typename BranchContainerT = OctreeContainerEmpty >
+    template<typename PointT,
+             typename LeafContainerT = OctreeDensityContainer<>,
+             typename BranchContainerT = OctreeEmptyContainer>
     class OctreePointCloudDensity : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
+
       public:
 
-      /** \brief OctreePointCloudDensity class constructor.
+        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
+
+        /** \brief OctreePointCloudDensity class constructor.
          *  \param resolution_arg:  octree resolution at lowest octree level
          * */
-        OctreePointCloudDensity (const double resolution_arg) :
-        OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution_arg)
+        OctreePointCloudDensity (const double resolution_arg)
+        : OctreeT (resolution_arg)
         {
         }
 
@@ -143,15 +86,10 @@ namespace pcl
         unsigned int
         getVoxelDensityAtPoint (const PointT& point_arg) const
         {
-          unsigned int point_count = 0;
-
-          OctreePointCloudDensityContainer* leaf = this->findLeafAtPoint (point_arg);
-
-          if (leaf)
-            point_count = leaf->getPointCounter ();
-
-          return (point_count);
+          LeafContainerT* leaf = this->findLeafAtPoint (point_arg);
+          return (leaf ? leaf->getSize () : 0);
         }
+
     };
   }
 }

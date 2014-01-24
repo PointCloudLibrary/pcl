@@ -57,8 +57,8 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
-             typename LeafContainerT = OctreeContainerPointIndices,
-             typename BranchContainerT = OctreeContainerEmpty,
+             typename LeafContainerT = OctreeIndicesContainer<>,
+             typename BranchContainerT = OctreeEmptyContainer,
              typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
     class OctreePointCloudPointVector : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     {

@@ -97,8 +97,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     //t_getLeaf += timer_.getTime () - t_temp;
     
     //t_temp = timer_.getTime ();
-    //Run the leaf's compute function
-    leaf_container->computeData ();
     //t_compute += timer_.getTime () - t_temp;
      
     //t_temp = timer_.getTime ();
@@ -158,13 +156,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
-pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::addPointIdx (const int pointIdx_arg)
+pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::addPointIdx (const int index_arg)
 {
   OctreeKey key;
   
-  assert (pointIdx_arg < static_cast<int> (this->input_->points.size ()));
+  assert (index_arg < static_cast<int> (this->input_->points.size ()));
   
-  const PointT& point = this->input_->points[pointIdx_arg];
+  const PointT& point = this->input_->points[index_arg];
   if (!pcl::isFinite (point))
     return;
    
@@ -172,7 +170,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   this->genOctreeKeyforPoint (point, key);
   // add point to octree at key
   LeafContainerT* container = this->createLeaf(key);
-  container->addPoint (point);
+  //container->insert (index_arg, point);
+  LeafContainerTraits<LeafContainerT>::insert (*container, index_arg, point);
+  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -44,7 +44,7 @@
 #include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
 #include <pcl/octree/octree_impl.h>
-#include <pcl/octree/octree_pointcloud_adjacency_container.h>
+#include <pcl/octree/octree_container.h>
 
 #include <set>
 #include <list>
@@ -63,7 +63,7 @@ namespace pcl
       * This pointcloud octree class generates an octree from a point cloud (zero-copy). The octree pointcloud is
       * initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
       *
-      * The OctreePointCloudAdjacencyContainer class can be used to store data in leaf nodes.
+      * The OctreeAdjacencyContainer class can be used to store data in leaf nodes.
       *
       * An optional transform function can be provided which changes how the voxel grid is computed - this can be used to,
       * for example, make voxel bins larger as they increase in distance from the origin (camera).
@@ -79,8 +79,8 @@ namespace pcl
       * \author Jeremie Papon (jpapon@gmail.com) */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename PointT,
-              typename LeafContainerT = OctreePointCloudAdjacencyContainer<PointT>,
-              typename BranchContainerT = OctreeContainerEmpty>
+              typename LeafContainerT = OctreeAdjacencyContainer<>,
+              typename BranchContainerT = OctreeEmptyContainer >
     class OctreePointCloudAdjacency : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
 

@@ -54,7 +54,9 @@ namespace pcl
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
-    template<typename PointT, typename LeafContainerT = OctreeContainerPointIndices ,  typename BranchContainerT = OctreeContainerEmpty >
+    template<typename PointT,
+             typename LeafContainerT = OctreeIndicesContainer<>,
+             typename BranchContainerT = OctreeEmptyContainer >
     class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
       public:

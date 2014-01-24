@@ -125,7 +125,7 @@ namespace pcl
     class SupervoxelHelper;
     friend class SupervoxelHelper;
     public:
-      /** \brief VoxelData is a structure used for storing data within a pcl::octree::OctreePointCloudAdjacencyContainer
+      /** \brief VoxelData is a structure used for storing data within a pcl::octree::OctreeAdjacencyContainer
        *  \note It stores xyz, rgb, normal, distance, an index, and an owner.
        */
       class VoxelData
@@ -136,6 +136,7 @@ namespace pcl
             rgb_ (0.0f, 0.0f, 0.0f),
             normal_ (0.0f, 0.0f, 0.0f, 0.0f),
             curvature_ (0.0f),
+            num_points_ (0),
             owner_ (0)
             {}
             
@@ -157,13 +158,15 @@ namespace pcl
           float curvature_;
           float distance_;
           int idx_;
+          int num_points_;
           SupervoxelHelper* owner_;
           
         public:
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
       
-      typedef pcl::octree::OctreePointCloudAdjacencyContainer<PointT, VoxelData> LeafContainerT;
+      typedef pcl::octree::OctreeCentroidContainer <PointT, VoxelData> OctreeCentroidT;
+      typedef pcl::octree::OctreeAdjacencyContainer<OctreeCentroidT> LeafContainerT;
       typedef std::vector <LeafContainerT*> LeafVectorT;
       
       typedef typename pcl::PointCloud<PointT> PointCloudT;

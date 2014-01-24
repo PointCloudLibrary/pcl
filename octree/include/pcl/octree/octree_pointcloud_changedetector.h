@@ -57,8 +57,8 @@ namespace pcl
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
-        typename LeafContainerT = OctreeContainerPointIndices,
-        typename BranchContainerT = OctreeContainerEmpty >
+             typename LeafContainerT = OctreeIndicesContainer<>,
+             typename BranchContainerT = OctreeEmptyContainer >
 
     class OctreePointCloudChangeDetector : public OctreePointCloud<PointT,
         LeafContainerT, BranchContainerT, Octree2BufBase<LeafContainerT, BranchContainerT> >
@@ -90,15 +90,15 @@ namespace pcl
             const int minPointsPerLeaf_arg = 0)
         {
 
-          std::vector<OctreeContainerPointIndices*> leaf_containers;
+          std::vector<LeafContainerT*> leaf_containers;
           this->serializeNewLeafs (leaf_containers);
 
-          std::vector<OctreeContainerPointIndices*>::iterator it;
-          std::vector<OctreeContainerPointIndices*>::const_iterator it_end = leaf_containers.end();
+          typename std::vector<LeafContainerT*>::iterator it;
+          typename std::vector<LeafContainerT*>::const_iterator it_end = leaf_containers.end();
 
           for (it=leaf_containers.begin(); it!=it_end; ++it)
           {
-            if ((*it)->getSize()>=minPointsPerLeaf_arg)
+            if (static_cast<int> ((*it)->getSize()) >= minPointsPerLeaf_arg)
               (*it)->getPointIndices(indicesVector_arg);
           }
 

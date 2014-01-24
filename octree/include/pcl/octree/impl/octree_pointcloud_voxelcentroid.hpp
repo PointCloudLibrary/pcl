@@ -34,7 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: octree_pointcloud_voxelcentroid.hpp 6459 2012-07-18 07:50:37Z dpb $
  */
 
 #ifndef PCL_OCTREE_VOXELCENTROID_HPP
@@ -57,8 +56,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 
   if (leaf)
   {
-    LeafContainerT* container = leaf;
-    container->getCentroid (voxel_centroid_arg);
+    leaf->getCentroid (voxel_centroid_arg);
   }
 
   return (leaf != 0);
@@ -67,7 +65,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> size_t
 pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContainerT>::getVoxelCentroids (
-    typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const
+    typename OctreeT::AlignedPointTVector &voxel_centroid_list_arg) const
 {
   OctreeKey new_key;
 
@@ -85,7 +83,7 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
 pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContainerT>::getVoxelCentroidsRecursive (
     const BranchNode* branch_arg, OctreeKey& key_arg,
-    typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::AlignedPointTVector &voxel_centroid_list_arg) const
+    typename OctreeT::AlignedPointTVector &voxel_centroid_list_arg) const
 {
   // child iterator
   unsigned char child_idx;
@@ -113,9 +111,9 @@ pcl::octree::OctreePointCloudVoxelCentroid<PointT, LeafContainerT, BranchContain
         {
           PointT new_centroid;
 
-          LeafNode* container = static_cast<LeafNode*> (child_node);
+          LeafNode* node = static_cast<LeafNode*> (child_node);
 
-          container->getContainer().getCentroid (new_centroid);
+          node->getContainer().getCentroid (new_centroid);
 
           voxel_centroid_list_arg.push_back (new_centroid);
           break;
