@@ -59,7 +59,7 @@ if(build)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs} ${visualization_incs})
     #PCL_ADD_SSE_FLAGS("${LIB_NAME}")
-    target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization "${Boost_SYSTEM_LIBRARY}")
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_visualization ${Boost_SYSTEM_LIBRARY})
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     # Install include files
