@@ -39,10 +39,28 @@ function doc ()
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $PCL_DIR
+
+  git config --global user.email "documentation@pointclouds.org"
+  git config --global user.name "PointCloudLibrary (via TravisCI)"
+
+  if [ -z "$id_rsa_{1..23}" ]; then echo 'No $id_rsa_{1..23} found !' ; exit 1; fi
+
+  echo -n $id_rsa_{1..23} >> ~/.ssh/travis_rsa_64
+  base64 --decode --ignore-garbage ~/.ssh/travis_rsa_64 > ~/.ssh/id_rsa
+
+  chmod 600 ~/.ssh/id_rsa
+
+  echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+
+  cd $DOC_DIR
+  git clone git@github.com:PointCloudLibrary/documentation.git .
+  cd $BUILD_DIR
+
   # Generate documentation
   make doc
-  # Do something with the generated documentation in $DOC_DIR
-  # Upload via ftp?
+  cd $DOC_DIR
+  git commit -a -m "adding $TRAVIS_COMMIT"
+  git push
 }
 
 case $TASK in
