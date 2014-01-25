@@ -1,4 +1,8 @@
-find_package(Sphinx)
+option(WITH_TUTORIALS "Build tutorials (requires Sphinx)" TRUE)
+if(WITH_TUTORIALS)
+  find_package(Sphinx)
+endif(WITH_TUTORIALS)
+
 if(SPHINX_FOUND)
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html")
   if(WIN32)
