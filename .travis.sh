@@ -33,7 +33,7 @@ function test ()
 function doc ()
 {
   # Do not generate documentation for pull requests
-  if [[ $TRAVIS_PULL_REQUEST ]]; then exit; fi
+  if [[ $TRAVIS_PULL_REQUEST == 'false' ]]; then exit; fi
   # Install doxygen and graphviz
   sudo apt-get install doxygen graphviz
   # Configure
