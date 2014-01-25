@@ -312,7 +312,7 @@ struct CurrentFrameCloudView
 
     cloud_viewer_.setBackgroundColor (0, 0, 0.15);
     cloud_viewer_.setPointCloudRenderingProperties (visualization::PCL_VISUALIZER_POINT_SIZE, 1);
-    cloud_viewer_.addCoordinateSystem (1.0);
+    cloud_viewer_.addCoordinateSystem (1.0, "global");
     cloud_viewer_.initCameraParameters ();
     cloud_viewer_.setPosition (0, 500);
     cloud_viewer_.setSize (640, 480);
@@ -467,7 +467,7 @@ struct SceneCloudView
         cloud_viewer_ = pcl::visualization::PCLVisualizer::Ptr( new pcl::visualization::PCLVisualizer("Scene Cloud Viewer") );
 
         cloud_viewer_->setBackgroundColor (0, 0, 0);
-        cloud_viewer_->addCoordinateSystem (1.0);
+        cloud_viewer_->addCoordinateSystem (1.0, "global");
         cloud_viewer_->initCameraParameters ();
         cloud_viewer_->setPosition (0, 500);
         cloud_viewer_->setSize (640, 480);
