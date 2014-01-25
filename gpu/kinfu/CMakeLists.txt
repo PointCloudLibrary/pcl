@@ -1,7 +1,7 @@
 set(SUBSYS_NAME gpu_kinfu)
 set(SUBSYS_PATH gpu/kinfu)
 set(SUBSYS_DESC "Kinect Fusion implementation")
-set(SUBSYS_DEPS common io gpu_containers geometry search)
+set(SUBSYS_DEPS common io gpu_containers geometry search visualization)
 
 set(build FALSE)
 
