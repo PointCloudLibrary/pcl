@@ -9,6 +9,7 @@ matrix:
   include:
     - compiler: clang
       env: TASK="test"
+    - env: TASK="doc"
 before_install:
   - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
   - sudo add-apt-repository ppa:apokluda/boost1.53 -y

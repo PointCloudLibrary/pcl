@@ -30,7 +30,23 @@ function test ()
   make tests -j3
 }
 
+function doc ()
+{
+  # Do not generate documentation for pull requests
+  if [[ $TRAVIS_PULL_REQUEST ]]; then exit; fi
+  # Install doxygen and graphviz
+  sudo apt-get install doxygen graphviz
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake $PCL_DIR
+  # Generate documentation
+  make doc
+  # Do something with the generated documentation in $DOC_DIR
+  # Upload via ftp?
+}
+
 case $TASK in
   build ) build;;
   test ) test;;
+  doc ) doc;;
 esac
