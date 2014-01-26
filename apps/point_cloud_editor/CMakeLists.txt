@@ -92,7 +92,6 @@ IF(BUILD)
 
   INCLUDE_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}"
                       "${CMAKE_CURRENT_SOURCE_DIR}/include"
-                      "${QT_QT_INCLUDE_DIR}"
                       "${QT_QTOPENGL_INCLUDE_DIR}"
 		      )
 
