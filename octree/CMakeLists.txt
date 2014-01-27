@@ -42,6 +42,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_voxelcentroid.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_adjacency.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_adjacency_container.hpp"
         )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
