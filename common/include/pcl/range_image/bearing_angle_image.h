@@ -72,7 +72,7 @@ namespace pcl
         * \measurement points.
         */
       double
-      getAngle (PointXYZ point1, PointXYZ point2);
+      getAngle (const PointXYZ &point1, const PointXYZ &point2);
 
       /** \brief Transform 3D point cloud into a 2D Bearing Angle(BA) image */
       void

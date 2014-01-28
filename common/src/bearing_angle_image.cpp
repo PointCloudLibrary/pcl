@@ -70,7 +70,7 @@ BearingAngleImage::reset ()
 
 /////////////////////////////////////////////////////////
 double
-BearingAngleImage::getAngle (PointXYZ point1, PointXYZ point2)
+BearingAngleImage::getAngle (const PointXYZ &point1, const PointXYZ &point2)
 {
   double a, b, c;
   double theta;
