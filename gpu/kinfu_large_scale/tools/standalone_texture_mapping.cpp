@@ -339,7 +339,7 @@ void showCameras (pcl::texture_mapping::CameraVector cams, pcl::PointCloud<pcl::
   }
   
   // add a coordinate system
-  visu.addCoordinateSystem (1.0);
+  visu.addCoordinateSystem (1.0, "global");
   
   // add the mesh's cloud (colored on Z axis)
   pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloud, "z");
