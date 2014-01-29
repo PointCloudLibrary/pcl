@@ -807,8 +807,8 @@ make sense to try to use explicit instantiations for your `MyPointType` types,
 for any classes that you expose (from PCL our outside PCL).
 
 .. note::
-Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
-any PCL headers to include the templated algorithms as well.
+   Starting with PCL-1.7 you need to define PCL_NO_PRECOMPILE before you include
+   any PCL headers to include the templated algorithms as well.
 
 Example
 -------

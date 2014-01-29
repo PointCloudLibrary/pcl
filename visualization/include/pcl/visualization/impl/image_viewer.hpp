@@ -388,7 +388,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   setSize (source_img.width + target_img.width , std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < (src_size + tgt_size))
+  if (data_size_ < static_cast<size_t> (src_size + tgt_size))
   {
     data_size_ = src_size + tgt_size;
     data_.reset (new unsigned char[data_size_]);

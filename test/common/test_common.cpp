@@ -298,6 +298,72 @@ TEST (PCL, PointTypes)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+template <typename T> class XYZPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
+TYPED_TEST(XYZPointTypesTest, GetVectorXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getVector3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getVector4fMap () (i));
+}
+
+TYPED_TEST(XYZPointTypesTest, GetArrayXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getArray3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data[i], &pt.getArray4fMap () (i));
+}
+
+template <typename T> class NormalPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_NORMAL_POINT_TYPES)> NormalPointTypes;
+TYPED_TEST_CASE(NormalPointTypesTest, NormalPointTypes);
+TYPED_TEST(NormalPointTypesTest, GetNormalVectorXfMap)
+{
+  TypeParam pt;
+  for (size_t i = 0; i < 3; ++i)
+    EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector3fMap () (i));
+  for (size_t i = 0; i < 4; ++i)
+    EXPECT_EQ (&pt.data_n[i], &pt.getNormalVector4fMap () (i));
+}
+
+template <typename T> class RGBPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_RGB_POINT_TYPES)> RGBPointTypes;
+TYPED_TEST_CASE(RGBPointTypesTest, RGBPointTypes);
+TYPED_TEST(RGBPointTypesTest, GetRGBVectorXi)
+{
+  TypeParam pt; pt.r = 1; pt.g = 2; pt.b = 3; pt.a = 4;
+  EXPECT_EQ (pt.r, pt.getRGBVector3i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBVector3i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBVector3i () (2));
+  EXPECT_EQ (pt.r, pt.getRGBVector4i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBVector4i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBVector4i () (2));
+  EXPECT_EQ (pt.a, pt.getRGBVector4i () (3));
+  EXPECT_EQ (pt.r, pt.getRGBAVector4i () (0));
+  EXPECT_EQ (pt.g, pt.getRGBAVector4i () (1));
+  EXPECT_EQ (pt.b, pt.getRGBAVector4i () (2));
+  EXPECT_EQ (pt.a, pt.getRGBAVector4i () (3));
+}
+
+TYPED_TEST(RGBPointTypesTest, GetBGRVectorXcMap)
+{
+  TypeParam pt;
+  EXPECT_EQ (&pt.b, &pt.getBGRVector3cMap () (0));
+  EXPECT_EQ (&pt.g, &pt.getBGRVector3cMap () (1));
+  EXPECT_EQ (&pt.r, &pt.getBGRVector3cMap () (2));
+  EXPECT_EQ (&pt.b, &pt.getBGRAVector4cMap () (0));
+  EXPECT_EQ (&pt.g, &pt.getBGRAVector4cMap () (1));
+  EXPECT_EQ (&pt.r, &pt.getBGRAVector4cMap () (2));
+  EXPECT_EQ (&pt.a, &pt.getBGRAVector4cMap () (3));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Intersections)
 {
   Eigen::VectorXf zline (6), yline (6);
@@ -1138,6 +1204,37 @@ TEST (PCL, IsSamePointType)
   EXPECT_FALSE (status);
   status = isSamePointType<PointXYZRGBA, PointXYZRGB> ();
   EXPECT_FALSE (status);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, HasField)
+{
+  // has_field
+  EXPECT_TRUE ((pcl::traits::has_field<pcl::Normal, pcl::fields::curvature>::value));
+  EXPECT_FALSE ((pcl::traits::has_field<pcl::PointXYZ, pcl::fields::curvature>::value));
+  // has_all_fields
+  EXPECT_TRUE ((pcl::traits::has_all_fields<pcl::PointXYZRGB, boost::mpl::vector<pcl::fields::x, pcl::fields::rgb> >::value));
+  EXPECT_FALSE ((pcl::traits::has_all_fields<pcl::PointXYZ, boost::mpl::vector<pcl::fields::x, pcl::fields::rgb> >::value));
+  // has_any_field
+  EXPECT_TRUE ((pcl::traits::has_any_field<pcl::PointXYZ, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  EXPECT_TRUE ((pcl::traits::has_any_field<pcl::Normal, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  EXPECT_FALSE ((pcl::traits::has_any_field<pcl::RGB, boost::mpl::vector<pcl::fields::x, pcl::fields::normal_x> >::value));
+  // has_xyz
+  EXPECT_TRUE ((pcl::traits::has_xyz<pcl::PointXYZ>::value));
+  EXPECT_FALSE ((pcl::traits::has_xyz<pcl::Normal>::value));
+  // has_normal
+  EXPECT_TRUE ((pcl::traits::has_normal<pcl::PointNormal>::value));
+  EXPECT_FALSE ((pcl::traits::has_normal<pcl::PointXYZ>::value));
+  // has_curvature
+  EXPECT_TRUE ((pcl::traits::has_curvature<pcl::PointNormal>::value));
+  EXPECT_FALSE ((pcl::traits::has_curvature<pcl::RGB>::value));
+  // has_color
+  EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGB>::value));
+  EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGBA>::value));
+  EXPECT_FALSE ((pcl::traits::has_color<pcl::PointXYZ>::value));
+  // has_label
+  EXPECT_TRUE ((pcl::traits::has_label<pcl::PointXYZL>::value));
+  EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
 }
 
 /* ---[ */

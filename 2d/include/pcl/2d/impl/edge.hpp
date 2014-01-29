@@ -216,7 +216,7 @@ pcl::Edge<PointInT, PointOutT>::cannyTraceEdge (
   int newCol = col + colOffset;
   PointXYZI &pt = maxima (newCol, newRow);
 
-  if (newRow > 0 && newRow < maxima.height && newCol > 0 && newCol < maxima.width)
+  if (newRow > 0 && newRow < static_cast<int> (maxima.height) && newCol > 0 && newCol < static_cast<int> (maxima.width))
   {
     if (pt.intensity == 0.0f || pt.intensity == std::numeric_limits<float>::max ())
       return;
@@ -481,9 +481,6 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeLoG (
     pcl::PointCloud<PointOutT> &output)
 {
   convolution_.setInputCloud (input_);
-
-  const int height = input_->height;
-  const int width = input_->width;
 
   pcl::PointCloud<PointXYZI>::Ptr log_kernel (new pcl::PointCloud<PointXYZI>);
   kernel_.setKernelType (kernel<PointXYZI>::LOG);

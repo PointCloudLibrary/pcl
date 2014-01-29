@@ -350,7 +350,7 @@ namespace pcl
    *  \param[in] focal the focal length
    *  \param[out] out the output pointcloud
    *  **/
-  void
+  inline void
   PointCloudDepthAndRGBtoXYZRGBA (PointCloud<Intensity>&  depth,
                                   PointCloud<RGB>&        image,
                                   float&                  focal,

@@ -1,4 +1,8 @@
-find_package(Sphinx)
+option(WITH_TUTORIALS "Build tutorials (requires Sphinx)" TRUE)
+if(WITH_TUTORIALS)
+  find_package(Sphinx)
+endif(WITH_TUTORIALS)
+
 if(SPHINX_FOUND)
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html")
   if(WIN32)
@@ -8,8 +12,8 @@ if(SPHINX_FOUND)
   endif()
   file(TO_CMAKE_PATH "${TMPDIR}" TMPDIR)
   add_custom_target(Tutorials 
-                    COMMAND ${CMAKE_COMMAND} -E remove_directory "${TMPDIR}/doctrees"
-                    COMMAND ${SPHINX_EXECUTABLE} -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/content" html
+                    COMMAND "${CMAKE_COMMAND}" -E remove_directory "${TMPDIR}/doctrees"
+                    COMMAND "${SPHINX_EXECUTABLE}" -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/content" html
                     )
   if(USE_PROJECT_FOLDERS)
     set_target_properties(Tutorials PROPERTIES FOLDER "Documentation")

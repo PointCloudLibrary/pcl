@@ -3,14 +3,14 @@ set(SUBSYS_DESC "Point cloud IO library")
 set(SUBSYS_DEPS common octree)
 
 set(build TRUE)
-PCL_SUBSYS_OPTION(build ${SUBSYS_NAME} ${SUBSYS_DESC} ON)
+PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS} OPT_DEPS openni pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni pcap png vtk libusb-1.0)
 endif(WIN32)
 
-PCL_ADD_DOC(${SUBSYS_NAME})
+PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
@@ -90,14 +90,14 @@ if(build)
     endif(LIBUSB_1_FOUND)
 
     if (VTK_FOUND AND NOT ANDROID)
-        set(VTK_USE_FILE ${VTK_USE_FILE} CACHE INTERNAL "VTK_USE_FILE")
-        include (${VTK_USE_FILE})
+        set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
+        include("${VTK_USE_FILE}")
         set(VTK_IO_INCLUDES 
-            include/pcl/${SUBSYS_NAME}/vtk_lib_io.h
-            include/pcl/${SUBSYS_NAME}/png_io.h 
+            "include/pcl/${SUBSYS_NAME}/vtk_lib_io.h"
+            "include/pcl/${SUBSYS_NAME}/png_io.h"
            )
         set(VTK_IO_INCLUDES_IMPL
-            include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp
+            "include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp"
            )
         set(VTK_IO_SOURCE 
             src/vtk_lib_io.cpp
@@ -110,13 +110,13 @@ if(build)
 
     set(PLY_SOURCES src/ply/ply_parser.cpp)
     set(PLY_INCLUDES 
-        include/pcl/${SUBSYS_NAME}/ply/byte_order.h
-        include/pcl/${SUBSYS_NAME}/ply/io_operators.h
-        include/pcl/${SUBSYS_NAME}/ply/ply.h
-        include/pcl/${SUBSYS_NAME}/ply/ply_parser.h
+        "include/pcl/${SUBSYS_NAME}/ply/byte_order.h"
+        "include/pcl/${SUBSYS_NAME}/ply/io_operators.h"
+        "include/pcl/${SUBSYS_NAME}/ply/ply.h"
+        "include/pcl/${SUBSYS_NAME}/ply/ply_parser.h"
        )
-    PCL_ADD_LIBRARY(pcl_io_ply ${SUBSYS_NAME} ${PLY_SOURCES} ${PLY_INCLUDES})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/ply ${PLY_INCLUDES})
+    PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}" ${PLY_SOURCES} ${PLY_INCLUDES})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 
     set(srcs 
         src/debayer.cpp
@@ -141,8 +141,7 @@ if(build)
         src/file_io.cpp
         )
     if(PNG_FOUND)
-      set(srcs
-          ${srcs}
+      list(APPEND srcs
           src/libpng_wrapper.cpp
           )
     endif(PNG_FOUND)
@@ -154,27 +153,27 @@ if(build)
 	endif(PCAP_FOUND)
 
     set(incs 
-        include/pcl/${SUBSYS_NAME}/boost.h
-        include/pcl/${SUBSYS_NAME}/eigen.h
-        include/pcl/${SUBSYS_NAME}/debayer.h
-        include/pcl/${SUBSYS_NAME}/file_io.h
-        include/pcl/${SUBSYS_NAME}/lzf.h
-        include/pcl/${SUBSYS_NAME}/lzf_image_io.h
-        include/pcl/${SUBSYS_NAME}/io.h
-        include/pcl/${SUBSYS_NAME}/grabber.h
-        include/pcl/${SUBSYS_NAME}/file_grabber.h
-        include/pcl/${SUBSYS_NAME}/pcd_grabber.h
-        include/pcl/${SUBSYS_NAME}/pcd_io.h
-        include/pcl/${SUBSYS_NAME}/vtk_io.h
-        include/pcl/${SUBSYS_NAME}/ply_io.h
-        include/pcl/${SUBSYS_NAME}/tar.h
-        include/pcl/${SUBSYS_NAME}/obj_io.h
-        include/pcl/${SUBSYS_NAME}/ascii_io.h
-        include/pcl/${SUBSYS_NAME}/ifs_io.h
-        include/pcl/${SUBSYS_NAME}/image_grabber.h 
-        include/pcl/${SUBSYS_NAME}/hdl_grabber.h
-        include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h
-        include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h
+        "include/pcl/${SUBSYS_NAME}/boost.h"
+        "include/pcl/${SUBSYS_NAME}/eigen.h"
+        "include/pcl/${SUBSYS_NAME}/debayer.h"
+        "include/pcl/${SUBSYS_NAME}/file_io.h"
+        "include/pcl/${SUBSYS_NAME}/lzf.h"
+        "include/pcl/${SUBSYS_NAME}/lzf_image_io.h"
+        "include/pcl/${SUBSYS_NAME}/io.h"
+        "include/pcl/${SUBSYS_NAME}/grabber.h"
+        "include/pcl/${SUBSYS_NAME}/file_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/pcd_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/pcd_io.h"
+        "include/pcl/${SUBSYS_NAME}/vtk_io.h"
+        "include/pcl/${SUBSYS_NAME}/ply_io.h"
+        "include/pcl/${SUBSYS_NAME}/tar.h"
+        "include/pcl/${SUBSYS_NAME}/obj_io.h"
+        "include/pcl/${SUBSYS_NAME}/ascii_io.h"
+        "include/pcl/${SUBSYS_NAME}/ifs_io.h"
+        "include/pcl/${SUBSYS_NAME}/image_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
@@ -190,79 +189,76 @@ if(build)
         include/pcl/compression/point_coding.h
        )
     if(PNG_FOUND)
-      set(compression_incs
-          ${compression_incs}
+      list(APPEND compression_incs
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
       if(OPENNI_FOUND)
-        set(compression_incs
-          ${compression_incs}
+        list(APPEND compression_incs
           include/pcl/compression/organized_pointcloud_compression.h
           )
       endif(OPENNI_FOUND)
     endif(PNG_FOUND)
 
     set(impl_incs 
-        include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp
-        include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp
-        include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp
-        include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp
+        "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp"
         include/pcl/compression/impl/entropy_range_coder.hpp
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
        )
     if(PNG_FOUND AND OPENNI_FOUND)
-     set(impl_incs
-         ${impl_incs}
+     list(APPEND impl_incs
          include/pcl/compression/impl/organized_pointcloud_compression.hpp
         )
     endif(PNG_FOUND AND OPENNI_FOUND)
 
-    set(LIB_NAME pcl_${SUBSYS_NAME})
+    set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${VTK_INCLUDE_DIRECTORIES})
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES})
     add_definitions(${VTK_DEFINES})
-    PCL_ADD_LIBRARY(${LIB_NAME} ${SUBSYS_NAME} ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
+    PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries(${LIB_NAME} pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
     if(PNG_FOUND)
-      target_link_libraries(${LIB_NAME} ${PNG_LIBRARY})
+      target_link_libraries("${LIB_NAME}" "${PNG_LIBRARY}")
     endif(PNG_FOUND)
 
     if(LIBUSB_1_FOUND)
-      target_link_libraries(${LIB_NAME} ${LIBUSB_1_LIBRARIES})
+      target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
     endif(LIBUSB_1_FOUND)
 
     if(OPENNI_FOUND)
-      target_link_libraries(${LIB_NAME} ${OPENNI_LIBRARIES})
+      target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
 	
     if(FZAPI_FOUND)
-      target_link_libraries(${LIB_NAME} ${FZAPI_LIBS})
+      target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
 	  if(WIN32)
-		target_link_libraries(${LIB_NAME} Version.lib)
+		target_link_libraries("${LIB_NAME}" Version.lib)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
 	
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})
-	  target_link_libraries(${LIB_NAME} ${PXCAPI_LIBS})
+	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
 	endif(PXCAPI_FOUND)
     
     if (PCAP_FOUND)
-      target_link_libraries(${LIB_NAME} ${PCAP_LIBRARIES})
+      target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
     endif(PCAP_FOUND)
 
     set(EXT_DEPS eigen3)
-    PCL_MAKE_PKGCONFIG(${LIB_NAME} ${SUBSYS_NAME} "${SUBSYS_DESC}"
+    PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
     # Install include files
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME} ${incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} compression ${compression_incs})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/openni_camera ${OPENNI_INCLUDES})
-    PCL_ADD_INCLUDES(${SUBSYS_NAME} ${SUBSYS_NAME}/impl ${impl_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" compression ${compression_incs})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni_camera" ${OPENNI_INCLUDES})
+    PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
                 
     add_subdirectory(tools)
 

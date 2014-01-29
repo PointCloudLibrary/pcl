@@ -278,8 +278,17 @@ namespace pcl
           * \param[in] scale the scale of the axes (default: 1)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
+        PCL_DEPRECATED (void addCoordinateSystem (double scale, int viewport = 0),
+        "addCoordinateSystem (scale, viewport) is deprecated, please use function "
+        "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.");
+
+        /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
+          * \param[in] scale the scale of the axes (default: 1)
+          * \param[in] id the coordinate system object id (default: reference)
+          * \param[in] viewport the view port where the 3D axes should be added (default: all)
+          */
         void
-        addCoordinateSystem (double scale = 1.0, int viewport = 0);
+        addCoordinateSystem (double scale = 1.0, const std::string& id = "reference", int viewport = 0);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -288,13 +297,36 @@ namespace pcl
           * \param[in] z the Z position of the axes
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
+        PCL_DEPRECATED (void addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0),
+        "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
+        "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.");
+
+        /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
+          * \param[in] scale the scale of the axes (default: 1)
+          * \param[in] x the X position of the axes
+          * \param[in] y the Y position of the axes
+          * \param[in] z the Z position of the axes
+          * \param[in] id the coordinate system object id (default: reference)
+          * \param[in] viewport the view port where the 3D axes should be added (default: all)
+          */
         void
-        addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
+        addCoordinateSystem (double scale, float x, float y, float z, const std::string &id = "reference", int viewport = 0);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
            * \param[in] scale the scale of the axes (default: 1)
            * \param[in] t transformation matrix
+           * \param[in] viewport the view port where the 3D axes should be added (default: all)
+           */
+        PCL_DEPRECATED (void addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0),
+        "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
+        "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.");
+
+         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
+           *
+           * \param[in] scale the scale of the axes (default: 1)
+           * \param[in] t transformation matrix
+           * \param[in] id the coordinate system object id (default: reference)
            * \param[in] viewport the view port where the 3D axes should be added (default: all)
            *
            * RPY Angles
@@ -323,13 +355,21 @@ namespace pcl
            *         y
            */
         void
-        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0);
+        addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string &id = "reference", int viewport = 0);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] viewport view port where the 3D axes should be removed from (default: all)
           */
+        PCL_DEPRECATED (bool removeCoordinateSystem (int viewport = 0),
+        "removeCoordinateSystem (viewport) is deprecated, please use function "
+        "addCoordinateSystem (id, viewport) with id a unique string identifier.");
+
+        /** \brief Removes a previously added 3D axes (coordinate system)
+          * \param[in] id the coordinate system object id (default: reference)
+          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
+          */
         bool
-        removeCoordinateSystem (int viewport = 0);
+        removeCoordinateSystem (const std::string &id = "reference", int viewport = 0);
 
         /** \brief Removes a Point Cloud from screen, based on a given ID.
           * \param[in] id the point cloud object id (i.e., given on \a addPointCloud)
@@ -1769,7 +1809,7 @@ namespace pcl
         ShapeActorMapPtr shape_actor_map_;
 
         /** \brief Internal list with actor pointers and viewpoint for coordinates. */
-        CoordinateActorMap coordinate_actor_map_;
+        CoordinateActorMapPtr coordinate_actor_map_;
 
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
