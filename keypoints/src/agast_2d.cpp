@@ -260,7 +260,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
     best_input.resize (nr_max_keypoints_);
-    for (int i = 0; i < scores.size (); ++i)
+    for (size_t i = 0; i < scores.size (); ++i)
       best_input[i] = input[scores[i].idx];
     applyNonMaxSuppression (best_input, scores, output);
   }
@@ -288,7 +288,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
     // Need to copy the points
     pcl::PointCloud<pcl::PointUV> best_input;
     best_input.resize (nr_max_keypoints_);
-    for (int i = 0; i < scores.size (); ++i)
+    for (size_t i = 0; i < scores.size (); ++i)
       best_input[i] = input[scores[i].idx];
     applyNonMaxSuppression (best_input, scores, output);
   }

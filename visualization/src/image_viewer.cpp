@@ -929,6 +929,48 @@ pcl::visualization::ImageViewer::markPoint (
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::ImageViewer::markPoints (
+    const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
+    const std::string &layer_id, double opacity)
+{
+  if (uv.size () == 0)
+    return;
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
+  }
+
+  vtkSmartPointer<context_items::Markers> markers = vtkSmartPointer<context_items::Markers>::New ();
+  markers->setOpacity (opacity);
+  std::vector<float> points (uv.size ());
+  std::size_t nb_points = points.size () / 2;
+  for (std::size_t i = 0; i < nb_points; ++i)
+  {
+    std::size_t ii = 2*i;
+    points[ii] = static_cast<float> (uv[ii]);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+    points[ii] = static_cast<float> (uv[ii+1]);
+#else
+    points[ii+1] = static_cast<float> (getSize ()[1] - uv[ii+1]);
+#endif
+  }
+
+  markers->set (points);
+  markers->setSize (size);
+  markers->setColors (bg_color[0], bg_color[1], bg_color[2]);
+  markers->setPointColors (fg_color[0], fg_color[1], fg_color[2]);
+  am_it->actor->GetScene ()->AddItem (markers);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::ImageViewer::render ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))

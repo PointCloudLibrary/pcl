@@ -566,7 +566,7 @@ class ObjectSelection
 
       cloud_viewer_->addPointCloud (cloud_, "scene");
       cloud_viewer_->resetCameraViewpoint ("scene");
-      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0);
+      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0, "global");
     }
 
     /////////////////////////////////////////////////////////////////////////

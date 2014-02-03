@@ -240,7 +240,7 @@ pcl::io::LZFRGB24ImageWriter::write (const char *data,
   int ptr1 = 0,
       ptr2 = width * height,
       ptr3 = 2 * width * height;
-  for (int i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
+  for (uint32_t i = 0; i < width * height; ++i, ++ptr1, ++ptr2, ++ptr3)
   {
     rrggbb[ptr1] = data[i * 3 + 0];
     rrggbb[ptr2] = data[i * 3 + 1];

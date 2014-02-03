@@ -62,8 +62,6 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   std::ifstream fs;
   std::string line;
 
-  int specified_channel_count = 0;
-
   if (file_name == "" || !boost::filesystem::exists (file_name))
   {
     PCL_ERROR ("[pcl::IFSReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
@@ -186,9 +184,6 @@ pcl::IFSReader::read (const std::string &file_name,
   if (res < 0)
     return (res);
 
-  // Get the number of points the cloud should have
-  unsigned int nr_points = cloud.width * cloud.height;
-
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
 
@@ -239,9 +234,6 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
 
   if (res < 0)
     return (res);
-
-  // Get the number of points the mesh.cloud should have
-  unsigned int nr_points = mesh.cloud.width * mesh.cloud.height;
 
   // Setting the is_dense property to true by default
   mesh.cloud.is_dense = true;

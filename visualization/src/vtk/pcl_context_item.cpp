@@ -63,6 +63,7 @@ namespace pcl
       vtkStandardNewMacro (Points);
       vtkStandardNewMacro (Polygon);
       vtkStandardNewMacro (Text);
+      vtkStandardNewMacro (Markers);
     }
   }
 }
@@ -230,6 +231,37 @@ pcl::visualization::context_items::Text::Paint (vtkContext2D *painter)
   text_property->BoldOff ();
   text_property->ShadowOff ();
   painter->DrawString (params[0], params[1], text.c_str ());
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::context_items::Markers::setPointColors (unsigned char r, unsigned char g, unsigned char b)
+{
+  point_colors[0] = r; point_colors[1] = g; point_colors[2] = b;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::context_items::Markers::setPointColors (unsigned char rgb[3])
+{
+  memcpy (point_colors, rgb, 3 * sizeof (unsigned char));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::context_items::Markers::Paint (vtkContext2D *painter)
+{
+  int nb_points (params.size () / 2);
+  if (size <= 0)
+    size = 2.3 * painter->GetPen ()->GetWidth ();
+
+  painter->GetPen ()->SetWidth (size);
+  painter->GetPen ()->SetColor (colors);
+  painter->DrawPointSprites (0, &params[0], nb_points);
+  painter->GetPen ()->SetWidth (1);
+  painter->GetPen ()->SetColor (point_colors);
+  painter->DrawPointSprites (0, &params[0], nb_points);
   return (true);
 }
 

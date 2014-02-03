@@ -180,7 +180,7 @@ namespace pcl
                     size_t& height_arg,
                     unsigned int& channels_arg)
     {
-      int y;
+      unsigned long y;
       png_structp png_ptr;
       png_infop info_ptr;
       png_uint_32 png_width;

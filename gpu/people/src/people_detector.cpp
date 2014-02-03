@@ -100,6 +100,11 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   cloud_host_.points.resize(cols * rows);
   cloud_host_.is_dense = false;
 
+  cloud_host_color_.width = cols;
+  cloud_host_color_.height = rows;
+  cloud_host_color_.resize(cols * rows);
+  cloud_host_color_.is_dense = false;
+
   hue_host_.width  = cols;
   hue_host_.height = rows;
   hue_host_.points.resize(cols * rows);

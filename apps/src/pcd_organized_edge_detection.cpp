@@ -173,7 +173,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
 
   // Display edges in PCLVisualizer
   viewer.setSize (640, 480);
-  viewer.addCoordinateSystem (0.2f);
+  viewer.addCoordinateSystem (0.2f, "global");
   viewer.addPointCloud (cloud, "original point cloud");
   viewer.registerKeyboardCallback(&keyboard_callback);
 

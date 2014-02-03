@@ -277,7 +277,7 @@ pcl::DinastGrabber::readImage ()
     // Is there enough data in the buffer to return one image, and did we find the header?
     // If not, go back and read some more data off the USB port
     // Else, read the data, clean the g_buffer_, return to the user
-    if (!first_image && (g_buffer_.size () >= image_size_ + data_adr) && data_adr != -1)
+    if (!first_image && (g_buffer_.size () >= static_cast<boost::circular_buffer<unsigned char>::size_type> (image_size_ + data_adr)) && data_adr != -1)
     {
       // An image found. Copy it from the buffer into the user given buffer
 
@@ -289,7 +289,7 @@ pcl::DinastGrabber::readImage ()
       first_image = true;
     }
 
-    if (first_image && g_buffer_.size () >= image_size_)
+    if (first_image && g_buffer_.size () >= static_cast<boost::circular_buffer<unsigned char>::size_type> (image_size_))
       break;
   }
 }
@@ -307,9 +307,9 @@ pcl::DinastGrabber::getXYZIPointCloud ()
   
   int depth_idx = 0;
 
-  for (int x = 0; x < cloud->width; ++x)
+  for (int x = 0; x < static_cast<int> (cloud->width); ++x)
   {
-    for (int y = 0; y < cloud->height; ++y, ++depth_idx)
+    for (int y = 0; y < static_cast<int> (cloud->height); ++y, ++depth_idx)
     {
       double pixel = image_[x + image_width_ * y];
 
@@ -412,7 +412,7 @@ pcl::DinastGrabber::checkHeader ()
 {
   // We need at least 2 full sync packets, in case the header starts at the end of the first sync packet to 
   // guarantee that the index returned actually exists in g_buffer_ (we perform no checking in the rest of the code)
-  if (g_buffer_.size () < 2 * sync_packet_size_)
+  if (g_buffer_.size () < static_cast<boost::circular_buffer<unsigned char>::size_type> (2 * sync_packet_size_))
     return (-1);
 
   int data_ptr = -1;

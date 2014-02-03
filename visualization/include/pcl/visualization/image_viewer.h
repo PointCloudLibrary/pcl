@@ -429,6 +429,18 @@ namespace pcl
         markPoint (size_t u, size_t v, Vector3ub fg_color, Vector3ub bg_color = red_color, double radius = 3.0,
                    const std::string &layer_id = "points", double opacity = 1.0);
 
+        /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another
+          * \param[in] uv the u/x, v/y coordinate of the pixels to be marked
+          * \param[in] fg_color the pixel color
+          * \param[in] bg_color the neighborhood color
+          * \param[in] size edge of the square surrounding each pixel
+          * \param[in] layer_id the name of the layer (default: "markers")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void
+        markPoints (const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color = red_color, double size = 3.0,
+                    const std::string &layer_id = "markers", double opacity = 1.0);
+
         /** \brief Set the window title name
           * \param[in] name the window title
           */
