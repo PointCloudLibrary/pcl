@@ -452,7 +452,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
                   "    ALT + 0..9 [+ CTRL]  : switch between different geometric handlers (where available)\n"
                   "          0..9 [+ CTRL]  : switch between different color handlers (where available)\n"
                   "\n"
-                  "    SHIFT + left click   : select a point\n"
+                  "    SHIFT + left click   : select a point (start with -use_point_picking)\n"
                   "\n"
                   "          x, X   : toggle rubber band selection mode for left mouse button\n"
           );
