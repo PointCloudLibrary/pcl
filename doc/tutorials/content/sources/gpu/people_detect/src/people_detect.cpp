@@ -306,7 +306,7 @@ class PeoplePCDApp
     pcl::PointCloud<pcl::RGB> rgba_host_;
     std::vector<unsigned char> rgb_host_;
 
-    PointCloud<PointXYZRGB> cloud_host_;
+    PointCloud<PointXYZRGBA> cloud_host_;
 
     ImageViewer final_view_;
     ImageViewer depth_view_;
