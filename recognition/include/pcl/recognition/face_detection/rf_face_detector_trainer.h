@@ -32,7 +32,6 @@ namespace pcl
       bool use_normals_;
       std::string directory_;
       float HEAD_ST_DIAMETER_;
-      float HEAD_ST_DIAMATER2_;
       float larger_radius_ratio_;
       std::vector<Eigen::Vector3f> head_center_votes_;
       std::vector<std::vector<Eigen::Vector3f> > head_center_votes_clustered_;
