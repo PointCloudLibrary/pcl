@@ -66,11 +66,11 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
   yaw_pitch_bins.resize (num_yaw);
   image_files_per_bin.resize (num_yaw);
-  for (size_t i = 0; i < num_yaw; i++)
+  for (int i = 0; i < num_yaw; i++)
   {
     yaw_pitch_bins[i].resize (num_pitch);
     image_files_per_bin[i].resize (num_pitch);
-    for (size_t j = 0; j < num_pitch; j++)
+    for (int j = 0; j < num_pitch; j++)
     {
       yaw_pitch_bins[i][j] = 0;
     }
@@ -123,9 +123,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   int max_elems = 0;
   int total_elems = 0;
 
-  for (size_t i = 0; i < num_yaw; i++)
+  for (int i = 0; i < num_yaw; i++)
   {
-    for (size_t j = 0; j < num_pitch; j++)
+    for (int j = 0; j < num_pitch; j++)
     {
       total_elems += yaw_pitch_bins[i][j];
       if (yaw_pitch_bins[i][j] > max_elems)
@@ -141,9 +141,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
   if (min_images_per_bin_ != -1)
   {
     std::cout << "Reducing unbalance of the dataset." << std::endl;
-    for (size_t i = 0; i < num_yaw; i++)
+    for (int i = 0; i < num_yaw; i++)
     {
-      for (size_t j = 0; j < num_pitch; j++)
+      for (int j = 0; j < num_pitch; j++)
       {
         if (yaw_pitch_bins[i][j] >= min_images_per_bin_)
         {
@@ -212,14 +212,14 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //crop images to remove as many NaNs as possible and reduce the memory footprint
     {
-      int min_col, min_row;
-      int max_col, max_row;
-      min_col = min_row = std::numeric_limits<int>::max ();
-      max_col = max_row = std::numeric_limits<int>::min ();
+      size_t min_col, min_row;
+      size_t max_col, max_row;
+      min_col = min_row = std::numeric_limits<size_t>::max ();
+      max_col = max_row = 0;
 
-      for (int col = 0; col < loaded_cloud->width; col++)
+      for (size_t col = 0; col < loaded_cloud->width; col++)
       {
-        for (int row = 0; row < loaded_cloud->height; row++)
+        for (size_t row = 0; row < loaded_cloud->height; row++)
         {
           if (pcl::isFinite (loaded_cloud->at (col, row)))
           {
@@ -298,16 +298,16 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
 
     //Using cloud labels estimate a 2D window from where to extract positive samples
     //Rest can be used to extract negative samples
-    int min_col, min_row;
-    int max_col, max_row;
-    min_col = min_row = std::numeric_limits<int>::max ();
-    max_col = max_row = std::numeric_limits<int>::min ();
+    size_t min_col, min_row;
+    size_t max_col, max_row;
+    min_col = min_row = std::numeric_limits<size_t>::max ();
+    max_col = max_row = 0;
 
     //std::cout << cloud_labels->width << " " << cloud_labels->height << std::endl;
 
-    for (int col = 0; col < cloud_labels->width; col++)
+    for (size_t col = 0; col < cloud_labels->width; col++)
     {
-      for (int row = 0; row < cloud_labels->height; row++)
+      for (size_t row = 0; row < cloud_labels->height; row++)
       {
         if (cloud_labels->at (col, row).label == 1)
         {
@@ -379,9 +379,9 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
       typedef std::pair<int, int> pixelpair;
       std::vector < pixelpair > negative_p, positive_p;
       //get negative and positive indices to sample from
-      for (int col = 0; col < (cloud_labels->width - w_size_); col++)
+      for (int col = 0; col < (static_cast<int> (cloud_labels->width) - w_size_); col++)
       {
-        for (int row = 0; row < (cloud_labels->height - w_size_); row++)
+        for (int row = 0; row < (static_cast<int> (cloud_labels->height) - w_size_); row++)
         {
           if (!pcl::isFinite (cloud->at (col + w_size_2, row + w_size_2)))
             continue;
