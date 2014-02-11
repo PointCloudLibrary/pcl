@@ -344,7 +344,7 @@ pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<PointT, 
 {
   
   supervoxel_helpers_.clear ();
-  for (int i = 0; i < seed_points.size (); ++i)
+  for (size_t i = 0; i < seed_points.size (); ++i)
   {
     supervoxel_helpers_.push_back (new SupervoxelHelper(i+1,this));
     //Find which leaf corresponds to this seed index
@@ -403,7 +403,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<Poi
   // This is number of voxels which fit in a planar slice through search volume
   // Area of planar slice / area of voxel side
   float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
-  for (int i = 0; i < seed_indices_orig.size (); ++i)
+  for (size_t i = 0; i < seed_indices_orig.size (); ++i)
   {
     int num = voxel_kdtree_->radiusSearch (seed_indices_orig[i], search_radius , neighbors, sqr_distances);
     int min_index = seed_indices_orig[i];
@@ -730,9 +730,9 @@ pcl::SupervoxelClustering<PointT>::setNormalImportance (float val)
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::initializeLabelColors ()
 {
-  int max_label = getMaxLabel ();
+  uint32_t max_label = static_cast<uint32_t> (getMaxLabel ());
   //If we already have enough colors, return
-  if (label_colors_.size () > max_label) 
+  if (label_colors_.size () > max_label)
     return;
   
   //Otherwise, generate new colors until we have enough
