@@ -68,7 +68,7 @@ pcl::SupervoxelClustering<PointT>::~SupervoxelClustering ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::setInputCloud (typename pcl::PointCloud<PointT>::ConstPtr cloud)
+pcl::SupervoxelClustering<PointT>::setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud)
 {
   if ( cloud->size () == 0 )
   {
