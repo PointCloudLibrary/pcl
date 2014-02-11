@@ -118,13 +118,13 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
 
     //get the largest biggest cluster and put if there
     int idx = -1;
-    int biggest_num = 0;
+    size_t biggest_num = 0;
     for (size_t j = 0; j < clusters_mean.size () /*&& !found*/; j++)
     {
       if ((votes_indices[j].size () > biggest_num) && (valid_in_cluster[j]))
       {
         idx = static_cast<int>(j);
-        biggest_num = static_cast<int> (votes_indices[j].size ());
+        biggest_num = votes_indices[j].size ();
       }
     }
 
@@ -201,7 +201,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
       Eigen::Vector3f rot;
       rot.setZero ();
       int num = std::min (used_for_pose_, static_cast<int> (uncertainty.size ()));
-      for (size_t j = 0; j < num; j++)
+      for (int j = 0; j < num; j++)
       {
         rot += angle_votes_[uncertainty[j].first];
       }
@@ -210,7 +210,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
 
       Eigen::Vector3f pos;
       pos.setZero ();
-      for (size_t j = 0; j < num; j++)
+      for (int j = 0; j < num; j++)
         pos += head_center_votes_[uncertainty[j].first];
 
       pos = pos / static_cast<float> (num);
@@ -337,9 +337,9 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
     int w_size_2 = static_cast<int> (w_size_ / 2);
 
     //do sliding window
-    for (int col = 0; col < (cloud->width - w_size_); col += stride_sw_)
+    for (int col = 0; col < (static_cast<int> (cloud->width) - w_size_); col += stride_sw_)
     {
-      for (int row = 0; row < (cloud->height - w_size_); row += stride_sw_)
+      for (int row = 0; row < (static_cast<int> (cloud->height) - w_size_); row += stride_sw_)
       {
 
         if (!pcl::isFinite (cloud->at (col + w_size_2, row + w_size_2))) //reject patches with invalid center point
