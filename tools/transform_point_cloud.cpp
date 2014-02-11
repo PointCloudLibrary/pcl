@@ -137,7 +137,7 @@ transformPointCloud2 (const pcl::PCLPointCloud2 &input, pcl::PCLPointCloud2 &out
   bool has_normals = false;
   for (size_t i = 0; i < input.fields.size (); ++i)
   {
-    if (input.fields[i].name == "rgb")
+    if (input.fields[i].name.find("rgb") != std::string::npos)
       has_rgb = true;
     if (input.fields[i].name == "normal_x")
       has_normals = true;
