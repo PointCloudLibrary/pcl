@@ -339,7 +339,7 @@ endif(WITH_QT)
 
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
-if(WITH_VTK)
+if(WITH_VTK AND NOT ANDROID)
   find_package(VTK)
   if(VTK_FOUND)
     if (PCL_SHARED_LIBS OR
@@ -356,7 +356,10 @@ if(WITH_VTK)
       message ("Warning: VTK disabled!")
     endif ()
   endif(VTK_FOUND)
-endif(WITH_VTK)
+else(WITH_VTK AND NOT ANDROID)
+  set(VTK_FOUND OFF)
+  set(HAVE_VTK OFF)
+endif(WITH_VTK AND NOT ANDROID)
 
 # Find MPI
 if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
