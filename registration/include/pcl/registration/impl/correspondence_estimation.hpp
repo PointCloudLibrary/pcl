@@ -40,8 +40,8 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_H_
 
-#include <pcl/common/concatenate.h>
 #include <pcl/common/io.h>
+#include <pcl/common/copy_point.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> void
@@ -132,7 +132,6 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 
   double max_dist_sqr = max_distance * max_distance;
 
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
   correspondences.resize (indices_->size ());
 
   std::vector<int> index (1);
@@ -165,9 +164,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx], 
-            pt));
+      copyPoint (input_->points[*idx], pt);
 
       tree_->nearestKSearch (pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -190,11 +187,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
 {
   if (!initCompute ())
     return;
-  
-  typedef typename pcl::traits::fieldList<PointSource>::type FieldListSource;
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-  typedef typename pcl::intersect<FieldListSource, FieldListTarget>::type FieldList;
-  
+
   // setup tree for reciprocal search
   // Set the internal point representation of choice
   if (!initComputeReciprocal())
@@ -242,9 +235,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx], 
-            pt_src));
+      copyPoint (input_->points[*idx], pt_src);
 
       tree_->nearestKSearch (pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -253,9 +244,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
       target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
-      pcl::for_each_type<FieldList> (pcl::NdConcatenateFunctor <PointTarget, PointSource> (
-            target_->points[target_idx],
-            pt_tgt));
+      copyPoint (target_->points[target_idx], pt_tgt);
 
       tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])

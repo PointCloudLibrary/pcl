@@ -682,8 +682,6 @@ namespace pcl
       void
       applyFilter (PointCloud &output);
 
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-
       /** \brief True if capable. */
       bool capable_;
 

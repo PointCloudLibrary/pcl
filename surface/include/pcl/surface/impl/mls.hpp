@@ -43,6 +43,7 @@
 #include <pcl/point_traits.h>
 #include <pcl/surface/mls.h>
 #include <pcl/common/io.h>
+#include <pcl/common/copy_point.h>
 #include <pcl/common/centroid.h>
 #include <pcl/common/eigen.h>
 #include <pcl/common/geometry.h>
@@ -752,13 +753,8 @@ template <typename PointInT, typename PointOutT> void
 pcl::MovingLeastSquares<PointInT, PointOutT>::copyMissingFields (const PointInT &point_in,
                                                                  PointOutT &point_out) const
 {
-  typedef typename pcl::traits::fieldList<typename PointCloudIn::PointType>::type FieldListInput;
-  typedef typename pcl::traits::fieldList<typename PointCloudOut::PointType>::type FieldListOutput;
-  typedef typename pcl::intersect<FieldListInput, FieldListOutput>::type FieldList;
-
   PointOutT temp = point_out;
-  pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointInT, PointOutT> (point_in,
-                                                                                   point_out));
+  copyPoint (point_in, point_out);
   point_out.x = temp.x;
   point_out.y = temp.y;
   point_out.z = temp.z;
