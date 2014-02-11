@@ -27,7 +27,7 @@ if(build)
     enable_testing()
     include_directories(${PCL_INCLUDE_DIRS})
 
-    add_custom_target(tests "${CMAKE_CTEST_COMMAND}" " -V")
+    add_custom_target(tests "${CMAKE_CTEST_COMMAND}" "-V" VERBATIM)
 
     add_subdirectory(2d)
     add_subdirectory(common)
