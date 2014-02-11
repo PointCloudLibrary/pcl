@@ -270,11 +270,11 @@ namespace pcl
         
       private:
         //no copy construction
-        OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer &rval) { }
+        OutofcoreOctreeDiskContainer (const OutofcoreOctreeDiskContainer& /*rval*/) { }
 
 
         OutofcoreOctreeDiskContainer&
-        operator= (const OutofcoreOctreeDiskContainer &rval) { }
+        operator= (const OutofcoreOctreeDiskContainer& /*rval*/) { }
 
         void
         flushWritebuff (const bool force_cache_dealloc);
