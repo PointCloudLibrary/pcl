@@ -606,7 +606,7 @@ void simulate_callback (const pcl::visualization::KeyboardEvent &event,
   
   
   
-  viewer->addCoordinateSystem (1.0,pose);
+  viewer->addCoordinateSystem (1.0,pose,"reference");
   
   
   
@@ -1086,7 +1086,7 @@ main (int argc, char** argv)
     double ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
     pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
     // Draw XYZ axes if command-line enabled
-    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z);
+    p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "reference");
   }
 
   // Clean up the memory used by the binary blob
