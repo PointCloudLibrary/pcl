@@ -137,7 +137,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
   PCLPointCloud2::Ptr targets_combined_blob (new PCLPointCloud2);
   if (!correspondence_rejectors_.empty () && need_target_blob_)
     pcl::toPCLPointCloud2 (*targets_combined, *targets_combined_blob);
-  bool rejectors_need_source = false;
+
   for (size_t i = 0; i < correspondence_rejectors_.size (); ++i)
   {
     registration::CorrespondenceRejector::Ptr& rej = correspondence_rejectors_[i];
@@ -223,7 +223,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
         *temp_correspondences = *correspondences_;
     }
 
-    size_t cnt = correspondences_->size ();
+    int cnt = correspondences_->size ();
     // Check whether we have enough correspondences
     if (cnt < min_number_correspondences_)
     {
