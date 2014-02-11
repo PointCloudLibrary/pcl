@@ -507,8 +507,6 @@ namespace pcl
       //Parameters for 2-pass SO optimization
       int smoothness_strong_;
       int smoothness_weak_;
-
-      double lut_[256];
   };
 }
 
