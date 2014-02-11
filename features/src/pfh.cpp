@@ -151,9 +151,9 @@ pcl::computeRGBPairFeatures (const Eigen::Vector4f &p1, const Eigen::Vector4f &n
 
   // everything before was standard 4D-Darboux frame feature pair
   // now, for the experimental color stuff
-  f5 = (colors2[0] != 0) ? static_cast<float> (colors1[0] / colors2[0]) : 1.0f;
-  f6 = (colors2[1] != 0) ? static_cast<float> (colors1[1] / colors2[1]) : 1.0f;
-  f7 = (colors2[2] != 0) ? static_cast<float> (colors1[2] / colors2[2]) : 1.0f;
+  f5 = (colors2[0] != 0) ? static_cast<float> (colors1[0]) / colors2[0] : 1.0f;
+  f6 = (colors2[1] != 0) ? static_cast<float> (colors1[1]) / colors2[1] : 1.0f;
+  f7 = (colors2[2] != 0) ? static_cast<float> (colors1[2]) / colors2[2] : 1.0f;
 
   // make sure the ratios are in the [-1, 1] interval
   if (f5 > 1.0f) f5 = - 1.0f / f5;
