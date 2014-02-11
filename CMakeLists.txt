@@ -12,7 +12,7 @@ project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # ---[ Include pkgconfig
 include (FindPkgConfig)
