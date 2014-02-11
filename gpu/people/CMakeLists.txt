@@ -31,6 +31,7 @@ if(build)
   FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
   #FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
+  FILE(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 
   source_group("Source files\\cuda" FILES ${srcs_cuda} )
   source_group("Source files" FILES ${srcs} )    
@@ -57,7 +58,7 @@ if(build)
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files
-  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${hdrs})
+  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${hdrs} ${hdrs_cuda})
 
   add_subdirectory(tools)
 endif(build)
