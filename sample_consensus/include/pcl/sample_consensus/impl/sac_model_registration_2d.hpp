@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int> &samples) const
+pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int>&) const
 {
   return (true);
   //using namespace pcl::common;

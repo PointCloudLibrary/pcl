@@ -718,7 +718,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 
   std::vector<unsigned int> vec;
   trained_model->clusters_.resize (number_of_clusters_, vec);
-  for (int i_label = 0; i_label < locations.size (); i_label++)
+  for (size_t i_label = 0; i_label < locations.size (); i_label++)
     trained_model->clusters_[labels (i_label)].push_back (i_label);
 
   calculateSigmas (trained_model->sigmas_);
@@ -738,7 +738,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
 
   trained_model->directions_to_center_.resize (locations.size (), 3);
   trained_model->classes_.resize (locations.size ());
-  for (int i_dir = 0; i_dir < locations.size (); i_dir++)
+  for (size_t i_dir = 0; i_dir < locations.size (); i_dir++)
   {
     trained_model->directions_to_center_(i_dir, 0) = locations[i_dir].dir_to_center_.x;
     trained_model->directions_to_center_(i_dir, 1) = locations[i_dir].dir_to_center_.y;
@@ -817,7 +817,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::findObject
     {
       unsigned int index = model->clusters_[min_dist_idx][i_word];
       unsigned int i_class = model->classes_[index];
-      if (i_class != in_class_of_interest)
+      if (static_cast<int> (i_class) != in_class_of_interest)
         continue;//skip this class
 
       //rotate dir to center as needed
@@ -1026,7 +1026,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::calculateW
   n_vot_2.resize (number_of_clusters_, vect);
   n_vot.resize (number_of_clusters_, 0);
   n_ftr.resize (number_of_classes, 0);
-  for (int i_location = 0; i_location < locations.size (); i_location++)
+  for (size_t i_location = 0; i_location < locations.size (); i_location++)
   {
     int i_class = training_classes_[locations[i_location].model_num_];
     int i_cluster = labels (i_location);

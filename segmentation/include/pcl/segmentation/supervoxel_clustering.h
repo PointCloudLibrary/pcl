@@ -236,7 +236,7 @@ namespace pcl
        * \param[in] cloud The cloud to be supervoxelize
        */
       virtual void
-      setInputCloud (typename pcl::PointCloud<PointT>::ConstPtr cloud);
+      setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud);
       
       /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
       * \param[in] cloud The input normals                         

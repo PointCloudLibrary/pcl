@@ -3263,7 +3263,6 @@ svm_model *svm_load_model (const char *model_file_name)
   while (1)
   {
     int res = fscanf (fp, "%80s", cmd);
-    res = res;
 
     if (strcmp (cmd, "svm_type") == 0)
     {

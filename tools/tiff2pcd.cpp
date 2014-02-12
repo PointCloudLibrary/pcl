@@ -353,7 +353,7 @@ int main(int argc, char ** argv)
       // Try to read the depth file
       int found = 0; // indicates if a corresponding depth file was found
       // Find the correct file name
-      for(int j = 0; j < tiff_depth_paths.size(); j++)
+      for(size_t j = 0; j < tiff_depth_paths.size(); j++)
       {
         std::string depth_filename = tiff_depth_paths[i].filename().string();
         std::string depth_time = depth_filename.substr(6,22);

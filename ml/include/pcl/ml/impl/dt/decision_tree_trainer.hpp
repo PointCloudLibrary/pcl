@@ -284,7 +284,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   float max_value = -::std::numeric_limits<float>::max();
 
   const size_t num_of_values = values.size ();
-  for (int value_index = 0; value_index < num_of_values; ++value_index)
+  for (size_t value_index = 0; value_index < num_of_values; ++value_index)
   {
     const float value = values[value_index];
 
@@ -298,7 +298,7 @@ pcl::DecisionTreeTrainer<FeatureType, DataSet, LabelType, ExampleIndex, NodeType
   // compute thresholds
   thresholds.resize (num_of_thresholds);
 
-  for (int threshold_index = 0; threshold_index < num_of_thresholds; ++threshold_index)
+  for (size_t threshold_index = 0; threshold_index < num_of_thresholds; ++threshold_index)
   {
     thresholds[threshold_index] = min_value + step*(static_cast<float>(threshold_index+1));
   }

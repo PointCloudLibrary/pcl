@@ -152,8 +152,8 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
       bool exist = false;
       for (size_t j = 0; j < cluster_numbers.size (); j++)
       {
-        if (cluster_numbers[j] == label)
-        {  
+        if (static_cast<uint32_t> (cluster_numbers[j]) == label)
+        {
           exist = true;
           break;
         }
@@ -184,7 +184,7 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
       uint32_t label;
       memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(uint32_t));
 
-      if (label == label_num)
+      if (static_cast<int> (label) == label_num)
       {
         pcl::PointXYZ point;
         // X Y Z
@@ -286,10 +286,10 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   for (size_t k = 0; k < trained_features.size (); k++)
   {
     pcl::PointCloud<pcl::FPFHSignature33>::Ptr hist = trained_features[k];
-    int c = static_cast<int> (hist->points.size ());
+    size_t c = hist->points.size ();
     for (size_t i = 0; i < c; ++i)
       for (size_t j = 0; j < data.cols; ++j)
-        data[(k*c)+i][j] = hist->points[i].histogram[j];
+        data[(k * c) + i][j] = hist->points[i].histogram[j];
   }
 
   // build kd-tree given the training features

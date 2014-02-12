@@ -61,12 +61,12 @@ typedef boost::adjacency_list
          boost::property<boost::vertex_degree_t, Weight> >,
          boost::property<boost::edge_weight_t, Weight> > Graph;
 typedef boost::graph_traits<Graph> GraphTraits;
-typedef typename GraphTraits::edge_descriptor EdgeDescriptor;
-typedef typename GraphTraits::vertex_descriptor VertexDescriptor;
-typedef typename GraphTraits::edge_iterator EdgeIterator;
-typedef typename GraphTraits::vertex_iterator VertexIterator;
-typedef typename boost::property_map<Graph, boost::edge_weight_t>::type EdgeWeightMap;
-typedef typename boost::property_map<Graph, boost::vertex_color_t>::type VertexColorMap;
+typedef GraphTraits::edge_descriptor EdgeDescriptor;
+typedef GraphTraits::vertex_descriptor VertexDescriptor;
+typedef GraphTraits::edge_iterator EdgeIterator;
+typedef GraphTraits::vertex_iterator VertexIterator;
+typedef boost::property_map<Graph, boost::edge_weight_t>::type EdgeWeightMap;
+typedef boost::property_map<Graph, boost::vertex_color_t>::type VertexColorMap;
 typedef Eigen::SparseMatrix<Weight> SparseMatrix;
 typedef Eigen::Matrix<Weight, Eigen::Dynamic, Eigen::Dynamic> Matrix;
 typedef Eigen::Matrix<Weight, Eigen::Dynamic, 1> Vector;

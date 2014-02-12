@@ -197,11 +197,12 @@ pcl::RegionGrowingRGB<PointT, NormalT>::extract (std::vector <pcl::PointIndices>
   std::vector<pcl::PointIndices>::iterator cluster_iter = clusters_.begin ();
   while (cluster_iter != clusters_.end ())
   {
-    if (cluster_iter->indices.size () < min_pts_per_cluster_ || cluster_iter->indices.size () > max_pts_per_cluster_)
+    if (static_cast<int> (cluster_iter->indices.size ()) < min_pts_per_cluster_ ||
+        static_cast<int> (cluster_iter->indices.size ()) > max_pts_per_cluster_)
     {
       cluster_iter = clusters_.erase (cluster_iter);
     }
-	else
+    else
       cluster_iter++;
   }
 
@@ -462,7 +463,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::applyRegionMergingAlgorithm ()
   int final_segment_number = homogeneous_region_number;
   for (int i_reg = 0; i_reg < homogeneous_region_number; i_reg++)
   {
-    if (num_pts_in_homogeneous_region[i_reg] < min_pts_per_cluster_)
+    if (static_cast<int> (num_pts_in_homogeneous_region[i_reg]) < min_pts_per_cluster_)
     {
       if ( region_neighbours[i_reg].empty () )
         continue;
@@ -690,7 +691,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::getSegmentFromPoint (int index, pcl::Poi
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
   int number_of_points = static_cast <int> (indices_->size ());
-  for (size_t point = 0; point < number_of_points; point++)
+  for (int point = 0; point < number_of_points; point++)
     if ( (*indices_)[point] == index)
     {
       point_was_found = true;

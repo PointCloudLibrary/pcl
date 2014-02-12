@@ -173,7 +173,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
   double cov[9];
   memset(cov, 0, sizeof(double) * 9);
 
-  for (size_t n_idx = 0; n_idx < n_neighbors; n_idx++)
+  for (int n_idx = 0; n_idx < n_neighbors; n_idx++)
   {
     const PointInT& n_point = (*input_).points[nn_indices[n_idx]];
 
@@ -316,7 +316,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
       this->searchForNeighbors (static_cast<int> (index), border_radius_, nn_indices, nn_distances);
 
-      for (int j = 0 ; j < nn_indices.size (); j++)
+      for (size_t j = 0 ; j < nn_indices.size (); j++)
       {
         if (edge_points_[nn_indices[j]])
         {
@@ -329,13 +329,13 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 
   Eigen::Vector3d *omp_mem = new Eigen::Vector3d[threads_];
 
-  for (int i = 0; i < threads_; i++)
+  for (size_t i = 0; i < threads_; i++)
     omp_mem[i].setZero (3);
 
   double *prg_local_mem = new double[input_->size () * 3];
   double **prg_mem = new double * [input_->size ()];
 
-  for (int i = 0; i < input_->size (); i++)
+  for (size_t i = 0; i < input_->size (); i++)
     prg_mem[i] = prg_local_mem + 3 * i;
 
 #ifdef _OPENMP
@@ -415,7 +415,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
       {
         is_max = true;
 
-        for (size_t j = 0 ; j < n_neighbors; j++)
+        for (int j = 0 ; j < n_neighbors; j++)
           if (third_eigen_value_[index] < third_eigen_value_[nn_indices[j]])
             is_max = false;
         if (is_max)

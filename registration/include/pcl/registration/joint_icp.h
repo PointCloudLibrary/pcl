@@ -132,7 +132,7 @@ namespace pcl
         * \param[in] cloud the input point cloud source
         */
       virtual void
-      setInputSource (const PointCloudSourceConstPtr &cloud)
+      setInputSource (const PointCloudSourceConstPtr& /*cloud*/)
       {
         PCL_WARN ("[pcl::%s::setInputSource] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputSource.", 
             getClassName ().c_str ());
@@ -158,7 +158,7 @@ namespace pcl
         * \param[in] cloud the input point cloud target
         */
       virtual void
-      setInputTarget (const PointCloudTargetConstPtr &cloud)
+      setInputTarget (const PointCloudTargetConstPtr& /*cloud*/)
       {
         PCL_WARN ("[pcl::%s::setInputTarget] Warning; JointIterativeClosestPoint expects multiple clouds. Please use addInputTarget.", 
             getClassName ().c_str ());
