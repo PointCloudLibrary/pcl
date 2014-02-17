@@ -559,13 +559,15 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                            Eigen::Vector4f &, Eigen::Quaternionf &,
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                             int &, int &, unsigned int &, const int)
 {
   // Silence compiler warnings
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
   cloud_->width = cloud_->height = 0;
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
