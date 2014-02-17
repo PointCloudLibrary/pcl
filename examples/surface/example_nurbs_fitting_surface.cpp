@@ -73,7 +73,7 @@ main (int argc, char *argv[])
   pcd_file = argv[1];
 
   unsigned order (3);
-  unsigned refinement (6);
+  unsigned refinement (5);
   unsigned iterations (10);
   unsigned mesh_resolution (256);
 
@@ -142,11 +142,11 @@ main (int argc, char *argv[])
   // ############################################################################
   // fit NURBS curve
   pcl::on_nurbs::FittingCurve2dAPDM::FitParameter curve_params;
-  curve_params.addCPsAccuracy = 3e-2;
+  curve_params.addCPsAccuracy = 5e-2;
   curve_params.addCPsIteration = 3;
   curve_params.maxCPs = 200;
   curve_params.accuracy = 1e-3;
-  curve_params.iterations = 10000;
+  curve_params.iterations = 100;
 
   curve_params.param.closest_point_resolution = 0;
   curve_params.param.closest_point_weight = 1.0;
