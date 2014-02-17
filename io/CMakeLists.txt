@@ -13,6 +13,24 @@ endif(WIN32)
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
+  set(IMAGE_INCLUDES
+    include/pcl/io/image_metadata_wrapper.h
+    include/pcl/io/image.h
+    include/pcl/io/image_rgb24.h
+    include/pcl/io/image_yuv422.h
+    include/pcl/io/image_ir.h
+    include/pcl/io/image_depth.h
+    include/pcl/io/io_exception.h
+  )
+  
+  set(IMAGE_SOURCES
+    src/image_rgb24.cpp
+    src/image_yuv422.cpp
+    src/image_ir.cpp
+    src/image_depth.cpp
+    src/io_exception.cpp
+  )
+  
     OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
     MARK_AS_ADVANCED(BUILD_OPENNI)
     if(NOT BUILD_OPENNI)
@@ -58,6 +76,9 @@ if(build)
             src/oni_grabber.cpp
             )
     endif(OPENNI_FOUND)
+
+    source_group("Image Headers" FILES ${IMAGE_INCLUDES})
+    source_group("Image Sources" FILES ${IMAGE_SOURCES})
 
     if(FZAPI_FOUND)
         set(FZAPI_GRABBER_INCLUDES
