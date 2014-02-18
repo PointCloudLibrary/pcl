@@ -96,7 +96,7 @@ compute (const Cloud::Ptr &input, Cloud::Ptr &output,
   // See Issue #493 for more information. 
 #ifdef _MSC_VER
   pcl::ConditionalRemoval<PointType> condrem (new pcl::ConditionBase<PointType>::Ptr (cond));
-#elif
+#else
   pcl::ConditionalRemoval<PointType> condrem (cond);
 #endif
   condrem.setInputCloud (input);
