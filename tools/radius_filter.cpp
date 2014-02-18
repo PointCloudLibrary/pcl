@@ -91,7 +91,14 @@ compute (const Cloud::Ptr &input, Cloud::Ptr &output,
   cond->addComparison (pcl::TfQuadraticXYZComparison<PointType>::ConstPtr (new pcl::TfQuadraticXYZComparison<PointType> (inside ? pcl::ComparisonOps::LT : pcl::ComparisonOps::GT, Eigen::Matrix3f::Identity (),
                                                                                                                   Eigen::Vector3f::Zero (), - radius * radius)));
 
-  pcl::ConditionalRemoval<PointType> condrem (static_cast<pcl::ConditionBase<PointType>::Ptr>(cond));
+  // Removes ambigious call to contructor. As of now MSVC does not fully support 
+  // the explicit argument which is used for boost::shared_ptr to bool conversions.
+  // See Issue #493 for more information. 
+#ifdef _MSC_VER
+  pcl::ConditionalRemoval<PointType> condrem (new pcl::ConditionBase<PointType>::Ptr (cond));
+#elif
+  pcl::ConditionalRemoval<PointType> condrem (cond);
+#endif
   condrem.setInputCloud (input);
   condrem.setKeepOrganized (keep_organized);
   condrem.filter (*output);
