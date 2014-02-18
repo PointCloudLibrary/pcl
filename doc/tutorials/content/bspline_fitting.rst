@@ -27,12 +27,20 @@ The algorithm applied to the frontal stanford bunny scan (204800 points):
 
   <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="http://youtu.be/trH2kWELvyw" frameborder="0" allowfullscreen></iframe>
 
+
 Background
 ----------
 
 Theoretical information on the algorithm can be found in this `report
 <http://pointclouds.org/blog/trcs/moerwald/index.php>`_ and in my `PhD thesis
 <http://users.acin.tuwien.ac.at/tmoerwald/?site=3>`_.
+
+Please note that the modules for NURBS and B-splines are not enabled by default.
+Make sure you enable "BUILD_surface_on_nurbs" by setting it to ON.
+
+If your license permits also enable "USE_UMFPACK" for sparse linear solving.
+This requires SuiteSparse (libsuitesparse-dev in Ubuntu) which is faster, 
+allows more degrees of freedom (i.e. control points) and more data points.
 
 
 The code
@@ -41,7 +49,7 @@ The code
 The cpp file used in this tutorial can be found in 
 pcl/examples/surface/example_nurbs_fitting_surface.cpp
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :linenos:
 
@@ -53,7 +61,7 @@ Now, let's break down the code piece by piece. Lets start with the choice of the
 parameters for B-spline surface fitting:
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 56-66
 
@@ -84,7 +92,7 @@ to these points. In our example we are trimming the surface anyway, so there is 
 for aligning the boundary.   
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 68-72
 
@@ -99,7 +107,7 @@ The surface fitting class *pcl::on_nurbs::FittingSurface* is provided with the p
 B-spline.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 74-80
 
@@ -108,7 +116,7 @@ for visualization of the B-spline surfaces. Note that NURBS are a generalisation
 and are therefore a valid container for B-splines, with all control-point weights = 1.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 82-92
 
@@ -123,7 +131,7 @@ This is the reason why we iteratively increase the degree of freedom by refineme
 and fit the B-spline surface to the point-cloud, getting closer to the final solution.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 94-102
 
@@ -135,7 +143,7 @@ To achiev this we project the point-cloud into the parametric domain using the c
 In this domain of R^2 we perform the weighted B-spline curve fitting, that creates a closed trimming curve that approximately
 contains all the points.
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 107-120
 
@@ -168,7 +176,7 @@ Also note that points that are inside and outside the curve are distinguished.
 * *smoothness* weight of smoothness term.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 122-127
 
@@ -177,7 +185,7 @@ at the mean of the point-cloud and the radius of the maximum distance of a point
 Please note that in line 126 interior weighting is enabled.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 129-133
 
@@ -185,7 +193,7 @@ Similar to the surface fitting approach, the curve is iteratively fitted and ref
 Note how the curve tends to bend inwards at regions where it is not supported by any points.
 
 
-.. literalinclude:: ../../../../examples/surface/example_nurbs_fitting_surface.cpp
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 136-142
 
@@ -201,20 +209,33 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. TODO literalinclude:: sources/greedy_projection/CMakeLists.txt
-.. TODO   :language: cmake
-.. TODO   :linenos:   
+.. literalinclude:: sources/bspline_fitting/CMakeLists.txt
+   :language: cmake
+   :linenos:   
 
-After you have made the executable, you can run it. Simply do::
+After you have made the executable, you can run it. Simply do:
 
-  $ ./pcl_example_nurbs_fitting_surface ../../test/bunny.pcd
+  $ ./bspline_fitting ${PCL_ROOT}/test/bunny.pcd
+
 
 Saving and viewing the result
 -----------------------------
 
-* Saving as triangle mesh into a vtk file
-  TODO
+* Saving as OpenNURBS (3dm) file
+You can save the B-spline surface by using the commands provided by OpenNurbs:
 
-* Saving as OpenNURBS file
-  TODO
+.. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
+   :language: cpp
+   :lines: 145-163
+
+The files generated can be viewed with the pcl/examples/surface/example_nurbs_viewer_surface.cpp.
+
+* Saving as triangle mesh into a vtk file
+You can save the triangle mesh for example by saving into a VTK file by:
+
+    #include <pcl/io/vtk_io.h>
+    ...
+    pcl::io::saveVTKFile ("mesh.vtk", mesh);
+
+PCL also provides vtk conversion into other formats (PLY, OBJ).
 
