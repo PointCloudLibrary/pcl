@@ -137,7 +137,21 @@ if (build)
 
   PCL_ADD_EXECUTABLE(pcl_compute_hausdorff "${SUBSYS_NAME}" compute_hausdorff.cpp)
   target_link_libraries(pcl_compute_hausdorff pcl_common pcl_io pcl_search)
+  
+  PCL_ADD_EXECUTABLE(pcl_morphological_open "${SUBSYS_NAME}" morphological_open.cpp)
+  target_link_libraries(pcl_morphological_open pcl_common pcl_io pcl_filters)
 
+  PCL_ADD_EXECUTABLE(pcl_morphological_close "${SUBSYS_NAME}" morphological_close.cpp)
+  target_link_libraries(pcl_morphological_close pcl_common pcl_io pcl_filters)
+ 
+  PCL_ADD_EXECUTABLE(pcl_morphological_dilate "${SUBSYS_NAME}" morphological_dilate.cpp)
+  target_link_libraries(pcl_morphological_dilate pcl_common pcl_io pcl_filters)
+  
+  PCL_ADD_EXECUTABLE(pcl_morphological_erode "${SUBSYS_NAME}" morphological_erode.cpp)
+  target_link_libraries(pcl_morphological_erode pcl_common pcl_io pcl_filters)
+
+  PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter "${SUBSYS_NAME}" progressive_morphological_filter.cpp)
+  target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
 
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
