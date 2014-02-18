@@ -3262,11 +3262,11 @@ svm_model *svm_load_model (const char *model_file_name)
 
   while (1)
   {
-    int res = fscanf (fp, "%80s", cmd);
+    fscanf (fp, "%80s", cmd);
 
     if (strcmp (cmd, "svm_type") == 0)
     {
-      res = fscanf (fp, "%80s", cmd);
+      fscanf (fp, "%80s", cmd);
       int i;
 
       for (i = 0;svm_type_table[i];i++)
@@ -3291,7 +3291,7 @@ svm_model *svm_load_model (const char *model_file_name)
     else
       if (strcmp (cmd, "kernel_type") == 0)
       {
-        res = fscanf (fp, "%80s", cmd);
+        fscanf (fp, "%80s", cmd);
         int i;
 
         for (i = 0;kernel_type_table[i];i++)
@@ -3315,19 +3315,19 @@ svm_model *svm_load_model (const char *model_file_name)
       }
       else
         if (strcmp (cmd, "degree") == 0)
-          res = fscanf (fp, "%d", &param.degree);
+          fscanf (fp, "%d", &param.degree);
         else
           if (strcmp (cmd, "gamma") == 0)
-            res = fscanf (fp, "%lf", &param.gamma);
+            fscanf (fp, "%lf", &param.gamma);
           else
             if (strcmp (cmd, "coef0") == 0)
-              res = fscanf (fp, "%lf", &param.coef0);
+              fscanf (fp, "%lf", &param.coef0);
             else
               if (strcmp (cmd, "nr_class") == 0)
-                res = fscanf (fp, "%d", &model->nr_class);
+                fscanf (fp, "%d", &model->nr_class);
               else
                 if (strcmp (cmd, "total_sv") == 0)
-                  res = fscanf (fp, "%d", &model->l);
+                  fscanf (fp, "%d", &model->l);
                 else
                   if (strcmp (cmd, "rho") == 0)
                   {
@@ -3335,7 +3335,7 @@ svm_model *svm_load_model (const char *model_file_name)
                     model->rho = Malloc (double, n);
 
                     for (int i = 0;i < n;i++)
-                      res = fscanf (fp, "%lf", &model->rho[i]);
+                      fscanf (fp, "%lf", &model->rho[i]);
                   }
                   else
                     if (strcmp (cmd, "label") == 0)
@@ -3344,7 +3344,7 @@ svm_model *svm_load_model (const char *model_file_name)
                       model->label = Malloc (int, n);
 
                       for (int i = 0;i < n;i++)
-                        res = fscanf (fp, "%d", &model->label[i]);
+                        fscanf (fp, "%d", &model->label[i]);
                     }
                     else
                       if (strcmp (cmd, "probA") == 0)
@@ -3353,7 +3353,7 @@ svm_model *svm_load_model (const char *model_file_name)
                         model->probA = Malloc (double, n);
 
                         for (int i = 0;i < n;i++)
-                          res = fscanf (fp, "%lf", &model->probA[i]);
+                          fscanf (fp, "%lf", &model->probA[i]);
                       }
                       else
                         if (strcmp (cmd, "probB") == 0)
@@ -3362,7 +3362,7 @@ svm_model *svm_load_model (const char *model_file_name)
                           model->probB = Malloc (double, n);
 
                           for (int i = 0;i < n;i++)
-                            res = fscanf (fp, "%lf", &model->probB[i]);
+                            fscanf (fp, "%lf", &model->probB[i]);
                         }
                         else
                           if (strcmp (cmd, "nr_sv") == 0)
@@ -3371,7 +3371,7 @@ svm_model *svm_load_model (const char *model_file_name)
                             model->nSV = Malloc (int, n);
 
                             for (int i = 0;i < n;i++)
-                              res = fscanf (fp, "%d", &model->nSV[i]);
+                              fscanf (fp, "%d", &model->nSV[i]);
                           }
                           else
                             if (strcmp (cmd, "scaling") == 0)
@@ -3380,7 +3380,7 @@ svm_model *svm_load_model (const char *model_file_name)
                               int ii = 0, pre_ii = 0;
                               //char delims[]="\t: ";
                               model->scaling = Malloc (struct svm_node, 1);
-                              res = fscanf (fp, "%10000[^\n]", buff);
+                              fscanf (fp, "%10000[^\n]", buff);
                               idx = strtok (buff, ":");
 
                               while (idx != NULL)
