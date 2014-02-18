@@ -1613,7 +1613,16 @@ TEST (ConditionalRemoval, Filters)
                                                                                                  0.12)));
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem (range_cond);
+
+  // Removes ambigious call to contructor. As of now MSVC does not fully support 
+  // the explicit argument which is used for boost::shared_ptr to bool conversions.
+  // See Issue #493 for more information. 
+#ifdef _MSC_VER
+  pcl::ConditionalRemoval<PoinXYZ> condrem (new pcl::ConditionBase<PointXYZ>::Ptr (range_cond));
+#else
+  pcl::ConditionalRemoval<PointXYZ> condrem (range_cond);
+#endif
+
   condrem.setInputCloud (cloud);
 
   // try the dense version
@@ -1702,7 +1711,16 @@ TEST (ConditionalRemovalSetIndices, Filters)
                                                                                                                   Eigen::Vector3f::Zero (), 0)));
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem2 (true_cond);
+  
+  // Removes ambigious call to contructor. As of now MSVC does not fully support 
+  // the explicit argument which is used for boost::shared_ptr to bool conversions.
+  // See Issue #493 for more information.
+#ifdef _MSC_VER
+  pcl::ConditionalRemoval<PoinXYZ> condrem2 (new pcl::ConditionBase<PointXYZ>::Ptr (true_cond));
+#else
+  pcl::ConditionalRemoval<PointXYZ> condrem2 (true_cond);
+#endif
+  
   condrem2.setInputCloud (cloud);
   condrem2.setIndices (indices);
 
@@ -2006,7 +2024,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   cyl_cond->addComparison (cyl_comp);
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem (cyl_cond);
+  ConditionalRemoval<PointXYZ> condrem (static_cast<pcl::ConditionBase<PointXYZ>::Ptr>(cyl_cond));
   condrem.setInputCloud (input);
   condrem.setKeepOrganized (false);
 
