@@ -38,15 +38,7 @@
 #ifndef PCL_KINFU_INTERNAL_HPP_
 #define PCL_KINFU_INTERNAL_HPP_
 
-#include <pcl/gpu/containers/device_array.h>
-
-// should we remove direct include and safe_call.hpp file. Include from gpu/utils ?
-// #include <pcl/gpu/utils/safe_call.hpp> 
-#include "safe_call.hpp"
-
-#include <iostream> // used by operator << in Struct Intr
-
-#include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
+#include <pcl/gpu/utils/safe_call.hpp>
 #include <pcl/gpu/kinfu_large_scale/device.h>
 
 //using namespace pcl::gpu;

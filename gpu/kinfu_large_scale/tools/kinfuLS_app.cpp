@@ -82,7 +82,6 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #endif
 typedef pcl::ScopeTime ScopeTimeT;
 
-#include "../src/internal.h"
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 using namespace std;
@@ -1312,7 +1311,7 @@ main (int argc, char* argv[])
   pc::parse_argument (argc, argv, "--shifting_distance", shift_distance);
   pc::parse_argument (argc, argv, "-sd", shift_distance);
 
-  int snapshot_rate = pcl::device::kinfuLS::SNAPSHOT_RATE; // defined in internal.h
+  int snapshot_rate = pcl::device::kinfuLS::SNAPSHOT_RATE; // defined in device.h
   pc::parse_argument (argc, argv, "--snapshot_rate", snapshot_rate);
   pc::parse_argument (argc, argv, "-sr", snapshot_rate);
 

@@ -39,13 +39,7 @@
 #define PCL_KINFU_DEVICE_H_
 
 #include <pcl/gpu/containers/device_array.h>
-
-// should we remove direct include and safe_call.hpp file. Include from gpu/utils ?
-// #include <pcl/gpu/utils/safe_call.hpp> 
-#include "safe_call.hpp"
-
 #include <iostream> // used by operator << in Struct Intr
-
 #include <pcl/gpu/kinfu_large_scale/tsdf_buffer.h>
 
 //using namespace pcl::gpu;
@@ -102,7 +96,6 @@ namespace pcl
           os << "([f = " << intr.fx << ", " << intr.fy << "] [cp = " << intr.cx << ", " << intr.cy << "])";
           return (os);
         }
-        
       };
 
       /** \brief 3x3 Matrix for device code

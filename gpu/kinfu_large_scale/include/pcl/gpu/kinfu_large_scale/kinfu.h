@@ -47,7 +47,6 @@
 #include <vector>
 //#include <boost/graph/buffer_concepts.hpp>
 
-//#include "internal.h"
 #include <pcl/gpu/kinfu_large_scale/device.h>
 
 #include <pcl/gpu/kinfu_large_scale/float3_operations.h>
@@ -59,9 +58,6 @@
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 //#include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
-
-
-
 
 namespace pcl
 {
