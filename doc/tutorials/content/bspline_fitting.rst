@@ -4,77 +4,86 @@ Fitting trimmed B-splines to unordered point clouds
 ---------------------------------------------------
 
 This tutorial explains how to run a B-spline fitting algorithm on a
-point-cloud, to obtain a parametric surface representation.
+point-cloud, to obtain a smooth, parametric surface representation.
 The algorithm consists of the following steps:
 
-* Choice of the parameters for B-spline surface fitting.
-
-* Initialize B-spline by using the Principal Component Analysis (PCA). This
+* Initialization of the B-spline surface by using the Principal Component Analysis (PCA). This
   assumes that the point-cloud has two main orientations, i.e. that it is roughly planar.
 
-* Refinement and fitting.
-
-* Choice of the parameters for B-spline curve fitting.
+* Refinement and fitting of the B-spline surface.
 
 * Circular initialization of the B-spline curve. Here we assume that the point-cloud is
   compact, i.e. no separated clusters.
 
+* Fitting of the B-spline curve.
+
 * Triangulation of the trimmed B-spline surface.
 
-The algorithm applied to the frontal stanford bunny scan (204800 points):
+In this video, the algorithm is applied to the frontal scan of the stanford bunny (204800 points):
 
 .. raw:: html
 
-  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="http://youtu.be/trH2kWELvyw" frameborder="0" allowfullscreen></iframe>
+  <iframe title="Trimmed B-spline surface fitting" width="480" height="390" src="http://www.youtube.com/embed/trH2kWELvyw?rel=0" frameborder="0" allowfullscreen></iframe>
 
 
-Background
-----------
+Theoretical background
+----------------------
 
 Theoretical information on the algorithm can be found in this `report
 <http://pointclouds.org/blog/trcs/moerwald/index.php>`_ and in my `PhD thesis
 <http://users.acin.tuwien.ac.at/tmoerwald/?site=3>`_.
 
-Please note that the modules for NURBS and B-splines are not enabled by default.
-Make sure you enable "BUILD_surface_on_nurbs" by setting it to ON.
 
-If your license permits also enable "USE_UMFPACK" for sparse linear solving.
+PCL installation settings
+-------------------------
+
+Please note that the modules for NURBS and B-splines are not enabled by default.
+Make sure you enable "BUILD_surface_on_nurbs" in your ccmake configuration, by setting it to ON.
+
+If your license permits, also enable "USE_UMFPACK" for sparse linear solving.
 This requires SuiteSparse (libsuitesparse-dev in Ubuntu) which is faster, 
 allows more degrees of freedom (i.e. control points) and more data points.
+
+The program created during this tutorial is available in 
+*pcl/examples/surface/example_nurbs_fitting_surface.cpp* and is built when
+"BUILD_examples" is set to ON. This will create the binary called *pcl_example_nurbs_fitting_surface*
+in your *bin* folder.
 
 
 The code
 --------
 
-The cpp file used in this tutorial can be found in 
-pcl/examples/surface/example_nurbs_fitting_surface.cpp
+The cpp file used in this tutorial can be found in *pcl/doc/tutorials/content/sources/bspline_fitting/bspline_fitting.cpp*.
+You can find the input file at *pcl/test/bunny.pcd*.
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :linenos:
+   :lines: 1-169
 
-The input file you can find at pcl/test/bunny.pcd
 
 The explanation
 ---------------
-Now, let's break down the code piece by piece. Lets start with the choice of the
-parameters for B-spline surface fitting:
-
+Now, let's break down the code piece by piece.
+Lets start with the choice of the parameters for B-spline surface fitting:
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
+   :linenos:
    :lines: 56-66
 
 * *order* is the polynomial order of the B-spline surface.
 
 * *refinement* is the number of refinement iterations, where for each iteration control-points
-  are inserted, approximately doubeling the control points in each parametric direction 
+  are inserted, approximately doubling the control points in each parametric direction 
   of the B-spline surface.
 
 * *iterations* is the number of iterations that are performed after refinement is completed.
 
-* *mesh_resoluation* the number of vertices in each parametric direction,
+* *mesh_resolution* the number of vertices in each parametric direction,
   used for triangulation of the B-spline surface.
+
+Fitting:
 
 * *interior_smoothness* is the smoothness of the surface interior.
 
@@ -85,12 +94,14 @@ parameters for B-spline surface fitting:
 * *boundary_weight* is the weight for optimization for the surface boundary.
 
 Note, that the boundary in this case is not the trimming curve used later on.
-The boundary can be used when a point-set exists that define the boundary. Those points
-can be declared in *pcl::on_nurbs::NurbsDataSurface::boundary*. In this case, when the
+The boundary can be used when a point-set exists that defines the boundary. Those points
+can be declared in *pcl::on_nurbs::NurbsDataSurface::boundary*. In that case, when the
 *boundary_weight* is greater than 0.0, the algorithm tries to align the domain boundaries
 to these points. In our example we are trimming the surface anyway, so there is no need
 for aligning the boundary.   
 
+Initialization of the B-spline surface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
@@ -103,22 +114,23 @@ To estimate the extension of the B-spline surface domain, a bounding box is comp
 by the maximum and middle eigenvectors. That bounding box is used to initialize the B-spline surface with
 its minimum number of control points, according to the polynomial degree chosen.
 
-The surface fitting class *pcl::on_nurbs::FittingSurface* is provided with the point data and the initial
+The surface fitting class *pcl::on_nurbs::FittingSurface* is initialized with the point data and the initial
 B-spline.
-
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 74-80
 
-The *on_nurbs* module allows easy conversion between the *ON_NurbsSurface* and the *PolygonMesh* class,
-for visualization of the B-spline surfaces. Note that NURBS are a generalisation of B-splines,
+The *on_nurbs::Triangulation* class allows easy conversion between the *ON_NurbsSurface* and the *PolygonMesh* class,
+for visualization of the B-spline surfaces. Note that NURBS are a generalization of B-splines,
 and are therefore a valid container for B-splines, with all control-point weights = 1.
-
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 82-92
+
+Refinement and fitting of the B-spline surface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 At this point of the code we have a B-spline surface with minimal number of control points.
 Typically they are not enough to represent finer details of the underlying geometry 
@@ -130,7 +142,6 @@ the rule is:
 This is the reason why we iteratively increase the degree of freedom by refinement in both directions (line 85-86),
 and fit the B-spline surface to the point-cloud, getting closer to the final solution.
 
-
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :lines: 94-102
@@ -138,8 +149,11 @@ and fit the B-spline surface to the point-cloud, getting closer to the final sol
 After we reached the final level of refinement, the surface is further fitted to the point-cloud
 for a pleasing end result.
 
+Initialization of the B-spline curve
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Now that we have the surface fitted to the point-cloud, we want to cut off the overlapping regions of the surface.
-To achiev this we project the point-cloud into the parametric domain using the closest points to the B-spline surface.
+To achieve this we project the point-cloud into the parametric domain using the closest points to the B-spline surface.
 In this domain of R^2 we perform the weighted B-spline curve fitting, that creates a closed trimming curve that approximately
 contains all the points.
 
@@ -148,7 +162,7 @@ contains all the points.
    :lines: 107-120
 
 The topic of curve fitting goes a bit deeper into the thematics of B-splines. Here we assume that you are
-familiar with the concept of B-splines, knot vectors, control-points, and so forthe.
+familiar with the concept of B-splines, knot vectors, control-points, and so forth.
 Please consider the curve being split into supporting regions which is bound by consecutive knots.
 Also note that points that are inside and outside the curve are distinguished.
 
@@ -180,10 +194,12 @@ Also note that points that are inside and outside the curve are distinguished.
    :language: cpp
    :lines: 122-127
 
-The curve is initialised using a minimum number of control points to reprecent a circle, with the center located
+The curve is initialized using a minimum number of control points to represent a circle, with the center located
 at the mean of the point-cloud and the radius of the maximum distance of a point to the center.
-Please note that in line 126 interior weighting is enabled.
+Please note that interior weighting is enabled for all points with the command *curve_data.interior_weight_function.push_back (true)*.
 
+Fitting of the B-spline curve
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
@@ -192,6 +208,8 @@ Please note that in line 126 interior weighting is enabled.
 Similar to the surface fitting approach, the curve is iteratively fitted and refined, as shown in the video.
 Note how the curve tends to bend inwards at regions where it is not supported by any points.
 
+Triangulation of the trimmed B-spline surface
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
@@ -199,10 +217,27 @@ Note how the curve tends to bend inwards at regions where it is not supported by
 
 After the curve fitting terminated, our geometric representation consists of a B-spline surface and a closed
 B-spline curved, defined within the parametric domain of the B-spline surface. This is called trimmed B-spline surface.
-In line 140 we can use the trimmed B-spline to create a triangular mesh.
-When running this example and switch to wireframe mode (w), you will notice that the triangles are ordered in
+In line 140 we can use the trimmed B-spline to create a triangular mesh. The triangulation algorithm first triangulates
+the whole domain and afterwards removes triangles that lie outside of the trimming curve. Vertices of triangles
+that intersect the trimming curve are clamped to the curve.
+
+When running this example and switch to wire-frame mode (w), you will notice that the triangles are ordered in
 a rectangular way, which is a result of the rectangular domain of the surface.
 
+Some hints
+----------
+Please bear in mind that the robustness of this algorithm heavily depends on the underlying data.
+The parameters for B-spline fitting are designed to model the characteristics of this data.
+
+* If you have holes or steps in your data, you might want to work with lower refinement levels and lower accuracy to 
+  prevent the B-spline from folding and twisting. Moderately increasing of the smoothness might also work.
+
+* Try to introduce as much pre-conditioning and constraints to the parameters. E.g. if you know, that
+  the trimming curve is rather simple, then limit the number of maximum control points.
+
+* Start simple! Before giving up on gaining control over twisting and bending B-splines, I highly recommend
+  to start your fitting trials with a small number of control points (low refinement), 
+  low accuracy but also low smoothness (B-splines have implicit smoothing property).
 
 Compiling and running the program
 ---------------------------------
