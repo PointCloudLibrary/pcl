@@ -19,6 +19,10 @@ if(BUILD_surface_on_nurbs)
     PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_surface
             FILES example_nurbs_fitting_surface.cpp
                     LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
+
+    PCL_ADD_EXAMPLE(pcl_example_nurbs_viewer_surface
+            FILES example_nurbs_viewer_surface.cpp
+                    LINK_WITH pcl_common pcl_io pcl_surface pcl_visualization)
                     
     PCL_ADD_EXAMPLE(pcl_example_nurbs_fitting_closed_curve
         	FILES example_nurbs_fitting_closed_curve.cpp
