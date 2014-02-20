@@ -126,7 +126,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   else
     // Iterate over each point
     for (size_t i = 0; i < cloud_in.points.size (); ++i)
-      copyPoint (cloud_in.points[i], cloud_out.points[i]);
+      copyPoint<PointInT, PointOutT>(cloud_in.points[i], cloud_out.points[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
