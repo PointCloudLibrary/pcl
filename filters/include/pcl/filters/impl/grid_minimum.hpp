@@ -46,13 +46,13 @@
 #include <pcl/common/io.h>
 #include <pcl/filters/grid_minimum.h>
 
-struct cloud_point_index_idx
+struct point_index_idx
 {
   unsigned int idx;
   unsigned int cloud_point_index;
 
-  cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
-  bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
+  point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
+  bool operator < (const point_index_idx &p) const { return (idx < p.idx); }
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], 0, 0);
 
-  std::vector<cloud_point_index_idx> index_vector;
+  std::vector<point_index_idx> index_vector;
   index_vector.reserve (indices_->size ());
 
   // First pass: go over all points and insert them into the index_vector vector
@@ -129,12 +129,12 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
 
     // Compute the centroid leaf index
     int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1];
-    index_vector.push_back (cloud_point_index_idx (static_cast<unsigned int> (idx), *it));
+    index_vector.push_back (point_index_idx (static_cast<unsigned int> (idx), *it));
   }
   
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  std::sort (index_vector.begin (), index_vector.end (), std::less<point_index_idx> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values
