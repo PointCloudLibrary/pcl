@@ -174,6 +174,21 @@ Basic Usage
      .. |mi_7| image:: images/pcl_logo.png
                :height: 75px
 
+  * :ref:`matrix_transform`
+
+     ======  ======
+     |mi_8|  Title: **Using matrixes to transform a point cloud**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to transform a point cloud using a matrix.
+     ======  ======
+
+     .. |mi_8| image:: images/matrix_transform/cube.png
+               :height: 120px
+
 .. _advanced_usage:
 
 Advanced Usage
