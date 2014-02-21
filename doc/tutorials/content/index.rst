@@ -1040,6 +1040,22 @@ Surface
      .. |su_3| image:: images/greedy_triangulation.png
                :height: 100px
 
+  * :ref:`bspline_fitting`
+
+     ======  ======
+     |su_4|  Title: **Fitting trimmed B-splines to unordered point clouds**
+
+             Author: *Thomas Mörwald*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to reconstruct a smooth surface from an unordered point-cloud by fitting trimmed B-splines.
+     ======  ======
+     
+     .. |su_4| image:: images/bspline_bunny.png
+               :height: 100px
+
+
 .. _visualization_tutorial:
 
 Visualization
