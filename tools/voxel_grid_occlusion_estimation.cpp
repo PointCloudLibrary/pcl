@@ -99,13 +99,23 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
     double y = voxelCenters.points[i].y;
     double z = voxelCenters.points[i].z;
     
+#if VTK_MAJOR_VERSION < 6
     treeWireframe->AddInput (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
+#else
+    treeWireframe->AddInputData (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
+#endif
+
   }
 
   vtkSmartPointer < vtkLODActor > treeActor = vtkSmartPointer<vtkLODActor>::New ();
   
   vtkSmartPointer < vtkDataSetMapper > mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput (treeWireframe->GetOutput ());
+#else
+  mapper->SetInputData (treeWireframe->GetOutput ());
+#endif
+
   treeActor->SetMapper (mapper);
   
   treeActor->GetProperty ()->SetRepresentationToWireframe ();
@@ -119,12 +129,20 @@ displayBoundingBox (Eigen::Vector3f& min_b, Eigen::Vector3f& max_b,
                     vtkSmartPointer<vtkActorCollection> coll)
 {
   vtkSmartPointer < vtkAppendPolyData > treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New ();
+#if VTK_MAJOR_VERSION < 6
   treeWireframe->AddInput (getCuboid (min_b[0], max_b[0], min_b[1], max_b[1], min_b[2], max_b[2]));
+#else
+  treeWireframe->AddInputData (getCuboid (min_b[0], max_b[0], min_b[1], max_b[1], min_b[2], max_b[2]));
+#endif
 
   vtkSmartPointer < vtkActor > treeActor = vtkSmartPointer<vtkActor>::New ();
 
   vtkSmartPointer < vtkDataSetMapper > mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput (treeWireframe->GetOutput ());
+#else
+  mapper->SetInputData (treeWireframe->GetOutput ());
+#endif
   treeActor->SetMapper (mapper);
 
   treeActor->GetProperty ()->SetRepresentationToWireframe ();

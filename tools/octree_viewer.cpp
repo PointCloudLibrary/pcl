@@ -294,13 +294,21 @@ private:
       double y = displayCloud->points[i].y;
       double z = displayCloud->points[i].z;
 
+#if VTK_MAJOR_VERSION < 6
       treeWireframe->AddInput(GetCuboid(x - s, x + s, y - s, y + s, z - s, z + s));
+#else
+      treeWireframe->AddInputData (GetCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
+#endif
     }
 
     vtkSmartPointer<vtkActor> treeActor = vtkSmartPointer<vtkActor>::New();
 
     vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+#if VTK_MAJOR_VERSION < 6
     mapper->SetInput(treeWireframe->GetOutput());
+#else
+    mapper->SetInputData (treeWireframe->GetOutput ());
+#endif
     treeActor->SetMapper(mapper);
 
     treeActor->GetProperty()->SetColor(1.0, 1.0, 1.0);

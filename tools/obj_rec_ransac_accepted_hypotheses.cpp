@@ -49,6 +49,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
+#include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
 #include <vtkRenderWindow.h>
 #include <vtkTransformPolyDataFilter.h>
@@ -323,13 +324,21 @@ update (CallbackParameters* params)
     // Setup the transformator
     vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
     vtk_transformator->SetTransform (vtk_transform);
+#if VTK_MAJOR_VERSION < 6
     vtk_transformator->SetInput (vtk_model);
+#else
+    vtk_transformator->SetInputData (vtk_model);
+#endif
     vtk_transformator->Update ();
 
     // Visualize
     vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
     vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
     vtk_mapper->SetInput(vtk_transformator->GetOutput ());
+#else
+    vtk_mapper->SetInputData (vtk_transformator->GetOutput ());
+#endif
     vtk_actor->SetMapper(vtk_mapper);
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);

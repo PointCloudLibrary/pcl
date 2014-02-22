@@ -276,7 +276,6 @@ void vtkVertexBufferObject::CreateBuffer()
     {
     GLuint ioBuf;
     vtkgl::GenBuffers(1, &ioBuf);
-    vtkGraphicErrorMacro(this->Context, "after GenBuffers");
     this->Handle = ioBuf;
     }
 }

@@ -18,6 +18,7 @@
 #include "pcl/visualization/vtk/vtkVertexBufferObject.h"
 #include "pcl/visualization/vtk/vtkVertexBufferObjectMapper.h"
 
+#include "vtkVersion.h"
 #include "vtkCellData.h"
 #include "vtkExecutive.h"
 #include "vtkInformation.h"
@@ -146,7 +147,11 @@ void vtkVertexBufferObjectMapper::SetInput(vtkPolyData *input)
 //  std::cout << "SetInput" << endl;
   if(input)
   {
+#if VTK_MAJOR_VERSION < 6
     this->SetInputConnection(0, input->GetProducerPort());
+#else
+    this->SetInputDataObject (0, input);
+#endif
   }
   else
   {
@@ -162,7 +167,11 @@ void vtkVertexBufferObjectMapper::SetInput(vtkDataSet *input)
 //  std::cout << "SetInput" << endl;
   if(input)
   {
+#if VTK_MAJOR_VERSION < 6
     this->SetInputConnection(0, input->GetProducerPort());
+#else
+    this->SetInputDataObject (0, input);
+#endif
   }
   else
   {

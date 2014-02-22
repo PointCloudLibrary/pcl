@@ -98,7 +98,7 @@ Camera::computeFrustum ()
 //
 //  vtkSmartPointer<vtkPolyDataMapper> hull_mapper = static_cast<vtkPolyDataMapper*> (hull_actor_->GetMapper ());
 //
-//#if VTK_MAJOR_VERSION <= 5
+//#if VTK_MAJOR_VERSION < 6
 //  hull_mapper->SetInput (hullData);
 //#else
 //  hull_mapper->SetInputData(hullData);

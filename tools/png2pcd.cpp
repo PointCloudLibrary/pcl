@@ -165,8 +165,8 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkImageData> color_image_data;
   vtkSmartPointer<vtkPNGReader> color_reader = vtkSmartPointer<vtkPNGReader>::New ();
   color_reader->SetFileName (argv[png_file_indices[0]]);
+  color_reader->Update ();
   color_image_data = color_reader->GetOutput ();
-  color_image_data->Update ();
 
   int components = color_image_data->GetNumberOfScalarComponents ();
   int dimensions[3];
@@ -183,8 +183,8 @@ main (int argc, char** argv)
   {
     depth_reader = vtkSmartPointer<vtkPNGReader>::New ();
     depth_reader->SetFileName (argv[png_file_indices[1]]);
+    depth_reader->Update ();
     depth_image_data = depth_reader->GetOutput ();
-    depth_image_data->Update ();
 
     if (depth_reader->GetNumberOfScalarComponents () != 1)
     {
