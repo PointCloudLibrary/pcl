@@ -5,7 +5,7 @@
 
   The <b>pcl_sample_consensus</b> library holds SAmple Consensus (SAC) methods like 
   <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can
-  combined freely in order to detect specific models and their paramters in point clouds.
+  combined freely in order to detect specific models and their parameters in point clouds.
 
   Some of the models implemented in this library include: lines, planes, cylinders, and spheres.  Plane fitting
   is often applied to the task of detecting common indoor surfaces, such as walls, floors, and table tops.
@@ -28,8 +28,8 @@
     <li><a href="classpcl_1_1_sample_consensus_model_perpendicular_plane.html">SACMODEL_PERPENDICULAR_PLANE</a> - a model for determining a plane <b>perpendicular</b> to an user-specified axis, within a maximum specified angular deviation. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
     <li>SACMODEL_PARALLEL_LINES - not implemented yet</li>
     <li><a href="classpcl_1_1_sample_consensus_model_normal_plane.html">SACMODEL_NORMAL_PLANE</a> - a model for determining plane models using an additional constraint: the surface normals at each inlier point has to be parallel to the surface normal of the output plane, within a maximum specified angular deviation. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_parallel_plane.html">SACMODEL_PARALLEL_PLANE</a> - a model for determining a plane <b>parallel</b> to an user-specified axis, within a maximim specified angular deviation. <a href="../classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_normal_parallel_plane.html">SACMODEL_NORMAL_PARALLEL_PLANE</a> defines a model for 3D plane segmentation using additional surface normal constraints. The plane must lie <b>parallel</b> to a user-specified axis. SACMODEL_NORMAL_PARALLEL_PLANE therefore is equivallent to SACMODEL_NORMAL_PLANE + SACMODEL_PARALLEL_PLANE. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
+    <li><a href="classpcl_1_1_sample_consensus_model_parallel_plane.html">SACMODEL_PARALLEL_PLANE</a> - a model for determining a plane <b>parallel</b> to an user-specified axis, within a maximum specified angular deviation. <a href="../classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
+    <li><a href="classpcl_1_1_sample_consensus_model_normal_parallel_plane.html">SACMODEL_NORMAL_PARALLEL_PLANE</a> defines a model for 3D plane segmentation using additional surface normal constraints. The plane must lie <b>parallel</b> to a user-specified axis. SACMODEL_NORMAL_PARALLEL_PLANE therefore is equivalent to SACMODEL_NORMAL_PLANE + SACMODEL_PARALLEL_PLANE. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
   </ul>
 
   The following list describes the robust sample consensus estimators implemented:
