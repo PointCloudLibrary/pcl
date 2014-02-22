@@ -3,10 +3,15 @@
 How to use iterative closest point
 ----------------------------------
 
-This document demonstrates using the Iterative Closest Point algorithm in your
-code which can determine if one PointCloud is just a rigid transformation of
-another by minimizing the distances between the points of two pointclouds and
-rigidly transforming them.
+This document will teach you how to code an interactive closest point viewer.
+The program will input a point cloud; apply a rigid transformation matrix to the
+point cloud. Then an ICP algorithm will be launched an each time the user presses
+"space" in the viewer an iteration will be done; refreshing the viewer.
+
+Generating a mesh with Blender
+------------------------------
+If you want to use the same mesh as in this tutorial here is the procedure to create it:
+
 
 The code
 --------
