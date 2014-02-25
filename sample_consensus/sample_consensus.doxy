@@ -14,7 +14,7 @@
 
   \image html http://www.pointclouds.org/assets/images/contents/documentation/sample_consensus_planes_cylinders.png
 
-  As of PCL 1.0, the following models are supported:
+  The following models are supported:
   <ul>
     <li>\link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink - used to determine plane models. The <b>four</b> coefficients of the plane are its <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian Normal form</a>: [<b>normal_x normal_y normal_z d</b>]</li>
     <li>\link pcl::SampleConsensusModelLine SACMODEL_LINE \endlink - used to determine line models. The <b>six</b> coefficients of the line are given by a point on the line and the direction of the line as: [<b>point_on_line.x point_on_line.y point_on_line.z line_direction.x line_direction.y line_direction.z</b>]</li>
