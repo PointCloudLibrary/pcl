@@ -98,8 +98,6 @@ typedef pcl::gpu::ScopeTimerCV ScopeTimeT;
   typedef pcl::ScopeTime ScopeTimeT;
 #endif
 
-#include "../src/internal.h"
-  
 #include <Eigen/Dense>
 #include <cmath>
 #include <iostream>

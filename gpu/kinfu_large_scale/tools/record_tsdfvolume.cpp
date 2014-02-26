@@ -49,8 +49,6 @@
 #include <pcl/gpu/containers/initialization.h>
 #include "openni_capture.h"
 
-#include "../src/internal.h"
-
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
 
