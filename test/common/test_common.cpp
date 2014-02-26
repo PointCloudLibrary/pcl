@@ -1228,6 +1228,9 @@ TEST (PCL, HasField)
   // has_curvature
   EXPECT_TRUE ((pcl::traits::has_curvature<pcl::PointNormal>::value));
   EXPECT_FALSE ((pcl::traits::has_curvature<pcl::RGB>::value));
+  // has_intensity
+  EXPECT_TRUE ((pcl::traits::has_intensity<pcl::PointXYZI>::value));
+  EXPECT_FALSE ((pcl::traits::has_intensity<pcl::PointXYZ>::value));
   // has_color
   EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGB>::value));
   EXPECT_TRUE ((pcl::traits::has_color<pcl::PointXYZRGBA>::value));
