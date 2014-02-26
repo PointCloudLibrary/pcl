@@ -135,6 +135,9 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_demean_cloud "${SUBSYS_NAME}" demean_cloud.cpp)
   target_link_libraries(pcl_demean_cloud pcl_common pcl_io)
 
+  PCL_ADD_EXECUTABLE(pcl_compute_hausdorff "${SUBSYS_NAME}" compute_hausdorff.cpp)
+  target_link_libraries(pcl_compute_hausdorff pcl_common pcl_io pcl_search)
+
 
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
