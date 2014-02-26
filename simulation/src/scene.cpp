@@ -32,5 +32,11 @@ Scene::draw ()
     (*model)->draw ();
 }
 
+void
+Scene::clear ()
+{
+  models_.clear();
+}
+
 } // namespace - simulation
 } // namespace - pcl
