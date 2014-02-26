@@ -80,13 +80,13 @@ pcl::planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
 
   if ((test_cosine < upper_limit) && (test_cosine > lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are Parallel");
+      PCL_ERROR ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
   if ((test_cosine > -upper_limit) && (test_cosine < -lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are Parallel");
+      PCL_ERROR ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
