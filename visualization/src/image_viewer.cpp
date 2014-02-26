@@ -675,7 +675,7 @@ bool
 pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, double radius,
                                             const std::string &layer_id, double opacity)
 {
-  return (addCircle (x, y, radius, layer_id, opacity));
+  return (addCircle (x, y, radius, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
