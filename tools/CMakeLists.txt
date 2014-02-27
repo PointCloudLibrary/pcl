@@ -138,6 +138,8 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_compute_hausdorff "${SUBSYS_NAME}" compute_hausdorff.cpp)
   target_link_libraries(pcl_compute_hausdorff pcl_common pcl_io pcl_search)
 
+  PCL_ADD_EXECUTABLE(pcl_morph "${SUBSYS_NAME}" morph.cpp)
+  target_link_libraries(pcl_morph pcl_common pcl_io pcl_filters)
 
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
