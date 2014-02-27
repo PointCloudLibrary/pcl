@@ -174,6 +174,21 @@ Basic Usage
      .. |mi_7| image:: images/pcl_logo.png
                :height: 75px
 
+  * :ref:`matrix_transform`
+
+     ======  ======
+     |mi_8|  Title: **Using matrixes to transform a point cloud**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to transform a point cloud using a matrix.
+     ======  ======
+
+     .. |mi_8| image:: images/matrix_transform/cube.png
+               :height: 120px
+
 .. _advanced_usage:
 
 Advanced Usage
@@ -766,6 +781,21 @@ Registration
 
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
+
+  * :ref:`interactive_icp`
+
+     ======  ======
+     |re_7|  Title: **Interactive ICP**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial will teach you how to build an interactive ICP program
+     ======  ======
+
+     .. |re_7| image:: images/interactive_icp/monkey.png
+               :height: 120px
 
   * :ref:`normal_distributions_transform`
 
