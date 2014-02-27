@@ -140,6 +140,9 @@ if (build)
 
   PCL_ADD_EXECUTABLE(pcl_morph "${SUBSYS_NAME}" morph.cpp)
   target_link_libraries(pcl_morph pcl_common pcl_io pcl_filters)
+  
+  PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter "${SUBSYS_NAME}" progressive_morphological_filter.cpp)
+  target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
 
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
