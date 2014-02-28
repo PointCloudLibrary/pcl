@@ -585,15 +585,26 @@ pcl::RegionGrowingRGB<PointT, NormalT>::assembleRegions (std::vector<unsigned in
   }
 
   // now we need to erase empty regions
-  std::vector< pcl::PointIndices >::iterator i_region;
-  i_region = clusters_.begin ();
-  while(i_region != clusters_.end ())
+  if (clusters_.empty ()) 
+    return;
+
+  std::vector<pcl::PointIndices>::iterator itr1, itr2;
+  itr1 = clusters_.begin ();
+  itr2 = clusters_.end () - 1;
+
+  while (itr1 < itr2)
   {
-    if ( i_region->indices.empty () )
-      i_region = clusters_.erase (i_region);
-    else
-      i_region++;
+    while (!(itr1->indices.empty ()) && itr1 < itr2) 
+      itr1++;
+    while (  itr2->indices.empty ()  && itr1 < itr2) 
+      itr2--;
+	  
+    if (itr1 != itr2)
+      itr1->indices.swap (itr2->indices);
   }
+
+  if (itr2->indices.empty ())
+    clusters_.erase (itr2, clusters_.end ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
