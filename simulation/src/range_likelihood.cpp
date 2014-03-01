@@ -14,7 +14,7 @@
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static boost::minstd_rand generator (static_cast<unsigned int>(std::time(0))); // seed
+static boost::minstd_rand generator (static_cast<unsigned int> (std::time (0))); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0
