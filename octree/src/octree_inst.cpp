@@ -35,10 +35,6 @@
  * Author: Julius Kammerl (julius@kammerl.de)
  */
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
 
@@ -60,6 +56,11 @@ template class PCL_EXPORTS pcl::octree::OctreeBase<
     pcl::octree::OctreeContainerEmpty,
     pcl::octree::OctreeContainerEmpty >;
 
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/impl/instantiate.hpp>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 PCL_INSTANTIATE(OctreePointCloudSingleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
 PCL_INSTANTIATE(OctreePointCloudDoubleBufferWithLeafDataTVector, PCL_XYZ_POINT_TYPES)
 
@@ -79,4 +80,5 @@ PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES)
 
+#endif    // PCL_NO_PRECOMPILE
 
