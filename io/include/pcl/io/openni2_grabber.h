@@ -399,7 +399,7 @@ namespace pcl
         * \param[in] depth the depth image to convert
         */
         boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> >
-        convertToXYZPointCloud (const pcl::io::openni2::DepthImage::Ptr &depth) const;
+        convertToXYZPointCloud (const pcl::io::openni2::DepthImage::Ptr &depth);
 
         /** \brief Convert a Depth + RGB image pair to a pcl::PointCloud<PointT>
         * \param[in] image the RGB image to convert
@@ -407,7 +407,7 @@ namespace pcl
         */
         template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
         convertToXYZRGBPointCloud (const pcl::io::openni2::Image::Ptr &image,
-          const pcl::io::openni2::DepthImage::Ptr &depth_image) const;
+          const pcl::io::openni2::DepthImage::Ptr &depth_image);
 
         /** \brief Convert a Depth + Intensity image pair to a pcl::PointCloud<pcl::PointXYZI>
         * \param[in] image the IR image to convert
@@ -415,8 +415,11 @@ namespace pcl
         */
         boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> >
         convertToXYZIPointCloud (const pcl::io::openni2::IRImage::Ptr &image,
-          const pcl::io::openni2::DepthImage::Ptr &depth_image) const;
+          const pcl::io::openni2::DepthImage::Ptr &depth_image);
 
+        std::vector<uint8_t> color_resize_buffer_;
+        std::vector<uint16_t> depth_resize_buffer_;
+        std::vector<uint16_t> ir_resize_buffer_;
 
         // Stream callbacks /////////////////////////////////////////////////////
         void
