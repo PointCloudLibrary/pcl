@@ -547,10 +547,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       cam->GetViewUp (view);
       int *win_pos = Interactor->GetRenderWindow ()->GetPosition ();
       int *win_size = Interactor->GetRenderWindow ()->GetSize ();
-      std::cerr << clip[0]  << "," << clip[1]  << "/" << focal[0] << "," << focal[1] << "," << focal[2] << "/" <<
-                   pos[0]   << "," << pos[1]   << "," << pos[2]   << "/" << view[0]  << "," << view[1]  << "," << view[2] << "/" <<
-                   cam->GetViewAngle () / 180.0 * M_PI  << "/" << win_size[0] << "," << win_size[1] << "/" << win_pos[0] << "," << win_pos[1]
-                << endl;
+      std::cerr <<  "Clipping plane [near,far] "  << clip[0] << ", " << clip[1] << endl <<
+                    "Focal point [x,y,z] " << focal[0] << ", " << focal[1] << ", " << focal[2] << endl <<
+                    "Position [x,y,z] " << pos[0] << ", " << pos[1] << ", " << pos[2] << endl <<
+                    "View up [x,y,z] " << view[0]  << ", " << view[1]  << ", " << view[2] << endl <<
+                    "Camera view angle [degrees] " << cam->GetViewAngle () << endl <<
+                    "Window size [x,y] " << win_size[0] << ", " << win_size[1] << endl <<
+                    "Window position [x,y] " << win_pos[0] << ", " << win_pos[1] << endl;
       break;
     }
     case '=':
