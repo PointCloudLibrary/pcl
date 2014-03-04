@@ -65,13 +65,20 @@ namespace pcl
     * \param[in] cloud_in the input point cloud dataset
     * \param[in] resolution the window size to be used for the morphological operation
     * \param[in] morphological_operator the morphological operator to apply (open, close, dilate, erode)
+    * \param[in] nr_threads the number of threads to be used when applying morphological operator
     * \param[out] cloud_out the resultant output point cloud dataset
     * \ingroup filters
     */
   template <typename PointT> PCL_EXPORTS void
   applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
                               float resolution, const int morphological_operator,
+                              unsigned int nr_threads, pcl::PointCloud<PointT> &cloud_out);
+
+  template <typename PointT> PCL_EXPORTS void
+  applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+                              float resolution, const int morphological_operator,
                               pcl::PointCloud<PointT> &cloud_out);
+
 }
 
 #ifdef PCL_NO_PRECOMPILE

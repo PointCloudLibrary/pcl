@@ -57,6 +57,7 @@ typedef const Cloud::ConstPtr ConstCloudPtr;
 
 std::string default_method = "open";
 float default_resolution = 1.0f;
+unsigned int default_threads = 0; // automatic determination
 
 void
 printHelp (int, char **argv)
@@ -69,6 +70,8 @@ printHelp (int, char **argv)
   print_value ("%s", default_method.c_str ()); print_info (")\n");
   print_info ("                     -input_dir X  = batch process all PCD files found in input_dir\n");
   print_info ("                     -output_dir X = save the processed files from input_dir in this directory\n");
+  print_info ("                     -threads X = the number of threads to use (default: ");
+  print_value ("%d", default_threads); print_info (")\n");
 }
 
 bool
@@ -87,7 +90,7 @@ loadCloud (const std::string &filename, Cloud &cloud)
 }
 
 void
-compute (ConstCloudPtr &input, Cloud &output, float resolution, std::string method)
+compute (ConstCloudPtr &input, Cloud &output, float resolution, std::string method, unsigned int threads)
 {
   // Estimate
   TicToc tt;
@@ -97,19 +100,19 @@ compute (ConstCloudPtr &input, Cloud &output, float resolution, std::string meth
 
   if (method == "dilate")
   {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_DILATE, output);
+    applyMorphologicalOperator<PointType> (input, resolution, MORPH_DILATE, threads, output);
   }
   else if (method == "erode")
   {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_ERODE, output);
+    applyMorphologicalOperator<PointType> (input, resolution, MORPH_ERODE, threads, output);
   }
   else if (method == "open")
   {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_OPEN, output);
+    applyMorphologicalOperator<PointType> (input, resolution, MORPH_OPEN, threads, output);
   }
   else if (method == "close")
   {
-    applyMorphologicalOperator<PointType> (input, resolution, MORPH_CLOSE, output);
+    applyMorphologicalOperator<PointType> (input, resolution, MORPH_CLOSE, threads, output);
   }
   else
   {
@@ -136,7 +139,7 @@ saveCloud (const std::string &filename, const Cloud &output)
 
 int
 batchProcess (const vector<string> &pcd_files, string &output_dir,
-              float resolution, std::string method)
+              float resolution, std::string method, unsigned int threads)
 {
   vector<string> st;
   for (size_t i = 0; i < pcd_files.size (); ++i)
@@ -148,7 +151,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir,
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, resolution, method);
+    compute (cloud, output, resolution, method, threads);
 
     // Prepare output file name
     string filename = pcd_files[i];
@@ -168,7 +171,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir,
 int
 main (int argc, char** argv)
 {
-  print_info ("Filter a point cloud using the pcl::morphologicalOpen. For more information, use: %s -h\n", argv[0]);
+  print_info ("Filter a point cloud using the pcl::applyMorphologicalOperator. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
   {
@@ -181,8 +184,10 @@ main (int argc, char** argv)
   // Command line parsing
   std::string method = default_method;
   float resolution = default_resolution;
+  unsigned int threads = default_threads;
   parse_argument (argc, argv, "-method", method);
   parse_argument (argc, argv, "-resolution", resolution);
+  parse_argument (argc, argv, "-threads", threads);
   string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
   {
@@ -215,7 +220,7 @@ main (int argc, char** argv)
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, resolution, method);
+    compute (cloud, output, resolution, method, threads);
 
     // Save into the second file
     saveCloud (argv[p_file_indices[1]], output);
@@ -235,7 +240,7 @@ main (int argc, char** argv)
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
         }
       }
-      batchProcess (pcd_files, output_dir, resolution, method);
+      batchProcess (pcd_files, output_dir, resolution, method, threads);
     }
     else
     {

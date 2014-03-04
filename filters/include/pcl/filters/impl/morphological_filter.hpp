@@ -56,7 +56,7 @@
 template <typename PointT> void
 pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
                                  float resolution, const int morphological_operator,
-                                 pcl::PointCloud<PointT> &cloud_out)
+                                 unsigned int threads, pcl::PointCloud<PointT> &cloud_out)
 {
   if (cloud_in->empty ())
     return;
@@ -75,6 +75,10 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
     case MORPH_DILATE:
     case MORPH_ERODE:
     {
+
+#ifdef _OPENMP
+#pragma omp parallel for num_threads (threads)
+#endif
       for (size_t p_idx = 0; p_idx < cloud_in->points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
@@ -118,6 +122,9 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       pcl::copyPointCloud<PointT, PointT> (*cloud_in, cloud_temp);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads (threads)
+#endif
       for (size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
@@ -155,6 +162,9 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
 
       cloud_temp.swap (cloud_out);
 
+#ifdef _OPENMP
+#pragma omp parallel for num_threads (threads)
+#endif
       for (size_t p_idx = 0; p_idx < cloud_temp.points.size (); ++p_idx)
       {
         Eigen::Vector3f bbox_min, bbox_max;
@@ -202,6 +212,17 @@ pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPt
   return;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> void
+pcl::applyMorphologicalOperator (const typename pcl::PointCloud<PointT>::ConstPtr &cloud_in,
+                                 float resolution, const int morphological_operator,
+                                 pcl::PointCloud<PointT> &cloud_out)
+{
+  applyMorphologicalOperator<PointT> (cloud_in, resolution, morphological_operator, 0, cloud_out);
+  return;
+}
+
+#define PCL_INSTANTIATE_applyMorphologicalOperator(T) template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (const pcl::PointCloud<T>::ConstPtr &, float, const int, unsigned int, pcl::PointCloud<T> &);
 #define PCL_INSTANTIATE_applyMorphologicalOperator(T) template PCL_EXPORTS void pcl::applyMorphologicalOperator<T> (const pcl::PointCloud<T>::ConstPtr &, float, const int, pcl::PointCloud<T> &);
 
 #endif  //#ifndef PCL_FILTERS_IMPL_MORPHOLOGICAL_FILTER_H_
