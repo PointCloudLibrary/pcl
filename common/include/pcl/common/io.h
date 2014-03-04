@@ -380,6 +380,19 @@ namespace pcl
                   const std::vector<pcl::PointIndices> &indices, 
                   pcl::PointCloud<PointOutT> &cloud_out);
 
+  /** \brief Copy a point cloud inside a larger one interpolating borders.
+    * \param[in] cloud_in the input point cloud dataset
+    * \param[out] cloud_out the resultant output point cloud dataset
+    * Position of cloud_in inside cloud_out is given by \a top, \a left, \a bottom \a right.
+    * \throw pcl::BadArgumentsException if any of top, bottm, left or right is negative.
+    * \ingroup common
+    */
+  template <typename PointT> void
+  copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
+                  pcl::PointCloud<PointT> &cloud_out,
+                  int top, int bottom, int left, int right,
+                  int borderType, const PointT& value);
+
   /** \brief Concatenate two datasets representing different fields.
     *
     * \note If the input datasets have overlapping fields (i.e., both contain
