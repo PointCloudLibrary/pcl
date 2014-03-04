@@ -71,6 +71,8 @@
 #include "tsdf_volume.h"
 #include "tsdf_volume.hpp"
 
+#include "camera_pose.h"
+
 #ifdef HAVE_OPENCV  
   #include <opencv2/highgui/highgui.hpp>
   #include <opencv2/imgproc/imgproc.hpp>
@@ -646,8 +648,8 @@ struct KinFuApp
 {
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
-  KinFuApp(pcl::Grabber& source, float vsz, int icp, int viz) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
-    registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), scene_cloud_view_(viz), image_view_(viz), time_ms_(0), icp_(icp), viz_(viz)
+  KinFuApp(pcl::Grabber& source, float vsz, int icp, int viz, boost::shared_ptr<CameraPoseProcessor> pose_processor=boost::shared_ptr<CameraPoseProcessor> () ) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
+      registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), scene_cloud_view_(viz), image_view_(viz), time_ms_(0), icp_(icp), viz_(viz), pose_processor_ (pose_processor)
   {    
     //Init Kinfu Tracker
     Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
@@ -667,7 +669,6 @@ struct KinFuApp
     if (!icp)
       kinfu_.disableIcp();
 
-    
     //Init KinfuApp            
     tsdf_cloud_ptr_ = pcl::PointCloud<pcl::PointXYZI>::Ptr (new pcl::PointCloud<pcl::PointXYZI>);
     image_view_.raycaster_ptr_ = RayCaster::Ptr( new RayCaster(kinfu_.rows (), kinfu_.cols ()) );
@@ -780,7 +781,13 @@ struct KinFuApp
         else
           has_image = kinfu_ (depth_device_);                  
       }
-      
+
+      // process camera pose
+      if (pose_processor_)
+      {
+        pose_processor_->processPose (kinfu_.getCameraPose ());
+      }
+
       image_view_.showDepth (depth);
       //image_view_.showGeneratedDepth(kinfu_, kinfu_.getCameraPose());
     }
@@ -1055,6 +1062,8 @@ struct KinFuApp
   int time_ms_;
   int icp_, viz_;
 
+  boost::shared_ptr<CameraPoseProcessor> pose_processor_;
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   static void
   keyboard_callback (const visualization::KeyboardEvent &e, void *cookie)
@@ -1154,6 +1163,7 @@ print_cli_help ()
   cout << "    --scale-truncation, -st                 : scale the truncation distance and raycaster based on the volume size" << endl;
   cout << "    -volume_size <size_in_meters>           : define integration volume size" << endl;
   cout << "    --depth-intrinsics <fx>,<fy>[,<cx>,<cy> : set the intrinsics of the depth camera" << endl;
+  cout << "    -save_pose <pose_file.csv>              : write tracked camera positions to the specified file" << endl;
   cout << "Valid depth data sources:" << endl; 
   cout << "    -dev <device> (default), -oni <oni_file>, -pcd <pcd_file or directory>" << endl;
   cout << "";
@@ -1233,7 +1243,14 @@ main (int argc, char* argv[])
   pc::parse_argument (argc, argv, "--icp", icp);
   pc::parse_argument (argc, argv, "--viz", visualization);
         
-  KinFuApp app (*capture, volume_size, icp, visualization);
+  std::string camera_pose_file;
+  boost::shared_ptr<CameraPoseProcessor> pose_processor;
+  if (pc::parse_argument (argc, argv, "-save_pose", camera_pose_file) && camera_pose_file.size () > 0)
+  {
+    pose_processor.reset (new CameraPoseWriter (camera_pose_file));
+  }
+
+  KinFuApp app (*capture, volume_size, icp, visualization, pose_processor);
 
   if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     app.toggleEvaluationMode(eval_folder, match_file);
