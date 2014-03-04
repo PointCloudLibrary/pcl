@@ -81,6 +81,24 @@ namespace pcl
         EXPECT_NEAR (v1[i], v2[i], epsilon);
     }
 
+    template <typename P1, typename P2>
+    void EXPECT_EQ_XYZ (const P1& p1, const P2& p2)
+    {
+      SCOPED_TRACE("EXPECT_EQ_XYZ failed");
+      EXPECT_EQ (p1.x, p2.x);
+      EXPECT_EQ (p1.y, p2.y);
+      EXPECT_EQ (p1.z, p2.z);
+    }
+
+    template <typename P1, typename P2, typename Scalar>
+    void EXPECT_NEAR_XYZ (const P1& p1, const P2& p2, const Scalar& epsilon)
+    {
+      SCOPED_TRACE("EXPECT_NEAR_XYZ failed");
+      EXPECT_NEAR (p1.x, p2.x, epsilon);
+      EXPECT_NEAR (p1.y, p2.y, epsilon);
+      EXPECT_NEAR (p1.z, p2.z, epsilon);
+    }
+
     namespace internal
     {
 
