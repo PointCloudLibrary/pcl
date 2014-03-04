@@ -42,7 +42,6 @@ if(build)
         src/projection_matrix.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
-        src/utils.cpp
         ${range_image_srcs}
         )
 
