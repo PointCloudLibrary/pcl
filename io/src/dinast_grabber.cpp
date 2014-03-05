@@ -342,7 +342,7 @@ pcl::DinastGrabber::getXYZIPointCloud ()
 
       
       // Get rid of the noise
-      if(cloud->points[depth_idx].z > 0.8f or cloud->points[depth_idx].z < 0.02f)
+      if(cloud->points[depth_idx].z > 0.8f || cloud->points[depth_idx].z < 0.02f)
       {
         cloud->points[depth_idx].x = std::numeric_limits<float>::quiet_NaN ();
       	cloud->points[depth_idx].y = std::numeric_limits<float>::quiet_NaN ();
