@@ -173,6 +173,7 @@ namespace pcl
       std::vector<double> interior_param; ///>> output
       vector_vec2d interior_line_start; ///>> output
       vector_vec2d interior_line_end; ///>> output
+      std::vector<int> interior_line_flag; ///>> output
       vector_vec2d interior_normals; ///>> output
 
       std::vector<double> interior_weight;
@@ -191,6 +192,8 @@ namespace pcl
       vector_vec2d closest_tangents;
       vector_vec2d closest_normals;
       std::vector<double> closest_rho;
+
+      std::vector<int> element_points_support;
 
       /** \brief Clear all interior data */
       inline void

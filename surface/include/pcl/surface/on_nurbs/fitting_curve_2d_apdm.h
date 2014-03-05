@@ -225,7 +225,7 @@ namespace pcl
 
         /** \brief Assemble point-to-curve constraints. */
         virtual void
-        assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
+        assembleInterior (const std::vector<double> &elements, double wInt, double sigma2, double rScale, unsigned &row);
 
         /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
          * are computed and point-to-curve constraints are added. */

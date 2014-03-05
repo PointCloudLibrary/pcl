@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
@@ -77,10 +77,12 @@ FittingCurve2dASDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
 
   m_solver.assign (nrows, ncp * 2, 1);
 
+  m_data->element_points_support.assign(elements.size(), 0);
+
   unsigned row (0);
 
   if (wInt > 0.0)
-    assembleInterior (wInt, parameter.interior_sigma2, parameter.rScale, row);
+    assembleInterior (elements, wInt, parameter.interior_sigma2, parameter.rScale, row);
 
   assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, row);
 
@@ -256,13 +258,14 @@ FittingCurve2dASDM::addCageRegularisation (double weight, unsigned &row, const s
 }
 
 void
-FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
+FittingCurve2dASDM::assembleInterior (const std::vector<double> &elements, double wInt, double sigma2, double rScale, unsigned &row)
 {
   unsigned nInt = unsigned (m_data->interior.size ());
   bool wFunction (true);
   double ds = 1.0 / (2.0 * sigma2);
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
+  m_data->interior_line_flag.clear();
   m_data->interior_error.clear ();
   m_data->interior_normals.clear ();
 
@@ -303,6 +306,12 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     }
 
     m_data->interior_error.push_back (error);
+
+    if(error<100.0 * sigma2)  // todo make non-heuristic
+    {
+      int E = findElement(param, elements);
+      m_data->element_points_support[E]++;
+    }
 
     double dt, kappa, rho, rho_prev;
     Eigen::Vector2d n_prev, t_prev;
@@ -368,15 +377,17 @@ FittingCurve2dASDM::assembleInterior (double wInt, double sigma2, double rScale,
     if (p < m_data->interior_weight_function.size ())
       wFunction = m_data->interior_weight_function[p];
 
-    m_data->interior_line_start.push_back (pt);
-    m_data->interior_line_end.push_back (pcp);
-
     double w (wInt);
     if (z (2) > 0.0 && wFunction)
       w = wInt * exp (-(error * error) * ds);
 
     if (w > 1e-6) // avoids ill-conditioned matrix
+    {
       addPointConstraint (m_data->interior_param[p], m_data->interior[p], n_prev, t_prev, rho_prev, d, w, row);
+      m_data->interior_line_start.push_back (pt);
+      m_data->interior_line_end.push_back (pcp);
+      m_data->interior_line_flag.push_back(0);
+    }
   }
 
   //  printf("[FittingCurve2dASDM::assembleInterior] d>0: %d d<0: %d\n", i1, i2);
@@ -389,8 +400,6 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
   m_data->closest_points.clear ();
   m_data->closest_points_param.clear ();
   m_data->closest_points_error.clear ();
-  //  m_data->interior_line_start.clear();
-  //  m_data->interior_line_end.clear();
 
   unsigned updateTNR (false);
   if (m_data->closest_ncps_prev != m_nurbs.CVCount ())
@@ -489,12 +498,17 @@ FittingCurve2dASDM::assembleClosestPoints (const std::vector<double> &elements, 
       d = -(p2 - p1).norm ();
 
     //    if (weight > 0.0 && (std::fabs(xi2 - xi) < std::fabs(dxi)))
-    if (w > 0.0)
+    //    if (w > 0.0) // &&
+    if(w>0 && m_data->element_points_support[i] < 1) // if element has no support by data points
     {
       addPointConstraint (xi, p2, n_prev, t_prev, rho_prev, d, w, row);
-      //      m_data->interior_line_start.push_back(p1);
-      //      m_data->interior_line_end.push_back(p2);
+      m_data->interior_line_start.push_back(p1);
+      m_data->interior_line_end.push_back(p2);
+      m_data->interior_line_flag.push_back(1);
     }
+
+
+
 
   }
 }
