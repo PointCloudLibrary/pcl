@@ -782,6 +782,21 @@ Registration
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
 
+  * :ref:`interactive_icp`
+
+     ======  ======
+     |re_7|  Title: **Interactive ICP**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial will teach you how to build an interactive ICP program
+     ======  ======
+
+     .. |re_7| image:: images/interactive_icp/monkey.png
+               :height: 120px
+
   * :ref:`normal_distributions_transform`
 
      ======  ======
