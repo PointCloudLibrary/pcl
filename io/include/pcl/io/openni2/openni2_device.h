@@ -182,11 +182,11 @@ namespace pcl
           getDefaultDepthMode () const;
 
           float
-          getIRFocalLength (int output_y_resolution) const;
+          getIRFocalLength () const;
           float
-          getColorFocalLength (int output_y_resolution) const;
+          getColorFocalLength () const;
           float
-          getDepthFocalLength (int output_y_resolution) const;
+          getDepthFocalLength () const;
 
           // Baseline between sensors. Returns 0 if this value does not exist.
           float

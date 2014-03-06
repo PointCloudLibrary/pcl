@@ -165,7 +165,7 @@ pcl::io::openni2::OpenNI2Device::isValid () const
 }
 
 float
-pcl::io::openni2::OpenNI2Device::getIRFocalLength (int output_x_resolution) const
+pcl::io::openni2::OpenNI2Device::getIRFocalLength () const
 {
   boost::shared_ptr<openni::VideoStream> stream = getIRVideoStream ();
 
@@ -176,7 +176,7 @@ pcl::io::openni2::OpenNI2Device::getIRFocalLength (int output_x_resolution) cons
 }
 
 float
-pcl::io::openni2::OpenNI2Device::getColorFocalLength (int output_x_resolution) const
+pcl::io::openni2::OpenNI2Device::getColorFocalLength () const
 {
   boost::shared_ptr<openni::VideoStream> stream = getColorVideoStream ();
 
@@ -187,7 +187,7 @@ pcl::io::openni2::OpenNI2Device::getColorFocalLength (int output_x_resolution) c
 }
 
 float
-pcl::io::openni2::OpenNI2Device::getDepthFocalLength (int output_x_resolution) const
+pcl::io::openni2::OpenNI2Device::getDepthFocalLength () const
 {
   boost::shared_ptr<openni::VideoStream> stream = getDepthVideoStream ();
 
@@ -539,7 +539,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
   for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
   {
     OpenNI2VideoMode mode = *modeItr;
-    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ = 30.0) )
+    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
   return (modeList.at (0)); // Return first mode if we can't find VGA
@@ -553,7 +553,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
   for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
   {
     OpenNI2VideoMode mode = *modeItr;
-    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ = 30.0) )
+    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
   return (modeList.at (0)); // Return first mode if we can't find VGA
@@ -567,7 +567,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
   for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
   {
     OpenNI2VideoMode mode = *modeItr;
-    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ = 30.0) )
+    if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
       return mode;
   }
   return (modeList.at (0)); // Return first mode if we can't find VGA
