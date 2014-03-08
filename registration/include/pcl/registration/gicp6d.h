@@ -47,18 +47,9 @@
 
 namespace pcl
 {
-  /** \brief A custom point type for position and CIELAB color value */
-  struct EIGEN_ALIGN16 PointXYZLAB
+  struct EIGEN_ALIGN16 _PointXYZLAB
   {
-    inline PointXYZLAB ()
-    {
-      x = y = z = 0.0f; data[3]     = 1.0f;  // important for homogeneous coordinates
-      L = a = b = 0.0f; data_lab[3] = 0.0f;
-    }
-
     PCL_ADD_POINT4D; // this adds the members x,y,z
-
-    //EIGEN_ALIGN16
     union
     {
       struct
@@ -69,13 +60,22 @@ namespace pcl
       };
       float data_lab[4];
     };
-
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  /** \brief A custom point type for position and CIELAB color value */
+  struct PointXYZLAB : public _PointXYZLAB
+  {
+    inline PointXYZLAB ()
+    {
+      x = y = z = 0.0f; data[3]     = 1.0f;  // important for homogeneous coordinates
+      L = a = b = 0.0f; data_lab[3] = 0.0f;
+    }
   };
 }
 
 // register the custom point type in PCL
-POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointXYZLAB,
+POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::_PointXYZLAB,
     (float, x, x)
     (float, y, y)
     (float, z, z)
@@ -83,6 +83,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pcl::PointXYZLAB,
     (float, a, a)
     (float, b, b)
 )
+POINT_CLOUD_REGISTER_POINT_WRAPPER(pcl::PointXYZLAB, pcl::_PointXYZLAB)
 
 namespace pcl
 {
