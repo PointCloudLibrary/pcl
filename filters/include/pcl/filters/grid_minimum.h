@@ -170,11 +170,11 @@ namespace pcl
       /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */
       Eigen::Array4f inverse_leaf_size_;
 
-      /** \brief Minimum number of points per grid cell for the minimum to be computed */
-      unsigned int min_points_per_grid_;
-
       /** \brief The minimum and maximum bin coordinates, the number of divisions, and the division multiplier. */
       Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
+
+      /** \brief Minimum number of points per grid cell for the minimum to be computed */
+      unsigned int min_points_per_grid_;
 
       /** \brief Downsample a Point Cloud using a 2D grid approach
         * \param[out] output the resultant point cloud message
