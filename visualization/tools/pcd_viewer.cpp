@@ -592,10 +592,14 @@ main (int argc, char** argv)
     // Add every dimension as a possible color
     if (!fcolorparam)
     {
+      int idx = 0;
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
+        {
+          idx = f + 1;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
+        }
         else
         {
           if (!isValidFieldName (cloud->fields[f].name))
@@ -606,6 +610,8 @@ main (int argc, char** argv)
         //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
         p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
+      // Set RGB color handler as default
+      p->updateColorHandlerIndex (cloud_name.str (), idx);
     }
 
     // Additionally, add normals as a handler
