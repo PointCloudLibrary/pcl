@@ -37,6 +37,7 @@
 #ifndef PCL_OCTREE_LEAF_DATA_H_
 #define PCL_OCTREE_LEAF_DATA_H_
 
+#include <pcl/point_types.h>
 #include <pcl/octree/impl/octree_leaf_data.hpp>
 
 namespace pcl
