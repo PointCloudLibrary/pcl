@@ -54,7 +54,13 @@ if(build)
   set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
   PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
-  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" "${CUDA_npp_LIBRARY}")
+
+  if(${CUDA_VERSION} VERSION_LESS "5.5")
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" "${CUDA_npp_LIBRARY}")
+  else()
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" "${CUDA_nppc_LIBRARY}" "${CUDA_nppi_LIBRARY}" "${CUDA_npps_LIBRARY}")
+  endif()
+  
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files
