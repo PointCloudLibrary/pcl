@@ -49,7 +49,7 @@ using namespace pcl;
 
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
-//#include <pcl/octree/octree_pointcloud_adjacency.h>
+#include <pcl/octree/octree_pointcloud_adjacency.h>
 
 using namespace octree;
 
@@ -1620,16 +1620,12 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
 
 }
 
-// TODO: update adjacency octree
-#if 0
+
 TEST (PCL, Octree_Pointcloud_Adjacency)
 {
 
   const unsigned int test_runs = 100;
   unsigned int test_id;
-
-  
-
 
   srand (static_cast<unsigned int> (time (NULL)));
 
@@ -1683,20 +1679,20 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
     
       
 
-    OctreePointCloudAdjacency<PointXYZ> octree (resolution);
+    octree::OctreePointCloudAdjacency<PointXYZ> octree (resolution);
     octree.setInputCloud (cloudIn);
     octree.addPointsFromInputCloud (); 
       
     //Point should have 26 neighbors, plus itself
-    ASSERT_EQ( octree.getLeafContainerAtPoint (point)->getOctreeData ().size() == 27, true);
+    ASSERT_EQ( octree.getLeafContainerAtPoint (point)->getNumNeighbors () == 27, true);
   
     //Other point should only have itself for neighbor
-    ASSERT_EQ( octree.getLeafContainerAtPoint (point)->getOctreeData ().size() == 1, true);
+    ASSERT_EQ( octree.getLeafContainerAtPoint (point2)->getNumNeighbors () == 1, true);
 
   }
 
 }
-#endif
+
 
 /* ---[ */
 int
