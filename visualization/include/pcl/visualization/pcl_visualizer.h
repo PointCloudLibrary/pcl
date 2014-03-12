@@ -521,6 +521,18 @@ namespace pcl
         bool
         updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
 
+        /** \brief Set the pose of an existing coordinate system.
+          *
+          * Returns false if the coordinate system doesn't exist, true if the pose was successfully
+          * updated.
+          *
+          * \param[in] id the point cloud object id (i.e., given on \a addCoordinateSystem etc.)
+          * \param[in] pose the new pose
+          * \return false if no coordinate system with the specified ID was found
+          */
+        bool
+        updateCoordinateSystemPose (const std::string &id, const Eigen::Affine3f& pose);
+
         /** \brief Set the pose of an existing point cloud.
           *
           * Returns false if the point cloud doesn't exist, true if the pose was successfully
