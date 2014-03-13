@@ -60,52 +60,36 @@ namespace pcl
 {
   /** \brief Supervoxel container class - stores a cluster extracted using supervoxel clustering 
    */
-  template <typename PointT>
   class Supervoxel
   {
     public:
       Supervoxel () :
-        voxels_ (new pcl::PointCloud<PointT> ()),
-        normals_ (new pcl::PointCloud<Normal> ())
+        voxels_ (new pcl::PointCloud<PointXYZRGBNormal> ())
         {  } 
       
-      typedef boost::shared_ptr<Supervoxel<PointT> > Ptr;
-      typedef boost::shared_ptr<const Supervoxel<PointT> > ConstPtr;
-
+      typedef boost::shared_ptr<Supervoxel> Ptr;
+      typedef boost::shared_ptr<const Supervoxel> ConstPtr;
+      
       /** \brief Gets the centroid of the supervoxel
        *  \param[out] centroid_arg centroid of the supervoxel
        */ 
+      template <typename PointT>
       void
-      getCentroidPoint (PointXYZRGBA &centroid_arg)
+      getCentroidPoint (PointT &point_arg)
       {
-        centroid_arg = centroid_;
+        copyPoint (centroid_, point_arg);
       }
       
-      /** \brief Gets the point normal for the supervoxel 
-       * \param[out] normal_arg Point normal of the supervoxel
-       * \note This isn't an average, it is a normal computed using all of the voxels in the supervoxel as support
-       */ 
       void
       getCentroidPointNormal (PointNormal &normal_arg)
       {
-        normal_arg.x = centroid_.x;
-        normal_arg.y = centroid_.y;
-        normal_arg.z = centroid_.z;
-        normal_arg.normal_x = normal_.normal_x;
-        normal_arg.normal_y = normal_.normal_y;
-        normal_arg.normal_z = normal_.normal_z;
-        normal_arg.curvature = normal_.curvature;
+        copyPoint (centroid_, normal_arg);
       }
       
-      /** \brief The normal calculated for the voxels contained in the supervoxel */
-      pcl::Normal normal_;
       /** \brief The centroid of the supervoxel - average voxel */
-      pcl::PointXYZRGBA centroid_;
+      pcl::PointXYZRGBNormal centroid_;
       /** \brief A Pointcloud of the voxels in the supervoxel */
-      typename pcl::PointCloud<PointT>::Ptr voxels_;
-      /** \brief A Pointcloud of the normals for the points in the supervoxel */
-      typename pcl::PointCloud<Normal>::Ptr normals_;
-                
+      pcl::PointCloud<PointXYZRGBNormal>::Ptr voxels_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
   };
@@ -132,48 +116,28 @@ namespace pcl
       {
         public:
           VoxelData ():
-            xyz_ (0.0f, 0.0f, 0.0f),
-            rgb_ (0.0f, 0.0f, 0.0f),
-            normal_ (0.0f, 0.0f, 0.0f, 0.0f),
-            curvature_ (0.0f),
-            num_points_ (0),
+            distance_ (std::numeric_limits<float>::max ()),
+            idx_ (-1),
             owner_ (0)
-            {}
-            
-          /** \brief Gets the data of in the form of a point
-           *  \param[out] point_arg Will contain the point value of the voxeldata
-           */  
-          void
-          getPoint (PointT &point_arg) const;
-          
-          /** \brief Gets the data of in the form of a normal
-           *  \param[out] normal_arg Will contain the normal value of the voxeldata
-           */            
-          void
-          getNormal (Normal &normal_arg) const;
-          
-          Eigen::Vector3f xyz_;
-          Eigen::Vector3f rgb_;
-          Eigen::Vector4f normal_;
-          float curvature_;
+          {}
+
           float distance_;
           int idx_;
-          int num_points_;
           SupervoxelHelper* owner_;
           
         public:
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
       
-      typedef pcl::octree::OctreeCentroidContainer <PointT, VoxelData> OctreeCentroidT;
+      typedef pcl::octree::OctreeCentroidContainer <PointXYZRGBNormal, VoxelData> OctreeCentroidT;
       typedef pcl::octree::OctreeAdjacencyContainer<OctreeCentroidT> LeafContainerT;
       typedef std::vector <LeafContainerT*> LeafVectorT;
       
-      typedef typename pcl::PointCloud<PointT> PointCloudT;
+      typedef typename pcl::PointCloud<PointXYZRGBNormal> VoxelCloudT;
       typedef typename pcl::PointCloud<Normal> NormalCloudT;
-      typedef typename pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
-      typedef typename pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
-      typedef typename pcl::search::KdTree<PointT> KdTreeT;
+      typedef typename pcl::octree::OctreePointCloudAdjacency<PointXYZRGBNormal, LeafContainerT> OctreeAdjacencyT;
+      typedef typename pcl::octree::OctreePointCloudSearch <PointXYZRGBNormal> OctreeSearchT;
+      typedef typename pcl::search::KdTree<PointXYZRGBNormal> KdTreeT;
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
            
       using PCLBase <PointT>::initCompute;
@@ -233,7 +197,7 @@ namespace pcl
        * \param[out] supervoxel_clusters A map of labels to pointers to supervoxel structures
        */
       virtual void
-      extract (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      extract (std::map<uint32_t, Supervoxel::Ptr > &supervoxel_clusters);
 
       /** \brief This method sets the cloud to be supervoxelized
        * \param[in] cloud The cloud to be supervoxelize
@@ -252,7 +216,7 @@ namespace pcl
        * \param[out] supervoxel_clusters The resulting refined supervoxels
        */
       virtual void
-      refineSupervoxels (int num_itr, std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      refineSupervoxels (int num_itr, std::map<uint32_t, Supervoxel::Ptr > &supervoxel_clusters);
       
       ////////////////////////////////////////////////////////////
       /** \brief Returns an RGB colorized cloud showing superpixels
@@ -311,7 +275,7 @@ namespace pcl
        * 
        */
       static pcl::PointCloud<pcl::PointNormal>::Ptr
-      makeSupervoxelNormalCloud (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      makeSupervoxelNormalCloud (std::map<uint32_t, Supervoxel::Ptr > &supervoxel_clusters);
       
       /** \brief Returns the current maximum (highest) label */
       int
@@ -335,13 +299,13 @@ namespace pcl
        *  \param[out] seed_points The selected points
        */
       void
-      selectInitialSupervoxelSeeds (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
+      selectInitialSupervoxelSeeds (std::vector<PointXYZRGBNormal, Eigen::aligned_allocator<PointXYZRGBNormal> > &seed_points);
       
       /** \brief This method creates the internal supervoxel helpers based on the provided seed points
        *  \param[in] seed_points The selected points
        */
       void
-      createSupervoxelHelpers (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
+      createSupervoxelHelpers (std::vector<PointXYZRGBNormal, Eigen::aligned_allocator<PointXYZRGBNormal> > &seed_points);
       
       /** \brief This performs the superpixel evolution */
       void
@@ -357,7 +321,7 @@ namespace pcl
       
       /** \brief Constructs the map of supervoxel clusters from the internal supervoxel helpers */
       void
-      makeSupervoxels (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters);
+      makeSupervoxels (std::map<uint32_t, Supervoxel::Ptr> &supervoxel_clusters);
       
       /** \brief Stores the resolution used in the octree */
       float resolution_;
@@ -365,32 +329,35 @@ namespace pcl
       /** \brief Stores the resolution used to seed the superpixels */
       float seed_resolution_;
       
-      /** \brief Distance function used for comparing voxelDatas */
+      /** \brief Distance function used for comparing leaves */
       float
-      voxelDataDistance (const VoxelData &v1, const VoxelData &v2) const;
+      pointDistance (const pcl::PointXYZRGBNormal &p1, const pcl::PointXYZRGBNormal &p2) const;
       
       /** \brief Transform function used to normalize voxel density versus distance from camera */
       void
-      transformFunction (PointT &p);
+      transformFunction (PointXYZRGBNormal &p);
       
       /** \brief Contains a KDtree for the voxelized cloud */
-      typename pcl::search::KdTree<PointT>::Ptr voxel_kdtree_;
+      typename pcl::search::KdTree<PointXYZRGBNormal>::Ptr voxel_kdtree_;
       
       /** \brief Octree Adjacency structure with leaves at voxel resolution */
       typename OctreeAdjacencyT::Ptr adjacency_octree_;
       
       /** \brief Contains the Voxelized centroid Cloud */
-      typename PointCloudT::Ptr voxel_centroid_cloud_;
+      typename VoxelCloudT::Ptr voxel_centroid_cloud_;
       
-      /** \brief Contains the Voxelized centroid Cloud */
-      typename NormalCloudT::ConstPtr input_normals_;
-      
+      /** \brief Contains an internal copy of input data */
+      VoxelCloudT::Ptr internal_cloud_;
+
       /** \brief Importance of color in clustering */
       float color_importance_;
       /** \brief Importance of distance from seed center in clustering */
       float spatial_importance_;
       /** \brief Importance of similarity in normals for clustering */
       float normal_importance_;
+      
+      /** \brief Stores whether external normals were calculated and inserted */
+      bool external_normals_set_;
       
       /** \brief Stores the colors used for the superpixel labels*/
       std::vector<uint32_t> label_colors_;
@@ -426,10 +393,7 @@ namespace pcl
           updateCentroid ();
           
           void 
-          getVoxels (typename pcl::PointCloud<PointT>::Ptr &voxels) const;
-          
-          void 
-          getNormals (typename pcl::PointCloud<Normal>::Ptr &normals) const;
+          getVoxels (typename pcl::PointCloud<PointXYZRGBNormal>::Ptr &voxels) const;
           
           typedef float (SupervoxelClustering::*DistFuncPtr)(const VoxelData &v1, const VoxelData &v2);
           
@@ -437,46 +401,16 @@ namespace pcl
           getLabel () const 
           { return label_; }
           
-          Eigen::Vector4f 
-          getNormal () const 
-          { return centroid_.normal_; }
-          
-          Eigen::Vector3f 
-          getRGB () const 
-          { return centroid_.rgb_; }
-          
-          Eigen::Vector3f
-          getXYZ () const 
-          { return centroid_.xyz_;}
-          
-          void
-          getXYZ (float &x, float &y, float &z) const
-          { x=centroid_.xyz_[0]; y=centroid_.xyz_[1]; z=centroid_.xyz_[2]; }
-          
-          void
-          getRGB (uint32_t &rgba) const
-          { 
-            rgba = static_cast<uint32_t>(centroid_.rgb_[0]) << 16 | 
-                   static_cast<uint32_t>(centroid_.rgb_[1]) << 8 | 
-                   static_cast<uint32_t>(centroid_.rgb_[2]); 
-          }
-          
-          void 
-          getNormal (pcl::Normal &normal_arg) const 
-          { 
-            normal_arg.normal_x = centroid_.normal_[0];
-            normal_arg.normal_y = centroid_.normal_[1];
-            normal_arg.normal_z = centroid_.normal_[2];
-            normal_arg.curvature = centroid_.curvature_;
-          }
-          
           void
           getNeighborLabels (std::set<uint32_t> &neighbor_labels) const;
           
-          VoxelData
+          PointXYZRGBNormal
           getCentroid () const
           { return centroid_; }
-            
+          
+          void 
+          getCentroid (PointXYZRGBNormal &point_arg) const
+          { point_arg = centroid_; }
           
           size_t
           size () const { return leaves_.size (); }
@@ -484,7 +418,8 @@ namespace pcl
           //Stores leaves
           std::set<LeafContainerT*> leaves_;
           uint32_t label_;
-          VoxelData centroid_;
+          PointXYZRGBNormal centroid_;
+          pcl::octree::OctreeCentroidContainer<PointXYZRGBNormal> centroid_container_;
           SupervoxelClustering* parent_;
         public:
           //Type VoxelData may have fixed-size Eigen objects inside
@@ -496,6 +431,7 @@ namespace pcl
       
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;
+
       
       //TODO DEBUG REMOVE
       StopWatch timer_;

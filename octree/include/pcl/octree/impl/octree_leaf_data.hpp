@@ -53,7 +53,7 @@ namespace pcl
       }
       void get (T& t, size_t n) const
       {
-        t.getNormalVector4fMap () = normal / n;
+        t.getNormalVector4fMap () = normal;
         t.getNormalVector4fMap ().normalize ();
         t.curvature = curvature / n;
       }

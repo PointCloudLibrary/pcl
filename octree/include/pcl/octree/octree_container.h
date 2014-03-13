@@ -247,10 +247,10 @@ namespace pcl
           neighbors_ = neighbor_arg;
         }
 
-        virtual void
-        reset ()
+        /** \brief Clears the set of neighbors */
+        void
+        resetNeighbors ()
         {
-          OctreeLeafContainerT::reset ();
           neighbors_.clear ();
         }
 

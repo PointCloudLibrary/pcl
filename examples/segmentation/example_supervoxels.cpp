@@ -49,8 +49,8 @@ keyboard_callback (const pcl::visualization::KeyboardEvent& event, void*)
     
 }
 
-void addSupervoxelConnectionsToViewer (PointT &supervoxel_center, 
-                                       PointCloudT &adjacent_supervoxel_centers,
+void addSupervoxelConnectionsToViewer (pcl::PointXYZRGBNormal &supervoxel_center, 
+                                       pcl::PointCloud<pcl::PointXYZRGBNormal> &adjacent_supervoxel_centers,
                                        std::string supervoxel_name,
                                        boost::shared_ptr<pcl::visualization::PCLVisualizer> & viewer);
 
@@ -262,7 +262,7 @@ main (int argc, char ** argv)
   super.setColorImportance (color_importance);
   super.setSpatialImportance (spatial_importance);
   super.setNormalImportance (normal_importance);
-  std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+  std::map <uint32_t, pcl::Supervoxel::Ptr > supervoxel_clusters;
  
   std::cout << "Extracting supervoxels!\n";
   super.extract (supervoxel_clusters);
@@ -273,7 +273,7 @@ main (int argc, char ** argv)
   PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
   PointLCloudT::Ptr full_labeled_cloud = super.getLabeledCloud ();
   
-  std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
+  std::map <uint32_t, pcl::Supervoxel::Ptr > refined_supervoxel_clusters;
   std::cout << "Refining supervoxels \n";
   super.refineSupervoxels (3, refined_supervoxel_clusters);
 
@@ -359,7 +359,7 @@ main (int argc, char ** argv)
     
     if (show_normals)
     {
-      std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr>::iterator sv_itr,sv_itr_end;
+      std::map <uint32_t, pcl::Supervoxel::Ptr>::iterator sv_itr,sv_itr_end;
       sv_itr = ((show_refined)?refined_supervoxel_clusters.begin ():supervoxel_clusters.begin ());
       sv_itr_end = ((show_refined)?refined_supervoxel_clusters.end ():supervoxel_clusters.end ());
       for (; sv_itr != sv_itr_end; ++sv_itr)
@@ -369,7 +369,7 @@ main (int argc, char ** argv)
         if (refined_normal_shown != show_refined || !normals_added)
         {
           viewer->removePointCloud (ss.str ());
-          viewer->addPointCloudNormals<PointT,Normal> ((sv_itr->second)->voxels_,(sv_itr->second)->normals_,10,0.02f,ss.str ());
+          viewer->addPointCloudNormals<PointXYZRGBNormal,PointXYZRGBNormal> ((sv_itr->second)->voxels_,(sv_itr->second)->voxels_,10,0.02f,ss.str ());
         //  std::cout << (sv_itr->second)->normals_->points[0]<<"\n";
           
         }
@@ -380,7 +380,7 @@ main (int argc, char ** argv)
     }
     else if (!show_normals)
     {
-      std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr>::iterator sv_itr,sv_itr_end;
+      std::map <uint32_t, pcl::Supervoxel::Ptr>::iterator sv_itr,sv_itr_end;
       sv_itr = ((show_refined)?refined_supervoxel_clusters.begin ():supervoxel_clusters.begin ());
       sv_itr_end = ((show_refined)?refined_supervoxel_clusters.end ():supervoxel_clusters.end ());
       for (; sv_itr != sv_itr_end; ++sv_itr)
@@ -400,13 +400,13 @@ main (int argc, char ** argv)
         //First get the label 
         uint32_t supervoxel_label = label_itr->first;
          //Now get the supervoxel corresponding to the label
-        pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (supervoxel_label);
+        pcl::Supervoxel::Ptr supervoxel = supervoxel_clusters.at (supervoxel_label);
         //Now we need to iterate through the adjacent supervoxels and make a point cloud of them
-        PointCloudT adjacent_supervoxel_centers;
+        PointCloud<PointXYZRGBNormal> adjacent_supervoxel_centers;
         std::multimap<uint32_t,uint32_t>::iterator adjacent_itr = label_adjacency.equal_range (supervoxel_label).first;
         for ( ; adjacent_itr!=label_adjacency.equal_range (supervoxel_label).second; ++adjacent_itr)
         {     
-          pcl::Supervoxel<PointT>::Ptr neighbor_supervoxel = supervoxel_clusters.at (adjacent_itr->second);
+          pcl::Supervoxel::Ptr neighbor_supervoxel = supervoxel_clusters.at (adjacent_itr->second);
           adjacent_supervoxel_centers.push_back (neighbor_supervoxel->centroid_);
         }
         //Now we make a name for this polygon
@@ -450,8 +450,8 @@ main (int argc, char ** argv)
 }
 
 void
-addSupervoxelConnectionsToViewer (PointT &supervoxel_center, 
-                                  PointCloudT &adjacent_supervoxel_centers,
+addSupervoxelConnectionsToViewer (pcl::PointXYZRGBNormal &supervoxel_center, 
+                                  pcl::PointCloud<pcl::PointXYZRGBNormal> &adjacent_supervoxel_centers,
                                   std::string supervoxel_name,
                                   boost::shared_ptr<pcl::visualization::PCLVisualizer> & viewer)
 {
@@ -460,7 +460,7 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
   vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New ();
   
   //Iterate through all adjacent points, and add a center point to adjacent point pair
-  PointCloudT::iterator adjacent_itr = adjacent_supervoxel_centers.begin ();
+  pcl::PointCloud<pcl::PointXYZRGBNormal>::iterator adjacent_itr = adjacent_supervoxel_centers.begin ();
   for ( ; adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
   {
     points->InsertNextPoint (supervoxel_center.data);
