@@ -95,8 +95,10 @@ namespace pcl
   };
   
   /** \brief Implements a supervoxel algorithm based on voxel structure, normals, and rgb values
-   *   \note Supervoxels are oversegmented volumetric patches (usually surfaces) 
-   *   \note Usually, color isn't needed (and can be detrimental)- spatial structure is mainly used
+   *  \warning If templated PointT has a normal field, SupervoxelClustering will use the normals in it
+   *  \warning If you want SupervoxelClustering to calculate normals itself (recommended!!), use a PointT without normals
+   *   Supervoxels are oversegmented volumetric patches (usually surfaces) 
+   *   Usually, color isn't needed (and can be detrimental)- spatial structure is mainly used
     * - J. Papon, A. Abramov, M. Schoeler, F. Woergoetter
     *   Voxel Cloud Connectivity Segmentation - Supervoxels from PointClouds
     *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013 
@@ -139,7 +141,8 @@ namespace pcl
       typedef typename pcl::PointCloud<PointXYZRGBNormal> VoxelCloudT;
       typedef typename pcl::PointCloud<Normal> NormalCloudT;
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
-           
+      typedef typename pcl::PointCloud<PointT> InputCloudT;     
+      
       using PCLBase <PointT>::initCompute;
       using PCLBase <PointT>::deinitCompute;
       using PCLBase <PointT>::input_;
@@ -200,6 +203,8 @@ namespace pcl
       extract (std::map<uint32_t, Supervoxel::Ptr > &supervoxel_clusters);
 
       /** \brief This method sets the cloud to be supervoxelized
+       *  \warning If templated PointT has a normal field, SupervoxelClustering will use the normals in it
+       *  \warning If you want SupervoxelClustering to calculate normals itself (recommended!!), use a PointT without normals
        * \param[in] cloud The cloud to be supervoxelize
        */
       virtual void
