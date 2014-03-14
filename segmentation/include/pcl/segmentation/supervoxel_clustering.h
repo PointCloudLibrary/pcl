@@ -129,15 +129,15 @@ namespace pcl
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
       
-      typedef pcl::octree::OctreeCentroidContainer <PointXYZRGBNormal, VoxelData> OctreeCentroidT;
+      typedef pcl::octree::OctreeCentroidContainer <PointT, VoxelData> OctreeCentroidT;
       typedef pcl::octree::OctreeAdjacencyContainer<OctreeCentroidT> LeafContainerT;
+      typedef typename pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT> OctreeAdjacencyT;
+      typedef typename pcl::octree::OctreePointCloudSearch <PointT> OctreeSearchT;
+      typedef typename pcl::search::KdTree<PointT> KdTreeT;
       typedef std::vector <LeafContainerT*> LeafVectorT;
       
       typedef typename pcl::PointCloud<PointXYZRGBNormal> VoxelCloudT;
       typedef typename pcl::PointCloud<Normal> NormalCloudT;
-      typedef typename pcl::octree::OctreePointCloudAdjacency<PointXYZRGBNormal, LeafContainerT> OctreeAdjacencyT;
-      typedef typename pcl::octree::OctreePointCloudSearch <PointXYZRGBNormal> OctreeSearchT;
-      typedef typename pcl::search::KdTree<PointXYZRGBNormal> KdTreeT;
       typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
            
       using PCLBase <PointT>::initCompute;
@@ -208,8 +208,9 @@ namespace pcl
       /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
       * \param[in] cloud The input normals                         
       */
-      virtual void
-      setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud);
+      PCL_DEPRECATED ( virtual void
+      setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud),
+          "SupervoxelClustering::setNormalCloud is deprecated. To input normals use a template type which as normals and use the normal setInputCloud function");
       
       /** \brief This method refines the calculated supervoxels - may only be called after extract
        * \param[in] num_itr The number of iterations of refinement to be done (2 or 3 is usually sufficient)
@@ -335,7 +336,7 @@ namespace pcl
       
       /** \brief Transform function used to normalize voxel density versus distance from camera */
       void
-      transformFunction (PointXYZRGBNormal &p);
+      transformFunction (PointT &p);
       
       /** \brief Contains a KDtree for the voxelized cloud */
       typename pcl::search::KdTree<PointXYZRGBNormal>::Ptr voxel_kdtree_;
@@ -345,9 +346,6 @@ namespace pcl
       
       /** \brief Contains the Voxelized centroid Cloud */
       typename VoxelCloudT::Ptr voxel_centroid_cloud_;
-      
-      /** \brief Contains an internal copy of input data */
-      VoxelCloudT::Ptr internal_cloud_;
 
       /** \brief Importance of color in clustering */
       float color_importance_;
