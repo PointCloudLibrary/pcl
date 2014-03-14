@@ -16,75 +16,84 @@ namespace pcl
     * the points have been inserted, `get()` should be called to compute the
     * average and retrieve it. */
     
-    template <typename T>
-    struct accumulator { void add (const T&) { }; void get (T&, size_t) const { }; };
-    
     /* xyz_accumulator computes the sum of x, y, and z fields of the points that
     * are added to it. It has two versions, one for the point types that
     * actually have x, y, and z fields, and the other one for the types that do
     * not. The latter simply does nothing. */
     
-    template <typename T, typename Enable = void>
-    struct xyz_accumulator : accumulator<T> { };
-    
-    template <typename T>
-    struct xyz_accumulator<T, typename boost::enable_if<pcl::traits::has_xyz<T> >::type>
+    struct xyz_accumulator
     {
-      xyz_accumulator () : xyz (Eigen::Vector3f::Zero ()) { }
-      void add (const T& t) { xyz += t.getVector3fMap (); }
-      void get (T& t, size_t n) const { t.getVector3fMap () = xyz / n; } 
+      size_t n;
       Eigen::Vector3f xyz;
+      xyz_accumulator () : n (0), xyz (Eigen::Vector3f::Zero ()) { }
+      // No-op add/get for point without xyz
+      template <typename T> typename boost::disable_if<pcl::traits::has_xyz<T>, void>::type
+      add (const T& t) { }
+      template <typename T> typename boost::disable_if<pcl::traits::has_xyz<T>, void>::type
+      get (T& t) const { }
+      // Functional add/get for points with xyz
+      template <typename T> typename boost::enable_if<pcl::traits::has_xyz<T>, void>::type
+      add (const T& t) { xyz += t.getVector3fMap (); ++n; }
+      template <typename T> typename boost::enable_if<pcl::traits::has_xyz<T>, void>::type
+      get (T& t) const { t.getVector3fMap () = xyz / n; }
     };
-    
+
     /* Computes the average of all normal vectors and normalizes it. Also
     * computes the average curvature. */
     
-    template <typename T, typename Enable = void>
-    struct normal_accumulator : accumulator<T> { };
-    
-    template <typename T>
-    struct normal_accumulator<T, typename boost::enable_if<pcl::traits::has_normal<T> >::type>
+    struct normal_accumulator
     {
-      normal_accumulator () : normal (Eigen::Vector4f::Zero ()), curvature (0) { }
-      void add (const T& t)
-      {
-        normal += t.getNormalVector4fMap ();
-        curvature += t.curvature;
-      }
-      void get (T& t, size_t n) const
+      size_t n;
+      Eigen::Vector4f normal;
+      float curvature;
+      normal_accumulator () : n (0), normal (Eigen::Vector4f::Zero ()), curvature (0) { }
+      // No-op add/get for points without normal
+      template <typename T> typename boost::disable_if<pcl::traits::has_normal<T>, void>::type
+      add (const T& t) { }
+      template <typename T> typename boost::disable_if<pcl::traits::has_normal<T>, void>::type
+      get (T& t) const { }
+      // Functional add/get for points with normal
+      template <typename T> typename boost::enable_if<pcl::traits::has_normal<T>, void>::type
+      add (const T& t) { normal += t.getNormalVector4fMap (); curvature += t.curvature; ++n; }
+      template <typename T> typename boost::enable_if<pcl::traits::has_normal<T>, void>::type
+      get (T& t) const
       {
         t.getNormalVector4fMap () = normal;
         t.getNormalVector4fMap ().normalize ();
         t.curvature = curvature / n;
       }
-      Eigen::Vector4f normal;
-      float curvature;
     };
-    
+
     /* Computes the average for each of the RGB channels separately. */
     
-    template <typename T, typename Enable = void>
-    struct color_accumulator : accumulator<T> { };
-    
-    template <typename T>
-    struct color_accumulator<T, typename boost::enable_if<pcl::traits::has_color<T> >::type>
+    struct color_accumulator
     {
-      color_accumulator () : r (0), g (0), b (0) { }
-      void add (const T& t)
+      size_t n;
+      float r, g, b;
+      color_accumulator () : n (0), r (0), g (0), b (0) { }
+      // No-op add/get for points without color
+      template <typename T> typename boost::disable_if<pcl::traits::has_color<T>, void>::type
+      add (const T& t) { }
+      template <typename T> typename boost::disable_if<pcl::traits::has_color<T>, void>::type
+      get (T& t) const { }
+      // Functional add/get for points with color
+      template <typename T> typename boost::enable_if<pcl::traits::has_color<T>, void>::type
+      add (const T& t)
       {
         r += static_cast<float> (t.r);
         g += static_cast<float> (t.g);
         b += static_cast<float> (t.b);
+        ++n;
       }
-      void get (T& t, size_t n) const
+      template <typename T> typename boost::enable_if<pcl::traits::has_color<T>, void>::type
+      get (T& t) const
       {
         t.rgba = static_cast<uint32_t> (r / n) << 16 |
-        static_cast<uint32_t> (g / n) <<  8 |
-        static_cast<uint32_t> (b / n);
+                 static_cast<uint32_t> (g / n) <<  8 |
+                 static_cast<uint32_t> (b / n);
       }
-      float r, g, b;
     };
-    
+
   }
 }
 

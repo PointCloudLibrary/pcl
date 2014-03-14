@@ -417,8 +417,8 @@ namespace pcl
         }
 
         /** Add a new point. */
-        void
-        insertPoint (const PointT& point_arg)
+        template <typename T> void
+        insertPoint (const T& point_arg)
         {
           ++num_points_;
           xyz_.add (point_arg);
@@ -431,12 +431,12 @@ namespace pcl
           * This container maintains the sum of all fields of the
           * inserted points. When this function is called it will divide the
           * sum by the actual number of inserted points. */
-        void
-        getCentroid (PointT& point_arg) const
+        template <typename T> void
+        getCentroid (T& point_arg) const
         {
-          xyz_.get (point_arg, num_points_);
-          normal_.get (point_arg, num_points_);
-          color_.get (point_arg, num_points_);
+          xyz_.get (point_arg);
+          normal_.get (point_arg);
+          color_.get (point_arg);
         }
 
         /** \brief Get the number of points that have been inserted. */
@@ -449,17 +449,17 @@ namespace pcl
         virtual void
         reset ()
         {
-          xyz_ = detail::xyz_accumulator<PointT> ();
-          normal_ = detail::normal_accumulator<PointT> ();
-          color_ = detail::color_accumulator<PointT> ();
+          xyz_ = detail::xyz_accumulator ();
+          normal_ = detail::normal_accumulator ();
+          color_ = detail::color_accumulator ();
           num_points_ = 0;
         }
 
       protected:
 
-        detail::xyz_accumulator<PointT> xyz_;
-        detail::normal_accumulator<PointT> normal_;
-        detail::color_accumulator<PointT> color_;
+        detail::xyz_accumulator xyz_;
+        detail::normal_accumulator normal_;
+        detail::color_accumulator color_;
 
         size_t num_points_;
 

@@ -208,9 +208,7 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
   for (int idx = 0 ; leaf_itr != adjacency_octree_->end (); ++leaf_itr, ++cent_cloud_itr, ++idx)
   {
     //Add the point to the centroid cloud
-    PointT temp;
-    (*leaf_itr)->getCentroid (temp);
-    copyPoint (temp, *cent_cloud_itr);
+    (*leaf_itr)->getCentroid (*cent_cloud_itr);
     //Get the voxel data, set the index member
     VoxelData& new_voxel_data = (*leaf_itr)->getUserData ();
     new_voxel_data.idx_ = idx;

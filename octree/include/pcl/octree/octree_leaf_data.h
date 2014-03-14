@@ -40,6 +40,7 @@
 #include <pcl/point_types.h>
 #include <pcl/octree/impl/octree_leaf_data.hpp>
 
+#if 0
 namespace pcl
 {
   namespace octree
@@ -342,6 +343,7 @@ namespace pcl
 
   }
 }
+#endif
 
 #endif //PCL_OCTREE_LEAF_DATA_H_
 
