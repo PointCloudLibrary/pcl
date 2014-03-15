@@ -47,6 +47,7 @@
 
 #include <pcl/pcl_macros.h>
 #include <pcl/octree/octree_leaf_data.h>
+#include <pcl/octree/centroid_point.h>
 
 namespace pcl
 {
