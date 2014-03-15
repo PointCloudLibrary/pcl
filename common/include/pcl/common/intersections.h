@@ -86,7 +86,27 @@ namespace pcl
                               const Eigen::Vector4f &fplane_b,
                               Eigen::VectorXf &line,
                               double angular_tolerance = 0.1);
+
+  /** \brief Determine the point of intersection of three non-parallel planes by solving the equations.
+    * \note If using nearly parralel planes you can lower the determinant_tolerance value. This can
+    * lead to inconsistent results.
+    * If the three planes intersects in a line the point will be anywhere on the line.
+    * \param[in] plane_a are the coefficients of the first plane in the form ax + by + cz + d = 0
+    * \param[in] plane_b are the coefficients of the second plane
+    * \param[in] plane_c are the coefficients of the third plane
+    * \param[in] determinant_tolerance is a limit to determine whether planes are parallel or not
+    * \param[out] intersection_point, the three coordinates x, y, z of the intersection point
+    * \return true if succeeded/planes aren't parallel
+    */
+  PCL_EXPORTS bool
+  threePlanesIntersection (const Eigen::Vector4f &plane_a, 
+                           const Eigen::Vector4f &plane_b,
+                           const Eigen::Vector4f &plane_c,
+                           Eigen::Vector3f &intersection_point,
+                           double determinant_tolerance = 1e-6);
+
 }
 /*@}*/
 #endif  //#ifndef PCL_INTERSECTIONS_H_
+
 
