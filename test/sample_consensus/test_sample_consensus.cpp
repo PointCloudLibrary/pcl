@@ -38,6 +38,7 @@
 
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/pcl_tests.h>
 
 #include <boost/thread.hpp>
 
@@ -123,17 +124,9 @@ void verifyPlaneSac (ModelType & model, SacType & sac, unsigned int inlier_numbe
   // Projection tests
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff_refined, proj_points);
-  EXPECT_NEAR (1.1266,  proj_points.points[20].x, proj_tol);
-  EXPECT_NEAR (0.0152,  proj_points.points[20].y, proj_tol);
-  EXPECT_NEAR (-0.0156, proj_points.points[20].z, proj_tol);
-
-  EXPECT_NEAR (1.1843,  proj_points.points[30].x, proj_tol);
-  EXPECT_NEAR (-0.0635, proj_points.points[30].y, proj_tol);
-  EXPECT_NEAR (-0.0201, proj_points.points[30].z, proj_tol);
-
-  EXPECT_NEAR (1.0749,  proj_points.points[50].x, proj_tol);
-  EXPECT_NEAR (-0.0586, proj_points.points[50].y, proj_tol);
-  EXPECT_NEAR (0.0587,  proj_points.points[50].z, refined_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1266,  0.0152, -0.0156), proj_points.points[20], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1843, -0.0635, -0.0201), proj_points.points[30], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.0749, -0.0586,  0.0587), proj_points.points[50], proj_tol);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -858,17 +851,9 @@ TEST (RANSAC, SampleConsensusModelLine)
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff_refined, proj_points);
 
-  EXPECT_NEAR (7.0, proj_points.points[2].x, 1e-4);
-  EXPECT_NEAR (8.0, proj_points.points[2].y, 1e-4);
-  EXPECT_NEAR (9.0, proj_points.points[2].z, 1e-4);
-
-  EXPECT_NEAR (10.0, proj_points.points[3].x, 1e-4);
-  EXPECT_NEAR (11.0, proj_points.points[3].y, 1e-4);
-  EXPECT_NEAR (12.0, proj_points.points[3].z, 1e-4);
-
-  EXPECT_NEAR (16.0, proj_points.points[5].x, 1e-4);
-  EXPECT_NEAR (17.0, proj_points.points[5].y, 1e-4);
-  EXPECT_NEAR (18.0, proj_points.points[5].z, 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ ( 7.0,  8.0,  9.0), proj_points.points[2], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (10.0, 11.0, 12.0), proj_points.points[3], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (16.0, 17.0, 18.0), proj_points.points[5], 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
