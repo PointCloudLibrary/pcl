@@ -46,7 +46,6 @@
 #include <boost/blank.hpp>
 
 #include <pcl/pcl_macros.h>
-#include <pcl/octree/octree_leaf_data.h>
 #include <pcl/octree/centroid_point.h>
 
 namespace pcl
@@ -413,18 +412,14 @@ namespace pcl
 
         OctreeCentroidContainer ()
         : OctreeLeafContainerT ()
-        , num_points_ (0)
         {
         }
 
         /** Add a new point. */
-        template <typename T> void
-        insertPoint (const T& point_arg)
+        void
+        insertPoint (const PointT& point_arg)
         {
-          ++num_points_;
-          xyz_.add (point_arg);
-          normal_.add (point_arg);
-          color_.add (point_arg);
+          centroid_.add (point_arg);
         }
 
         /** \brief Retrieve the computed average (centroid) point.
@@ -435,36 +430,25 @@ namespace pcl
         template <typename T> void
         getCentroid (T& point_arg) const
         {
-          xyz_.get (point_arg);
-          normal_.get (point_arg);
-          color_.get (point_arg);
+          centroid_.get (point_arg);
         }
 
         /** \brief Get the number of points that have been inserted. */
         size_t
         getSize () const
         {
-          return (num_points_);
+          return (centroid_.getSize ());
         }
 
         virtual void
         reset ()
         {
-          xyz_ = detail::xyz_accumulator ();
-          normal_ = detail::normal_accumulator ();
-          color_ = detail::color_accumulator ();
-          num_points_ = 0;
+          centroid_ = CentroidPoint<PointT> ();
         }
 
       protected:
 
-        detail::xyz_accumulator xyz_;
-        detail::normal_accumulator normal_;
-        detail::color_accumulator color_;
-
-        size_t num_points_;
-
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+        CentroidPoint<PointT> centroid_;
 
     };
 
