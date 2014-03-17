@@ -41,7 +41,6 @@
 #include <pcl/pcl_tests.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
-#include <pcl/features/normal_3d.h>
 
 #include <pcl/sample_consensus/msac.h>
 #include <pcl/sample_consensus/lmeds.h>
@@ -322,22 +321,12 @@ main (int argc, char** argv)
     std::cerr << "Failed to read test file. Please download `sac_plane_test.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
+
   fromPCLPointCloud2 (cloud_blob, *cloud_);
+  fromPCLPointCloud2 (cloud_blob, *normals_);
 
   indices_.resize (cloud_->points.size ());
   for (size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
-
-  // Estimate surface normals
-  NormalEstimation<PointXYZ, Normal> n;
-  search::Search<PointXYZ>::Ptr tree (new search::KdTree<PointXYZ>);
-  tree->setInputCloud (cloud_);
-  n.setInputCloud (cloud_);
-  boost::shared_ptr<std::vector<int> > indices_ptr (new std::vector<int> (indices_));
-  n.setIndices (indices_ptr);
-  n.setSearchMethod (tree);
-  // Use 2cm radius to estimate the normals
-  n.setRadiusSearch (0.02);
-  n.compute (*normals_);
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
