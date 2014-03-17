@@ -105,19 +105,20 @@ void verifyPlaneSac (ModelType & model, SacType & sac, unsigned int inlier_numbe
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (4, coeff.size ());
-  EXPECT_NEAR (plane_coeffs_[0], coeff[0]/coeff[3], tol);
-  EXPECT_NEAR (plane_coeffs_[1], coeff[1]/coeff[3], tol);
-  EXPECT_NEAR (plane_coeffs_[2], coeff[2]/coeff[3], tol);
+  EXPECT_NEAR (plane_coeffs_[0], coeff[0] / coeff[3], tol);
+  EXPECT_NEAR (plane_coeffs_[1], coeff[1] / coeff[3], tol);
+  EXPECT_NEAR (plane_coeffs_[2], coeff[2] / coeff[3], tol);
 
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (4, coeff_refined.size ());
-  EXPECT_NEAR (plane_coeffs_[0], coeff_refined[0]/coeff_refined[3], refined_tol);
-  EXPECT_NEAR (plane_coeffs_[1], coeff_refined[1]/coeff_refined[3], refined_tol);
+  EXPECT_NEAR (plane_coeffs_[0], coeff_refined[0] / coeff_refined[3], refined_tol);
+  EXPECT_NEAR (plane_coeffs_[1], coeff_refined[1] / coeff_refined[3], refined_tol);
+
   // This test fails in Windows (VS 2010) -- not sure why yet -- relaxing the constraint from 1e-2 to 1e-1
   // This test fails in MacOS too -- not sure why yet -- disabling
-  //EXPECT_NEAR (coeff_refined[2]/coeff_refined[3], plane_coeffs_[2], refined_tol);
+  //EXPECT_NEAR (coeff_refined[2] / coeff_refined[3], plane_coeffs_[2], refined_tol);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;
@@ -294,9 +295,9 @@ TEST (RANSAC, SampleConsensusModelNormalParallelPlane)
 
   // test axis slightly in valid range
   {
-    model->setAxis (Eigen::Vector3f(0, sin(max_angle_rad * (1 - angle_eps)), cos(max_angle_rad * (1 - angle_eps))));
+    model->setAxis (Eigen::Vector3f(0, sin (max_angle_rad * (1 - angle_eps)), cos (max_angle_rad * (1 - angle_eps))));
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
-    sac.computeModel();
+    sac.computeModel ();
 
     std::vector<int> inliers;
     sac.getInliers (inliers);
@@ -305,9 +306,9 @@ TEST (RANSAC, SampleConsensusModelNormalParallelPlane)
 
   // test axis slightly out of valid range
   {
-    model->setAxis (Eigen::Vector3f(0, sin(max_angle_rad * (1 + angle_eps)), cos(max_angle_rad * (1 + angle_eps))));
+    model->setAxis (Eigen::Vector3f (0, sin (max_angle_rad * (1 + angle_eps)), cos (max_angle_rad * (1 + angle_eps))));
     RandomSampleConsensus<PointXYZ> sac (model, 0.03);
-    sac.computeModel();
+    sac.computeModel ();
 
     std::vector<int> inliers;
     sac.getInliers (inliers);
@@ -326,7 +327,7 @@ TEST (MLESAC, SampleConsensusModelPlane)
   // Create the MSAC object
   MaximumLikelihoodSampleConsensus<PointXYZ> sac (model, 0.03);
 
-  verifyPlaneSac(model, sac, 1000, 0.3f, 0.2f, 0.01f);
+  verifyPlaneSac (model, sac, 1000, 0.3f, 0.2f, 0.01f);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,16 +370,16 @@ TEST (RANSAC, SampleConsensusModelSphere)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (4, coeff.size ());
-  EXPECT_NEAR (2, coeff[0]/coeff[3],  1e-2);
-  EXPECT_NEAR (2, coeff[1]/coeff[3],  1e-2);
-  EXPECT_NEAR (2, coeff[2]/coeff[3],  1e-2);
+  EXPECT_NEAR (2, coeff[0] / coeff[3], 1e-2);
+  EXPECT_NEAR (2, coeff[1] / coeff[3], 1e-2);
+  EXPECT_NEAR (2, coeff[2] / coeff[3], 1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (4, coeff_refined.size ());
-  EXPECT_NEAR (2, coeff_refined[0]/coeff_refined[3],  1e-2);
-  EXPECT_NEAR (2, coeff_refined[1]/coeff_refined[3],  1e-2);
-  EXPECT_NEAR (2, coeff_refined[2]/coeff_refined[3],  1e-2);
+  EXPECT_NEAR (2, coeff_refined[0] / coeff_refined[3], 1e-2);
+  EXPECT_NEAR (2, coeff_refined[1] / coeff_refined[3], 1e-2);
+  EXPECT_NEAR (2, coeff_refined[2] / coeff_refined[3], 1e-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -417,7 +418,7 @@ TEST (RANSAC, SampleConsensusModelNormalSphere)
   cloud.points[24].getVector3fMap () << -0.029389f,  0.065451f, 1.000000f;
   cloud.points[25].getVector3fMap () <<  0.029389f,  0.065451f, 1.000000f;
   cloud.points[26].getVector3fMap () <<  0.000000f,  0.075000f, 1.000000f;
-  
+
   normals.points[ 0].getNormalVector3fMap () << -0.293893f, -0.309017f, -0.904509f;
   normals.points[ 1].getNormalVector3fMap () <<  0.293893f, -0.309017f, -0.904508f;
   normals.points[ 2].getNormalVector3fMap () << -0.293893f,  0.309017f, -0.904509f;
@@ -445,7 +446,7 @@ TEST (RANSAC, SampleConsensusModelNormalSphere)
   normals.points[24].getNormalVector3fMap () << -0.587785f,  0.809017f,  0.000000f;
   normals.points[25].getNormalVector3fMap () <<  0.587785f,  0.809017f,  0.000000f;
   normals.points[26].getNormalVector3fMap () <<  0.000000f,  1.000000f,  0.000000f;
-  
+
   // Create a shared sphere model pointer directly
   SampleConsensusModelNormalSpherePtr model (new SampleConsensusModelNormalSphere<PointXYZ, Normal> (cloud.makeShared ()));
   model->setInputNormals(normals.makeShared ());
@@ -468,17 +469,17 @@ TEST (RANSAC, SampleConsensusModelNormalSphere)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (4, coeff.size ());
-  EXPECT_NEAR (0.0, coeff[0],   1e-2);
+  EXPECT_NEAR (0.000, coeff[0], 1e-2);
   EXPECT_NEAR (0.025, coeff[1], 1e-2);
-  EXPECT_NEAR (1.0, coeff[2],   1e-2);
-  EXPECT_NEAR (0.05, coeff[3],  1e-2);
+  EXPECT_NEAR (1.000, coeff[2], 1e-2);
+  EXPECT_NEAR (0.050, coeff[3], 1e-2);
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (4, coeff_refined.size ());
-  EXPECT_NEAR (0.0, coeff_refined[0],   1e-2);
+  EXPECT_NEAR (0.000, coeff_refined[0], 1e-2);
   EXPECT_NEAR (0.025, coeff_refined[1], 1e-2);
-  EXPECT_NEAR (1.0, coeff_refined[2],   1e-2);
-  EXPECT_NEAR (0.05, coeff_refined[3],  1e-2);	 
+  EXPECT_NEAR (1.000, coeff_refined[2], 1e-2);
+  EXPECT_NEAR (0.050, coeff_refined[3], 1e-2);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (RANSAC, SampleConsensusModelCone)
@@ -577,14 +578,14 @@ TEST (RANSAC, SampleConsensusModelCone)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (7, coeff.size ());
-  EXPECT_NEAR (0,  coeff[0], 1e-2);
-  EXPECT_NEAR (0.1,  coeff[1],  1e-2);
-  EXPECT_NEAR (0.349066,  coeff[6], 1e-2);
+  EXPECT_NEAR (0.000000, coeff[0], 1e-2);
+  EXPECT_NEAR (0.100000, coeff[1], 1e-2);
+  EXPECT_NEAR (0.349066, coeff[6], 1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (7, coeff_refined.size ());
-  EXPECT_NEAR (0.349066 , coeff_refined[6], 1e-2);
+  EXPECT_NEAR (0.349066, coeff_refined[6], 1e-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -662,8 +663,8 @@ TEST (RANSAC, SampleConsensusModelCylinder)
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (7, coeff.size ());
   EXPECT_NEAR (-0.5, coeff[0], 1e-3);
-  EXPECT_NEAR (1.7,  coeff[1],  1e-3);
-  EXPECT_NEAR (0.5,  coeff[6], 1e-3);
+  EXPECT_NEAR ( 1.7, coeff[1], 1e-3);
+  EXPECT_NEAR ( 0.5, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
@@ -720,16 +721,16 @@ TEST (RANSAC, SampleConsensusModelCircle2D)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (3, coeff.size ());
-  EXPECT_NEAR (3,  coeff[0], 1e-3);
+  EXPECT_NEAR ( 3, coeff[0], 1e-3);
   EXPECT_NEAR (-5, coeff[1], 1e-3);
-  EXPECT_NEAR (1,  coeff[2], 1e-3);
+  EXPECT_NEAR ( 1, coeff[2], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (3, coeff_refined.size ());
-  EXPECT_NEAR (3,  coeff_refined[0], 1e-3);
+  EXPECT_NEAR ( 3, coeff_refined[0], 1e-3);
   EXPECT_NEAR (-5, coeff_refined[1], 1e-3);
-  EXPECT_NEAR (1,  coeff_refined[2], 1e-3);
+  EXPECT_NEAR ( 1, coeff_refined[2], 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -783,24 +784,24 @@ TEST (RANSAC, SampleConsensusModelCircle3D)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (7, coeff.size ());
-  EXPECT_NEAR (1,  coeff[0], 1e-3);
-  EXPECT_NEAR (5,  coeff[1], 1e-3);
-  EXPECT_NEAR (-3, coeff[2], 1e-3);
-  EXPECT_NEAR (0.1,coeff[3], 1e-3);
-  EXPECT_NEAR (0,  coeff[4], 1e-3);
-  EXPECT_NEAR (-1, coeff[5], 1e-3);
-  EXPECT_NEAR (0,  coeff[6], 1e-3);
+  EXPECT_NEAR ( 1.0, coeff[0], 1e-3);
+  EXPECT_NEAR ( 5.0, coeff[1], 1e-3);
+  EXPECT_NEAR (-3.0, coeff[2], 1e-3);
+  EXPECT_NEAR ( 0.1, coeff[3], 1e-3);
+  EXPECT_NEAR ( 0.0, coeff[4], 1e-3);
+  EXPECT_NEAR (-1.0, coeff[5], 1e-3);
+  EXPECT_NEAR ( 0.0, coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (7, coeff_refined.size ());
-  EXPECT_NEAR (1,  coeff_refined[0], 1e-3);
-  EXPECT_NEAR (5,  coeff_refined[1], 1e-3);
-  EXPECT_NEAR (-3, coeff_refined[2], 1e-3);
-  EXPECT_NEAR (0.1,coeff_refined[3], 1e-3);
-  EXPECT_NEAR (0,  coeff_refined[4], 1e-3);
-  EXPECT_NEAR (-1, coeff_refined[5], 1e-3);
-  EXPECT_NEAR (0,  coeff_refined[6], 1e-3);
+  EXPECT_NEAR ( 1.0, coeff_refined[0], 1e-3);
+  EXPECT_NEAR ( 5.0, coeff_refined[1], 1e-3);
+  EXPECT_NEAR (-3.0, coeff_refined[2], 1e-3);
+  EXPECT_NEAR ( 0.1, coeff_refined[3], 1e-3);
+  EXPECT_NEAR ( 0.0, coeff_refined[4], 1e-3);
+  EXPECT_NEAR (-1.0, coeff_refined[5], 1e-3);
+  EXPECT_NEAR ( 0.0, coeff_refined[6], 1e-3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -844,14 +845,14 @@ TEST (RANSAC, SampleConsensusModelLine)
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
   EXPECT_EQ (6, coeff.size ());
-  EXPECT_NEAR (1, coeff[4]/coeff[3], 1e-4);
-  EXPECT_NEAR (1, coeff[5]/coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[4] / coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[5] / coeff[3], 1e-4);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (6, coeff_refined.size ());
-  EXPECT_NEAR (1, coeff[4]/coeff[3], 1e-4);
-  EXPECT_NEAR (1, coeff[5]/coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[4] / coeff[3], 1e-4);
+  EXPECT_NEAR (1, coeff[5] / coeff[3], 1e-4);
 
   // Projection tests
   PointCloud<PointXYZ> proj_points;
@@ -906,42 +907,42 @@ TEST (SAC, InfiniteLoop)
   RandomSampleConsensus<PointXYZ> ransac (model, 0.03);
   sac_function = boost::bind (&RandomSampleConsensus<PointXYZ>::computeModel, &ransac, 0);
   boost::thread thread1 (sac_function);
-  ASSERT_TRUE(thread1.timed_join(delay));
+  ASSERT_TRUE (thread1.timed_join (delay));
 
   // Create the LMSAC object
   LeastMedianSquares<PointXYZ> lmsac (model, 0.03);
   sac_function = boost::bind (&LeastMedianSquares<PointXYZ>::computeModel, &lmsac, 0);
   boost::thread thread2 (sac_function);
-  ASSERT_TRUE(thread2.timed_join(delay));
+  ASSERT_TRUE (thread2.timed_join (delay));
 
   // Create the MSAC object
   MEstimatorSampleConsensus<PointXYZ> mesac (model, 0.03);
   sac_function = boost::bind (&MEstimatorSampleConsensus<PointXYZ>::computeModel, &mesac, 0);
   boost::thread thread3 (sac_function);
-  ASSERT_TRUE(thread3.timed_join(delay));
+  ASSERT_TRUE (thread3.timed_join (delay));
 
   // Create the RRSAC object
   RandomizedRandomSampleConsensus<PointXYZ> rrsac (model, 0.03);
   sac_function = boost::bind (&RandomizedRandomSampleConsensus<PointXYZ>::computeModel, &rrsac, 0);
   boost::thread thread4 (sac_function);
-  ASSERT_TRUE(thread4.timed_join(delay));
+  ASSERT_TRUE (thread4.timed_join (delay));
 
   // Create the RMSAC object
   RandomizedMEstimatorSampleConsensus<PointXYZ> rmsac (model, 0.03);
   sac_function = boost::bind (&RandomizedMEstimatorSampleConsensus<PointXYZ>::computeModel, &rmsac, 0);
   boost::thread thread5 (sac_function);
-  ASSERT_TRUE(thread5.timed_join(delay));
+  ASSERT_TRUE (thread5.timed_join (delay));
 
   // Create the MLESAC object
   MaximumLikelihoodSampleConsensus<PointXYZ> mlesac (model, 0.03);
   sac_function = boost::bind (&MaximumLikelihoodSampleConsensus<PointXYZ>::computeModel, &mlesac, 0);
   boost::thread thread6 (sac_function);
-  ASSERT_TRUE(thread6.timed_join(delay));
+  ASSERT_TRUE (thread6.timed_join (delay));
 }
 
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
   if (argc < 2)
   {
