@@ -96,15 +96,15 @@ void verifyPlaneSac (ModelType & model, SacType & sac, unsigned int inlier_numbe
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (3, int (sample.size ()));
+  EXPECT_EQ (3, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_LT (inlier_number, int (inliers.size ()));
+  EXPECT_LT (inlier_number, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (4, int (coeff.size ()));
+  EXPECT_EQ (4, coeff.size ());
   EXPECT_NEAR (plane_coeffs_[0], coeff[0]/coeff[3], tol);
   EXPECT_NEAR (plane_coeffs_[1], coeff[1]/coeff[3], tol);
   EXPECT_NEAR (plane_coeffs_[2], coeff[2]/coeff[3], tol);
@@ -112,7 +112,7 @@ void verifyPlaneSac (ModelType & model, SacType & sac, unsigned int inlier_numbe
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (4, int (coeff_refined.size ()));
+  EXPECT_EQ (4, coeff_refined.size ());
   EXPECT_NEAR (plane_coeffs_[0], coeff_refined[0]/coeff_refined[3], refined_tol);
   EXPECT_NEAR (plane_coeffs_[1], coeff_refined[1]/coeff_refined[3], refined_tol);
   // This test fails in Windows (VS 2010) -- not sure why yet -- relaxing the constraint from 1e-2 to 1e-1
@@ -360,22 +360,22 @@ TEST (RANSAC, SampleConsensusModelSphere)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (4, int (sample.size ()));
+  EXPECT_EQ (4, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (9, int (inliers.size ()));
+  EXPECT_EQ (9, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (4, int (coeff.size ()));
+  EXPECT_EQ (4, coeff.size ());
   EXPECT_NEAR (2, coeff[0]/coeff[3],  1e-2);
   EXPECT_NEAR (2, coeff[1]/coeff[3],  1e-2);
   EXPECT_NEAR (2, coeff[2]/coeff[3],  1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (4, int (coeff_refined.size ()));
+  EXPECT_EQ (4, coeff_refined.size ());
   EXPECT_NEAR (2, coeff_refined[0]/coeff_refined[3],  1e-2);
   EXPECT_NEAR (2, coeff_refined[1]/coeff_refined[3],  1e-2);
   EXPECT_NEAR (2, coeff_refined[2]/coeff_refined[3],  1e-2);
@@ -459,22 +459,22 @@ TEST (RANSAC, SampleConsensusModelNormalSphere)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (4, int (sample.size ()));
+  EXPECT_EQ (4, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (27, int (inliers.size ()));
+  EXPECT_EQ (27, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (4, int (coeff.size ()));
+  EXPECT_EQ (4, coeff.size ());
   EXPECT_NEAR (0.0, coeff[0],   1e-2);
   EXPECT_NEAR (0.025, coeff[1], 1e-2);
   EXPECT_NEAR (1.0, coeff[2],   1e-2);
   EXPECT_NEAR (0.05, coeff[3],  1e-2);
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (4, int (coeff_refined.size ()));
+  EXPECT_EQ (4, coeff_refined.size ());
   EXPECT_NEAR (0.0, coeff_refined[0],   1e-2);
   EXPECT_NEAR (0.025, coeff_refined[1], 1e-2);
   EXPECT_NEAR (1.0, coeff_refined[2],   1e-2);
@@ -568,22 +568,22 @@ TEST (RANSAC, SampleConsensusModelCone)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (3, int (sample.size ()));
+  EXPECT_EQ (3, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (31, int (inliers.size ()));
+  EXPECT_EQ (31, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (7, int (coeff.size ()));
+  EXPECT_EQ (7, coeff.size ());
   EXPECT_NEAR (0,  coeff[0], 1e-2);
   EXPECT_NEAR (0.1,  coeff[1],  1e-2);
   EXPECT_NEAR (0.349066,  coeff[6], 1e-2);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (7, int (coeff_refined.size ()));
+  EXPECT_EQ (7, coeff_refined.size ());
   EXPECT_NEAR (0.349066 , coeff_refined[6], 1e-2);
 }
 
@@ -652,22 +652,22 @@ TEST (RANSAC, SampleConsensusModelCylinder)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (2, int (sample.size ()));
+  EXPECT_EQ (2, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (20, int (inliers.size ()));
+  EXPECT_EQ (20, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (7, int (coeff.size ()));
+  EXPECT_EQ (7, coeff.size ());
   EXPECT_NEAR (-0.5, coeff[0], 1e-3);
   EXPECT_NEAR (1.7,  coeff[1],  1e-3);
   EXPECT_NEAR (0.5,  coeff[6], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (7, int (coeff_refined.size ()));
+  EXPECT_EQ (7, coeff_refined.size ());
   EXPECT_NEAR (0.5, coeff_refined[6], 1e-3);
 }
 
@@ -711,22 +711,22 @@ TEST (RANSAC, SampleConsensusModelCircle2D)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (3, int (sample.size ()));
+  EXPECT_EQ (3, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (17, int (inliers.size ()));
+  EXPECT_EQ (17, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (3, int (coeff.size ()));
+  EXPECT_EQ (3, coeff.size ());
   EXPECT_NEAR (3,  coeff[0], 1e-3);
   EXPECT_NEAR (-5, coeff[1], 1e-3);
   EXPECT_NEAR (1,  coeff[2], 1e-3);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (3, int (coeff_refined.size ()));
+  EXPECT_EQ (3, coeff_refined.size ());
   EXPECT_NEAR (3,  coeff_refined[0], 1e-3);
   EXPECT_NEAR (-5, coeff_refined[1], 1e-3);
   EXPECT_NEAR (1,  coeff_refined[2], 1e-3);
@@ -774,15 +774,15 @@ TEST (RANSAC, SampleConsensusModelCircle3D)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (3, int (sample.size ()));
+  EXPECT_EQ (3, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (18, int (inliers.size ()));
+  EXPECT_EQ (18, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (7, int (coeff.size ()));
+  EXPECT_EQ (7, coeff.size ());
   EXPECT_NEAR (1,  coeff[0], 1e-3);
   EXPECT_NEAR (5,  coeff[1], 1e-3);
   EXPECT_NEAR (-3, coeff[2], 1e-3);
@@ -793,7 +793,7 @@ TEST (RANSAC, SampleConsensusModelCircle3D)
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (7, int (coeff_refined.size ()));
+  EXPECT_EQ (7, coeff_refined.size ());
   EXPECT_NEAR (1,  coeff_refined[0], 1e-3);
   EXPECT_NEAR (5,  coeff_refined[1], 1e-3);
   EXPECT_NEAR (-3, coeff_refined[2], 1e-3);
@@ -835,21 +835,21 @@ TEST (RANSAC, SampleConsensusModelLine)
 
   std::vector<int> sample;
   sac.getModel (sample);
-  EXPECT_EQ (2, int (sample.size ()));
+  EXPECT_EQ (2, sample.size ());
 
   std::vector<int> inliers;
   sac.getInliers (inliers);
-  EXPECT_EQ (8, int (inliers.size ()));
+  EXPECT_EQ (8, inliers.size ());
 
   Eigen::VectorXf coeff;
   sac.getModelCoefficients (coeff);
-  EXPECT_EQ (6, int (coeff.size ()));
+  EXPECT_EQ (6, coeff.size ());
   EXPECT_NEAR (1, coeff[4]/coeff[3], 1e-4);
   EXPECT_NEAR (1, coeff[5]/coeff[3], 1e-4);
 
   Eigen::VectorXf coeff_refined;
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
-  EXPECT_EQ (6, int (coeff_refined.size ()));
+  EXPECT_EQ (6, coeff_refined.size ());
   EXPECT_NEAR (1, coeff[4]/coeff[3], 1e-4);
   EXPECT_NEAR (1, coeff[5]/coeff[3], 1e-4);
 
