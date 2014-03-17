@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -33,12 +34,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
+
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
-#include "boost.h"
+
+#include <boost/thread.hpp>
+
 #include <pcl/sample_consensus/sac.h>
 #include <pcl/sample_consensus/lmeds.h>
 #include <pcl/sample_consensus/ransac.h>
