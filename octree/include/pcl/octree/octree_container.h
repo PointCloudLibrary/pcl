@@ -36,8 +36,8 @@
  *
  */
 
-#ifndef PCL_OCTREE_CONTAINER_H
-#define PCL_OCTREE_CONTAINER_H
+#ifndef PCL_OCTREE_OCTREE_CONTAINER_H
+#define PCL_OCTREE_OCTREE_CONTAINER_H
 
 #include <vector>
 #include <cstddef>
@@ -50,17 +50,18 @@
 
 namespace pcl
 {
+
   namespace octree
   {
 
-    /** \brief An octree leaf container class that serves as a base to construct
+    /** An octree leaf container class that serves as a base to construct
       * specialized leaf node container classes.
       *
       * Has a single template parameter UserDataT, which allows the user to
       * store some arbitrary piece of information inside a leaf.
       *
-      * Deriving container classes should specialize LeafContainerTraits, see
-      * its documentation. */
+      * \note Deriving container classes should specialize LeafContainerTraits,
+      * see its documentation. */
     template <typename UserDataT = boost::blank>
     class OctreeLeafContainer
     {
@@ -78,27 +79,23 @@ namespace pcl
         /// User data type stored in this leaf container.
         typedef UserDataT data_type;
 
-        /** \brief Empty constructor. */
-        OctreeLeafContainer ()
-        {
-        }
-
-        /** \brief Empty deconstructor. */
+        /** Empty virtual destructor. */
         virtual
         ~OctreeLeafContainer ()
         {
         }
 
-        /** \brief Deep copy of the leaf - copies all internal data. */
+        /** Deep copy of the leaf, allocates memory and copies the user data
+          * that is stored internally. */
         virtual OctreeLeafContainer*
         deepCopy () const
         {
           OctreeLeafContainer* new_container = new OctreeLeafContainer;
           new_container->user_data_ = user_data_;
-          return new_container;
+          return (new_container);
         }
 
-        /** \brief Equal comparison operator.
+        /** Equal comparison operator.
           *
           * \param[in] other OctreeLeafContainer to compare with
           *
@@ -108,10 +105,10 @@ namespace pcl
         virtual bool
         operator== (const OctreeLeafContainer&) const
         {
-          return false;
+          return (false);
         }
 
-        /** \brief Inequal comparison operator.
+        /** Inequal comparison operator.
           *
           * \param[in] other OctreeLeafContainer to compare with */
         bool
@@ -120,21 +117,27 @@ namespace pcl
           return (!operator== (other));
         }
 
-        /** \brief Clear the data contained in the node. */
+        /** Clear the data contained in the node. */
         virtual void
         reset ()
         {
           user_data_ = UserDataT ();
         }
 
-        /** \brief Returns reference to the internal user data member. */
+        /** Returns a reference to the internal user data member. */
         UserDataT&
         getUserData ()
         {
-          return user_data_;
+          return (user_data_);
         }
 
-        size_t
+        /** Returns the size of the container.
+          *
+          * This base implementation always returns zero. A deriving container
+          * class may override if it has a concept of size.
+          *
+          * This function is retained for compatibility with older versions. */
+        virtual size_t
         getSize () const
         {
           return (0);
@@ -160,16 +163,6 @@ namespace pcl
       * might run into issues with traits. */
     class OctreeEmptyContainer : public OctreeLeafContainer<boost::blank>
     {
-
-        typedef OctreeLeafContainer<boost::blank> OctreeLeafContainerT;
-
-      public:
-
-        OctreeEmptyContainer ()
-        : OctreeLeafContainerT ()
-        {
-        }
-
     };
 
     /** \brief @b Octree adjacency leaf container class - stores set of pointers to neighbors, number of points added, and a DataT value.
