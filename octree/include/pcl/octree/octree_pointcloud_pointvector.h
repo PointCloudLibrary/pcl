@@ -40,11 +40,84 @@
 #define PCL_OCTREE_POINT_VECTOR_H
 
 #include "octree_pointcloud.h"
+#include "octree_container.h"
 
 namespace pcl
 {
   namespace octree
   {
+
+    /** \brief An octree leaf container that stores indices of the points that
+      * are inserted into it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeIndicesContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        OctreeIndicesContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+        /** Add a new point (index). */
+        void
+        insertPointIndex (int index_arg)
+        {
+          indices_.push_back (index_arg);
+        }
+
+        std::vector<int>
+        getPointIndicesVector () const
+        {
+          return (indices_);
+        }
+
+        void
+        getPointIndices (std::vector<int>& indices) const
+        {
+          indices.insert (indices.end (), indices_.begin (), indices_.end ());
+        }
+
+        size_t
+        getSize () const
+        {
+          return (indices_.size ());
+        }
+
+        virtual void
+        reset ()
+        {
+          indices_.clear ();
+        }
+
+      protected:
+
+        std::vector<int> indices_;
+
+    };
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeIndicesContainer<boost::blank> OctreeContainerPointIndices;
+
+    template<typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeIndicesContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int idx, const PointT&)
+      {
+        container.insertPointIndex (idx);
+      }
+    };
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud point vector class

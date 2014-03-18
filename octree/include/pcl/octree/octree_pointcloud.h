@@ -55,6 +55,10 @@ namespace pcl
   namespace octree
   {
 
+    // TODO: this is weird
+    template <typename UserDataT>
+    class OctreeIndicesContainer;
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud class
      *  \note Octree implementation for pointclouds. Only indices are stored by the octree leaf nodes (zero-copy).
@@ -70,7 +74,7 @@ namespace pcl
      *  \author Julius Kammerl (julius@kammerl.de)
      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeIndicesContainer<>,
+    template<typename PointT, typename LeafContainerT = OctreeIndicesContainer<boost::blank>,
         typename BranchContainerT = OctreeEmptyContainer,
         typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
 

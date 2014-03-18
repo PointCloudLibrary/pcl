@@ -40,11 +40,74 @@
 #define PCL_OCTREE_SINGLE_POINT_H
 
 #include "octree_pointcloud.h"
+#include "octree_container.h"
 
 namespace pcl
 {
   namespace octree
   {
+
+    /** \brief An octree leaf container that stores the index of the very last
+      * point that was added to it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeIndexContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        OctreeIndexContainer ()
+        : OctreeLeafContainerT ()
+        , last_index_ (-1)
+        {
+        }
+
+        /** Add a new point (index). */
+        void
+        insertPointIndex (int index_arg)
+        {
+          last_index_ = index_arg;
+        }
+
+        /** \brief Retrieve the index of the last point. */
+        int
+        getPointIndex () const
+        {
+          return (last_index_);
+        }
+
+        virtual void
+        reset ()
+        {
+          last_index_ = -1;
+        }
+
+      protected:
+
+        int last_index_;
+
+    };
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeIndexContainer<boost::blank> OctreeContainerPointIndex;
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeIndexContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int idx, const PointT&)
+      {
+        container.insertPointIndex (idx);
+      }
+    };
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud single point class
      *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). Every leaf node contains a single point index from the dataset given by \a setInputCloud.

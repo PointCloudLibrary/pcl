@@ -57,6 +57,95 @@ namespace pcl
 
   namespace octree
   {
+
+    /** \brief @b Octree adjacency leaf container class - stores set of pointers to neighbors, number of points added, and a DataT value.
+     * \note This class implements a leaf node that stores pointers to neighboring leaves.
+     * \note This class also has a virtual computeData function, which is called by OctreePointCloudAdjacency::addPointsFromInputCloud.
+     * \note If you are not happy with the default data type (which is AveragePoint<PointInT>) and its behavior (averaging of XYZ,
+     * normal, and RGB fields), then you should implement your own and either:
+     *
+     * - make sure it has add() and compute() functions (like AveragePoint does)
+     *   or
+     * - make explicit instantiations of addPoint() and computeData() functions of this class (supervoxel_clustering.hpp for an example).
+     */
+    template <typename OctreeLeafContainerT = OctreeEmptyContainer>
+    class OctreeAdjacencyContainer : public OctreeLeafContainerT
+    {
+
+      public:
+
+        typedef OctreeAdjacencyContainer<OctreeLeafContainerT> OctreeAdjacencyContainerT;
+
+        typedef std::set<OctreeAdjacencyContainerT*> NeighborSetT;
+
+        /** Iterator for neighbors of this leaf */
+        typedef typename NeighborSetT::iterator iterator;
+        /** Const iterator for neighbors of this leaf */
+        typedef typename NeighborSetT::const_iterator const_iterator;
+        inline iterator begin () { return (neighbors_.begin ()); }
+        inline iterator end ()   { return (neighbors_.end ()); }
+        inline const_iterator begin () const { return (neighbors_.begin ()); }
+        inline const_iterator end () const  { return (neighbors_.end ()); }
+
+        OctreeAdjacencyContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+        /** \brief Deep copy of the leaf - copies all internal data. */
+        virtual OctreeAdjacencyContainerT*
+        deepCopy () const
+        {
+          OctreeAdjacencyContainerT *new_data = new OctreeAdjacencyContainerT;
+          new_data->neighbors_ = this->neighbors_;
+          new_data->user_data_ = this->user_data_;
+          return (new_data);
+        }
+
+        /** \brief Add a new neighbor to the container.
+          * \param[in] neighbor the new neighbor to add */
+        void
+        addNeighbor (OctreeAdjacencyContainerT *neighbor)
+        {
+          neighbors_.insert (neighbor);
+        }
+
+        /** \brief Remove neighbor from neighbor set.
+          * \param[in] neighbor the neighbor to remove */
+        void
+        removeNeighbor (OctreeAdjacencyContainerT *neighbor)
+        {
+          neighbors_.erase (neighbor);
+        }
+
+        /** Returns the number of neighbors this leaf has. */
+        inline size_t
+        getNumNeighbors () const
+        {
+          return (neighbors_.size ());
+        }
+
+        /** \brief Sets the whole neighbor set.
+          * \param[in] neighbor_arg the new set */
+        void
+        setNeighbors (const NeighborSetT &neighbor_arg)
+        {
+          neighbors_ = neighbor_arg;
+        }
+
+        /** \brief Clears the set of neighbors */
+        void
+        resetNeighbors ()
+        {
+          neighbors_.clear ();
+        }
+
+      protected:
+
+        NeighborSetT neighbors_;
+
+    };
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief @b Octree pointcloud voxel class which maintains adjacency information for its voxels.
       *

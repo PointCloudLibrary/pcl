@@ -41,6 +41,8 @@
 #define PCL_OCTREE_VOXELCENTROID_H
 
 #include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree_container.h>
+#include <pcl/octree/centroid_point.h>
 #include <pcl/common/point_operators.h>
 #include <pcl/point_types.h>
 #include <pcl/register_point_struct.h>
@@ -48,7 +50,96 @@
 namespace pcl
 {
   namespace octree
-  {    
+  {
+
+    /** \brief An octree leaf container that computes the cenrtoid of the points
+      * that were inserted into it. */
+    template <typename PointT = pcl::PointXYZ,
+              typename UserDataT = boost::blank>
+    class OctreeCentroidContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        typedef PointT point_type;
+        typedef UserDataT data_type;
+
+        OctreeCentroidContainer ()
+        : OctreeLeafContainerT ()
+        {
+        }
+
+        /** Add a new point. */
+        void
+        insertPoint (const PointT& point_arg)
+        {
+          centroid_.add (point_arg);
+        }
+
+        /** \brief Retrieve the computed average (centroid) point.
+          *
+          * This container maintains the sum of all fields of the
+          * inserted points. When this function is called it will divide the
+          * sum by the actual number of inserted points. */
+        template <typename T> void
+        getCentroid (T& point_arg) const
+        {
+          centroid_.get (point_arg);
+        }
+
+        /** \brief Get the number of points that have been inserted. */
+        size_t
+        getSize () const
+        {
+          return (centroid_.getSize ());
+        }
+
+        virtual void
+        reset ()
+        {
+          centroid_ = CentroidPoint<PointT> ();
+        }
+
+      protected:
+
+        CentroidPoint<PointT> centroid_;
+
+    };
+
+    /** Wrapper class to preserve existing interface. */
+    template <typename PointT>
+    class OctreePointCloudVoxelCentroidContainer : public OctreeCentroidContainer<PointT, boost::blank>
+    {
+
+      public:
+
+        OctreePointCloudVoxelCentroidContainer ()
+        : OctreeCentroidContainer<PointT, boost::blank> ()
+        {
+        }
+
+    };
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeCentroidContainer<
+                                     typename LeafContainerT::point_type
+                                   , typename LeafContainerT::data_type
+                                   >
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      static void insert (LeafContainerT& container, int, const typename LeafContainerT::point_type& point)
+      {
+        container.insertPoint (point);
+      }
+    };
+
     /** \brief @b Octree pointcloud voxel centroid class
     * \note This class generate an octrees from a point cloud (zero-copy). It provides a vector of centroids for all occupied voxels.
     * \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.

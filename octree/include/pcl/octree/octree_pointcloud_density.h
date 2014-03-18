@@ -41,11 +41,73 @@
 #define PCL_OCTREE_DENSITY_H
 
 #include "octree_pointcloud.h"
+#include "octree_container.h"
 
 namespace pcl
 {
   namespace octree
   {
+
+    /** \brief An octree leaf container that stores the number of points
+      * that were added to it. */
+    template <typename UserDataT = boost::blank>
+    class OctreeDensityContainer : public OctreeLeafContainer<UserDataT>
+    {
+
+        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
+
+      public:
+
+        OctreeDensityContainer ()
+        : OctreeLeafContainerT ()
+        , num_points_ (0)
+        {
+        }
+
+        /** Add a new point. */
+        void
+        insertPoint ()
+        {
+          ++num_points_;
+        }
+
+        /** \brief Get the number of points that have been inserted. */
+        size_t
+        getSize () const
+        {
+          return (num_points_);
+        }
+
+        virtual void
+        reset ()
+        {
+          num_points_ = 0;
+        }
+
+      protected:
+
+        size_t num_points_;
+
+    };
+
+    /** Typedef to preserve existing interface. */
+    typedef OctreeDensityContainer<boost::blank> OctreePointCloudDensityContainer;
+
+    template <typename LeafContainerT>
+    struct LeafContainerTraits<LeafContainerT,
+                               typename boost::enable_if<
+                                 boost::is_base_of<
+                                   OctreeDensityContainer<typename LeafContainerT::data_type>
+                                 , LeafContainerT
+                                 >
+                               >::type>
+    {
+      template <typename PointT>
+      static void insert (LeafContainerT& container, int, const PointT&)
+      {
+        container.insertPoint ();
+      }
+    };
 
     /** \brief @b Octree pointcloud density class
       * \note This class generate an octrees from a point cloud (zero-copy). Only the amount of points that fall into the leaf node voxel are stored.
