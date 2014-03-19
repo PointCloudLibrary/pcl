@@ -50,7 +50,9 @@ using namespace pcl;
 
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_impl.h>
+
 #include <pcl/octree/octree_pointcloud_adjacency.h>
+#include <pcl/octree/octree_pointcloud_dynamic_depth.h>
 
 using namespace octree;
 
@@ -261,7 +263,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
   const static size_t leafAggSize = 5;
 
-  OctreePointCloudPointVector<PointXYZ> octree (resolution);
+  OctreePointCloudDynamicDepth<PointXYZ> octree (resolution, leafAggSize);
 
   // create shared pointcloud instances
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> ());
@@ -274,7 +276,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     // clean up
     cloud->points.clear ();
     octree.deleteTree ();
-
+    
     PointXYZ newPoint (1.5, 2.5, 3.5);
     cloud->push_back (newPoint);
 
@@ -288,14 +290,12 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     }
 
     // check if all points from leaf data can be found in input pointcloud data sets
-    octree.defineBoundingBox ();
-    octree.enableDynamicDepth (leafAggSize);
     octree.addPointsFromInputCloud ();
 
     unsigned int leaf_node_counter = 0;
     // iterate over tree
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it2;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it2_end = octree.leaf_end();
+    OctreePointCloudDynamicDepth<PointXYZ>::LeafNodeIterator it2;
+    const OctreePointCloudDynamicDepth<PointXYZ>::LeafNodeIterator it2_end = octree.leaf_end();
     for (it2 = octree.leaf_begin(); it2 != it2_end; ++it2)
     {
       ++leaf_node_counter;
@@ -321,12 +321,11 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
 
     // check if all points from leaf data can be found in input pointcloud data sets
     octree.defineBoundingBox ();
-    octree.enableDynamicDepth (leafAggSize);
     octree.addPointsFromInputCloud ();
 
     //  test iterator
-    OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it;
-    const OctreePointCloudPointVector<PointXYZ>::LeafNodeIterator it_end = octree.leaf_end();
+    OctreePointCloudDynamicDepth<PointXYZ>::LeafNodeIterator it;
+    const OctreePointCloudDynamicDepth<PointXYZ>::LeafNodeIterator it_end = octree.leaf_end();
     unsigned int leaf_count = 0;
 
     std::vector<int> indexVector;

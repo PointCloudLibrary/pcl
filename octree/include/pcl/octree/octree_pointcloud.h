@@ -396,19 +396,13 @@ namespace pcl
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);
         }
 
+
         /** \brief Enable dynamic octree structure
          *  \note Leaf nodes are kept as close to the root as possible and are only expanded if the number of DataT objects within a leaf node exceeds a fixed limit.
          *  \param maxObjsPerLeaf: maximum number of DataT objects per leaf
          * */
-        inline void
-        enableDynamicDepth ( size_t maxObjsPerLeaf )
-        {
-          assert(this->leaf_count_==0);
-          max_objs_per_leaf_ = maxObjsPerLeaf;
-
-          this->dynamic_depth_enabled_ = static_cast<bool> (max_objs_per_leaf_>0);
-        }
-
+        PCL_DEPRECATED ( void enableDynamicDepth ( std::size_t maxObjsPerLeaf ), 
+                         "pcl::octree::OctreePointCloud::enableDynamicDepth is deprecated. Dynamic Depth does not work in standard OctreePointCloud. Please use pcl::octree::OctreePointCloudDynamicDepth instead.");
 
       protected:
 
@@ -417,15 +411,6 @@ namespace pcl
          */
         virtual void
         addPointIdx (const int point_idx_arg);
-
-        /** \brief Add point at index from input pointcloud dataset to octree
-         * \param[in] leaf_node to be expanded
-         * \param[in] parent_branch parent of leaf node to be expanded
-         * \param[in] child_idx child index of leaf node (in parent branch)
-         * \param[in] depth_mask of leaf node to be expanded
-         */
-        void
-        expandLeafNode (LeafNode* leaf_node, BranchNode* parent_branch, unsigned char child_idx, unsigned int depth_mask);
 
         /** \brief Get point at index from input pointcloud dataset
          * \param[in] index_arg index representing the point in the dataset given by \a setInputCloud
@@ -567,11 +552,6 @@ namespace pcl
 
         /** \brief Flag indicating if octree has defined bounding box. */
         bool bounding_box_defined_;
-
-        /** \brief Amount of DataT objects per leafNode before expanding branch
-         *  \note zero indicates a fixed/maximum depth octree structure
-         * **/
-        std::size_t max_objs_per_leaf_;
     };
 
   }

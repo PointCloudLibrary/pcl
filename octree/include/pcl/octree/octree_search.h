@@ -42,7 +42,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree_pointcloud_pointvector.h>
 
 namespace pcl
 {
