@@ -311,7 +311,7 @@ namespace pcl
 
         combinedKernel<<<grid, block>>>(cs);
         cudaSafeCall ( cudaGetLastError () );
-        //cudaSafeCall(cudaDeviceSynchronize());
+        cudaSafeCall(cudaDeviceSynchronize());
 
         //printFuncAttrib(combinedKernel);
 
