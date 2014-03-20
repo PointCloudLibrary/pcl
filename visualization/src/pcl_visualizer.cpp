@@ -1685,6 +1685,29 @@ pcl::visualization::PCLVisualizer::updateShapePose (const std::string &id, const
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
+pcl::visualization::PCLVisualizer::updateCoordinateSystemPose (const std::string &id, const Eigen::Affine3f& pose)
+{
+  ShapeActorMap::iterator am_it = coordinate_actor_map_->find (id);
+
+  vtkLODActor* actor;
+
+  if (am_it == coordinate_actor_map_->end ())
+    return (false);
+  else
+    actor = vtkLODActor::SafeDownCast (am_it->second);
+
+  vtkSmartPointer<vtkMatrix4x4> matrix = vtkSmartPointer<vtkMatrix4x4>::New ();
+
+  convertToVtkMatrix (pose.matrix (), matrix);
+
+  actor->SetUserMatrix (matrix);
+  actor->Modified ();
+
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::visualization::PCLVisualizer::updatePointCloudPose (const std::string &id, const Eigen::Affine3f& pose)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
