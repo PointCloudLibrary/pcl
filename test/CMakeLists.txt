@@ -43,6 +43,7 @@ if(build)
     add_subdirectory(keypoints)
     add_subdirectory(surface)
     add_subdirectory(segmentation)
+    add_subdirectory(sample_consensus)
 
     PCL_ADD_TEST(a_bearing_angle_image_test test_bearing_angle_image
                  FILES test_bearing_angle_image.cpp
@@ -58,11 +59,6 @@ if(build)
                  LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
 
-    PCL_ADD_TEST(a_sample_consensus_test test_sample_consensus
-                 FILES test_sample_consensus.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_sample_consensus pcl_kdtree pcl_features
-                 ARGUMENTS "${PCL_SOURCE_DIR}/test/sac_plane_test.pcd")
-    
     PCL_ADD_TEST(a_transforms_test test_transforms
                  FILES test_transforms.cpp
                  LINK_WITH pcl_gtest pcl_io
