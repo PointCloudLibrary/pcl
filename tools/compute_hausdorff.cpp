@@ -112,6 +112,9 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
       max_dist_b = sqr_distances[0];
   }
 
+  max_dist_a = std::sqrt (max_dist_a);
+  max_dist_b = std::sqrt (max_dist_b);
+
   float dist = std::max (max_dist_a, max_dist_b);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : ");
