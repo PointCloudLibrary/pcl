@@ -1090,6 +1090,39 @@ namespace pcl
 
   };
 
+  /** Compute the centroid of a set of points and return it as a point.
+    *
+    * Implementation leverages \ref CentroidPoint class and therefore behaves
+    * differently from \ref compute3DCentroid() and \ref computeNDCentroid().
+    * See \ref CentroidPoint documentation for explanation.
+    *
+    * \param[in] cloud input point cloud
+    * \param[out] centroid output centroid
+    *
+    * \return number of valid points used to determine the centroid (will be the
+    * same as the size of the cloud if it is dense)
+    *
+    * \note If return value is \c 0, then the centroid is not changed, thus is
+    * not valid.
+    *
+    * \ingroup common */
+  template <typename PointInT, typename PointOutT> size_t
+  computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                   PointOutT& centroid);
+
+  /** Compute the centroid of a set of points and return it as a point.
+    *
+    * \param[in] indices point cloud indices that need to be used
+    *
+    * This is an overloaded function provided for convenience. See the
+    * documentation for computeCentroid().
+    *
+    * \ingroup common */
+  template <typename PointInT, typename PointOutT> size_t
+  computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                   const std::vector<int>& indices,
+                   PointOutT& centroid);
+
 }
 /*@}*/
 #include <pcl/common/impl/centroid.hpp>
