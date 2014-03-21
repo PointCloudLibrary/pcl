@@ -133,6 +133,7 @@ if(build)
         include/pcl/common/impl/random.hpp
         include/pcl/common/impl/generate.hpp
         include/pcl/common/impl/projection_matrix.hpp
+        include/pcl/common/impl/detail/accumulators.hpp
         )
 
     set(impl_incs 
