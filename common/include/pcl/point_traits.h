@@ -53,6 +53,12 @@
 #include <boost/mpl/bool.hpp>
 #endif
 
+// This is required for the workaround at line 109
+#ifdef _MSC_VER
+#include <Eigen/Core>
+#include <Eigen/src/StlSupport/details.h>
+#endif
+
 namespace pcl
 {
 
@@ -99,6 +105,24 @@ namespace pcl
     {
       typedef PointT type;
     };
+
+#ifdef _MSC_VER
+
+    /* Sometimes when calling functions like `copyPoint()` or `copyPointCloud`
+     * without explicitly specifying point types, MSVC deduces them to be e.g.
+     * `Eigen::internal::workaround_msvc_stl_support<pcl::PointXYZ>` instead of
+     * plain `pcl::PointXYZ`. Subsequently these types are passed to meta-
+     * functions like `has_field` or `fieldList` and make them choke. This hack
+     * makes use of the fact that internally `fieldList` always applies `POD` to
+     * its argument type. This specialization therefore allows to unwrap the
+     * contained point type. */
+    template<typename PointT>
+    struct POD<Eigen::internal::workaround_msvc_stl_support<PointT> >
+    {
+      typedef PointT type;
+    };
+
+#endif
 
     // name
     /* This really only depends on Tag, but we go through some gymnastics to avoid ODR violations.
