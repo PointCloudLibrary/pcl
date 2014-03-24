@@ -126,7 +126,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   else
     // Iterate over each point
     for (size_t i = 0; i < cloud_in.points.size (); ++i)
-      copyPoint (cloud_in.points[i], cloud_out.points[i]);
+      copyPoint<PointInT, PointOutT> (cloud_in.points[i], cloud_out.points[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
 
   // Iterate over each point
   for (size_t i = 0; i < indices.size (); ++i)
-    copyPoint (cloud_in.points[indices[i]], cloud_out.points[i]);
+    copyPoint<PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
 
   // Iterate over each point
   for (size_t i = 0; i < indices.size (); ++i)
-    copyPoint (cloud_in.points[indices[i]], cloud_out.points[i]);
+    copyPoint<PointInT, PointOutT> (cloud_in.points[indices[i]], cloud_out.points[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -256,7 +256,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
                      const pcl::PointIndices &indices,
                      pcl::PointCloud<PointOutT> &cloud_out)
 {
-  copyPointCloud (cloud_in, indices.indices, cloud_out);
+  copyPointCloud<PointInT, PointOutT> (cloud_in, indices.indices, cloud_out);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -332,7 +332,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     // Iterate over each idx
     for (size_t i = 0; i < indices[cc].indices.size (); ++i)
     {
-      copyPoint (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]);
+      copyPoint<PointInT, PointOutT> (cloud_in.points[indices[cc].indices[i]], cloud_out.points[cp]);
       ++cp;
     }
   }

@@ -135,7 +135,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        copyPoint (input_->points[*idx_i], pt_src);
+        copyPoint<PointSource, PointTarget> (input_->points[*idx_i], pt_src);
 
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -265,7 +265,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        copyPoint (input_->points[*idx_i], pt_src);
+        copyPoint<PointSource, PointTarget> (input_->points[*idx_i], pt_src);
 
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
