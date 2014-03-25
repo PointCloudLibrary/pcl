@@ -210,7 +210,7 @@ namespace pcl
       boost::shared_ptr<FLANNIndex> flann_index_;
 
       /** \brief Internal pointer to data. */
-      float* cloud_;
+      boost::shared_ptr<float> cloud_;
       
       /** \brief mapping between internal and external indices. */
       std::vector<int> index_mapping_;
