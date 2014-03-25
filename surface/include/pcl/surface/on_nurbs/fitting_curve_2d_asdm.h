@@ -90,6 +90,9 @@ namespace pcl
 
       protected:
 
+        virtual void
+        addPointConstraint (const double &param, const Eigen::Vector2d &point, double weight, unsigned &row);
+
         /** \brief Add minimization constraint: point-to-surface distance (squared-distance-minimization). */
         virtual void
         addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,

@@ -104,6 +104,8 @@ FittingCurve2dASDM::solve (double damp)
 
   if (m_solver.solve ())
     cps_diff = updateCurve (damp);
+  else
+    throw std::runtime_error("[FittingCurve2dASDM::solve] solver failure");
 
   return cps_diff;
 }
@@ -145,6 +147,240 @@ FittingCurve2dASDM::updateCurve (double damp)
   return cps_diff / ncp;
 }
 
+#ifdef EIGENVERSION_GEQUAL_3_2
+void
+FittingCurve2dASDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
+                                        double weight, unsigned &row)
+{
+  int cp_red = m_nurbs.m_order - 2;
+  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
+
+  int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
+
+  ON_EvaluateNurbsBasis (m_nurbs.m_order, m_nurbs.m_knot + E, param, N);
+
+  std::vector<double> rhs;
+  std::vector<double> lhs;
+  std::vector<int> spPattern;
+
+  rhs.assign(1, point (0) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+  {
+    lhs.push_back(weight * N[i]);
+    spPattern.push_back(2 * ((E + i) % ncp) + 0);
+  }
+  m_solver.AddRow(lhs,rhs,spPattern);
+  row++;
+
+  lhs.clear();
+  spPattern.clear();
+  rhs.assign(1, point (1) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+  {
+    lhs.push_back(weight * N[i]);
+    spPattern.push_back(2 * ((E + i) % ncp) + 1);
+  }
+  m_solver.AddRow(lhs,rhs,spPattern);
+  row++;
+
+  delete [] N;
+}
+
+
+void
+FittingCurve2dASDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
+                                        const Eigen::Vector2d &normal, const Eigen::Vector2d &tangent, double rho,
+                                        double d, double weight, unsigned &row)
+{
+  int cp_red = m_nurbs.m_order - 2;
+  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
+
+  int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
+
+  ON_EvaluateNurbsBasis (m_nurbs.m_order, m_nurbs.m_knot + E, param, N);
+
+  std::vector<double> rhs;
+  std::vector<double> lhs;
+  std::vector<int> spPattern;
+
+  rhs.assign(1, normal (0) * point (0) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+  {
+    lhs.push_back(weight * normal (0) * N[i]);
+    spPattern.push_back(2 * ((E + i) % ncp) + 0);
+    //    m_solver.K (row, 2 * ((E + i) % ncp) + 0, weight * normal (0) * N[i]);
+  }
+  m_solver.AddRow(lhs,rhs,spPattern);
+  row++;
+
+  lhs.clear();
+  spPattern.clear();
+  rhs.assign(1, normal (1) * point (1) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+  {
+    lhs.push_back(weight * normal (1) * N[i]);
+    spPattern.push_back(2 * ((E + i) % ncp) + 1);
+    //    m_solver.K (row, 2 * ((E + i) % ncp) + 1, weight * normal (1) * N[i]);
+  }
+  m_solver.AddRow(lhs,rhs,spPattern);
+  row++;
+
+  if (d < 0.0)
+  {
+
+    double a = d / (d - rho);
+
+    lhs.clear();
+    spPattern.clear();
+    rhs.assign(1, a * a * tangent (0) * point (0) * weight);
+    for (int i = 0; i < m_nurbs.m_order; i++)
+    {
+      lhs.push_back(a * a * weight * tangent (0) * N[i]);
+      spPattern.push_back(2 * ((E + i) % ncp) + 0);
+      //      m_solver.K (row, 2 * ((E + i) % ncp) + 0, a * a * weight * tangent (0) * N[i]);
+    }
+    m_solver.AddRow(lhs,rhs,spPattern);
+    row++;
+
+    lhs.clear();
+    spPattern.clear();
+    rhs.assign(1, a * a * tangent (1) * point (1) * weight);
+    for (int i = 0; i < m_nurbs.m_order; i++)
+    {
+      lhs.push_back(a * a * weight * tangent (1) * N[i]);
+      spPattern.push_back(2 * ((E + i) % ncp) + 1);
+      //      m_solver.K (row, 2 * ((E + i) % ncp) + 1, a * a * weight * tangent (1) * N[i]);
+    }
+    m_solver.AddRow(lhs,rhs,spPattern);
+    row++;
+
+  }
+
+  delete [] N;
+}
+
+void
+FittingCurve2dASDM::addCageRegularisation (double weight, unsigned &row, const std::vector<double> &elements,
+                                           double wConcav)
+{
+
+  std::vector<double> rhs0(1,0.0);
+  std::vector<double> rhs1(1,0.0);
+
+  int cp_red = (m_nurbs.m_order - 2);
+  int ncp = (m_nurbs.m_cv_count - 2 * cp_red);
+
+  //  m_data->interior_line_start.clear();
+  //  m_data->interior_line_end.clear();
+  for (int j = 1; j < ncp + 1; j++)
+  {
+    if (wConcav == 0.0)
+    {
+    }
+    else
+    {
+      int i = j % ncp;
+
+      if (i >= int (m_data->closest_points_error.size () - 1))
+      {
+        printf ("[FittingCurve2dASDM::addCageRegularisation] Warning, index for closest_points_error out of bounds\n");
+      }
+      else
+      {
+        Eigen::Vector2d t, n;
+        double pt[4];
+
+        double xi = elements[i] + 0.5 * (elements[i + 1] - elements[i]);
+        m_nurbs.Evaluate (xi, 1, 2, pt);
+        t (0) = pt[2];
+        t (1) = pt[3];
+        n (0) = -t (1);
+        n (1) = t (0);
+        n.normalize ();
+
+        double err = m_data->closest_points_error[i] + 0.5 * (m_data->closest_points_error[i + 1]
+            - m_data->closest_points_error[i]);
+
+        rhs0.assign(1, err * wConcav * n (0));
+        rhs1.assign(1, err * wConcav * n (1));
+//        m_solver.f (row + 0, 0, err * wConcav * n (0));
+//        m_solver.f (row + 1, 0, err * wConcav * n (1));
+
+        //        Eigen::Vector2d p1, p2;
+        //        p1(0) = pt[0];
+        //        p1(1) = pt[1];
+        //        p2 = p1 + n * wConcav * err;
+        //        m_data->interior_line_start.push_back(p1);
+        //        m_data->interior_line_end.push_back(p2);
+      }
+    }
+
+
+    std::vector<double> lhs;
+    std::vector<int> spPattern;
+
+    lhs.push_back(-2.0 * weight);
+    spPattern.push_back(2 * ((j + 0) % ncp) + 0);
+    lhs.push_back( 1.0 * weight);
+    spPattern.push_back(2 * ((j - 1) % ncp) + 0);
+    lhs.push_back( 1.0 * weight);
+    spPattern.push_back(2 * ((j + 1) % ncp) + 0);
+    m_solver.AddRow(lhs,rhs0,spPattern);
+    row++;
+
+    lhs.clear();
+    spPattern.clear();
+
+    lhs.push_back(-2.0 * weight);
+    spPattern.push_back(2 * ((j + 0) % ncp) + 1);
+    lhs.push_back( 1.0 * weight);
+    spPattern.push_back(2 * ((j - 1) % ncp) + 1);
+    lhs.push_back( 1.0 * weight);
+    spPattern.push_back(2 * ((j + 1) % ncp) + 1);
+    m_solver.AddRow(lhs,rhs1,spPattern);
+    row++;
+
+//    m_solver.K (row, 2 * ((j + 0) % ncp) + 0, -2.0 * weight);
+//    m_solver.K (row, 2 * ((j - 1) % ncp) + 0, 1.0 * weight);
+//    m_solver.K (row, 2 * ((j + 1) % ncp) + 0, 1.0 * weight);
+//    row++;
+
+//    m_solver.K (row, 2 * ((j + 0) % ncp) + 1, -2.0 * weight);
+//    m_solver.K (row, 2 * ((j - 1) % ncp) + 1, 1.0 * weight);
+//    m_solver.K (row, 2 * ((j + 1) % ncp) + 1, 1.0 * weight);
+//    row++;
+  }
+}
+
+#else
+
+void
+FittingCurve2dASDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
+                                        double weight, unsigned &row)
+{
+  int cp_red = m_nurbs.m_order - 2;
+  int ncp = m_nurbs.m_cv_count - 2 * cp_red;
+  double *N = new double[m_nurbs.m_order * m_nurbs.m_order];
+
+  int E = ON_NurbsSpanIndex (m_nurbs.m_order, m_nurbs.m_cv_count, m_nurbs.m_knot, param, 0, 0);
+
+  ON_EvaluateNurbsBasis (m_nurbs.m_order, m_nurbs.m_knot + E, param, N);
+
+  m_solver.f (row, 0, point (0) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+    m_solver.K (row, 2 * ((E + i) % ncp) + 0, weight * N[i]);
+  row++;
+
+  m_solver.f (row, 0, point (1) * weight);
+  for (int i = 0; i < m_nurbs.m_order; i++)
+    m_solver.K (row, 2 * ((E + i) % ncp) + 1, weight * N[i]);
+  row++;
+
+  delete [] N;
+}
+
 void
 FittingCurve2dASDM::addPointConstraint (const double &param, const Eigen::Vector2d &point,
                                         const Eigen::Vector2d &normal, const Eigen::Vector2d &tangent, double rho,
@@ -160,20 +396,13 @@ FittingCurve2dASDM::addPointConstraint (const double &param, const Eigen::Vector
 
   m_solver.f (row, 0, normal (0) * point (0) * weight);
   for (int i = 0; i < m_nurbs.m_order; i++)
-  {
     m_solver.K (row, 2 * ((E + i) % ncp) + 0, weight * normal (0) * N[i]);
-  }
   row++;
 
   m_solver.f (row, 0, normal (1) * point (1) * weight);
   for (int i = 0; i < m_nurbs.m_order; i++)
-  {
     m_solver.K (row, 2 * ((E + i) % ncp) + 1, weight * normal (1) * N[i]);
-  }
   row++;
-
-  //  if (d >= 0.0 && d > rho)
-  //    printf("[FittingCurve2dASDM::addPointConstraint] Warning d > rho: %f > %f\n", d, rho);
 
   if (d < 0.0)
   {
@@ -256,6 +485,7 @@ FittingCurve2dASDM::addCageRegularisation (double weight, unsigned &row, const s
     row++;
   }
 }
+#endif
 
 void
 FittingCurve2dASDM::assembleInterior (const std::vector<double> &elements, double wInt, double sigma2, double rScale, unsigned &row)
