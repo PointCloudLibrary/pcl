@@ -813,7 +813,8 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (0), m_nurbs.m_knot[0] + E, order, N0); // derivative order?
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (1), m_nurbs.m_knot[1] + F, order, N1);
 
-    lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+   // lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+    lhs.clear();
     spPattern.clear();
     for (int i = 0; i < m_nurbs.Order (0); i++)
     {
@@ -822,8 +823,9 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
       {
         indx = lrc2gl (E, F, i, j);
         spPattern.push_back(indx);
-        lhs[ indx  ] =
-            weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+      //  lhs[ indx  ] =
+      //      weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+        lhs.push_back(weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]));
       } // i
     } // j
 
@@ -847,7 +849,8 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (0), m_nurbs.m_knot[0] + E, order, N0); // derivative order?
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (1), m_nurbs.m_knot[1] + F, order, N1);
 
-    lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+    //lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+    lhs.clear();
     spPattern.clear();
     for (int i = 0; i < m_nurbs.Order (0); i++)
     {
@@ -856,8 +859,9 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
       {
         indx = lrc2gl (E, F, i, j);
         spPattern.push_back(indx);
-        lhs[ indx ] =
-            weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+      //  lhs[ indx ] =
+      //      weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);  );
 
       } // i
 
@@ -882,7 +886,8 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (0), m_nurbs.m_knot[0] + E, order, N0); // derivative order?
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (1), m_nurbs.m_knot[1] + F, order, N1);
 
-    lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+   // lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+    lhs.clear();
     spPattern.clear();
     for (int i = 0; i < m_nurbs.Order (0); i++)
     {
@@ -891,8 +896,9 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
       {
         indx =  lrc2gl (E, F, i, j);
         spPattern.push_back(indx);
-        lhs[ indx ] =
-            weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+        //lhs[ indx ] =
+        //  weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+        lhs.push_back(weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]));
       } // i
 
     } // j
@@ -916,7 +922,8 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (0), m_nurbs.m_knot[0] + E, order, N0); // derivative order?
     ON_EvaluateNurbsBasisDerivatives (m_nurbs.Order (1), m_nurbs.m_knot[1] + F, order, N1);
 
-    lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+  //  lhs.assign(m_nurbs.m_cv_count[0] * m_nurbs.m_cv_count[1],0.0);
+    lhs.clear();
     spPattern.clear();
     for (int i = 0; i < m_nurbs.Order (0); i++)
     {
@@ -925,8 +932,9 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
       {
         indx = lrc2gl (E, F, i, j);
         spPattern.push_back(indx);
-        lhs[ indx ] =
-            weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+    //    lhs[ indx ] =
+    //        weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
+        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]); );
 
       } // i
 
