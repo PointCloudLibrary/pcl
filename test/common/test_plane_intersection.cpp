@@ -301,6 +301,44 @@ TEST (PCL, planeWithPlaneIntersection)
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, threePlanesIntersection)
+{
+  // Testing 2 parallel planes
+  Eigen::Vector4f plane_a (1.0f, 0.0f, 0.0f, -0.5f);
+  Eigen::Vector4f plane_b (1.0f, 0.0f, 0.0f, 0.5f);
+  Eigen::Vector4f plane_c (0.0f, 0.0f, 1.0f, -0.5f);
+  Eigen::Vector3f point (1.0f, 2.0f, 3.0f);
+
+  std::cout << std::endl;
+  EXPECT_FALSE (threePlanesIntersection (plane_a, plane_b, plane_c, point, 1e-6));
+  std::cout << std::endl;
+  EXPECT_FALSE (threePlanesIntersection (plane_a, plane_b, plane_c, point, 1e-3));
+  EXPECT_FLOAT_EQ (1.0f, point (0));
+  EXPECT_FLOAT_EQ (2.0f, point (1));
+  EXPECT_FLOAT_EQ (3.0f, point (2));
+
+  //perfect box
+  plane_b << 0.0f, 1.0f, 0.0f, 0.5f;
+
+  std::cout << std::endl;
+  EXPECT_TRUE (threePlanesIntersection (plane_a, plane_b, plane_c, point));
+  EXPECT_FLOAT_EQ (0.5f, point (0));
+  EXPECT_FLOAT_EQ (-0.5f, point (1));
+  EXPECT_FLOAT_EQ (0.5f, point (2));
+
+  //general planes
+  plane_a << 1.4564f, 0.5465f, -0.1325f, 0.4685f;
+  plane_b << -1.5619f, 5.5461f, 5.4569f, 2.9414f;
+  plane_c << 0.9852f, 654.55f, -0.1546f, -45.1516f;
+
+  std::cout << std::endl;
+  EXPECT_TRUE (threePlanesIntersection (plane_a, plane_b, plane_c, point));
+  EXPECT_NEAR (-0.413977f, point (0), 1e-4);
+  EXPECT_NEAR (0.0694323f, point (1), 1e-4);
+  EXPECT_NEAR (-0.728082f, point (2), 1e-4);
+}
+
 //* ---[ */
 int
 main (int argc, char** argv)
@@ -309,4 +347,5 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */
+
 
