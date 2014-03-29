@@ -77,8 +77,8 @@ namespace pcl
       {
         enum
         {
-          CTA_SIZE_X = CUDA_GRID_X,
-          CTA_SIZE_Y = CUDA_GRID_Y,
+          CTA_SIZE_X = ESTIMATE_COMBINED_CUDA_GRID_X,
+          CTA_SIZE_Y = ESTIMATE_COMBINED_CUDA_GRID_Y,
           CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y
         };
 
