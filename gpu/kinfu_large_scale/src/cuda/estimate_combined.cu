@@ -38,7 +38,7 @@
 //#include <pcl/gpu/utils/device/block.hpp>
 //#include <pcl/gpu/utils/device/funcattrib.hpp>
 #include "device.hpp"
-#include "estimate_combined.hpp"
+#include "estimate_combined.h"
 //#include <boost/graph/buffer_concepts.hpp>
 
 using namespace pcl::device;
