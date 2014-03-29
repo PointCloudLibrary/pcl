@@ -108,6 +108,10 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   std::vector<int> tar_offsets_;
   std::vector<size_t> cloud_idx_to_file_idx_;
 
+  // Mutex to ensure that two quick consecutive triggers do not cause
+  // simultaneous asynchronous read-aheads
+  boost::mutex read_ahead_mutex_;
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW 
 };
 
@@ -282,6 +286,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::openTARFile (const std::string &file_name)
 void 
 pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
+  boost::mutex::scoped_lock read_ahead_lock(read_ahead_mutex_);
   if (valid_)
     grabber_.publish (next_cloud_,origin_,orientation_);
 
