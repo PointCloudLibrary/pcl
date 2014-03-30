@@ -94,7 +94,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   // Check that we got the same number of points and normals
   if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
   {
-    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%zu) and normal cloud (%zu) do not match!\n",
+    PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
                getClassName ().c_str (), input_->points.size (),
                normals_->points.size ());
     return;

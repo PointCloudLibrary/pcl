@@ -59,7 +59,7 @@ main (int argc, char ** argv)
   // Load input file
   PointCloudPtr input (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *input);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], input->size ());    
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], input->size ());    
   
   ObjectRecognitionParameters params;
   ifstream params_stream;

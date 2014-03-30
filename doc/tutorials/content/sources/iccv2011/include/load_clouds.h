@@ -12,7 +12,7 @@ loadPointCloud (std::string filename, std::string suffix)
   boost::shared_ptr<pcl::PointCloud<PointT> > output (new pcl::PointCloud<PointT>);
   filename.append (suffix);
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -22,7 +22,7 @@ loadPoints (std::string filename)
   PointCloudPtr output (new PointCloud);
   filename.append ("_points.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -32,7 +32,7 @@ loadSurfaceNormals(std::string filename)
   SurfaceNormalsPtr output (new SurfaceNormals);
   filename.append ("_normals.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -42,7 +42,7 @@ loadKeypoints (std::string filename)
   PointCloudPtr output (new PointCloud);
   filename.append ("_keypoints.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -52,7 +52,7 @@ loadLocalDescriptors (std::string filename)
   LocalDescriptorsPtr output (new LocalDescriptors);
   filename.append ("_localdesc.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 
@@ -62,7 +62,7 @@ loadGlobalDescriptors (std::string filename)
   GlobalDescriptorsPtr output (new GlobalDescriptors);
   filename.append ("_globaldesc.pcd");
   pcl::io::loadPCDFile (filename, *output);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str (), output->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str (), output->size ());
   return (output);
 }
 

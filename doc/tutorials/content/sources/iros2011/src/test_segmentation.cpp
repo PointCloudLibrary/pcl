@@ -22,7 +22,7 @@ main (int argc, char ** argv)
   // Load the input file
   PointCloudPtr cloud (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *cloud);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], cloud->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], cloud->size ());
 
   // Subtract the dominant plane
   double dist_threshold, max_iters;
@@ -31,7 +31,7 @@ main (int argc, char ** argv)
   {
     size_t n = cloud->size ();
     cloud = findAndSubtractPlane (cloud, dist_threshold, (int)max_iters);
-    pcl::console::print_info ("Subtracted %zu points along the detected plane\n", n - cloud->size ());
+    pcl::console::print_info ("Subtracted %lu points along the detected plane\n", n - cloud->size ());
   }
 
   // Cluster points
@@ -41,7 +41,7 @@ main (int argc, char ** argv)
   if (cluster_points)
   {
     clusterObjects (cloud, tolerance, (int)min_size, (int)max_size, cluster_indices);
-    pcl::console::print_info ("Found %zu clusters\n", cluster_indices.size ());
+    pcl::console::print_info ("Found %lu clusters\n", cluster_indices.size ());
   }
 
   // Save output

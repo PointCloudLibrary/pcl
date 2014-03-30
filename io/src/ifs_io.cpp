@@ -128,7 +128,7 @@ pcl::IFSReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
         fs.read ((char*)&nr_points, sizeof (uint32_t));
         if ((nr_points == 0) || (nr_points > 10000000))
         {
-          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %zu!\n", nr_points);
+          PCL_ERROR ("[pcl::IFSReader::readHeader] Bad number of vertices %lu!\n", nr_points);
           fs.close ();
           return (-1);
         }
@@ -293,7 +293,7 @@ pcl::IFSReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, int 
   fs.read ((char*)&nr_facets, sizeof (uint32_t));
   if ((nr_facets == 0) || (nr_facets > 10000000))
   {
-    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %zu!\n", nr_facets);
+    PCL_ERROR ("[pcl::IFSReader::read] Bad number of facets %lu!\n", nr_facets);
     fs.close ();
     return (-1);
   }

@@ -28,7 +28,7 @@ main (int argc, char ** argv)
   // Load the input file
   PointCloudPtr cloud (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *cloud);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], cloud->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], cloud->size ());
   
   // Estimate surface normals
   SurfaceNormalsPtr normals;
@@ -56,7 +56,7 @@ main (int argc, char ** argv)
     int nr_scales = atoi(tokens[2].c_str ());
     float min_contrast = atof(tokens[3].c_str ());
     keypoints = detectKeypoints (cloud, normals, min_scale, nr_octaves, nr_scales, min_contrast);
-    pcl::console::print_info ("Detected %zu keypoints\n", keypoints->size ());
+    pcl::console::print_info ("Detected %lu keypoints\n", keypoints->size ());
   }
   
   // Compute local descriptors

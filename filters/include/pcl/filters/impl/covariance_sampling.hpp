@@ -54,7 +54,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
 
   if (num_samples_ > indices_->size ())
   {
-    PCL_ERROR ("[pcl::CovarianceSampling::initCompute] The number of samples you asked for (%d) is larger than the number of input indices (%zu)\n",
+    PCL_ERROR ("[pcl::CovarianceSampling::initCompute] The number of samples you asked for (%d) is larger than the number of input indices (%lu)\n",
                num_samples_, indices_->size ());
     return false;
   }
