@@ -223,7 +223,7 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
   }
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), I_N_best);
+    PCL_DEBUG ("[pcl::ProgressiveSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), I_N_best);
 
   if (model_.empty ())
   {

@@ -110,7 +110,7 @@ main (int argc, char** argv)
   {
     const LineRGBD<PointXYZRGBA>::Detection & d = detections[i];
     const BoundingBoxXYZ & bb = d.bounding_box;
-    print_info ("%zu %zu %f (%f %f %f) (%f %f %f)\n", 
+    print_info ("%lu %lu %f (%f %f %f) (%f %f %f)\n", 
                 d.detection_id, d.template_id, d.response,
                 bb.x, bb.y, bb.z, bb.width, bb.height, bb.depth);
   }

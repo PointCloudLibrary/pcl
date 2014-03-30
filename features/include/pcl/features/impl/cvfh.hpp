@@ -83,12 +83,12 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
   if (cloud.points.size () != normals.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!\n", cloud.points.size (), normals.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
     return;
   }
 

@@ -77,7 +77,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
   if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%zu)!\n",
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
                nr_samples, cloud.points.size ());
     return;
   }

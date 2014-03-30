@@ -54,7 +54,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::initCompute ()
   // If sample size is 0 or if the sample size is greater then input cloud size then return entire copy of cloud
   if (sample_ >= input_->size ())
   {
-    PCL_ERROR ("[NormalSpaceSampling::initCompute] Requested more samples than the input cloud size: %d vs %zu\n",
+    PCL_ERROR ("[NormalSpaceSampling::initCompute] Requested more samples than the input cloud size: %d vs %lu\n",
                sample_, input_->size ());
     return false;
   }

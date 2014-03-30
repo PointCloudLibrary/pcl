@@ -51,7 +51,7 @@ pcl::extractLabeledEuclideanClusters (const PointCloud<PointT> &cloud,
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractLabeledEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractLabeledEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false

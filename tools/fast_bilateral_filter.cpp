@@ -93,7 +93,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   PointCloud<PointXYZ> xyz_filtered;
   fbf.filter (xyz_filtered);
 
-  print_highlight ("Filtered data in "); print_value ("%g", tt.toc ()); print_info (" ms for "); print_value ("%zu", xyz_filtered.size ()); print_info (" points.\n");
+  print_highlight ("Filtered data in "); print_value ("%g", tt.toc ()); print_info (" ms for "); print_value ("%lu", xyz_filtered.size ()); print_info (" points.\n");
 
   // Convert data back
   pcl::PCLPointCloud2 output_xyz;

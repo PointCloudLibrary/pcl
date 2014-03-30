@@ -209,7 +209,7 @@ main (int argc, char** argv)
     }
 
     // Display
-    PCL_INFO ("Found %zu inliers.\n", inliers.indices.size ());
+    PCL_INFO ("Found %lu inliers.\n", inliers.indices.size ());
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr line (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::copyPointCloud (*cloud_f, inliers, *line);

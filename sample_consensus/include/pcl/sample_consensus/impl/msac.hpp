@@ -141,7 +141,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
   if (distances.size () != indices.size ())
   {
-    PCL_ERROR ("[pcl::MEstimatorSampleConsensus::computeModel] Estimated distances (%zu) differs than the normal of indices (%zu).\n", distances.size (), indices.size ());
+    PCL_ERROR ("[pcl::MEstimatorSampleConsensus::computeModel] Estimated distances (%lu) differs than the normal of indices (%lu).\n", distances.size (), indices.size ());
     return (false);
   }
 
@@ -156,7 +156,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
   inliers_.resize (n_inliers_count);
 
   if (debug_verbosity_level > 0)
-    PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Model: %zu size, %d inliers.\n", model_.size (), n_inliers_count);
+    PCL_DEBUG ("[pcl::MEstimatorSampleConsensus::computeModel] Model: %lu size, %d inliers.\n", model_.size (), n_inliers_count);
 
   return (true);
 }

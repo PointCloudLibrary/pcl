@@ -142,7 +142,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     }
     catch (std::bad_alloc)
     {
-      PCL_ERROR ("[initCompute] Failed to allocate %zu indices.\n", (input_->width * input_->height));
+      PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
     }
     for (size_t i = 0; i < indices_->size (); ++i) { (*indices_)[i] = static_cast<int>(i); }
   }
