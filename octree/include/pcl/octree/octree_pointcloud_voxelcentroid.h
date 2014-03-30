@@ -42,8 +42,8 @@
 
 #include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_container.h>
-#include <pcl/octree/centroid_point.h>
 #include <pcl/common/point_operators.h>
+#include <pcl/common/centroid.h>
 #include <pcl/point_types.h>
 
 namespace pcl

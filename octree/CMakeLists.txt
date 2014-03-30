@@ -31,7 +31,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/octree.h"
         "include/pcl/${SUBSYS_NAME}/octree2buf_base.h"
         "include/pcl/${SUBSYS_NAME}/octree_pointcloud_adjacency.h"
-        "include/pcl/${SUBSYS_NAME}/centroid_point.h"
         "include/pcl/${SUBSYS_NAME}/octree_pointcloud_dynamic_depth.h"
         )
 
@@ -43,7 +42,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/octree_search.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_voxelcentroid.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_adjacency.hpp"
-        "include/pcl/${SUBSYS_NAME}/impl/centroid_point.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/octree_pointcloud_dynamic_depth.hpp"
         )
 
