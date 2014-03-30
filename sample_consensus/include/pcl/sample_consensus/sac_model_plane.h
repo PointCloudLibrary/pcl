@@ -251,7 +251,7 @@ namespace pcl
         // Needs a valid model coefficients
         if (model_coefficients.size () != 4)
         {
-          PCL_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModelPlane::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
           return (false);
         }
         return (true);

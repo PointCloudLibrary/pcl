@@ -323,7 +323,7 @@ class NILinemod
       vector<PointIndices> label_indices;
       vector<PointIndices> boundary_indices;
       mps_.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
-      PCL_DEBUG ("Number of planar regions detected: %zu for a cloud of %zu points and %zu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
+      PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -428,7 +428,7 @@ class NILinemod
 
         PlanarRegion<PointT> refined_region;
         pcl::approximatePolygon (region, refined_region, 0.01, false, true);
-        PCL_INFO ("Planar region: %zu points initial, %zu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
+        PCL_INFO ("Planar region: %lu points initial, %lu points after refinement.\n", region.getContour ().size (), refined_region.getContour ().size ());
         cloud_viewer_.addPolygon (refined_region, 0.0, 0.0, 1.0, "refined_region");
         cloud_viewer_.setShapeRenderingProperties (visualization::PCL_VISUALIZER_LINE_WIDTH, 10, "refined_region");
 

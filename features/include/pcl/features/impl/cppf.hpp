@@ -100,7 +100,7 @@ pcl::CPPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
         }
         else
         {
-          PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %zu and %zu went wrong.\n", getClassName ().c_str (), i, j);
+          PCL_ERROR ("[pcl::%s::computeFeature] Computing pair feature vector between points %lu and %lu went wrong.\n", getClassName ().c_str (), i, j);
           p.f1 = p.f2 = p.f3 = p.f4 = p.f5 = p.f6 = p.f7 = p.f8 = p.f9 = p.f10 = p.alpha_m = std::numeric_limits<float>::quiet_NaN ();
           output.is_dense = false;
         }

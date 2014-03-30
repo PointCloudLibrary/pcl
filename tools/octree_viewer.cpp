@@ -212,7 +212,7 @@ private:
     viz.addText(level, 0, 45, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape("level_t2");
-    sprintf(level, "Voxel size: %.4fm [%zu voxels]", sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
+    sprintf(level, "Voxel size: %.4fm [%lu voxels]", sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
             displayCloud->points.size());
     viz.addText(level, 0, 30, 1.0, 0.0, 0.0, "level_t2");
 
@@ -342,7 +342,7 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%zu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
+    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
            (end - start) / static_cast<double> (displayCloud->points.size ()));
 
     update();

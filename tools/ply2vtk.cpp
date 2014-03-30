@@ -78,7 +78,7 @@ main (int argc, char** argv)
   reader->SetFileName (argv[ply_file_indices[0]]);
   polydata = reader->GetOutput ();
   polydata->Update ();
-  print_info ("Loaded %s with %zu points/vertices.\n", argv[ply_file_indices[0]], polydata->GetNumberOfPoints ());
+  print_info ("Loaded %s with %lu points/vertices.\n", argv[ply_file_indices[0]], polydata->GetNumberOfPoints ());
 
   // Convert to VTK and save
   vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New ();
