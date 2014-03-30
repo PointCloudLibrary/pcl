@@ -100,7 +100,7 @@ namespace pcl
       add (const PointT& t) { normal += t.getNormalVector4fMap (); }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const
+      get (PointT& t, size_t) const
       {
         t.getNormalVector4fMap () = normal;
         t.getNormalVector4fMap ().normalize ();
@@ -202,7 +202,7 @@ namespace pcl
       }
 
       template <typename PointT> void
-      get (PointT& t, size_t n) const
+      get (PointT& t, size_t) const
       {
         size_t max = 0;
         std::map<uint32_t, size_t>::const_iterator itr;
