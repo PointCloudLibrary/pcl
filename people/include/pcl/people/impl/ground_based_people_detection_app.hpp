@@ -62,6 +62,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionAp
 
   // set flag values for mandatory parameters:
   sqrt_ground_coeffs_ = std::numeric_limits<float>::quiet_NaN();
+  ground_coeffs_set_ = false;
+  intrinsics_matrix_set_ = false;
   person_classifier_set_flag_ = false;
 }
 
@@ -75,6 +77,7 @@ template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setGround (Eigen::VectorXf& ground_coeffs)
 {
   ground_coeffs_ = ground_coeffs;
+  ground_coeffs_set_ = true;
   sqrt_ground_coeffs_ = (ground_coeffs - Eigen::Vector4f(0.0f, 0.0f, 0.0f, ground_coeffs(3))).norm();
 }
 
@@ -94,6 +97,7 @@ template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setIntrinsics (Eigen::Matrix3f intrinsics_matrix)
 {
   intrinsics_matrix_ = intrinsics_matrix;
+  intrinsics_matrix_set_ = true;
 }
 
 template <typename PointT> void
@@ -159,7 +163,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::getMinimumDistanceBetweenHea
 template <typename PointT> Eigen::VectorXf
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::getGround ()
 {
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (!ground_coeffs_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::getGround] Floor parameters have not been set or they are not valid!\n");
   }
@@ -214,7 +218,7 @@ template <typename PointT> bool
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters)
 {
   // Check if all mandatory variables have been set:
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (!ground_coeffs_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Floor parameters have not been set or they are not valid!\n");
     return (false);
@@ -224,7 +228,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Input cloud has not been set!\n");
     return (false);
   }
-  if (intrinsics_matrix_(0) == 0)
+  if (!intrinsics_matrix_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Camera intrinsic parameters have not been set!\n");
     return (false);

@@ -245,6 +245,9 @@ namespace pcl
       /** \brief ground plane coefficients */
       Eigen::VectorXf ground_coeffs_;
 
+      /** \brief flag stating whether the ground coefficients have been set or not */
+      bool ground_coeffs_set_;
+
       /** \brief ground plane normalization factor */
       float sqrt_ground_coeffs_;
 
@@ -284,6 +287,9 @@ namespace pcl
       
       /** \brief intrinsic parameters matrix of the RGB camera */
       Eigen::Matrix3f intrinsics_matrix_;
+
+      /** \brief flag stating whether the intrinsics matrix has been set or not */
+      bool intrinsics_matrix_set_;
 
       /** \brief SVM-based person classifier */
       pcl::people::PersonClassifier<pcl::RGB> person_classifier_;  
