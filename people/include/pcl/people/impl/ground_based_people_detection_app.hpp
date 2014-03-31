@@ -176,6 +176,12 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::getGround ()
 }
 
 template <typename PointT> typename pcl::people::GroundBasedPeopleDetectionApp<PointT>::PointCloudPtr
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::getFilteredCloud ()
+{
+  return (cloud_filtered_);
+}
+
+template <typename PointT> typename pcl::people::GroundBasedPeopleDetectionApp<PointT>::PointCloudPtr
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::getNoGroundCloud ()
 {
   return (no_ground_cloud_);
@@ -217,6 +223,16 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCl
     }
   }
   cloud = output_cloud;
+}
+
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::filter ()
+{
+  cloud_filtered_ = PointCloudPtr (new PointCloud);
+  pcl::VoxelGrid<PointT> grid;
+  grid.setInputCloud(cloud_);
+  grid.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
+  grid.filter(*cloud_filtered_);
 }
 
 template <typename PointT> bool
@@ -266,20 +282,15 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     (*cloud_) = (*cloud_downsampled);
   }
 
-  // Voxel grid filtering:
-  PointCloudPtr cloud_filtered(new PointCloud);
-  pcl::VoxelGrid<PointT> voxel_grid_filter_object;
-  voxel_grid_filter_object.setInputCloud(cloud_);
-  voxel_grid_filter_object.setLeafSize (voxel_size_, voxel_size_, voxel_size_);
-  voxel_grid_filter_object.filter (*cloud_filtered);
+  filter();
 
   // Ground removal and update:
   pcl::IndicesPtr inliers(new std::vector<int>);
-  boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered));
+  boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered_));
   ground_model->selectWithinDistance(ground_coeffs_, voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);
   pcl::ExtractIndices<PointT> extract;
-  extract.setInputCloud(cloud_filtered);
+  extract.setInputCloud(cloud_filtered_);
   extract.setIndices(inliers);
   extract.setNegative(true);
   extract.filter(*no_ground_cloud_);

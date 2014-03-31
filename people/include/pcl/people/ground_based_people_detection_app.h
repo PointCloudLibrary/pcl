@@ -198,6 +198,12 @@ namespace pcl
       getGround ();
 
       /**
+       * \brief Get the filtered point cloud.
+       */
+      PointCloudPtr
+      getFilteredCloud ();
+
+      /**
        * \brief Get pointcloud after voxel grid filtering and ground removal.
        */
       PointCloudPtr
@@ -227,6 +233,12 @@ namespace pcl
       updateMinMaxPoints ();
 
       /**
+       * \brief Reduces the input cloud to one point per voxel and limits the field of view.
+       */
+      void
+      filter ();
+
+      /**
        * \brief Perform people detection on the input data and return people clusters information.
        * 
        * \param[out] clusters Vector of PersonCluster.
@@ -254,6 +266,9 @@ namespace pcl
 
       /** \brief pointer to the input cloud */
       PointCloudPtr cloud_;
+
+      /** \brief pointer to the filtered cloud */
+      PointCloudPtr cloud_filtered_;
 
       /** \brief pointer to the cloud after voxel grid filtering and ground removal */
       PointCloudPtr no_ground_cloud_;              
