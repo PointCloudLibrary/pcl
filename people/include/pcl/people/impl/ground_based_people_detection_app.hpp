@@ -358,7 +358,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Ground removal and update:
   pcl::IndicesPtr inliers(new std::vector<int>);
   boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered_));
-  ground_model->selectWithinDistance(ground_coeffs_transformed_, voxel_size_, *inliers);
+  ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);
   pcl::ExtractIndices<PointT> extract;
   extract.setInputCloud(cloud_filtered_);
