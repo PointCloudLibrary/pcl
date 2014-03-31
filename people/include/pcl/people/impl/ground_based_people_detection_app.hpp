@@ -375,7 +375,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
   tree->setInputCloud(no_ground_cloud_);
   pcl::EuclideanClusterExtraction<PointT> ec;
-  ec.setClusterTolerance(2 * 0.06);
+  ec.setClusterTolerance(2 * voxel_size_);
   ec.setMinClusterSize(min_points_);
   ec.setMaxClusterSize(max_points_);
   ec.setSearchMethod(tree);
