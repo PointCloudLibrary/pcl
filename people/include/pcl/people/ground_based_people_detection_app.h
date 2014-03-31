@@ -51,6 +51,7 @@
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/head_based_subcluster.h>
 #include <pcl/people/person_classifier.h>
+#include <pcl/common/transforms.h>
 
 namespace pcl
 {
@@ -97,6 +98,14 @@ namespace pcl
        */
       void
       setGround (Eigen::VectorXf& ground_coeffs);
+
+      /**
+       * \brief Set the transformation matrix, which is used in order to transform the given point cloud, the ground plane and the intrinsics matrix to the internal coordinate frame.
+       *
+       * \param[in] cloud A pointer to the input cloud.
+       */
+      void
+      setTransformation (const Eigen::Matrix3f& transformation);
 
       /**
        * \brief Set sampling factor. 
@@ -242,6 +251,24 @@ namespace pcl
       updateMinMaxPoints ();
 
       /**
+       * \brief Applies the transformation to the input point cloud.
+       */
+      void
+      applyTransformationPointCloud ();
+
+      /**
+       * \brief Applies the transformation to the ground plane.
+       */
+      void
+      applyTransformationGround ();
+
+      /**
+       * \brief Applies the transformation to the intrinsics matrix.
+       */
+      void
+      applyTransformationIntrinsics ();
+
+      /**
        * \brief Reduces the input cloud to one point per voxel and limits the field of view.
        */
       void
@@ -270,8 +297,17 @@ namespace pcl
       /** \brief flag stating whether the ground coefficients have been set or not */
       bool ground_coeffs_set_;
 
+      /** \brief the transformed ground coefficients */
+      Eigen::VectorXf ground_coeffs_transformed_;
+
       /** \brief ground plane normalization factor */
       float sqrt_ground_coeffs_;
+
+      /** \brief rotation matrix which transforms input point cloud to internal people tracker coordinate frame */
+      Eigen::Matrix3f transformation_;
+
+      /** \brief flag stating whether the transformation matrix has been set or not */
+      bool transformation_set_;
 
       /** \brief pointer to the input cloud */
       PointCloudPtr cloud_;
@@ -324,6 +360,9 @@ namespace pcl
 
       /** \brief flag stating whether the intrinsics matrix has been set or not */
       bool intrinsics_matrix_set_;
+
+      /** \brief the transformed intrinsics matrix */
+      Eigen::Matrix3f intrinsics_matrix_transformed_;
 
       /** \brief SVM-based person classifier */
       pcl::people::PersonClassifier<pcl::RGB> person_classifier_;  
