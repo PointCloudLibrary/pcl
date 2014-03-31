@@ -1004,6 +1004,22 @@ Segmentation
 
      .. |se_9| image:: images/supervoxel_clustering_small.png
                :height: 100px
+
+  * :ref:`progressive_morphological_filtering`
+
+     =======  ======
+     |se_10|  Title: **Progressive Morphological Filtering**
+
+              Author: *Brad Chambers*
+
+              Compatibility: >= PCL 1.8
+
+              In this tutorial, we show how to segment a point cloud into ground and non-ground returns.
+     =======  ======
+
+     .. |se_10| image:: images/progressive_morphological_filter.png
+               :height: 100px
+
                
 .. _surface_tutorial:
 
