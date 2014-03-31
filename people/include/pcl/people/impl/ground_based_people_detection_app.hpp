@@ -246,7 +246,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Fill rgb image:
   rgb_image_->points.clear();                            // clear RGB pointcloud
   extractRGBFromPointCloud(cloud_, rgb_image_);          // fill RGB pointcloud
-  
+
   // Downsample of sampling_factor in every dimension:
   if (sampling_factor_ != 1)
   {

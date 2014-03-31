@@ -243,13 +243,13 @@ namespace pcl
       float voxel_size_;                  
       
       /** \brief ground plane coefficients */
-      Eigen::VectorXf ground_coeffs_;            
-      
+      Eigen::VectorXf ground_coeffs_;
+
       /** \brief ground plane normalization factor */
-      float sqrt_ground_coeffs_;              
-      
+      float sqrt_ground_coeffs_;
+
       /** \brief pointer to the input cloud */
-      PointCloudPtr cloud_;   
+      PointCloudPtr cloud_;
 
       /** \brief pointer to the cloud after voxel grid filtering and ground removal */
       PointCloudPtr no_ground_cloud_;              
@@ -261,8 +261,8 @@ namespace pcl
       float max_height_;                  
       
       /** \brief person clusters minimum height from the ground plane */
-      float min_height_;                  
-      
+      float min_height_;
+
       /** \brief if true, the sensor is considered to be vertically placed (portrait mode) */
       bool vertical_;                    
       
@@ -283,13 +283,13 @@ namespace pcl
       float heads_minimum_distance_;            
       
       /** \brief intrinsic parameters matrix of the RGB camera */
-      Eigen::Matrix3f intrinsics_matrix_;          
-      
+      Eigen::Matrix3f intrinsics_matrix_;
+
       /** \brief SVM-based person classifier */
       pcl::people::PersonClassifier<pcl::RGB> person_classifier_;  
       
       /** \brief flag stating if the classifier has been set or not */
-      bool person_classifier_set_flag_;        
+      bool person_classifier_set_flag_;
     };
   } /* namespace people */
 } /* namespace pcl */
