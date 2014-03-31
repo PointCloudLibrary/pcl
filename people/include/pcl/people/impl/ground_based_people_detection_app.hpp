@@ -55,9 +55,9 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionAp
   head_centroid_ = true;
   min_height_ = 1.3;
   max_height_ = 2.3;
-  min_points_ = 30;     // this value is adapted to the voxel size in method "compute"
-  max_points_ = 5000;   // this value is adapted to the voxel size in method "compute"
-  dimension_limits_set_ = false;
+  min_width_ = 0.1;
+  max_width_ = 8.0;
+  updateMinMaxPoints ();
   heads_minimum_distance_ = 0.3;
 
   // set flag values for mandatory parameters:
@@ -91,6 +91,7 @@ template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setVoxelSize (float voxel_size)
 {
   voxel_size_ = voxel_size;
+  updateMinMaxPoints ();
 }
 
 template <typename PointT> void
@@ -113,19 +114,21 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setSensorPortraitOrientation
   vertical_ = vertical;
 }
 
-template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setHeightLimits (float min_height, float max_height)
+template<typename PointT>
+void pcl::people::GroundBasedPeopleDetectionApp<PointT>::updateMinMaxPoints ()
 {
-  min_height_ = min_height;
-  max_height_ = max_height;
+  min_points_ = (int) (min_height_ * min_width_ / voxel_size_ / voxel_size_);
+  max_points_ = (int) (max_height_ * max_width_ / voxel_size_ / voxel_size_);
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setDimensionLimits (int min_points, int max_points)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setPersonClusterLimits (float min_height, float max_height, float min_width, float max_width)
 {
-  min_points_ = min_points;
-  max_points_ = max_points;
-  dimension_limits_set_ = true;
+  min_height_ = min_height;
+  max_height_ = max_height;
+  min_width_ = min_width;
+  max_width_ = max_width;
+  updateMinMaxPoints ();
 }
 
 template <typename PointT> void
@@ -141,10 +144,12 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setHeadCentroid (bool head_c
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::getHeightLimits (float& min_height, float& max_height)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::getPersonClusterLimits (float& min_height, float& max_height, float& min_width, float& max_width)
 {
   min_height = min_height_;
   max_height = max_height_;
+  min_width = min_width_;
+  max_width = max_width_;
 }
 
 template <typename PointT> void
@@ -237,14 +242,6 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Person classifier has not been set!\n");
     return (false);
-  }
-
-  if (!dimension_limits_set_)    // if dimension limits have not been set by the user
-  {
-    // Adapt thresholds for clusters points number to the voxel size:
-    max_points_ = int(float(max_points_) * std::pow(0.06/voxel_size_, 2));
-    if (voxel_size_ > 0.06)
-      min_points_ = int(float(min_points_) * std::pow(0.06/voxel_size_, 2));
   }
 
   // Fill rgb image:

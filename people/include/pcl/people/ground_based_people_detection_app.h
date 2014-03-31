@@ -147,22 +147,15 @@ namespace pcl
       setHeadCentroid (bool head_centroid);
 
       /**
-       * \brief Set minimum and maximum allowed height for a person cluster.
+       * \brief Set minimum and maximum allowed height and width for a person cluster.
        *
        * \param[in] min_height Minimum allowed height for a person cluster (default = 1.3).
        * \param[in] max_height Maximum allowed height for a person cluster (default = 2.3).
+       * \param[in] min_width Minimum width for a person cluster (default = 0.1).
+       * \param[in] max_width Maximum width for a person cluster (default = 8.0).
        */
       void
-      setHeightLimits (float min_height, float max_height);
-
-      /**
-       * \brief Set minimum and maximum allowed number of points for a person cluster.
-       *
-       * \param[in] min_points Minimum allowed number of points for a person cluster.
-       * \param[in] max_points Maximum allowed number of points for a person cluster.
-       */
-      void
-      setDimensionLimits (int min_points, int max_points);
+      setPersonClusterLimits (float min_height, float max_height, float min_width, float max_width);
 
       /**
        * \brief Set minimum distance between persons' heads.
@@ -173,13 +166,15 @@ namespace pcl
       setMinimumDistanceBetweenHeads (float heads_minimum_distance);
 
       /**
-       * \brief Get minimum and maximum allowed height for a person cluster.
+       * \brief Get the minimum and maximum allowed height and width for a person cluster.
        *
        * \param[out] min_height Minimum allowed height for a person cluster.
        * \param[out] max_height Maximum allowed height for a person cluster.
+       * \param[out] min_width Minimum width for a person cluster.
+       * \param[out] max_width Maximum width for a person cluster.
        */
       void
-      getHeightLimits (float& min_height, float& max_height);
+      getPersonClusterLimits (float& min_height, float& max_height, float& min_width, float& max_width);
 
       /**
        * \brief Get minimum and maximum allowed number of points for a person cluster.
@@ -225,6 +220,12 @@ namespace pcl
       void
       swapDimensions (pcl::PointCloud<pcl::RGB>::Ptr& cloud);
 
+     /**
+       * \brief Estimates min_points_ and max_points_ based on the minimal and maximal cluster size and the voxel size.
+       */
+      void
+      updateMinMaxPoints ();
+
       /**
        * \brief Perform people detection on the input data and return people clusters information.
        * 
@@ -266,6 +267,12 @@ namespace pcl
       /** \brief person clusters minimum height from the ground plane */
       float min_height_;
 
+      /** \brief person clusters maximum width, used to estimate how many points maximally represent a person cluster */
+      float max_width_;
+
+      /** \brief person clusters minimum width, used to estimate how many points minimally represent a person cluster */
+      float min_width_;
+
       /** \brief if true, the sensor is considered to be vertically placed (portrait mode) */
       bool vertical_;                    
       
@@ -278,9 +285,6 @@ namespace pcl
       
       /** \brief minimum number of points for a person cluster */
       int min_points_;                  
-      
-      /** \brief true if min_points and max_points have been set by the user, false otherwise */
-      bool dimension_limits_set_;              
       
       /** \brief minimum distance between persons' heads */
       float heads_minimum_distance_;            
