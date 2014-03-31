@@ -53,6 +53,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionAp
   voxel_size_ = 0.06;
   vertical_ = false;
   head_centroid_ = true;
+  min_fov_ = 0;
+  max_fov_ = 50;
   min_height_ = 1.3;
   max_height_ = 2.3;
   min_width_ = 0.1;
@@ -106,6 +108,13 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setClassifier (pcl::people::
 {
   person_classifier_ = person_classifier;
   person_classifier_set_flag_ = true;
+}
+
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setFOV (float min_fov, float max_fov)
+{
+  min_fov_ = min_fov;
+  max_fov_ = max_fov;
 }
 
 template <typename PointT> void
@@ -232,6 +241,8 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::filter ()
   pcl::VoxelGrid<PointT> grid;
   grid.setInputCloud(cloud_);
   grid.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
+  grid.setFilterFieldName("z");
+  grid.setFilterLimits(min_fov_, max_fov_);
   grid.filter(*cloud_filtered_);
 }
 

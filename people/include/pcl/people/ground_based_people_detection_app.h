@@ -131,6 +131,15 @@ namespace pcl
       setClassifier (pcl::people::PersonClassifier<pcl::RGB> person_classifier);
 
       /**
+       * \brief Set the field of view of the point cloud in z direction.
+       *
+       * \param[in] min The beginning of the field of view in z-direction, should be usually set to zero.
+       * \param[in] max The end of the field of view in z-direction.
+       */
+      void
+      setFOV (float min, float max);
+
+      /**
        * \brief Set sensor orientation (vertical = true means portrait mode, vertical = false means landscape mode).
        *
        * \param[in] vertical Set landscape/portait camera orientation (default = false).
@@ -287,6 +296,12 @@ namespace pcl
 
       /** \brief person clusters minimum width, used to estimate how many points minimally represent a person cluster */
       float min_width_;
+
+      /** \brief the beginning of the field of view in z-direction, should be usually set to zero */
+      float min_fov_;
+
+      /** \brief the end of the field of view in z-direction */
+      float max_fov_;
 
       /** \brief if true, the sensor is considered to be vertically placed (portrait mode) */
       bool vertical_;                    
