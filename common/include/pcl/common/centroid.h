@@ -947,7 +947,7 @@ namespace pcl
 
 }
 
-#include <pcl/common/impl/detail/accumulators.hpp>
+#include <pcl/common/impl/accumulators.hpp>
 
 namespace pcl
 {
