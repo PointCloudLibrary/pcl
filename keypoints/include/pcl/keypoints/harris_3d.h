@@ -74,6 +74,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::search_parameter_;
       using Keypoint<PointInT, PointOutT>::keypoints_indices_;
       using Keypoint<PointInT, PointOutT>::initCompute;
+      using PCLBase<PointInT>::setInputCloud;
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI, CURVATURE} ResponseMethod;
 
@@ -95,6 +96,12 @@ namespace pcl
       
       /** \brief Empty destructor */
       virtual ~HarrisKeypoint3D () {}
+
+      /** \brief Provide a pointer to the input dataset
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
+        */
+      virtual void
+      setInputCloud (const PointCloudInConstPtr &cloud);
 
       /** \brief Set the method of the response to be calculated.
         * \param[in] type
