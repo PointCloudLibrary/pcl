@@ -486,7 +486,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     {
       MTLReader companion;
       if (companion.read (file_name, material_files[i]))
-        PCL_WARN ("[OBJReader::readHeader] Problem reading material file %s",
+        PCL_WARN ("[pcl::OBJReader::readHeader] Problem reading material file %s\n",
                   material_files[i].c_str ());
       companions_.push_back (companion);
     }
