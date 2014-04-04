@@ -102,8 +102,8 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-  std::vector<bool> point_is_max (false, indices_->size ());
-  std::vector<bool> point_is_visited (false, indices_->size ());
+  std::vector<bool> point_is_max (indices_->size (), false);
+  std::vector<bool> point_is_visited (indices_->size (), false);
 
   // Find all points within xy radius (i.e., a vertical cylinder) of the query
   // point, removing those that are locally maximal (i.e., highest z within the
@@ -132,7 +132,7 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
     PointT p = cloud_projected->points[(*indices_)[iii]];
     if (searcher_->radiusSearch (p, radius_, radius_indices, radius_dists) == 0)
     {
-      PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n", getClassName ().c_str (), radius_);
+      PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors within radius %f failed.\n", getClassName ().c_str (), radius_);
       continue;
     }
 
