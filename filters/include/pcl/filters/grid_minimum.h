@@ -45,8 +45,6 @@
 #include <pcl/filters/boost.h>
 #include <pcl/filters/filter.h>
 #include <pcl/filters/filter_indices.h>
-#include <pcl/filters/voxel_grid.h>
-#include <map>
 
 namespace pcl
 {
@@ -74,15 +72,9 @@ namespace pcl
 
     public:
       /** \brief Empty constructor. */
-      GridMinimum () :
-        leaf_size_ (Eigen::Vector4f::Zero ()),
-        inverse_leaf_size_ (Eigen::Array4f::Zero ()),
-        min_b_ (Eigen::Vector4i::Zero ()),
-        max_b_ (Eigen::Vector4i::Zero ()),
-        div_b_ (Eigen::Vector4i::Zero ()),
-        divb_mul_ (Eigen::Vector4i::Zero ()),
-        min_points_per_grid_ (0)
+      GridMinimum (const float resolution)
       {
+        setResolution (resolution);
         filter_name_ = "GridMinimum";
       }
 
@@ -91,90 +83,27 @@ namespace pcl
       {
       }
 
-      /** \brief Set the grid leaf size.
-        * \param[in] leaf_size the grid leaf size
+      /** \brief Set the grid resolution.
+        * \param[in] resolution the grid resolution
         */
       inline void
-      setLeafSize (const Eigen::Vector4f &leaf_size)
+      setResolution (const float resolution)
       {
-        leaf_size_ = leaf_size;
-        // Avoid division errors
-        if (leaf_size_[2] == 0)
-          leaf_size_[2] = 1;
-        if (leaf_size_[3] == 0)
-          leaf_size_[3] = 1;
+        resolution_ = resolution;
         // Use multiplications instead of divisions
-        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
+        inverse_resolution_ = 1.0f / resolution_;
       }
 
-      /** \brief Set the grid leaf size.
-        * \param[in] lx the leaf size for X
-        * \param[in] ly the leaf size for Y
-        */
-      inline void
-      setLeafSize (float lx, float ly)
-      {
-        leaf_size_[0] = lx; leaf_size_[1] = ly;
-        // Avoid division errors
-        if (leaf_size_[2] == 0)
-          leaf_size_[2] = 1;
-        if (leaf_size_[3] == 0)
-          leaf_size_[3] = 1;
-        // Use multiplications instead of divisions
-        inverse_leaf_size_ = Eigen::Array4f::Ones () / leaf_size_.array ();
-      }
-
-      /** \brief Get the grid leaf size. */
-      inline Eigen::Vector3f
-      getLeafSize () { return (leaf_size_.head<3> ()); }
-
-      /** \brief Set the minimum number of points required for a grid cell to be used.
-        * \param[in] min_points_per_voxel the minimum number of points for required for a cell to be used
-        */
-      inline void
-      setMinimumPointsNumberPerGrid (unsigned int min_points_per_grid) { min_points_per_grid_ = min_points_per_grid; }
-
-      /** \brief Return the minimum number of points required for a grid cell to be used.
-       */
-      inline unsigned int
-      getMinimumPointsNumberPerGrid () { return min_points_per_grid_; }
-
-      /** \brief Get the minimum coordinates of the bounding box (after
-        * filtering is performed).
-        */
-      inline Eigen::Vector3i
-      getMinBoxCoordinates () { return (min_b_.head<3> ()); }
-
-      /** \brief Get the maximum coordinates of the bounding box (after
-        * filtering is performed).
-        */
-      inline Eigen::Vector3i
-      getMaxBoxCoordinates () { return (max_b_.head<3> ()); }
-
-      /** \brief Get the number of divisions along all 3 axes (after filtering
-        * is performed).
-        */
-      inline Eigen::Vector3i
-      getNrDivisions () { return (div_b_.head<3> ()); }
-
-      /** \brief Get the multipliers to be applied to the grid coordinates in
-        * order to find the centroid index (after filtering is performed).
-        */
-      inline Eigen::Vector3i
-      getDivisionMultiplier () { return (divb_mul_.head<3> ()); }
+      /** \brief Get the grid resolution. */
+      inline float
+      getResolution () { return (resolution_); }
 
     protected:
-      /** \brief The size of a leaf. */
-      Eigen::Vector4f leaf_size_;
+      /** \brief The resolution. */
+      float resolution_;
 
-      /** \brief Internal leaf sizes stored as 1/leaf_size_ for efficiency reasons. */
-      Eigen::Array4f inverse_leaf_size_;
-
-      /** \brief The minimum and maximum bin coordinates, the number of divisions, and the division multiplier. */
-      Eigen::Vector4i min_b_, max_b_, div_b_, divb_mul_;
-
-      /** \brief Minimum number of points per grid cell for the minimum to be computed */
-      unsigned int min_points_per_grid_;
+      /** \brief Internal resolution stored as 1/resolution_ for efficiency reasons. */
+      float inverse_resolution_;
 
       /** \brief Downsample a Point Cloud using a 2D grid approach
         * \param[out] output the resultant point cloud message
