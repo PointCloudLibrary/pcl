@@ -150,6 +150,9 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_local_max "${SUBSYS_NAME}" local_max.cpp)
   target_link_libraries(pcl_local_max pcl_common pcl_io pcl_filters)
 
+  PCL_ADD_EXECUTABLE(pcl_grid_min "${SUBSYS_NAME}" grid_min.cpp)
+  target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
+
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
