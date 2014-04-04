@@ -140,6 +140,10 @@ if(build)
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
     target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
+
+    IF(APPLE)
+       SET_TARGET_PROPERTIES(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    ENDIF()
     
     include(ComposerTool.cmake REQUIRED)
     
