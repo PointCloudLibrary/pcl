@@ -1197,6 +1197,9 @@ namespace pcl
                  const std::string &id = "line", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1209,7 +1212,10 @@ namespace pcl
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b,
                   const std::string &id = "arrow", int viewport = 0);
 
-        /** \brief Add a line arrow segment between two points, and display the distance between them
+        /** \brief Add a line arrow segment between two points, and (optianally) display the distance between them
+          *
+          * Arrow head is attached on the **start** point (\c pt1) of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1224,6 +1230,9 @@ namespace pcl
                   const std::string &id = "arrow", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them in a given color
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r_line the red channel of the color that the line should be rendered with
