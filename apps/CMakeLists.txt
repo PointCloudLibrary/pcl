@@ -226,6 +226,8 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_trajkovic ${SUBSYS_NAME} src/ni_trajkovic.cpp)
       target_link_libraries(pcl_ni_trajkovic pcl_common pcl_visualization pcl_features pcl_keypoints pcl_search)
 
+      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_klt "${SUBSYS_NAME}" src/openni_klt.cpp)
+      target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
     endif() # OPENNI_FOUND + BUILD_OPENNI
 
   endif() # VTK_FOUND
