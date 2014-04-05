@@ -71,6 +71,7 @@ namespace pcl
     using Feature<PointInT, PointOutT>::feature_name_;
     using Feature<PointInT, PointOutT>::tree_;
     using Feature<PointInT, PointOutT>::k_;
+    using Feature<PointInT, PointOutT>::indices_;
 
     public:
       typedef boost::shared_ptr<IntegralImageNormalEstimation<PointInT, PointOutT> > Ptr;
@@ -315,11 +316,27 @@ namespace pcl
       
     protected:
 
-      /** \brief Computes the normal for the complete cloud.
+      /** \brief Computes the normal for the complete cloud or only \a indices_ if provided.
         * \param[out] output the resultant normals
         */
       void
       computeFeature (PointCloudOut &output);
+
+      /** \brief Computes the normal for the complete cloud.
+        * \param[in] distance_map distance map
+        * \param[in] bad_point constant given to invalid normal components
+        * \param[out] output the resultant normals
+        */
+      void
+      computeFeatureFull (const float* distance_map, const float& bad_point, PointCloudOut& output);
+
+      /** \brief Computes the normal for part of the cloud specified by \a indices_
+        * \param[in] distance_map distance map
+        * \param[in] bad_point constant given to invalid normal components
+        * \param[out] output the resultant normals
+        */
+      void
+      computeFeaturePart (const float* distance_map, const float& bad_point, PointCloudOut& output);
 
       /** \brief Initialize the data structures, based on the normal estimation method chosen. */
       void
