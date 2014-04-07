@@ -477,15 +477,19 @@ namespace pcl
           
           size_t
           size () const { return leaves_.size (); }
-      private:
+        private:
           //Stores leaves
           std::set<LeafContainerT*> leaves_;
           uint32_t label_;
           VoxelData centroid_;
           SupervoxelClustering* parent_;
           
-
+        public:
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
+      
+      //Make boost::ptr_list access private class declared in class pcl::SupervoxelClustering<PointT>
+      friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *);
       
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;
