@@ -44,11 +44,13 @@
 #include <pcl/impl/instantiate.hpp>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT352)(pcl::SHOT1344))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT352))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT1344))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT352))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTColorEstimationOMP, ((pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::SHOT1344))((pcl::ReferenceFrame)))
 #else
+  PCL_INSTANTIATE_PRODUCT(SHOTEstimationBase, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352)(pcl::SHOT1344))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTColorEstimation, ((pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBL)(pcl::PointXYZRGBNormal))(PCL_NORMAL_POINT_TYPES)((pcl::SHOT1344))((pcl::ReferenceFrame)))
   PCL_INSTANTIATE_PRODUCT(SHOTEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::SHOT352))((pcl::ReferenceFrame)))

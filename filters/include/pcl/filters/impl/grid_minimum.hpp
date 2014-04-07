@@ -86,9 +86,9 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
   Eigen::Vector4f min_p, max_p;
   getMinMax3D<PointT> (*input_, *indices_, min_p, max_p);
 
-  // Check that the leaf size is not too small, given the size of the data
-  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_leaf_size_[0])+1;
-  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_leaf_size_[1])+1;
+  // Check that the resolution is not too small, given the size of the data
+  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
+  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
 
   if ((dx*dy) > static_cast<int64_t> (std::numeric_limits<int32_t>::max ()))
   {
@@ -96,18 +96,20 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     return;
   }
 
+  Eigen::Vector4i min_b, max_b, div_b, divb_mul;
+
   // Compute the minimum and maximum bounding box values
-  min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
-  max_b_[0] = static_cast<int> (floor (max_p[0] * inverse_leaf_size_[0]));
-  min_b_[1] = static_cast<int> (floor (min_p[1] * inverse_leaf_size_[1]));
-  max_b_[1] = static_cast<int> (floor (max_p[1] * inverse_leaf_size_[1]));
+  min_b[0] = static_cast<int> (floor (min_p[0] * inverse_resolution_));
+  max_b[0] = static_cast<int> (floor (max_p[0] * inverse_resolution_));
+  min_b[1] = static_cast<int> (floor (min_p[1] * inverse_resolution_));
+  max_b[1] = static_cast<int> (floor (max_p[1] * inverse_resolution_));
 
   // Compute the number of divisions needed along all axis
-  div_b_ = max_b_ - min_b_ + Eigen::Vector4i::Ones ();
-  div_b_[3] = 0;
+  div_b = max_b - min_b + Eigen::Vector4i::Ones ();
+  div_b[3] = 0;
 
   // Set up the division multiplier
-  divb_mul_ = Eigen::Vector4i (1, div_b_[0], 0, 0);
+  divb_mul = Eigen::Vector4i (1, div_b[0], 0, 0);
 
   std::vector<point_index_idx> index_vector;
   index_vector.reserve (indices_->size ());
@@ -124,11 +126,11 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
           !pcl_isfinite (input_->points[*it].z))
         continue;
 
-    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
-    // Compute the centroid leaf index
-    int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1];
+    // Compute the grid cell index
+    int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
     index_vector.push_back (point_index_idx (static_cast<unsigned int> (idx), *it));
   }
   
@@ -153,22 +155,18 @@ pcl::GridMinimum<PointT>::applyFilterIndices (std::vector<int> &indices)
     unsigned int i = index + 1;
     while (i < index_vector.size () && index_vector[i].idx == index_vector[index].idx)
       ++i;
-    if (i - index >= min_points_per_grid_)
-    {
-      ++total;
-      first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
-    }
+    ++total;
+    first_and_last_indices_vector.push_back (std::pair<unsigned int, unsigned int> (index, i));
     index = i;
   }
 
-  // Fourth pass: compute centroids, insert them into their final position
+  // Fourth pass: locate grid minimums
   indices.resize (total);
 
   index = 0;
 
   for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
   {
-    // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
     unsigned int first_index = first_and_last_indices_vector[cp].first;
     unsigned int last_index = first_and_last_indices_vector[cp].second;
     unsigned int min_index = index_vector[first_index].cloud_point_index;

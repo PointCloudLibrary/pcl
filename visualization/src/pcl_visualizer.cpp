@@ -3769,6 +3769,12 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
      hardware_selector->SetArea (0, 0, xres - 1, yres - 1);
      hardware_selector->SetFieldAssociation(vtkDataObject::FIELD_ASSOCIATION_CELLS);
      hdw_selection = hardware_selector->Select ();
+     if (!hdw_selection || !hdw_selection->GetNode (0) || !hdw_selection->GetNode (0)->GetSelectionList ())
+     {
+       PCL_WARN ("[renderViewTesselatedSphere] Invalid selection, skipping!\n");
+       continue;
+     }
+
      vtkSmartPointer<vtkIdTypeArray> ids = vtkSmartPointer<vtkIdTypeArray>::New ();
      ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
      double visible_area = 0;
@@ -3777,6 +3783,12 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
        int id_mesh = static_cast<int> (ids->GetValue (sel_id));
        vtkCell * cell = polydata->GetCell (id_mesh);
        vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
+       if (!triangle)
+       {
+         PCL_WARN ("[renderViewTesselatedSphere] Invalid triangle %d, skipping!\n", id_mesh);
+         continue;
+       }
+
        double p0[3];
        double p1[3];
        double p2[3];
