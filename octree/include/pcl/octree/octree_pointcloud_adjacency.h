@@ -141,7 +141,7 @@ namespace pcl
         }
 
       protected:
-
+        
         NeighborSetT neighbors_;
 
     };
@@ -282,6 +282,23 @@ namespace pcl
         bool
         testForOcclusion (const PointT& point_arg, const PointXYZ &camera_pos = PointXYZ (0, 0, 0));
 
+                /** \brief Sets the precision of the occlusion testing
+        *  Lower values mean more testing - the value specifies the interval (in voxels) between occlusion checks on the ray to the camera 
+        *  \param[in] occlusion_interval_arg Distance between checks (default is 0.5) in multiples of resolution_ */  
+        void
+        setOcclusionTestInterval (const float occlusion_interval_arg)
+        {
+          occlusion_test_interval_ = occlusion_interval_arg;
+        } 
+        
+        /** \brief Returns the interval for occlusion testing
+         * 
+         * \returns The interval */
+        float
+        getOcclusionTestInterval () const
+        {
+          return occlusion_test_interval_;
+        }
       protected:
 
         /** \brief Add point at index from input pointcloud dataset to octree.
@@ -309,12 +326,10 @@ namespace pcl
       private:
 
         /** \brief Add point at given index from input point cloud to octree.
-          *
           * Index will be also added to indices vector. This functionality is not enabled for adjacency octree. */
         using OctreePointCloudT::addPointFromCloud;
 
         /** \brief Add point simultaneously to octree and input point cloud.
-          *
           * This functionality is not enabled for adjacency octree. */
         using OctreePointCloudT::addPointToCloud;
 
@@ -327,13 +342,14 @@ namespace pcl
         using OctreePointCloudT::max_y_;
         using OctreePointCloudT::max_z_;
 
-        StopWatch timer_;
-
         /// Local leaf pointer vector used to make iterating through leaves fast.
         LeafVectorT leaf_vector_;
 
+       /** \brief  Transform function used for changing shape of bins by transforming input coordinates */
         boost::function<void (PointT &p)> transform_func_;
 
+                //Stores the precision for occlusion testing
+        float occlusion_test_interval_;
     };
 
   }

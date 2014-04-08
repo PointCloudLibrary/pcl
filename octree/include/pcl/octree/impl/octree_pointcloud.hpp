@@ -523,11 +523,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   // generate key
   genOctreeKeyforPoint (point, key);
 
-  LeafNode* leaf_node;
-  BranchNode* parent_branch_of_leaf_node;
-  unsigned int depth_mask = this->createLeafRecursive (key, this->depth_mask_ ,this->root_node_, leaf_node, parent_branch_of_leaf_node);
+  LeafContainerT* container = this->createLeaf(key);
 
-  LeafContainerTraits<LeafContainerT>::insert (leaf_node->getContainer (), point_idx_arg, point);
+  LeafContainerTraits<LeafContainerT>::insert (*container, point_idx_arg, point);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

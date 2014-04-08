@@ -45,6 +45,7 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT>
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::OctreePointCloudAdjacency (const double resolution_arg) 
 : OctreePointCloud<PointT, LeafContainerT, BranchContainerT
 , OctreeBase<LeafContainerT, BranchContainerT> > (resolution_arg)
+, occlusion_test_interval_ (0.2f)
 {
 
 }
@@ -79,56 +80,21 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   //t1 = timer_.getTime ();
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
 
-
-  //t2 = timer_.getTime ();
-  //std::cout << "Add Points:"<<t2-t1<<" ms  Num leaves ="<<this->getLeafCount ()<<"\n";
-   
-  std::list <std::pair<OctreeKey,LeafContainerT*> > delete_list;
-  //double t_temp, t_neigh, t_compute, t_getLeaf;
-  //t_neigh = t_compute = t_getLeaf = 0;
   LeafContainerT *leaf_container;
   typename OctreeAdjacencyT::LeafNodeIterator leaf_itr;
   leaf_vector_.reserve (this->getLeafCount ());
   for ( leaf_itr = this->leaf_begin () ; leaf_itr != this->leaf_end (); ++leaf_itr)
   {
-    //t_temp = timer_.getTime ();
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
     leaf_container = &(leaf_itr.getLeafContainer ());
-    //t_getLeaf += timer_.getTime () - t_temp;
     
-    //t_temp = timer_.getTime ();
-    //t_compute += timer_.getTime () - t_temp;
-     
-    //t_temp = timer_.getTime ();
-    //  std::cout << "Computing neighbors\n";
     computeNeighbors (leaf_key, leaf_container);
-    //t_neigh += timer_.getTime () - t_temp;
     
     leaf_vector_.push_back (leaf_container);
-
-  }
-  //Go through and delete voxels scheduled
-  for (typename std::list<std::pair<OctreeKey,LeafContainerT*> >::iterator delete_itr = delete_list.begin (); delete_itr != delete_list.end (); ++delete_itr)
-  {
-    leaf_container = delete_itr->second;
-    //Remove pointer to it from all neighbors
-    typename std::set<LeafContainerT*>::iterator neighbor_itr = leaf_container->begin ();
-    typename std::set<LeafContainerT*>::iterator neighbor_end = leaf_container->end ();
-    for ( ; neighbor_itr != neighbor_end; ++neighbor_itr)
-    {
-      //Don't delete self neighbor
-      if (*neighbor_itr != leaf_container)
-        (*neighbor_itr)->removeNeighbor (leaf_container);
-    }
-    this->removeLeaf (delete_itr->first);
   }
   
   //Make sure our leaf vector is correctly sized
   assert (leaf_vector_.size () == this->getLeafCount ());
-  
- //  std::cout << "Time spent getting leaves ="<<t_getLeaf<<"\n";
- // std::cout << "Time spent computing data in leaves="<<t_compute<<"\n";
- // std::cout << "Time spent computing neighbors="<<t_neigh<<"\n";
   
 }
 
@@ -163,6 +129,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   assert (index_arg < static_cast<int> (this->input_->points.size ()));
   
   const PointT& point = this->input_->points[index_arg];
+  
   if (!pcl::isFinite (point))
     return;
    
@@ -172,7 +139,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   LeafContainerT* container = this->createLeaf(key);
   //container->insert (index_arg, point);
   LeafContainerTraits<LeafContainerT>::insert (*container, index_arg, point);
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,12 +179,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   }
 }
 
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> LeafContainerT*
-pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::getLeafContainerAtPoint (
-  const PointT& point_arg) const
+pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::getLeafContainerAtPoint (const PointT& point_arg) const
 {
   OctreeKey key;
   LeafContainerT* leaf = 0;
@@ -234,8 +197,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> void
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::computeVoxelAdjacencyGraph (VoxelAdjacencyList &voxel_adjacency_graph)
 {
-  //TODO Change this to use leaf centers, not centroids!
-  
   voxel_adjacency_graph.clear ();
   //Add a vertex for each voxel, store ids in map
   std::map <LeafContainerT*, VoxelID> leaf_vertex_id_map;
@@ -270,62 +231,52 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
       PointT p_v = voxel_adjacency_graph[v];
       float dist = (p_v.getVector3fMap () - p_u.getVector3fMap ()).norm ();
       voxel_adjacency_graph[edge] = dist;
-      
     }
-      
   }
- 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool
 pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>::testForOcclusion (const PointT& point_arg, const PointXYZ &camera_pos)
 {
-  OctreeKey key;
-  this->genOctreeKeyforPoint (point_arg, key);
-  // This code follows the method in Octree::PointCloud
-  Eigen::Vector3f sensor(camera_pos.x,
-                         camera_pos.y,
-                         camera_pos.z);
+  OctreeKey camera_key;
+  this->genOctreeKeyforPoint (camera_pos, camera_key);
   
-  Eigen::Vector3f leaf_centroid(static_cast<float> ((static_cast<double> (key.x) + 0.5f) * this->resolution_ + this->min_x_),
-                                static_cast<float> ((static_cast<double> (key.y) + 0.5f) * this->resolution_ + this->min_y_), 
-                                static_cast<float> ((static_cast<double> (key.z) + 0.5f) * this->resolution_ + this->min_z_));
-  Eigen::Vector3f direction = sensor - leaf_centroid;
-  
+  OctreeKey current_key;
+  this->genOctreeKeyforPoint (point_arg, current_key);
+
+  //This traverses bins directly, rather than by points as done in OctreePointCloud
+  Eigen::Vector3f camera_key_vals (camera_key.x, camera_key.y, camera_key.z);
+  Eigen::Vector3f leaf_key_vals (current_key.x,current_key.y,current_key.z);
+  Eigen::Vector3f direction = (camera_key_vals - leaf_key_vals);
   float norm = direction.norm ();
   direction.normalize ();
-  float precision = 1.0f;
-  const float step_size = static_cast<const float> (resolution_) * precision;
-  const int nsteps = std::max (1, static_cast<int> (norm / step_size));
   
-  OctreeKey prev_key = key;
+  const int nsteps = std::max (1, static_cast<int> (norm / occlusion_test_interval_));
+  leaf_key_vals += (direction * occlusion_test_interval_);
+  OctreeKey test_key;
+  
   // Walk along the line segment with small steps.
-  Eigen::Vector3f p = leaf_centroid;
-  PointT octree_p;
   for (int i = 0; i < nsteps; ++i)
   {
     //Start at the leaf voxel, and move back towards sensor.
-    p += (direction * step_size);
-    
-    octree_p.x = p.x ();
-    octree_p.y = p.y ();
-    octree_p.z = p.z ();
-    //  std::cout << octree_p<< "\n";
-    OctreeKey key;
-    this->genOctreeKeyforPoint (octree_p, key);
-    
-    // Not a new key, still the same voxel (starts at self).
-    if ((key == prev_key))
+    leaf_key_vals += (direction * occlusion_test_interval_);
+
+    //Now we need to round the key
+    test_key.x = ::round(leaf_key_vals.x ());
+    test_key.y = ::round(leaf_key_vals.y ());
+    test_key.z = ::round(leaf_key_vals.z ());
+      
+    if (test_key == current_key)
       continue;
     
-    prev_key = key;
-    
-    LeafContainerT *leaf = this->findLeaf (key);
-    //If the voxel is occupied, there is a possible occlusion
-    if (leaf)
+    current_key = test_key;
+      
+    //If the voxel is occupied, there is an occlusion
+    if (this->findLeaf (test_key))
     {
-     return true;
+      float voxels_to_occluder = i * occlusion_test_interval_;
+      return true; 
     }
   }
   

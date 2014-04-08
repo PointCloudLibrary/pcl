@@ -58,7 +58,7 @@ namespace pcl
               typename UserDataT = boost::blank>
     class OctreeCentroidContainer : public OctreeLeafContainer<UserDataT>
     {
-
+        typedef OctreeCentroidContainer<PointT, UserDataT> OctreeCentroidContainerT;
         typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
 
       public:
@@ -71,6 +71,16 @@ namespace pcl
         {
         }
 
+        /** \brief Deep copy of the leaf - copies all internal data. */
+        virtual OctreeCentroidContainerT*
+        deepCopy () const
+        {
+          OctreeCentroidContainerT *new_data = new OctreeCentroidContainerT;
+          new_data->centroid_ = this->centroid_;
+          new_data->user_data_ = this->user_data_;
+          return (new_data);
+        }
+        
         /** Add a new point. */
         void
         insertPoint (const PointT& point_arg)
