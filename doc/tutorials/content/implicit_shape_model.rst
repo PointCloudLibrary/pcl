@@ -53,11 +53,11 @@ First of all you will need the set of point clouds for this tutorial - training 
 Below is the list of clouds that are well suited for this tutorial (they were borrowed from the Ohio dataset).
 
 Clouds for training:
-  * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_cat.pcd>`_
-  * `Horse <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_horse.pcd>`_
-  * `Lioness <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_lioness.pcd>`_
-  * `Michael <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_michael.pcd>`_
-  * `Wolf <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_wolf.pcd>`_
+  * `Cat (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_cat.pcd>`_
+  * `Horse (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_horse.pcd>`_
+  * `Lioness (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_lioness.pcd>`_
+  * `Michael (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_michael.pcd>`_
+  * `Wolf (train) <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_train_wolf.pcd>`_
 
 Clouds for testing:
   * `Cat <https://raw.github.com/PointCloudLibrary/data/master/tutorials/ism_test_cat.pcd>`_

@@ -1,14 +1,14 @@
 .. _moment_of_inertia:
 
 Moment of inertia and eccentricity based descriptors
----------------------------
+----------------------------------------------------
 
 In this tutorial we will learn how to use the `pcl::MomentOfInertiaEstimation` class in order to obtain descriptors based on
 eccentricity and moment of inertia. This class also allows to extract axis aligned and oriented bounding boxes of the cloud.
 But keep in mind that extracted OBB is not the minimal possible bounding box.
 
 Theoretical Primer
----------------------------
+------------------
 
 The idea of the feature extraction method is as follows.
 First of all the covariance matrix of the point cloud is calculated and its eigen values and vectors are extracted.

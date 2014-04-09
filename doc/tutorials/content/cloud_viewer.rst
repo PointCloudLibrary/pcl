@@ -10,7 +10,7 @@ to get you up and viewing clouds in as little code as possible.
    
    The CloudViewer class is **NOT** meant to be used in multi-threaded
    applications! Please check the documentation on
-   :pcl:`PCLVisualizer<pcl::PCLVisualizer>` or read the :ref:`pcl_visualizer` tutorial
+   :pcl:`PCLVisualizer<pcl::visualization::PCLVisualizer>` or read the :ref:`pcl_visualizer` tutorial
    for thread safe visualization.
 
 Simple Cloud Visualization
