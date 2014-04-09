@@ -84,7 +84,7 @@ pcl::ProgressiveMorphologicalFilter<PointT>::extract (std::vector<int>& ground)
   float window_size = 0.0f;
   float height_threshold = 0.0f;
 
-  while (window_size <= max_window_size_)
+  while (window_size < max_window_size_)
   {
     // Determine the initial window size.
     if (exponential_)
