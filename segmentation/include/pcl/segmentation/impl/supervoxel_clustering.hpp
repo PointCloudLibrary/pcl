@@ -54,7 +54,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution,
   normal_importance_(1.0f),
   label_colors_ (0)
 {
-  adjacency_octree_ = boost::make_shared <OctreeAdjacencyT> (resolution_);
+  adjacency_octree_.reset (new OctreeAdjacencyT (resolution_));
   if (use_single_camera_transform)
     adjacency_octree_->setTransformFunction (boost::bind (&SupervoxelClustering::transformFunction, this, _1));  
 }
@@ -205,7 +205,7 @@ pcl::SupervoxelClustering<PointT>::prepareForSegmentation ()
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::computeVoxelData ()
 {
-  voxel_centroid_cloud_ = boost::make_shared<PointCloudT> ();
+  voxel_centroid_cloud_.reset (new PointCloudT);
   voxel_centroid_cloud_->resize (adjacency_octree_->getLeafCount ());
   typename LeafVectorT::iterator leaf_itr = adjacency_octree_->begin ();
   typename PointCloudT::iterator cent_cloud_itr = voxel_centroid_cloud_->begin ();
@@ -326,7 +326,7 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<uint32_t,typename S
   for (typename HelperListT::iterator sv_itr = supervoxel_helpers_.begin (); sv_itr != supervoxel_helpers_.end (); ++sv_itr)
   {
     uint32_t label = sv_itr->getLabel ();
-    supervoxel_clusters[label] = boost::make_shared<Supervoxel<PointT> > ();
+    supervoxel_clusters[label].reset (new Supervoxel<PointT>);
     sv_itr->getXYZ (supervoxel_clusters[label]->centroid_.x,supervoxel_clusters[label]->centroid_.y,supervoxel_clusters[label]->centroid_.z);
     sv_itr->getRGB (supervoxel_clusters[label]->centroid_.rgba);
     sv_itr->getNormal (supervoxel_clusters[label]->normal_);
@@ -386,7 +386,7 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<Poi
   distance.resize(1,0);
   if (voxel_kdtree_ == 0)
   {
-    voxel_kdtree_ = boost::make_shared< pcl::search::KdTree<PointT> >();
+    voxel_kdtree_.reset (new pcl::search::KdTree<PointT>);
     voxel_kdtree_ ->setInputCloud (voxel_centroid_cloud_);
   }
   
@@ -548,7 +548,7 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 {
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZRGBA> >();
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
   pcl::copyPointCloud (*input_,*colored_cloud);
   
   pcl::PointCloud <pcl::PointXYZRGBA>::iterator i_colored;
@@ -578,7 +578,7 @@ pcl::SupervoxelClustering<PointT>::getColoredCloud () const
 template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud () const
 {
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZRGBA> > ();
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
   for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
   {
     typename PointCloudT::Ptr voxels;
@@ -600,7 +600,7 @@ pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud () const
 template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::SupervoxelClustering<PointT>::getVoxelCentroidCloud () const
 {
-  typename PointCloudT::Ptr centroid_copy = boost::make_shared<PointCloudT> ();
+  typename PointCloudT::Ptr centroid_copy (new PointCloudT);
   copyPointCloud (*voxel_centroid_cloud_, *centroid_copy);
   return centroid_copy;
 }
@@ -609,7 +609,7 @@ pcl::SupervoxelClustering<PointT>::getVoxelCentroidCloud () const
 template <typename PointT> pcl::PointCloud<pcl::PointXYZL>::Ptr
 pcl::SupervoxelClustering<PointT>::getLabeledVoxelCloud () const
 {
-  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_voxel_cloud = boost::make_shared< pcl::PointCloud<pcl::PointXYZL> > ();
+  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_voxel_cloud (new pcl::PointCloud<pcl::PointXYZL>);
   for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
   {
     typename PointCloudT::Ptr voxels;
@@ -631,7 +631,7 @@ pcl::SupervoxelClustering<PointT>::getLabeledVoxelCloud () const
 template <typename PointT> pcl::PointCloud<pcl::PointXYZL>::Ptr
 pcl::SupervoxelClustering<PointT>::getLabeledCloud () const
 {
-  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_cloud = boost::make_shared <pcl::PointCloud<pcl::PointXYZL> >();
+  pcl::PointCloud<pcl::PointXYZL>::Ptr labeled_cloud (new pcl::PointCloud<pcl::PointXYZL>);
   pcl::copyPointCloud (*input_,*labeled_cloud);
   
   pcl::PointCloud <pcl::PointXYZL>::iterator i_labeled;
@@ -661,7 +661,7 @@ pcl::SupervoxelClustering<PointT>::getLabeledCloud () const
 template <typename PointT> pcl::PointCloud<pcl::PointNormal>::Ptr
 pcl::SupervoxelClustering<PointT>::makeSupervoxelNormalCloud (std::map<uint32_t,typename Supervoxel<PointT>::Ptr > &supervoxel_clusters)
 {
-  pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud = boost::make_shared<pcl::PointCloud<pcl::PointNormal> > ();
+  pcl::PointCloud<pcl::PointNormal>::Ptr normal_cloud (new pcl::PointCloud<pcl::PointNormal>);
   normal_cloud->resize (supervoxel_clusters.size ());
   typename std::map <uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator sv_itr,sv_itr_end;
   sv_itr = supervoxel_clusters.begin ();
@@ -1037,7 +1037,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::updateCentroid ()
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::PointCloud<PointT>::Ptr &voxels) const
 {
-  voxels = boost::make_shared<pcl::PointCloud<PointT> > ();
+  voxels.reset (new pcl::PointCloud<PointT>);
   voxels->clear ();
   voxels->resize (leaves_.size ());
   typename pcl::PointCloud<PointT>::iterator voxel_itr = voxels->begin ();
@@ -1055,7 +1055,7 @@ pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getVoxels (typename pcl::Po
 template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::SupervoxelHelper::getNormals (typename pcl::PointCloud<Normal>::Ptr &normals) const
 {
-  normals = boost::make_shared<pcl::PointCloud<Normal> > ();
+  normals.reset (new pcl::PointCloud<Normal>);
   normals->clear ();
   normals->resize (leaves_.size ());
   typename std::set<LeafContainerT*>::const_iterator leaf_itr;
