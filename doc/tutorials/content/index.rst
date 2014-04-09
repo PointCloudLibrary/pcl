@@ -57,7 +57,7 @@ Basic Usage
   * :ref:`basic_structures`
 
      ======  ======
-     |mi_0|  Title: **Getting Started / Basic Structures**
+     |mi_9|  Title: **Getting Started / Basic Structures**
 
              Author: *Radu B. Rusu*
 
@@ -66,7 +66,7 @@ Basic Usage
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
-     .. |mi_0| image:: images/pcl_logo.png
+     .. |mi_9| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`using_pcl_pcl_config`
@@ -1216,6 +1216,7 @@ Applications
      
      .. |ap_5| image:: images/ground_based_rgbd_people_detection/Index_photo.jpg
                :height: 120px
+
 .. _gpu:
 
 GPU
@@ -1265,6 +1266,7 @@ GPU
      
      .. |gp_2| image:: images/gpu/people/c2_100.jpg
                :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation
