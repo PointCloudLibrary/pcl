@@ -100,11 +100,14 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED (virtual void setInputCloud (const PointCloudConstPtr &cloud), 
-            "[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
 
         /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED (PointCloudConstPtr const getInputCloud (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
+        PointCloudConstPtr const
+        getInputCloud ();
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -122,7 +125,9 @@ namespace pcl
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED (virtual void setTargetCloud (const PointCloudConstPtr &cloud), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.")
+        virtual void
+        setTargetCloud (const PointCloudConstPtr &cloud);
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -174,12 +179,14 @@ namespace pcl
           * \return Distance threshold in the same dimension as source and target data sets.
           */
         inline double 
-        getInlierThreshold() { return inlier_threshold_; };
+        getInlierThreshold () { return inlier_threshold_; };
 
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED (void setMaxIterations (int max_iterations), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.")
+        void
+        setMaxIterations (int max_iterations);
 
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
@@ -190,7 +197,9 @@ namespace pcl
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED (int getMaxIterations (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.")
+        int
+        getMaxIterations ();
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
