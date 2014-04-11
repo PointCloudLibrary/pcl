@@ -35,14 +35,14 @@ main (int argc, char** argv)
   pass.filter (*indices);
 
   pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg;
-  reg.setMinClusterSize (100);
-  reg.setMaxClusterSize (10000);
+  reg.setMinClusterSize (50);
+  reg.setMaxClusterSize (1000000);
   reg.setSearchMethod (tree);
   reg.setNumberOfNeighbours (30);
   reg.setInputCloud (cloud);
   //reg.setIndices (indices);
   reg.setInputNormals (normals);
-  reg.setSmoothnessThreshold (7.0 / 180.0 * M_PI);
+  reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);
   reg.setCurvatureThreshold (1.0);
 
   std::vector <pcl::PointIndices> clusters;
