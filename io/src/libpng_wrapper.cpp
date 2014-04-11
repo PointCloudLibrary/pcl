@@ -43,7 +43,11 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
+#ifndef _MSC_VER
 #include <stdint.h>
+#else
+#define uint8_t unsigned char
+#endif
 #include <assert.h>
 
 
