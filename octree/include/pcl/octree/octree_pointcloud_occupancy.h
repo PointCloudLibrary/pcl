@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -47,24 +48,27 @@ namespace pcl
   {
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud occupancy class
-     *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). No information is stored at the lead nodes. It can be used of occupancy checks.
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
+    /** \brief @b Octree pointcloud occupancy class.
+      *
+      * This pointcloud octree class generates an octree from a point cloud (zero-copy). No information is stored at the
+      * lead nodes. It can be used of occupancy checks.
+      *
+      * The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can
+      * be predefined.
+      *
+      * typename: PointT: type of point used in pointcloud
+      * \ingroup octree
+      *  \author Julius Kammerl (julius@kammerl.de)
+      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
              typename LeafContainerT = OctreeEmptyContainer,
-             typename BranchContainerT = OctreeEmptyContainer >
-    class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafContainerT,
-        BranchContainerT, OctreeBase<LeafContainerT, BranchContainerT> >
-
+             typename BranchContainerT = OctreeEmptyContainer>
+    class OctreePointCloudOccupancy : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
 
       public:
+
         // public typedefs for single/double buffering
         typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> SingleBuffer;
         typedef OctreePointCloudOccupancy<PointT, LeafContainerT, BranchContainerT> DoubleBuffer;
@@ -74,54 +78,59 @@ namespace pcl
         typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudPtr PointCloudPtr;
         typedef typename OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::PointCloudConstPtr PointCloudConstPtr;
 
-        /** \brief Constructor.
-         *  \param resolution_arg:  octree resolution at lowest octree level
-         * */
-        OctreePointCloudOccupancy (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafContainerT, BranchContainerT,
-                OctreeBase<LeafContainerT, BranchContainerT> > (resolution_arg)
+        typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
+
+        /** Constructor.
+          * \param resolution_arg:  octree resolution at lowest octree level
+          */
+        OctreePointCloudOccupancy (const double resolution_arg)
+        : OctreeT (resolution_arg)
         {
         }
 
-        /** \brief Empty class constructor. */
+        /** Empty class deconstructor. */
         virtual
         ~OctreePointCloudOccupancy ()
         {
         }
 
-        /** \brief Set occupied voxel at point.
-         *  \param point_arg:  input point
-         * */
-        void setOccupiedVoxelAtPoint( const PointT& point_arg ) {
-        	OctreeKey key;
+        /** Set occupied voxel at point.
+          * \param point_arg input point
+          */
+        void setOccupiedVoxelAtPoint (const PointT& point_arg)
+        {
+          OctreeKey key;
 
-            // make sure bounding box is big enough
-            adoptBoundingBoxToPoint (point_arg);
+          // make sure bounding box is big enough
+          adoptBoundingBoxToPoint (point_arg);
 
-            // generate key
-            genOctreeKeyforPoint (point_arg, key);
+          // generate key
+          genOctreeKeyforPoint (point_arg, key);
 
-            // add point to octree at key
-            this->createLeaf (key);
+          // add point to octree at key
+          this->createLeaf (key);
         }
 
-        /** \brief Set occupied voxels at all points from point cloud.
-         *  \param cloud_arg:  input point cloud
-         * */
-        void setOccupiedVoxelsAtPointsFromCloud( PointCloudPtr cloud_arg ) {
-            size_t i;
+        /** Set occupied voxels at all points from point cloud.
+          * \param cloud_arg:  input point cloud
+          */
+        void setOccupiedVoxelsAtPointsFromCloud (PointCloudPtr cloud_arg)
+        {
+          size_t i;
 
-            for (i = 0; i < cloud_arg->points.size (); i++)
+          for (i = 0; i < cloud_arg->points.size (); i++)
+          {
+            // check for NaNs
+            if (isFinite (cloud_arg->points[i]))
             {
-              // check for NaNs
-              if (isFinite(cloud_arg->points[i])) {
-                // set voxel at point
-                this->setOccupiedVoxelAtPoint (cloud_arg->points[i]);
-              }
+              // set voxel at point
+              this->setOccupiedVoxelAtPoint (cloud_arg->points[i]);
             }
+          }
         }
 
       };
+
   }
 
 }

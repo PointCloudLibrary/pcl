@@ -57,11 +57,12 @@ namespace pcl
     /** An octree leaf container class that serves as a base to construct
       * specialized leaf node container classes.
       *
-      * Has a single template parameter UserDataT, which allows the user to
-      * store some arbitrary piece of information inside a leaf.
+      * OctreeLeafContainer has a single template parameter UserDataT. This
+      * allows the user to store an arbitrary piece of information inside a
+      * leaf.
       *
-      * \note Deriving container classes should specialize LeafContainerTraits,
-      * see its documentation. */
+      * \warning It is absolutely necessary to specialize LeafContainerTraits
+      * for deriving contatiner classes. See its documentation for details. */
     template <typename UserDataT = boost::blank>
     class OctreeLeafContainer
     {
@@ -99,7 +100,7 @@ namespace pcl
           *
           * \param[in] other OctreeLeafContainer to compare with
           *
-          * \note This function always returns false. A deriving container
+          * \note This function always returns \c false. A deriving container
           * class should override this if it has any reasonable way to compare
           * itself to another container. */
         virtual bool
@@ -160,7 +161,7 @@ namespace pcl
     /** An empty octree leaf container.
       *
       * We need this to be a separate type (not a typedef) because otherwise we
-      * might run into issues with traits. */
+      * might run into issues with LeafContainerTraits. */
     class OctreeEmptyContainer : public OctreeLeafContainer<boost::blank>
     {
     };
@@ -190,6 +191,8 @@ namespace pcl
     template <typename LeafContainerT, typename Enable = void>
     struct LeafContainerTraits;
 
+    /** LeafContainerTraits specialization for OctreeEmptyContainer, does
+      * nothing. */
     template<typename LeafContainerT>
     struct LeafContainerTraits<LeafContainerT,
                                typename boost::enable_if<

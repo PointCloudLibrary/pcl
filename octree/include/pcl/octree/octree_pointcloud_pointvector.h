@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -44,44 +45,38 @@
 
 namespace pcl
 {
+
   namespace octree
   {
 
-    /** \brief An octree leaf container that stores indices of the points that
-      * are inserted into it. */
+    /** An octree leaf container that stores indices of the points that are
+      * inserted into it. */
     template <typename UserDataT = boost::blank>
     class OctreeIndicesContainer : public OctreeLeafContainer<UserDataT>
     {
 
-        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
-
       public:
 
-        OctreeIndicesContainer ()
-        : OctreeLeafContainerT ()
-        {
-        }
-
         /** Add a new point (index). */
-        void
+        inline void
         insertPointIndex (int index_arg)
         {
           indices_.push_back (index_arg);
         }
 
-        std::vector<int>
+        inline std::vector<int>
         getPointIndicesVector () const
         {
           return (indices_);
         }
 
-        void
+        inline void
         getPointIndices (std::vector<int>& indices) const
         {
           indices.insert (indices.end (), indices_.begin (), indices_.end ());
         }
 
-        size_t
+        inline size_t
         getSize () const
         {
           return (indices_.size ());
@@ -102,6 +97,7 @@ namespace pcl
     /** Typedef to preserve existing interface. */
     typedef OctreeIndicesContainer<boost::blank> OctreeContainerPointIndices;
 
+    /** LeafContainerTraits specialization for OctreeIndicesContainer. */
     template<typename LeafContainerT>
     struct LeafContainerTraits<LeafContainerT,
                                typename boost::enable_if<
@@ -120,14 +116,18 @@ namespace pcl
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud point vector class
-     *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). Every leaf node contains a list of point indices of the dataset given by \a setInputCloud.
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
+    /** \brief @b Octree pointcloud point vector class.
+      *
+      * This pointcloud octree class generates an octree from a point cloud (zero-copy). Every leaf node contains a list
+      * of point indices of the dataset given by \a setInputCloud.
+      *
+      * The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can
+      * be predefined.
+      *
+      * typename: PointT: type of point used in pointcloud
+      * \ingroup octree
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
              typename LeafContainerT = OctreeIndicesContainer<>,
@@ -137,27 +137,28 @@ namespace pcl
     {
 
       public:
+
         // public typedefs for single/double buffering
         typedef OctreePointCloudPointVector<PointT, LeafContainerT, BranchContainerT,
-            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
-      //  typedef OctreePointCloudPointVector<PointT, LeafContainerT, BranchContainerT,
-     //       Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
+                                            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
 
-        /** \brief Constructor.
-         *  \param resolution_arg: octree resolution at lowest octree level
-         * */
-        OctreePointCloudPointVector (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
+        /** Constructor.
+          * \param resolution_arg: octree resolution at lowest octree level
+          */
+        OctreePointCloudPointVector (const double resolution_arg)
+        : OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
         {
         }
 
-        /** \brief Empty class constructor. */
+        /** Empty class deconstructor. */
         virtual ~OctreePointCloudPointVector ()
         {
         }
 
     };
+
   }
+
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudPointVector(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudPointVector<T>;

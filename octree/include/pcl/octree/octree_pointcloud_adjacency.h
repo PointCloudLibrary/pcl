@@ -58,16 +58,11 @@ namespace pcl
   namespace octree
   {
 
-    /** \brief @b Octree adjacency leaf container class - stores set of pointers to neighbors, number of points added, and a DataT value.
-     * \note This class implements a leaf node that stores pointers to neighboring leaves.
-     * \note This class also has a virtual computeData function, which is called by OctreePointCloudAdjacency::addPointsFromInputCloud.
-     * \note If you are not happy with the default data type (which is AveragePoint<PointInT>) and its behavior (averaging of XYZ,
-     * normal, and RGB fields), then you should implement your own and either:
-     *
-     * - make sure it has add() and compute() functions (like AveragePoint does)
-     *   or
-     * - make explicit instantiations of addPoint() and computeData() functions of this class (supervoxel_clustering.hpp for an example).
-     */
+    /** Leaf container class for OctreePointCloudAdjacency.
+      *
+      * This class derives itself from the class provided as a template
+      * parameter. In addition to the base class functionality it provides a
+      * facility to store a set of pointers to its neighboring leaves. */
     template <typename OctreeLeafContainerT = OctreeEmptyContainer>
     class OctreeAdjacencyContainer : public OctreeLeafContainerT
     {
@@ -78,21 +73,23 @@ namespace pcl
 
         typedef std::set<OctreeAdjacencyContainerT*> NeighborSetT;
 
-        /** Iterator for neighbors of this leaf */
+        /// Iterator for neighbors of this leaf.
         typedef typename NeighborSetT::iterator iterator;
-        /** Const iterator for neighbors of this leaf */
-        typedef typename NeighborSetT::const_iterator const_iterator;
         inline iterator begin () { return (neighbors_.begin ()); }
-        inline iterator end ()   { return (neighbors_.end ()); }
+        inline iterator end () { return (neighbors_.end ()); }
+
+        /// Const iterator for neighbors of this leaf.
+        typedef typename NeighborSetT::const_iterator const_iterator;
         inline const_iterator begin () const { return (neighbors_.begin ()); }
-        inline const_iterator end () const  { return (neighbors_.end ()); }
+        inline const_iterator end () const { return (neighbors_.end ()); }
 
         OctreeAdjacencyContainer ()
         : OctreeLeafContainerT ()
         {
         }
 
-        /** \brief Deep copy of the leaf - copies all internal data. */
+        /** Deep copy of the leaf, allocates memory and copies the neighbor set
+          * as well as the user data that is stored internally. */
         virtual OctreeAdjacencyContainerT*
         deepCopy () const
         {
@@ -102,38 +99,38 @@ namespace pcl
           return (new_data);
         }
 
-        /** \brief Add a new neighbor to the container.
+        /** Add a new neighbor to the container.
           * \param[in] neighbor the new neighbor to add */
-        void
+        inline void
         addNeighbor (OctreeAdjacencyContainerT *neighbor)
         {
           neighbors_.insert (neighbor);
         }
 
-        /** \brief Remove neighbor from neighbor set.
+        /** Remove neighbor from neighbor set.
           * \param[in] neighbor the neighbor to remove */
-        void
+        inline void
         removeNeighbor (OctreeAdjacencyContainerT *neighbor)
         {
           neighbors_.erase (neighbor);
         }
 
-        /** Returns the number of neighbors this leaf has. */
+        /** Get the number of neighbors this leaf has. */
         inline size_t
         getNumNeighbors () const
         {
           return (neighbors_.size ());
         }
 
-        /** \brief Sets the whole neighbor set.
-          * \param[in] neighbor_arg the new set */
+        /** Set the whole neighbor set.
+          * \param[in] neighbor the new set */
         void
-        setNeighbors (const NeighborSetT &neighbor_arg)
+        setNeighbors (const NeighborSetT &neighbors)
         {
-          neighbors_ = neighbor_arg;
+          neighbors_ = neighbors;
         }
 
-        /** \brief Clears the set of neighbors */
+        /** Clear the set of neighbors. */
         void
         resetNeighbors ()
         {
@@ -141,7 +138,7 @@ namespace pcl
         }
 
       protected:
-        
+
         NeighborSetT neighbors_;
 
     };
@@ -169,7 +166,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template <typename PointT,
               typename LeafContainerT = OctreeAdjacencyContainer<>,
-              typename BranchContainerT = OctreeEmptyContainer >
+              typename BranchContainerT = OctreeEmptyContainer>
     class OctreePointCloudAdjacency : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
 
@@ -224,8 +221,8 @@ namespace pcl
         inline iterator begin () { return (leaf_vector_.begin ()); }
         inline iterator end ()   { return (leaf_vector_.end ()); }
 
-        // Size of neighbors
-        inline size_t size () const { return leaf_vector_.size (); }
+        /// Number of leaves.
+        inline size_t size () const { return (leaf_vector_.size ()); }
 
         /** \brief Constructor.
           *
@@ -282,23 +279,22 @@ namespace pcl
         bool
         testForOcclusion (const PointT& point_arg, const PointXYZ &camera_pos = PointXYZ (0, 0, 0));
 
-                /** \brief Sets the precision of the occlusion testing
-        *  Lower values mean more testing - the value specifies the interval (in voxels) between occlusion checks on the ray to the camera 
-        *  \param[in] occlusion_interval_arg Distance between checks (default is 0.5) in multiples of resolution_ */  
+        /** \brief Sets the precision of the occlusion testing
+          *  Lower values mean more testing - the value specifies the interval (in voxels) between occlusion checks on the ray to the camera 
+          *  \param[in] occlusion_interval_arg Distance between checks (default is 0.5) in multiples of resolution_ */
         void
         setOcclusionTestInterval (const float occlusion_interval_arg)
         {
           occlusion_test_interval_ = occlusion_interval_arg;
-        } 
-        
-        /** \brief Returns the interval for occlusion testing
-         * 
-         * \returns The interval */
+        }
+
+        /** \brief Returns the interval for occlusion testing. */
         float
         getOcclusionTestInterval () const
         {
-          return occlusion_test_interval_;
+          return (occlusion_test_interval_);
         }
+
       protected:
 
         /** \brief Add point at index from input pointcloud dataset to octree.

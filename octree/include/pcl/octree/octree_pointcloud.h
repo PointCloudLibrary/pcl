@@ -52,34 +52,40 @@
 
 namespace pcl
 {
+
   namespace octree
   {
 
-    // TODO: this is weird
+    // Forward-declare OctreeIndicesContainer because it is supposed to be the
+    // default container in OctreePointCloud
     template <typename UserDataT>
     class OctreeIndicesContainer;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud class
-     *  \note Octree implementation for pointclouds. Only indices are stored by the octree leaf nodes (zero-copy).
-     *  \note The octree pointcloud class needs to be initialized with its voxel resolution. Its bounding box is automatically adjusted
-     *  \note according to the pointcloud dimension or it can be predefined.
-     *  \note Note: The tree depth equates to the resolution and the bounding box dimensions of the octree.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \note typename: LeafContainerT:  leaf node container (
-     *  \note typename: BranchContainerT:  branch node container
-     *  \note typename: OctreeT: octree implementation ()
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
+    /** \brief @b Octree pointcloud class.
+      *
+      * Octree implementation for pointclouds. By default indices are stored by the octree leaf nodes (zero-copy).
+      *
+      * The octree pointcloud class needs to be initialized with its voxel resolution. Its bounding box is
+      * automatically adjusted according to the pointcloud dimension or it can be predefined.
+      *
+      * \note The tree depth equates to the resolution and the bounding box dimensions of the octree.
+      *
+      *  typename: PointT: type of point used in pointcloud
+      *  typename: LeafContainerT:  leaf node container
+      *  typename: BranchContainerT:  branch node container
+      *  typename: OctreeT: octree implementation
+      *  \ingroup octree
+      *  \author Julius Kammerl (julius@kammerl.de)
+      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    template<typename PointT, typename LeafContainerT = OctreeIndicesContainer<boost::blank>,
-        typename BranchContainerT = OctreeEmptyContainer,
-        typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
-
+    template <typename PointT,
+              typename LeafContainerT = OctreeIndicesContainer<boost::blank>,
+              typename BranchContainerT = OctreeEmptyContainer,
+              typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
     class OctreePointCloud : public OctreeT
     {
+
         // iterators are friends
         friend class OctreeIteratorBase<OctreeT> ;
         friend class OctreeDepthFirstIterator<OctreeT> ;
@@ -87,6 +93,7 @@ namespace pcl
         friend class OctreeLeafNodeIterator<OctreeT> ;
 
       public:
+
         typedef OctreeT Base;
 
         typedef typename OctreeT::LeafNode LeafNode;

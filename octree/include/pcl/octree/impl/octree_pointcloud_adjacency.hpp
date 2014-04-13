@@ -275,7 +275,6 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     //If the voxel is occupied, there is an occlusion
     if (this->findLeaf (test_key))
     {
-      float voxels_to_occluder = i * occlusion_test_interval_;
       return true; 
     }
   }

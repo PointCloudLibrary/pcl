@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -44,34 +45,32 @@
 
 namespace pcl
 {
+
   namespace octree
   {
 
-    /** \brief An octree leaf container that stores the index of the very last
-      * point that was added to it. */
+    /** An octree leaf container that stores the index of the very last point
+      * that was added to it. */
     template <typename UserDataT = boost::blank>
     class OctreeIndexContainer : public OctreeLeafContainer<UserDataT>
     {
 
-        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
-
       public:
 
         OctreeIndexContainer ()
-        : OctreeLeafContainerT ()
-        , last_index_ (-1)
+        : last_index_ (-1)
         {
         }
 
         /** Add a new point (index). */
-        void
+        inline void
         insertPointIndex (int index_arg)
         {
           last_index_ = index_arg;
         }
 
-        /** \brief Retrieve the index of the last point. */
-        int
+        /** Retrieve the index of the last point. */
+        inline int
         getPointIndex () const
         {
           return (last_index_);
@@ -92,6 +91,7 @@ namespace pcl
     /** Typedef to preserve existing interface. */
     typedef OctreeIndexContainer<boost::blank> OctreeContainerPointIndex;
 
+    /** LeafContainerTraits specialization for OctreeIndexContainer. */
     template <typename LeafContainerT>
     struct LeafContainerTraits<LeafContainerT,
                                typename boost::enable_if<
@@ -109,40 +109,42 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /** \brief @b Octree pointcloud single point class
-     *  \note This pointcloud octree class generate an octrees from a point cloud (zero-copy). Every leaf node contains a single point index from the dataset given by \a setInputCloud.
-     *  \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-     *  \note
-     *  \note typename: PointT: type of point used in pointcloud
-     *  \ingroup octree
-     *  \author Julius Kammerl (julius@kammerl.de)
-     */
+    /** \brief @b Octree pointcloud single point class.
+      *
+      * This pointcloud octree class generates an octree from a point cloud (zero-copy). Every leaf node contains a single
+      * point index from the dataset given by \a setInputCloud.
+      *
+      * The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can
+      * be predefined.
+      *
+      * typename: PointT: type of point used in pointcloud
+      * \ingroup octree
+      * \author Julius Kammerl (julius@kammerl.de)
+      */
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
              typename LeafContainerT = OctreeIndexContainer<>,
              typename BranchContainerT = OctreeEmptyContainer,
              typename OctreeT = OctreeBase<LeafContainerT, BranchContainerT> >
 
-    class OctreePointCloudSinglePoint : public OctreePointCloud<PointT, LeafContainerT,
-        BranchContainerT, OctreeT>
+    class OctreePointCloudSinglePoint : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     {
 
       public:
+
         // public typedefs for single/double buffering
         typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
-            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
-  //      typedef OctreePointCloudSinglePoint<PointT, LeafContainerT, BranchContainerT,
-   //         Octree2BufBase<int, LeafContainerT, BranchContainerT> > DoubleBuffer;
+                                            OctreeBase<LeafContainerT, BranchContainerT> > SingleBuffer;
 
-        /** \brief Constructor.
-         *  \param resolution_arg: octree resolution at lowest octree level
-         * */
-        OctreePointCloudSinglePoint (const double resolution_arg) :
-            OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
+        /** Constructor.
+          * \param resolution_arg octree resolution at lowest octree level
+          */
+        OctreePointCloudSinglePoint (const double resolution_arg)
+        : OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT> (resolution_arg)
         {
         }
 
-        /** \brief Empty class constructor. */
+        /** Empty class deconstructor. */
         virtual ~OctreePointCloudSinglePoint ()
         {
         }
@@ -150,6 +152,7 @@ namespace pcl
     };
 
   }
+
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudSinglePoint(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSinglePoint<T>;

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -47,20 +48,28 @@
 
 namespace pcl
 {
+
   namespace octree
   {
-    /** \brief @b Octree pointcloud search class
-      * \note This class provides several methods for spatial neighbor search based on octree structure
-      * \note typename: PointT: type of point used in pointcloud
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** @b Octree pointcloud search class.
+      *
+      * This class provides several methods for spatial neighbor search based on octree structure.
+      *
+      * typename: PointT: type of point used in pointcloud
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
              typename LeafContainerT = OctreeIndicesContainer<>,
-             typename BranchContainerT = OctreeEmptyContainer >
+             typename BranchContainerT = OctreeEmptyContainer>
     class OctreePointCloudSearch : public OctreePointCloud<PointT, LeafContainerT, BranchContainerT>
     {
+
       public:
+
         // public typedefs
         typedef boost::shared_ptr<std::vector<int> > IndicesPtr;
         typedef boost::shared_ptr<const std::vector<int> > IndicesConstPtr;
@@ -83,8 +92,8 @@ namespace pcl
         /** \brief Constructor.
           * \param[in] resolution octree resolution at lowest octree level
           */
-        OctreePointCloudSearch (const double resolution) :
-          OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution)
+        OctreePointCloudSearch (const double resolution)
+        : OctreePointCloud<PointT, LeafContainerT, BranchContainerT> (resolution)
         {
         }
 

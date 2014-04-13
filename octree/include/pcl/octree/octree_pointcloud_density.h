@@ -45,34 +45,32 @@
 
 namespace pcl
 {
+
   namespace octree
   {
 
-    /** \brief An octree leaf container that stores the number of points
-      * that were added to it. */
+    /** An octree leaf container that stores the number of points that were
+      * added to it. */
     template <typename UserDataT = boost::blank>
     class OctreeDensityContainer : public OctreeLeafContainer<UserDataT>
     {
 
-        typedef OctreeLeafContainer<UserDataT> OctreeLeafContainerT;
-
       public:
 
         OctreeDensityContainer ()
-        : OctreeLeafContainerT ()
-        , num_points_ (0)
+        : num_points_ (0)
         {
         }
 
         /** Add a new point. */
-        void
+        inline void
         insertPoint ()
         {
           ++num_points_;
         }
 
-        /** \brief Get the number of points that have been inserted. */
-        size_t
+        /** Get the number of points that have been inserted. */
+        inline size_t
         getSize () const
         {
           return (num_points_);
@@ -93,6 +91,7 @@ namespace pcl
     /** Typedef to preserve existing interface. */
     typedef OctreeDensityContainer<boost::blank> OctreePointCloudDensityContainer;
 
+    /** LeafContainerTraits specialization for OctreeDensityContainer. */
     template <typename LeafContainerT>
     struct LeafContainerTraits<LeafContainerT,
                                typename boost::enable_if<
@@ -109,14 +108,20 @@ namespace pcl
       }
     };
 
-    /** \brief @b Octree pointcloud density class
-      * \note This class generate an octrees from a point cloud (zero-copy). Only the amount of points that fall into the leaf node voxel are stored.
-      * \note The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can be predefined.
-      * \note
-      * \note typename: PointT: type of point used in pointcloud
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief @b Octree pointcloud density class.
+      *
+      * This class generates an octree from a point cloud (zero-copy). Only the amount of points that fall into the leaf
+      * node voxel is stored.
+      *
+      * The octree pointcloud is initialized with its voxel resolution. Its bounding box is automatically adjusted or can
+      * be predefined.
+      *
+      * typename: PointT: type of point used in pointcloud
       * \ingroup octree
       * \author Julius Kammerl (julius@kammerl.de)
       */
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     template<typename PointT,
              typename LeafContainerT = OctreeDensityContainer<>,
              typename BranchContainerT = OctreeEmptyContainer>
@@ -127,21 +132,21 @@ namespace pcl
 
         typedef OctreePointCloud<PointT, LeafContainerT, BranchContainerT> OctreeT;
 
-        /** \brief OctreePointCloudDensity class constructor.
-         *  \param resolution_arg:  octree resolution at lowest octree level
-         * */
+        /** OctreePointCloudDensity class constructor.
+          * \param resolution_arg octree resolution at lowest octree level
+          */
         OctreePointCloudDensity (const double resolution_arg)
         : OctreeT (resolution_arg)
         {
         }
 
-        /** \brief Empty class deconstructor. */
+        /** Empty class deconstructor. */
         virtual
         ~OctreePointCloudDensity ()
         {
         }
 
-        /** \brief Get the amount of points within a leaf node voxel which is addressed by a point
+        /** Get the amount of points within a leaf node voxel which is addressed by a point
           * \param[in] point_arg: a point addressing a voxel
           * \return amount of points that fall within leaf node voxel
           */
@@ -153,7 +158,9 @@ namespace pcl
         }
 
     };
+
   }
+
 }
 
 #define PCL_INSTANTIATE_OctreePointCloudDensity(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudDensity<T>;
