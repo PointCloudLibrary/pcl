@@ -283,8 +283,7 @@ namespace pcl
             max_key_ (source.max_key_),
             buffer_selector_ (source.buffer_selector_),
             tree_dirty_flag_ (source.tree_dirty_flag_),
-            octree_depth_ (source.octree_depth_),
-            dynamic_depth_enabled_(source.dynamic_depth_enabled_)
+            octree_depth_ (source.octree_depth_)
         {
         }
 
@@ -300,7 +299,6 @@ namespace pcl
           buffer_selector_ = source.buffer_selector_;
           tree_dirty_flag_ = source.tree_dirty_flag_;
           octree_depth_ = source.octree_depth_;
-          dynamic_depth_enabled_ = source.dynamic_depth_enabled_;
           return (*this);
         }
 
@@ -911,10 +909,6 @@ namespace pcl
 
         /** \brief Octree depth */
         unsigned int octree_depth_;
-
-        /** \brief Enable dynamic_depth
-         *  \note Note that this parameter is ignored in octree2buf! */
-        bool dynamic_depth_enabled_;
 
     };
   }

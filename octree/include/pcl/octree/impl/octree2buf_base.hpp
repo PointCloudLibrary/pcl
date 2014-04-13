@@ -53,8 +53,7 @@ namespace pcl
       max_key_ (),
       buffer_selector_ (0),
       tree_dirty_flag_ (false),
-      octree_depth_ (0),
-      dynamic_depth_enabled_(false)
+      octree_depth_ (0)
     {
     }
 

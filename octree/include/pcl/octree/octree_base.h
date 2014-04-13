@@ -118,7 +118,6 @@ namespace pcl
           root_node_ (new (BranchNode) (*(source.root_node_))),
           depth_mask_ (source.depth_mask_),
           octree_depth_ (source.octree_depth_),
-          dynamic_depth_enabled_(source.dynamic_depth_enabled_),
           max_key_ (source.max_key_)
         {
         }
@@ -584,9 +583,6 @@ namespace pcl
 
         /** \brief Octree depth */
         unsigned int octree_depth_;
-
-        /** \brief Enable dynamic_depth **/
-        bool dynamic_depth_enabled_;
 
         /** \brief key range */
         OctreeKey max_key_;

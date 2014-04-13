@@ -57,7 +57,6 @@ namespace pcl
           root_node_ (new BranchNode ()),
           depth_mask_ (0),
           octree_depth_ (0),
-          dynamic_depth_enabled_ (false),
           max_key_ ()
       {
       }
@@ -299,7 +298,7 @@ namespace pcl
 
         if (!child_node)
         {
-          if ((!dynamic_depth_enabled_) && (depth_mask_arg > 1))
+          if (depth_mask_arg > 1)
           {
             // if required branch does not exist -> create it
             BranchNode* childBranch = createBranchChild (*branch_arg, child_idx);

@@ -403,14 +403,6 @@ namespace pcl
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);
         }
 
-
-        /** \brief Enable dynamic octree structure
-         *  \note Leaf nodes are kept as close to the root as possible and are only expanded if the number of DataT objects within a leaf node exceeds a fixed limit.
-         *  \param maxObjsPerLeaf: maximum number of DataT objects per leaf
-         * */
-        PCL_DEPRECATED ( void enableDynamicDepth ( std::size_t maxObjsPerLeaf ), 
-                         "pcl::octree::OctreePointCloud::enableDynamicDepth is deprecated. Dynamic Depth does not work in standard OctreePointCloud. Please use pcl::octree::OctreePointCloudDynamicDepth instead.");
-
       protected:
 
         /** \brief Add point at index from input pointcloud dataset to octree
