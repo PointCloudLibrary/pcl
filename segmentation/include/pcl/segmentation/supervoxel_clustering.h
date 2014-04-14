@@ -63,6 +63,9 @@ namespace pcl
   class Supervoxel
   {
     public:
+      typedef pcl::PointXYZRGBNormal CentroidT;
+      typedef pcl::PointXYZRGBNormal VoxelT;
+      
       Supervoxel () :
         voxels_ (new pcl::PointCloud<PointXYZRGBNormal> ())
         {  } 
@@ -87,9 +90,9 @@ namespace pcl
       }
       
       /** \brief The centroid of the supervoxel - average voxel */
-      pcl::PointXYZRGBNormal centroid_;
+      CentroidT centroid_;
       /** \brief A Pointcloud of the voxels in the supervoxel */
-      pcl::PointCloud<PointXYZRGBNormal>::Ptr voxels_;
+      pcl::PointCloud<VoxelT>::Ptr voxels_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
   };

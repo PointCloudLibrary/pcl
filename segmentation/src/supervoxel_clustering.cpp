@@ -49,12 +49,3 @@
 template class pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
 template class pcl::SupervoxelClustering<pcl::PointXYZRGB>;
 template class pcl::SupervoxelClustering<pcl::PointXYZ>;
-
-
-
-//template class pcl::octree::OctreeBase<AdjacencyContainerRGBT, pcl::octree::OctreeContainerEmpty>;
-//template class pcl::octree::OctreeBase<AdjacencyContainerRGBAT, pcl::octree::OctreeContainerEmpty>;
-
-//template class pcl::octree::OctreeBreadthFirstIterator<pcl::octree::OctreeBase<AdjacencyContainerRGBT, pcl::octree::OctreeContainerEmpty> >;
-//template class pcl::octree::OctreeBreadthFirstIterator<pcl::octree::OctreeBase<AdjacencyContainerRGBAT, pcl::octree::OctreeContainerEmpty> >;
-
