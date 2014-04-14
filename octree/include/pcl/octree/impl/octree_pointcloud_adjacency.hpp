@@ -63,6 +63,8 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     PointT temp (input_->points[i]);
     if (transform_func_) //Search for point with 
       transform_func_ (temp);
+    if (!pcl::isFinite (temp))
+      continue;
     if (temp.x < minX)
       minX = temp.x;
     if (temp.y < minY)
@@ -106,10 +108,13 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   {
     PointT temp (point_arg);
     transform_func_ (temp);
-   // calculate integer key for transformed point coordinates
-    key_arg.x = static_cast<unsigned int> ((temp.x - this->min_x_) / this->resolution_);
-    key_arg.y = static_cast<unsigned int> ((temp.y - this->min_y_) / this->resolution_);
-    key_arg.z = static_cast<unsigned int> ((temp.z - this->min_z_) / this->resolution_);
+    if (pcl::isFinite (temp))
+    {
+      // calculate integer key for transformed point coordinates
+      key_arg.x = static_cast<unsigned int> ((temp.x - this->min_x_) / this->resolution_);
+      key_arg.y = static_cast<unsigned int> ((temp.y - this->min_y_) / this->resolution_);
+      key_arg.z = static_cast<unsigned int> ((temp.z - this->min_z_) / this->resolution_);
+    }
   }
   else 
   {
