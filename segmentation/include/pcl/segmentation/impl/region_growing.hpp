@@ -289,8 +289,8 @@ pcl::RegionGrowing<PointT, NormalT>::extract (std::vector <pcl::PointIndices>& c
   std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters.begin ();
   for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters_.begin (); cluster_iter != clusters_.end (); cluster_iter++)
   {
-    if ((cluster_iter->indices.size () >= min_pts_per_cluster_) && 
-        (cluster_iter->indices.size () <= max_pts_per_cluster_))
+    if ((static_cast<int> (cluster_iter->indices.size ()) >= min_pts_per_cluster_) &&
+        (static_cast<int> (cluster_iter->indices.size ()) <= max_pts_per_cluster_))
     {
       *cluster_iter_input = *cluster_iter;
       cluster_iter_input++;
@@ -358,13 +358,27 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
   std::vector<float> distances;
 
   point_neighbours_.resize (input_->points.size (), neighbours);
-
-  for (int i_point = 0; i_point < point_number; i_point++)
+  if (input_->is_dense)
   {
-    int point_index = (*indices_)[i_point];
-    neighbours.clear ();
-    search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
-    point_neighbours_[point_index].swap (neighbours);
+    for (int i_point = 0; i_point < point_number; i_point++)
+    {
+      int point_index = (*indices_)[i_point];
+      neighbours.clear ();
+      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      point_neighbours_[point_index].swap (neighbours);
+    }
+  }
+  else
+  {
+    for (int i_point = 0; i_point < point_number; i_point++)
+    {
+      neighbours.clear ();
+      int point_index = (*indices_)[i_point];
+      if (!pcl::isFinite (input_->points[point_index]))
+        continue;
+      search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
+      point_neighbours_[point_index].swap (neighbours);
+    }
   }
 }
 
@@ -576,7 +590,7 @@ pcl::RegionGrowing<PointT, NormalT>::getSegmentFromPoint (int index, pcl::PointI
   // first of all we need to find out if this point belongs to cloud
   bool point_was_found = false;
   int number_of_points = static_cast <int> (indices_->size ());
-  for (size_t point = 0; point < number_of_points; point++)
+  for (int point = 0; point < number_of_points; point++)
     if ( (*indices_)[point] == index)
     {
       point_was_found = true;

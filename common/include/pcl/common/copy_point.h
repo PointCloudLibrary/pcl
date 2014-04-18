@@ -1,7 +1,9 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2014-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,39 +33,30 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
-#ifndef __PCL_CUDA_SAFE_CALL_HPP__
-#define __PCL_CUDA_SAFE_CALL_HPP__
-
-#include "cuda_runtime_api.h"
-#include <pcl/gpu/containers/initialization.h>
-
-#if defined(__GNUC__)
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__, __func__)
-#else /* defined(__CUDACC__) || defined(__MSVC__) */
-    #define cudaSafeCall(expr)  pcl::gpu::___cudaSafeCall(expr, __FILE__, __LINE__)    
-#endif
+#ifndef PCL_COMMON_COPY_POINT_H_
+#define PCL_COMMON_COPY_POINT_H_
 
 namespace pcl
 {
-    namespace gpu
-    {
-        static inline void ___cudaSafeCall(cudaError_t err, const char *file, const int line, const char *func = "")
-        {
-            if (cudaSuccess != err)
-                error(cudaGetErrorString(err), file, line, func);
-        }        
 
-        static inline int divUp(int total, int grain) { return (total + grain - 1) / grain; }
-    }
+  /** \brief Copy the fields of a source point into a target point.
+    *
+    * If the source and the target point types are the same, then a complete
+    * copy is made. Otherwise only those fields that the two point types share
+    * in common are copied.
+    *
+    * \param[in]  point_in the source point
+    * \param[out] point_out the target point
+    *
+    * \ingroup common */
+  template <typename PointInT, typename PointOutT> void
+  copyPoint (const PointInT& point_in, PointOutT& point_out);
 
-    namespace device
-    {
-        using pcl::gpu::divUp;        
-    }
 }
 
+#include <pcl/common/impl/copy_point.hpp>
 
-#endif /* __PCL_CUDA_SAFE_CALL_HPP__ */
+#endif // PCL_COMMON_COPY_POINT_H_
+

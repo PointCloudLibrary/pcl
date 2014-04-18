@@ -40,7 +40,7 @@
 
 #include <pcl/common/time.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-
+#include "internal.h"
 
 #include <Eigen/Core>
 #include <Eigen/SVD>

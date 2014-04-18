@@ -521,6 +521,18 @@ namespace pcl
         bool
         updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
 
+        /** \brief Set the pose of an existing coordinate system.
+          *
+          * Returns false if the coordinate system doesn't exist, true if the pose was successfully
+          * updated.
+          *
+          * \param[in] id the point cloud object id (i.e., given on \a addCoordinateSystem etc.)
+          * \param[in] pose the new pose
+          * \return false if no coordinate system with the specified ID was found
+          */
+        bool
+        updateCoordinateSystemPose (const std::string &id, const Eigen::Affine3f& pose);
+
         /** \brief Set the pose of an existing point cloud.
           *
           * Returns false if the point cloud doesn't exist, true if the pose was successfully
@@ -1185,6 +1197,9 @@ namespace pcl
                  const std::string &id = "line", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1197,7 +1212,10 @@ namespace pcl
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b,
                   const std::string &id = "arrow", int viewport = 0);
 
-        /** \brief Add a line arrow segment between two points, and display the distance between them
+        /** \brief Add a line arrow segment between two points, and (optianally) display the distance between them
+          *
+          * Arrow head is attached on the **start** point (\c pt1) of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1212,6 +1230,9 @@ namespace pcl
                   const std::string &id = "arrow", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them in a given color
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r_line the red channel of the color that the line should be rendered with

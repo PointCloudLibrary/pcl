@@ -80,13 +80,13 @@ pcl::planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
 
   if ((test_cosine < upper_limit) && (test_cosine > lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are Parallel");
+      PCL_ERROR ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
   if ((test_cosine > -upper_limit) && (test_cosine < -lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are Parallel");
+      PCL_ERROR ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
@@ -113,3 +113,48 @@ pcl::planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
   line[5] = line_direction[2];
   return true;
 } 
+
+bool 
+pcl::threePlanesIntersection (const Eigen::Vector4f &plane_a, 
+                              const Eigen::Vector4f &plane_b,
+                              const Eigen::Vector4f &plane_c,
+                              Eigen::Vector3f &intersection_point,
+                              double determinant_tolerance)
+{
+  // Check if some planes are parallel
+  Eigen::Matrix3f normals_in_lines;
+
+  for (int i = 0; i < 3; i++)
+  {
+    normals_in_lines (i, 0) = plane_a[i];
+    normals_in_lines (i, 1) = plane_b[i];
+    normals_in_lines (i, 2) = plane_c[i];
+  }
+
+  double determinant = normals_in_lines.determinant ();
+  if (fabs (determinant) < determinant_tolerance)
+  {
+    // det ~= 0
+    PCL_ERROR ("Two or more planes are parralel.\n");
+    return (false);
+  }
+
+  // Left part of the 3 equations
+  Eigen::Matrix3f left_member;
+
+  for (int i = 0; i < 3; i++)
+  {
+    left_member (0, i) = plane_a[i];
+    left_member (1, i) = plane_b[i];
+    left_member (2, i) = plane_c[i];
+  }
+
+  // Right side of the 3 equations
+  Eigen::Vector3f right_member;
+  right_member << -plane_a[3], -plane_b[3], -plane_c[3];
+
+  // Solve the system
+  intersection_point = left_member.fullPivLu ().solve (right_member);
+  return (true);
+}
+

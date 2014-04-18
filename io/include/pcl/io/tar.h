@@ -91,9 +91,9 @@ namespace pcl
       * \remark till implemented will return FALSE
       */
     template <typename PointT> bool
-    saveTARPointCloud (const std::string &tar_filename, 
-                       const PointCloud<PointT> &cloud, 
-                       const std::string &pcd_filename)
+    saveTARPointCloud (const std::string& /*tar_filename*/,
+                       const PointCloud<PointT>& /*cloud*/,
+                       const std::string& /*pcd_filename*/)
     {
       return (false);
     }

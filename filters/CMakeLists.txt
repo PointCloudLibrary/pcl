@@ -36,6 +36,9 @@ if(build)
         src/median_filter.cpp
 	src/voxel_grid_occlusion_estimation.cpp
 	    src/normal_refinement.cpp
+        src/grid_minimum.cpp
+        src/morphological_filter.cpp
+        src/local_maximum.cpp
         )
 
     set(incs
@@ -71,6 +74,9 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/covariance_sampling.h"
         "include/pcl/${SUBSYS_NAME}/median_filter.h"
         "include/pcl/${SUBSYS_NAME}/normal_refinement.h"
+        "include/pcl/${SUBSYS_NAME}/grid_minimum.h"
+        "include/pcl/${SUBSYS_NAME}/morphological_filter.h"
+        "include/pcl/${SUBSYS_NAME}/local_maximum.h"
         )
 
     set(impl_incs
@@ -103,6 +109,9 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/covariance_sampling.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/median_filter.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/normal_refinement.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/grid_minimum.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/morphological_filter.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/local_maximum.hpp"
         )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")

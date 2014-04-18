@@ -61,6 +61,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/transformation_validation.h"
         "include/pcl/${SUBSYS_NAME}/transformation_validation_euclidean.h"
         "include/pcl/${SUBSYS_NAME}/gicp.h"
+        "include/pcl/${SUBSYS_NAME}/gicp6d.h"
         "include/pcl/${SUBSYS_NAME}/bfgs.h"
         "include/pcl/${SUBSYS_NAME}/warp_point_rigid.h"
         "include/pcl/${SUBSYS_NAME}/warp_point_rigid_6d.h"
@@ -138,6 +139,7 @@ if(build)
         src/icp.cpp
         src/joint_icp.cpp
         src/gicp.cpp
+        src/gicp6d.cpp
         src/icp_nl.cpp
         src/elch.cpp
         src/lum.cpp

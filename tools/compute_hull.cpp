@@ -71,14 +71,14 @@ compute (PointCloud<PointXYZ>::ConstPtr cloud_in,
 {
   if (!convex_concave_hull)
   {
-    print_info ("Computing the convex hull of a cloud with %zu points.\n", cloud_in->size ());
+    print_info ("Computing the convex hull of a cloud with %lu points.\n", cloud_in->size ());
     ConvexHull<PointXYZ> convex_hull;
     convex_hull.setInputCloud (cloud_in);
     convex_hull.reconstruct (mesh_out);
   }
   else
   {
-    print_info ("Computing the concave hull (alpha shapes) with alpha %f of a cloud with %zu points.\n", alpha, cloud_in->size ());
+    print_info ("Computing the concave hull (alpha shapes) with alpha %f of a cloud with %lu points.\n", alpha, cloud_in->size ());
     ConcaveHull<PointXYZ> concave_hull;
     concave_hull.setInputCloud (cloud_in);
     concave_hull.setAlpha (alpha);

@@ -40,6 +40,8 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_NORMAL_SHOOTING_H_
 
+#include <pcl/common/copy_point.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarget, NormalT, Scalar>::initCompute ()
@@ -61,7 +63,6 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   if (!initCompute ())
     return;
 
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
   correspondences.resize (indices_->size ());
 
   std::vector<int> nn_indices (k_);
@@ -134,9 +135,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx_i], 
-            pt_src));
+        copyPoint (input_->points[*idx_i], pt_src);
 
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -178,8 +177,6 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
   if (!initCompute ())
     return;
 
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-  
   // setup tree for reciprocal search
   // Set the internal point representation of choice
   if (!initComputeReciprocal ())
@@ -268,9 +265,7 @@ pcl::registration::CorrespondenceEstimationNormalShooting<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx_i], 
-            pt_src));
+        copyPoint (input_->points[*idx_i], pt_src);
 
         // computing the distance between a point and a line in 3d. 
         // Reference - http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html

@@ -1120,6 +1120,7 @@ namespace pcl
   struct PFHSignature125
   {
     float histogram[125];
+    static int descriptorSize () { return 125; }
   
     friend std::ostream& operator << (std::ostream& os, const PFHSignature125& p);
   };
@@ -1131,7 +1132,8 @@ namespace pcl
   struct PFHRGBSignature250
   {
     float histogram[250];
-  
+    static int descriptorSize () { return 250; }
+
     friend std::ostream& operator << (std::ostream& os, const PFHRGBSignature250& p);
   };
 
@@ -1192,7 +1194,8 @@ namespace pcl
   {
     float descriptor[1980];
     float rf[9];
-  
+    static int descriptorSize () { return 1980; }
+
     friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
   };
 
@@ -1205,7 +1208,8 @@ namespace pcl
   {
     float descriptor[352];
     float rf[9];
-  
+    static int descriptorSize () { return 352; }
+
     friend std::ostream& operator << (std::ostream& os, const SHOT352& p);
   };
 
@@ -1218,7 +1222,8 @@ namespace pcl
   {
     float descriptor[1344];
     float rf[9];
-  
+    static int descriptorSize () { return 1344; }
+
     friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
   };
 
@@ -1278,7 +1283,8 @@ namespace pcl
   struct FPFHSignature33
   {
     float histogram[33];
-  
+    static int descriptorSize () { return 33; }
+
     friend std::ostream& operator << (std::ostream& os, const FPFHSignature33& p);
   };
 
@@ -1289,7 +1295,8 @@ namespace pcl
   struct VFHSignature308
   {
     float histogram[308];
-  
+    static int descriptorSize () { return 308; }
+
     friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
   };
 
@@ -1302,7 +1309,8 @@ namespace pcl
     float scale;
     float orientation;
     unsigned char descriptor[64];
-  
+    static int descriptorSize () { return 64; }
+
     friend std::ostream& operator << (std::ostream& os, const BRISKSignature512& p);
   };
 
@@ -1313,7 +1321,8 @@ namespace pcl
   struct ESFSignature640
   {
     float histogram[640];
-  
+    static int descriptorSize () { return 640; }
+
     friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
   };
 
@@ -1324,7 +1333,7 @@ namespace pcl
   struct GFPFHSignature16
   {
     float histogram[16];
-    static int descriptorSize() { return 16; }
+    static int descriptorSize () { return 16; }
     
     friend std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   };
@@ -1337,7 +1346,8 @@ namespace pcl
   {
     float x, y, z, roll, pitch, yaw;
     float descriptor[36];
-  
+    static int descriptorSize () { return 36; }
+
     friend std::ostream& operator << (std::ostream& os, const Narf36& p);
   };
 
@@ -1382,6 +1392,7 @@ namespace pcl
   struct Histogram
   {
     float histogram[N];
+    static int descriptorSize () { return N; }
   };
 
   struct EIGEN_ALIGN16 _PointWithScale

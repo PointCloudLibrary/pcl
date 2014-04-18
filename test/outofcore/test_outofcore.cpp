@@ -937,7 +937,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
 
   uint64_t total_octreeB_LOD_query = 0;
   
-  for (int i=0; i <= octreeB.getDepth (); i++)
+  for (boost::uint64_t i=0; i <= octreeB.getDepth (); i++)
   {
     octreeB.queryBBIncludes (min, max, i, query_result_b);
     total_octreeB_LOD_query += query_result_b->width*query_result_b->height;

@@ -52,6 +52,38 @@ namespace pcl
 {
   namespace io
   {
+    /** \brief Saves the histogram field from the point cloud as image to PNG file.
+      * \note PointCloud data must contain a histogram field with length hsize
+      * Use \ref pcl::PCLHistogramVisualizer::addFeatureHistogram() to visualize
+      * the histogram
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] cloud PointCloud dataset containing histogram
+      * \param[in] hsize length of histogram
+      * \param[in] width histogram image output's width (default: 640)
+      * \param[in] height histogram image output's height (default: 240)
+      * \ingroup io
+      */
+    template <typename HistT> void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<HistT>& cloud,
+            const int hsize, int width = 640, int height = 240);
+
+    /** \brief Saves the histogram field from the point cloud as image to PNG file.
+      * \note Plots histogram from field_name field in the point at given index
+      * Use \ref pcl::PCLHistogramVisualizer::addFeatureHistogram() to visualize
+      * the histogram
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] cloud histogram point cloud
+      * \param[in] field_name the field name containing histogram
+      * \param[in] index point index to extract the histogram from
+      * \param[in] width histogram image output's width (default: 640)
+      * \param[in] height histogram image output's height (default: 240)
+      * \ingroup io
+      */
+    template <typename HistT> void
+    savePNGFile (const std::string& file_name, const pcl::PointCloud<HistT>& cloud,
+            const std::string& field_name, const int index,
+            int width = 640, int height = 240);
+
     /** \brief Saves 8-bit encoded image to PNG file.
       * \param[in] file_name the name of the file to write to disk
       * \param[in] mono_image image grayscale data
@@ -200,5 +232,7 @@ namespace pcl
 
   }
 }
+
+#include <pcl/io/impl/png_io.hpp>
 
 #endif  //#ifndef PCL_IO_PNG_IO_H_

@@ -110,7 +110,7 @@
 <setting id="org.eclipse.cdt.core.formatter.insert_space_before_question_in_conditional" value="insert"/>
 <setting id="org.eclipse.cdt.core.formatter.insert_space_before_binary_operator" value="insert"/>
 <setting id="org.eclipse.cdt.core.formatter.alignment_for_base_clause_in_type_declaration" value="80"/>
-<setting id="org.eclipse.cdt.core.formatter.insert_new_line_before_identifier_in_function_declaration" value="do not insert"/>
+<setting id="org.eclipse.cdt.core.formatter.insert_new_line_before_identifier_in_function_declaration" value="insert"/>
 <setting id="org.eclipse.cdt.core.formatter.insert_space_before_comma_in_method_declaration_throws" value="do not insert"/>
 <setting id="org.eclipse.cdt.core.formatter.indent_declaration_compare_to_template_header" value="false"/>
 <setting id="org.eclipse.cdt.core.formatter.insert_space_before_comma_in_method_invocation_arguments" value="do not insert"/>

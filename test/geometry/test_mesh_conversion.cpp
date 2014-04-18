@@ -176,7 +176,7 @@ TYPED_TEST (TestMeshConversion, HalfEdgeMeshToFaceVertexMesh)
   for (size_t i=0; i<faces.size (); ++i)
   {
     vi.clear ();
-    for (int j=0; j<faces [i].size (); ++j)
+    for (size_t j=0; j<faces [i].size (); ++j)
     {
       vi.push_back (VertexIndex (static_cast <int> (faces [i][j])));
     }

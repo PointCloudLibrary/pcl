@@ -119,7 +119,7 @@ compute (const PointCloudXYZRGBA::ConstPtr & input, const char * templates_filen
   for (size_t i = 0; i < detections.size (); ++i)
   {
     const LINEMODDetection & d = detections[i];
-    printf ("%zu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
+    printf ("%lu: %d %d %d %f\n", i, d.x, d.y, d.template_id, d.score);
   }
 
   /*// Visualization code for testing purposes (requires libpng++)

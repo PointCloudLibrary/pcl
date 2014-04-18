@@ -12,7 +12,7 @@ project(PCL)
 string(TOLOWER ${PROJECT_NAME} PROJECT_NAME_LOWER)
 
 ### ---[ Find universal dependencies
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/" ${CMAKE_MODULE_PATH})
 
 # ---[ Include pkgconfig
 include (FindPkgConfig)
@@ -149,9 +149,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
     SET(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
-    if(APPLE)
+    if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-    endif(APPLE)
+    endif()
   endif()
   SET(CLANG_LIBRARIES "stdc++")
 endif()
@@ -164,7 +164,7 @@ if(USE_PROJECT_FOLDERS)
 endif(USE_PROJECT_FOLDERS)
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION 1.7.1 CACHE STRING "PCL version")
+set(PCL_VERSION 1.7.2 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
@@ -339,7 +339,7 @@ endif(WITH_QT)
 
 # Find VTK
 option(WITH_VTK "Build VTK-Visualizations" TRUE)
-if(WITH_VTK)
+if(WITH_VTK AND NOT ANDROID)
   find_package(VTK)
   if(VTK_FOUND)
     if (PCL_SHARED_LIBS OR
@@ -356,7 +356,10 @@ if(WITH_VTK)
       message ("Warning: VTK disabled!")
     endif ()
   endif(VTK_FOUND)
-endif(WITH_VTK)
+else(WITH_VTK AND NOT ANDROID)
+  set(VTK_FOUND OFF)
+  set(HAVE_VTK OFF)
+endif(WITH_VTK AND NOT ANDROID)
 
 # Find MPI
 if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often

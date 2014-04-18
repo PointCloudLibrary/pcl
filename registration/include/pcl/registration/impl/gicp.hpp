@@ -60,7 +60,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
 {
   if (k_correspondences_ > int (cloud->size ()))
   {
-    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or points in cloud (%zu) is less than k_correspondences_ (%zu)!\n", cloud->size (), k_correspondences_);
+    PCL_ERROR ("[pcl::GeneralizedIterativeClosestPoint::computeCovariances] Number or points in cloud (%lu) is less than k_correspondences_ (%lu)!\n", cloud->size (), k_correspondences_);
     return;
   }
 

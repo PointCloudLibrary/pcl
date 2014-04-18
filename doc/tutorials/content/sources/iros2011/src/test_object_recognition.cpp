@@ -57,7 +57,7 @@ main (int argc, char ** argv)
   // Load input file
   PointCloudPtr query (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *query);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], query->size ());    
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], query->size ());    
 
   ifstream input_stream;
   ObjectRecognitionParameters params;

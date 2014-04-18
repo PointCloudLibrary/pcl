@@ -135,6 +135,23 @@ if (build)
   PCL_ADD_EXECUTABLE(pcl_demean_cloud "${SUBSYS_NAME}" demean_cloud.cpp)
   target_link_libraries(pcl_demean_cloud pcl_common pcl_io)
 
+  PCL_ADD_EXECUTABLE(pcl_compute_hausdorff "${SUBSYS_NAME}" compute_hausdorff.cpp)
+  target_link_libraries(pcl_compute_hausdorff pcl_common pcl_io pcl_search)
+
+  PCL_ADD_EXECUTABLE(pcl_morph "${SUBSYS_NAME}" morph.cpp)
+  target_link_libraries(pcl_morph pcl_common pcl_io pcl_filters)
+  
+  PCL_ADD_EXECUTABLE(pcl_progressive_morphological_filter "${SUBSYS_NAME}" progressive_morphological_filter.cpp)
+  target_link_libraries(pcl_progressive_morphological_filter pcl_common pcl_io pcl_filters pcl_segmentation)
+
+  PCL_ADD_EXECUTABLE(pcl_generate "${SUBSYS_NAME}" generate.cpp)
+  target_link_libraries(pcl_generate pcl_common pcl_io)
+
+  PCL_ADD_EXECUTABLE(pcl_local_max "${SUBSYS_NAME}" local_max.cpp)
+  target_link_libraries(pcl_local_max pcl_common pcl_io pcl_filters)
+
+  PCL_ADD_EXECUTABLE(pcl_grid_min "${SUBSYS_NAME}" grid_min.cpp)
+  target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)

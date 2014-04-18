@@ -1983,7 +1983,7 @@ namespace pcl
 
         /** \brief Resize the mesh data. */
         template <class DataCloudT> inline void
-        resizeData (DataCloudT& data_cloud, const size_t n, const typename DataCloudT::value_type& data, boost::true_type /*has_data*/) const
+        resizeData (DataCloudT& /*data_cloud*/, const size_t n, const typename DataCloudT::value_type& data, boost::true_type /*has_data*/) const
         {
           data.resize (n, data);
         }

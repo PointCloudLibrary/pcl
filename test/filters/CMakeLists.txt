@@ -15,5 +15,15 @@ PCL_ADD_TEST(filters_bilateral test_filters_bilateral
              LINK_WITH pcl_gtest pcl_filters pcl_io pcl_kdtree
              ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
 
-    
+PCL_ADD_TEST(filters_grid_minimum test_filters_grid_minimum
+             FILES test_grid_minimum.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
 
+PCL_ADD_TEST(filters_morphological test_morphological
+             FILES test_morphological.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+    
+PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum
+             FILES test_local_maximum.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+ 

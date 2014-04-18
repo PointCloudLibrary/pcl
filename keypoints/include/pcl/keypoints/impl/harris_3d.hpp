@@ -52,6 +52,15 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT, typename NormalT> void
+pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setInputCloud (const PointCloudInConstPtr &cloud)
+{
+  if (normals_ && input_ && (cloud != input_))
+    normals_.reset ();
+  input_ = cloud;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::setMethod (ResponseMethod method)
 {
   method_ = method;

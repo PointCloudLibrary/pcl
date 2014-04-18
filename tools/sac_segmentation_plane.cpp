@@ -122,7 +122,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   sac.getInliers (inliers);
   sac.getModelCoefficients (coefficients);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms, plane has : "); print_value ("%zu", inliers.size ()); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms, plane has : "); print_value ("%lu", inliers.size ()); print_info (" points]\n");
 
   print_info ("Model coefficients: [");
   print_value ("%g %g %g %g", coefficients[0], coefficients[1], coefficients[2], coefficients[3]); print_info ("]\n");

@@ -22,7 +22,7 @@ if(build)
     find_cuda_helper_libs(nppi)
     find_cuda_helper_libs(npps)
 
-    set(CUDA_npp_LIBRARY "${CUDA_nppc_LIBRARY};${CUDA_nppi_LIBRARY};${CUDA_npps_LIBRARY}" CACHE STRING "npp library")
+    set(CUDA_npp_LIBRARY ${CUDA_nppc_LIBRARY} ${CUDA_nppi_LIBRARY} ${CUDA_npps_LIBRARY} CACHE STRING "npp library")
   endif()
 
   #Label_skeleton
@@ -31,6 +31,7 @@ if(build)
   FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
   #FILE(GLOB srcs_cuda src/cuda/*.cu src/cuda/*.h src/cuda/nvidia/*.cu src/cuda/nvidia/*.hpp)
   FILE(GLOB hdrs include/pcl/gpu/people/*.h*)
+  FILE(GLOB hdrs_cuda src/cuda/nvidia/*.h*)
 
   source_group("Source files\\cuda" FILES ${srcs_cuda} )
   source_group("Source files" FILES ${srcs} )    
@@ -43,7 +44,6 @@ if(build)
   if (UNIX OR APPLE)
     set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
   endif()
-
   if(NOT UNIX OR APPLE)
     add_definitions(-DPCLAPI_EXPORTS)
   endif()
@@ -53,11 +53,11 @@ if(build)
   set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
   PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
-  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" "${CUDA_npp_LIBRARY}")
+  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" ${CUDA_npp_LIBRARY})
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files
-  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${hdrs})
+  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_PATH}" ${hdrs} ${hdrs_cuda})
 
   add_subdirectory(tools)
 endif(build)

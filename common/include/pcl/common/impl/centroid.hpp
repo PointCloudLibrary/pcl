@@ -859,5 +859,44 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
   return (pcl::computeNDCentroid (cloud, indices.indices, centroid));
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> size_t
+pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                      PointOutT& centroid)
+{
+  pcl::CentroidPoint<PointInT> cp;
+
+  if (cloud.is_dense)
+    for (size_t i = 0; i < cloud.size (); ++i)
+      cp.add (cloud[i]);
+  else
+    for (size_t i = 0; i < cloud.size (); ++i)
+      if (pcl::isFinite (cloud[i]))
+        cp.add (cloud[i]);
+
+  cp.get (centroid);
+  return (cp.getSize ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> size_t
+pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                      const std::vector<int>& indices,
+                      PointOutT& centroid)
+{
+  pcl::CentroidPoint<PointInT> cp;
+
+  if (cloud.is_dense)
+    for (size_t i = 0; i < indices.size (); ++i)
+      cp.add (cloud[indices[i]]);
+  else
+    for (size_t i = 0; i < indices.size (); ++i)
+      if (pcl::isFinite (cloud[indices[i]]))
+        cp.add (cloud[indices[i]]);
+
+  cp.get (centroid);
+  return (cp.getSize ());
+}
+
 #endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_
 

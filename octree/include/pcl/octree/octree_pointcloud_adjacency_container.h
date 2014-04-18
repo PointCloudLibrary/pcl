@@ -95,7 +95,7 @@ namespace pcl
        * \param[in] new_point the new point to add  
        */
       void 
-      addPoint (const PointInT& new_point)
+      addPoint (const PointInT& /*new_point*/)
       {
         using namespace pcl::common;
         ++num_points_;
@@ -176,7 +176,7 @@ namespace pcl
        * \return number of points added to leaf node container.
        */
       virtual size_t
-      getSize ()
+      getSize () const
       {
         return num_points_;
       }

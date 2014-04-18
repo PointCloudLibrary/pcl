@@ -8,7 +8,6 @@ In this tutorial we will learn how to use Difference of Normals features, implem
 
 This algorithm performs a scale based segmentation of the given input point cloud, finding points that belong within the scale parameters given.
 
-.. donpipeline::
 .. figure:: images/donpipelinesmall.jpg
    :align: center
 
@@ -28,7 +27,6 @@ Formally the Difference of Normals operator is defined,
 
 where :math:`$r_s, r_l \in \mathbb{R}$`, :math:`$r_s<r_l$`, and :math:`$\mathbf{\hat{n}}(p, r)$` is the surface normal estimate at point :math:`$p$`, given the support radius :math:`$r$`. Notice, the response of the operator is a normalized vector field, and is thus orientable (the resulting direction is a key feature), however the operator's norm often provides an easier quantity to work with, and is always in the range :math:`(0,1)`.
 
-.. scalenormals_figure::
 .. figure:: images/don_scalenormals.svg
    :width: 60%
    :align: center
@@ -40,7 +38,6 @@ The primary motivation behind DoN is the observation that surface normals estima
 
 The above diagram illustrates this effect in 1D. Normals, :math:`$\mathbf{\hat{n}}$`, and tangents, :math:`$T$`, estimated with a small support radius :math:`$r_s$` are affected by small-scale surface structure (and similarly by noise). On the other hand, normals and tangent planes estimated with a large support radius $r_l$ are less affected by small-scale structure, and represent the geometry of larger scale surface structures. In fact a similair set of features is seen in the DoN feature vectors for real-world street curbs in a LiDAR image shown below.
 
-.. doncurbcloseup::
 .. figure:: images/don_curb_closeup_small.jpg
    :align: center
 

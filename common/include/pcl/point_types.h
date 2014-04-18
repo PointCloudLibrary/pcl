@@ -729,6 +729,11 @@ namespace pcl
     struct has_curvature : has_field<PointT, pcl::fields::curvature>
     { };
 
+    /** Metafunction to check if a given point type has intensity field. */
+    template <typename PointT>
+    struct has_intensity : has_field<PointT, pcl::fields::intensity>
+    { };
+
     /** Metafunction to check if a given point type has either rgb or rgba field. */
     template <typename PointT>
     struct has_color : has_any_field<PointT, boost::mpl::vector<pcl::fields::rgb,

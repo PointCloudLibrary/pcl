@@ -675,7 +675,7 @@ bool
 pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, double radius,
                                             const std::string &layer_id, double opacity)
 {
-  return (addCircle (x, y, radius, layer_id, opacity));
+  return (addCircle (x, y, radius, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -936,6 +936,21 @@ pcl::visualization::ImageViewer::markPoints (
   if (uv.size () == 0)
     return;
 
+  std::vector<float> float_uv (uv.size ());
+  for (std::size_t i = 0; i < uv.size (); ++i)
+    float_uv[i] = static_cast<float> (uv[i]);
+  return (markPoints (float_uv, fg_color, bg_color, size, layer_id, opacity));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::markPoints (
+    const std::vector<float>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
+    const std::string &layer_id, double opacity)
+{
+  if (uv.size () == 0)
+    return;
+
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
   if (am_it == layer_map_.end ())
@@ -949,20 +964,15 @@ pcl::visualization::ImageViewer::markPoints (
 
   vtkSmartPointer<context_items::Markers> markers = vtkSmartPointer<context_items::Markers>::New ();
   markers->setOpacity (opacity);
-  std::vector<float> points (uv.size ());
-  std::size_t nb_points = points.size () / 2;
-  for (std::size_t i = 0; i < nb_points; ++i)
-  {
-    std::size_t ii = 2*i;
-    points[ii] = static_cast<float> (uv[ii]);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
-    points[ii] = static_cast<float> (uv[ii+1]);
+  markers->set (uv);
 #else
-    points[ii+1] = static_cast<float> (getSize ()[1] - uv[ii+1]);
-#endif
-  }
-
+  // translate v which is on odd indices
+  std::vector<float> points = uv;
+  for (std::size_t i = 1; i < points.size (); i+=2)
+    points[i] = getSize ()[1] - points[i];
   markers->set (points);
+#endif
   markers->setSize (size);
   markers->setColors (bg_color[0], bg_color[1], bg_color[2]);
   markers->setPointColors (fg_color[0], fg_color[1], fg_color[2]);

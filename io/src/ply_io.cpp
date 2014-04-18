@@ -559,13 +559,15 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                            Eigen::Vector4f &, Eigen::Quaternionf &,
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                             int &, int &, unsigned int &, const int)
 {
   // Silence compiler warnings
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
   cloud_->width = cloud_->height = 0;
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -1497,7 +1499,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Write down vertices
@@ -1616,7 +1618,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Close the file

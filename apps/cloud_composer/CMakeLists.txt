@@ -140,6 +140,10 @@ if(build)
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
     target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
+
+    IF(APPLE)
+       SET_TARGET_PROPERTIES(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    ENDIF()
     
     include(ComposerTool.cmake REQUIRED)
     
@@ -175,7 +179,7 @@ if(build)
     
      #Organized Segmentation
     set (OSEG_DEPS pcl_segmentation pcl_kdtree)
-    set (OSEG_SOURCES "tools/organized_segmentation.cpp include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
+    set (OSEG_SOURCES tools/organized_segmentation.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/organized_segmentation.hpp")
     set (OSEG_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/organized_segmentation.h")
     define_composer_tool (organized_segmentation "${OSEG_SOURCES}" "${OSEG_HEADERS}" "${OSEG_DEPS}")
     
@@ -187,7 +191,7 @@ if(build)
     
      #Supervoxels
     set (VSP_DEPS pcl_octree pcl_segmentation)
-    set (VSP_SOURCES "tools/supervoxels.cpp include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
+    set (VSP_SOURCES tools/supervoxels.cpp "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/impl/supervoxels.hpp")
     set (VSP_HEADERS "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/tools/supervoxels.h")
     define_composer_tool (supervoxels "${VSP_SOURCES}" "${VSP_HEADERS}" "${VSP_DEPS}")
 

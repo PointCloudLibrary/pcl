@@ -113,7 +113,6 @@ namespace pcl
         OctreeIteratorBase (const OctreeIteratorBase& src, unsigned int max_depth_arg = 0) :
             octree_ (src.octree_), current_state_(0), max_octree_depth_(max_depth_arg)
         {
-          this->reset ();
         }
 
         /** \brief Copy operator.

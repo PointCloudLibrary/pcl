@@ -251,6 +251,18 @@ namespace pcl
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
+  /** \class BadArgumentException
+    * \brief An exception that is thrown when the argments number or type is wrong/unhandled.
+    */
+  class BadArgumentException : public PCLException
+  {
+    public:
+    BadArgumentException (const std::string& error_description,
+                          const std::string& file_name = "",
+                          const std::string& function_name = "" ,
+                          unsigned line_number = 0) throw ()
+      : pcl::PCLException (error_description, file_name, function_name, line_number) { }
+  };
 }
 
 

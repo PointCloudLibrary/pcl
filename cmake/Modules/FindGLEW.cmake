@@ -42,11 +42,17 @@ ELSE (WIN32)
 
   IF (APPLE)
 # These values for Apple could probably do with improvement.
+  if (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
     FIND_PATH( GLEW_INCLUDE_DIR glew.h
       /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
       ${OPENGL_LIBRARY_DIR}
-    )
+      )
     SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
+  else (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
+    find_package(PkgConfig)
+    pkg_check_modules(glew GLEW)
+    SET(GLEW_GLEW_LIBRARY ${GLEW_LIBRARIES} CACHE STRING "GLEW library for OSX")
+  endif (${CMAKE_SYSTEM_VERSION} VERSION_LESS "13.0.0")
     SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
   ELSE (APPLE)
 

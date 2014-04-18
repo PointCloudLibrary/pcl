@@ -70,14 +70,14 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   if (cloud_src.points.size () != cloud_tgt.points.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number or points in source (%zu) differs than target (%zu)!\n", 
+    PCL_ERROR ("Number or points in source (%lu) differs than target (%lu)!\n", 
                cloud_src.points.size (), cloud_tgt.points.size ());
     return;
   }
   if (cloud_src.points.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %zu points!\n", 
+    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!\n", 
                cloud_src.points.size ());
     return;
   }
@@ -85,7 +85,7 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   if (correspondence_weights_.size () != cloud_src.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+    PCL_ERROR ("Number of weights (%lu) differs than number of points (%lu)!\n",
                correspondence_weights_.size (), cloud_src.points.size ());
     return;
   }
@@ -129,14 +129,14 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
     return;
   }
 
   if (correspondence_weights_.size () != indices_src.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+    PCL_ERROR ("Number of weights (%lu) differs than number of points (%lu)!\n",
                correspondence_weights_.size (), indices_src.size ());
     return;
   }
@@ -165,14 +165,14 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), indices_tgt.size ());
     return;
   }
 
   if (indices_src.size () < 4)     // need at least 4 samples
   {
     PCL_ERROR ("[pcl::IterativeClosestPointNonLinear::estimateRigidTransformationLM] ");
-    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %zu points!",
+    PCL_ERROR ("Need at least 4 points to estimate a transform! Source and target have %lu points!",
                indices_src.size ());
     return;
   }
@@ -180,7 +180,7 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   if (correspondence_weights_.size () != indices_src.size ())
   {
     PCL_ERROR ("[pcl::registration::TransformationEstimationPointToPlaneWeighted::estimateRigidTransformation] ");
-    PCL_ERROR ("Number of weights (%zu) differs than number of points (%zu)!\n",
+    PCL_ERROR ("Number of weights (%lu) differs than number of points (%lu)!\n",
                correspondence_weights_.size (), indices_src.size ());
     return;
   }

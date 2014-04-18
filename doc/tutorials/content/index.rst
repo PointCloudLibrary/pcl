@@ -57,7 +57,7 @@ Basic Usage
   * :ref:`basic_structures`
 
      ======  ======
-     |mi_0|  Title: **Getting Started / Basic Structures**
+     |mi_9|  Title: **Getting Started / Basic Structures**
 
              Author: *Radu B. Rusu*
 
@@ -66,7 +66,7 @@ Basic Usage
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
-     .. |mi_0| image:: images/pcl_logo.png
+     .. |mi_9| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`using_pcl_pcl_config`
@@ -173,6 +173,21 @@ Basic Usage
 
      .. |mi_7| image:: images/pcl_logo.png
                :height: 75px
+
+  * :ref:`matrix_transform`
+
+     ======  ======
+     |mi_8|  Title: **Using matrixes to transform a point cloud**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to transform a point cloud using a matrix.
+     ======  ======
+
+     .. |mi_8| image:: images/matrix_transform/cube.png
+               :height: 120px
 
 .. _advanced_usage:
 
@@ -767,6 +782,21 @@ Registration
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
 
+  * :ref:`interactive_icp`
+
+     ======  ======
+     |re_7|  Title: **Interactive ICP**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial will teach you how to build an interactive ICP program
+     ======  ======
+
+     .. |re_7| image:: images/interactive_icp/monkey.png
+               :height: 120px
+
   * :ref:`normal_distributions_transform`
 
      ======  ======
@@ -974,6 +1004,22 @@ Segmentation
 
      .. |se_9| image:: images/supervoxel_clustering_small.png
                :height: 100px
+
+  * :ref:`progressive_morphological_filtering`
+
+     =======  ======
+     |se_10|  Title: **Progressive Morphological Filtering**
+
+              Author: *Brad Chambers*
+
+              Compatibility: >= PCL 1.8
+
+              In this tutorial, we show how to segment a point cloud into ground and non-ground returns.
+     =======  ======
+
+     .. |se_10| image:: images/progressive_morphological_filter.png
+               :height: 100px
+
                
 .. _surface_tutorial:
 
@@ -1024,6 +1070,22 @@ Surface
      
      .. |su_3| image:: images/greedy_triangulation.png
                :height: 100px
+
+  * :ref:`bspline_fitting`
+
+     ======  ======
+     |su_4|  Title: **Fitting trimmed B-splines to unordered point clouds**
+
+             Author: *Thomas Mörwald*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to reconstruct a smooth surface from an unordered point-cloud by fitting trimmed B-splines.
+     ======  ======
+     
+     .. |su_4| image:: images/bspline_bunny.png
+               :height: 100px
+
 
 .. _visualization_tutorial:
 
@@ -1154,6 +1216,7 @@ Applications
      
      .. |ap_5| image:: images/ground_based_rgbd_people_detection/Index_photo.jpg
                :height: 120px
+
 .. _gpu:
 
 GPU
@@ -1203,6 +1266,7 @@ GPU
      
      .. |gp_2| image:: images/gpu/people/c2_100.jpg
                :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation

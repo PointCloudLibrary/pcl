@@ -137,8 +137,8 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
 {
   int max = 0;
 
-  for (int i = 0; i < training_set.size() ; i++)
-    for (int j = 0; j < training_set[i].SV.size() ; j++)
+  for (size_t i = 0; i < training_set.size() ; i++)
+    for (size_t j = 0; j < training_set[i].SV.size() ; j++)
       if (training_set[i].SV[j].idx > max)
         max = training_set[i].SV[j].idx; // max number of features
 
@@ -154,8 +154,8 @@ pcl::SVMTrain::scaleFactors (std::vector<SVMData> training_set, svm_scaling &sca
     scaling.obj[i].value = 0;
   }
 
-  for (int i = 0; i < training_set.size(); i++)
-    for (int j = 0; j < training_set[i].SV.size(); j++)
+  for (size_t i = 0; i < training_set.size(); i++)
+    for (size_t j = 0; j < training_set[i].SV.size(); j++)
       // save scaling factor finding the maximum value
       if (module (training_set[i].SV[j].value) > scaling.obj[ training_set[i].SV[j].idx ].value)
       {
@@ -226,7 +226,7 @@ pcl::SVM::adaptInputToLibSVM (std::vector<SVMData> training_set, svm_problem &pr
 
     int k = 0;
     
-    for (int j = 0; j < training_set[i].SV.size(); j++)
+    for (size_t j = 0; j < training_set[i].SV.size(); j++)
       if (training_set[i].SV[j].idx != -1 && pcl_isfinite (training_set[i].SV[j].value))
       {
         prob.x[i][k].index = training_set[i].SV[j].idx;
@@ -466,7 +466,7 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
   }
     
 
-  for (int j = 0; j < training_set_.size() ; j++)
+  for (size_t j = 0; j < training_set_.size() ; j++)
   {
 
     if (labelled)
@@ -475,7 +475,7 @@ pcl::SVM::saveProblem (const char *filename, bool labelled = 0)
       myfile << training_set_[j].label << " ";
     }
 
-    for (int i = 0; i < training_set_[j].SV.size(); i++)
+    for (size_t i = 0; i < training_set_[j].SV.size(); i++)
       if (pcl_isfinite (training_set_[j].SV[i].value))
         myfile << training_set_[j].SV[i].idx << ":" << training_set_[j].SV[i].value << " ";
 
@@ -810,7 +810,7 @@ pcl::SVMClassify::classification (pcl::SVMData in)
   svm_node *buff;
   buff = Malloc (struct svm_node, in.SV.size() + 10);
 
-  int i = 0;
+  size_t i = 0;
 
   for (i = 0; i < in.SV.size (); i++)
   {
@@ -910,9 +910,9 @@ pcl::SVMClassify::saveClassificationResult (const char *filename)
     output << "\n";
   }
 
-  for (int i = 0; i < prediction_.size(); i++)
+  for (size_t i = 0; i < prediction_.size(); i++)
   {
-    for (int j = 0; j < prediction_[i].size(); j++)
+    for (size_t j = 0; j < prediction_[i].size(); j++)
       output << prediction_[i][j] << " ";
 
     output << "\n";

@@ -44,7 +44,7 @@
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int> &samples) const
+pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector<int>&) const
 {
   return (true);
   //using namespace pcl::common;
@@ -66,7 +66,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eige
   PCL_INFO ("[pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel]\n");
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::getDistancesToModel] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::getDistancesToModel] Number of source indices (%lu) differs than number of target indices (%lu)!\n", indices_->size (), indices_tgt_->size ());
     distances.clear ();
     return;
   }
@@ -117,7 +117,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::selectWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::selectWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", indices_->size (), indices_tgt_->size ());
     inliers.clear ();
     return;
   }
@@ -180,7 +180,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
 {
   if (indices_->size () != indices_tgt_->size ())
   {
-    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::countWithinDistance] Number of source indices (%zu) differs than number of target indices (%zu)!\n", indices_->size (), indices_tgt_->size ());
+    PCL_ERROR ("[pcl::SampleConsensusModelRegistration2D::countWithinDistance] Number of source indices (%lu) differs than number of target indices (%lu)!\n", indices_->size (), indices_tgt_->size ());
     return (0);
   }
   if (!target_)

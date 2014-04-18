@@ -289,7 +289,7 @@ namespace pcl
         * \param output Output point cloud passed by reference
         */
       void 
-      applyFilter (pcl::PointCloud<PointOutT> &output) {}
+      applyFilter (pcl::PointCloud<PointOutT>& /*output*/) {}
 
       /** \brief Set the input point cloud pointer
         * \param[in] input pointer to input point cloud
