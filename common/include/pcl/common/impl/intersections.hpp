@@ -35,8 +35,13 @@
  *
  */
 
-#include <pcl/common/intersections.h>
+#ifndef PCL_COMMON_INTERSECTIONS_IMPL_HPP_
+#define PCL_COMMON_INTERSECTIONS_IMPL_HPP_
+
+#include <pcl/pcl_macros.h>
 #include <pcl/console/print.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////
 
 bool
 pcl::lineWithLineIntersection (const Eigen::VectorXf &line_a, 
@@ -67,62 +72,69 @@ pcl::lineWithLineIntersection (const pcl::ModelCoefficients &line_a,
   return (lineWithLineIntersection (coeff1, coeff2, point, sqr_eps));
 }
 
-bool 
-pcl::planeWithPlaneIntersection (const Eigen::Vector4f &plane_a, 
-                                 const Eigen::Vector4f &plane_b,
-                                 Eigen::VectorXf &line,
+template <typename Scalar> bool 
+pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a, 
+                                 const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                                 Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
                                  double angular_tolerance)
 {
+  typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
+  typedef Eigen::Matrix<Scalar, 5, 1> Vector5;
+  typedef Eigen::Matrix<Scalar, 5, 3> Matrix5;
+
   //planes shouldn't be parallel
-  double test_cosine = plane_a.head<3>().dot(plane_b.head<3>());
+  double test_cosine = plane_a.template head<3> ().dot (plane_b.template head<3> ());
   double upper_limit = 1 + angular_tolerance;
   double lower_limit = 1 - angular_tolerance;
 
   if ((test_cosine < upper_limit) && (test_cosine > lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are parallel\n");
+      PCL_DEBUG ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
   if ((test_cosine > -upper_limit) && (test_cosine < -lower_limit))
   {
-      PCL_ERROR ("Plane A and Plane B are parallel\n");
+      PCL_DEBUG ("Plane A and Plane B are parallel\n");
       return (false);
   }
 
-  Eigen::Vector4f line_direction = plane_a.cross3(plane_b);
+  Vector4 line_direction = plane_a.cross3 (plane_b);
   line_direction.normalized();
 
   //construct system of equations using lagrange multipliers with one objective function and two constraints
-  Eigen::MatrixXf langegrange_coefs(5,5);
-  langegrange_coefs << 2,0,0,plane_a[0],plane_b[0],  0,2,0,plane_a[1],plane_b[1],  0,0,2, plane_a[2], plane_b[2], plane_a[0], plane_a[1] , plane_a[2], 0,0, plane_b[0], plane_b[1], plane_b[2], 0,0;
+  Matrix5 langrange_coefs;
+  langrange_coefs << 2,0,0, plane_a[0], plane_b[0],  
+                     0,2,0, plane_a[1], plane_b[1],
+                     0,0,2, plane_a[2], plane_b[2],
+                     plane_a[0], plane_a[1], plane_a[2], 0, 0,
+                     plane_b[0], plane_b[1], plane_b[2], 0, 0;
 
-  Eigen::VectorXf b;
-  b.resize(5);
+  Vector5 b;
   b << 0, 0, 0, -plane_a[3], -plane_b[3];
 
-  //solve for the lagrange Multipliers
-  Eigen::VectorXf x;
-  x.resize(5);
-  x = langegrange_coefs.colPivHouseholderQr().solve(b);
-
   line.resize(6);
-  line.head<3>() = x.head<3>(); // the x[3] and x[4] are the values of the lagrange multipliers and are neglected
+  //solve for the lagrange Multipliers
+  line.template head<3>() = langrange_coefs.colPivHouseholderQr().solve(b).template head<3> ();
   line[3] = line_direction[0];
   line[4] = line_direction[1];
   line[5] = line_direction[2];
   return true;
-} 
+}
 
-bool 
-pcl::threePlanesIntersection (const Eigen::Vector4f &plane_a, 
-                              const Eigen::Vector4f &plane_b,
-                              const Eigen::Vector4f &plane_c,
-                              Eigen::Vector3f &intersection_point,
+template <typename Scalar> bool
+pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a, 
+                              const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                              const Eigen::Matrix<Scalar, 4, 1> &plane_c,
+                              Eigen::Matrix<Scalar, 3, 1> &intersection_point,
                               double determinant_tolerance)
 {
+  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
+  typedef Eigen::Matrix<Scalar, 3, 3> Matrix3;
+
+  // TODO: Using Eigen::HyperPlanes is better to solve this problem
   // Check if some planes are parallel
-  Eigen::Matrix3f normals_in_lines;
+  Matrix3 normals_in_lines;
 
   for (int i = 0; i < 3; i++)
   {
@@ -131,16 +143,16 @@ pcl::threePlanesIntersection (const Eigen::Vector4f &plane_a,
     normals_in_lines (i, 2) = plane_c[i];
   }
 
-  double determinant = normals_in_lines.determinant ();
+  Scalar determinant = normals_in_lines.determinant ();
   if (fabs (determinant) < determinant_tolerance)
   {
     // det ~= 0
-    PCL_ERROR ("Two or more planes are parralel.\n");
+    PCL_DEBUG ("At least two planes are parralel.\n");
     return (false);
   }
 
   // Left part of the 3 equations
-  Eigen::Matrix3f left_member;
+  Matrix3 left_member;
 
   for (int i = 0; i < 3; i++)
   {
@@ -150,7 +162,7 @@ pcl::threePlanesIntersection (const Eigen::Vector4f &plane_a,
   }
 
   // Right side of the 3 equations
-  Eigen::Vector3f right_member;
+  Vector3 right_member;
   right_member << -plane_a[3], -plane_b[3], -plane_c[3];
 
   // Solve the system
@@ -158,3 +170,4 @@ pcl::threePlanesIntersection (const Eigen::Vector4f &plane_a,
   return (true);
 }
 
+#endif  //PCL_COMMON_INTERSECTIONS_IMPL_HPP

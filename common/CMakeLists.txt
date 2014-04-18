@@ -35,7 +35,6 @@ if(build)
         src/common.cpp
         src/correspondence.cpp
         src/distances.cpp
-        src/intersections.cpp
         src/parse.cpp
         src/poses_from_matches.cpp
         src/print.cpp
@@ -117,6 +116,7 @@ if(build)
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
         include/pcl/common/impl/eigen.hpp
+        include/pcl/common/impl/intersections.hpp
         include/pcl/common/impl/copy_point.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
