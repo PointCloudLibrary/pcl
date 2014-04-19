@@ -301,21 +301,21 @@ log2f (float x)
 #endif
 
 #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) < PCL_LINEAR_VERSION(4,5,0) && ! defined(__clang__)) || defined(__INTEL_COMPILER)
-#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated))
+#define PCL_DEPRECATED(message) __attribute__ ((deprecated))
 #endif
 
 // gcc supports this starting from 4.5 : http://gcc.gnu.org/bugzilla/show_bug.cgi?id=43666
 #if (defined(__GNUC__) && PCL_LINEAR_VERSION(__GNUC__,__GNUC_MINOR__,__GNUC_PATCHLEVEL__) >= PCL_LINEAR_VERSION(4,5,0)) || (defined(__clang__) && __has_extension(attribute_deprecated_with_message))
-#define PCL_DEPRECATED(func, message) func __attribute__ ((deprecated(message)))
+#define PCL_DEPRECATED(message) __attribute__ ((deprecated(message)))
 #endif
 
 #ifdef _MSC_VER
-#define PCL_DEPRECATED(func, message) __declspec(deprecated(message)) func
+#define PCL_DEPRECATED(message) __declspec(deprecated(message))
 #endif
 
 #ifndef PCL_DEPRECATED
 #pragma message("WARNING: You need to implement PCL_DEPRECATED for this compiler")
-#define PCL_DEPRECATED(func) func
+#define PCL_DEPRECATED(message)
 #endif
 
 
