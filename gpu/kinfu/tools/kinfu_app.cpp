@@ -976,7 +976,13 @@ struct KinFuApp
   {      
     const SceneCloudView& view = scene_cloud_view_;
 
-    if (!view.cloud_ptr_->points.empty ())
+    // Points to export are either in cloud_ptr_ or combined_ptr_.
+    // If none have points, we have nothing to export.
+    if (view.cloud_ptr_->points.empty () && view.combined_ptr_->points.empty ())
+    {
+      cout << "Not writing cloud: Cloud is empty" << endl;
+    }
+    else
     {
       if(view.point_colors_ptr_->points.empty()) // no colors
       {
