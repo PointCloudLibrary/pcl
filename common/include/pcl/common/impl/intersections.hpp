@@ -78,31 +78,32 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
                                  Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
                                  double angular_tolerance)
 {
+  typedef Eigen::Matrix<Scalar, 3, 1> Vector3;
   typedef Eigen::Matrix<Scalar, 4, 1> Vector4;
   typedef Eigen::Matrix<Scalar, 5, 1> Vector5;
-  typedef Eigen::Matrix<Scalar, 5, 3> Matrix5;
+  typedef Eigen::Matrix<Scalar, 5, 5> Matrix5;
 
-  //planes shouldn't be parallel
-  double test_cosine = plane_a.template head<3> ().dot (plane_b.template head<3> ());
+  // Normalize plane normals
+  Vector3 plane_a_norm (plane_a.template head<3> ());
+  Vector3 plane_b_norm (plane_b.template head<3> ());
+  plane_a_norm.normalize ();
+  plane_b_norm.normalize ();
+
+  // Test if planes are parallel (test_cos == 1)
+  double test_cos = plane_a_norm.dot (plane_b_norm);
   double upper_limit = 1 + angular_tolerance;
   double lower_limit = 1 - angular_tolerance;
 
-  if ((test_cosine < upper_limit) && (test_cosine > lower_limit))
+  if ((test_cos > lower_limit) && (test_cos < upper_limit))
   {
-      PCL_DEBUG ("Plane A and Plane B are parallel\n");
-      return (false);
-  }
-
-  if ((test_cosine > -upper_limit) && (test_cosine < -lower_limit))
-  {
-      PCL_DEBUG ("Plane A and Plane B are parallel\n");
+      PCL_DEBUG ("Plane A and Plane B are parallel.\n");
       return (false);
   }
 
   Vector4 line_direction = plane_a.cross3 (plane_b);
   line_direction.normalized();
 
-  //construct system of equations using lagrange multipliers with one objective function and two constraints
+  // Construct system of equations using lagrange multipliers with one objective function and two constraints
   Matrix5 langrange_coefs;
   langrange_coefs << 2,0,0, plane_a[0], plane_b[0],  
                      0,2,0, plane_a[1], plane_b[1],
@@ -114,12 +115,10 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   b << 0, 0, 0, -plane_a[3], -plane_b[3];
 
   line.resize(6);
-  //solve for the lagrange Multipliers
+  // Solve for the lagrange multipliers
   line.template head<3>() = langrange_coefs.colPivHouseholderQr().solve(b).template head<3> ();
-  line[3] = line_direction[0];
-  line[4] = line_direction[1];
-  line[5] = line_direction[2];
-  return true;
+  line.template tail<3>() = line_direction.template head<3>();
+  return (true);
 }
 
 template <typename Scalar> bool
