@@ -89,6 +89,20 @@ namespace pcl
         return (count_);
       }
 
+      /** \brief Get the curvature of the region. */
+      float
+      getCurvature () const
+      {
+        return (curvature_);
+      }
+
+      /** \brief Set the curvature of the region. */
+      void
+      setCurvature (float curvature)
+      {
+        curvature_ = curvature;
+      }
+
     protected:
       /** \brief The centroid of the region. */
       Eigen::Vector3f centroid_;
@@ -99,6 +113,9 @@ namespace pcl
       /** \brief The number of points in the region. */
       unsigned count_;
 
+      /** \brief The mean curvature of the region. */
+      float curvature_;
+      
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
