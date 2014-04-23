@@ -28,6 +28,12 @@ if(WIN32 AND NOT MINGW)
   if(NOT DEFINED CMAKE_RELEASE_POSTFIX)
     set(CMAKE_RELEASE_POSTFIX "_release")
   endif()
+  if(NOT DEFINED CMAKE_RELWITHDEBINFO_POSTFIX)
+    set(CMAKE_RELWITHDEBINFO_POSTFIX "_release")
+  endif()
+  if(NOT DEFINED CMAKE_MINSIZEREL_POSTFIX)
+    set(CMAKE_MINSIZEREL_POSTFIX "_release")
+  endif()
 endif()
 
 # ---[ special maintainer mode
