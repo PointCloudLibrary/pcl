@@ -92,6 +92,7 @@ namespace pcl
         * \param cloud a point cloud dataset containing XYZI coordinates (Cartesian coordinates + intensity)
         * \param indices the indices of the neighoring points in the dataset
         * \param point the 3D Cartesian coordinates of the point at which to estimate the gradient
+        * \param mean_intensity
         * \param normal the 3D surface normal of the given point
         * \param gradient the resultant 3D gradient vector
         */

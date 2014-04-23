@@ -301,7 +301,7 @@ namespace pcl
       /**
        * \brief Draws the theoretical 3D bounding box of the cluster in the PCL visualizer.
        * \param[in] viewer PCL visualizer.
-       * \param[in] person_numbers progressive number representing the person.
+       * \param[in] person_number progressive number representing the person.
        */
       void
       drawTBoundingBox (pcl::visualization::PCLVisualizer& viewer, int person_number);

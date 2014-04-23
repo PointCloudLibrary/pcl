@@ -144,6 +144,7 @@ namespace pcl
 
       /** \brief Removes normals with high curvature caused by real edges or noisy data
        * \param[in] cloud pointcloud to be filtered
+       * \param[in] indices_to_use
        * \param[out] indices_out the indices of the points with higher curvature than threshold
        * \param[out] indices_in the indices of the remaining points after filtering
        * \param[in] threshold threshold value for curvature

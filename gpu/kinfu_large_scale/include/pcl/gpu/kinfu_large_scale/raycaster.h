@@ -91,6 +91,7 @@ namespace pcl
         /** \brief Runs raycasting algorithm from given camera pose. It writes results to internal fiels.
           * \param[in] volume tsdf volume container
           * \param[in] camera_pose camera pose
+          * \param buffer
           */ 
         void 
         run(const TsdfVolume& volume, const Eigen::Affine3f& camera_pose, tsdf_buffer* buffer);
@@ -109,7 +110,7 @@ namespace pcl
         generateSceneView(View& view, const Eigen::Vector3f& light_source_pose) const;
 
         /** \brief Generates depth image using data raycasted by run method. So call it before.
-          * \param[out] view output array for depth image        
+          * \param[out] depth output array for depth image        
           */
         void
         generateDepthImage(Depth& depth) const;

@@ -49,7 +49,7 @@ namespace pcl
      *
      *  \ingroup outofcore
      *  \author Justin Rosen (jmylesrosen@gmail.com)
-     *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl_octree written by Julius Kammerl
+     *  \note Code adapted from \ref octree_iterator.h in Module \ref pcl::octree written by Julius Kammerl
      */
     template<typename PointT=pcl::PointXYZ, typename ContainerT=OutofcoreOctreeDiskContainer<pcl::PointXYZ> >
     class OutofcoreBreadthFirstIterator : public OutofcoreIteratorBase<PointT, ContainerT>

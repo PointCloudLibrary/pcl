@@ -105,7 +105,7 @@ namespace pcl
       }
 
       /** \brief Sets the number of thresholds tested for finding the optimal decision threshold on the feature responses.
-        * \param[in] num_of_thresholds The number of thresholds.
+        * \param[in] num_of_threshold The number of thresholds.
         */
       inline void
       setNumOfThresholds (const size_t num_of_threshold)
@@ -159,7 +159,7 @@ namespace pcl
       }
 
       /** \brief Specify the data provider.
-        * \param[in] dftp The data provider that should implement getDatasetAndLabels(...) function
+        * \param[in] dtdp The data provider that should implement getDatasetAndLabels(...) function
         */
       void
       setDecisionTreeDataProvider (boost::shared_ptr<pcl::DecisionTreeTrainerDataProvider<FeatureType, DataSet, LabelType, ExampleIndex, NodeType> > & dtdp)

@@ -47,15 +47,15 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Constructor with direct computation
-  * \param[in] X input m*n matrix (ie n vectors of R(m))
+  * \param[in] cloud input m*n matrix (ie n vectors of R(m))
   * \param[in] basis_only flag to compute only the PCA basis
   */
 template<typename PointT>
-pcl::PCA<PointT>::PCA (const pcl::PointCloud<PointT>& X, bool basis_only)
+pcl::PCA<PointT>::PCA (const pcl::PointCloud<PointT> &cloud, bool basis_only)
 {
   Base ();
   basis_only_ = basis_only;
-  setInputCloud (X.makeShared ());
+  setInputCloud (cloud.makeShared ());
   compute_done_ = initCompute ();
 }
 

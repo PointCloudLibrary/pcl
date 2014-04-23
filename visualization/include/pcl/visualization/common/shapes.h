@@ -255,8 +255,6 @@ namespace pcl
       * \param[in] y_max is the maximum y value of the box
       * \param[in] z_min is the minimum z value of the box
       * \param[in] z_max is the maximum z value of the box
-      * \param[in] id the cube id/name (default: "cube")
-      * \param[in] viewport (optional) the id of the new viewport (default: 0)
       */
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCube (double x_min, double x_max,

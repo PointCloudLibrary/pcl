@@ -109,7 +109,7 @@ namespace pcl
         /** Constructor
           * \param parameters uniform distribution parameters and generator seed
           */
-        UniformGenerator(const Parameters& paramters);
+        UniformGenerator(const Parameters& parameters);
 
         /** Change seed value
           * \param[in] seed new generator seed value

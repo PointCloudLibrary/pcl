@@ -73,9 +73,11 @@ namespace pcl
       virtual ~DOTMOD ();
 
       /** \brief Creates a template from the specified data and adds it to the matching queue. 
-        * \param 
-        * \param 
-        * \param 
+        * \param modalities
+        * \param masks
+        * \param template_anker_x
+        * \param template_anker_y
+        * \param region
         */
       size_t 
       createAndAddTemplate (const std::vector<DOTModality*> & modalities,

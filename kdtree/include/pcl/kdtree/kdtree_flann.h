@@ -97,12 +97,12 @@ namespace pcl
       KdTreeFLANN (bool sorted = true);
 
       /** \brief Copy constructor
-        * \param[in] tree the tree to copy into this
+        * \param[in] k the tree to copy into this
         */
       KdTreeFLANN (const KdTreeFLANN<PointT> &k);
 
       /** \brief Copy operator
-        * \param[in] tree the tree to copy into this
+        * \param[in] k the tree to copy into this
         */ 
       inline KdTreeFLANN<PointT>&
       operator = (const KdTreeFLANN<PointT>& k)

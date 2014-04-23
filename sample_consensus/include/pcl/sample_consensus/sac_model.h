@@ -386,6 +386,7 @@ namespace pcl
       
       /** \brief Set the maximum distance allowed when drawing random samples
         * \param[in] radius the maximum distance (L2 norm)
+        * \param search
         */
       inline void
       setSamplesMaxDist (const double &radius, SearchPtr search)

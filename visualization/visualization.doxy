@@ -32,6 +32,6 @@
   - VTK
   - \ref io "io"
   - \ref kdtree "kdtree"
-  - \ref range_image "range_image"
+  - \ref pcl::RangeImage "RangeImage"
 
 */

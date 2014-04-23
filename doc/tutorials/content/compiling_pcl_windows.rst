@@ -85,7 +85,7 @@ The invocation to download the source code is thus, using a command line:
   cd wherever/you/want/to/put/the/repo/
   git clone https://github.com/PointCloudLibrary/pcl.git
 
-You could also use Github for Windows (http://windows.github.com/), but that is potentially more
+You could also use Github for Windows (https://windows.github.com/), but that is potentially more
 troublesome than setting up git on windows.
 
 Configuring PCL
@@ -323,7 +323,7 @@ Advanced topics
 	Then, you need to enable the `documentation` project in Visual Studio by checking the **BUILD_DOCUMENTATION** checkbox in CMake.
 	
 	You can also build one single CHM file that will gather all the generated html files into one file. You need the `Microsoft
-	HTML HELP Workshop <http://www.microsoft.com/downloads/en/details.aspx?familyid=00535334-c8a6-452f-9aa0-d597d16580cc&displaylang=en>`_.
+	HTML HELP Workshop <http://www.microsoft.com/en-us/download/details.aspx?id=21138>`_.
 	After you install the `Microsoft HTML HELP Workshop`, hit `Configure`. If CMake is not able to find **HTML_HEL_COMPILER**, then fill
 	it manually with the path to `hhc.exe` (e.g. C:/Program Files (x86)/HTML Help Workshop/hhc.exe), then click `Configure` and `Generate`.
 	

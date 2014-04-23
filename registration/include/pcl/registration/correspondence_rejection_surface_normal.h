@@ -101,7 +101,7 @@ namespace pcl
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
-          * \param[in] cloud a cloud containing XYZ data
+          * \param[in] input a cloud containing XYZ data
           */
         template <typename PointT> inline void 
         setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr &input)
@@ -116,7 +116,7 @@ namespace pcl
         }
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!), used to compute the correspondence distance.  
-          * \param[in] cloud a cloud containing XYZ data
+          * \param[in] input a cloud containing XYZ data
           */
         template <typename PointT> inline void 
         setInputSource (const typename pcl::PointCloud<PointT>::ConstPtr &input)

@@ -107,6 +107,8 @@ namespace pcl
         * \param[out] origin the sensor acquisition origin always null
         * \param[out] orientation the sensor acquisition orientation always identity
         * \param[out] file_version always 0
+        * \param data_type
+        * \param data_idx
         * \param[in] offset the offset in the file where to expect the true header to begin.
         * One usage example for setting the offset parameter is for reading
         * data from a TAR "archive containing multiple files: TAR files always

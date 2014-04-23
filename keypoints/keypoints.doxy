@@ -16,7 +16,7 @@
   - \ref search "search"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
-  - \ref range_image "range_image"
+  - \ref pcl::RangeImage "range_image"
   - \ref features "features"
   - \ref filters "filters"
 

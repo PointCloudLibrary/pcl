@@ -20,7 +20,7 @@ Prerequisites
 Before getting started download and install the following prerequisites for
 Mac OS X:
 
-- **XCode** (http://developer.apple.com/xcode)
+- **XCode** (https://developer.apple.com/xcode/)
    Apple’s powerful integrated development environment
 
 
@@ -60,7 +60,7 @@ The following libraries are **Required** to build PCL.
    Unified matrix library.  Used as the matrix backend for SSE optimized math.
 
 - **FLANN** version >= 1.6.8
-  (http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN)
+  (http://www.cs.ubc.ca/research/flann/)
   Library for performing fast approximate nearest neighbor searches in high
   dimensional spaces.  Used in `kdtree` for fast approximate nearest neighbors
   search.
@@ -104,7 +104,7 @@ for PCL developers:
    A documentation system for C++, C, Java, Objective-C, Python, IDL (Corba and
    Microsoft flavors), Fortran, VHDL, PHP, C#, and to some extent D.
 
-- **Sphinx** (http://sphinx.pocoo.org/)
+- **Sphinx** (http://sphinx-doc.org/)
    A tool that makes it easy to create intelligent and beautiful
    documentation.
 
@@ -292,7 +292,7 @@ using Sphinx.  The easiest way to get this installed is using pythons
    $ easy_install -U Sphinx
 
 The Sphinx documentation also requires the third party contrib extension
-`sphinxcontrib-doxylink` (http://pypi.python.org/pypi/sphinxcontrib-doxylink)
+`sphinxcontrib-doxylink` (https://pypi.python.org/pypi/sphinxcontrib-doxylink)
 to reference the Doxygen built documentation.
 
 To install from source you'll also need Mercurial::

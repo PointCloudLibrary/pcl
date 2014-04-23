@@ -134,7 +134,7 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator
-         * \param[in] OctreeIteratorBase to compare with
+         * \param[in] other OctreeIteratorBase to compare with
          */
         bool operator==(const OctreeIteratorBase& other) const
         {
@@ -144,7 +144,7 @@ namespace pcl
         }
 
         /** \brief Inequal comparison operator
-         * \param[in] OctreeIteratorBase to compare with
+         * \param[in] other OctreeIteratorBase to compare with
          */
         bool operator!=(const OctreeIteratorBase& other) const
         {

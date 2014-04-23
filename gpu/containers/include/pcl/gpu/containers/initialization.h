@@ -54,12 +54,12 @@ namespace pcl
         PCL_EXPORTS std::string getDeviceName(int device);
 
         /** \brief Prints infromatoin about given cuda deivce or about all deivces
-         *  \param deivce: if < 0 prints info for all devices, otherwise the function interpets is as device id.
+         *  \param device: if < 0 prints info for all devices, otherwise the function interpets is as device id.
          */
         void PCL_EXPORTS printCudaDeviceInfo(int device = -1);
 
         /** \brief Prints infromatoin about given cuda deivce or about all deivces
-         *  \param deivce: if < 0 prints info for all devices, otherwise the function interpets is as device id.
+         *  \param device: if < 0 prints info for all devices, otherwise the function interpets is as device id.
          */
         void PCL_EXPORTS printShortCudaDeviceInfo(int device = -1);
 

@@ -99,7 +99,7 @@ namespace pcl
       addPointCoherence (PointCoherencePtr coherence) { point_coherences_.push_back (coherence); }
 
       /** \brief add a PointCoherence to the PointCloudCoherence.
-        * \param coherence a pointer to PointCoherence.
+        * \param cloud a pointer to PointCoherence.
         */
       virtual inline void
       setTargetCloud (const PointCloudInConstPtr &cloud)  { target_input_ = cloud; }

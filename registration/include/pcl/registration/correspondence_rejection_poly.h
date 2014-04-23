@@ -174,7 +174,7 @@ namespace pcl
         
         /** \brief Set the similarity threshold in [0,1[ between edge lengths,
           * where 1 is a perfect match
-          * \param similarity similarity threshold
+          * \param similarity_threshold similarity threshold
           */
         inline void 
         setSimilarityThreshold (float similarity_threshold)
