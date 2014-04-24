@@ -192,90 +192,90 @@ TEST (PCL, lineWithLineIntersection)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, planeWithPlaneIntersection)
 {
-  // Testing parallel planes
-  const int k = 2;
-  double x = 1.0;
-  double y = 2.0;
-  double z = 3.0;
-  double w = 4.0;
-  float xf = 1.0;
-  float yf = 2.0;
-  float zf = 3.0;
-  float wf = 4.0;
+  Eigen::Vector4f plane_a, plane_b;
+  Eigen::Vector4d plane_ad, plane_bd;
+  Eigen::VectorXf line;
+  Eigen::VectorXd lined;
 
-  Eigen::Vector4d plane_a, plane_b;
-  plane_a << x, y, z, w;
-  plane_b << x, y, z, (w+k);
+  // Testing parallel planes, plane normal not normalized!
+  plane_a << 1.0, 2.0, 3.0, 0.0;
+  plane_b << plane_a;
+  plane_b[3] += 1.0;
+  plane_ad << 1.0, 2.0, 3.0, 0.0;
+  plane_bd << plane_ad;
+  plane_bd[3] -= -1.0;
 
-  Eigen::Vector4f plane_af, plane_bf;
-  plane_af << xf, yf, zf, wf;
-  plane_bf << xf, yf, zf, (wf+k);
+  EXPECT_FALSE (pcl::planeWithPlaneIntersection (plane_a, plane_b, line, 1e-6));
+  EXPECT_FALSE (pcl::planeWithPlaneIntersection (plane_ad, plane_bd, lined, 1e-6));
 
-  Eigen::VectorXd line;
-  Eigen::VectorXf linef;
+  // Testing nearly parallel planes, plane normal not normalized!
+  plane_a << 1.0, 2.0, 3.0, -0.5;
+  plane_b << 1.0, 2.5, 3.0, 0.5;;
+  plane_ad << 1.0, 2.0, 3.0, -0.5;
+  plane_bd << 1.0, 2.5, 3.0, 0.5;
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 45));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 45));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_a, plane_b, line, 1e-3));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_ad, plane_bd, lined, 1e-3));
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 90));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 90));
+  double tolerance = 1e-4;
+  EXPECT_NEAR (line[0], 0.45, tolerance);
+  EXPECT_NEAR (line[1], -2.0, tolerance);
+  EXPECT_NEAR (line[2], 1.35, tolerance);
+  EXPECT_NEAR (line[3], -1.5, tolerance);
+  EXPECT_NEAR (line[4], 0.0,  tolerance);
+  EXPECT_NEAR (line[5], 0.5,  tolerance);
+  EXPECT_NEAR (lined[0], 0.45, tolerance);
+  EXPECT_NEAR (lined[1], -2.0, tolerance);
+  EXPECT_NEAR (lined[2], 1.35, tolerance);
+  EXPECT_NEAR (lined[3], -1.5, tolerance);
+  EXPECT_NEAR (lined[4], 0.0,  tolerance);
+  EXPECT_NEAR (lined[5], 0.5,  tolerance);
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 180));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 180));
+  // Orthogonal planes, Hessian form (plane normal normalized)
+  plane_a << 0.0, 0.0, 1.0, +0.0;
+  plane_b << 1.0, 0.0, 0.0, -0.5;
+  plane_ad << 0.0, 0.0, 1.0, +0.0;
+  plane_bd << 1.0, 0.0, 0.0, -0.5;
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 360));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 360));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_a, plane_b, line, 0.1));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_ad, plane_bd, lined, 0.1));
 
-  plane_b << x, y, z, w;
-  plane_b *= k;
-  plane_bf << xf, yf, zf, wf;
-  plane_bf *= k;
+  tolerance = 1e-5;
+  EXPECT_NEAR (line[0], 0.5, tolerance);
+  EXPECT_NEAR (line[1], 0.0, tolerance);
+  EXPECT_NEAR (line[2], 0.0, tolerance);
+  EXPECT_NEAR (line[3], 0.0, tolerance);
+  EXPECT_NEAR (line[4], 1.0, tolerance);
+  EXPECT_NEAR (line[5], 0.0, tolerance);
+  EXPECT_NEAR (lined[0], 0.5, tolerance);
+  EXPECT_NEAR (lined[1], 0.0, tolerance);
+  EXPECT_NEAR (lined[2], 0.0, tolerance);
+  EXPECT_NEAR (lined[3], 0.0, tolerance);
+  EXPECT_NEAR (lined[4], 1.0, tolerance);
+  EXPECT_NEAR (lined[5], 0.0, tolerance);
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 45));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 45));
+  // Random planes, plane normal not normalized!
+  plane_a << 24.234, -22.234, 3.0823, -24.5;
+  plane_b << 689.0, 1239.01, 1.0003, 0.5;
+  plane_ad << 24.234, -22.234, 3.0823, -24.5;
+  plane_bd << 689.0, 1239.01, 1.0003, 0.5;
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 90));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 90));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_a, plane_b, line, 0.1));
+  EXPECT_TRUE (pcl::planeWithPlaneIntersection (plane_ad, plane_bd, lined, 0.1));
 
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 180));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 180));
-
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 360));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 360));
-
-  // Overlapping planes
-  plane_b.w() = w;
-  plane_bf.w() = wf;
-
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 45));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 45));
-
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 90));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 90));
-
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 180));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 180));
-
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_a, plane_b, line, 360));
-  EXPECT_FALSE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 360));
-
-  // Orthogonal planes
-  plane_a << 2.0, 1.0, -5.0, 6.0;
-  plane_b << 2.0, 1.0, 1.0, 7.0;
-  plane_af << 2.0, 1.0, -5.0, 6.0;
-  plane_bf << 2.0, 1.0, 1.0, 7.0;
-
-  EXPECT_TRUE (planeWithPlaneIntersection (plane_a, plane_b, line, 0));
-  EXPECT_TRUE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 0));
-
-  // General planes
-  plane_a << 1.555, 0.894, 1.234, 3.567;
-  plane_b << 0.743, 1.890, 6.789, 5.432;
-  plane_af << 1.555, 0.894, 1.234, 3.567;
-  plane_bf << 0.743, 1.890, 6.789, 5.432;
-
-  EXPECT_TRUE (planeWithPlaneIntersection (plane_a, plane_b, line, 0));
-  EXPECT_TRUE (planeWithPlaneIntersection (plane_af, plane_bf, linef, 0));
+  tolerance = 1e-2;
+  EXPECT_NEAR (line[0], 0.662983, tolerance);
+  EXPECT_NEAR (line[1], -0.369141, tolerance);
+  EXPECT_NEAR (line[2], 0.0732528, tolerance);
+  EXPECT_NEAR (line[3], -3841.24, tolerance);
+  EXPECT_NEAR (line[4], 2099.46, tolerance);
+  EXPECT_NEAR (line[5], 45345.4, tolerance);
+  EXPECT_NEAR (lined[0], 0.662983, tolerance);
+  EXPECT_NEAR (lined[1], -0.369141, tolerance);
+  EXPECT_NEAR (lined[2], 0.0732528, tolerance);
+  EXPECT_NEAR (lined[3], -3841.24, tolerance);
+  EXPECT_NEAR (lined[4], 2099.46, tolerance);
+  EXPECT_NEAR (lined[5], 45345.4, tolerance);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
