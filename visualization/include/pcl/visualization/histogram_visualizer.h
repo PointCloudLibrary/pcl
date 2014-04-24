@@ -95,7 +95,6 @@ namespace pcl
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
         /** \brief Add a histogram feature to screen as a separate window from a cloud containing a single histogram.
-          * \note Use \ref pcl::io::savePNGFile() to save histogram to file
           * \param[in] cloud the PointCloud dataset containing the histogram
           * \param[in] field_name the field name containing the histogram
           * \param[in] id the point cloud object id (default: cloud)
@@ -108,7 +107,6 @@ namespace pcl
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
 
         /** \brief Add a histogram feature to screen as a separate window.
-          * \note Use \ref pcl::io::savePNGFile() to save histogram to file
           * \param[in] cloud the PointCloud dataset containing the histogram
           * \param[in] field_name the field name containing the histogram
           * \param[in] index the point index to extract the histogram from
