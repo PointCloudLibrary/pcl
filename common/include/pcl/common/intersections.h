@@ -82,8 +82,9 @@ namespace pcl
     * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
     * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
     * \param[out] plane_b coefficients of line where line.tail<3>() = direction vector and
-    * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * line.head<3>() the point on the line closest to (0, 0, 0)
     * \return true if succeeded/planes aren't parallel
+    * \note Plane normal doesn't have to be normalized
     */
   PCL_EXPORTS template <typename Scalar> bool
   planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
