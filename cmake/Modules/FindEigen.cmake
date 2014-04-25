@@ -14,6 +14,10 @@ set(EIGEN_DEFINITIONS ${PC_EIGEN_CFLAGS_OTHER})
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /usr /usr/local)
 endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+if(APPLE)
+  list(APPEND CMAKE_INCLUDE_PATH /opt/local)
+  set(CMAKE_FIND_FRAMEWORK NEVER)
+endif()
 
 find_path(EIGEN_INCLUDE_DIR Eigen/Core
     HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
@@ -23,6 +27,7 @@ find_path(EIGEN_INCLUDE_DIR Eigen/Core
 
 if(EIGEN_INCLUDE_DIR)
   file(READ "${EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h" _eigen_version_header)
+
   string(REGEX MATCH "define[ \t]+EIGEN_WORLD_VERSION[ \t]+([0-9]+)" _eigen_world_version_match "${_eigen_version_header}")
   set(EIGEN_WORLD_VERSION "${CMAKE_MATCH_1}")
   string(REGEX MATCH "define[ \t]+EIGEN_MAJOR_VERSION[ \t]+([0-9]+)" _eigen_major_version_match "${_eigen_version_header}")
@@ -33,6 +38,7 @@ if(EIGEN_INCLUDE_DIR)
 endif(EIGEN_INCLUDE_DIR)
 
 set(EIGEN_INCLUDE_DIRS ${EIGEN_INCLUDE_DIR})
+set(CMAKE_FIND_FRAMEWORK)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Eigen DEFAULT_MSG EIGEN_INCLUDE_DIR)
@@ -42,4 +48,3 @@ mark_as_advanced(EIGEN_INCLUDE_DIR)
 if(EIGEN_FOUND)
   message(STATUS "Eigen found (include: ${EIGEN_INCLUDE_DIRS}, version: ${EIGEN_VERSION})")
 endif(EIGEN_FOUND)
-

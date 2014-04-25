@@ -18,7 +18,7 @@ if(build)
     if(NOT BUILD_OPENNI)
       # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
       # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI
-      set(OPENNI_FOUND FALSE) 
+      set(OPENNI_FOUND FALSE)
     endif()
     if(OPENNI_FOUND)
         set(OPENNI_GRABBER_INCLUDES
@@ -66,11 +66,11 @@ if(build)
 #        set(FZAPI_INCLUDES
 #            include/pcl/io/openni_camera/openni.h
 #            )
-        set(FZAPI_GRABBER_SOURCES 
+        set(FZAPI_GRABBER_SOURCES
             src/fotonic_grabber.cpp
             )
     endif(FZAPI_FOUND)
-	
+
 	if(PXCAPI_FOUND)
 		set(PXC_GRABBER_INCLUDES
 			include/pcl/io/pxc_grabber.h
@@ -79,7 +79,7 @@ if(build)
 			src/pxc_grabber.cpp
 			)
 	endif(PXCAPI_FOUND)
-	
+
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -92,7 +92,7 @@ if(build)
     if (VTK_FOUND AND NOT ANDROID)
         set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
         include("${VTK_USE_FILE}")
-        set(VTK_IO_INCLUDES 
+        set(VTK_IO_INCLUDES
             "include/pcl/${SUBSYS_NAME}/vtk_lib_io.h"
             "include/pcl/${SUBSYS_NAME}/png_io.h"
            )
@@ -100,7 +100,7 @@ if(build)
             "include/pcl/${SUBSYS_NAME}/impl/vtk_lib_io.hpp"
             "include/pcl/${SUBSYS_NAME}/impl/png_io.hpp"
            )
-        set(VTK_IO_SOURCE 
+        set(VTK_IO_SOURCE
             src/vtk_lib_io.cpp
             src/png_io.cpp
            )
@@ -110,7 +110,7 @@ if(build)
     endif ()
 
     set(PLY_SOURCES src/ply/ply_parser.cpp)
-    set(PLY_INCLUDES 
+    set(PLY_INCLUDES
         "include/pcl/${SUBSYS_NAME}/ply/byte_order.h"
         "include/pcl/${SUBSYS_NAME}/ply/io_operators.h"
         "include/pcl/${SUBSYS_NAME}/ply/ply.h"
@@ -119,7 +119,7 @@ if(build)
     PCL_ADD_LIBRARY(pcl_io_ply "${SUBSYS_NAME}" ${PLY_SOURCES} ${PLY_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/ply" ${PLY_INCLUDES})
 
-    set(srcs 
+    set(srcs
         src/debayer.cpp
         src/pcd_grabber.cpp
         src/pcd_io.cpp
@@ -153,7 +153,7 @@ if(build)
 	  add_definitions(${PCAP_DEFINES})
 	endif(PCAP_FOUND)
 
-    set(incs 
+    set(incs
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/debayer.h"
@@ -201,7 +201,7 @@ if(build)
       endif(OPENNI_FOUND)
     endif(PNG_FOUND)
 
-    set(impl_incs 
+    set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp"
@@ -222,7 +222,7 @@ if(build)
     add_definitions(${VTK_DEFINES})
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} )
+    target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_IO_TARGET_LINK_LIBRARIES} ${VTK_COMMON_TARGET_LINK_LIBRARIES})
     if(PNG_FOUND)
       target_link_libraries("${LIB_NAME}" "${PNG_LIBRARY}")
     endif(PNG_FOUND)
@@ -234,19 +234,19 @@ if(build)
     if(OPENNI_FOUND)
       target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
     endif(OPENNI_FOUND)
-	
+
     if(FZAPI_FOUND)
       target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
 	  if(WIN32)
 		target_link_libraries("${LIB_NAME}" Version.lib)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
-	
+
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})
 	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
 	endif(PXCAPI_FOUND)
-    
+
     if (PCAP_FOUND)
       target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
     endif(PCAP_FOUND)
@@ -260,7 +260,7 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" compression ${compression_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni_camera" ${OPENNI_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-                
+
     add_subdirectory(tools)
 
 endif(build)

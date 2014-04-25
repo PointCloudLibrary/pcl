@@ -3,7 +3,7 @@
 # OPENGL_IS_A_FRAMEWORK
 # GLUT_IS_A_FRAMEWORK
 
-find_package(OpenGL QUIET)
+find_package(OpenGL QUIET REQUIRED)
 
 if(APPLE AND OPENGL_FOUND)
   if ("${OPENGL_INCLUDE_DIR}" MATCHES "\\.framework")
