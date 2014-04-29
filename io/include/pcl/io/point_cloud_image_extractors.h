@@ -199,7 +199,7 @@ namespace pcl
         /** \brief Obtain the color image from the given cloud.
           * The cloud should contain "normal" field.
           * \param[in] cloud organized point cloud to extract image from
-          * \param[out] image the output image
+          * \param[out] img the output image
           * \return true if the operation was successful, false otherwise
           */
         virtual bool
@@ -230,7 +230,7 @@ namespace pcl
         /** \brief Obtain the color image from the given cloud.
           * The cloud should contain either "rgb" or "rgba" field.
           * \param[in] cloud organized point cloud to extract image from
-          * \param[out] image the output image
+          * \param[out] img the output image
           * \return true if the operation was successful, false otherwise
           */
         virtual bool
@@ -279,7 +279,7 @@ namespace pcl
           * The cloud should contain "label" field.
           * \note Labels using more than 16 bits will cause problems in COLORS_MONO mode.
           * \param[in] cloud organized point cloud to extract image from
-          * \param[out] image the output image
+          * \param[out] img the output image
           * \return true if the operation was successful, false otherwise
           */
         virtual bool
@@ -314,7 +314,7 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloudImageExtractorFromZField<PointT> > ConstPtr;
 
         /** \brief Constructor.
-          * \param[i] scaling_factor a scaling factor to apply to each depth value (default 10000)
+          * \param[in] scaling_factor a scaling factor to apply to each depth value (default 10000)
           */
         PointCloudImageExtractorFromZField (const float scaling_factor = 10000)
           : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_factor)
@@ -322,7 +322,7 @@ namespace pcl
         }
 
         /** \brief Constructor.
-          * \param[i] scaling_method a scaling method to use
+          * \param[in] scaling_method a scaling method to use
           */
         PointCloudImageExtractorFromZField (const ScalingMethod scaling_method)
           : PointCloudImageExtractorWithScaling<PointT> ("z", scaling_method)
@@ -356,7 +356,7 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloudImageExtractorFromCurvatureField<PointT> > ConstPtr;
 
         /** \brief Constructor.
-          * \param[i] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
+          * \param[in] scaling_method a scaling method to use (default SCALING_FULL_RANGE)
           */
         PointCloudImageExtractorFromCurvatureField (const ScalingMethod scaling_method = PointCloudImageExtractorWithScaling<PointT>::SCALING_FULL_RANGE)
           : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_method)
@@ -364,7 +364,7 @@ namespace pcl
         }
 
         /** \brief Constructor.
-          * \param[i] scaling_factor a scaling factor to apply to each curvature value
+          * \param[in] scaling_factor a scaling factor to apply to each curvature value
           */
         PointCloudImageExtractorFromCurvatureField (const float scaling_factor)
           : PointCloudImageExtractorWithScaling<PointT> ("curvature", scaling_factor)
@@ -398,7 +398,7 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloudImageExtractorFromIntensityField<PointT> > ConstPtr;
 
         /** \brief Constructor.
-          * \param[i] scaling_method a scaling method to use (default SCALING_NO)
+          * \param[in] scaling_method a scaling method to use (default SCALING_NO)
           */
         PointCloudImageExtractorFromIntensityField (const ScalingMethod scaling_method = PointCloudImageExtractorWithScaling<PointT>::SCALING_NO)
           : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_method)
@@ -406,7 +406,7 @@ namespace pcl
         }
 
         /** \brief Constructor.
-          * \param[i] scaling_factor a scaling factor to apply to each intensity value
+          * \param[in] scaling_factor a scaling factor to apply to each intensity value
           */
         PointCloudImageExtractorFromIntensityField (const float scaling_factor)
           : PointCloudImageExtractorWithScaling<PointT> ("intensity", scaling_factor)

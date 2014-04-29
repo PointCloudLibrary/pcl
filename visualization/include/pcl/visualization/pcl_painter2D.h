@@ -207,7 +207,7 @@ namespace pcl
       vtkTypeRevisionMacro (PCLPainter2D, vtkContextItem);
 
       /** \brief Paint event for the chart, called whenever the chart needs to be drawn
-       *  \param[in] name Name of the window
+       *  \param[in] painter Name of the window
        */
       virtual bool 
       Paint (vtkContext2D *painter);
@@ -324,8 +324,7 @@ namespace pcl
       scalePen(double x, double y);
       
       /** \brief Create a translation matrix and concatenate it with the current transformation.
-       * \param[in] x translation along X axis
-       * \param[in] y translation along Y axis
+       * \param[in] matrix the transformation matrix
        */
       void 
       setTransform(vtkMatrix3x3 *matrix);

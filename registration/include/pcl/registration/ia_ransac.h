@@ -246,6 +246,7 @@ namespace pcl
 
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess The computed transforamtion
         */
       virtual void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);

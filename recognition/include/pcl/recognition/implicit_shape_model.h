@@ -104,6 +104,7 @@ namespace pcl
           * \param[out] out_peaks it will contain the strongest peaks
           * \param[in] in_class_id class of interest for which peaks are evaluated
           * \param[in] in_non_maxima_radius non maxima supression radius. The shapes radius is recommended for this value.
+          * \param in_sigma
           */
         void
         findStrongestPeaks (std::vector<ISMPeak, Eigen::aligned_allocator<ISMPeak> > &out_peaks, int in_class_id, double in_non_maxima_radius, double in_sigma);
@@ -425,7 +426,7 @@ namespace pcl
 
         /** \brief This method performs training and forms a visual vocabulary. It returns a trained model that
           * can be saved to file for later usage.
-          * \param[out] model trained model
+          * \param[out] trained_model trained model
           */
         bool
         trainISM (ISMModelPtr& trained_model);
@@ -454,7 +455,7 @@ namespace pcl
         /** \brief This method performs descriptor clustering.
           * \param[in] histograms descriptors to cluster
           * \param[out] labels it contains labels for each descriptor
-          * \param[out] cluster_centers stores the centers of clusters
+          * \param[out] clusters_centers stores the centers of clusters
           */
         bool
         clusterDescriptors (std::vector< pcl::Histogram<FeatureSize> >& histograms, Eigen::MatrixXi& labels, Eigen::MatrixXf& clusters_centers);
@@ -467,7 +468,6 @@ namespace pcl
 
         /** \brief This function forms a visual vocabulary and evaluates weights
           * described in [Knopp et al., 2010, (5)].
-          * \param[in] classes classes that we want to learn
           * \param[in] locations array containing description of each keypoint: its position, which cloud belongs
           * and expected direction to center
           * \param[in] labels labels that were obtained during k-means clustering
@@ -520,7 +520,6 @@ namespace pcl
 
         /** \brief This method estimates features for the given point cloud.
           * \param[in] sampled_point_cloud sampled point cloud for which the features must be computed
-          * \param[in] point_cloud original point cloud
           * \param[in] normal_cloud normals for the original point cloud
           * \param[out] feature_cloud it will store the computed histograms (features) for the given cloud
           */

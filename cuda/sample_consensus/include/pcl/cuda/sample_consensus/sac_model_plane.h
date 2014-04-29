@@ -104,7 +104,7 @@ namespace pcl
           */
         SampleConsensusModelPlane (const PointCloudConstPtr &cloud);
 
-        /** \brief Constructor for base SampleConsensusModelPlane.
+        /*  \brief Constructor for base SampleConsensusModelPlane.
           * \param cloud the input point cloud dataset
           * \param indices a vector of point indices to be used from \a cloud
           */
@@ -137,10 +137,10 @@ namespace pcl
           return generateModelHypotheses (h, max_iterations);
         };
 
-  //      /** \brief Compute all distances from the cloud data to a given plane model.
-  //        * \param model_coefficients the coefficients of a plane model that we need to compute distances to
-  //        * \param distances the resultant estimated distances
-  //        */
+          /*  \brief Compute all distances from the cloud data to a given plane model.
+            * \param model_coefficients the coefficients of a plane model that we need to compute distances to
+            * \param distances the resultant estimated distances
+            */
   //      void 
   //      getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<float> &distances);
 
@@ -150,6 +150,7 @@ namespace pcl
           * \param threshold a maximum admissible distance threshold for determining the 
           * inliers from the outliers
           * \param inliers the resultant model inliers
+          * \param inliers_stencil
           */
         int 
         selectWithinDistance (const Coefficients &model_coefficients, 
@@ -170,40 +171,40 @@ namespace pcl
         int
         countWithinDistance (const Hypotheses &h, int idx, float threshold);
 
-  //      /** \brief Recompute the plane coefficients using the given inlier set and return them to the user.
-  //        * @note: these are the coefficients of the plane model after refinement (eg. after SVD)
-  //        * \param inliers the data inliers found as supporting the model
-  //        * \param model_coefficients the initial guess for the model coefficients
-  //        * \param optimized_coefficients the resultant recomputed coefficients after non-linear optimization
-  //        */
+          /*  \brief Recompute the plane coefficients using the given inlier set and return them to the user.
+            * @note: these are the coefficients of the plane model after refinement (eg. after SVD)
+            * \param inliers the data inliers found as supporting the model
+            * \param model_coefficients the initial guess for the model coefficients
+            * \param optimized_coefficients the resultant recomputed coefficients after non-linear optimization
+            */
   //      void 
   //      optimizeModelCoefficients (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, Eigen::VectorXf &optimized_coefficients);
-  //
-  //      /** \brief Create a new point cloud with inliers projected onto the plane model.
-  //        * \param inliers the data inliers that we want to project on the plane model
-  //        * \param model_coefficients the *normalized* coefficients of a plane model
-  //        * \param projected_points the resultant projected points
-  //        * \param copy_data_fields set to true if we need to copy the other data fields
-  //        */
+
+          /*  \brief Create a new point cloud with inliers projected onto the plane model.
+            * \param inliers the data inliers that we want to project on the plane model
+            * \param model_coefficients the *normalized* coefficients of a plane model
+            * \param projected_points the resultant projected points
+            * \param copy_data_fields set to true if we need to copy the other data fields
+            */
   //      void 
   //      projectPoints (const std::vector<int> &inliers, const Eigen::VectorXf &model_coefficients, PointCloud &projected_points, bool copy_data_fields = true);
-  //
-  //      /** \brief Verify whether a subset of indices verifies the given plane model coefficients.
-  //        * \param indices the data indices that need to be tested against the plane model
-  //        * \param model_coefficients the plane model coefficients
-  //        * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
-  //        */
+
+          /*  \brief Verify whether a subset of indices verifies the given plane model coefficients.
+            * \param indices the data indices that need to be tested against the plane model
+            * \param model_coefficients the plane model coefficients
+            * \param threshold a maximum admissible distance threshold for determining the inliers from the outliers
+            */
   //      bool 
   //      doSamplesVerifyModel (const std::set<int> &indices, const Eigen::VectorXf &model_coefficients, float threshold);
-  //
-  //      /** \brief Return an unique id for this model (SACMODEL_PLANE). */
-  //      //inline pcl::SacModel getModelType () const { return (SACMODEL_PLANE); }
-  //
+
+          /*  \brief Return an unique id for this model (SACMODEL_PLANE). */
+  //      inline pcl::SacModel getModelType () const { return (SACMODEL_PLANE); }
+
   //    protected:
-  //      /** \brief Check whether a model is valid given the user constraints.
-  //        * \param model_coefficients the set of model coefficients
-  //        */
-  ///*      inline bool 
+         /*  \brief Check whether a model is valid given the user constraints.
+           * \param model_coefficients the set of model coefficients
+           */
+  //      inline bool 
   //      isModelValid (const Eigen::VectorXf &model_coefficients)
   //      {
   //        // Needs a valid model coefficients
@@ -213,10 +214,10 @@ namespace pcl
   //          return (false);
   //        }
   //        return (true);
-  //      }*/
-  //
+  //      }
+
   //    private:
-  //      /** \brief Define the maximum number of iterations for collinearity checks */
+        /* \brief Define the maximum number of iterations for collinearity checks */
         const static int MAX_ITERATIONS_COLLINEAR = 1000;
     };
 

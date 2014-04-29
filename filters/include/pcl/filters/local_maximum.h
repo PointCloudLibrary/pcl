@@ -81,7 +81,7 @@ namespace pcl
       setRadius (float radius) { radius_ = radius; }
 
       /** \brief Get the radius to use to determine if a point is the local max.
-        * \param[in] radius The radius to use to determine if a point is the local max.
+        * \return The radius to use to determine if a point is the local max.
         */
       inline float
       getRadius () const { return (radius_); }

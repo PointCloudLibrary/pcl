@@ -252,9 +252,9 @@ namespace pcl
         serializeTreeCallback (LeafT &leaf_arg, const OctreeKey& key_arg);
 
         /** \brief Decode leaf nodes information during deserialization
-          * \param leaf_arg: reference to new leaf node
-         * \param key_arg: octree key of new leaf node
+         * \param key_arg octree key of new leaf node
          */
+        // param leaf_arg reference to new leaf node
         virtual void
         deserializeTreeCallback (LeafT&, const OctreeKey& key_arg);
 

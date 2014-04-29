@@ -70,6 +70,7 @@ namespace pcl
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses
+        * \param[in] window_size
         * \param[in] first_threshold the threshold used in the simple cornerness test.
         * \param[in] second_threshold the threshold used to reject weak corners.
         */
@@ -106,7 +107,7 @@ namespace pcl
 
       /** \brief set the first_threshold to reject corners in the simple cornerness
         * computation stage.
-        * \param[in] first_threshold
+        * \param[in] threshold
         */
       inline void
       setFirstThreshold (float threshold) { first_threshold_= threshold; }
@@ -117,7 +118,7 @@ namespace pcl
 
       /** \brief set the second threshold to reject corners in the final cornerness
         * computation stage.
-        * \param[in] second_threshold
+        * \param[in] threshold
         */
       inline void
       setSecondThreshold (float threshold) { second_threshold_= threshold; }

@@ -99,7 +99,7 @@ namespace pcl
 
     public:
       /** \brief Constructor
-        * \param[in] device_id ID of the device, which might be a serial number, bus@address or the index of the device.
+        * \param[in] device_id ID of the device, which might be a serial number, bus\@address or the index of the device.
         * \param[in] depth_mode the mode of the depth stream
         * \param[in] image_mode the mode of the image stream
         */
@@ -129,7 +129,7 @@ namespace pcl
       virtual float 
       getFramesPerSecond () const;
 
-      /** \brief Get a boost shared pointer to the \ref OpenNIDevice object. */
+      /** \brief Get a boost shared pointer to the \ref pcl::openni_wrapper::OpenNIDevice object. */
       inline boost::shared_ptr<openni_wrapper::OpenNIDevice>
       getDevice () const;
 
@@ -194,7 +194,7 @@ namespace pcl
 
       /** \brief Set the RGB image focal length
         * \param[in] rgb_focal_length_x the RGB focal length (fx)
-        * \param[in] rgb_focal_ulength_y the RGB focal length (fy)
+        * \param[in] rgb_focal_length_y the RGB focal length (fy)
         * Setting the parameters to non-finite values (e.g., NaN, Inf) invalidates them
         * and the grabber will use the default values from the camera instead.
         * These parameters will be used for XYZRGBA clouds.

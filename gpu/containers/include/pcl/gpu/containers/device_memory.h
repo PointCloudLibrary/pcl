@@ -62,13 +62,13 @@ namespace pcl
             ~DeviceMemory();            
 
             /** \brief Allocates internal buffer in GPU memory
-              * \param sizeBytes_arg: amount of memory to allocate
+              * \param sizeBytes_arg amount of memory to allocate
               * */
             DeviceMemory(size_t sizeBytes_arg);
 
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
-              * \param ptr_arg: pointer to buffer
-              * \param sizeBytes_arg: buffer size
+              * \param ptr_arg pointer to buffer
+              * \param sizeBytes_arg buffer size
               * */
             DeviceMemory(void *ptr_arg, size_t sizeBytes_arg);
 
@@ -79,7 +79,7 @@ namespace pcl
             DeviceMemory& operator=(const DeviceMemory& other_arg);
 
              /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.               
-               * \param sizeBytes_arg: buffer size
+               * \param sizeBytes_arg buffer size
                * */
             void create(size_t sizeBytes_arg);
 
@@ -87,23 +87,23 @@ namespace pcl
             void release();
 
             /** \brief Performs data copying. If destination size differs it will be reallocated.
-              * \param other_arg: destination container
+              * \param other destination container
               * */
             void copyTo(DeviceMemory& other) const;
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param host_ptr_arg: pointer to buffer to upload               
-              * \param sizeBytes_arg: buffer size
+              * \param host_ptr_arg pointer to buffer to upload               
+              * \param sizeBytes_arg buffer size
               * */
             void upload(const void *host_ptr_arg, size_t sizeBytes_arg);
             
             /** \brief Downloads data from internal buffer to CPU memory
-              * \param host_ptr_arg: pointer to buffer to download               
+              * \param host_ptr_arg pointer to buffer to download               
               * */
             void download(void *host_ptr_arg) const;
 
             /** \brief Performs swap of data pointed with another device memory. 
-              * \param other: device memory to swap with   
+              * \param other_arg device memory to swap with   
               * */
             void swap(DeviceMemory& other_arg);
             
@@ -150,17 +150,17 @@ namespace pcl
             ~DeviceMemory2D();            
 
             /** \brief Allocates internal buffer in GPU memory
-              * \param rows_arg: number of rows to allocate
-              * \param colsBytes_arg: width of the buffer in bytes
+              * \param rows_arg number of rows to allocate
+              * \param colsBytes_arg width of the buffer in bytes
               * */
             DeviceMemory2D(int rows_arg, int colsBytes_arg);
 
 
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
-              * \param rows_arg: number of rows
-              * \param colsBytes_arg: width of the buffer in bytes
-              * \param data_arg: pointer to buffer
-              * \param stepBytes_arg: stride between two consecutive rows in bytes
+              * \param rows_arg number of rows
+              * \param colsBytes_arg width of the buffer in bytes
+              * \param data_arg pointer to buffer
+              * \param step_arg stride between two consecutive rows in bytes
               * */
             DeviceMemory2D(int rows_arg, int colsBytes_arg, void *data_arg, size_t step_arg);
 
@@ -171,8 +171,8 @@ namespace pcl
             DeviceMemory2D& operator=(const DeviceMemory2D& other_arg);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
-               * \param ptr_arg: number of rows to allocate
-               * \param sizeBytes_arg: width of the buffer in bytes
+               * \param rows_arg number of rows to allocate
+               * \param colsBytes_arg width of the buffer in bytes
                * */
             void create(int rows_arg, int colsBytes_arg);
 
@@ -180,36 +180,36 @@ namespace pcl
             void release();
 
             /** \brief Performs data copying. If destination size differs it will be reallocated.
-              * \param other_arg: destination container
+              * \param other destination container
               * */
             void copyTo(DeviceMemory2D& other) const;
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param host_ptr_arg: pointer to host buffer to upload               
-              * \param host_step_arg: stride between two consecutive rows in bytes for host buffer
-              * \param rows_arg: number of rows to upload
-              * \param sizeBytes_arg: width of host buffer in bytes
+              * \param host_ptr_arg pointer to host buffer to upload               
+              * \param host_step_arg stride between two consecutive rows in bytes for host buffer
+              * \param rows_arg number of rows to upload
+              * \param colsBytes_arg width of host buffer in bytes
               * */
             void upload(const void *host_ptr_arg, size_t host_step_arg, int rows_arg, int colsBytes_arg);
 
             /** \brief Downloads data from internal buffer to CPU memory. User is resposible for correct host buffer size.
-              * \param host_ptr_arg: pointer to host buffer to download               
-              * \param host_step_arg: stride between two consecutive rows in bytes for host buffer             
+              * \param host_ptr_arg pointer to host buffer to download               
+              * \param host_step_arg stride between two consecutive rows in bytes for host buffer             
               * */
             void download(void *host_ptr_arg, size_t host_step_arg) const;
 
             /** \brief Performs swap of data pointed with another device memory. 
-              * \param other: device memory to swap with   
+              * \param other_arg device memory to swap with   
               * */
             void swap(DeviceMemory2D& other_arg);
             
             /** \brief Returns pointer to given row in internal buffer. 
-              * \param y_arg: row index   
+              * \param y_arg row index   
               * */
             template<class T> T* ptr(int y_arg = 0);
 
             /** \brief Returns constant pointer to given row in internal buffer. 
-              * \param y_arg: row index   
+              * \param y_arg row index   
               * */
             template<class T> const T* ptr(int y_arg = 0) const;
 

@@ -128,12 +128,12 @@ namespace pcl
         virtual bool 
         computeModel (int debug_verbosity_level = 0) = 0;
 
-        /** \brief Get a set of randomly selected indices.
+        /* \brief Get a set of randomly selected indices.
           * \param indices the input indices vector
           * \param nr_samples the desired number of point indices to randomly select
           * \param indices_subset the resultant output set of randomly selected indices
           */
-  /*      inline void
+/*      inline void
         getRandomSamples (const IndicesPtr &indices, size_t nr_samples, 
                           std::set<int> &indices_subset)
         {
@@ -149,15 +149,14 @@ namespace pcl
         getModel (Indices &model) { model = model_; }
 
         /** \brief Return the best set of inliers found so far for this model. 
-          * \param inliers the resultant set of inliers
           */
-  //      inline void 
-  //      getInliers (std::vector<int> &inliers) { inliers = inliers_; }
+  //    inline void 
+  //    getInliers (std::vector<int> &inliers) { inliers = inliers_; }
         inline IndicesPtr 
         getInliers () { return inliers_; }
 
-  //      inline void 
-  //      getInliersStencil (Indices &inliers) { inliers = inliers_stencil_; }
+  //    inline void 
+  //    getInliersStencil (Indices &inliers) { inliers = inliers_stencil_; }
         inline IndicesPtr
         getInliersStencil () { return inliers_stencil_; }
 

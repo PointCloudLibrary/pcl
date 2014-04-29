@@ -118,6 +118,7 @@ namespace pcl
       
       /** \brief Send a RX data packet request
         * \param[in] req_code the request to send (the request field for the setup packet)
+        * \param buffer
         * \param[in] length the length field for the setup packet. The data buffer should be at least this size.
         */
       bool
@@ -127,6 +128,7 @@ namespace pcl
 
       /** \brief Send a TX data packet request
         * \param[in] req_code the request to send (the request field for the setup packet)
+        * \param buffer
         * \param[in] length the length field for the setup packet. The data buffer should be at least this size.
         */
       bool
@@ -148,7 +150,7 @@ namespace pcl
       readImage ();
       
       /** \brief Obtains XYZI Point Cloud from the image of the camera
-        * \param[out] the point cloud from the image data
+        * \return the point cloud from the image data
         */
       pcl::PointCloud<pcl::PointXYZI>::Ptr
       getXYZIPointCloud ();

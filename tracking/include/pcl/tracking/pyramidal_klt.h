@@ -109,7 +109,7 @@ namespace pcl
         getNumberOfPyramidLevels () const { return (nb_levels_); }
 
         /** Set accuracy
-          * \param[in] desired accuracy.
+          * \param[in] accuracy desired accuracy.
           */
         inline void
         setAccuracy (float accuracy) { accuracy_ = accuracy; }
@@ -119,7 +119,7 @@ namespace pcl
         getAccuracy () const { return (accuracy_); }
 
         /** Set epsilon
-          * \param[in] desired epsilon.
+          * \param[in] epsilon desired epsilon.
           */
         inline void
         setEpsilon (float epsilon) { epsilon_ = epsilon; }
@@ -268,7 +268,7 @@ namespace pcl
         convolveRows (const FloatImageConstPtr& input, FloatImage& output) const;
 
         /** \brief extract the patch from the previous image, previous image gradients surrounding
-          * pixel \alocation while interpolating image and gradients data and compute covariation
+          * pixel alocation while interpolating image and gradients data and compute covariation
           * matrix of derivatives.
           * \param[in] img original image
           * \param[in] grad_x original image gradient along X direction
@@ -301,7 +301,7 @@ namespace pcl
                         Eigen::Array2f &b) const;
 
         /** \brief Compute the pyramidal representation of an image.
-          * \param[in]  the input cloud
+          * \param[in] input the input cloud
           * \param[out] pyramid computed pyramid levels along with their respective gradients
           * \param[in]  border_type
           */

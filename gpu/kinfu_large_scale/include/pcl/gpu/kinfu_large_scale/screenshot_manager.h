@@ -78,10 +78,9 @@ namespace pcl
           ~ScreenshotManager(){}
           
           /** \brief Sets Depth camera intrinsics
-            * \param[in] fx focal length x 
-            * \param[in] fy focal length y
-            * \param[in] cx principal point x
-            * \param[in] cy principal point y
+            * \param[in] focal focal length x 
+            * \param height
+            * \param width
             */
           void
           setCameraIntrinsics (float focal = 575.816f, float height = 480.0f, float width = 640.0f);

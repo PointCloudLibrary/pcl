@@ -281,7 +281,7 @@ namespace pcl
         * neighbors. K is set via setCorrespondenceRandomness() methode.
         * \param cloud pointer to point cloud
         * \param tree KD tree performer for nearest neighbors search
-        * \return cloud_covariance covariances matrices for each point in the cloud
+        * \param[out] cloud_covariances covariances matrices for each point in the cloud
         */
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 

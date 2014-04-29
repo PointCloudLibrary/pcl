@@ -92,8 +92,8 @@ namespace pcl
       /** \brief Add new point to container- this just counts points
        * \note To actually store data in the leaves, need to specialize this
        * for your point and data type as in supervoxel_clustering.hpp
-       * \param[in] new_point the new point to add  
        */
+       // param[in] new_point the new point to add  
       void 
       addPoint (const PointInT& /*new_point*/)
       {

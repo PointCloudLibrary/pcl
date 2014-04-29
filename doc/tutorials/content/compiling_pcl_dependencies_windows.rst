@@ -32,7 +32,7 @@ compile a series of 3rd party library dependencies:
 
     used as the matrix backend for SSE optimized math. **mandatory**
 
-    - **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN)
+    - **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/research/flann/)
 
     used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
@@ -52,7 +52,7 @@ compile a series of 3rd party library dependencies:
 
     used to grab point clouds from OpenNI compliant devices. **optional**
 
-    - **Qt** version >= 4.6 (http://qt.nokia.com/)
+    - **Qt** version >= 4.6 (http://qt.digia.com/)
 
     used for developing applications with a graphical user interface (GUI) **optional**
 
@@ -222,7 +222,7 @@ like::
   
       If you don't have a Python interpreter installed CMake would probably not allow you
       to generate the project files. To solve this problem you can install the Python interpreter
-      (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
+      (https://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
       from C:/PCL_dependencies/flann-1.7.1-src/CMakeLists.txt .
 
 - **QHull** : 

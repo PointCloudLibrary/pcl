@@ -197,6 +197,7 @@ namespace pcl
 
       /** \brief Set the maximum distance allowed when drawing random samples
         * \param[in] radius the maximum distance (L2 norm)
+        * \param search
         */
       inline void
       setSamplesMaxDist (const double &radius, SearchPtr search)
@@ -369,7 +370,8 @@ namespace pcl
       getNormalDistanceWeight () const { return (distance_weight_); }
 
       /** \brief Set the minimum opning angle for a cone model.
-        * \param oa the opening angle which we need minumum to validate a cone model.
+        * \param min_angle the opening angle which we need minumum to validate a cone model.
+        * \param max_angle the opening angle which we need maximum to validate a cone model.
         */
       inline void
       setMinMaxOpeningAngle (const double &min_angle, const double &max_angle)

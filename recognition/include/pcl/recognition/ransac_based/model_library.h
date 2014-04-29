@@ -197,7 +197,7 @@ namespace pcl
           max_coplanarity_angle_ = max_coplanarity_angle_degrees*AUX_DEG_TO_RADIANS;
         }
 
-        /** \biref Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior
+        /** \brief Call this method in order NOT to add co-planar point pairs to the hash table. The default behavior
           * is ignoring co-planar points on. */
         inline void
         ignoreCoplanarPointPairsOn ()
@@ -205,7 +205,7 @@ namespace pcl
           ignore_coplanar_opps_ = true;
         }
 
-        /** \biref Call this method in order to add all point pairs (co-planar as well) to the hash table. The default
+        /** \brief Call this method in order to add all point pairs (co-planar as well) to the hash table. The default
           * behavior is ignoring co-planar points on. */
         inline void
         ignoreCoplanarPointPairsOff ()
@@ -218,7 +218,7 @@ namespace pcl
           * \param[in] points represents the model to be added.
           * \param[in] normals are the normals at the model points.
           * \param[in] object_name is the unique name of the object to be added.
-          * \param[in] num_points_for_registration is the number of points used for fast ICP registration prior to hypothesis testing
+          * \param[in] frac_of_points_for_registration is the number of points used for fast ICP registration prior to hypothesis testing
           * \param[in] user_data is a pointer to some data (can be NULL)
           *
           * Returns true if model successfully added and false otherwise (e.g., if object_name is not unique). */

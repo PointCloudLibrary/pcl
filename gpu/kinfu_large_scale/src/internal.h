@@ -225,7 +225,7 @@ namespace pcl
         * \param[in] tranc_dist tsdf truncation distance
         * \param[in] volume tsdf volume to be updated
         * \param[in] buffer cyclical buffer structure
-        * \param[out] depthRawScaled Buffer for scaled depth along ray
+        * \param[out] depthScaled Buffer for scaled depth along ray
         */
       PCL_EXPORTS void 
       integrateTsdfVolume (const PtrStepSz<ushort>& depth, const Intr& intr, const float3& volume_size, 
@@ -290,9 +290,9 @@ namespace pcl
 
 
       /** \brief Renders depth image from give pose
-        * \param[in] vmap inverse camera rotation
-        * \param[in] nmap camera translation
-        * \param[in] light vertex map
+        * \param[in] R_inv inverse camera rotation
+        * \param[in] t camera translation
+        * \param[in] vmap vertex map
         * \param[out] dst buffer where depth is generated
         */
       void
@@ -301,7 +301,7 @@ namespace pcl
       /** \brief Paints 3D view with color map
         * \param[in] colors rgb color frame from OpenNI   
         * \param[out] dst output 3D view
-        * \param[in] colors_wight weight for colors   
+        * \param[in] colors_weight weight for colors   
         */
       void 
       paint3DView(const PtrStep<uchar3>& colors, PtrStepSz<uchar3> dst, float colors_weight = 0.5f);
@@ -390,7 +390,7 @@ namespace pcl
       convert (const MapArr& vmap, DeviceArray2D<T>& output);
 
       /** \brief Merges pcl::PointXYZ and pcl::Normal to PointNormal
-        * \param[in] coud points cloud
+        * \param[in] cloud points cloud
         * \param[in] normals normals cloud
         * \param[out] output array of PointNomals.
         */

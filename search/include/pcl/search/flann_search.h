@@ -172,7 +172,7 @@ namespace pcl
         class KMeansIndexCreator: public FlannIndexCreator
         {
           public:
-          /** \param[in] max_leaf_size All FLANN kd trees created by this class will have
+          /** \brief All FLANN kd trees created by this class will have
             * a maximum of max_leaf_size points per leaf node. Higher values make index creation
             * cheaper, but search more costly (and the other way around).
             */
@@ -239,7 +239,7 @@ namespace pcl
         }
 
         /** \brief Set the number of checks to perform during approximate searches in multiple randomized trees.
-          * \param[in] number of checks to perform during approximate searches in multiple randomized trees.
+          * \param[in] checks number of checks to perform during approximate searches in multiple randomized trees.
           */
         inline void
         setChecks (int checks)

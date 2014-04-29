@@ -81,7 +81,7 @@ namespace pcl
      *
      *  \brief OutofcoreOctreeBaseNode Class internally representing nodes of an
      *  outofcore octree, with accessors to its data via the \ref
-     *  octree_disk_container class or \ref octree_ram_container class,
+     *  pcl::outofcore::OutofcoreOctreeDiskContainer class or \ref pcl::outofcore::OutofcoreOctreeRamContainer class,
      *  whichever it is templated against.  
      * 
      *  \ingroup outofcore
@@ -130,8 +130,8 @@ namespace pcl
 
         //query
         /** \brief gets the minimum and maximum corner of the bounding box represented by this node
-         * \param[out] minCoord returns the minimum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
-         * \param[out] maxCoord returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
+         * \param[out] min_bb returns the minimum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
+         * \param[out] max_bb returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          */
         virtual inline void
         getBoundingBox (Eigen::Vector3d &min_bb, Eigen::Vector3d &max_bb) const
@@ -187,6 +187,7 @@ namespace pcl
          *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth
+         *  \param percent
          *  \param[out] v std::list of points returned by the query
          */
         virtual void
@@ -200,7 +201,7 @@ namespace pcl
         virtual void
         queryBBIntersects (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const boost::uint32_t query_depth, std::list<std::string> &file_names);
 
-        /** \brief Write the voxel size to stdout at \ref query_depth 
+        /** \brief Write the voxel size to stdout at \c query_depth 
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
         virtual void
@@ -208,7 +209,7 @@ namespace pcl
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
-         *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
+         *  \param[in] skip_bb_check whether to check if the point's coordinates fall within the bounding box
          */
         virtual boost::uint64_t
         addDataToLeaf (const AlignedPointTVector &p, const bool skip_bb_check = true);
@@ -312,9 +313,9 @@ namespace pcl
          * If creating root, path is full name. If creating any other
          * node, path is dir; throws exception if directory or metadata not found
          *
-         * \param[in] Directory pathname
+         * \param[in] directory_path pathname
          * \param[in] super
-         * \param[in] loadAll
+         * \param[in] load_all
          * \throws PCLException if directory is missing
          * \throws PCLException if node index is missing
          */
@@ -346,14 +347,14 @@ namespace pcl
         virtual size_t
         countNumChildren () const;
 
-        /** \brief Counts the number of loaded chilren by testing the \ref children_ array; 
+        /** \brief Counts the number of loaded chilren by testing the \c children_ array; 
          *  used to update num_loaded_chilren_ internally 
          */
         virtual size_t
         countNumLoadedChildren () const;
         
         /** \brief Save node's metadata to file
-         * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
+         * \param[in] recursive if false, save only this node's metadata to file; if true, recursively
          * save all children's metadata to files as well
          */
         void
@@ -386,7 +387,7 @@ namespace pcl
         addDataAtMaxDepth (const AlignedPointTVector &p, const bool skip_bb_check = true);
 
         /** \brief Add data to the leaf when at max depth of tree. If
-         *   \ref skip_bb_check is true, adds to the node regardless of the
+         *   \c skip_bb_check is true, adds to the node regardless of the
          *   bounding box it represents; otherwise only adds points that
          *   fall within the bounding box 
          *
@@ -402,7 +403,7 @@ namespace pcl
         
         /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
          *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] min_bb The maximum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
          *  \return bool True if any portion of the bounding box intersects with this node's bounding box; false otherwise
          */
         inline bool
@@ -416,7 +417,7 @@ namespace pcl
         inline bool
         inBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
 
-        /** \brief Tests whether \ref point falls within the input bounding box
+        /** \brief Tests whether \c point falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          *  \param[in] point The test point
@@ -424,7 +425,7 @@ namespace pcl
         bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Vector3d &point);
 
-        /** \brief Tests whether \ref p falls within the input bounding box
+        /** \brief Tests whether \c p falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          *  \param[in] p The point to be tested
@@ -432,10 +433,13 @@ namespace pcl
         static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
 
-        /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
+        /** \brief Tests whether \c x, \c y, and \c z fall within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
-         **/
+         *  \param x
+         *  \param y
+         *  \param z
+          **/
         static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double x, const double y, const double z);
 
@@ -443,7 +447,7 @@ namespace pcl
         inline bool
         pointInBoundingBox (const PointT &p) const;
 
-        /** \brief Creates child node \ref idx
+        /** \brief Creates child node \c idx
          *  \param[in] idx Index (0-7) of the child node
          */
         void
