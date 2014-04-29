@@ -45,7 +45,6 @@
 #include <pcl/common/io.h>
 #include <pcl/filters/local_min_max.h>
 #include <pcl/filters/project_inliers.h>
-#include <pcl/ModelCoefficients.h>
 #include <pcl/octree/octree.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,34 +80,50 @@ pcl::LocalMinMax<PointT>::applyFilterIndices (std::vector<int> &indices)
 template <typename PointT> void
 pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
 {
+  typename PointCloud::Ptr cloud_projected (new PointCloud);
+
+  // Create the filtering object and project input
+  pcl::ProjectInliers<PointT> proj;
+  proj.setModelType (pcl::SACMODEL_PLANE);
+  proj.setInputCloud (input_);
+  proj.setModelCoefficients (model_);
+  proj.filter (*cloud_projected);
+  
+  // convert cartesian normal to spherical coordinates
+  std::vector<float> sphere_coeffs (3);
+  sphere_coeffs[0] = std::sqrt (model_->values[0]*model_->values[0]+model_->values[1]*model_->values[1]+model_->values[2]*model_->values[2]); // radius
+  sphere_coeffs[1] = std::atan2 (model_->values[1], model_->values[0]); // theta
+  sphere_coeffs[2] = std::acos (model_->values[2]/sphere_coeffs[0]); // phi
+
+  float r, theta, phi;
+
+  // rotate each of the projected points into the xy plane
+  for (int i = 0; i < cloud_projected->size(); i++)
+  {
+    r = std::sqrt (cloud_projected->points[i].x*cloud_projected->points[i].x+cloud_projected->points[i].y*cloud_projected->points[i].y+cloud_projected->points[i].z*cloud_projected->points[i].z);
+    if (r > 0.0)
+    {
+      // compute theta and phi and subtract the theta and phi values calculated for the projection normal
+      theta = std::atan2 (cloud_projected->points[i].y, cloud_projected->points[i].x) - sphere_coeffs[1];
+      phi = std::acos (cloud_projected->points[i].z/r) - sphere_coeffs[2];
+
+      // reassign rotated points
+      cloud_projected->points[i].x = r * cos (theta) * sin (phi);
+      cloud_projected->points[i].y = r * sin (theta) * sin (phi);
+      cloud_projected->points[i].z = r * cos (phi);
+    }
+  }
+
   indices.reserve (indices_->size ());
   removed_indices_->reserve (indices_->size ());
 
   // Get the minimum and maximum dimensions
   Eigen::Vector4f min_p, max_p;
-  getMinMax3D<PointT> (*input_, *indices_, min_p, max_p);
-
-  // setup the dimension indices
-  int dimIdx1, dimIdx2;
-  if (projection_normal_ == PN_X)
-  {
-    dimIdx1 = 1;
-    dimIdx2 = 2;
-  }
-  else if (projection_normal_ == PN_Y)
-  {
-    dimIdx1 = 0;
-    dimIdx2 = 2;
-  }
-  else if (projection_normal_ == PN_Z)
-  {
-    dimIdx1 = 0;
-    dimIdx2 = 1;
-  }
+  getMinMax3D<PointT> (*cloud_projected, *indices_, min_p, max_p);
 
   // Check that the resolution is not too small, given the size of the data
-  int64_t dx = static_cast<int64_t> ((max_p[dimIdx1] - min_p[dimIdx1]) * inverse_resolution_)+1;
-  int64_t dy = static_cast<int64_t> ((max_p[dimIdx2] - min_p[dimIdx2]) * inverse_resolution_)+1;
+  int64_t dx = static_cast<int64_t> ((max_p[0] - min_p[0]) * inverse_resolution_)+1;
+  int64_t dy = static_cast<int64_t> ((max_p[1] - min_p[1]) * inverse_resolution_)+1;
 
   if ((dx*dy) > static_cast<int64_t> (std::numeric_limits<int32_t>::max ()))
   {
@@ -120,10 +135,10 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
   int num_grid_sections;
 
   // Compute the minimum and maximum bounding box values
-  min_b[0] = static_cast<int> (floor (min_p[dimIdx1] * inverse_resolution_));
-  max_b[0] = static_cast<int> (floor (max_p[dimIdx1] * inverse_resolution_));
-  min_b[1] = static_cast<int> (floor (min_p[dimIdx2] * inverse_resolution_));
-  max_b[1] = static_cast<int> (floor (max_p[dimIdx2] * inverse_resolution_));
+  min_b[0] = static_cast<int> (floor (min_p[0] * inverse_resolution_));
+  max_b[0] = static_cast<int> (floor (max_p[0] * inverse_resolution_));
+  min_b[1] = static_cast<int> (floor (min_p[1] * inverse_resolution_));
+  max_b[1] = static_cast<int> (floor (max_p[1] * inverse_resolution_));
 
   // Compute the size of each division
   div_b = max_b - min_b + Eigen::Vector2i::Ones ();
@@ -147,34 +162,10 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
           !pcl_isfinite (input_->points[*it].z))
         continue;
 
-    float new_value;
-    float val1, val2;
-    int min1, min2;
+    float new_value = model_->values[0]*input_->points[*it].x + model_->values[1]*input_->points[*it].y + model_->values[2]*input_->points[*it].z;
 
-    if (projection_normal_ == PN_X)
-    {
-      new_value = input_->points[*it].x;
-      val1 = input_->points[*it].y;
-      val2 = input_->points[*it].z;
-    }
-    else if (projection_normal_ == PN_Y)
-    {
-      new_value = input_->points[*it].y;
-      val1 = input_->points[*it].x;
-      val2 = input_->points[*it].z;
-    }
-    else if (projection_normal_ == PN_Z)
-    {
-      new_value = input_->points[*it].z;
-      val1 = input_->points[*it].x;
-      val2 = input_->points[*it].y;
-    }
-
-    min1 = min_b[0];
-    min2 = min_b[1];
-
-    int ijk0 = static_cast<int> (floor (val1 * inverse_resolution_) - static_cast<float> (min1));
-    int ijk1 = static_cast<int> (floor (val2 * inverse_resolution_) - static_cast<float> (min2));
+    int ijk0 = static_cast<int> (floor (cloud_projected->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (floor (cloud_projected->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
@@ -189,13 +180,7 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
     {
       index_saved[idx]++;
 
-      float current_value;
-      if (projection_normal_ == PN_X)
-        current_value = input_->points[index_vector[idx]].x;
-      else if (projection_normal_ == PN_Y)
-        current_value = input_->points[index_vector[idx]].y;
-      else if (projection_normal_ == PN_Z)
-        current_value = input_->points[index_vector[idx]].z;
+      float current_value = model_->values[0]*input_->points[index_vector[idx]].x + model_->values[1]*input_->points[index_vector[idx]].y + model_->values[2]*input_->points[index_vector[idx]].z;;
       
       if (stat_type_ == ST_MIN && new_value < current_value)
       {
@@ -252,22 +237,38 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
 
   Eigen::Vector4f min_p, max_p;
   Eigen::Vector4i min_b, max_b, div_b, divb_mul;
-
-  // Create a set of planar coefficients
-  std::vector<float> coefficients (4);
-  pcl::ModelCoefficients::Ptr model_coefficients (new pcl::ModelCoefficients ());
-  coefficients[0] = (projection_normal_ == PN_X) ? 1.0 : 0.0;
-  coefficients[1] = (projection_normal_ == PN_Y) ? 1.0 : 0.0;
-  coefficients[2] = (projection_normal_ == PN_Z) ? 1.0 : 0.0;
-  coefficients[3] = 0.0;
-  model_coefficients->values.insert(model_coefficients->values.begin (), coefficients.begin (), coefficients.end ());
   
   // Create the filtering object and project input
   pcl::ProjectInliers<PointT> proj;
   proj.setModelType (pcl::SACMODEL_PLANE);
   proj.setInputCloud (input_);
-  proj.setModelCoefficients (model_coefficients);
+  proj.setModelCoefficients (model_);
   proj.filter (*cloud_projected);
+  
+  // convert cartesian normal to spherical coordinates
+  std::vector<float> sphere_coeffs (3);
+  sphere_coeffs[0] = std::sqrt (model_->values[0]*model_->values[0]+model_->values[1]*model_->values[1]+model_->values[2]*model_->values[2]); // radius
+  sphere_coeffs[1] = std::atan2 (model_->values[1], model_->values[0]); // theta
+  sphere_coeffs[2] = std::acos (model_->values[2]/sphere_coeffs[0]); // phi
+
+  float r, theta, phi;
+
+  // rotate each of the projected points into the xy plane
+  for (int i = 0; i < cloud_projected->size(); i++)
+  {
+    r = std::sqrt (cloud_projected->points[i].x*cloud_projected->points[i].x+cloud_projected->points[i].y*cloud_projected->points[i].y+cloud_projected->points[i].z*cloud_projected->points[i].z);
+    if (r > 0.0)
+    {
+      // compute theta and phi and subtract the theta and phi values calculated for the projection normal
+      theta = std::atan2 (cloud_projected->points[i].y, cloud_projected->points[i].x) - sphere_coeffs[1];
+      phi = std::acos (cloud_projected->points[i].z/r) - sphere_coeffs[2];
+
+      // reassign rotated points
+      cloud_projected->points[i].x = r * cos (theta) * sin (phi);
+      cloud_projected->points[i].y = r * sin (theta) * sin (phi);
+      cloud_projected->points[i].z = r * cos (phi);
+    }
+  }
 
   // Initialize the search class
   if (locality_type_ == LT_BOX)
@@ -329,12 +330,12 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     if (locality_type_ == LT_BOX)
     {
       Eigen::Vector3f bbox_min, bbox_max;
-      float minx = (projection_normal_ == PN_X) ? -std::numeric_limits<float>::max () : p.x - half_res;
-      float miny = (projection_normal_ == PN_Y) ? -std::numeric_limits<float>::max () : p.y - half_res;
-      float minz = (projection_normal_ == PN_Z) ? -std::numeric_limits<float>::max () : p.z - half_res;
-      float maxx = (projection_normal_ == PN_X) ? std::numeric_limits<float>::max () : p.x + half_res;
-      float maxy = (projection_normal_ == PN_Y) ? std::numeric_limits<float>::max () : p.y + half_res;
-      float maxz = (projection_normal_ == PN_Z) ? std::numeric_limits<float>::max () : p.z + half_res;
+      float minx = p.x - half_res;
+      float miny = p.y - half_res;
+      float minz = -std::numeric_limits<float>::max ();
+      float maxx = p.x + half_res;
+      float maxy = p.y + half_res;
+      float maxz = std::numeric_limits<float>::max ();
       bbox_min = Eigen::Vector3f (minx, miny, minz);
       bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
 
@@ -369,10 +370,10 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
 
     // Check to see if a current point meets the criteria
     // (i.e. current point is local min/max)
-    float query_value = coefficients[0]*input_->points[(*indices_)[iii]].x + coefficients[1]*input_->points[(*indices_)[iii]].y + coefficients[2]*input_->points[(*indices_)[iii]].z;
+    float query_value = model_->values[0]*input_->points[(*indices_)[iii]].x + model_->values[1]*input_->points[(*indices_)[iii]].y + model_->values[2]*input_->points[(*indices_)[iii]].z;
     for (size_t k = 1; k < result_indices.size (); ++k)  // k = 1 is the first neighbor
     {
-      float point_value = coefficients[0]*input_->points[result_indices[k]].x + coefficients[1]*input_->points[result_indices[k]].y + coefficients[2]*input_->points[result_indices[k]].z;
+      float point_value = model_->values[0]*input_->points[result_indices[k]].x + model_->values[1]*input_->points[result_indices[k]].y + model_->values[2]*input_->points[result_indices[k]].z;
       if (stat_type_ == ST_MAX && point_value > query_value || stat_type_ == ST_MIN && point_value < query_value)
       {
         // Query point does not meet the criteria, no need to check others

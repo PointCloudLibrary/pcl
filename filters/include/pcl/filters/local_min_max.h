@@ -44,6 +44,7 @@
 
 #include <pcl/filters/filter_indices.h>
 #include <pcl/search/pcl_search.h>
+#include <pcl/ModelCoefficients.h>
 
 namespace pcl
 {
@@ -82,14 +83,6 @@ namespace pcl
         ST_LENGTH = 2
       } StatType;
 
-      typedef enum ProjectionNormal
-      {
-        PN_X = 0, /**< Project point cloud to plane orthogonal to X.    */
-        PN_Y = 1, /**< Project point cloud to plane orthogonal to Y.    */
-        PN_Z = 2, /**< Project point cloud to plane orthogonal to Z.    */
-        PN_LENGTH = 3
-      } ProjectionNormal;
-
       /** \brief Empty constructor. */
       LocalMinMax (bool extract_removed_indices = false) :
         FilterIndices<PointT>::FilterIndices (extract_removed_indices),
@@ -98,10 +91,16 @@ namespace pcl
         num_neighbors_ (0),
         resolution_ (1.0f),
         locality_type_ (LT_BOX),
-        stat_type_ (ST_MIN),
-        projection_normal_ (PN_Z)
+        stat_type_ (ST_MIN)
       {
         filter_name_ = "LocalMinMax";
+
+        // set the default model coefficients to represent the XY plane
+        ModelCoefficientsPtr model_coeffs (new pcl::ModelCoefficients ());
+        model_coeffs->values.resize (4);
+        model_coeffs->values[0] = model_coeffs->values[1] = model_coeffs->values[3] = 0;
+        model_coeffs->values[2] = 1.0;
+        model_ = model_coeffs;
       }
 
       /** \brief Set the radius to use to determine if a point is within our locality.
@@ -163,16 +162,22 @@ namespace pcl
       inline StatType
       getStatType () const { return (stat_type_); }
 
-      /** \brief Set the normal of the plane to which points will be projected.
-        * \param[in] projection_normal The normal of the plane to which points will be projected.
+      /** \brief Provide a pointer to the vector of model coefficients which represent the plane to which points will be projected.
+        * \param model a pointer to the vector of model coefficients which represent the plane to which points will be projected.
         */
       inline void
-      setProjectionNormal (const ProjectionNormal projection_normal) { projection_normal_ = projection_normal; }
+      setModelCoefficients (const ModelCoefficientsConstPtr &model)
+      {
+        model_ = model;
+      }
 
-      /** \brief Get the normal of the plane to which points will be projected.
+      /** \brief Get a pointer to the vector of model coefficients which represent the plane to which points will be projected.
         */
-      inline ProjectionNormal
-      getProjectionNormal () const { return (projection_normal_); }
+      inline ModelCoefficientsConstPtr
+      getModelCoefficients ()
+      {
+        return (model_);
+      }
 
     protected:
       using PCLBase<PointT>::input_;
@@ -229,8 +234,8 @@ namespace pcl
       /** \brief The stat that will be computed for each locality. */
       StatType stat_type_;
 
-      /** \brief The normal of the plane to which points will be projected. */
-      ProjectionNormal projection_normal_;
+      /** \brief A pointer to the vector of model coefficients which represent the plane to which points will be projected. */
+      ModelCoefficientsConstPtr model_;
 
       /** \brief Filtered results are indexed by an indices array using grid locality.
         * \param[out] indices The resultant indices.
