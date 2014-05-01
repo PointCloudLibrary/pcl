@@ -347,6 +347,7 @@ namespace pcl
            *
            * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
            * z direction is point into the screen.
+           * \code
            *     z
            *      \
            *       \
@@ -359,7 +360,9 @@ namespace pcl
            *         |
            *         |
            *         y
+           * \endcode
            */
+
         void
         addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string &id = "reference", int viewport = 0);
 
@@ -965,7 +968,6 @@ namespace pcl
 
         /** \brief Add a TextureMesh object to screen
           * \param[in] polymesh the textured polygonal mesh
-          * \param[in] path_to_tex_files path to texture files (usuallay same directory as your mesh file)
           * \param[in] id the texture mesh object id (default: "texture")
           * \param[in] viewport the view port where the TextureMesh should be added (default: all)
           */
@@ -1660,6 +1662,7 @@ namespace pcl
         /** \brief Set the camera clipping distances.
           * \param[in] near the near clipping distance (no objects closer than this to the camera will be drawn)
           * \param[in] far the far clipping distance (no objects further away than this to the camera will be drawn)
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
         setCameraClipDistances (double near, double far, int viewport = 0);

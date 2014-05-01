@@ -377,7 +377,7 @@ namespace pcl
       inline KdTreePtr
       getSearchMethod () { return (tree_); }
       /** \brief Allows to set the number of neighbours to find.
-        * \param[in] number_of_neighbours new number of neighbours
+        * \param[in] nb_neighbours new number of neighbours
         */
       void
       setNumberOfNeighbours (int nb_neighbours) { nb_neighbours_ = nb_neighbours; }

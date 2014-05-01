@@ -59,7 +59,7 @@ namespace pcl
       StereoGrabberBase (const std::pair<std::string, std::string>& pair_files, float frames_per_second, bool repeat);
 
       /** \brief Constructor taking a list of paths to Stereo pair files, that are played in the order they appear in the list.
-        * \param[in] pcd_files vector of paths to stereo (left+right) images.
+        * \param[in] files vector of paths to stereo (left+right) images.
         * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next pair in the list.
         * \param[in] repeat whether to play files in an endless loop or not.
         */

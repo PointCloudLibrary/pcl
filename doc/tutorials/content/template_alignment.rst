@@ -15,7 +15,7 @@ We can use the code below to fit a template of a person's face (the blue points)
 The code
 --------
 
-First, download the datasets from `github.com/PointCloudLibrary/data/tree/master/tutorials/template_alignment/ <https://raw.github.com/PointCloudLibrary/data/master/tutorials/template_alignment/>`_
+First, download the datasets from `github.com/PointCloudLibrary/data/tree/master/tutorials/template_alignment/ <https://github.com/PointCloudLibrary/data/tree/master/tutorials/template_alignment>`_
 and extract the files.
 
 Next, copy and paste the following code into your editor and save it as ``template_alignment.cpp`` (or download the source file :download:`here <./sources/template_alignment/template_alignment.cpp>`).
@@ -75,7 +75,7 @@ We start by defining a structure to store the alignment results.  It contains a 
 
 .. note::
 
-   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/api/TopicStructHavingEigenMembers.html>`_.
+   Because we are including an Eigen::Matrix4f in this struct, we need to include the EIGEN_MAKE_ALIGNED_OPERATOR_NEW macro, which will overload the struct's "operator new" so that it will generate 16-bytes-aligned pointers.  If you're curious, you can find more information about this issue `here <http://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html>`_.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp

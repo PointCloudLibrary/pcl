@@ -239,7 +239,7 @@ namespace pcl
             }
 
             /** \brief Obtain a score between a pair of correspondences.
-              * \param[in] the index to check in the list of correspondences
+              * \param[in] index the index to check in the list of correspondences
               * \return score the resultant computed score
               */
             virtual inline double
@@ -272,7 +272,7 @@ namespace pcl
 
             /** \brief Check whether the correspondence pair at the given index is valid
               * by computing the score and testing it against the user given threshold 
-              * \param[in] the index to check in the list of correspondences
+              * \param[in] index the index to check in the list of correspondences
               * \return true if the correspondence is good, false otherwise
               */
             virtual inline bool

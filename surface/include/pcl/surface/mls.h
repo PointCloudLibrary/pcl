@@ -184,6 +184,7 @@ namespace pcl
       getSqrGaussParam () const { return (sqr_gauss_param_); }
 
       /** \brief Set the upsampling method to be used
+        * \param method
         * \note Options are: * NONE - no upsampling will be done, only the input points will be projected to their own
         *                             MLS surfaces
         *                    * DISTINCT_CLOUD - will project the points of the distinct cloud to the closest point on
@@ -193,7 +194,7 @@ namespace pcl
         *                                           parameters
         *                    * RANDOM_UNIFORM_DENSITY - the local plane of each input point will be sampled using an
         *                                               uniform random distribution such that the density of points is
-        *                                               constant throughout the cloud - given by the \ref \ref desired_num_points_in_radius_
+        *                                               constant throughout the cloud - given by the \ref desired_num_points_in_radius_
         *                                               parameter
         *                    * VOXEL_GRID_DILATION - the input cloud will be inserted into a voxel grid with voxels of
         *                                            size \ref voxel_size_; this voxel grid will be dilated \ref dilation_iteration_num_
@@ -449,9 +450,9 @@ namespace pcl
       }
 
       /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
-        * \param[in] index the inex of the query point in the \ref input cloud
-        * \param[in] nn_indices the set of nearest neighbors indices for \ref pt
-        * \param[in] nn_sqr_dists the set of nearest neighbors squared distances for \ref pt
+        * \param[in] index the inex of the query point in the input cloud
+        * \param[in] nn_indices the set of nearest neighbors indices for pt
+        * \param[in] nn_sqr_dists the set of nearest neighbors squared distances for pt
         * \param[out] projected_points the set of points projected points around the query point
         * (in the case of upsampling method NONE, only the query point projected to its own fitted surface will be returned,
         * in the case of the other upsampling methods, multiple points will be returned)
@@ -473,11 +474,11 @@ namespace pcl
         * the MLS surface of the input point
         * \param[in] u_disp the u coordinate of the sample point in the local plane of the query point
         * \param[in] v_disp the v coordinate of the sample point in the local plane of the query point
-        * \param[in] u the axis corresponding to the u-coordinates of the local plane of the query point
-        * \param[in] v the axis corresponding to the v-coordinates of the local plane of the query point
-        * \param[in] plane_normal the normal to the local plane of the query point
+        * \param[in] u_axis the axis corresponding to the u-coordinates of the local plane of the query point
+        * \param[in] v_axis the axis corresponding to the v-coordinates of the local plane of the query point
+        * \param[in] n_axis
+        * \param mean
         * \param[in] curvature the curvature of the surface at the query point
-        * \param[in] query_point the absolute 3D position of the query point
         * \param[in] c_vec the coefficients of the polynomial fit on the MLS surface of the query point
         * \param[in] num_neighbors the number of neighbors of the query point in the input cloud
         * \param[out] result_point the absolute 3D position of the resulting projected point

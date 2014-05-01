@@ -81,10 +81,11 @@ namespace pcl
   /** \brief Determine the line of intersection of two non-parallel planes using lagrange multipliers
     * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
     * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
-    * \param[out] plane_b coefficients of line where line.tail<3>() = direction vector and
-    * line.head<3>() the point on the line closest to (0, 0, 0)
+    * \param[in] plane_b coefficients of line where line.tail<3>() = direction vector and
+    * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * \param[out] line the intersected line to be filled
+    * \param[in] angular_tolerance tolerance in radians
     * \return true if succeeded/planes aren't parallel
-    * \note Plane normal doesn't have to be normalized
     */
   PCL_EXPORTS template <typename Scalar> bool
   planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
@@ -118,7 +119,7 @@ namespace pcl
     * \param[in] plane_b are the coefficients of the second plane
     * \param[in] plane_c are the coefficients of the third plane
     * \param[in] determinant_tolerance is a limit to determine whether planes are parallel or not
-    * \param[out] intersection_point, the three coordinates x, y, z of the intersection point
+    * \param[out] intersection_point the three coordinates x, y, z of the intersection point
     * \return true if succeeded/planes aren't parallel
     */
   PCL_EXPORTS template <typename Scalar> bool

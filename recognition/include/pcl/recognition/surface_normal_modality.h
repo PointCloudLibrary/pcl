@@ -165,7 +165,7 @@ namespace pcl
     /** \brief Initializes the LUT.
       * \param[in] range_x_arg the range of the LUT in x-direction.
       * \param[in] range_y_arg the range of the LUT in y-direction.
-      * \parma[in] range_z_arg the range of the LUT in z-direction.
+      * \param[in] range_z_arg the range of the LUT in z-direction.
       */
     void 
     initializeLUT (const int range_x_arg, const int range_y_arg, const int range_z_arg)
@@ -717,13 +717,6 @@ static void accumBilateral(long delta, long i, long j, long * A, long * b, int t
  * \brief Compute quantized normal image from depth image.
  *
  * Implements section 2.6 "Extension to Dense Depth Sensors."
- *
- * \param[in]  src  The source 16-bit depth image (in mm).
- * \param[out] dst  The destination 8-bit image. Each bit represents one bin of
- *                  the view cone.
- * \param distance_threshold   Ignore pixels beyond this distance.
- * \param difference_threshold When computing normals, ignore contributions of pixels whose
- *                             depth difference with the central pixel is above this threshold.
  *
  * \todo Should also need camera model, or at least focal lengths? Replace distance_threshold with mask?
  */

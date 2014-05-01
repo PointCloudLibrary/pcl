@@ -376,7 +376,7 @@ namespace pcl
         
         /** \brief Implementation of "sample with replacement" using Walker's alias method.
             about Walker's alias method, you can check the paper below:
-            @article{355749,
+             article{355749},
              author = {Walker, Alastair J.},
              title = {An Efficient Method for Generating Discrete
              Random Variables with General Distributions},

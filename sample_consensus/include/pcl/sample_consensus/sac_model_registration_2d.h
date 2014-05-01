@@ -148,7 +148,6 @@ namespace pcl
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr&)
@@ -176,7 +175,6 @@ namespace pcl
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline void
       computeSampleDistanceThreshold (const PointCloudConstPtr&,

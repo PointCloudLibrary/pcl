@@ -43,6 +43,6 @@ Please visit http://www.pointclouds.org for more information.
   - \ref search "search"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
-  - \ref range_image "range_image"
+  - \ref pcl::RangeImage "range_image"
 
 */

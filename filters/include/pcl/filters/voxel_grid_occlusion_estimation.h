@@ -89,8 +89,9 @@ namespace pcl
       /** \brief Returns the state (free = 0, occluded = 1) of the voxel
         * after utilizing a ray traversal algorithm to a target voxel
         * in (i, j, k) coordinates.
-        * \param[out] The state of the voxel.
-        * \param[in] The target voxel coordinate (i, j, k) of the voxel.
+        * \param[out] out_state The state of the voxel.
+        * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
+        * \return the state (free = 0, occluded = 1) of the voxel
         */
       int
       occlusionEstimation (int& out_state,
@@ -101,9 +102,10 @@ namespace pcl
         * in (i, j, k) coordinates. Additionally, this function returns
         * the voxels penetrated of the ray-traversal algorithm till reaching
         * the target voxel.
-        * \param[out] The state of the voxel.
-        * \param[out] The voxels penetrated of the ray-traversal algorithm.
-        * \param[in] The target voxel coordinate (i, j, k) of the voxel.
+        * \param[out] out_state The state of the voxel.
+        * \param[out] out_ray The voxels penetrated of the ray-traversal algorithm.
+        * \param[in] in_target_voxel The target voxel coordinate (i, j, k) of the voxel.
+        * \return the state (free = 0, occluded = 1) of the voxel
         */
       int
       occlusionEstimation (int& out_state,
@@ -112,13 +114,14 @@ namespace pcl
 
       /** \brief Returns the voxel coordinates (i, j, k) of all occluded
         * voxels in the voxel gird.
-        * \param[out] the coordinates (i, j, k) of all occluded voxels
+        * \param[out] occluded_voxels the coordinates (i, j, k) of all occluded voxels
+        * \return the voxel coordinates (i, j, k)
         */
       int
       occlusionEstimationAll (std::vector<Eigen::Vector3i>& occluded_voxels);
 
       /** \brief Returns the voxel grid filtered point cloud
-        * \param[out] The voxel grid filtered point cloud
+        * \return The voxel grid filtered point cloud
         */
       inline PointCloud
       getFilteredPointCloud () { return filtered_cloud_; }
@@ -138,7 +141,7 @@ namespace pcl
 
       /** \brief Returns the corresponding centroid (x,y,z) coordinates
         * in the grid of voxel (i,j,k).
-        * \param[in] the coordinate (i, j, k) of the voxel
+        * \param[in] ijk the coordinate (i, j, k) of the voxel
         * \return the (x,y,z) coordinate of the voxel centroid
         */
       inline Eigen::Vector4f
@@ -167,8 +170,8 @@ namespace pcl
 
       /** \brief Returns the scaling value (tmin) were the ray intersects with the
         * voxel grid bounding box. (p_entry = origin + tmin * orientation)
-        * \param[in] The sensor origin
-        * \param[in] The sensor orientation
+        * \param[in] origin The sensor origin
+        * \param[in] direction The sensor orientation
         * \return the scaling value
         */
       float
@@ -177,10 +180,10 @@ namespace pcl
 
       /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied)
         * unsing a ray traversal algorithm.
-        * \param[in] The target voxel in the voxel grid with coordinate (i, j, k).
-        * \param[in] The sensor origin.
-        * \param[in] The sensor orientation
-        * \param[in] The scaling value (tmin).
+        * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
+        * \param[in] origin The sensor origin.
+        * \param[in] direction The sensor orientation
+        * \param[in] t_min The scaling value (tmin).
         * \return The estimated voxel state.
         */
       int
@@ -191,11 +194,11 @@ namespace pcl
 
       /** \brief Returns the state of the target voxel (0 = visible, 1 = occupied) and
         * the voxels penetrated by the ray unsing a ray traversal algorithm.
-        * \param[out] The voxels penetrated by the ray in (i, j, k) coordinates
-        * \param[in] The target voxel in the voxel grid with coordinate (i, j, k).
-        * \param[in] The sensor origin.
-        * \param[in] The sensor orientation
-        * \param[in] The scaling value (tmin).
+        * \param[out] out_ray The voxels penetrated by the ray in (i, j, k) coordinates
+        * \param[in] target_voxel The target voxel in the voxel grid with coordinate (i, j, k).
+        * \param[in] origin The sensor origin.
+        * \param[in] direction The sensor orientation
+        * \param[in] t_min The scaling value (tmin).
         * \return The estimated voxel state.
         */
       int
@@ -206,7 +209,7 @@ namespace pcl
                     const float t_min);
 
       /** \brief Returns a rounded value. 
-        * \param[in] value
+        * \param[in] d
         * \return rounded value
         */
       inline float

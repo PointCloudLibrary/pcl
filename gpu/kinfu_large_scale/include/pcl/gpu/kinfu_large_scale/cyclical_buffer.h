@@ -59,7 +59,7 @@ namespace pcl
     { 
         
       /** \brief CyclicalBuffer implements a cyclical TSDF buffer.
-        * \The class offers a simple interface, by handling shifts and maintaining the world autonomously.
+        *  The class offers a simple interface, by handling shifts and maintaining the world autonomously.
         * \author Raphael Favier, Francisco Heredia
         */
       class PCL_EXPORTS CyclicalBuffer
@@ -173,8 +173,8 @@ namespace pcl
           /** \brief Computes and set the origin of the new cube (relative to the world), centered around a the target point.
             * \param[in] target_point the target point around which the new cube will be centered.
             * \param[out] shiftX shift on X axis (in indices).
-            * \param[out] shiftX shift on X axis (in indices).
-            * \param[out] shiftX shift on X axis (in indices).
+            * \param[out] shiftY shift on Y axis (in indices).
+            * \param[out] shiftZ shift on Z axis (in indices).
             */ 
           void computeAndSetNewCubeMetricOrigin (const pcl::PointXYZ &target_point, int &shiftX, int &shiftY, int &shiftZ);
           

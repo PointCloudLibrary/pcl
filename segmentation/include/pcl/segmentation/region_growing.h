@@ -185,7 +185,7 @@ namespace pcl
       getSearchMethod () const;
 
       /** \brief Allows to set search method that will be used for finding KNN.
-        * \param[in] search search method to use
+        * \param[in] tree pointer to a KdTree
         */
       void
       setSearchMethod (const KdTreePtr& tree);
@@ -272,7 +272,6 @@ namespace pcl
       validatePoint (int initial_seed, int point, int nghbr, bool& is_a_seed) const;
 
       /** \brief This function simply assembles the regions from list of point labels.
-        * \param[out] clusters clusters that were obtained during the segmentation process.
         * Each cluster is an array of point indices.
         */
       void

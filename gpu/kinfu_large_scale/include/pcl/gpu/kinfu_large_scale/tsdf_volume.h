@@ -170,13 +170,15 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         fetchCloud (DeviceArray<PointType>& cloud_buffer) const;
 
           /** \brief Push a point cloud of previously scanned tsdf slice to the TSDF volume
-            * \param[in] existingCloud point cloud pointer to the existing data. This data will be pushed to the TSDf volume. The points with indices outside the range [0 ... VOLUME_X - 1][0 ... VOLUME_Y - 1][0 ... VOLUME_Z - 1] will not be added.
+            * \param[in] existing_data_cloud point cloud pointer to the existing data. This data will be pushed to the TSDf volume. The points with indices outside the range [0 ... VOLUME_X - 1][0 ... VOLUME_Y - 1][0 ... VOLUME_Z - 1] will not be added.
+            * \param buffer
             */
         void 
         pushSlice (const PointCloud<PointXYZI>::Ptr existing_data_cloud, const tsdf_buffer* buffer) const;
 
         /** \brief Generates cloud using GPU in connected6 mode only
-          * \param[out] cloud_buffer buffer_xyz to store point cloud
+          * \param[out] cloud_buffer_xyz buffer to store point cloud
+          * \param cloud_buffer_intensity
           * \param[in] buffer Pointer to the buffer struct that contains information about memory addresses of the tsdf volume memory block, which are used for the cyclic buffer.
           * \param[in] shiftX Offset in indices.
           * \param[in] shiftY Offset in indices.

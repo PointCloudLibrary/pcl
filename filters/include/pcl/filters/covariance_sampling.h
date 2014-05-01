@@ -81,7 +81,7 @@ namespace pcl
       { filter_name_ = "CovarianceSampling"; }
 
       /** \brief Set number of indices to be sampled.
-        * \param[in] sample the number of sample indices
+        * \param[in] samples the number of sample indices
         */
       inline void
       setNumberOfSamples (unsigned int samples)

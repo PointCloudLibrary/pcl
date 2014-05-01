@@ -67,13 +67,13 @@ namespace pcl
             DeviceArray();
 
             /** \brief Allocates internal buffer in GPU memory
-              * \param size_t: number of elements to allocate
+              * \param size number of elements to allocate
               * */
             DeviceArray(size_t size);
             
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
-              * \param ptr: pointer to buffer
-              * \param size: elemens number
+              * \param ptr pointer to buffer
+              * \param size elemens number
               * */
             DeviceArray(T *ptr, size_t size);
 
@@ -84,7 +84,7 @@ namespace pcl
             DeviceArray& operator = (const DeviceArray& other);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.               
-              * \param size: elemens number
+              * \param size elemens number
               * */
             void create(size_t size);
 
@@ -92,35 +92,35 @@ namespace pcl
             void release();  
 
             /** \brief Performs data copying. If destination size differs it will be reallocated.
-              * \param other_arg: destination container
+              * \param other destination container
               * */
             void copyTo(DeviceArray& other) const;
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param host_ptr_arg: pointer to buffer to upload               
-              * \param size: elemens number
+              * \param host_ptr pointer to buffer to upload               
+              * \param size elemens number
               * */
             void upload(const T *host_ptr, size_t size);
 
             /** \brief Downloads data from internal buffer to CPU memory
-              * \param host_ptr_arg: pointer to buffer to download               
+              * \param host_ptr pointer to buffer to download               
               * */
             void download(T *host_ptr) const;
             
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param data: host vector to upload from              
+              * \param data host vector to upload from              
               * */
             template<class A>
             void upload(const std::vector<T, A>& data);
 
              /** \brief Downloads data from internal buffer to CPU memory
-               * \param data:  host vector to download to                 
+               * \param data  host vector to download to                 
                * */
             template<typename A>
             void download(std::vector<T, A>& data) const;
 
             /** \brief Performs swap of data pointed with another device array. 
-              * \param other: device array to swap with   
+              * \param other_arg device array to swap with   
               * */
             void swap(DeviceArray& other_arg);
 
@@ -164,16 +164,16 @@ namespace pcl
             DeviceArray2D();
             
             /** \brief Allocates internal buffer in GPU memory
-              * \param rows: number of rows to allocate
-              * \param cols: number of elements in each row
+              * \param rows number of rows to allocate
+              * \param cols number of elements in each row
               * */
             DeviceArray2D(int rows, int cols);
 
              /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
-              * \param rows: number of rows
-              * \param cols: number of elements in each row
-              * \param data: pointer to buffer
-              * \param stepBytes: stride between two consecutive rows in bytes
+              * \param rows number of rows
+              * \param cols number of elements in each row
+              * \param data pointer to buffer
+              * \param stepBytes stride between two consecutive rows in bytes
               * */
             DeviceArray2D(int rows, int cols, void *data, size_t stepBytes);
 
@@ -184,8 +184,8 @@ namespace pcl
             DeviceArray2D& operator = (const DeviceArray2D& other);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
-               * \param rows: number of rows to allocate
-               * \param cols: number of elements in each row
+               * \param rows number of rows to allocate
+               * \param cols number of elements in each row
                * */
             void create(int rows, int cols);
 
@@ -193,50 +193,50 @@ namespace pcl
             void release();
             
             /** \brief Performs data copying. If destination size differs it will be reallocated.
-              * \param other: destination container
+              * \param other destination container
               * */
             void copyTo(DeviceArray2D& other) const;
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param host_ptr: pointer to host buffer to upload               
-              * \param host_step: stride between two consecutive rows in bytes for host buffer
-              * \param rows: number of rows to upload
-              * \param cols: number of elements in each row
+              * \param host_ptr pointer to host buffer to upload               
+              * \param host_step stride between two consecutive rows in bytes for host buffer
+              * \param rows number of rows to upload
+              * \param cols number of elements in each row
               * */
             void upload(const void *host_ptr, size_t host_step, int rows, int cols);
 
             /** \brief Downloads data from internal buffer to CPU memory. User is resposible for correct host buffer size.
-              * \param host_ptr: pointer to host buffer to download               
-              * \param host_step: stride between two consecutive rows in bytes for host buffer             
+              * \param host_ptr pointer to host buffer to download               
+              * \param host_step stride between two consecutive rows in bytes for host buffer             
               * */
             void download(void *host_ptr, size_t host_step) const;
 
             /** \brief Performs swap of data pointed with another device array. 
-              * \param other: device array to swap with   
+              * \param other_arg device array to swap with   
               * */
             void swap(DeviceArray2D& other_arg);
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
-              * \param data: host vector to upload from              
-              * \param cols: stride in elements between two consecutive rows for host buffer
+              * \param data host vector to upload from              
+              * \param cols stride in elements between two consecutive rows for host buffer
               * */
             template<class A>
             void upload(const std::vector<T, A>& data, int cols);
 
             /** \brief Downloads data from internal buffer to CPU memory
-               * \param data: host vector to download to                 
-               * \param cols: Output stride in elements between two consecutive rows for host vector.
+               * \param data host vector to download to                 
+               * \param cols Output stride in elements between two consecutive rows for host vector.
                * */
             template<class A>
             void download(std::vector<T, A>& data, int& cols) const;
                                       
             /** \brief Returns pointer to given row in internal buffer. 
-              * \param y_arg: row index   
+              * \param y row index   
               * */
             T* ptr(int y = 0);             
 
             /** \brief Returns const pointer to given row in internal buffer. 
-              * \param y_arg: row index   
+              * \param y row index   
               * */
             const T* ptr(int y = 0) const;            
             

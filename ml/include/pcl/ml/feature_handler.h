@@ -67,7 +67,7 @@ namespace pcl
       createRandomFeatures (const size_t num_of_features, std::vector<FeatureType> & features) = 0;
 
       /** \brief Evaluates a feature on the specified data. 
-        * \param[in] features The features to evaluate.
+        * \param[in] feature The features to evaluate.
         * \param[in] data_set The data set on which the feature is evaluated.
         * \param[in] examples The examples which specify on which parts of the data set the feature is evaluated.
         * \param[out] results The destination for the results of the feature evaluation.
@@ -81,11 +81,11 @@ namespace pcl
                        std::vector<unsigned char> & flags) const = 0;
 
       /** \brief Evaluates a feature on the specified data. 
-        * \param[in] features The features to evaluate.
+        * \param[in] feature The features to evaluate.
         * \param[in] data_set The data set on which the feature is evaluated.
-        * \param[in] examples The examples which specify on which parts of the data set the feature is evaluated.
-        * \param[out] results The destination for the results of the feature evaluation.
-        * \param[out] flags Flags that are supplied together with the results.
+        * \param[in] example The examples which specify on which parts of the data set the feature is evaluated.
+        * \param[out] result The destination for the results of the feature evaluation.
+        * \param[out] flag Flags that are supplied together with the results.
         */
       virtual void 
       evaluateFeature (const FeatureType & feature,

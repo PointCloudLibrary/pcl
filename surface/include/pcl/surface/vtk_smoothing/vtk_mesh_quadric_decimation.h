@@ -56,7 +56,7 @@ namespace pcl
       MeshQuadricDecimationVTK ();
 
       /** \brief Set the percentage of faces that should be removed.
-        * \param[in] float the factor
+        * \param[in] factor the factor
         */
       inline void
       setTargetReductionFactor (float factor)

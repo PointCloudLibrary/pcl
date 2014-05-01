@@ -63,7 +63,7 @@ namespace pcl
   namespace visualization
   {
 
-    /** \brief A list of potential keyboard modifiers for \ref PCLVisualizerInteractorStyle.
+    /** \brief A list of potential keyboard modifiers for \ref pcl::visualization::PCLVisualizerInteractorStyle::PCLVisualizerInteractorStyle()
       * Defaults to Alt. 
       */ 
     enum InteractorKeyboardModifier
@@ -145,7 +145,7 @@ namespace pcl
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
         /** \brief Pass a pointer to the actor map
-          * \param[in] actors the actor map that will be used with this style
+          * \param[in] use_vbos
           */
         inline void
         setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }

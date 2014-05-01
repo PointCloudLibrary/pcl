@@ -167,9 +167,9 @@ HTML_HEADER            =
 HTML_FOOTER            = @PCL_SOURCE_DIR@/doc/doxygen/footer.html
 HTML_STYLESHEET        = 
 HTML_EXTRA_FILES       =
-HTML_COLORSTYLE_HUE    = 220
-HTML_COLORSTYLE_SAT    = 100
-HTML_COLORSTYLE_GAMMA  = 80
+HTML_COLORSTYLE_HUE    = 87
+HTML_COLORSTYLE_SAT    = 46
+HTML_COLORSTYLE_GAMMA  = 73
 HTML_TIMESTAMP         = YES
 HTML_DYNAMIC_SECTIONS  = YES
 GENERATE_DOCSET        = YES
@@ -275,9 +275,10 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = *.h
-#PREDEFINED             = protected=private \
-PREDEFINED             = "HAVE_QHULL=1" \
-                         "HAVE_OPENNI=1"
+#PREDEFINED            = protected=private \
+PREDEFINED =           = "HAVE_QHULL=1" \
+                         "HAVE_OPENNI=1" \
+                         "PCL_DEPRECATED(x)="
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 

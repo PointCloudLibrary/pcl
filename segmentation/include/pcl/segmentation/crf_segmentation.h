@@ -84,9 +84,9 @@ namespace pcl
 
 
       /** \brief Set the leaf size for the voxel grid.
-        * \param[in] leaf size x-axis
-        * \param[in] leaf size y-axis
-        * \param[in] leaf size z-axis
+        * \param[in] x leaf size x-axis
+        * \param[in] y leaf size y-axis
+        * \param[in] z leaf size z-axis
         */
       void
       setVoxelGridLeafSize (const float x, const float y, const float z);
@@ -114,22 +114,22 @@ namespace pcl
       
 
       /** \brief Set the smoothness kernel parameters.
-       * \param[in] standard deviation x
-       * \param[in] standard deviation y
-       * \param[in] standard deviation z
-       * \param[in] weight
+       * \param[in] sx standard deviation x
+       * \param[in] sy standard deviation y
+       * \param[in] sz standard deviation z
+       * \param[in] w weight
         */
       void
       setSmoothnessKernelParameters (const float sx, const float sy, const float sz, const float w);
 
       /** \brief Set the appearanche kernel parameters.
-       * \param[in] standard deviation x
-       * \param[in] standard deviation y
-       * \param[in] standard deviation z
-       * \param[in] standard deviation red
-       * \param[in] standard deviation green
-       * \param[in] standard deviation blue
-       * \param[in] weight
+       * \param[in] sx standard deviation x
+       * \param[in] sy standard deviation y
+       * \param[in] sz standard deviation z
+       * \param[in] sr standard deviation red
+       * \param[in] sg standard deviation green
+       * \param[in] sb standard deviation blue
+       * \param[in] w weight
         */
       void
       setAppearanceKernelParameters (float sx, float sy, float sz, 

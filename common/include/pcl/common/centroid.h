@@ -1111,9 +1111,9 @@ namespace pcl
                    PointOutT& centroid);
 
   /** Compute the centroid of a set of points and return it as a point.
-    *
+    * \param[in] cloud
     * \param[in] indices point cloud indices that need to be used
-    *
+    * \param[out] centroid
     * This is an overloaded function provided for convenience. See the
     * documentation for computeCentroid().
     *

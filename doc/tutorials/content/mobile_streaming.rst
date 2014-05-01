@@ -41,7 +41,7 @@ The client is an Android app named *Point Cloud Streaming*.  The app
 is implemented using the Android `NativeActivity <https://developer.android.com/reference/android/app/NativeActivity.html>`_.
 Using *NativeActivity*, an Android app can be implemented in pure
 C++ code without writing components in Java.  The app uses APIs provided by the `Android
-NDK <http://developer.android.com/sdk/ndk/overview.html>`_ to handle touch events
+NDK <http://developer.android.com/tools/sdk/ndk/index.html>`_ to handle touch events
 and app life cycle events.  While this is suitable for an example app, apps that
 demand extra features and user interface elements will require implementations that mix
 native code and Java components and APIs.
