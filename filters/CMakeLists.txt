@@ -40,6 +40,7 @@ if(build)
         src/morphological_filter.cpp
         src/local_maximum.cpp
         src/model_outlier_removal.cpp
+        src/local_modify.cpp
         )
 
     set(incs
@@ -79,6 +80,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/morphological_filter.h"
         "include/pcl/${SUBSYS_NAME}/local_maximum.h"
         "include/pcl/${SUBSYS_NAME}/model_outlier_removal.h"
+        "include/pcl/${SUBSYS_NAME}/local_modify.h"
         )
 
     set(impl_incs
@@ -115,6 +117,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/morphological_filter.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/local_maximum.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/model_outlier_removal.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/local_modify.hpp"
         )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
