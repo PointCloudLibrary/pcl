@@ -108,7 +108,7 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
 
   std::vector<float> assignment_vector (num_grid_sections);
   std::vector<int> sum_count_vector (num_grid_sections, 0);
-  std::vector<std::vector<float>> median_vector (num_grid_sections);
+  std::vector< std::vector<float> > median_vector (num_grid_sections);
 
   // Go over all points and update the vector containers depending upon the stat type
   for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
