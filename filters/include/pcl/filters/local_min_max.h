@@ -209,7 +209,6 @@ namespace pcl
       void
       applyFilterIndices (std::vector<int> &indices);
 
-    private:
       /** \brief A pointer to the spatial search object. */
       SearcherPtr searcher_;
 
@@ -240,13 +239,13 @@ namespace pcl
       /** \brief Filtered results are indexed by an indices array using grid locality.
         * \param[out] indices The resultant indices.
         */
-      void
+      virtual void
       applyGridFilter (std::vector<int> &indices);
 
       /** \brief Filtered results are indexed by an indices array using local locality.
         * \param[out] indices The resultant indices.
         */
-      void
+      virtual void
       applyLocalFilter (std::vector<int> &indices);
   };
 }
