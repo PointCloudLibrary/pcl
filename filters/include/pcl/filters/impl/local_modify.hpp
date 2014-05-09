@@ -220,8 +220,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
   // Initialize the search class
   if (locality_type_ == LT_BOX)
   {
-    if (!octree_)
-      octree_.reset (new pcl::octree::OctreePointCloudSearch<PointT> (resolution_));
+    octree_.reset (new pcl::octree::OctreePointCloudSearch<PointT> (resolution_));
 
     octree_->setInputCloud (cloud_projected);
     octree_->addPointsFromInputCloud ();
