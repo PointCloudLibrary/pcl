@@ -213,7 +213,7 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
   // only save the selected points if:
   //   negative_ == false and extract_removed_indices_ == true OR
   //   negative_ == true
-  if (!negative_ && extract_removed_indices_ || negative_)
+  if ((!negative_ && extract_removed_indices_) || negative_)
   {
     for (int i = 0; i < index_saved.size (); i++)
     {
@@ -273,8 +273,7 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
   // Initialize the search class
   if (locality_type_ == LT_BOX)
   {
-    if (!octree_)
-      octree_.reset (new pcl::octree::OctreePointCloudSearch<PointT> (resolution_));
+    octree_.reset (new pcl::octree::OctreePointCloudSearch<PointT> (resolution_));
 
     octree_->setInputCloud (cloud_projected);
     octree_->addPointsFromInputCloud ();
@@ -371,32 +370,38 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     // Check to see if a current point meets the criteria
     // (i.e. current point is local min/max)
     float query_value = model_->values[0]*input_->points[(*indices_)[iii]].x + model_->values[1]*input_->points[(*indices_)[iii]].y + model_->values[2]*input_->points[(*indices_)[iii]].z;
-    for (size_t k = 1; k < result_indices.size (); ++k)  // k = 1 is the first neighbor
+    for (size_t k = 0; k < result_indices.size (); ++k)  // k = 1 is the first neighbor
     {
-      float point_value = model_->values[0]*input_->points[result_indices[k]].x + model_->values[1]*input_->points[result_indices[k]].y + model_->values[2]*input_->points[result_indices[k]].z;
-      if (stat_type_ == ST_MAX && point_value > query_value || stat_type_ == ST_MIN && point_value < query_value)
+      if (result_indices[k] != (*indices_)[iii])
       {
-        // Query point does not meet the criteria, no need to check others
-        point_meets_criteria[(*indices_)[iii]] = false;
-        break;
+        float point_value = model_->values[0]*input_->points[result_indices[k]].x + model_->values[1]*input_->points[result_indices[k]].y + model_->values[2]*input_->points[result_indices[k]].z;
+        if (((stat_type_ == ST_MAX) && (point_value > query_value)) || ((stat_type_ == ST_MIN) && (point_value < query_value)))
+        {
+          // Query point does not meet the criteria, no need to check others
+          point_meets_criteria[(*indices_)[iii]] = false;
+          break;
+        }
       }
     }
 
     // If the query point met the criteria, all neighbors can be marked as
     // visited, excluding them from future consideration unless we are 
     // using K-nearest neighbors as our search criteria
-    if (point_meets_criteria[(*indices_)[iii]] && locality_type_ != LT_KNN)
+    if (point_meets_criteria[(*indices_)[iii]] && (locality_type_ != LT_KNN))
     {
-      for (size_t k = 1; k < result_indices.size (); ++k)  // k = 1 is the first neighbor
+      for (size_t k = 0; k < result_indices.size (); ++k)
       {
-        if (point_is_visited[result_indices[k]] != true)
+        if (result_indices[k] != (*indices_)[iii])
         {
-          point_is_visited[result_indices[k]] = true;
+          if (point_is_visited[result_indices[k]] != true)
+          {
+            point_is_visited[result_indices[k]] = true;
 
-          if (!negative_)
-            indices[oii++] = result_indices[k];
-          if (negative_ && extract_removed_indices_)
-            (*removed_indices_)[rii++] = result_indices[k];
+            if (!negative_)
+              indices[oii++] = result_indices[k];
+            if (negative_ && extract_removed_indices_)
+              (*removed_indices_)[rii++] = result_indices[k];
+          }
         }
       }
     }
