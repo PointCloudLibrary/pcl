@@ -57,7 +57,7 @@ Basic Usage
   * :ref:`basic_structures`
 
      ======  ======
-     |mi_9|  Title: **Getting Started / Basic Structures**
+     |mi_1|  Title: **Getting Started / Basic Structures**
 
              Author: *Radu B. Rusu*
 
@@ -66,13 +66,13 @@ Basic Usage
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
-     .. |mi_9| image:: images/pcl_logo.png
+     .. |mi_1| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in your own project**
+     |mi_2|  Title: **Using PCL in your own project**
 
              Author: *Nizar Sallem*
 
@@ -81,13 +81,13 @@ Basic Usage
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
 
-     .. |mi_1| image:: images/pcl_logo.png
+     .. |mi_2| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`building_pcl`
 
      ======  ======
-     |mi_2|  Title: **Explaining PCL's cmake options**
+     |mi_3|  Title: **Explaining PCL's cmake options**
 
              Author: *Nizar Sallem*
 
@@ -96,13 +96,13 @@ Basic Usage
              In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
-     .. |mi_2| image:: images/pcl_ccmake.png
+     .. |mi_3| image:: images/pcl_ccmake.png
                :height: 100px
 
   * :ref:`compiling_pcl_dependencies_windows`
 
      ======  ======
-     |mi_3|  Title: **Compiling PCL's dependencies from source on Windows**
+     |mi_4|  Title: **Compiling PCL's dependencies from source on Windows**
 
              Authors: *Alessio Placitelli* and *Mourad Boufarguine*
 
@@ -111,13 +111,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
      ======  ======
 
-     .. |mi_3| image:: images/windows_logo.png
+     .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_windows`
 
      ======  ======
-     |mi_4|  Title: **Compiling PCL on Windows**
+     |mi_5|  Title: **Compiling PCL on Windows**
 
              Author: *Mourad Boufarguine*
 
@@ -126,13 +126,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL on Microsoft Windows.
      ======  ======
 
-     .. |mi_4| image:: images/windows_logo.png
+     .. |mi_5| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_macosx`
 
      ======  ======
-     |mi_5|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
+     |mi_6|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
 
              Author: *Justin Rosen*
 
@@ -141,13 +141,13 @@ Basic Usage
              This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
      ======  ======
 
-     .. |mi_5| image:: images/macosx_logo.png
+     .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`installing_homebrew`
 
      ======  ======
-     |mi_6|  Title: **Installing on Mac OS X using Homebrew**
+     |mi_7|  Title: **Installing on Mac OS X using Homebrew**
 
              Author: *Geoffrey Biggs*
 
@@ -156,13 +156,13 @@ Basic Usage
              This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
-     .. |mi_6| image:: images/macosx_logo.png
+     .. |mi_7| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`using_pcl_with_eclipse`
 
      ======  ======
-     |mi_7|  Title: **Using Eclipse as your PCL editor**
+     |mi_8|  Title: **Using Eclipse as your PCL editor**
 
              Author: *Koen Buys*
 
@@ -171,22 +171,37 @@ Basic Usage
              This tutorial shows you how to get your PCL as a project in Eclipse.
      ======  ======
 
-     .. |mi_7| image:: images/pcl_logo.png
+     .. |mi_8| image:: images/pcl_logo.png
                :height: 75px
 
-  * :ref:`matrix_transform`
+  * :ref:`qt_visualizer`
 
      ======  ======
-     |mi_8|  Title: **Using matrixes to transform a point cloud**
+     |mi_9|  Title: **Create a PCL visualizer in Qt with cmake**
 
              Author: *Victor Lamoine*
 
              Compatibility: > PCL 1.5
 
-             This tutorial shows you how to transform a point cloud using a matrix.
+             This tutorial shows you how to create a PCL visualizer within a Qt application.
      ======  ======
 
-     .. |mi_8| image:: images/matrix_transform/cube.png
+     .. |mi_9| image:: images/qt_visualizer/qt.png
+               :height: 128px
+
+  * :ref:`matrix_transform`
+
+     =======  ======
+     |mi_10|  Title: **Using matrixes to transform a point cloud**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: > PCL 1.5
+
+              This tutorial shows you how to transform a point cloud using a matrix.
+     =======  ======
+
+     .. |mi_10| image:: images/matrix_transform/cube.png
                :height: 120px
 
 .. _advanced_usage:
