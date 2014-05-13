@@ -119,7 +119,7 @@ Var AR_RegFlags
  "exit_${SecName}:"
 !macroend
  
-!macro RemoveSection SecName
+!macro RemoveSection_CPack SecName
   ;  This macro is used to call section's Remove_... macro
   ;from the uninstaller.
   ;Input: section index constant name specified in Section command.
