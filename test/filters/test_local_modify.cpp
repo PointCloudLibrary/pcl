@@ -197,10 +197,10 @@ TEST (Box, Median)
   lm.setResolution (10.0f);
   lm.filter (cloud_out);
 
-  EXPECT_EQ (1.0f, cloud_out[0].z);
-  EXPECT_EQ (1.0f, cloud_out[1].z);
-  EXPECT_EQ (1.0f, cloud_out[2].z);
-  EXPECT_EQ (1.0f, cloud_out[3].z);
+  EXPECT_EQ (0.75f, cloud_out[0].z);
+  EXPECT_EQ (0.75f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (0.75f, cloud_out[3].z);
   EXPECT_EQ (4, cloud_out.size ());
 }
 
@@ -353,10 +353,10 @@ TEST (Radius, Median)
   lm.setRadius (8.0f);
   lm.filter (cloud_out);
 
-  EXPECT_EQ (1.0f, cloud_out[0].z);
-  EXPECT_EQ (1.0f, cloud_out[1].z);
-  EXPECT_EQ (1.0f, cloud_out[2].z);
-  EXPECT_EQ (1.0f, cloud_out[3].z);
+  EXPECT_EQ (0.75f, cloud_out[0].z);
+  EXPECT_EQ (0.75f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (0.75f, cloud_out[3].z);
   EXPECT_EQ (4, cloud_out.size ());
 }
 
@@ -518,10 +518,10 @@ TEST (KNN, Median)
   lm.setNumNeighbors (1);
   lm.filter (cloud_out);
 
-  EXPECT_EQ (0.5f, cloud_out[0].z);
-  EXPECT_EQ (0.5f, cloud_out[1].z);
-  EXPECT_EQ (1.0f, cloud_out[2].z);
-  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (0.375f, cloud_out[0].z);
+  EXPECT_EQ (0.375f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (1.5f, cloud_out[3].z);
   EXPECT_EQ (4, cloud_out.size ());
 }
 
@@ -674,10 +674,659 @@ TEST (Grid, Median)
   lm.setResolution (6.0f);
   lm.filter (cloud_out);
 
+  EXPECT_EQ (cloud_out[0].z, 0.75f);
+  EXPECT_EQ (cloud_out[1].z, 0.75f);
+  EXPECT_EQ (cloud_out[2].z, 0.75f);
+  EXPECT_EQ (cloud_out[3].z, 0.75f);
+  EXPECT_EQ (cloud_out.size (), 4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Box_OMP, Minimum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setStatType (lm.ST_MIN);
+  lm.setLocalityType (lm.LT_BOX);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.25f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setResolution (10.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.25f, cloud_out[2].z);
+  EXPECT_EQ (0.25f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Box_OMP, Maximum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setStatType (lm.ST_MAX);
+  lm.setLocalityType (lm.LT_BOX);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (1.0f, cloud_out[0].z);
+  EXPECT_EQ (1.0f, cloud_out[1].z);
+  EXPECT_EQ (1.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setResolution (10.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (2.0f, cloud_out[0].z);
+  EXPECT_EQ (2.0f, cloud_out[1].z);
+  EXPECT_EQ (2.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Box_OMP, Mean)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setStatType (lm.ST_MEAN);
+  lm.setLocalityType (lm.LT_BOX);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  float mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z) / 3.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+  EXPECT_EQ (mean, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setResolution (10.0f);
+  lm.filter (cloud_out);
+
+  mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z + cloud_in[3].z) / 4.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+  EXPECT_EQ (mean, cloud_out[2].z);
+  EXPECT_EQ (mean, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Box_OMP, Median)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setStatType (lm.ST_MEDIAN);
+  lm.setLocalityType (lm.LT_BOX);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.5f, cloud_out[0].z);
+  EXPECT_EQ (0.5f, cloud_out[1].z);
+  EXPECT_EQ (0.5f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setResolution (10.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.75f, cloud_out[0].z);
+  EXPECT_EQ (0.75f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (0.75f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Radius_OMP, Minimum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setRadius (1.0f);
+  lm.setStatType (lm.ST_MIN);
+  lm.setLocalityType (lm.LT_RADIUS);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.25f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setRadius (8.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.25f, cloud_out[2].z);
+  EXPECT_EQ (0.25f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Radius_OMP, Maximum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setRadius (1.0f);
+  lm.setStatType (lm.ST_MAX);
+  lm.setLocalityType (lm.LT_RADIUS);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (1.0f, cloud_out[0].z);
+  EXPECT_EQ (1.0f, cloud_out[1].z);
+  EXPECT_EQ (1.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setRadius (8.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (2.0f, cloud_out[0].z);
+  EXPECT_EQ (2.0f, cloud_out[1].z);
+  EXPECT_EQ (2.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Radius_OMP, Mean)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setRadius (1.0f);
+  lm.setStatType (lm.ST_MEAN);
+  lm.setLocalityType (lm.LT_RADIUS);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  float mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z) / 3.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+  EXPECT_EQ (mean, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setRadius (8.0f);
+  lm.filter (cloud_out);
+
+  mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z + cloud_in[3].z) / 4.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+  EXPECT_EQ (mean, cloud_out[2].z);
+  EXPECT_EQ (mean, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Radius_OMP, Median)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setRadius (1.0f);
+  lm.setStatType (lm.ST_MEDIAN);
+  lm.setLocalityType (lm.LT_RADIUS);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.5f, cloud_out[0].z);
+  EXPECT_EQ (0.5f, cloud_out[1].z);
+  EXPECT_EQ (0.5f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setRadius (8.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.75f, cloud_out[0].z);
+  EXPECT_EQ (0.75f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (0.75f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (KNN_OMP, Minimum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setNumNeighbors (2);
+  lm.setStatType (lm.ST_MIN);
+  lm.setLocalityType (lm.LT_KNN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.25f, cloud_out[2].z);
+  EXPECT_EQ (0.5f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setNumNeighbors (1);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.25f, cloud_out[0].z);
+  EXPECT_EQ (0.25f, cloud_out[1].z);
+  EXPECT_EQ (0.5f, cloud_out[2].z);
+  EXPECT_EQ (1.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (KNN_OMP, Maximum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setNumNeighbors (2);
+  lm.setStatType (lm.ST_MAX);
+  lm.setLocalityType (lm.LT_KNN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (1.0f, cloud_out[0].z);
+  EXPECT_EQ (1.0f, cloud_out[1].z);
+  EXPECT_EQ (1.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setNumNeighbors (1);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.5f, cloud_out[0].z);
+  EXPECT_EQ (0.5f, cloud_out[1].z);
+  EXPECT_EQ (1.0f, cloud_out[2].z);
+  EXPECT_EQ (2.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (KNN_OMP, Mean)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setNumNeighbors (2);
+  lm.setStatType (lm.ST_MEAN);
+  lm.setLocalityType (lm.LT_KNN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  float mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z) / 3.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+  EXPECT_EQ (mean, cloud_out[2].z);
+
+  mean = (cloud_in[1].z + cloud_in[2].z + cloud_in[3].z) / 3.0;
+
+  EXPECT_EQ (mean, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setNumNeighbors (1);
+  lm.filter (cloud_out);
+
+  mean = (cloud_in[0].z + cloud_in[1].z) / 2.0;
+
+  EXPECT_EQ (mean, cloud_out[0].z);
+  EXPECT_EQ (mean, cloud_out[1].z);
+
+  mean = (cloud_in[1].z + cloud_in[2].z) / 2.0;
+
+  EXPECT_EQ (mean, cloud_out[2].z);
+
+  mean = (cloud_in[2].z + cloud_in[3].z) / 2.0;
+
+  EXPECT_EQ (mean, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (KNN_OMP, Median)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setNumNeighbors (2);
+  lm.setStatType (lm.ST_MEDIAN);
+  lm.setLocalityType (lm.LT_KNN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.5f, cloud_out[0].z);
+  EXPECT_EQ (0.5f, cloud_out[1].z);
+  EXPECT_EQ (0.5f, cloud_out[2].z);
+  EXPECT_EQ (1.0f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+
+  lm.setNumNeighbors (1);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (0.375f, cloud_out[0].z);
+  EXPECT_EQ (0.375f, cloud_out[1].z);
+  EXPECT_EQ (0.75f, cloud_out[2].z);
+  EXPECT_EQ (1.5f, cloud_out[3].z);
+  EXPECT_EQ (4, cloud_out.size ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Grid_OMP, Minimum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setLocalityType (lm.LT_GRID);
+  lm.setStatType (lm.ST_MIN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (cloud_out[0].z, 0.25f);
+  EXPECT_EQ (cloud_out[1].z, 0.25f);
+  EXPECT_EQ (cloud_out[2].z, 0.25f);
+  EXPECT_EQ (cloud_out[3].z, 2.0f);
+  EXPECT_EQ (cloud_out.size (), 4);
+
+  lm.setResolution (6.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (cloud_out[0].z, 0.25f);
+  EXPECT_EQ (cloud_out[1].z, 0.25f);
+  EXPECT_EQ (cloud_out[2].z, 0.25f);
+  EXPECT_EQ (cloud_out[3].z, 0.25f);
+  EXPECT_EQ (cloud_out.size (), 4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Grid_OMP, Maximum)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setLocalityType (lm.LT_GRID);
+  lm.setStatType (lm.ST_MAX);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
   EXPECT_EQ (cloud_out[0].z, 1.0f);
   EXPECT_EQ (cloud_out[1].z, 1.0f);
   EXPECT_EQ (cloud_out[2].z, 1.0f);
-  EXPECT_EQ (cloud_out[3].z, 1.0f);
+  EXPECT_EQ (cloud_out[3].z, 2.0f);
+  EXPECT_EQ (cloud_out.size (), 4);
+
+  lm.setResolution (6.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (cloud_out[0].z, 2.0f);
+  EXPECT_EQ (cloud_out[1].z, 2.0f);
+  EXPECT_EQ (cloud_out[2].z, 2.0f);
+  EXPECT_EQ (cloud_out[3].z, 2.0f);
+  EXPECT_EQ (cloud_out.size (), 4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Grid_OMP, Mean)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setLocalityType (lm.LT_GRID);
+  lm.setStatType (lm.ST_MEAN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  float mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z) / 3.0;
+
+  EXPECT_EQ (cloud_out[0].z, mean);
+  EXPECT_EQ (cloud_out[1].z, mean);
+  EXPECT_EQ (cloud_out[2].z, mean);
+  EXPECT_EQ (cloud_out[3].z, 2.0f);
+  EXPECT_EQ (cloud_out.size (), 4);
+
+  lm.setResolution (6.0f);
+  lm.filter (cloud_out);
+
+  mean = (cloud_in[0].z + cloud_in[1].z + cloud_in[2].z + cloud_in[3].z) / 4.0;
+
+  EXPECT_EQ (cloud_out[0].z, mean);
+  EXPECT_EQ (cloud_out[1].z, mean);
+  EXPECT_EQ (cloud_out[2].z, mean);
+  EXPECT_EQ (cloud_out[3].z, mean);
+  EXPECT_EQ (cloud_out.size (), 4);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (Grid_OMP, Median)
+{
+  PointCloud<PointXYZ> cloud_in, cloud_out;
+
+  cloud_in.height = 1;
+  cloud_in.width = 3;
+  cloud_in.is_dense = true;
+  cloud_in.resize (4);
+
+  cloud_in[0].x = 0;    cloud_in[0].y = 0;    cloud_in[0].z = 0.25;
+  cloud_in[1].x = 0.25; cloud_in[1].y = 0.25; cloud_in[1].z = 0.5;
+  cloud_in[2].x = 0.5;  cloud_in[2].y = 0.5;  cloud_in[2].z = 1;
+  cloud_in[3].x = 5;    cloud_in[3].y = 5;    cloud_in[3].z = 2;
+
+  LocalModify<PointXYZ> lm;
+  lm.setInputCloud (cloud_in.makeShared ());
+  lm.setResolution (1.0f);
+  lm.setLocalityType (lm.LT_GRID);
+  lm.setStatType (lm.ST_MEDIAN);
+  lm.setNumberOfThreads (omp_get_num_procs ());
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (cloud_out[0].z, 0.5f);
+  EXPECT_EQ (cloud_out[1].z, 0.5f);
+  EXPECT_EQ (cloud_out[2].z, 0.5f);
+  EXPECT_EQ (cloud_out[3].z, 2.0f);
+  EXPECT_EQ (cloud_out.size (), 4);
+
+  lm.setResolution (6.0f);
+  lm.filter (cloud_out);
+
+  EXPECT_EQ (cloud_out[0].z, 0.75f);
+  EXPECT_EQ (cloud_out[1].z, 0.75f);
+  EXPECT_EQ (cloud_out[2].z, 0.75f);
+  EXPECT_EQ (cloud_out[3].z, 0.75f);
   EXPECT_EQ (cloud_out.size (), 4);
 }
 

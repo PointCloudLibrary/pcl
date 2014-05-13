@@ -86,9 +86,10 @@ namespace pcl
       } StatType;
 
       /** \brief Empty constructor. */
-      LocalModify () :
+      LocalModify (unsigned int threads = 0) :
         FilterIndices<PointT>::FilterIndices (),
         searcher_ (),
+        threads_ (threads),
         radius_ (0),
         num_neighbors_ (0),
         resolution_ (1.0f),
@@ -97,6 +98,12 @@ namespace pcl
       {
         filter_name_ = "LocalModify";
       }
+
+      /** \brief Set the number of threads to use.
+        * \param threads the number of hardware threads to use
+        */
+      inline void 
+      setNumberOfThreads (unsigned int threads = 0) { threads_ = threads; }
 
       /** \brief Set the radius to use to determine if a point is within our locality.
         * \param[in] radius The radius to use to determine if a point is within our locality.
@@ -183,6 +190,9 @@ namespace pcl
 
       /** \brief A pointer to the octree search object. */
       OctreePtr octree_;
+
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_;
 
       /** \brief The radius to use to determine if a point is within our locality. */
       float radius_;

@@ -72,7 +72,6 @@ pcl::LocalModify<PointT>::applyFilter (PointCloud &output)
 template <typename PointT> void
 pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
 {
-
   // start by copying input to output
   pcl::copyPointCloud<PointT> (*input_, *indices_, output);
 
@@ -110,24 +109,37 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
   std::vector<int> sum_count_vector (num_grid_sections, 0);
   std::vector< std::vector<float> > median_vector (num_grid_sections);
 
+  #ifdef _OPENMP
+  std::vector<omp_lock_t> write_locks (num_grid_sections);
+  for (int i = 0; i < write_locks.size (); ++i)
+    omp_init_lock(&write_locks[i]);
+  #endif
+
   // Go over all points and update the vector containers depending upon the stat type
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads(threads_)
+  #endif
+  for (int i = 0; i < indices_->size (); ++i)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!pcl_isfinite (input_->points[(*indices_)[i]].x) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].y) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].z))
         continue;
 
-    float new_value = input_->points[*it].z;
+    float new_value = input_->points[(*indices_)[i]].z;
 
-    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (floor (input_->points[(*indices_)[i]].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (floor (input_->points[(*indices_)[i]].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
     
+    #ifdef _OPENMP
+    omp_set_lock(&write_locks[idx]);
+    #endif
+
     float current_value = assignment_vector[idx];
 
     // stat type is min and the new value is smaller than our current 
@@ -159,18 +171,31 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
       // save the z value so we can compute the median later
       median_vector[idx].push_back (new_value);
     }
+
+    #ifdef _OPENMP
+    omp_unset_lock(&write_locks[idx]);
+    #endif
   }
 
   // calculate the mean/median for each grid index
   if (stat_type_ == ST_MEDIAN || stat_type_ == ST_MEAN)
   {
+    #ifdef _OPENMP
+    #pragma omp parallel for num_threads(threads_)
+    #endif
     for (int i = 0; i < assignment_vector.size (); ++i)
     {
       if (stat_type_ == ST_MEDIAN && median_vector[i].size () > 0)
       {
         // sort the values & save the median
         std::sort (median_vector[i].begin (), median_vector[i].end ());
-        assignment_vector[i] = median_vector[i][median_vector[i].size () / 2];
+
+        // assign the median z value
+        if (median_vector[i].size () % 2 == 1)
+          assignment_vector[i] = median_vector[i][median_vector[i].size () / 2];
+        else{
+          assignment_vector[i] = (median_vector[i][(median_vector[i].size () / 2) - 1] + median_vector[i][median_vector[i].size () / 2]) / 2.0;
+        }
       }
       else if (stat_type_ == ST_MEAN && sum_count_vector[i] > 0)
       {
@@ -181,23 +206,26 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
   }
 
   // Assign the Min/Max/Mean/Median value to the z field of each cloud point 
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads(threads_)
+  #endif
+  for (int i = 0; i < indices_->size (); ++i)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!pcl_isfinite (input_->points[(*indices_)[i]].x) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].y) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].z))
         continue;
 
-    int ijk0 = static_cast<int> (floor (input_->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (floor (input_->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (floor (input_->points[(*indices_)[i]].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (floor (input_->points[(*indices_)[i]].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
 
     // update the z value for this point
-    output.points[*it].z = assignment_vector[idx];
+    output.points[(*indices_)[i]].z = assignment_vector[idx];
   }
 }
 
@@ -239,12 +267,20 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
 
   float half_res = resolution_ / 2.0f;
 
+  #ifdef _OPENMP
+  omp_lock_t search_lock;
+  omp_init_lock(&search_lock);
+  #endif
+
   // Find all points within bounds (e.g. radius, box, KNN) of the query
   // point, and determine the min/max/mean/median
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads(threads_)
+  #endif
+  for (int i = 0; i < indices_->size (); ++i)
   {
     // This simply checks to make sure that the point is valid
-    if (!isFinite (cloud_projected->points[*it]))
+    if (!isFinite (cloud_projected->points[(*indices_)[i]]))
     {
       continue;
     }
@@ -252,7 +288,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
     // Perform the search in the projected cloud
     std::vector<int> result_indices;
     std::vector<float> result_dists;
-    PointT p = cloud_projected->points[*it];
+    PointT p = cloud_projected->points[(*indices_)[i]];
     if (locality_type_ == LT_BOX)
     {
       Eigen::Vector3f bbox_min, bbox_max;
@@ -265,7 +301,15 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
       bbox_min = Eigen::Vector3f (minx, miny, minz);
       bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
 
-      if (octree_->boxSearch (bbox_min, bbox_max, result_indices) == 0)
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+      int num_points = octree_->boxSearch (bbox_min, bbox_max, result_indices);
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors with resolution %f failed.\n", getClassName ().c_str (), resolution_);
         continue;
@@ -273,7 +317,16 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
     }
     else if (locality_type_ == LT_RADIUS)
     {
-      if (searcher_->radiusSearch (p, radius_, result_indices, result_dists) == 0)
+
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+      int num_points = searcher_->radiusSearch (p, radius_, result_indices, result_dists);
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors within radius %f failed.\n", getClassName ().c_str (), radius_);
         continue;
@@ -281,7 +334,16 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
     }
     else if (locality_type_ == LT_KNN)
     {
-      if (searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists) == 0)
+
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+      int num_points = searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists);
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for %d nearest neighbors failed.\n", getClassName ().c_str (), num_neighbors_);
         continue;
@@ -298,9 +360,9 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
 
       // assign either min or max to the current point
       if (stat_type_ == ST_MIN)
-        output.points[*it].z = min_p.z ();
+        output.points[(*indices_)[i]].z = min_p.z ();
       else 
-        output.points[*it].z = max_p.z ();
+        output.points[(*indices_)[i]].z = max_p.z ();
     }
     else if (stat_type_ == ST_MEAN)
     {
@@ -311,7 +373,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
         sum += input_->points[result_indices[j]].z;
 
       // assign the sum divided by the number of points
-      output.points[*it].z = sum / (float)result_indices.size ();
+      output.points[(*indices_)[i]].z = sum / (float)result_indices.size ();
     }
     else if (stat_type_ == ST_MEDIAN)
     {
@@ -325,7 +387,10 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
       std::sort (z_values.begin (), z_values.end ());
 
       // assign the median z value
-      output.points[*it].z = z_values[z_values.size () / 2];
+      if (z_values.size () % 2 == 1)
+        output.points[(*indices_)[i]].z = z_values[z_values.size () / 2];
+      else
+        output.points[(*indices_)[i]].z = (z_values[(z_values.size () / 2) - 1] + z_values[z_values.size () / 2]) / 2.0;
     }
   }
 }
