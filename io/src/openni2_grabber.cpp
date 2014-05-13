@@ -72,7 +72,10 @@ namespace pcl
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
-  : rgb_sync_ ()
+  : color_resize_buffer_(0)
+  , depth_resize_buffer_(0)
+  , ir_resize_buffer_(0)
+  , rgb_sync_ ()
   , ir_sync_ ()
   , device_ ()
   , rgb_frame_id_ ()
@@ -92,9 +95,6 @@ pcl::io::OpenNI2Grabber::OpenNI2Grabber (const std::string& device_id, const Mod
   , running_ (false)
   , rgb_parameters_(std::numeric_limits<double>::quiet_NaN () )
   , depth_parameters_(std::numeric_limits<double>::quiet_NaN () )
-  , color_resize_buffer_(0)
-  , depth_resize_buffer_(0)
-  , ir_resize_buffer_(0)
 {
   // initialize driver
   updateModeMaps (); // registering mapping from PCL enum modes to openni::VideoMode and vice versa
@@ -904,7 +904,6 @@ void pcl::io::OpenNI2Grabber::processDepthFrame (openni::VideoStream& stream)
   stream.readFrame (&frame);
   FrameWrapper::Ptr frameWrapper = boost::make_shared<Openni2FrameWrapper>(frame);
 
-  boost::posix_time::ptime t_readFrameTimestamp = boost::posix_time::microsec_clock::local_time ();
   float focalLength = device_->getDepthFocalLength ();
 
   float baseline = device_->getBaseline();
@@ -922,7 +921,6 @@ void pcl::io::OpenNI2Grabber::processIRFrame (openni::VideoStream& stream)
 {
   openni::VideoFrameRef frame;
   stream.readFrame (&frame);
-  boost::posix_time::ptime t_readFrameTimestamp = boost::posix_time::microsec_clock::local_time ();
 
   FrameWrapper::Ptr frameWrapper = boost::make_shared<Openni2FrameWrapper>(frame);
 
