@@ -265,6 +265,16 @@ if(WITH_OPENNI)
   endif(OPENNI_FOUND)
 endif(WITH_OPENNI)
 
+# OpenNI 2
+option(WITH_OPENNI2 "OpenNI 2 driver support" TRUE)
+if(WITH_OPENNI2)
+  find_package(OpenNI2)
+  if (OPENNI2_FOUND)
+    set(HAVE_OPENNI2 ON)
+    include_directories(SYSTEM ${OPENNI2_INCLUDE_DIRS})
+  endif(OPENNI2_FOUND)
+endif(WITH_OPENNI2)
+
 # Fotonic (FZ_API)
 option(WITH_FZAPI "Build Fotonic Camera support" TRUE)
 if(WITH_FZAPI)

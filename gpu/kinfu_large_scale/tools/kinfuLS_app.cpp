@@ -147,11 +147,15 @@ struct SampledScopeTime : public StopWatch
   ~SampledScopeTime()
   {
     static int i_ = 0;
-    time_ms_ += getTime ();    
+    static boost::posix_time::ptime starttime_ = boost::posix_time::microsec_clock::local_time();
+    time_ms_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
-      time_ms_ = 0;        
+      boost::posix_time::ptime endtime_ = boost::posix_time::microsec_clock::local_time();
+      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )"
+           << "( real: " << 1000.f * EACH / (endtime_-starttime_).total_milliseconds() << "fps )"  << endl;
+      time_ms_ = 0;
+      starttime_ = endtime_;
     }
     ++i_;
   }
