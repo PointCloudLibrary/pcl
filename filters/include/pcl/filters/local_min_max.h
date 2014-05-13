@@ -84,9 +84,11 @@ namespace pcl
       } StatType;
 
       /** \brief Empty constructor. */
-      LocalMinMax (bool extract_removed_indices = false) :
+      LocalMinMax (bool extract_removed_indices = false,
+                   unsigned int threads = 0) :
         FilterIndices<PointT>::FilterIndices (extract_removed_indices),
         searcher_ (),
+        threads_ (threads),
         radius_ (0),
         num_neighbors_ (0),
         resolution_ (1.0f),
@@ -102,6 +104,12 @@ namespace pcl
         model_coeffs->values[2] = 1.0;
         model_ = model_coeffs;
       }
+
+      /** \brief Set the number of threads to use.
+        * \param threads the number of hardware threads to use (0 sets the value back to automatic)
+        */
+      inline void 
+      setNumberOfThreads (unsigned int threads = 0) { threads_ = threads; }
 
       /** \brief Set the radius to use to determine if a point is within our locality.
         * \param[in] radius The radius to use to determine if a point is within our locality.
@@ -214,6 +222,9 @@ namespace pcl
 
       /** \brief A pointer to the octree search object. */
       OctreePtr octree_;
+
+      /** \brief The number of threads the scheduler should use. */
+      unsigned int threads_;
 
       /** \brief The radius to use to determine if a point is within our locality. */
       float radius_;

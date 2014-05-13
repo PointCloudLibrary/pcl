@@ -95,11 +95,13 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
   sphere_coeffs[1] = std::atan2 (model_->values[1], model_->values[0]); // theta
   sphere_coeffs[2] = std::acos (model_->values[2]/sphere_coeffs[0]); // phi
 
-  float r, theta, phi;
-
   // rotate each of the projected points into the xy plane
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads (threads_)
+  #endif
   for (int i = 0; i < cloud_projected->size(); i++)
   {
+    float r, theta, phi;
     r = std::sqrt (cloud_projected->points[i].x*cloud_projected->points[i].x+cloud_projected->points[i].y*cloud_projected->points[i].y+cloud_projected->points[i].z*cloud_projected->points[i].z);
     if (r > 0.0)
     {
@@ -150,31 +152,47 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
   std::vector<int> index_vector (num_grid_sections);
   std::vector<int> index_saved (num_grid_sections, 0);
 
+  #ifdef _OPENMP
+  std::vector<omp_lock_t> write_locks (num_grid_sections);
+  for (int i = 0; i < write_locks.size (); ++i)
+    omp_init_lock(&write_locks[i]);
+
+  omp_lock_t index_lock;
+  omp_init_lock(&index_lock);
+  #endif
+
   // Go over all points and insert them into the index_vector vector with 
   // calculated idx if they are locally minimal/maximal. Points with the 
   // same idx value will contribute to the same point of resulting CloudPoint
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads (threads_)
+  #endif
+  for (int i = 0; i < indices_->size (); ++i)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[*it].x) ||
-          !pcl_isfinite (input_->points[*it].y) ||
-          !pcl_isfinite (input_->points[*it].z))
+      if (!pcl_isfinite (input_->points[(*indices_)[i]].x) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].y) ||
+          !pcl_isfinite (input_->points[(*indices_)[i]].z))
         continue;
 
-    float new_value = model_->values[0]*input_->points[*it].x + model_->values[1]*input_->points[*it].y + model_->values[2]*input_->points[*it].z;
+    float new_value = model_->values[0]*input_->points[(*indices_)[i]].x + model_->values[1]*input_->points[(*indices_)[i]].y + model_->values[2]*input_->points[(*indices_)[i]].z;
 
-    int ijk0 = static_cast<int> (floor (cloud_projected->points[*it].x * inverse_resolution_) - static_cast<float> (min_b[0]));
-    int ijk1 = static_cast<int> (floor (cloud_projected->points[*it].y * inverse_resolution_) - static_cast<float> (min_b[1]));
+    int ijk0 = static_cast<int> (floor (cloud_projected->points[(*indices_)[i]].x * inverse_resolution_) - static_cast<float> (min_b[0]));
+    int ijk1 = static_cast<int> (floor (cloud_projected->points[(*indices_)[i]].y * inverse_resolution_) - static_cast<float> (min_b[1]));
 
     // Compute the grid cell index
     int idx = ijk0 * divb_mul[0] + ijk1 * divb_mul[1];
+
+    #ifdef _OPENMP
+    omp_set_lock(&write_locks[idx]);
+    #endif
 
     // if this is the first point we've seen in this grid section, save the index
     if (index_saved[idx] == 0)
     {
       index_saved[idx]++;
-      index_vector[idx] = *it;
+      index_vector[idx] = (*indices_)[i];
     }
     else 
     {
@@ -184,30 +202,59 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
       
       if (stat_type_ == ST_MIN && new_value < current_value)
       {
+        #ifdef _OPENMP
+        omp_set_lock(&index_lock);
+        #endif
+
         if (!negative_)
           indices.push_back (index_vector[idx]);
         if (negative_ && extract_removed_indices_)
           removed_indices_->push_back (index_vector[idx]);
 
-        index_vector[idx] = *it;
+        #ifdef _OPENMP
+        omp_unset_lock(&index_lock);
+        #endif
+
+        index_vector[idx] = (*indices_)[i];
       }
       else if (stat_type_ == ST_MAX && new_value > current_value)
       {
+
+        #ifdef _OPENMP
+        omp_set_lock(&index_lock);
+        #endif
+
         if (!negative_)
           indices.push_back (index_vector[idx]);
         if (negative_ && extract_removed_indices_)
           removed_indices_->push_back (index_vector[idx]);
 
-        index_vector[idx] = *it;
+        #ifdef _OPENMP
+        omp_unset_lock(&index_lock);
+        #endif
+
+        index_vector[idx] = (*indices_)[i];
       }
       else
       {
+        #ifdef _OPENMP
+        omp_set_lock(&index_lock);
+        #endif
+
         if (!negative_)
-          indices.push_back (*it);
+          indices.push_back ((*indices_)[i]);
         if (negative_ && extract_removed_indices_)
-          removed_indices_->push_back (*it);
+          removed_indices_->push_back ((*indices_)[i]);
+
+        #ifdef _OPENMP
+        omp_unset_lock(&index_lock);
+        #endif
       }
     }
+
+    #ifdef _OPENMP
+    omp_unset_lock(&write_locks[idx]);
+    #endif
   }
   
   // only save the selected points if:
@@ -251,11 +298,13 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
   sphere_coeffs[1] = std::atan2 (model_->values[1], model_->values[0]); // theta
   sphere_coeffs[2] = std::acos (model_->values[2]/sphere_coeffs[0]); // phi
 
-  float r, theta, phi;
-
   // rotate each of the projected points into the xy plane
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads (threads_)
+  #endif
   for (int i = 0; i < cloud_projected->size(); i++)
   {
+    float r, theta, phi;
     r = std::sqrt (cloud_projected->points[i].x*cloud_projected->points[i].x+cloud_projected->points[i].y*cloud_projected->points[i].y+cloud_projected->points[i].z*cloud_projected->points[i].z);
     if (r > 0.0)
     {
@@ -295,13 +344,23 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-  std::vector<bool> point_meets_criteria (indices_->size (), false);
   std::vector<bool> point_is_visited (indices_->size (), false);
 
   float half_res = resolution_ / 2.0f;
 
+  #ifdef _OPENMP
+  omp_lock_t search_lock;
+  omp_init_lock(&search_lock);
+
+  omp_lock_t index_lock;
+  omp_init_lock(&index_lock);
+  #endif
+
   // Find all points within bounds (e.g. radius, box, KNN) of the query
   // point, removing those that are locally minimal/maximal
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads (threads_)
+  #endif
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)
   {
     // This simply checks to make sure that the point is valid
@@ -313,18 +372,22 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     // Points in the neighborhood of a previously identified point which meets
     // the criteria, will not be minimal/maximal in their own neighborhood for
     // radius and box search.  This does not apply for k-nearest neighbors.
-    if (point_is_visited[(*indices_)[iii]] && !point_meets_criteria[(*indices_)[iii]])
+    // As we cannot determine the order with which threads operate on our 
+    // data, we cannot reliably keep track of visited points when this algorithm
+    // is multi-threaded, so we skip this this block when threaded
+    if (threads_ == 1  && point_is_visited[(*indices_)[iii]])
     {
       continue;
     }
 
     // Assume the current query point meets the criteria, mark as visited
-    point_meets_criteria[(*indices_)[iii]] = true;
+    bool point_meets_criteria = true;
     point_is_visited[(*indices_)[iii]] = true;
 
     // Perform the search in the projected cloud
     std::vector<int> result_indices;
     std::vector<float> result_dists;
+
     PointT p = cloud_projected->points[(*indices_)[iii]];
     if (locality_type_ == LT_BOX)
     {
@@ -338,7 +401,17 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
       bbox_min = Eigen::Vector3f (minx, miny, minz);
       bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
 
-      if (octree_->boxSearch (bbox_min, bbox_max, result_indices) == 0)
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+      
+      int num_points = octree_->boxSearch (bbox_min, bbox_max, result_indices);
+      
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors with resolution %f failed.\n", getClassName ().c_str (), resolution_);
         continue;
@@ -346,7 +419,18 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     }
     else if (locality_type_ == LT_RADIUS)
     {
-      if (searcher_->radiusSearch (p, radius_, result_indices, result_dists) == 0)
+
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+
+      int num_points = searcher_->radiusSearch (p, radius_, result_indices, result_dists);
+
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors within radius %f failed.\n", getClassName ().c_str (), radius_);
         continue;
@@ -354,7 +438,18 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     }
     else if (locality_type_ == LT_KNN)
     {
-      if (searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists) == 0)
+
+      #ifdef _OPENMP
+      omp_set_lock(&search_lock);
+      #endif
+
+      int num_points = searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists);
+      
+      #ifdef _OPENMP
+      omp_unset_lock(&search_lock);
+      #endif
+
+      if (num_points == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for %d nearest neighbors failed.\n", getClassName ().c_str (), num_neighbors_);
         continue;
@@ -364,7 +459,7 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     // If query point is alone, we retain it regardless
     if (result_indices.size () == 1)
     {
-        point_meets_criteria[(*indices_)[iii]] = false;
+        point_meets_criteria = false;
     }
 
     // Check to see if a current point meets the criteria
@@ -378,7 +473,7 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
         if (((stat_type_ == ST_MAX) && (point_value > query_value)) || ((stat_type_ == ST_MIN) && (point_value < query_value)))
         {
           // Query point does not meet the criteria, no need to check others
-          point_meets_criteria[(*indices_)[iii]] = false;
+          point_meets_criteria = false;
           break;
         }
       }
@@ -387,7 +482,10 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
     // If the query point met the criteria, all neighbors can be marked as
     // visited, excluding them from future consideration unless we are 
     // using K-nearest neighbors as our search criteria
-    if (point_meets_criteria[(*indices_)[iii]] && (locality_type_ != LT_KNN))
+    // As we cannot determine the order with which threads operate on our 
+    // data, we cannot reliably keep track of visited points when this algorithm
+    // is multi-threaded, so we skip this this block when threaded
+    if (threads_ == 1 && point_meets_criteria && (locality_type_ != LT_KNN))
     {
       for (size_t k = 0; k < result_indices.size (); ++k)
       {
@@ -408,18 +506,34 @@ pcl::LocalMinMax<PointT>::applyLocalFilter (std::vector<int> &indices)
 
     // Points that meet the criteria are passed to removed indices
     // Unless negative was set, then it's the opposite condition
-    if ((!negative_ && point_meets_criteria[(*indices_)[iii]]) || (negative_ && !point_meets_criteria[(*indices_)[iii]]))
+    if ((!negative_ && point_meets_criteria) || (negative_ && !point_meets_criteria))
     {
       if (extract_removed_indices_)
       {
-        (*removed_indices_)[rii++] = (*indices_)[iii];
-      }
 
+        #ifdef _OPENMP
+        omp_set_lock(&index_lock);
+        #endif
+
+        (*removed_indices_)[rii++] = (*indices_)[iii];
+
+        #ifdef _OPENMP
+        omp_unset_lock(&index_lock);
+        #endif
+      }
       continue;
     }
 
     // Otherwise it was a normal point for output (inlier)
+    #ifdef _OPENMP
+    omp_set_lock(&index_lock);
+    #endif
+
     indices[oii++] = (*indices_)[iii];
+
+    #ifdef _OPENMP
+    omp_unset_lock(&index_lock);
+    #endif
   }
 
   // Resize the output arrays
