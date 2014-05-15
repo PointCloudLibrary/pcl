@@ -869,6 +869,87 @@ TEST (PCL, transformLine)
     EXPECT_NEAR (lined[i], test[i], tolerance);
   }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformPlane)
+{
+  Eigen::Vector4d test;
+  double tolerance = 1e-8;
+  pcl::ModelCoefficients::Ptr plane (new pcl::ModelCoefficients);
+  plane->values.resize(4);
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+
+  // Simple translation
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 1, 0, 0;
+  transformationd.translation() << 1, 0, 0;
+  test << 1, 0, 0, -3;
+
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  // Simple rotation
+  transformation.translation() << 0, 0, 0;
+  transformationd.translation() << 0, 0, 0;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  test << 0, 1, 0, -2;
+  tolerance = 1e-6;
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  // Random transformation
+  transformation.translation() << 12.5, -5.4, 0.1;
+  transformationd.translation() << 12.5, -5.4, 0.1;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY())
+  * Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
+  * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
+  test << 5.35315, 2.89914, 0.196848, -49.2788;
+  tolerance = 1e-4;
+
+  plane->values[0] = 5.4;
+  plane->values[1] = -1.3;
+  plane->values[2] = 2.5;
+  plane->values[3] = 2.0;
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 5.4;
+  plane->values[1] = -1.3;
+  plane->values[2] = 2.5;
+  plane->values[3] = 2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+}
 
 /* ---[ */
 int

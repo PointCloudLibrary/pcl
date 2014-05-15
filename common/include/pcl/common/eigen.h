@@ -53,6 +53,7 @@
 #endif
 
 #include <cmath>
+#include <pcl/ModelCoefficients.h>
 
 #include <Eigen/StdVector>
 #include <Eigen/Core>
@@ -505,6 +506,67 @@ namespace pcl
                  const Eigen::Affine3d &transformation)
   {
     return (transformLine<double> (line_in, line_out, transformation));
+  }
+
+/** \brief Transform plane vectors using an affine matrix
+  * \param[in] plane_in the plane coefficients to be transformed
+  * \param[out] plane_out the transformed plane coefficients to fill
+  * \param[in] transformation the transformation matrix
+  *
+  * The plane vectors are filled in the form ax+by+cz+d=0
+  * Can be used with non Hessian form planes coefficients
+  * Can be used with \c plane_in = \c plane_out
+  */
+  template <typename Scalar> void
+  transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
+                        Eigen::Matrix<Scalar, 4, 1> &plane_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline void
+  transformPlane (const Eigen::Matrix<double, 4, 1> &plane_in,
+                        Eigen::Matrix<double, 4, 1> &plane_out,
+                  const Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<double> (plane_in, plane_out, transformation);
+  }
+
+  inline void
+  transformPlane (const Eigen::Matrix<float, 4, 1> &plane_in,
+                        Eigen::Matrix<float, 4, 1> &plane_out,
+                  const Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<float> (plane_in, plane_out, transformation);
+  }
+
+/** \brief Transform plane vectors using an affine matrix
+  * \param[in] plane_in the plane coefficients to be transformed
+  * \param[out] plane_out the transformed plane coefficients to fill
+  * \param[in] transformation the transformation matrix
+  *
+  * The plane vectors are filled in the form ax+by+cz+d=0
+  * Can be used with non Hessian form planes coefficients
+  * Can be used with \c plane_in = \c plane_out
+  * \warning ModelCoefficients stores floats only !
+  */
+  template<typename Scalar> void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<double> (plane_in, plane_out, transformation);
+  }
+
+  inline void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<float> (plane_in, plane_out, transformation);
   }
 
 }

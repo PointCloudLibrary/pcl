@@ -848,5 +848,30 @@ pcl::transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar> void
+pcl::transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
+                           Eigen::Matrix<Scalar, 4, 1> &plane_out,
+                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+{
+  Eigen::Hyperplane < Scalar, 3 > plane;
+  plane.coeffs () << plane_in;
+  plane.transform (transformation);
+  plane_out << plane.coeffs ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar> void
+pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                           pcl::ModelCoefficients::Ptr plane_out,
+                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+{
+  Eigen::Matrix < Scalar, 4, 1 > v_plane_in (std::vector < Scalar > (plane_in->values.begin (), plane_in->values.end ()).data ());
+  pcl::transformPlane (v_plane_in, v_plane_in, transformation);
+  plane_out->values.resize (4);
+  for (int i = 0; i < 4; i++)
+    plane_in->values[i] = v_plane_in[i];
+}
+
 #endif  //PCL_COMMON_EIGEN_IMPL_HPP_
 
