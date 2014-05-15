@@ -117,7 +117,7 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
 
   // Go over all points and update the vector containers depending upon the stat type
   #ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_)
+  #pragma omp parallel for num_threads (threads_) schedule (dynamic)
   #endif
   for (int i = 0; i < indices_->size (); ++i)
   {
@@ -181,7 +181,7 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
   if (stat_type_ == ST_MEDIAN || stat_type_ == ST_MEAN)
   {
     #ifdef _OPENMP
-    #pragma omp parallel for num_threads(threads_)
+    #pragma omp parallel for num_threads (threads_) schedule (dynamic)
     #endif
     for (int i = 0; i < assignment_vector.size (); ++i)
     {
@@ -207,7 +207,7 @@ pcl::LocalModify<PointT>::applyGridFilter (PointCloud &output)
 
   // Assign the Min/Max/Mean/Median value to the z field of each cloud point 
   #ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_)
+  #pragma omp parallel for num_threads (threads_)
   #endif
   for (int i = 0; i < indices_->size (); ++i)
   {
@@ -239,8 +239,11 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
   pcl::copyPointCloud<PointT> (*input_, *indices_, *cloud_projected);
 
   // zero each point's z value
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
-    cloud_projected->points[*it].z = 0.0;
+  #ifdef _OPENMP
+  #pragma omp parallel for num_threads (threads_)
+  #endif
+  for (int i = 0; i < indices_->size (); ++i)
+    cloud_projected->points[(*indices_)[i]].z = 0.0;
 
   // copy the input data to the output point cloud
   pcl::copyPointCloud<PointT> (*input_, *indices_, output);
@@ -267,15 +270,10 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
 
   float half_res = resolution_ / 2.0f;
 
-  #ifdef _OPENMP
-  omp_lock_t search_lock;
-  omp_init_lock(&search_lock);
-  #endif
-
   // Find all points within bounds (e.g. radius, box, KNN) of the query
   // point, and determine the min/max/mean/median
   #ifdef _OPENMP
-  #pragma omp parallel for num_threads(threads_)
+  #pragma omp parallel for num_threads (threads_) schedule (dynamic)
   #endif
   for (int i = 0; i < indices_->size (); ++i)
   {
@@ -301,15 +299,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
       bbox_min = Eigen::Vector3f (minx, miny, minz);
       bbox_max = Eigen::Vector3f (maxx, maxy, maxz);
 
-      #ifdef _OPENMP
-      omp_set_lock(&search_lock);
-      #endif
-      int num_points = octree_->boxSearch (bbox_min, bbox_max, result_indices);
-      #ifdef _OPENMP
-      omp_unset_lock(&search_lock);
-      #endif
-
-      if (num_points == 0)
+      if (octree_->boxSearch (bbox_min, bbox_max, result_indices) == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors with resolution %f failed.\n", getClassName ().c_str (), resolution_);
         continue;
@@ -317,16 +307,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
     }
     else if (locality_type_ == LT_RADIUS)
     {
-
-      #ifdef _OPENMP
-      omp_set_lock(&search_lock);
-      #endif
-      int num_points = searcher_->radiusSearch (p, radius_, result_indices, result_dists);
-      #ifdef _OPENMP
-      omp_unset_lock(&search_lock);
-      #endif
-
-      if (num_points == 0)
+      if (searcher_->radiusSearch (p, radius_, result_indices, result_dists) == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors within radius %f failed.\n", getClassName ().c_str (), radius_);
         continue;
@@ -334,16 +315,7 @@ pcl::LocalModify<PointT>::applyLocalFilter (PointCloud &output)
     }
     else if (locality_type_ == LT_KNN)
     {
-
-      #ifdef _OPENMP
-      omp_set_lock(&search_lock);
-      #endif
-      int num_points = searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists);
-      #ifdef _OPENMP
-      omp_unset_lock(&search_lock);
-      #endif
-
-      if (num_points == 0)
+      if (searcher_->nearestKSearch (p, num_neighbors_+1, result_indices, result_dists) == 0)
       {
         PCL_WARN ("[pcl::%s::applyFilter] Searching for %d nearest neighbors failed.\n", getClassName ().c_str (), num_neighbors_);
         continue;
