@@ -481,6 +481,25 @@ pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix> inline typename Matrix::Scalar
+pcl::invert2x2 (const Matrix& matrix, Matrix& inverse)
+{
+  typedef typename Matrix::Scalar Scalar;
+  Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2);
+
+  if (det != 0)
+  {
+    //Scalar inv_det = Scalar (1.0) / det;
+    inverse.coeffRef (0) = matrix.coeff (3);
+    inverse.coeffRef (1) = -matrix.coeff (1);
+    inverse.coeffRef (2) = -matrix.coeff (2);
+    inverse.coeffRef (3) = matrix.coeff (0);
+    inverse /= det;
+  }
+  return det;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 

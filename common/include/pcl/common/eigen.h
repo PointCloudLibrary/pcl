@@ -141,23 +141,8 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert2x2 (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2) ;
-
-    if (det != 0)
-    {
-      //Scalar inv_det = Scalar (1.0) / det;
-      inverse.coeffRef (0) =   matrix.coeff (3);
-      inverse.coeffRef (1) = - matrix.coeff (1);
-      inverse.coeffRef (2) = - matrix.coeff (2);
-      inverse.coeffRef (3) =   matrix.coeff (0);
-      inverse /= det;
-    }
-    return det;
-  }
+  template <typename Matrix> typename Matrix::Scalar
+  invert2x2 (const Matrix &matrix, Matrix &inverse);
 
   /** \brief Calculate the inverse of a 3x3 symmetric matrix.
     * \param[in] matrix matrix to be inverted
