@@ -56,10 +56,10 @@ boost::mutex io_mutex;
 #include <unistd.h>
 // Get the available memory size on Linux/BSD systems
 
-size_t 
+size_t
 getTotalSystemMemory ()
 {
-  size_t memory = std::numeric_limits<size_t>::max ();
+  uint64_t memory = std::numeric_limits<uint64_t>::max ();
 
 #ifdef _SC_AVPHYS_PAGES
   uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
@@ -79,12 +79,12 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > std::numeric_limits<size_t>::max ())
+  if (memory > uint64_t(std::numeric_limits<size_t>::max ()))
   {
     memory = std::numeric_limits<size_t>::max ();
   }
   
-  print_info ("Total available memory size: %lluMB.\n", memory / 1048576);
+  print_info ("Total available memory size: %lluMB.\n", memory / 1048576ull);
   return memory;
 }
 
