@@ -151,39 +151,8 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // elements
-    // a b c
-    // b d e
-    // c e f
-    //| a b c |-1             |   fd-ee    ce-bf   be-cd  |
-    //| b d e |    =  1/det * |   ce-bf    af-cc   bc-ae  |
-    //| c e f |               |   be-cd    bc-ae   ad-bb  |
-
-    //det = a(fd-ee) + b(ec-fb) + c(eb-dc)
-
-    Scalar fd_ee = matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (7) * matrix.coeff (5);
-    Scalar ce_bf = matrix.coeff (2) * matrix.coeff (5) - matrix.coeff (1) * matrix.coeff (8);
-    Scalar be_cd = matrix.coeff (1) * matrix.coeff (5) - matrix.coeff (2) * matrix.coeff (4);
-
-    Scalar det = matrix.coeff (0) * fd_ee + matrix.coeff (1) * ce_bf + matrix.coeff (2) * be_cd;
-
-    if (det != 0)
-    {
-      //Scalar inv_det = Scalar (1.0) / det;
-      inverse.coeffRef (0) = fd_ee;
-      inverse.coeffRef (1) = inverse.coeffRef (3) = ce_bf;
-      inverse.coeffRef (2) = inverse.coeffRef (6) = be_cd;
-      inverse.coeffRef (4) = (matrix.coeff (0) * matrix.coeff (8) - matrix.coeff (2) * matrix.coeff (2));
-      inverse.coeffRef (5) = inverse.coeffRef (7) = (matrix.coeff (1) * matrix.coeff (2) - matrix.coeff (0) * matrix.coeff (5));
-      inverse.coeffRef (8) = (matrix.coeff (0) * matrix.coeff (4) - matrix.coeff (1) * matrix.coeff (1));
-      inverse /= det;
-    }
-    return det;
-  }
+  template <typename Matrix> typename Matrix::Scalar
+  invert3x3SymMatrix (const Matrix &matrix, Matrix &inverse);
 
   /** \brief Calculate the inverse of a general 3x3 matrix.
     * \param[in] matrix matrix to be inverted
