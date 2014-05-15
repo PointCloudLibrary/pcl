@@ -122,6 +122,99 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Vector> inline void
+pcl::eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+{
+  // if diagonal matrix, the eigenvalues are the diagonal elements
+  // and the eigenvectors are not unique, thus set to Identity
+  if (fabs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+  {
+    if (mat.coeff (0) < mat.coeff (2))
+    {
+      eigenvalue = mat.coeff (0);
+      eigenvector[0] = 1.0;
+      eigenvector[1] = 0.0;
+    }
+    else
+    {
+      eigenvalue = mat.coeff (2);
+      eigenvector[0] = 0.0;
+      eigenvector[1] = 1.0;
+    }
+    return;
+  }
+
+  // 0.5 to optimize further calculations
+  typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
+  typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
+
+  typename Matrix::Scalar temp = trace * trace - determinant;
+
+  if (temp < 0)
+    temp = 0;
+
+  eigenvalue = trace - ::std::sqrt (temp);
+
+  eigenvector[0] = -mat.coeff (1);
+  eigenvector[1] = mat.coeff (0) - eigenvalue;
+  eigenvector.normalize ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Vector> inline void
+pcl::eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
+{
+  // if diagonal matrix, the eigenvalues are the diagonal elements
+  // and the eigenvectors are not unique, thus set to Identity
+  if (fabs (mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
+  {
+    if (mat.coeff (0) < mat.coeff (3))
+    {
+      eigenvalues.coeffRef (0) = mat.coeff (0);
+      eigenvalues.coeffRef (1) = mat.coeff (3);
+      eigenvectors.coeffRef (0) = 1.0;
+      eigenvectors.coeffRef (1) = 0.0;
+      eigenvectors.coeffRef (2) = 0.0;
+      eigenvectors.coeffRef (3) = 1.0;
+    }
+    else
+    {
+      eigenvalues.coeffRef (0) = mat.coeff (3);
+      eigenvalues.coeffRef (1) = mat.coeff (0);
+      eigenvectors.coeffRef (0) = 0.0;
+      eigenvectors.coeffRef (1) = 1.0;
+      eigenvectors.coeffRef (2) = 1.0;
+      eigenvectors.coeffRef (3) = 0.0;
+    }
+    return;
+  }
+
+  // 0.5 to optimize further calculations
+  typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
+  typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
+
+  typename Matrix::Scalar temp = trace * trace - determinant;
+
+  if (temp < 0)
+    temp = 0;
+  else
+    temp = ::std::sqrt (temp);
+
+  eigenvalues.coeffRef (0) = trace - temp;
+  eigenvalues.coeffRef (1) = trace + temp;
+
+  // either this is in a row or column depending on RowMajor or ColumnMajor
+  eigenvectors.coeffRef (0) = -mat.coeff (1);
+  eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
+  typename Matrix::Scalar norm = static_cast<typename Matrix::Scalar> (1.0)
+      / static_cast<typename Matrix::Scalar> (::std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
+  eigenvectors.coeffRef (0) *= norm;
+  eigenvectors.coeffRef (2) *= norm;
+  eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
+  eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 
