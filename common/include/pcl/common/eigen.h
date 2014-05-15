@@ -410,6 +410,40 @@ namespace pcl
   template <typename Derived, typename OtherDerived> 
   typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
   umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling = false);
+
+/** \brief Transform a point using an affine matrix
+  * \param[in] point_in the vector to be transformed
+  * \param[out] point_out the transformed vector
+  * \param[in] transformation the transformation matrix
+  *
+  * \note Can be used with \c point_in = \c point_out
+  */
+  template<typename Scalar> inline void
+  transformPoint (const Eigen::Matrix<Scalar, 3, 1> &point_in,
+                        Eigen::Matrix<Scalar, 3, 1> &point_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+  {
+    Eigen::Matrix<Scalar, 4, 1> point;
+    point << point_in, 1.0;
+    point_out = (transformation * point).template head<3> ();
+  }
+
+  inline void
+  transformPoint (const Eigen::Vector3f &point_in,
+                        Eigen::Vector3f &point_out,
+                  const Eigen::Affine3f &transformation)
+  {
+    transformPoint<float> (point_in, point_out, transformation);
+  }
+
+  inline void
+  transformPoint (const Eigen::Vector3d &point_in,
+                        Eigen::Vector3d &point_out,
+                  const Eigen::Affine3d &transformation)
+  {
+    transformPoint<double> (point_in, point_out, transformation);
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>
