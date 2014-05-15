@@ -364,7 +364,7 @@ main (int argc, char** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  print_highlight ("Starting the producer and consumer threads... Press Cltr+C to end\n");
+  print_highlight ("Starting the producer and consumer threads... Press Ctrl+C to end\n");
  
   OpenNIGrabber grabber ("");
   if (grabber.providesCallback<OpenNIGrabber::sig_cb_openni_point_cloud_rgba> () && 
