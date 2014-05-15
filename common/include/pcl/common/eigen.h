@@ -160,37 +160,8 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
-
-    //| a b c |-1             |   ie-hf    hc-ib   fb-ec  |
-    //| d e f |    =  1/det * |   gf-id    ia-gc   dc-fa  |
-    //| g h i |               |   hd-ge    gb-ha   ea-db  |
-    //det = a(ie-hf) + d(hc-ib) + g(fb-ec)
-
-    Scalar ie_hf = matrix.coeff (8) * matrix.coeff (4) - matrix.coeff (7) * matrix.coeff (5);
-    Scalar hc_ib = matrix.coeff (7) * matrix.coeff (2) - matrix.coeff (8) * matrix.coeff (1);
-    Scalar fb_ec = matrix.coeff (5) * matrix.coeff (1) - matrix.coeff (4) * matrix.coeff (2);
-    Scalar det = matrix.coeff (0) * (ie_hf) + matrix.coeff (3) * (hc_ib) + matrix.coeff (6) * (fb_ec) ;
-
-    if (det != 0)
-    {
-      inverse.coeffRef (0) = ie_hf;
-      inverse.coeffRef (1) = hc_ib;
-      inverse.coeffRef (2) = fb_ec;
-      inverse.coeffRef (3) = matrix.coeff (6) * matrix.coeff (5) - matrix.coeff (8) * matrix.coeff (3);
-      inverse.coeffRef (4) = matrix.coeff (8) * matrix.coeff (0) - matrix.coeff (6) * matrix.coeff (2);
-      inverse.coeffRef (5) = matrix.coeff (3) * matrix.coeff (2) - matrix.coeff (5) * matrix.coeff (0);
-      inverse.coeffRef (6) = matrix.coeff (7) * matrix.coeff (3) - matrix.coeff (6) * matrix.coeff (4);
-      inverse.coeffRef (7) = matrix.coeff (6) * matrix.coeff (1) - matrix.coeff (7) * matrix.coeff (0);
-      inverse.coeffRef (8) = matrix.coeff (4) * matrix.coeff (0) - matrix.coeff (3) * matrix.coeff (1);
-
-      inverse /= det;
-    }
-    return det;
-  }
+  template <typename Matrix> typename Matrix::Scalar
+  invert3x3Matrix (const Matrix &matrix, Matrix &inverse);
 
   template<typename Matrix> inline typename Matrix::Scalar
   determinant3x3Matrix (const Matrix& matrix)
