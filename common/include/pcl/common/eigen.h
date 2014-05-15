@@ -475,6 +475,38 @@ namespace pcl
     transformVector<double> (vector_in, vector_out, transformation);
   }
 
+/** \brief Transform a line using an affine matrix
+  * \param[in] line_in the line to be transformed
+  * \param[out] line_out the transformed line
+  * \param[in] transformation the transformation matrix
+  *
+  * Lines must be filled in this form:\n
+  * line[0-2] = Origin coordinates of the vector\n
+  * line[3-5] = Direction vector
+  *
+  * \note Can be used with \c line_in = \c line_out
+  */
+  template <typename Scalar> bool
+  transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
+                       Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_out,
+                 const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline bool
+  transformLine (const Eigen::VectorXf &line_in,
+                       Eigen::VectorXf &line_out,
+                 const Eigen::Affine3f &transformation)
+  {
+    return (transformLine<float> (line_in, line_out, transformation));
+  }
+
+  inline bool
+  transformLine (const Eigen::VectorXd &line_in,
+                       Eigen::VectorXd &line_out,
+                 const Eigen::Affine3d &transformation)
+  {
+    return (transformLine<double> (line_in, line_out, transformation));
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>

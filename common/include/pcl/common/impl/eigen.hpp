@@ -39,7 +39,7 @@
 #ifndef PCL_COMMON_EIGEN_IMPL_HPP_
 #define PCL_COMMON_EIGEN_IMPL_HPP_
 
-#include <pcl/pcl_macros.h>
+#include <pcl/console/print.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename Scalar, typename Roots> inline void
@@ -824,6 +824,28 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   }
 
   return (Rt);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar> bool
+pcl::transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
+                          Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_out,
+                    const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+{
+  if (line_in.innerSize () != 6 || line_out.innerSize () != 6)
+  {
+    PCL_DEBUG ("transformLine: lines size != 6\n");
+    return (false);
+  }
+
+  Eigen::Matrix<Scalar, 3, 1> point, vector;
+  point << line_in.template head<3> ();
+  vector << line_out.template tail<3> ();
+
+  pcl::transformPoint (point, point, transformation);
+  pcl::transformVector (vector, vector, transformation);
+  line_out << point, vector;
+  return (true);
 }
 
 #endif  //PCL_COMMON_EIGEN_IMPL_HPP_

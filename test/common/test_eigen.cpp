@@ -799,6 +799,77 @@ TEST (PCL, eigen33f)
   EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformLine)
+{
+  // This also tests transformPoint and transformVector
+  Eigen::VectorXf line;
+  Eigen::VectorXd lined, test;
+  line.resize(6);
+  lined.resize(6);
+  test.resize(6);
+  double tolerance = 1e-7;
+
+  // Simple translation
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 1, -2, 0;
+  transformationd.translation() << 1, -2, 0;
+  line << 1, 2, 3, 0, 1, 0;
+  lined << 1, 2, 3, 0, 1, 0;
+  test << 2, 0, 3, 0, 1, 0;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+
+  // Simple rotation
+  transformation = Eigen::Affine3f::Identity ();
+  transformationd = Eigen::Affine3d::Identity ();
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+
+  line << 1, 2, 3, 0, 1, 0;
+  lined << 1, 2, 3, 0, 1, 0;
+  test << -2, 1, 3, -1, 0, 0;
+  tolerance = 1e-4;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+
+  // Random transformation
+  transformation = Eigen::Affine3f::Identity ();
+  transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 25.97, -2.45, 0.48941;
+  transformationd.translation() << 25.97, -2.45, 0.48941;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX())
+  * Eigen::AngleAxisf(M_PI/3, Eigen::Vector3f::UnitY());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX())
+  * Eigen::AngleAxisd(M_PI/3, Eigen::Vector3d::UnitY());
+
+  line << -1, 9, 3, 1.5, 2.0, 0.2;
+  lined << -1, 9, 3, 1.5, 2.0, 0.2;
+  test << 28.0681, 3.44044, 7.69363, 0.923205, 2.32281, 0.205528;
+  tolerance = 1e-3;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
