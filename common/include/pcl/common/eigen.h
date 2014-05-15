@@ -261,8 +261,20 @@ namespace pcl
     * \param[in] yaw the resulting yaw angle
     * \ingroup common
     */
+  template <typename Scalar> void
+  getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw);
+
   inline void
-  getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw);
+  getEulerAngles (const Eigen::Affine3f &t, float &roll, float &pitch, float &yaw)
+  {
+    getEulerAngles<float> (t, roll, pitch, yaw);
+  }
+
+  inline void
+  getEulerAngles (const Eigen::Affine3d &t, double &roll, double &pitch, double &yaw)
+  {
+    getEulerAngles<double> (t, roll, pitch, yaw);
+  }
 
   /** Extract x,y,z and the Euler angles (XYZ-convention) from the given transformation
     * \param[in] t the input transformation matrix

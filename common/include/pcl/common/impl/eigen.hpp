@@ -660,12 +660,12 @@ pcl::getTransformationFromTwoUnitVectorsAndOrigin (const Eigen::Vector3f& y_dire
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void 
-pcl::getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw)
+template <typename Scalar> void
+pcl::getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw)
 {
-  roll  = atan2f(t(2,1), t(2,2));
-  pitch = asinf(-t(2,0));
-  yaw   = atan2f(t(1,0), t(0,0));
+  roll = atan2 (t (2, 1), t (2, 2));
+  pitch = asin (-t (2, 0));
+  yaw = atan2 (t (1, 0), t (0, 0));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
