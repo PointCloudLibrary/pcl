@@ -1014,6 +1014,100 @@ TEST (PCL, checkCoordinateSystem)
   EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd, 1e-7, 5e-3));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformBetween2CoordinateSystems)
+{
+  Eigen::Affine3f transformation;
+  Eigen::Affine3d transformationd;
+  Eigen::VectorXf from_line_x, from_line_y, to_line_x, to_line_y;
+  Eigen::VectorXd from_line_xd, from_line_yd, to_line_xd, to_line_yd;
+  from_line_x.resize(6); from_line_y.resize(6);
+  to_line_x.resize(6); to_line_y.resize(6);
+  from_line_xd.resize(6); from_line_yd.resize(6);
+  to_line_xd.resize(6); to_line_yd.resize(6);
+
+  Eigen::Matrix4d test;
+  double tolerance = 1e-3;
+
+  // Simple translation
+  test << 1, 0, 0, 10,
+  0, 1, 0, -5,
+  0, 0, 1, 1,
+  0, 0, 0, 1;
+
+  from_line_x << 0, 0, 0, 1, 0, 0;
+  from_line_y << 0, 0, 0, 0, 1, 0;
+  to_line_x << 10, -5, 1, 1, 0, 0;
+  to_line_y << 10, -5, 1, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 0, 0, 0, 1, 0, 0;
+  from_line_yd << 0, 0, 0, 0, 1, 0;
+  to_line_xd << 10, -5, 1, 1, 0, 0;
+  to_line_yd << 10, -5, 1, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+
+  // Simple rotation
+  test << 0, 0, 1, 0,
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 0, 1;
+
+  from_line_x << 0, 0, 0, 1, 0, 0;
+  from_line_y << 0, 0, 0, 0, 1, 0;
+  to_line_x << 0, 0, 0, 0, 1, 0;
+  to_line_y << 0, 0, 0, 0, 0, 1;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 0, 0, 0, 1, 0, 0;
+  from_line_yd << 0, 0, 0, 0, 1, 0;
+  to_line_xd << 0, 0, 1, 0, 1, 0;
+  to_line_yd << 0, 0, 1, 0, 0, 1;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+
+  // General case
+  test << 0.00397405, 0.00563289, -0.999976, -4.9062,
+  0.611348, -0.791359, -0.00213906, -754.746,
+  -0.791352, -0.611325, -0.00658855, 976.972,
+  0, 0, 0, 1;
+
+  from_line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  from_line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  to_line_x << 0, 0, 0, 1, 0, 0;
+  to_line_y << 0, 0, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  from_line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  to_line_xd << 0, 0, 0, 1, 0, 0;
+  to_line_yd << 0, 0, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

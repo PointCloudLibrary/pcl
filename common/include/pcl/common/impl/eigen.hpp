@@ -939,5 +939,63 @@ pcl::checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line
   return (true);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar> bool
+pcl::transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_x,
+                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_y,
+                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_x,
+                                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_y,
+                                         Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+{
+  if (from_line_x.innerSize () != 6 || from_line_y.innerSize () != 6 || to_line_x.innerSize () != 6 || to_line_y.innerSize () != 6)
+  {
+    PCL_DEBUG ("transformBetween2CoordinateSystems: lines size != 6\n");
+    return (false);
+  }
+
+  // Check if coordinate systems are valid
+  if (!pcl::checkCoordinateSystem (from_line_x, from_line_y) || !pcl::checkCoordinateSystem (to_line_x, to_line_y))
+  {
+    PCL_DEBUG ("transformBetween2CoordinateSystems: coordinate systems invalid !\n");
+    return (false);
+  }
+
+  // Convert lines into Vector3 :
+  Eigen::Matrix<Scalar, 3, 1> fr0 (from_line_x.template head<3>()),
+                              fr1 (from_line_x.template head<3>() + from_line_x.template tail<3>()),
+                              fr2 (from_line_y.template head<3>() + from_line_y.template tail<3>()),
+
+                              to0 (to_line_x.template head<3>()),
+                              to1 (to_line_x.template head<3>() + to_line_x.template tail<3>()),
+                              to2 (to_line_y.template head<3>() + to_line_y.template tail<3>());
+
+  // Code is inspired from http://stackoverflow.com/a/15277421/1816078
+  // Define matrices and points :
+  Eigen::Transform<Scalar, 3, Eigen::Affine> T2, T3 = Eigen::Transform<Scalar, 3, Eigen::Affine>::Identity ();
+  Eigen::Matrix<Scalar, 3, 1> x1, y1, z1, x2, y2, z2;
+
+  // Axes of the coordinate system "fr"
+  x1 = (fr1 - fr0).normalized ();  // the versor (unitary vector) of the (fr1-fr0) axis vector
+  y1 = (fr2 - fr0).normalized ();
+
+  // Axes of the coordinate system "to"
+  x2 = (to1 - to0).normalized ();
+  y2 = (to2 - to0).normalized ();
+
+  // Transform from CS1 to CS2
+  // Note: if fr0 == (0,0,0) --> CS1 == CS2 --> T2 = Identity
+  T2.linear () << x1, y1, x1.cross (y1);
+
+  // Transform from CS1 to CS3
+  T3.linear () << x2, y2, x2.cross (y2);
+
+  // Identity matrix = transform to CS2 to CS3
+  // Note: if CS1 == CS2 --> transformation = T3
+  transformation = Eigen::Transform<Scalar, 3, Eigen::Affine>::Identity ();
+  transformation.linear () = T3.linear () * T2.linear ().inverse ();
+  transformation.translation () = to0 - (transformation.linear () * fr0);
+  return (true);
+}
+
 #endif  //PCL_COMMON_EIGEN_IMPL_HPP_
 

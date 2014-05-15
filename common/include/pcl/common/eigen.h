@@ -672,6 +672,45 @@ namespace pcl
     return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
   }
 
+/** \brief Compute the transformation between two coordinate systems
+  * \param[in] from_line_x X axis from the origin coordinate system
+  * \param[in] from_line_y Y axis from the origin coordinate system
+  * \param[in] to_line_x X axis from the destination coordinate system
+  * \param[in] to_line_y Y axis from the destination coordinate system
+  * \param[out] transformation the transformation matrix to fill
+  * \return true if transformation was filled, false otherwise.
+  *
+  * Line must be filled in this form:\n
+  * line[0-2] = Coordinate system origin coordinates \n
+  * line[3-5] = Direction vector (norm doesn't matter)
+  */
+  template <typename Scalar> bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<double, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    return (transformBetween2CoordinateSystems<double> (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  }
+
+  inline bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<float, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    return (transformBetween2CoordinateSystems<float> (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>
