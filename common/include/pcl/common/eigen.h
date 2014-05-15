@@ -104,36 +104,8 @@ namespace pcl
     * \param[out] eigenvector the corresponding eigenvector for the input eigenvalue
     * \ingroup common
     */
-  template<typename Matrix, typename Vector> inline void
-  computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // Scale the matrix so its entries are in [-1,1].  The scaling is applied
-    // only when at least one matrix entry has magnitude larger than 1.
-
-    Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min ())
-      scale = Scalar (1.0);
-
-    Matrix scaledMat = mat / scale;
-
-    scaledMat.diagonal ().array () -= eigenvalue / scale;
-
-    Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
-    Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
-    Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-
-    if (len1 >= len2 && len1 >= len3)
-      eigenvector = vec1 / std::sqrt (len1);
-    else if (len2 >= len1 && len2 >= len3)
-      eigenvector = vec2 / std::sqrt (len2);
-    else
-      eigenvector = vec3 / std::sqrt (len3);
-  }
+  template <typename Matrix, typename Vector> void
+  computeCorrespondingEigenVector (const Matrix &mat, const typename Matrix::Scalar &eigenvalue, Vector &eigenvector);
   
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
