@@ -444,6 +444,37 @@ namespace pcl
     transformPoint<double> (point_in, point_out, transformation);
   }
 
+/** \brief Transform a vector using an affine matrix
+  * \param[in] vector_in the vector to be transformed
+  * \param[out] vector_out the transformed vector
+  * \param[in] transformation the transformation matrix
+  *
+  * \note Can be used with \c vector_in = \c vector_out
+  */
+  template <typename Scalar> inline void
+  transformVector (const Eigen::Matrix<Scalar, 3, 1> &vector_in,
+                         Eigen::Matrix<Scalar, 3, 1> &vector_out,
+                   const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+  {
+    vector_out = transformation.linear () * vector_in;
+  }
+
+  inline void
+  transformVector (const Eigen::Vector3f &vector_in,
+                         Eigen::Vector3f &vector_out,
+                   const Eigen::Affine3f &transformation)
+  {
+    transformVector<float> (vector_in, vector_out, transformation);
+  }
+
+  inline void
+  transformVector (const Eigen::Vector3d &vector_in,
+                         Eigen::Vector3d &vector_out,
+                   const Eigen::Affine3d &transformation)
+  {
+    transformVector<double> (vector_in, vector_out, transformation);
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>
