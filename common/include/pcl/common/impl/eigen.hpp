@@ -57,6 +57,71 @@ pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Roots> inline void
+pcl::computeRoots (const Matrix& m, Roots& roots)
+{
+  typedef typename Matrix::Scalar Scalar;
+
+  // The characteristic equation is x^3 - c2*x^2 + c1*x - c0 = 0.  The
+  // eigenvalues are the roots to this equation, all guaranteed to be
+  // real-valued, because the matrix is symmetric.
+  Scalar c0 =      m (0, 0) * m (1, 1) * m (2, 2)
+      + Scalar (2) * m (0, 1) * m (0, 2) * m (1, 2)
+             - m (0, 0) * m (1, 2) * m (1, 2)
+             - m (1, 1) * m (0, 2) * m (0, 2)
+             - m (2, 2) * m (0, 1) * m (0, 1);
+  Scalar c1 = m (0, 0) * m (1, 1) -
+        m (0, 1) * m (0, 1) +
+        m (0, 0) * m (2, 2) -
+        m (0, 2) * m (0, 2) +
+        m (1, 1) * m (2, 2) -
+        m (1, 2) * m (1, 2);
+  Scalar c2 = m (0, 0) + m (1, 1) + m (2, 2);
+
+  if (fabs (c0) < Eigen::NumTraits < Scalar > ::epsilon ())  // one root is 0 -> quadratic equation
+    computeRoots2 (c2, c1, roots);
+  else
+  {
+    const Scalar s_inv3 = Scalar (1.0 / 3.0);
+    const Scalar s_sqrt3 = std::sqrt (Scalar (3.0));
+    // Construct the parameters used in classifying the roots of the equation
+    // and in solving the equation for the roots in closed form.
+    Scalar c2_over_3 = c2 * s_inv3;
+    Scalar a_over_3 = (c1 - c2 * c2_over_3) * s_inv3;
+    if (a_over_3 > Scalar (0))
+      a_over_3 = Scalar (0);
+
+    Scalar half_b = Scalar (0.5) * (c0 + c2_over_3 * (Scalar (2) * c2_over_3 * c2_over_3 - c1));
+
+    Scalar q = half_b * half_b + a_over_3 * a_over_3 * a_over_3;
+    if (q > Scalar (0))
+      q = Scalar (0);
+
+    // Compute the eigenvalues by solving for the roots of the polynomial.
+    Scalar rho = std::sqrt (-a_over_3);
+    Scalar theta = std::atan2 (std::sqrt (-q), half_b) * s_inv3;
+    Scalar cos_theta = std::cos (theta);
+    Scalar sin_theta = std::sin (theta);
+    roots (0) = c2_over_3 + Scalar (2) * rho * cos_theta;
+    roots (1) = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
+    roots (2) = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
+
+    // Sort in increasing order.
+    if (roots (0) >= roots (1))
+      std::swap (roots (0), roots (1));
+    if (roots (1) >= roots (2))
+    {
+      std::swap (roots (1), roots (2));
+      if (roots (0) >= roots (1))
+        std::swap (roots (0), roots (1));
+    }
+
+    if (roots (0) <= 0)  // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+      computeRoots2 (c2, c1, roots);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 
