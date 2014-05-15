@@ -70,19 +70,8 @@ namespace pcl
     * \param[in] c constant parameter
     * \param[out] roots solutions of x^2 + b*x + c = 0
     */
-  template<typename Scalar, typename Roots> inline void
-  computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
-  {
-    roots (0) = Scalar (0);
-    Scalar d = Scalar (b * b - 4.0 * c);
-    if (d < 0.0) // no real roots!!!! THIS SHOULD NOT HAPPEN!
-      d = 0.0;
-
-    Scalar sd = ::std::sqrt (d);
-
-    roots (2) = 0.5f * (b + sd);
-    roots (1) = 0.5f * (b - sd);
-  }
+  template <typename Scalar, typename Roots> void
+  computeRoots2 (const Scalar &b, const Scalar &c, Roots &roots);
 
   /** \brief computes the roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     * \param[in] m input matrix

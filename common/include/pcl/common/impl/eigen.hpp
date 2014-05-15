@@ -42,6 +42,21 @@
 #include <pcl/pcl_macros.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar, typename Roots> inline void
+pcl::computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
+{
+  roots (0) = Scalar (0);
+  Scalar d = Scalar (b * b - 4.0 * c);
+  if (d < 0.0)  // no real roots ! THIS SHOULD NOT HAPPEN!
+    d = 0.0;
+
+  Scalar sd = ::std::sqrt (d);
+
+  roots (2) = 0.5f * (b + sd);
+  roots (1) = 0.5f * (b - sd);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 
