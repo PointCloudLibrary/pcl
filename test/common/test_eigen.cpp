@@ -194,9 +194,9 @@ TEST (PCL, InverseSymmetric3x3f)
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
     c_matrix = r_matrix;
-//    c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-//    c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-//    c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
     determinant = invert3x3SymMatrix (r_matrix, r_inverse);
@@ -260,9 +260,9 @@ TEST (PCL, InverseSymmetric3x3d)
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
     c_matrix = r_matrix;
-//    c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-//    c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-//    c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
     determinant = invert3x3SymMatrix (r_matrix, r_inverse);
@@ -426,8 +426,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint () % 10;
 
-	Scalar val1 = Scalar (rand_double ());
-	Scalar val2 = Scalar (rand_double ());
+  Scalar val1 = Scalar (rand_double ());
+  Scalar val2 = Scalar (rand_double ());
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -458,7 +458,7 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
   }
   eigenvalues (0, 0) = val1;
   eigenvalues (1, 1) = val2;
-	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
+  matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -595,9 +595,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint ();
 
-	Scalar val1 = Scalar (rand_double ());
-	Scalar val2 = Scalar (rand_double ());
-	Scalar val3 = Scalar (rand_double ());
+  Scalar val1 = Scalar (rand_double ());
+  Scalar val2 = Scalar (rand_double ());
+  Scalar val3 = Scalar (rand_double ());
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -657,7 +657,7 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
   eigenvalues (1, 1) = val2;
   eigenvalues (2, 2) = val3;
 
-	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
+  matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
