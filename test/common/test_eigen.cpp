@@ -951,6 +951,69 @@ TEST (PCL, transformPlane)
   EXPECT_NEAR (plane->values[i], test[i], tolerance);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, checkCoordinateSystem)
+{
+  Eigen::VectorXd line_x, line_y;
+  Eigen::VectorXd line_xd, line_yd;
+  line_x.resize(6); line_y.resize(6);
+  line_xd.resize(6); line_yd.resize(6);
+
+  Eigen::Vector3d origin, vector_x, vector_y;
+  Eigen::Vector3d origind, vector_xd, vector_yd;
+
+  // No translation, no rotation coordinate system
+  line_x << 0, 0, 0, 0, 1, 0;// Y
+  line_y << 0, 0, 0, 0, 0, 1;// Z
+  line_xd << 0, 0, 0, 0, 1, 0;
+  line_yd << 0, 0, 0, 0, 0, 1;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+
+  origin << 0, 0, 0;
+  vector_x << 0, 1, 0;// Y
+  vector_y << 0, 0, 1;// Z
+  origind << 0, 0, 0;
+  vector_xd << 0, 1, 0;
+  vector_yd << 0, 0, 1;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+
+  // Simple translated coordinate system
+  line_x << 10, -1, 0, 1, 0, 0;// X
+  line_y << 10, -1, 0, 0, 1, 0;// Y
+  line_xd << 10, -1, 0, 1, 0, 0;
+  line_yd << 10, -1, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+
+  origin << 10, -1, 0;
+  vector_x << 1, 0, 0;
+  vector_y << 0, 1, 0;
+  origind << 10, -1, 0;
+  vector_xd << 1, 0, 0;
+  vector_yd << 0, 1, 0;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+
+  // General coordinate system
+  line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y , 1e-7, 5e-3));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd, 1e-7, 5e-3));
+
+  origin << 1234.56, 0.0, 0.0;
+  vector_x << 0.00387281179, 0.00572064891, -0.999976099;
+  vector_y << 0.6113801, -0.79133445, -0.00202810019;
+  origind << 1234.56, 0.0, 0.0;
+  vector_xd << 0.00387281179, 0.00572064891, -0.999976099;
+  vector_yd << 0.6113801, -0.79133445, -0.00202810019;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y , 1e-7, 5e-3));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd, 1e-7, 5e-3));
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

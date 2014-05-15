@@ -569,6 +569,109 @@ namespace pcl
     transformPlane<float> (plane_in, plane_out, transformation);
   }
 
+/** \brief Check coordinate system integrity
+  * \param[in] line_x the first axis
+  * \param[in] line_y the second axis
+  * \param[in] norm_limit the limit to ignore norm rounding errors
+  * \param[in] dot_limit the limit to ignore dot product rounding errors
+  * \return True if the coordinate system is consistent, false otherwise.
+  *
+  * Lines must be filled in this form:\n
+  * line[0-2] = Origin coordinates of the vector\n
+  * line[3-5] = Direction vector
+  *
+  * Can be used like this :\n
+  * line_x = X axis and line_y = Y axis\n
+  * line_x = Z axis and line_y = X axis\n
+  * line_x = Y axis and line_y = Z axis\n
+  * Because X^Y = Z, Z^X = Y and Y^Z = X.
+  * Do NOT invert line order !
+  *
+  * Determine whether a coordinate system is consistent or not by checking :\n
+  * Line origins: They must be the same for the 2 lines\n
+  * Norm: The 2 lines must be normalized\n
+  * Dot products: Must be 0 or perpendicular vectors
+  */
+  template<typename Scalar> bool
+  checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_y,
+                         const Scalar norm_limit = 1e-3,
+                         const Scalar dot_limit = 1e-3);
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<double, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<double, Eigen::Dynamic, 1> &line_y,
+                         const double norm_limit = 1e-3,
+                         const double dot_limit = 1e-3)
+  {
+    return (checkCoordinateSystem<double> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<float, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<float, Eigen::Dynamic, 1> &line_y,
+                         const float norm_limit = 1e-3,
+                         const float dot_limit = 1e-3)
+  {
+    return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+/** \brief Check coordinate system integrity
+  * \param[in] origin the origin of the coordinate system
+  * \param[in] x_direction the first axis
+  * \param[in] y_direction the second axis
+  * \param[in] norm_limit the limit to ignore norm rounding errors
+  * \param[in] dot_limit the limit to ignore dot product rounding errors
+  * \return True if the coordinate system is consistent, false otherwise.
+  *
+  * Read the other variant for more information
+  */
+  template <typename Scalar> inline bool
+  checkCoordinateSystem (const Eigen::Matrix<Scalar, 3, 1> &origin,
+                         const Eigen::Matrix<Scalar, 3, 1> &x_direction,
+                         const Eigen::Matrix<Scalar, 3, 1> &y_direction,
+                         const Scalar norm_limit = 1e-3,
+                         const Scalar dot_limit = 1e-3)
+  {
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_y;
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<Scalar> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<double, 3, 1> &origin,
+                         const Eigen::Matrix<double, 3, 1> &x_direction,
+                         const Eigen::Matrix<double, 3, 1> &y_direction,
+                         const double norm_limit = 1e-3,
+                         const double dot_limit = 1e-3)
+  {
+    Eigen::Matrix<double, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<double, Eigen::Dynamic, 1> line_y;
+    line_x.resize (6);
+    line_y.resize (6);
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<double> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<float, 3, 1> &origin,
+                         const Eigen::Matrix<float, 3, 1> &x_direction,
+                         const Eigen::Matrix<float, 3, 1> &y_direction,
+                         const float norm_limit = 1e-3,
+                         const float dot_limit = 1e-3)
+  {
+    Eigen::Matrix<float, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<float, Eigen::Dynamic, 1> line_y;
+    line_x.resize (6);
+    line_y.resize (6);
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>

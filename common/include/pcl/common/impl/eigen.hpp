@@ -873,5 +873,71 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
     plane_in->values[i] = v_plane_in[i];
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Scalar> bool
+pcl::checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_x,
+                            const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_y,
+                            const Scalar norm_limit,
+                            const Scalar dot_limit)
+{
+  if (line_x.innerSize () != 6 || line_y.innerSize () != 6)
+  {
+    PCL_DEBUG ("checkCoordinateSystem: lines size != 6\n");
+    return (false);
+  }
+
+  if (line_x.template head<3> () != line_y.template head<3> ())
+  {
+    PCL_DEBUG ("checkCoorZdinateSystem: vector origins are different !\n");
+    return (false);
+  }
+
+  // Make a copy of vector directions
+  // X^Y = Z | Y^Z = X | Z^X = Y
+  Eigen::Matrix<Scalar, 3, 1> v_line_x (line_x.template tail<3> ()),
+                              v_line_y (line_y.template tail<3> ()),
+                              v_line_z (v_line_x.cross (v_line_y));
+
+  // Check vectors norms
+  if (v_line_x.norm () < 1 - norm_limit || v_line_x.norm () > 1 + norm_limit)
+  {
+    PCL_DEBUG ("checkCoordinateSystem: line_x norm %d != 1\n", v_line_x.norm ());
+    return (false);
+  }
+
+  if (v_line_y.norm () < 1 - norm_limit || v_line_y.norm () > 1 + norm_limit)
+  {
+    PCL_DEBUG ("checkCoordinateSystem: line_y norm %d != 1\n", v_line_y.norm ());
+    return (false);
+  }
+
+  if (v_line_z.norm () < 1 - norm_limit || v_line_z.norm () > 1 + norm_limit)
+  {
+    PCL_DEBUG ("checkCoordinateSystem: line_z norm %d != 1\n", v_line_z.norm ());
+    return (false);
+  }
+
+  // Check vectors perendicularity
+  if (std::abs (v_line_x.dot (v_line_y)) > dot_limit)
+  {
+    PCL_DEBUG ("checkCSAxis: line_x dot line_y %e =  > %e\n", v_line_x.dot (v_line_y), dot_limit);
+    return (false);
+  }
+
+  if (std::abs (v_line_x.dot (v_line_z)) > dot_limit)
+  {
+    PCL_DEBUG ("checkCSAxis: line_x dot line_z = %e > %e\n", v_line_x.dot (v_line_z), dot_limit);
+    return (false);
+  }
+
+  if (std::abs (v_line_y.dot (v_line_z)) > dot_limit)
+  {
+    PCL_DEBUG ("checkCSAxis: line_y dot line_z = %e > %e\n", v_line_y.dot (v_line_z), dot_limit);
+    return (false);
+  }
+
+  return (true);
+}
+
 #endif  //PCL_COMMON_EIGEN_IMPL_HPP_
 
