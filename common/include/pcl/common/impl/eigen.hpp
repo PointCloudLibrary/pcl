@@ -247,6 +247,240 @@ pcl::computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Vector> inline void
+pcl::eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
+{
+  typedef typename Matrix::Scalar Scalar;
+  // Scale the matrix so its entries are in [-1,1].  The scaling is applied
+  // only when at least one matrix entry has magnitude larger than 1.
+
+  Scalar scale = mat.cwiseAbs ().maxCoeff ();
+  if (scale <= std::numeric_limits < Scalar > ::min ())
+    scale = Scalar (1.0);
+
+  Matrix scaledMat = mat / scale;
+
+  Vector eigenvalues;
+  computeRoots (scaledMat, eigenvalues);
+
+  eigenvalue = eigenvalues (0) * scale;
+
+  scaledMat.diagonal ().array () -= eigenvalues (0);
+
+  Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
+  Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
+  Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
+
+  Scalar len1 = vec1.squaredNorm ();
+  Scalar len2 = vec2.squaredNorm ();
+  Scalar len3 = vec3.squaredNorm ();
+
+  if (len1 >= len2 && len1 >= len3)
+    eigenvector = vec1 / std::sqrt (len1);
+  else if (len2 >= len1 && len2 >= len3)
+    eigenvector = vec2 / std::sqrt (len2);
+  else
+    eigenvector = vec3 / std::sqrt (len3);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Vector> inline void
+pcl::eigen33 (const Matrix& mat, Vector& evals)
+{
+  typedef typename Matrix::Scalar Scalar;
+  Scalar scale = mat.cwiseAbs ().maxCoeff ();
+  if (scale <= std::numeric_limits < Scalar > ::min ())
+    scale = Scalar (1.0);
+
+  Matrix scaledMat = mat / scale;
+  computeRoots (scaledMat, evals);
+  evals *= scale;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix, typename Vector> inline void
+pcl::eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
+{
+  typedef typename Matrix::Scalar Scalar;
+  // Scale the matrix so its entries are in [-1,1].  The scaling is applied
+  // only when at least one matrix entry has magnitude larger than 1.
+
+  Scalar scale = mat.cwiseAbs ().maxCoeff ();
+  if (scale <= std::numeric_limits < Scalar > ::min ())
+    scale = Scalar (1.0);
+
+  Matrix scaledMat = mat / scale;
+
+  // Compute the eigenvalues
+  computeRoots (scaledMat, evals);
+
+  if ( (evals (2) - evals (0)) <= Eigen::NumTraits < Scalar > ::epsilon ())
+  {
+    // all three equal
+    evecs.setIdentity ();
+  }
+  else if ( (evals (1) - evals (0)) <= Eigen::NumTraits < Scalar > ::epsilon ())
+  {
+    // first and second equal
+    Matrix tmp;
+    tmp = scaledMat;
+    tmp.diagonal ().array () -= evals (2);
+
+    Vector vec1 = tmp.row (0).cross (tmp.row (1));
+    Vector vec2 = tmp.row (0).cross (tmp.row (2));
+    Vector vec3 = tmp.row (1).cross (tmp.row (2));
+
+    Scalar len1 = vec1.squaredNorm ();
+    Scalar len2 = vec2.squaredNorm ();
+    Scalar len3 = vec3.squaredNorm ();
+
+    if (len1 >= len2 && len1 >= len3)
+      evecs.col (2) = vec1 / std::sqrt (len1);
+    else if (len2 >= len1 && len2 >= len3)
+      evecs.col (2) = vec2 / std::sqrt (len2);
+    else
+      evecs.col (2) = vec3 / std::sqrt (len3);
+
+    evecs.col (1) = evecs.col (2).unitOrthogonal ();
+    evecs.col (0) = evecs.col (1).cross (evecs.col (2));
+  }
+  else if ( (evals (2) - evals (1)) <= Eigen::NumTraits < Scalar > ::epsilon ())
+  {
+    // second and third equal
+    Matrix tmp;
+    tmp = scaledMat;
+    tmp.diagonal ().array () -= evals (0);
+
+    Vector vec1 = tmp.row (0).cross (tmp.row (1));
+    Vector vec2 = tmp.row (0).cross (tmp.row (2));
+    Vector vec3 = tmp.row (1).cross (tmp.row (2));
+
+    Scalar len1 = vec1.squaredNorm ();
+    Scalar len2 = vec2.squaredNorm ();
+    Scalar len3 = vec3.squaredNorm ();
+
+    if (len1 >= len2 && len1 >= len3)
+      evecs.col (0) = vec1 / std::sqrt (len1);
+    else if (len2 >= len1 && len2 >= len3)
+      evecs.col (0) = vec2 / std::sqrt (len2);
+    else
+      evecs.col (0) = vec3 / std::sqrt (len3);
+
+    evecs.col (1) = evecs.col (0).unitOrthogonal ();
+    evecs.col (2) = evecs.col (0).cross (evecs.col (1));
+  }
+  else
+  {
+    Matrix tmp;
+    tmp = scaledMat;
+    tmp.diagonal ().array () -= evals (2);
+
+    Vector vec1 = tmp.row (0).cross (tmp.row (1));
+    Vector vec2 = tmp.row (0).cross (tmp.row (2));
+    Vector vec3 = tmp.row (1).cross (tmp.row (2));
+
+    Scalar len1 = vec1.squaredNorm ();
+    Scalar len2 = vec2.squaredNorm ();
+    Scalar len3 = vec3.squaredNorm ();
+#ifdef _WIN32
+    Scalar *mmax = new Scalar[3];
+#else
+    Scalar mmax[3];
+#endif
+    unsigned int min_el = 2;
+    unsigned int max_el = 2;
+    if (len1 >= len2 && len1 >= len3)
+    {
+      mmax[2] = len1;
+      evecs.col (2) = vec1 / std::sqrt (len1);
+    }
+    else if (len2 >= len1 && len2 >= len3)
+    {
+      mmax[2] = len2;
+      evecs.col (2) = vec2 / std::sqrt (len2);
+    }
+    else
+    {
+      mmax[2] = len3;
+      evecs.col (2) = vec3 / std::sqrt (len3);
+    }
+
+    tmp = scaledMat;
+    tmp.diagonal ().array () -= evals (1);
+
+    vec1 = tmp.row (0).cross (tmp.row (1));
+    vec2 = tmp.row (0).cross (tmp.row (2));
+    vec3 = tmp.row (1).cross (tmp.row (2));
+
+    len1 = vec1.squaredNorm ();
+    len2 = vec2.squaredNorm ();
+    len3 = vec3.squaredNorm ();
+    if (len1 >= len2 && len1 >= len3)
+    {
+      mmax[1] = len1;
+      evecs.col (1) = vec1 / std::sqrt (len1);
+      min_el = len1 <= mmax[min_el] ? 1 : min_el;
+      max_el = len1 > mmax[max_el] ? 1 : max_el;
+    }
+    else if (len2 >= len1 && len2 >= len3)
+    {
+      mmax[1] = len2;
+      evecs.col (1) = vec2 / std::sqrt (len2);
+      min_el = len2 <= mmax[min_el] ? 1 : min_el;
+      max_el = len2 > mmax[max_el] ? 1 : max_el;
+    }
+    else
+    {
+      mmax[1] = len3;
+      evecs.col (1) = vec3 / std::sqrt (len3);
+      min_el = len3 <= mmax[min_el] ? 1 : min_el;
+      max_el = len3 > mmax[max_el] ? 1 : max_el;
+    }
+
+    tmp = scaledMat;
+    tmp.diagonal ().array () -= evals (0);
+
+    vec1 = tmp.row (0).cross (tmp.row (1));
+    vec2 = tmp.row (0).cross (tmp.row (2));
+    vec3 = tmp.row (1).cross (tmp.row (2));
+
+    len1 = vec1.squaredNorm ();
+    len2 = vec2.squaredNorm ();
+    len3 = vec3.squaredNorm ();
+    if (len1 >= len2 && len1 >= len3)
+    {
+      mmax[0] = len1;
+      evecs.col (0) = vec1 / std::sqrt (len1);
+      min_el = len3 <= mmax[min_el] ? 0 : min_el;
+      max_el = len3 > mmax[max_el] ? 0 : max_el;
+    }
+    else if (len2 >= len1 && len2 >= len3)
+    {
+      mmax[0] = len2;
+      evecs.col (0) = vec2 / std::sqrt (len2);
+      min_el = len3 <= mmax[min_el] ? 0 : min_el;
+      max_el = len3 > mmax[max_el] ? 0 : max_el;
+    }
+    else
+    {
+      mmax[0] = len3;
+      evecs.col (0) = vec3 / std::sqrt (len3);
+      min_el = len3 <= mmax[min_el] ? 0 : min_el;
+      max_el = len3 > mmax[max_el] ? 0 : max_el;
+    }
+
+    unsigned mid_el = 3 - min_el - max_el;
+    evecs.col (min_el) = evecs.col ( (min_el + 1) % 3).cross (evecs.col ( (min_el + 2) % 3)).normalized ();
+    evecs.col (mid_el) = evecs.col ( (mid_el + 1) % 3).cross (evecs.col ( (mid_el + 2) % 3)).normalized ();
+#ifdef _WIN32
+    delete [] mmax;
+#endif
+  }
+  // Rescale back to the original size.
+  evals *= scale;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 
