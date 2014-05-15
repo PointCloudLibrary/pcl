@@ -88,10 +88,10 @@ getTotalSystemMemory ()
   return memory;
 }
 
-const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480));
+const size_t BUFFER_SIZE = size_t (getTotalSystemMemory () / (640 * 480 * sizeof(pcl::PointXYZRGBA)));
 #else
 
-const int BUFFER_SIZE = 200;
+const size_t BUFFER_SIZE = 200;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
