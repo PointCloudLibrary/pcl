@@ -286,10 +286,26 @@ namespace pcl
     * \param[out] yaw the resulting yaw angle
     * \ingroup common
     */
+  template <typename Scalar> void
+  getTranslationAndEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t,
+                                Scalar &x, Scalar &y, Scalar &z,
+                                Scalar &roll, Scalar &pitch, Scalar &yaw);
+
   inline void
-  getTranslationAndEulerAngles (const Eigen::Affine3f& t, 
-                                float& x, float& y, float& z,
-                                float& roll, float& pitch, float& yaw);
+  getTranslationAndEulerAngles (const Eigen::Affine3f &t,
+                                float &x, float &y, float &z,
+                                float &roll, float &pitch, float &yaw)
+  {
+    getTranslationAndEulerAngles<float> (t, x, y, z, roll, pitch, yaw);
+  }
+
+  inline void
+  getTranslationAndEulerAngles (const Eigen::Affine3d &t,
+                                double &x, double &y, double &z,
+                                double &roll, double &pitch, double &yaw)
+  {
+    getTranslationAndEulerAngles<double> (t, x, y, z, roll, pitch, yaw);
+  }
 
   /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
     * \param[in] x the input x translation
@@ -301,7 +317,7 @@ namespace pcl
     * \param[out] t the resulting transformation matrix
     * \ingroup common
     */
-  template <typename Scalar> inline void
+  template<typename Scalar> void
   getTransformation (Scalar x, Scalar y, Scalar z, Scalar roll, Scalar pitch, Scalar yaw, 
                      Eigen::Transform<Scalar, 3, Eigen::Affine> &t);
 
