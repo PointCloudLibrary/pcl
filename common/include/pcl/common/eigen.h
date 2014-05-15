@@ -163,14 +163,13 @@ namespace pcl
   template <typename Matrix> typename Matrix::Scalar
   invert3x3Matrix (const Matrix &matrix, Matrix &inverse);
 
-  template<typename Matrix> inline typename Matrix::Scalar
-  determinant3x3Matrix (const Matrix& matrix)
-  {
-    // result is independent of Row/Col Major storage!
-    return matrix.coeff (0) * (matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (5) * matrix.coeff (7)) +
-           matrix.coeff (1) * (matrix.coeff (5) * matrix.coeff (6) - matrix.coeff (3) * matrix.coeff (8)) +
-           matrix.coeff (2) * (matrix.coeff (3) * matrix.coeff (7) - matrix.coeff (4) * matrix.coeff (6)) ;
-  }
+  /** \brief Calculate the determinant of a 3x3 matrix.
+    * \param[in] matrix matrix
+    * \return determinant of the matrix
+    * \ingroup common
+    */
+  template <typename Matrix> typename Matrix::Scalar
+  determinant3x3Matrix (const Matrix &matrix);
   
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
     * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)

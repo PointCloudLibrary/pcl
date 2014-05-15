@@ -568,6 +568,16 @@ pcl::invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+template <typename Matrix> inline typename Matrix::Scalar
+pcl::determinant3x3Matrix (const Matrix& matrix)
+{
+  // result is independent of Row/Col Major storage!
+  return matrix.coeff (0) * (matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (5) * matrix.coeff (7)) +
+         matrix.coeff (1) * (matrix.coeff (5) * matrix.coeff (6) - matrix.coeff (3) * matrix.coeff (8)) +
+         matrix.coeff (2) * (matrix.coeff (3) * matrix.coeff (7) - matrix.coeff (4) * matrix.coeff (6)) ;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void 
 pcl::getTransFromUnitVectorsZY (const Eigen::Vector3f& z_axis, 
                                 const Eigen::Vector3f& y_direction, 
