@@ -317,7 +317,7 @@ namespace pcl
     * \param[out] t the resulting transformation matrix
     * \ingroup common
     */
-  template<typename Scalar> void
+  template <typename Scalar> void
   getTransformation (Scalar x, Scalar y, Scalar z, Scalar roll, Scalar pitch, Scalar yaw, 
                      Eigen::Transform<Scalar, 3, Eigen::Affine> &t);
 
@@ -346,7 +346,12 @@ namespace pcl
     * \ingroup common
     */
   inline Eigen::Affine3f
-  getTransformation (float x, float y, float z, float roll, float pitch, float yaw);
+  getTransformation (float x, float y, float z, float roll, float pitch, float yaw)
+  {
+    Eigen::Affine3f t;
+    getTransformation<float> (x, y, z, roll, pitch, yaw, t);
+    return (t);
+  }
 
   /** \brief Write a matrix to an output stream
     * \param[in] matrix the matrix to output

@@ -698,15 +698,6 @@ pcl::getTransformation (Scalar x, Scalar y, Scalar z,
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-Eigen::Affine3f 
-pcl::getTransformation (float x, float y, float z, float roll, float pitch, float yaw)
-{
-  Eigen::Affine3f t;
-  getTransformation (x, y, z, roll, pitch, yaw, t);
-  return (t);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
 template <typename Derived> void 
 pcl::saveBinary (const Eigen::MatrixBase<Derived>& matrix, std::ostream& file)
 {
