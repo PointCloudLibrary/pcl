@@ -1639,7 +1639,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     allocVtkPolyData (polydata);
     cell_array->GetData ()->SetNumberOfValues (idx);
     cell_array->Squeeze ();
-    polydata->SetStrips (cell_array);
+    polydata->SetPolys (cell_array);
     polydata->SetPoints (points);
   
     if (colors)
@@ -1812,7 +1812,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   cells->GetData ()->SetNumberOfValues (idx);
   cells->Squeeze ();
   // Set the the vertices
-  polydata->SetStrips (cells);
+  polydata->SetPolys (cells);
   polydata->Update ();
 
   return (true);
