@@ -11,18 +11,26 @@ if(SPHINX_FOUND)
     set(TMPDIR "/tmp")
   endif()
   file(TO_CMAKE_PATH "${TMPDIR}" TMPDIR)
-  add_custom_target(Tutorials 
+  add_custom_target(tutorials
                     COMMAND "${CMAKE_COMMAND}" -E remove_directory "${TMPDIR}/doctrees"
                     COMMAND "${SPHINX_EXECUTABLE}" -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/content" html
+                    COMMAND "${SPHINX_EXECUTABLE}" -b html -a -d "${TMPDIR}/doctrees" "${CMAKE_CURRENT_SOURCE_DIR}/../advanced/content" ../advanced/html
                     )
   if(USE_PROJECT_FOLDERS)
-    set_target_properties(Tutorials PROPERTIES FOLDER "Documentation")
+    set_target_properties(tutorials PROPERTIES FOLDER "Documentation")
   endif(USE_PROJECT_FOLDERS)
   install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
           DESTINATION "${DOC_INSTALL_DIR}/tutorials"
           COMPONENT doc)
   install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/content/sources"
           DESTINATION "${DOC_INSTALL_DIR}/tutorials"
+          COMPONENT doc
+          PATTERN ".svn" EXCLUDE)
+  install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../advanced/html"
+          DESTINATION "${DOC_INSTALL_DIR}/advanced"
+          COMPONENT doc)
+  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../advanced/content/files"
+          DESTINATION "${DOC_INSTALL_DIR}/advanced"
           COMPONENT doc
           PATTERN ".svn" EXCLUDE)
 endif(SPHINX_FOUND)
