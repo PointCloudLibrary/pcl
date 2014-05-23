@@ -634,7 +634,10 @@ main (int argc, char** argv)
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
     if (i == 0 && !p->cameraParamsSet ())
+    {
       p->resetCameraViewpoint (cloud_name.str ());
+      p->resetCamera ();
+    }
 
     print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
