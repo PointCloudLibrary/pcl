@@ -4,6 +4,9 @@ PCL_DIR=`pwd`
 BUILD_DIR=$PCL_DIR/build
 DOC_DIR=$BUILD_DIR/doc/doxygen/html
 
+TUTORIALS_DIR=$BUILD_DIR/doc/tutorials/html
+ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
+
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
@@ -34,8 +37,9 @@ function doc ()
 {
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
-  # Install doxygen and graphviz
-  sudo apt-get install doxygen graphviz
+  # Install doxygen and sphinx
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip
+  sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $PCL_DIR
@@ -54,13 +58,18 @@ function doc ()
 
   cd $DOC_DIR
   git clone git@github.com:PointCloudLibrary/documentation.git .
-  cd $BUILD_DIR
 
   # Generate documentation
+  cd $BUILD_DIR
   make doc
   cd $DOC_DIR
   git commit -a -m "adding $TRAVIS_COMMIT"
   git push
+
+  # Generate tutorials
+  cd $BUILD_DIR
+  make tutorials
+  # upload to github...
 }
 
 case $TASK in
