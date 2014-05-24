@@ -53,16 +53,23 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::GroundBasedPeopleDetectionAp
   voxel_size_ = 0.06;
   vertical_ = false;
   head_centroid_ = true;
+  min_fov_ = 0;
+  max_fov_ = 50;
   min_height_ = 1.3;
   max_height_ = 2.3;
-  min_points_ = 30;     // this value is adapted to the voxel size in method "compute"
-  max_points_ = 5000;   // this value is adapted to the voxel size in method "compute"
-  dimension_limits_set_ = false;
+  min_width_ = 0.1;
+  max_width_ = 8.0;
+  updateMinMaxPoints ();
   heads_minimum_distance_ = 0.3;
 
   // set flag values for mandatory parameters:
   sqrt_ground_coeffs_ = std::numeric_limits<float>::quiet_NaN();
+  ground_coeffs_set_ = false;
+  intrinsics_matrix_set_ = false;
   person_classifier_set_flag_ = false;
+
+  // set other flags
+  transformation_set_ = false;
 }
 
 template <typename PointT> void
@@ -72,10 +79,26 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setInputCloud (PointCloudPtr
 }
 
 template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setTransformation (const Eigen::Matrix3f& transformation)
+{
+  if (!transformation.isUnitary())
+  {
+	PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::setCloudTransform] The cloud transformation matrix must be an orthogonal matrix!\n");
+  }
+
+  transformation_ = transformation;
+  transformation_set_ = true;
+  applyTransformationGround();
+  applyTransformationIntrinsics();
+}
+
+template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setGround (Eigen::VectorXf& ground_coeffs)
 {
   ground_coeffs_ = ground_coeffs;
+  ground_coeffs_set_ = true;
   sqrt_ground_coeffs_ = (ground_coeffs - Eigen::Vector4f(0.0f, 0.0f, 0.0f, ground_coeffs(3))).norm();
+  applyTransformationGround();
 }
 
 template <typename PointT> void
@@ -88,12 +111,15 @@ template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setVoxelSize (float voxel_size)
 {
   voxel_size_ = voxel_size;
+  updateMinMaxPoints ();
 }
 
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setIntrinsics (Eigen::Matrix3f intrinsics_matrix)
 {
   intrinsics_matrix_ = intrinsics_matrix;
+  intrinsics_matrix_set_ = true;
+  applyTransformationIntrinsics();
 }
 
 template <typename PointT> void
@@ -104,24 +130,33 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setClassifier (pcl::people::
 }
 
 template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setFOV (float min_fov, float max_fov)
+{
+  min_fov_ = min_fov;
+  max_fov_ = max_fov;
+}
+
+template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::setSensorPortraitOrientation (bool vertical)
 {
   vertical_ = vertical;
 }
 
-template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setHeightLimits (float min_height, float max_height)
+template<typename PointT>
+void pcl::people::GroundBasedPeopleDetectionApp<PointT>::updateMinMaxPoints ()
 {
-  min_height_ = min_height;
-  max_height_ = max_height;
+  min_points_ = (int) (min_height_ * min_width_ / voxel_size_ / voxel_size_);
+  max_points_ = (int) (max_height_ * max_width_ / voxel_size_ / voxel_size_);
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::setDimensionLimits (int min_points, int max_points)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::setPersonClusterLimits (float min_height, float max_height, float min_width, float max_width)
 {
-  min_points_ = min_points;
-  max_points_ = max_points;
-  dimension_limits_set_ = true;
+  min_height_ = min_height;
+  max_height_ = max_height;
+  min_width_ = min_width;
+  max_width_ = max_width;
+  updateMinMaxPoints ();
 }
 
 template <typename PointT> void
@@ -137,10 +172,12 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::setHeadCentroid (bool head_c
 }
 
 template <typename PointT> void
-pcl::people::GroundBasedPeopleDetectionApp<PointT>::getHeightLimits (float& min_height, float& max_height)
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::getPersonClusterLimits (float& min_height, float& max_height, float& min_width, float& max_width)
 {
   min_height = min_height_;
   max_height = max_height_;
+  min_width = min_width_;
+  max_width = max_width_;
 }
 
 template <typename PointT> void
@@ -159,11 +196,17 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::getMinimumDistanceBetweenHea
 template <typename PointT> Eigen::VectorXf
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::getGround ()
 {
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (!ground_coeffs_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::getGround] Floor parameters have not been set or they are not valid!\n");
   }
   return (ground_coeffs_);
+}
+
+template <typename PointT> typename pcl::people::GroundBasedPeopleDetectionApp<PointT>::PointCloudPtr
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::getFilteredCloud ()
+{
+  return (cloud_filtered_);
 }
 
 template <typename PointT> typename pcl::people::GroundBasedPeopleDetectionApp<PointT>::PointCloudPtr
@@ -210,11 +253,62 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCl
   cloud = output_cloud;
 }
 
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationPointCloud ()
+{
+  if (transformation_set_)
+  {
+    Eigen::Transform<float, 3, Eigen::Affine> transform;
+    transform = transformation_;
+    pcl::transformPointCloud(*cloud_, *cloud_, transform);
+  }
+}
+
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationGround ()
+{
+  if (transformation_set_ && ground_coeffs_set_)
+  {
+    Eigen::Transform<float, 3, Eigen::Affine> transform;
+    transform = transformation_;
+    ground_coeffs_transformed_ = transform.matrix() * ground_coeffs_;
+  }
+  else
+  {
+    ground_coeffs_transformed_ = ground_coeffs_;
+  }
+}
+
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::applyTransformationIntrinsics ()
+{
+  if (transformation_set_ && intrinsics_matrix_set_)
+  {
+    intrinsics_matrix_transformed_ = intrinsics_matrix_ * transformation_.transpose();
+  }
+  else
+  {
+    intrinsics_matrix_transformed_ = intrinsics_matrix_;
+  }
+}
+
+template <typename PointT> void
+pcl::people::GroundBasedPeopleDetectionApp<PointT>::filter ()
+{
+  cloud_filtered_ = PointCloudPtr (new PointCloud);
+  pcl::VoxelGrid<PointT> grid;
+  grid.setInputCloud(cloud_);
+  grid.setLeafSize(voxel_size_, voxel_size_, voxel_size_);
+  grid.setFilterFieldName("z");
+  grid.setFilterLimits(min_fov_, max_fov_);
+  grid.filter(*cloud_filtered_);
+}
+
 template <typename PointT> bool
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::people::PersonCluster<PointT> >& clusters)
 {
   // Check if all mandatory variables have been set:
-  if (sqrt_ground_coeffs_ != sqrt_ground_coeffs_)
+  if (!ground_coeffs_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Floor parameters have not been set or they are not valid!\n");
     return (false);
@@ -224,7 +318,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Input cloud has not been set!\n");
     return (false);
   }
-  if (intrinsics_matrix_(0) == 0)
+  if (!intrinsics_matrix_set_)
   {
     PCL_ERROR ("[pcl::people::GroundBasedPeopleDetectionApp::compute] Camera intrinsic parameters have not been set!\n");
     return (false);
@@ -235,18 +329,10 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     return (false);
   }
 
-  if (!dimension_limits_set_)    // if dimension limits have not been set by the user
-  {
-    // Adapt thresholds for clusters points number to the voxel size:
-    max_points_ = int(float(max_points_) * std::pow(0.06/voxel_size_, 2));
-    if (voxel_size_ > 0.06)
-      min_points_ = int(float(min_points_) * std::pow(0.06/voxel_size_, 2));
-  }
-
   // Fill rgb image:
   rgb_image_->points.clear();                            // clear RGB pointcloud
   extractRGBFromPointCloud(cloud_, rgb_image_);          // fill RGB pointcloud
-  
+
   // Downsample of sampling_factor in every dimension:
   if (sampling_factor_ != 1)
   {
@@ -265,25 +351,22 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
     (*cloud_) = (*cloud_downsampled);
   }
 
-  // Voxel grid filtering:
-  PointCloudPtr cloud_filtered(new PointCloud);
-  pcl::VoxelGrid<PointT> voxel_grid_filter_object;
-  voxel_grid_filter_object.setInputCloud(cloud_);
-  voxel_grid_filter_object.setLeafSize (voxel_size_, voxel_size_, voxel_size_);
-  voxel_grid_filter_object.filter (*cloud_filtered);
+  applyTransformationPointCloud();
+
+  filter();
 
   // Ground removal and update:
   pcl::IndicesPtr inliers(new std::vector<int>);
-  boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered));
-  ground_model->selectWithinDistance(ground_coeffs_, voxel_size_, *inliers);
+  boost::shared_ptr<pcl::SampleConsensusModelPlane<PointT> > ground_model(new pcl::SampleConsensusModelPlane<PointT>(cloud_filtered_));
+  ground_model->selectWithinDistance(ground_coeffs_transformed_, 2 * voxel_size_, *inliers);
   no_ground_cloud_ = PointCloudPtr (new PointCloud);
   pcl::ExtractIndices<PointT> extract;
-  extract.setInputCloud(cloud_filtered);
+  extract.setInputCloud(cloud_filtered_);
   extract.setIndices(inliers);
   extract.setNegative(true);
   extract.filter(*no_ground_cloud_);
   if (inliers->size () >= (300 * 0.06 / voxel_size_ / std::pow (static_cast<double> (sampling_factor_), 2)))
-    ground_model->optimizeModelCoefficients (*inliers, ground_coeffs_, ground_coeffs_);
+    ground_model->optimizeModelCoefficients (*inliers, ground_coeffs_transformed_, ground_coeffs_transformed_);
   else
     PCL_INFO ("No groundplane update!\n");
 
@@ -292,7 +375,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   typename pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
   tree->setInputCloud(no_ground_cloud_);
   pcl::EuclideanClusterExtraction<PointT> ec;
-  ec.setClusterTolerance(2 * 0.06);
+  ec.setClusterTolerance(2 * voxel_size_);
   ec.setMinClusterSize(min_points_);
   ec.setMaxClusterSize(max_points_);
   ec.setSearchMethod(tree);
@@ -302,7 +385,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Head based sub-clustering //
   pcl::people::HeadBasedSubclustering<PointT> subclustering;
   subclustering.setInputCloud(no_ground_cloud_);
-  subclustering.setGround(ground_coeffs_);
+  subclustering.setGround(ground_coeffs_transformed_);
   subclustering.setInitialClusters(cluster_indices);
   subclustering.setHeightLimits(min_height_, max_height_);
   subclustering.setMinimumDistanceBetweenHeads(heads_minimum_distance_);
@@ -317,11 +400,11 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   for(typename std::vector<pcl::people::PersonCluster<PointT> >::iterator it = clusters.begin(); it != clusters.end(); ++it)
   {
     //Evaluate confidence for the current PersonCluster:
-    Eigen::Vector3f centroid = intrinsics_matrix_ * (it->getTCenter());
+    Eigen::Vector3f centroid = intrinsics_matrix_transformed_ * (it->getTCenter());
     centroid /= centroid(2);
-    Eigen::Vector3f top = intrinsics_matrix_ * (it->getTTop());
+    Eigen::Vector3f top = intrinsics_matrix_transformed_ * (it->getTTop());
     top /= top(2);
-    Eigen::Vector3f bottom = intrinsics_matrix_ * (it->getTBottom());
+    Eigen::Vector3f bottom = intrinsics_matrix_transformed_ * (it->getTBottom());
     bottom /= bottom(2);
     it->setPersonConfidence(person_classifier_.evaluate(rgb_image_, bottom, top, centroid, vertical_));
   }
