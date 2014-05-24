@@ -227,6 +227,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTr
 
   int inner_iterations_ = 0;
   int result = bfgs.minimizeInit (x);
+  result = BFGSSpace::Running;
   do
   {
     inner_iterations_++;
