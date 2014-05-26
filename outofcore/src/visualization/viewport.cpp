@@ -201,7 +201,7 @@ Viewport::viewportHudUpdate ()
   }
 
   char points_loaded_str[50];
-  sprintf (points_loaded_str, "%llu points/%llu mb", points_loaded, data_loaded/1024);
+  sprintf (points_loaded_str, "%lu points/%lu mb", points_loaded, data_loaded/1024);
   points_hud_actor_->SetInput (points_loaded_str);
 }
 
