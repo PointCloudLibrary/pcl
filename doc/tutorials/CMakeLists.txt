@@ -26,11 +26,15 @@ if(SPHINX_FOUND)
           DESTINATION "${DOC_INSTALL_DIR}/tutorials"
           COMPONENT doc
           PATTERN ".svn" EXCLUDE)
-  install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../advanced/html"
-          DESTINATION "${DOC_INSTALL_DIR}/advanced"
-          COMPONENT doc)
-  install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../advanced/content/files"
-          DESTINATION "${DOC_INSTALL_DIR}/advanced"
-          COMPONENT doc
-          PATTERN ".svn" EXCLUDE)
+  if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/../advanced/html")
+    install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/../advanced/html"
+            DESTINATION "${DOC_INSTALL_DIR}/advanced"
+            COMPONENT doc)
+  endif()
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../advanced/content/files")
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../advanced/content/files"
+            DESTINATION "${DOC_INSTALL_DIR}/advanced"
+            COMPONENT doc
+            PATTERN ".svn" EXCLUDE)
+  endif()
 endif(SPHINX_FOUND)
