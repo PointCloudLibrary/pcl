@@ -5,7 +5,7 @@ Filtering a PointCloud using ModelOutlierRemoval
 
 This tutorial demonstrates how to extract parametric models for example for planes or spheres 
 out of a PointCloud by using SAC_Models with known coefficients.
-If you don't know the models coefficients take a look at the Sample Consensus tutorials.
+If you don't know the models coefficients take a look at the :ref:`random_sample_consensus` tutorial. 
 
 The code
 --------
