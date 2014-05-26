@@ -137,7 +137,6 @@ namespace pcl
         }
 
         vtkSmartPointer<vtkPolyData> poly = mapper->GetInput ();
-        poly->Update ();
 
         uniform_sampling (poly, n_samples, cloud_out);
 

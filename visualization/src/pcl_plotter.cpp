@@ -36,6 +36,7 @@
  *
  */
 
+#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -123,7 +124,11 @@ pcl::visualization::PCLPlotter::addPlotData (
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
   vtkPlot *line = chart_->AddPlot (type);
+#if VTK_MAJOR_VERSION < 6
   line->SetInput (table, 0, 1);
+#else
+  line->SetInputData (table, 0, 1);
+#endif
   line->SetWidth (1);
 
   if (color == NULL)    //color automatically based on the ColorScheme

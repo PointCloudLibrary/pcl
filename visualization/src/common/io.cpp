@@ -36,6 +36,7 @@
  *
  */
 
+#include <vtkVersion.h>
 #include <vtkPolyData.h>
 #include <vtkCleanPolyData.h>
 #include <vtkSmartPointer.h>
@@ -89,7 +90,11 @@ pcl::visualization::savePointData (vtkPolyData* data, const std::string &out_fil
   // Clean the data (no duplicates!)
   vtkSmartPointer<vtkCleanPolyData> cleaner = vtkSmartPointer<vtkCleanPolyData>::New ();
   cleaner->SetTolerance (0.0);
+#if VTK_MAJOR_VERSION < 6
   cleaner->SetInput (data);
+#else
+  cleaner->SetInputData (data);
+#endif
   cleaner->ConvertLinesToPointsOff ();
   cleaner->ConvertPolysToLinesOff ();
   cleaner->ConvertStripsToPolysOff ();

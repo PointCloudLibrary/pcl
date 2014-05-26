@@ -54,18 +54,24 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
         vtkMapper* mapper = act->actor->GetMapper ();
         vtkDataSet* data = mapper->GetInput ();
         vtkPolyData* poly_data = vtkPolyData::SafeDownCast (data);
+#if VTK_MAJOR_VERSION > 5
+        id_filter->SetInputData (poly_data);
+#else
         id_filter->SetInput (poly_data);
+#endif
         //extract_geometry->SetInput (poly_data);
           
         vtkSmartPointer<vtkPolyData> selected = vtkSmartPointer<vtkPolyData>::New ();
         glyph_filter->SetOutput (selected);
         glyph_filter->Update ();
+#if VTK_MAJOR_VERSION < 6
         selected->SetSource (0);
+#endif
         if (selected->GetNumberOfPoints() > 0)
         {
           qDebug () << "Selected " << selected->GetNumberOfPoints () << " points.";
           id_selected_data_map.insert ( QString::fromStdString ((*it).first), selected);
-          #if VTK_MAJOR_VERSION <= 5
+          #if VTK_MAJOR_VERSION < 6
             append->AddInput (selected);
           #else // VTK 6
             append->AddInputData (selected);
@@ -77,9 +83,12 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
   append->Update ();
   vtkSmartPointer<vtkPolyData> all_points = append->GetOutput ();
   qDebug () << "Allpoints = " <<all_points->GetNumberOfPoints ();
-  
-  selected_mapper->SetInput (all_points);
 
+#if VTK_MAJOR_VERSION < 6
+  selected_mapper->SetInput (all_points);
+#else
+  selected_mapper->SetInputData (all_points);
+#endif
   selected_mapper->ScalarVisibilityOff ();
 
   vtkIdTypeArray* ids = vtkIdTypeArray::SafeDownCast (all_points->GetPointData ()->GetArray ("OriginalIds"));

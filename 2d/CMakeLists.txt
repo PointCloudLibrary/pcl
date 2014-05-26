@@ -38,7 +38,7 @@ if(build)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES})
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${impl_incs})
     link_directories(${VTK_LINK_DIRECTORIES})
-    target_link_libraries("${LIB_NAME}" ${VTK_IO_TARGET_LINK_LIBRARIES} pcl_io)
+    target_link_libraries("${LIB_NAME}" ${VTK_LIBRARIES} pcl_io)
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
     #Install include files
