@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
+ *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -33,7 +33,6 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
  */
 
 #include <gtest/gtest.h>
@@ -43,10 +42,9 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 
-/* expectation: 
-	a model found by ransac has the same inliers and outliers as the same model filtered with model_outlier_removal
-	as long as the thresholdfunction of ransac and model_outlier_removal is the same */
-
+/* Expectation:
+ A model found by ransac has the same inliers and outliers as the same model filtered with model_outlier_removal
+ as long as the thresholdfunction of ransac and model_outlier_removal is the same */
 
 using namespace pcl;
 
@@ -60,35 +58,35 @@ TEST (ModelOutlierRemoval, Model_Outlier_Filter)
   float thresh = 0.01;
   //run ransac
   Eigen::VectorXf model_coefficients;
-  pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr
-    model_p (new pcl::SampleConsensusModelPlane<pcl::PointXYZ> (cloud_in));
-  RandomSampleConsensus<pcl::PointXYZ> ransac (model_p);
-  ransac.setDistanceThreshold ( thresh );
-  ransac.computeModel();
-  ransac.getInliers(ransac_inliers);
-  ransac.getModelCoefficients( model_coefficients );
+  pcl::SampleConsensusModelPlane<pcl::PointXYZ>::Ptr model_p (new pcl::SampleConsensusModelPlane<pcl::PointXYZ> (cloud_in));
+  RandomSampleConsensus < pcl::PointXYZ > ransac (model_p);
+  ransac.setDistanceThreshold (thresh);
+  ransac.computeModel ();
+  ransac.getInliers (ransac_inliers);
+  ransac.getModelCoefficients (model_coefficients);
   // test ransacs result
-  EXPECT_EQ (model_coefficients.size(), 4);
-  if( model_coefficients.size() != 4) return;
+  EXPECT_EQ (model_coefficients.size (), 4);
+  if (model_coefficients.size () != 4)
+    return;
   //run filter
   pcl::ModelCoefficients model_coeff;
-  model_coeff.values.resize(4);
-  for(int i = 0; i < 4; i++) model_coeff.values[i] = model_coefficients[i];
-  pcl::ModelOutlierRemoval<pcl::PointXYZ> filter;
-  filter.setModelCoefficients( model_coeff);
-  filter.setThreshold( thresh );
-  filter.setModelType( pcl::SACMODEL_PLANE );
-  filter.setInputCloud( cloud_in );
-  filter.filter( *cloud_filter_out );
+  model_coeff.values.resize (4);
+  for (int i = 0; i < 4; i++)
+    model_coeff.values[i] = model_coefficients[i];
+  pcl::ModelOutlierRemoval < pcl::PointXYZ > filter;
+  filter.setModelCoefficients (model_coeff);
+  filter.setThreshold (thresh);
+  filter.setModelType (pcl::SACMODEL_PLANE);
+  filter.setInputCloud (cloud_in);
+  filter.filter (*cloud_filter_out);
   //compare results
-  EXPECT_EQ (cloud_filter_out->points.size(), ransac_inliers.size() );
+  EXPECT_EQ (cloud_filter_out->points.size (), ransac_inliers.size ());
   //TODO: also compare content
 }
 
 /* ---[ */
 int
-main (int argc,
-      char** argv)
+main (int argc, char** argv)
 {
   // Load a standard PCD file from disk
   if (argc < 2)
