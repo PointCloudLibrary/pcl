@@ -1595,7 +1595,15 @@ namespace pcl
         bool
         getCameraParameters (int argc, char **argv);
 
-        /** \brief Checks whether the camera parameters were manually loaded from file.*/
+        /** \brief Load camera parameters from a camera parameters file.
+          * \param[in] file the name of the camera parameters file
+          */
+        bool
+        loadCameraParameters (const std::string &file);
+
+        /** \brief Checks whether the camera parameters were manually loaded.
+          * \return True if valid "-cam" option is available in command line or a corresponding camera file is automatically loaded.
+          */
         bool
         cameraParamsSet () const;
 
@@ -1688,6 +1696,18 @@ namespace pcl
           */
         void
         saveScreenshot (const std::string &file);
+
+        /** \brief Save the camera parameters to disk, as a .cam file.
+          * \param[in] file the name of the .cam file
+          */
+        void
+        saveCameraParameters (const std::string &file);
+
+        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
+          * \param[out] camera the name of the pcl::visualization::Camera
+          */
+        void
+        getCameraParameters (Camera &camera);
 
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
@@ -2069,6 +2089,13 @@ namespace pcl
         int
         textureFromTexMaterial (const pcl::TexMaterial& tex_mat,
                                 vtkTexture* vtk_tex) const;
+
+        /** \brief Get camera file for camera parameter saving/restoring from command line.
+          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * \return empty string if failed.
+          */
+        std::string
+        getUniqueCameraFile (int argc, char **argv);
         
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:

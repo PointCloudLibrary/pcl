@@ -229,8 +229,6 @@ main (int argc, char** argv)
   if (debug)
     pcl::console::setVerbosityLevel (pcl::console::L_DEBUG);
 
-  bool cam = pcl::console::find_switch (argc, argv, "-cam");
-
   // Parse the command line arguments for .pcd files
   std::vector<int> p_file_indices   = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
   std::vector<int> vtk_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".vtk");
@@ -474,7 +472,7 @@ main (int argc, char** argv)
       // Set whether or not we should be using the vtkVertexBufferObjectMapper
       p->setUseVbos (use_vbos);
 
-      if (!cam)
+      if (!p->cameraParamsSet ())
       {
         Eigen::Matrix3f rotation;
         rotation = orientation;
