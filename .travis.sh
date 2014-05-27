@@ -12,9 +12,55 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function build ()
 {
+  case $CC in
+    clang ) build_clang;;
+    gcc ) build_gcc;;
+  esac
+}
+
+function build_clang ()
+{
+  # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS -DPCL_ONLY_CORE_POINT_TYPES=ON -DBUILD_global_tests=OFF $PCL_DIR
+  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_global_tests=OFF \
+        $PCL_DIR
+  # Build
+  make -j2
+}
+
+function build_gcc ()
+{
+  # A reduced build, only pcl_common
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_2d=OFF \
+        -DBUILD_features=OFF \
+        -DBUILD_filters=OFF \
+        -DBUILD_geometry=OFF \
+        -DBUILD_global_tests=OFF \
+        -DBUILD_io=OFF \
+        -DBUILD_kdtree=OFF \
+        -DBUILD_keypoints=OFF \
+        -DBUILD_ml=OFF \
+        -DBUILD_octree=OFF \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=OFF \
+        -DBUILD_recognition=OFF \
+        -DBUILD_registration=OFF \
+        -DBUILD_sample_consensus=OFF \
+        -DBUILD_search=OFF \
+        -DBUILD_segmentation=OFF \
+        -DBUILD_stereo=OFF \
+        -DBUILD_surface=OFF \
+        -DBUILD_tools=OFF \
+        -DBUILD_tracking=OFF \
+        -DBUILD_visualization=OFF \
+        $PCL_DIR
   # Build
   make -j2
 }
