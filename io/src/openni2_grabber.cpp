@@ -907,8 +907,8 @@ void pcl::io::OpenNI2Grabber::processDepthFrame (openni::VideoStream& stream)
   float focalLength = device_->getDepthFocalLength ();
 
   float baseline = device_->getBaseline();
-  uint64_t no_sample_value = device_->getShadowValue();
-  uint64_t shadow_value = no_sample_value;
+  pcl::uint64_t no_sample_value = device_->getShadowValue();
+  pcl::uint64_t shadow_value = no_sample_value;
   
   boost::shared_ptr<DepthImage> image  = 
    boost::make_shared<DepthImage> (frameWrapper, baseline, focalLength, shadow_value, no_sample_value);

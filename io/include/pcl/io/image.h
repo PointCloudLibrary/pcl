@@ -166,7 +166,7 @@ namespace pcl
         * @return the timestamp of the image
         * @note the time value is not synchronized with the system time
         */
-        uint64_t
+        pcl::uint64_t
         getTimestamp () const
         {
           return (wrapper_->getTimestamp ());
