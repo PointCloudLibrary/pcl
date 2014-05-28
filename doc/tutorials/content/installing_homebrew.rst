@@ -49,7 +49,7 @@ To install the latest version using the formula, execute the following command::
 You can specify options to control which parts of PCL are installed. For
 example, to build just the libraries without extra dependencies, execute the following command::
 
-  $ brew install pcl --HEAD --without-apps --without-tools --without-vtk5 --without-qvtk --without-qt
+  $ brew install pcl --HEAD --without-apps --without-tools --without-vtk --without-qvtk --without-qt
 
 For a full list of the available options, see the formula's help::
 
