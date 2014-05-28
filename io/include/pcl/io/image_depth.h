@@ -71,8 +71,8 @@ namespace pcl
           * \param[in] no_sample_value defines which values in the depth data are indicating that no depth (disparity) could be determined .
           * \attention The focal length may change, depending whether the depth stream is registered/mapped to the RGB stream or not.
           */
-        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value);
-        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value, Timestamp time);
+        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value);
+        DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value, Timestamp time);
 
         /** \brief Destructor. Never throws an exception. */
         ~DepthImage ();
@@ -128,13 +128,13 @@ namespace pcl
         /** \brief method to access the shadow value, that indicates pixels lying in shadow in the depth image.
           * \return shadow value
           */
-        uint64_t
+        pcl::uint64_t
         getShadowValue () const;
 
         /** \brief method to access the no-sample value, that indicates pixels where no disparity could be determined for the depth image.
           * \return no-sample value
           */
-        uint64_t
+        pcl::uint64_t
         getNoSampleValue () const;
 
         /** \return the width of the depth image */
@@ -155,7 +155,7 @@ namespace pcl
           * \attention its not the system time, thus can not be used directly to synchronize different sensors.
           *            But definitely synchronized with other streams
           */
-        uint64_t
+        pcl::uint64_t
         getTimestamp () const;
 
         Timestamp
@@ -181,8 +181,8 @@ namespace pcl
 
         float baseline_;
         float focal_length_;
-        uint64_t shadow_value_;
-        uint64_t no_sample_value_;
+        pcl::uint64_t shadow_value_;
+        pcl::uint64_t no_sample_value_;
         Timestamp timestamp_;
     };
 

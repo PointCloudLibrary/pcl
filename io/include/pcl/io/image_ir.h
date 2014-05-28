@@ -76,7 +76,7 @@ namespace pcl
         unsigned
         getFrameID () const;
 
-        uint64_t
+        pcl::uint64_t
         getTimestamp () const;
 
         Timestamp

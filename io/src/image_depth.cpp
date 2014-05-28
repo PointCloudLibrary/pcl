@@ -47,7 +47,7 @@
 using pcl::io::FrameWrapper;
 using pcl::io::IOException;
 
-pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value)
+pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value)
 : wrapper_ (depth_metadata)
 , baseline_ (baseline)
 , focal_length_ (focal_length)
@@ -57,7 +57,7 @@ pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baselin
 {}
 
 
-pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, uint64_t shadow_value, uint64_t no_sample_value, Timestamp timestamp)
+pcl::io::DepthImage::DepthImage (FrameWrapper::Ptr depth_metadata, float baseline, float focal_length, pcl::uint64_t shadow_value, pcl::uint64_t no_sample_value, Timestamp timestamp)
 : wrapper_(depth_metadata)
 , baseline_ (baseline)
 , focal_length_ (focal_length)
@@ -106,14 +106,14 @@ pcl::io::DepthImage::getFocalLength () const
 }
 
 
-uint64_t
+pcl::uint64_t
 pcl::io::DepthImage::getShadowValue () const
 {
   return (shadow_value_);
 }
 
 
-uint64_t
+pcl::uint64_t
 pcl::io::DepthImage::getNoSampleValue () const
 {
   return (no_sample_value_);
@@ -141,7 +141,7 @@ pcl::io::DepthImage::getFrameID () const
 }
 
 
-uint64_t
+pcl::uint64_t
 pcl::io::DepthImage::getTimestamp () const
 {
   return (wrapper_->getTimestamp ());
