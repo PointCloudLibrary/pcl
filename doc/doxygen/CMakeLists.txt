@@ -12,6 +12,13 @@ if(DOXYGEN_FOUND)
     set(HAVE_DOT NO)
   endif(DOXYGEN_DOT_EXECUTABLE)
 
+  option(DOXYGEN_USE_SHORT_NAMES "Generate shorter (but less readable) file names" OFF)
+  if(DOXYGEN_USE_SHORT_NAMES)
+    set(SHORT_NAMES YES)
+  else(DOXYGEN_USE_SHORT_NAMES)
+    set(SHORT_NAMES NO)
+  endif(DOXYGEN_USE_SHORT_NAMES)
+
   set(STRIPPED_HEADERS "${PCL_SOURCE_DIR}/${PCL_MODULES_NAMES}/include")
   string(REPLACE ";" "/include \\\n\t\t\t\t\t\t\t\t\t\t\t\t ${PCL_SOURCE_DIR}/" STRIPPED_HEADERS "${STRIPPED_HEADERS}")
   set(DOC_SOURCE_DIR "\"${PCL_SOURCE_DIR}\"\\")
