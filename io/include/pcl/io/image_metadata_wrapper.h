@@ -42,6 +42,7 @@
 #define PCL_IO_IMAGE_METADATA_WRAPPER_H_
 
 #include <pcl/pcl_config.h>
+#include <pcl/pcl_macros.h>
 
 namespace pcl
 {
@@ -72,7 +73,7 @@ namespace pcl
         getFrameID () const = 0;
 
         // Microseconds from some arbitrary start point
-        virtual uint64_t
+        virtual pcl::uint64_t
         getTimestamp () const = 0;
     };
 
