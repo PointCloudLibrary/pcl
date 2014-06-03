@@ -49,9 +49,6 @@
 #include <set>
 #include <list>
 
-//DEBUG TODO REMOVE
-#include <pcl/common/time.h>
-
 namespace pcl
 {
 
@@ -237,8 +234,6 @@ namespace pcl
         using OctreePointCloudT::max_x_;
         using OctreePointCloudT::max_y_;
         using OctreePointCloudT::max_z_;
-
-        StopWatch timer_;
 
         /// Local leaf pointer vector used to make iterating through leaves fast.
         LeafVectorT leaf_vector_;
