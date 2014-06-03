@@ -273,6 +273,10 @@ main (int argc, char ** argv)
   PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
   PointLCloudT::Ptr full_labeled_cloud = super.getLabeledCloud ();
   
+  std::cout << "Getting supervoxel adjacency\n";
+  std::multimap<uint32_t, uint32_t> label_adjacency;
+  super.getSupervoxelAdjacency (label_adjacency);
+   
   std::map <uint32_t, pcl::Supervoxel<PointT>::Ptr > refined_supervoxel_clusters;
   std::cout << "Refining supervoxels \n";
   super.refineSupervoxels (3, refined_supervoxel_clusters);
@@ -282,10 +286,6 @@ main (int argc, char ** argv)
   PointLCloudT::Ptr refined_full_labeled_cloud = super.getLabeledCloud ();
   PointCloudT::Ptr refined_full_colored_cloud = super.getColoredCloud ();
   
-  std::cout << "Getting supervoxel adjacency\n";
-  std::multimap<uint32_t, uint32_t> label_adjacency;
-  super.getSupervoxelAdjacency (label_adjacency);
-   
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS
   pcl::io::savePNGFile (out_path, *full_colored_cloud, "rgb");
   pcl::io::savePNGFile (refined_out_path, *refined_full_colored_cloud, "rgb");
