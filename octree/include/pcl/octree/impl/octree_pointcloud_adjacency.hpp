@@ -95,12 +95,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     computeNeighbors (leaf_key, leaf_container);
     
     leaf_vector_.push_back (leaf_container);
-
   }
-  
   //Make sure our leaf vector is correctly sized
   assert (leaf_vector_.size () == this->getLeafCount ());
-   
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
