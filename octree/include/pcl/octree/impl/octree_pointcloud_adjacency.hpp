@@ -62,6 +62,8 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     PointT temp (input_->points[i]);
     if (transform_func_) //Search for point with 
       transform_func_ (temp);
+    if (!pcl::isFinite (temp)) //Check to make sure transform didn't make point not finite
+      continue;
     if (temp.x < minX)
       minX = temp.x;
     if (temp.y < minY)
@@ -76,62 +78,26 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
       maxZ = temp.z;
   }
   this->defineBoundingBox (minX, minY, minZ, maxX, maxY, maxZ);
-  //t1 = timer_.getTime ();
+
   OctreePointCloud<PointT, LeafContainerT, BranchContainerT>::addPointsFromInputCloud ();
-
-
-  //t2 = timer_.getTime ();
-  //std::cout << "Add Points:"<<t2-t1<<" ms  Num leaves ="<<this->getLeafCount ()<<"\n";
-   
-  std::list <std::pair<OctreeKey,LeafContainerT*> > delete_list;
-  //double t_temp, t_neigh, t_compute, t_getLeaf;
-  //t_neigh = t_compute = t_getLeaf = 0;
+  
   LeafContainerT *leaf_container;
   typename OctreeAdjacencyT::LeafNodeIterator leaf_itr;
   leaf_vector_.reserve (this->getLeafCount ());
   for ( leaf_itr = this->leaf_begin () ; leaf_itr != this->leaf_end (); ++leaf_itr)
   {
-    //t_temp = timer_.getTime ();
     OctreeKey leaf_key = leaf_itr.getCurrentOctreeKey ();
     leaf_container = &(leaf_itr.getLeafContainer ());
-    //t_getLeaf += timer_.getTime () - t_temp;
     
-    //t_temp = timer_.getTime ();
     //Run the leaf's compute function
     leaf_container->computeData ();
-    //t_compute += timer_.getTime () - t_temp;
-     
-    //t_temp = timer_.getTime ();
-    //  std::cout << "Computing neighbors\n";
+
     computeNeighbors (leaf_key, leaf_container);
-    //t_neigh += timer_.getTime () - t_temp;
     
     leaf_vector_.push_back (leaf_container);
-
   }
-  //Go through and delete voxels scheduled
-  for (typename std::list<std::pair<OctreeKey,LeafContainerT*> >::iterator delete_itr = delete_list.begin (); delete_itr != delete_list.end (); ++delete_itr)
-  {
-    leaf_container = delete_itr->second;
-    //Remove pointer to it from all neighbors
-    typename std::set<LeafContainerT*>::iterator neighbor_itr = leaf_container->begin ();
-    typename std::set<LeafContainerT*>::iterator neighbor_end = leaf_container->end ();
-    for ( ; neighbor_itr != neighbor_end; ++neighbor_itr)
-    {
-      //Don't delete self neighbor
-      if (*neighbor_itr != leaf_container)
-        (*neighbor_itr)->removeNeighbor (leaf_container);
-    }
-    this->removeLeaf (delete_itr->first);
-  }
-  
   //Make sure our leaf vector is correctly sized
   assert (leaf_vector_.size () == this->getLeafCount ());
-  
- //  std::cout << "Time spent getting leaves ="<<t_getLeaf<<"\n";
- // std::cout << "Time spent computing data in leaves="<<t_compute<<"\n";
- // std::cout << "Time spent computing neighbors="<<t_neigh<<"\n";
-  
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -143,9 +109,16 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     PointT temp (point_arg);
     transform_func_ (temp);
    // calculate integer key for transformed point coordinates
-    key_arg.x = static_cast<unsigned int> ((temp.x - this->min_x_) / this->resolution_);
-    key_arg.y = static_cast<unsigned int> ((temp.y - this->min_y_) / this->resolution_);
-    key_arg.z = static_cast<unsigned int> ((temp.z - this->min_z_) / this->resolution_);
+    if (pcl::isFinite (temp)) //Make sure transformed point is finite - if it is not, it gets default key
+    {
+      key_arg.x = static_cast<unsigned int> ((temp.x - this->min_x_) / this->resolution_);
+      key_arg.y = static_cast<unsigned int> ((temp.y - this->min_y_) / this->resolution_);
+      key_arg.z = static_cast<unsigned int> ((temp.z - this->min_z_) / this->resolution_);
+    }
+    else
+    {
+      key_arg = OctreeKey ();
+    }
   }
   else 
   {
