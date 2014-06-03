@@ -117,7 +117,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
     }
     else
     {
-      key = OctreeKey ();
+      key_arg = OctreeKey ();
     }
   }
   else 
