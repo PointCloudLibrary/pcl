@@ -104,7 +104,7 @@ This is the transformation we just defined ::
    :lines: 92-105
 
 This second approach is easier to understand and is less error prone. 
-Be carefull if you want to apply several rotations; rotations are not commutative ! This means than in most cases :
+Be carefull if you want to apply several rotations; rotations are not commutative ! This means than in most cases:
 rotA * rotB != rotB * rotA.
 
 .. literalinclude:: sources/matrix_transform/matrix_transform.cpp
@@ -166,19 +166,20 @@ More about transformations
 | A point is defined in 3D space with its three coordinates; x,y,z (in a cartesian coordinate system).
 | How can you multiply a vector (with 3 coordinates) with a 4x4 matrix ? You simply can't ! If you don't know why please refer to `matrix multiplications on wikipedia <https://en.wikipedia.org/wiki/Matrix_multiplication>`_.
 
-We need a vector with 4 components. What do you put in the last component ? It depends on what you want to do :
+We need a vector with 4 components. What do you put in the last component ? It depends on what you want to do:
 
 * If you want to transform a point: put 1 at the end of the vector so that the translation is taken in account.
 * If you want to transform the direction of a vector: put 0 at the end of the vector to ignore the translation.
 
-| Here's a quick example, we want to transform the following vector : 
-| [10.0, 0.0, 0.0, 1.0, 0.0, 0.0]
+Here's a quick example, we want to transform the following vector: ::
+
+  [10, 5, 0, 3, 0, -1]
 
 | Where the first 3 components defines the origin coordinates and the last 3 components the direction.
-| This vector starts at point 10.0, 5.0, 0.0 and ends at 11.0, 5.0, 0.0.
+| This vector starts at point 10, 5, 0 and ends at 13, 5, -1.
 
-This is what you need to do to transform the vector : ::
+This is what you need to do to transform the vector: ::
 
-  [10.0, 5.0, 0.0, 1.0] * 4x4_transformation_matrix
-  [1.0, 0.0, 0.0, 0.0] * 4x4_transformation_matrix
+  [10, 5, 0,  1] * 4x4_transformation_matrix
+  [3,  0, -1, 0] * 4x4_transformation_matrix
 
