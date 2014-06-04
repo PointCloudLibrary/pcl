@@ -500,15 +500,21 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     // For each point in the cloud
     for (size_t i = 0; i < point_count; ++i)
     {
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y; // 4
-      accu [4] += cloud[i].y * cloud[i].z; // 5
-      accu [5] += cloud[i].z * cloud[i].z; // 8
       accu [6] += cloud[i].x;
       accu [7] += cloud[i].y;
       accu [8] += cloud[i].z;
+    }
+
+    accu = accu / static_cast<float>(point_count);
+    
+    for (size_t i = 0; i < point_count; ++i)
+    {
+      accu [0] += (cloud[i].x - accu[6]) * (cloud[i].x - accu[6]);
+      accu [1] += (cloud[i].x - accu[6]) * (cloud[i].y - accu[7]);
+      accu [2] += (cloud[i].x - accu[6]) * (cloud[i].z - accu[8]);
+      accu [3] += (cloud[i].y - accu[7]) * (cloud[i].y - accu[7]);
+      accu [4] += (cloud[i].y - accu[7]) * (cloud[i].z - accu[8]);
+      accu [5] += (cloud[i].z - accu[8]) * (cloud[i].z - accu[8]);
     }
   }
   else
@@ -519,30 +525,39 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       if (!isFinite (cloud[i]))
         continue;
 
-      accu [0] += cloud[i].x * cloud[i].x;
-      accu [1] += cloud[i].x * cloud[i].y;
-      accu [2] += cloud[i].x * cloud[i].z;
-      accu [3] += cloud[i].y * cloud[i].y;
-      accu [4] += cloud[i].y * cloud[i].z;
-      accu [5] += cloud[i].z * cloud[i].z;
       accu [6] += cloud[i].x;
       accu [7] += cloud[i].y;
       accu [8] += cloud[i].z;
       ++point_count;
     }
+
+    accu /= static_cast<float>(point_count);
+
+    for (size_t i = 0; i < cloud.size (); ++i)
+    {
+      if (!isFinite (cloud[i]))
+        continue;
+
+      accu [0] += (cloud[i].x - accu[6]) * (cloud[i].x - accu[6]);
+      accu [1] += (cloud[i].x - accu[6]) * (cloud[i].y - accu[7]);
+      accu [2] += (cloud[i].x - accu[6]) * (cloud[i].z - accu[8]);
+      accu [3] += (cloud[i].y - accu[7]) * (cloud[i].y - accu[7]);
+      accu [4] += (cloud[i].y - accu[7]) * (cloud[i].z - accu[8]);
+      accu [5] += (cloud[i].z - accu[8]) * (cloud[i].z - accu[8]);
+    }
   }
-  accu /= static_cast<Scalar> (point_count);
+
   if (point_count != 0)
   {
     //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
     centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
     centroid[3] = 0;
-    covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-    covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-    covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-    covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-    covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-    covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
+    covariance_matrix.coeffRef (0) = accu [0] / static_cast<float>(point_count);
+    covariance_matrix.coeffRef (1) = accu [1] / static_cast<float>(point_count);
+    covariance_matrix.coeffRef (2) = accu [2] / static_cast<float>(point_count);
+    covariance_matrix.coeffRef (4) = accu [3] / static_cast<float>(point_count);
+    covariance_matrix.coeffRef (5) = accu [4] / static_cast<float>(point_count);
+    covariance_matrix.coeffRef (8) = accu [5] / static_cast<float>(point_count);
     covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
     covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
     covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
@@ -565,16 +580,21 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
     point_count = indices.size ();
     for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
     {
-      //const PointT& point = cloud[*iIt];
-      accu [0] += cloud[*iIt].x * cloud[*iIt].x;
-      accu [1] += cloud[*iIt].x * cloud[*iIt].y;
-      accu [2] += cloud[*iIt].x * cloud[*iIt].z;
-      accu [3] += cloud[*iIt].y * cloud[*iIt].y;
-      accu [4] += cloud[*iIt].y * cloud[*iIt].z;
-      accu [5] += cloud[*iIt].z * cloud[*iIt].z;
       accu [6] += cloud[*iIt].x;
       accu [7] += cloud[*iIt].y;
       accu [8] += cloud[*iIt].z;
+    }
+
+    accu = accu / static_cast<float>(point_count);
+
+    for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+    {
+      accu [0] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].x - accu[6]);
+      accu [1] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].y - accu[7]);
+      accu [2] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].z - accu[8]);
+      accu [3] += (cloud[*iIt].y - accu[7]) * (cloud[*iIt].y - accu[7]);
+      accu [4] += (cloud[*iIt].y - accu[7]) * (cloud[*iIt].z - accu[8]);
+      accu [5] += (cloud[*iIt].z - accu[8]) * (cloud[*iIt].z - accu[8]);
     }
   }
   else
@@ -585,31 +605,39 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
       if (!isFinite (cloud[*iIt]))
         continue;
 
-      ++point_count;
-      accu [0] += cloud[*iIt].x * cloud[*iIt].x;
-      accu [1] += cloud[*iIt].x * cloud[*iIt].y;
-      accu [2] += cloud[*iIt].x * cloud[*iIt].z;
-      accu [3] += cloud[*iIt].y * cloud[*iIt].y; // 4
-      accu [4] += cloud[*iIt].y * cloud[*iIt].z; // 5
-      accu [5] += cloud[*iIt].z * cloud[*iIt].z; // 8
       accu [6] += cloud[*iIt].x;
       accu [7] += cloud[*iIt].y;
       accu [8] += cloud[*iIt].z;
+      ++point_count;
+    }
+
+    accu = accu / static_cast<float>(point_count);
+
+    for (std::vector<int>::const_iterator iIt = indices.begin (); iIt != indices.end (); ++iIt)
+    {
+      if (!isFinite (cloud[*iIt]))
+        continue;
+
+      accu [0] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].x - accu[6]);
+      accu [1] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].y - accu[7]);
+      accu [2] += (cloud[*iIt].x - accu[6]) * (cloud[*iIt].z - accu[8]);
+      accu [3] += (cloud[*iIt].y - accu[7]) * (cloud[*iIt].y - accu[7]);
+      accu [4] += (cloud[*iIt].y - accu[7]) * (cloud[*iIt].z - accu[8]);
+      accu [5] += (cloud[*iIt].z - accu[8]) * (cloud[*iIt].z - accu[8]);
     }
   }
 
-  accu /= static_cast<Scalar> (point_count);
   //Eigen::Vector3f vec = accu.tail<3> ();
   //centroid.head<3> () = vec;//= accu.tail<3> ();
   //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
   centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
   centroid[3] = 0;
-  covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
-  covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
-  covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
-  covariance_matrix.coeffRef (4) = accu [3] - accu [7] * accu [7];
-  covariance_matrix.coeffRef (5) = accu [4] - accu [7] * accu [8];
-  covariance_matrix.coeffRef (8) = accu [5] - accu [8] * accu [8];
+  covariance_matrix.coeffRef (0) = accu [0] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (1) = accu [1] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (2) = accu [2] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (4) = accu [3] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (5) = accu [4] / static_cast<float>(point_count);
+  covariance_matrix.coeffRef (8) = accu [5] / static_cast<float>(point_count);
   covariance_matrix.coeffRef (3) = covariance_matrix.coeff (1);
   covariance_matrix.coeffRef (6) = covariance_matrix.coeff (2);
   covariance_matrix.coeffRef (7) = covariance_matrix.coeff (5);
