@@ -146,7 +146,7 @@ pcl::LocalMinMax<PointT>::applyGridFilter (std::vector<int> &indices)
   div_b = max_b - min_b + Eigen::Vector2i::Ones ();
 
   // Set up the division multiplier and number of grid sections
-  divb_mul = Eigen::Vector2i (1, div_b[1]);
+  divb_mul = Eigen::Vector2i (1, div_b[0]);
   num_grid_sections = div_b[0]*div_b[1];
 
   std::vector<int> index_vector (num_grid_sections);
