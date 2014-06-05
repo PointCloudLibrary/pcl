@@ -174,6 +174,21 @@ Basic Usage
      .. |mi_8| image:: images/pcl_logo.png
                :height: 75px
 
+  * :ref:`generate_local_doc`
+
+     =======  ======
+     |mi_11|  Title: **Generate a local documentation for PCL**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: PCL > 1.0
+
+              This tutorial shows you how to generate and use a local documentation for PCL.
+     =======  ======
+
+     .. |mi_11| image:: images/pcl_logo.png
+               :height: 75px
+
   * :ref:`qt_visualizer`
 
      ======  ======
