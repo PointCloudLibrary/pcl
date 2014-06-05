@@ -57,7 +57,6 @@
 template <typename PointT> bool
 pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
 {
-  model_from_normals_ = NULL;
   // Build the model
   switch (model_type)
   {
@@ -100,41 +99,31 @@ pcl::ModelOutlierRemoval<PointT>::initSACModel (pcl::SacModel model_type)
     case SACMODEL_CYLINDER:
     {
       PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelCYLINDER\n", getClassName ().c_str ());
-      SampleConsensusModelCylinder<PointT, pcl::Normal> *ptr = new SampleConsensusModelCylinder<PointT, pcl::Normal> (input_);
-      model_from_normals_ = ptr;
-      model_.reset (ptr);
+      model_.reset (new SampleConsensusModelCylinder<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_NORMAL_PLANE:
     {
       PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_PLANE\n", getClassName ().c_str ());
-      SampleConsensusModelNormalPlane<PointT, pcl::Normal> *ptr = new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_);
-      model_from_normals_ = ptr;
-      model_.reset (ptr);
+      model_.reset (new SampleConsensusModelNormalPlane<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_CONE:
     {
       PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelCONE\n", getClassName ().c_str ());
-      SampleConsensusModelCone<PointT, pcl::Normal> *ptr = new SampleConsensusModelCone<PointT, pcl::Normal> (input_);
-      model_from_normals_ = ptr;
-      model_.reset (ptr);
+      model_.reset (new SampleConsensusModelCone<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_NORMAL_SPHERE:
     {
       PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_SPHERE\n", getClassName ().c_str ());
-      SampleConsensusModelNormalSphere<PointT, pcl::Normal> *ptr = new SampleConsensusModelNormalSphere<PointT, pcl::Normal> (input_);
-      model_from_normals_ = ptr;
-      model_.reset (ptr);
+      model_.reset (new SampleConsensusModelNormalSphere<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_NORMAL_PARALLEL_PLANE:
     {
       PCL_DEBUG ("[pcl::%s::segment] Using a model of type: modelNORMAL_PARALLEL_PLANE\n", getClassName ().c_str ());
-      SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> *ptr = new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> (input_);
-      model_from_normals_ = ptr;
-      model_.reset (ptr);
+      model_.reset (new SampleConsensusModelNormalParallelPlane<PointT, pcl::Normal> (input_));
       break;
     }
     case SACMODEL_PARALLEL_PLANE:
@@ -189,7 +178,12 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   bool valid_setup = true;
 
   valid_setup &= initSACModel (model_type_);
-  if (model_from_normals_)
+
+  typedef SampleConsensusModelFromNormals<PointT, pcl::Normal> SACModelFromNormals;
+  // Returns NULL if cast isn't possible
+  SACModelFromNormals *model_from_normals = dynamic_cast<SACModelFromNormals *> (& (*model_));
+
+  if (model_from_normals)
   {
     if (!cloud_normals_)
     {
@@ -198,8 +192,8 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
     }
     else
     {
-      model_from_normals_->setNormalDistanceWeight (normals_distance_weight_);
-      model_from_normals_->setInputNormals (cloud_normals_);
+      model_from_normals->setNormalDistanceWeight (normals_distance_weight_);
+      model_from_normals->setInputNormals (cloud_normals_);
     }
   }
 

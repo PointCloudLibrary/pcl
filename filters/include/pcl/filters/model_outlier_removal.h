@@ -82,7 +82,6 @@ namespace pcl
       ModelOutlierRemoval (bool extract_removed_indices = false) :
           FilterIndices<PointT>::FilterIndices (extract_removed_indices)
       {
-        model_from_normals_ = NULL;
         thresh_ = 0;
         normals_distance_weight_ = 0;
         filter_name_ = "ModelOutlierRemoval";
@@ -222,7 +221,6 @@ namespace pcl
     protected:
       double normals_distance_weight_;
       pcl::PointCloud<pcl::Normal>::Ptr cloud_normals_;
-      SampleConsensusModelFromNormals<PointT, pcl::Normal> *model_from_normals_;
 
       /** \brief The model used to calculate distances */
       SampleConsensusModelPtr model_;
