@@ -1,8 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Documentation - Point Cloud Library (PCL)</title>
+</head>
 {% extends "!layout.html" %}
 
 {% block extrahead %}
+<?php
+define('MODX_CORE_PATH', '/var/www/pointclouds.org/core/');
+define('MODX_CONFIG_KEY', 'config');
+
+require_once MODX_CORE_PATH.'config/'.MODX_CONFIG_KEY.'.inc.php';
+require_once MODX_CORE_PATH.'model/modx/modx.class.php';
+$modx = new modX();
+$modx->initialize('web');
+
+$snip = $modx->runSnippet("getSiteNavigation", array('id'=>5, 'phLevels'=>'sitenav.level0,sitenav.level1', 'showPageNav'=>'n'));
+$chunkOutput = $modx->getChunk("site-header", array('sitenav'=>$snip));
+$bodytag = str_replace("[[+showSubmenus:notempty=`", "", $chunkOutput);
+$bodytag = str_replace("`]]", "", $bodytag);
+echo $bodytag;
+echo "\n";
+?>
+<div id="pagetitle">
+<h1>Documentation</h1>
+<a id="donate" href="http://www.openperception.org/support/"><img src="/assets/images/donate-button.png" alt="Donate to the Open Perception foundation"/></a>
+</div>
+<div id="page-content">
 {% endblock %}
 
+{% block relbar1 %}{% endblock %}
+{% block relbar2 %}{% endblock %}
 {% block rootrellink %}{% endblock %}
 
 {% block sidebarsearch %}{% endblock %}
+
+{% block footer %}
+</div> <!-- #page-content -->
+
+<?php
+$chunkOutput = $modx->getChunk("site-footer");
+echo $chunkOutput;
+?>
+{% endblock %}
+</html>
+
