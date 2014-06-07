@@ -1710,6 +1710,12 @@ namespace pcl
           return (cloud_actor_map_);
         }
         
+        /** \brief Return a pointer to the ShapeActorMap this visualizer uses. */
+        ShapeActorMapPtr
+        getShapeActorMap ()
+        {
+          return (shape_actor_map_);
+        }
 
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
