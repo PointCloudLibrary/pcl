@@ -84,26 +84,28 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamp
   int temp_sample;
 
   // Draw random samples until n samples is reached
-  for (int i = 0; i < nr_samples; i++) {
-      // Select a random number
-      sample_indices[i] = getRandomIndex (static_cast<int> (cloud.points.size ()) - i);
+  for (int i = 0; i < nr_samples; i++)
+  {
+    // Select a random number
+    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.points.size ()) - i);
       
-      // Run trough list of numbers, starting at the lowest, to avoid duplicates
-      for (int j = 0; j < i; j++) {
-          // Move value up if it is higher than previous selections to ensure true randomness
-          if (sample_indices[i] >= sample_indices[j]) {
-              sample_indices[i]++;
-          } else {
-              // The new number is lower, place it at the correct point and break for a sorted list
-              temp_sample = sample_indices[i];
-              for (int k = i; k > j; k--)
-                  sample_indices[k] = sample_indices[k - 1];
-              
-              sample_indices[j] = temp_sample;
-              
-              break;
-          }
+    // Run trough list of numbers, starting at the lowest, to avoid duplicates
+    for (int j = 0; j < i; j++)
+    {
+      // Move value up if it is higher than previous selections to ensure true randomness
+      if (sample_indices[i] >= sample_indices[j])
+      {
+        sample_indices[i]++;
+      } else {
+        // The new number is lower, place it at the correct point and break for a sorted list
+        temp_sample = sample_indices[i];
+        for (int k = i; k > j; k--)
+          sample_indices[k] = sample_indices[k - 1];
+        
+        sample_indices[j] = temp_sample;
+        break;
       }
+    }
   }
 }
 
