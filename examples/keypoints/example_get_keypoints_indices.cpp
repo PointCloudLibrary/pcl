@@ -70,7 +70,7 @@ main(int argc, char** argv)
   detector.setThreshold (1e-6);
   pcl::StopWatch watch;
   detector.compute (*keypoints);
-  pcl::console::print_highlight ("Detected %zd points in %dms\n", keypoints->size (), watch.getTimeSeconds ());
+  pcl::console::print_highlight ("Detected %zd points in %lfs\n", keypoints->size (), watch.getTimeSeconds ());
   pcl::PointIndicesConstPtr keypoints_indices = detector.getKeypointsIndices ();
   if (!keypoints_indices->indices.empty ())
   {
