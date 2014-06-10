@@ -310,7 +310,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   if ((min_axis / max_axis) > axis_ratio_)
   {
-    PCL_WARN("Both axis are equally easy/difficult to disambiguate\n");
+    PCL_WARN ("Both axes are equally easy/difficult to disambiguate\n");
 
     Eigen::Vector3f evy_copy = evy;
     Eigen::Vector3f evxminus = evx * -1;
@@ -376,6 +376,10 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
                                                                                      std::vector<pcl::PointIndices> & cluster_indices)
 {
   PointCloudOut ourcvfh_output;
+
+  cluster_axes_.clear ();
+  cluster_axes_.resize (centroids_dominant_orientations_.size ());
+  
   for (size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
   {
 
@@ -383,6 +387,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     PointInTPtr grid (new pcl::PointCloud<PointInT>);
     sgurf (centroids_dominant_orientations_[i], dominant_normals_[i], processed, transformations, grid, cluster_indices[i]);
 
+    // Make a note of how many transformations correspond to each cluster
+    cluster_axes_[i] = transformations.size ();
+    
     for (size_t t = 0; t < transformations.size (); t++)
     {
 
@@ -512,11 +519,15 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       }
 
       ourcvfh_output.points.push_back (vfh_signature.points[0]);
-
+      ourcvfh_output.width = ourcvfh_output.points.size ();
       delete[] weights;
     }
   }
 
+  if (ourcvfh_output.points.size ())
+  {
+    ourcvfh_output.height = 1;
+  }
   output = ourcvfh_output;
 }
 
