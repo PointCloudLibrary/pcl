@@ -69,8 +69,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
-    const PointCloudSource &cloud, int nr_samples, 
-    std::vector<int> &sample_indices)
+    const PointCloudSource &cloud, int nr_samples, std::vector<int> &sample_indices)
 {
   if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
@@ -79,25 +78,35 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamp
                nr_samples, cloud.points.size ());
     return;
   }
+  
+  sample_indices.resize (nr_samples);
+  int temp_sample;
 
-  // Iteratively draw random samples until nr_samples is reached
-  sample_indices.clear ();
-  std::vector<bool> sampled_indices (cloud.points.size (), false);
-  while (static_cast<int> (sample_indices.size ()) < nr_samples)
+  // Draw random samples until n samples is reached
+  for (int i = 0; i < nr_samples; i++)
   {
-    // Choose a unique sample at random
-    int sample_index;
-    do
+    // Select a random number
+    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.points.size ()) - i);
+      
+    // Run trough list of numbers, starting at the lowest, to avoid duplicates
+    for (int j = 0; j < i; j++)
     {
-      sample_index = getRandomIndex (static_cast<int> (cloud.points.size ()));
+      // Move value up if it is higher than previous selections to ensure true randomness
+      if (sample_indices[i] >= sample_indices[j])
+      {
+        sample_indices[i]++;
+      }
+      else
+      {
+        // The new number is lower, place it at the correct point and break for a sorted list
+        temp_sample = sample_indices[i];
+        for (int k = i; k > j; k--)
+          sample_indices[k] = sample_indices[k - 1];
+        
+        sample_indices[j] = temp_sample;
+        break;
+      }
     }
-    while (sampled_indices[sample_index]);
-    
-    // Mark index as sampled
-    sampled_indices[sample_index] = true;
-    
-    // Store
-    sample_indices.push_back (sample_index);
   }
 }
 

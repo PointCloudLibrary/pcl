@@ -257,8 +257,7 @@ namespace pcl
         * \param sample_indices the resulting sample indices
         */
       void 
-      selectSamples (const PointCloudSource &cloud, int nr_samples, 
-                     std::vector<int> &sample_indices);
+      selectSamples (const PointCloudSource &cloud, int nr_samples, std::vector<int> &sample_indices);
 
       /** \brief For each of the sample points, find a list of points in the target cloud whose features are similar to 
         * the sample points' features. From these, select one randomly which will be considered that sample point's 
