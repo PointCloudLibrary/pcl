@@ -318,16 +318,11 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
     // Check if point is an inlier
     if (nn_dists[0] < max_range)
     {
-      // Errors
-      const float dx = input_transformed.points[i].x - target_->points[nn_indices[0]].x;
-      const float dy = input_transformed.points[i].y - target_->points[nn_indices[0]].y;
-      const float dz = input_transformed.points[i].z - target_->points[nn_indices[0]].z;
-      
       // Update inliers
       inliers.push_back (static_cast<int> (i));
       
       // Update fitness score
-      fitness_score += dx*dx + dy*dy + dz*dz;
+      fitness_score += nn_dists[0];
     }
   }
 
