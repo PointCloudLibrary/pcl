@@ -263,12 +263,12 @@ namespace pcl
       /** \brief For each of the sample points, find a list of points in the target cloud whose features are similar to 
         * the sample points' features. From these, select one randomly which will be considered that sample point's 
         * correspondence. 
-        * \param input_features a cloud of feature descriptors
+        * \param nn_indices precomputed correspondence indices in the target cloud
         * \param sample_indices the indices of each sample point
         * \param corresponding_indices the resulting indices of each sample's corresponding point in the target cloud
         */
       void 
-      findSimilarFeatures (const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
+      findSimilarFeatures (const std::vector<std::vector<int> > &nn_indices, const std::vector<int> &sample_indices, 
                            std::vector<int> &corresponding_indices);
 
       /** \brief Rigid transformation computation method.
