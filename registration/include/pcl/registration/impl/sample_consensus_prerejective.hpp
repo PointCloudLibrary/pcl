@@ -113,28 +113,29 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamp
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
-    const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
-    std::vector<int> &corresponding_indices)
+        const std::vector<int> &sample_indices,
+        std::vector<std::vector<int> >& similar_features,
+        std::vector<int> &corresponding_indices)
 {
-  std::vector<int> nn_indices (k_correspondences_);
-  std::vector<float> nn_distances (k_correspondences_);
-
+  // Allocate results
   corresponding_indices.resize (sample_indices.size ());
+  std::vector<float> nn_distances (k_correspondences_);
+  
+  // Loop over the sampled features
   for (size_t i = 0; i < sample_indices.size (); ++i)
   {
-    // Find the k features nearest to input_features.points[sample_indices[i]]
-    feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
+    // Current feature index
+    const int idx = sample_indices[i];
+    
+    // Find the k nearest feature neighbors to the sampled input feature if they are not in the cache already
+    if (similar_features[idx].empty ())
+      feature_tree_->nearestKSearch (*input_features_, idx, k_correspondences_, similar_features[idx], nn_distances);
 
     // Select one at random and add it to corresponding_indices
     if (k_correspondences_ == 1)
-    {
-      corresponding_indices[i] = nn_indices[0];
-    }
+      corresponding_indices[i] = similar_features[idx][0];
     else
-    {
-      int random_correspondence = getRandomIndex (k_correspondences_);
-      corresponding_indices[i] = nn_indices[random_correspondence];
-    }
+      corresponding_indices[i] = similar_features[idx][getRandomIndex (k_correspondences_)];
   }
 }
 
@@ -189,6 +190,14 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     return;
   }
   
+  if (k_correspondences_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
+    PCL_ERROR ("Illegal correspondence randomness %d, must be > 0!\n",
+            k_correspondences_);
+    return;
+  }
+  
   // Initialize prerejector (similarity threshold already set to default value in constructor)
   correspondence_rejector_poly_->setInputSource (input_);
   correspondence_rejector_poly_->setInputTarget (target_);
@@ -221,21 +230,25 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     }
   }
   
+  // Feature correspondence cache
+  std::vector<std::vector<int> > similar_features (input_->size ());
+  
   // Start
   for (int i = 0; i < max_iterations_; ++i)
   {
     // Temporary containers
-    std::vector<int> sample_indices (nr_samples_);
-    std::vector<int> corresponding_indices (nr_samples_);
+    std::vector<int> sample_indices;
+    std::vector<int> corresponding_indices;
     
     // Draw nr_samples_ random samples
     selectSamples (*input_, nr_samples_, sample_indices);
     
     // Find corresponding features in the target cloud
-    findSimilarFeatures (*input_features_, sample_indices, corresponding_indices);
+    findSimilarFeatures (sample_indices, similar_features, corresponding_indices);
     
     // Apply prerejection
-    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices)) {
+    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices))
+    {
       ++num_rejections;
       continue;
     }
