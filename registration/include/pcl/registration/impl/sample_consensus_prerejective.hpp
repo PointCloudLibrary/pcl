@@ -193,7 +193,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   correspondence_rejector_poly_->setInputSource (input_);
   correspondence_rejector_poly_->setInputTarget (target_);
   correspondence_rejector_poly_->setCardinality (nr_samples_);
-  std::vector<bool> accepted (input_->size (), false); // Indices of sampled points that passed prerejection
   int num_rejections = 0; // For debugging
   
   // Initialize results
@@ -232,19 +231,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     // Draw nr_samples_ random samples
     selectSamples (*input_, nr_samples_, sample_indices);
     
-    // Check if all sampled points already been accepted
-    bool samples_accepted = true;
-    for (unsigned int j = 0; j < sample_indices.size(); ++j) {
-      if (!accepted[j]) {
-        samples_accepted = false;
-        break;
-      }
-    }
-
-    // All points have already been accepted, avoid
-    if (samples_accepted)
-      continue;
-    
     // Find corresponding features in the target cloud
     findSimilarFeatures (*input_features_, sample_indices, corresponding_indices);
     
@@ -271,19 +257,14 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
 
     // If the new fit is better, update results
     inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
-    
-    if (inlier_fraction >= inlier_fraction_) {
-      // Mark the sampled points accepted
-      for (int j = 0; j < nr_samples_; ++j)
-        accepted[j] = true;
-      
-      // Update result if pose hypothesis is better
-      if (error < lowest_error) {
-        inliers_ = inliers;
-        lowest_error = error;
-        converged_ = true;
-        final_transformation_ = transformation_;
-      }
+
+    // Update result if pose hypothesis is better
+    if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
+    {
+      inliers_ = inliers;
+      lowest_error = error;
+      converged_ = true;
+      final_transformation_ = transformation_;
     }
   }
 
