@@ -9,7 +9,7 @@ In this tutorial, we show how to find the alignment pose of a rigid object in a 
 The code
 --------
 
-First, download the datasets from :download:`here <./sources/alignment_prerejective/data/alignment_prerejective.tar.gz>` and extract the files.
+First, download the test models: :download:`object <./sources/alignment_prerejective/chef.pcd>` and :download:`scene <./sources/alignment_prerejective/rs1.pcd>`.
 
 Next, copy and paste the following code into your editor and save it as ``alignment_prerejective.cpp`` (or download the source file :download:`here <./sources/alignment_prerejective/alignment_prerejective.cpp>`).
 
