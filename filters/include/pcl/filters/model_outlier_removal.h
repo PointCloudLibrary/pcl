@@ -75,6 +75,9 @@ namespace pcl
       typedef typename SampleConsensusModel<PointT>::Ptr SampleConsensusModelPtr;
 
     public:
+      typedef typename pcl::PointCloud<pcl::Normal>::Ptr PointCloudNPtr;
+      typedef typename pcl::PointCloud<pcl::Normal>::ConstPtr PointCloudNConstPtr;
+
       /** \brief Constructor.
        * \param[in] extract_removed_indices Set to true if you want to be able to extract the indices of points being removed (default = false).
        */
@@ -141,13 +144,13 @@ namespace pcl
 
       /** \brief Set the normals cloud*/
       inline void
-      setInputNormals (pcl::PointCloud<pcl::Normal>::Ptr normals_ptr)
+      setInputNormals (const PointCloudNConstPtr normals_ptr)
       {
         cloud_normals_ = normals_ptr;
       }
 
       /** \brief Get the normals cloud*/
-      inline pcl::PointCloud<pcl::Normal>::Ptr
+      inline PointCloudNConstPtr
       getInputNormals () const
       {
         return (cloud_normals_);
@@ -220,7 +223,7 @@ namespace pcl
 
     protected:
       double normals_distance_weight_;
-      pcl::PointCloud<pcl::Normal>::Ptr cloud_normals_;
+      PointCloudNConstPtr cloud_normals_;
 
       /** \brief The model used to calculate distances */
       SampleConsensusModelPtr model_;
