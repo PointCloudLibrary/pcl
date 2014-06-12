@@ -454,12 +454,11 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnChar ()
     case 'u': case 'U':
     case 'q': case 'Q':
     case 'x': case 'X':
+    case 'r': case 'R':
     {
       break;
     }
-    // R have a special !CTRL case
-    // S have special !ALT and !CTRL case
-    case 'r': case 'R':
+    // S have special !ALT case
     case 's': case 'S':
     {
       if (!keymod)
