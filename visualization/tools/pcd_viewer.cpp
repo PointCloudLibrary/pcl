@@ -472,7 +472,7 @@ main (int argc, char** argv)
       // Set whether or not we should be using the vtkVertexBufferObjectMapper
       p->setUseVbos (use_vbos);
 
-      if (!p->cameraParamsSet ())
+      if (!p->cameraParamsSet () && !p->cameraFileLoaded ())
       {
         Eigen::Matrix3f rotation;
         rotation = orientation;
@@ -631,7 +631,7 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
     // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
-    if (i == 0 && !p->cameraParamsSet ())
+    if (i == 0 && !p->cameraParamsSet () && !p->cameraFileLoaded ())
     {
       p->resetCameraViewpoint (cloud_name.str ());
       p->resetCamera ();
@@ -639,6 +639,8 @@ main (int argc, char** argv)
 
     print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%u", cloud->width * cloud->height); print_info (" points]\n");
     print_info ("Available dimensions: "); print_value ("%s\n", pcl::getFieldsList (*cloud).c_str ());
+    if (p->cameraFileLoaded ())
+      print_info ("Camera parameters restored from %s.\n", p->getCameraFile ().c_str ());
   }
 
   if (!mview && p)

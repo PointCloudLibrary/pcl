@@ -1602,10 +1602,28 @@ namespace pcl
         loadCameraParameters (const std::string &file);
 
         /** \brief Checks whether the camera parameters were manually loaded.
-          * \return True if valid "-cam" option is available in command line or a corresponding camera file is automatically loaded.
+          * \return True if valid "-cam" option is available in command line.
+          * \sa cameraFileLoaded ()
           */
         bool
         cameraParamsSet () const;
+
+        /** \brief Checks whether a camera file were automatically loaded.
+          * \return True if a valid camera file is automatically loaded.
+          * \note The camera file is saved by pressing "ctrl + s" during last run of the program
+          * and restored automatically when the program runs this time.
+          * \sa cameraParamsSet ()
+          */
+        bool
+        cameraFileLoaded () const;
+
+        /** \brief Get camera file for camera parameter saving/restoring.
+          * \note This will be valid only when valid "-cam" option were available in command line
+          * or a saved camera file were automatically loaded. 
+          * \sa cameraParamsSet (), cameraFileLoaded ()
+          */
+        std::string
+        getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
         void
@@ -1872,8 +1890,11 @@ namespace pcl
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
         
-        /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
+        /** \brief Boolean that holds whether or not the camera parameters were manually initialized */
         bool camera_set_;
+
+        /** \brief Boolean that holds whether or not a camera file were automatically loaded */
+        bool camera_file_loaded_;
 
         /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_;
