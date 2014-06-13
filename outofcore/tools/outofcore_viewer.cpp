@@ -322,11 +322,8 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 }
 
 void
-print_help (int argc, char **argv)
+print_help (int, char **argv)
 {
-  //suppress unused parameter warning
-  assert(argc == argc);
-
   print_info ("This program is used to visualize outofcore data structure");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");
