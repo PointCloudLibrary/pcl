@@ -28,7 +28,7 @@ Scene::getCameras ()
 Camera*
 Scene::getCamera (vtkCamera *camera)
 {
-  for (int i = 0; i < cameras_.size (); i++)
+  for (size_t i = 0; i < cameras_.size (); i++)
   {
     if (cameras_[i]->getCamera ().GetPointer () == camera)
     {
@@ -42,7 +42,7 @@ Scene::getCamera (vtkCamera *camera)
 Camera*
 Scene::getCamera (std::string name)
 {
-  for (int i = 0; i < cameras_.size (); i++)
+  for (size_t i = 0; i < cameras_.size (); i++)
     if (cameras_[i]->getName () == name)
       return cameras_[i];
 
@@ -60,7 +60,7 @@ Scene::addObject (Object *object)
 Object*
 Scene::getObjectByName (std::string name)
 {
-  for (int i = 0; i < objects_.size (); i++)
+  for (size_t i = 0; i < objects_.size (); i++)
     if (objects_[i]->getName () == name)
       return objects_[i];
 
