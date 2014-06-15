@@ -144,7 +144,7 @@ Viewport::viewportActorUpdate ()
 
   std::vector<Camera*> cameras = scene->getCameras ();
 
-  for (int i = 0; i < cameras.size (); i++)
+  for (size_t i = 0; i < cameras.size (); i++)
   {
     cameras[i]->render (renderer_);
 //    if (cameras[i]->getCamera () != renderer_->GetActiveCamera ())
@@ -158,7 +158,7 @@ Viewport::viewportActorUpdate ()
   }
 
   std::vector<Object*> objects = scene->getObjects ();
-  for (int i = 0; i < objects.size (); i++)
+  for (size_t i = 0; i < objects.size (); i++)
   {
     //std::cout << objects[i]->getName () << std::endl;
     objects[i]->render (renderer_);
@@ -189,7 +189,7 @@ Viewport::viewportHudUpdate ()
 
   uint64_t points_loaded = 0;
   uint64_t data_loaded = 0;
-  for (int i = 0; i < objects.size (); i++)
+  for (size_t i = 0; i < objects.size (); i++)
   {
     //TYPE& dynamic_cast<TYPE&> (object);
     OutofcoreCloud* cloud = dynamic_cast<OutofcoreCloud*> (objects[i]);

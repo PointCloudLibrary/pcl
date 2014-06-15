@@ -732,9 +732,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
 
   surface_normal_orientations_.resize (width, height, 0.0f);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (int row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (int col_index = 0; col_index < width; ++col_index)
     {
       const float value = input_->points[row_index*width + col_index].z;
       if (pcl_isfinite (value))
@@ -947,9 +947,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   map[0x1<<7] = 7;
 
   quantized_surface_normals_.resize (width, height);
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (int row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (int col_index = 0; col_index < width; ++col_index)
     {
       quantized_surface_normals_ (col_index, row_index) = map[lp_normals[row_index*width + col_index]];
     }

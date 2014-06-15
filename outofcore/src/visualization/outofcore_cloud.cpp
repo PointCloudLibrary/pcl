@@ -313,7 +313,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
       }
     }
 
-    for (int i = 0; i < actors_to_remove.size (); i++)
+    for (size_t i = 0; i < actors_to_remove.size (); i++)
     {
       points_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetNumberOfPoints ();
       data_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetActualMemorySize();

@@ -93,7 +93,7 @@ pcl::people::HeightMap2D<PointT>::compute (pcl::people::PersonCluster<PointT>& c
       index = int((p->x - cluster.getMin()(0)) / bin_size_);
     else        // camera vertical
       index = int((p->y - cluster.getMin()(1)) / bin_size_);
-    if(index > (buckets_.size() - 1))
+    if (index > (static_cast<int> (buckets_.size ()) - 1))
       std::cout << "Error: out of array - " << index << " of " << buckets_.size() << std::endl;
     else
     {
@@ -136,7 +136,7 @@ pcl::people::HeightMap2D<PointT>::searchLocalMaxima ()
 
   // Main loop:
   int i = 1;
-  while(i < (buckets_.size()-1))
+  while (i < (static_cast<int> (buckets_.size()) - 1))
   {
     right = buckets_[i+1];
     if ((buckets_[i] > left) && (buckets_[i] > right))

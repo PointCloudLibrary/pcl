@@ -155,12 +155,12 @@ class OutofcoreCloud : public Object
       {
         displayDepth = 0;
       }
-      else if (displayDepth > octree_->getDepth ())
+      else if (static_cast<unsigned int> (displayDepth) > octree_->getDepth ())
       {
         displayDepth = octree_->getDepth ();
       }
 
-      if (display_depth_ != displayDepth)
+      if (display_depth_ != static_cast<uint64_t> (displayDepth))
       {
         display_depth_ = displayDepth;
         updateVoxelData ();
