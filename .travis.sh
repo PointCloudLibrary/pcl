@@ -88,7 +88,9 @@ function doc ()
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $PCL_DIR
+  cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
+        -DSPHINX_HTML_FILE_SUFFIX=php \
+        $PCL_DIR
 
   git config --global user.email "documentation@pointclouds.org"
   git config --global user.name "PointCloudLibrary (via TravisCI)"
@@ -105,17 +107,19 @@ function doc ()
   cd $DOC_DIR
   git clone git@github.com:PointCloudLibrary/documentation.git .
 
-  # Generate documentation
+  # Generate documentation and tutorials
   cd $BUILD_DIR
   make doc
-  cd $DOC_DIR
-  git commit -a -m "adding $TRAVIS_COMMIT"
-  git push
-
-  # Generate tutorials
-  cd $BUILD_DIR
   make tutorials
-  # upload to github...
+
+  # Move generated tutorials to the doc directory
+  mv $TUTORIALS_DIR $DOC_DIR/tutorials
+  mv $ADVANCED_DIR $DOC_DIR/advanced
+
+  # Upload to GitHub
+  cd $DOC_DIR
+  git commit --all --amend -m "Documentation for commit $TRAVIS_COMMIT"
+  git push --force
 }
 
 case $TASK in
