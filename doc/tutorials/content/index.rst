@@ -1035,6 +1035,20 @@ Segmentation
      .. |se_10| image:: images/progressive_morphological_filter.png
                :height: 100px
 
+  * :ref:`model_outlier_removal`
+
+     =======  ======
+     |se_11|  Title: **Model outlier removal**
+
+              Author: *Timo Häckel*
+
+              Compatibility: >= PCL 1.7.2
+
+              This tutorial describes how to extract points from a point cloud using SAC models
+     =======  ======
+
+     .. |se_11| image:: images/pcl_logo.png
+               :height: 75px
                
 .. _surface_tutorial:
 
