@@ -133,9 +133,6 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 
-// Definitions
-const int MAX_DEPTH (-1);
-
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;
 
