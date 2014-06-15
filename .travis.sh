@@ -118,7 +118,8 @@ function doc ()
 
   # Upload to GitHub
   cd $DOC_DIR
-  git commit --all --amend -m "Documentation for commit $TRAVIS_COMMIT"
+  git add --all
+  git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
   git push --force
 }
 
