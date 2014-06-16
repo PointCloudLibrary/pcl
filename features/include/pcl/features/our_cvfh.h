@@ -92,7 +92,7 @@ namespace pcl
 
       /** \brief Creates an affine transformation from the RF axes
        * \param[in] evx the x-axis
-       * \param[in] evy the z-axis
+       * \param[in] evy the y-axis
        * \param[in] evz the z-axis
        * \param[out] transformPC the resulting transformation
        * \param[in] center_mat 4x4 matrix concatenated to the resulting transformation
@@ -262,6 +262,15 @@ namespace pcl
       {
         indices = clusters_;
       }
+    
+      /** \brief Gets the number of non-disambiguable axes that correspond to each centroid
+       * \param[out] cluster_axes vector mapping each centroid to the number of signatures
+       */
+      inline void
+      getClusterAxes (std::vector<short> & cluster_axes)
+      {
+        cluster_axes = cluster_axes_;
+      }
 
       /** \brief Sets the refinement factor for the clusters
        * \param[in] rc the factor used to decide if a point is used to estimate a stable cluster
@@ -391,6 +400,8 @@ namespace pcl
       std::vector<Eigen::Vector3f> dominant_normals_;
       /** \brief Indices to the points representing the stable clusters */
       std::vector<pcl::PointIndices> clusters_;
+      /** \brief Mapping from clusters to OUR-CVFH descriptors */
+      std::vector<short> cluster_axes_;
   };
 }
 
