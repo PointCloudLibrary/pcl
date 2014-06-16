@@ -109,18 +109,21 @@ function doc ()
 
   # Generate documentation and tutorials
   cd $BUILD_DIR
-  make doc
-  make tutorials
+  make doc tutorials
 
-  # Move generated tutorials to the doc directory
-  mv $TUTORIALS_DIR $DOC_DIR/tutorials
-  mv $ADVANCED_DIR $DOC_DIR/advanced
-
-  # Upload to GitHub
-  cd $DOC_DIR
-  git add --all
-  git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
-  git push --force
+  # Upload to GitHub if generation succeeded
+  if [[ $? == 0 ]]; then
+    # Move generated tutorials to the doc directory
+    mv $TUTORIALS_DIR $DOC_DIR/tutorials
+    mv $ADVANCED_DIR $DOC_DIR/advanced
+    # Commit and push
+    cd $DOC_DIR
+    git add --all
+    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
+    git push --force
+  else
+    exit 2
+  fi
 }
 
 case $TASK in
