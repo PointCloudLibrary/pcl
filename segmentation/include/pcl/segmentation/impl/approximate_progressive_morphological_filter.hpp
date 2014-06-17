@@ -136,7 +136,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(threads_)
 #endif
-  for (size_t i = 0; i < input_->points.size (); ++i)
+  for (int i = 0; i < (int)input_->points.size (); ++i)
   {
     // ...then test for lower points within the cell
     PointT p = input_->points[i];
