@@ -1613,7 +1613,8 @@ TEST (ConditionalRemoval, Filters)
                                                                                                  0.12)));
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem (range_cond);
+  ConditionalRemoval<PointXYZ> condrem;
+  condrem.setCondition (range_cond);
   condrem.setInputCloud (cloud);
 
   // try the dense version
@@ -1648,7 +1649,8 @@ TEST (ConditionalRemoval, Filters)
   EXPECT_EQ (bool (output.is_dense), false);
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem_ (range_cond,true);
+  ConditionalRemoval<PointXYZ> condrem_ (true);
+  condrem_.setCondition (range_cond);
   condrem_.setInputCloud (cloud);
 
   // try the dense version
@@ -1702,7 +1704,8 @@ TEST (ConditionalRemovalSetIndices, Filters)
                                                                                                                   Eigen::Vector3f::Zero (), 0)));
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem2 (true_cond);
+  ConditionalRemoval<PointXYZ> condrem2;
+  condrem2.setCondition (true_cond);
   condrem2.setInputCloud (cloud);
   condrem2.setIndices (indices);
 
@@ -1749,7 +1752,8 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (num_not_nan, 2);
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem2_ (true_cond, true);
+  ConditionalRemoval<PointXYZ> condrem2_ (true);
+  condrem2_.setCondition (true_cond);
   condrem2_.setIndices (indices);
   condrem2_.setInputCloud (cloud);
 
@@ -2006,7 +2010,8 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   cyl_cond->addComparison (cyl_comp);
 
   // build the filter
-  ConditionalRemoval<PointXYZ> condrem (cyl_cond);
+  ConditionalRemoval<PointXYZ> condrem;
+  condrem.setCondition (cyl_cond);
   condrem.setInputCloud (input);
   condrem.setKeepOrganized (false);
 
