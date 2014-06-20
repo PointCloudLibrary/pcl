@@ -33,7 +33,7 @@ This is how I organized the project: the build folder contains all built files a
       └── pcl_visualizer.pro.user
 
 If you want to change this layout you will have to do minor modifications in the code, especially line 2 of ``pclviewer.cpp``
-Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualiser>`_.
+Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualizer>`_.
 
 .. note::
    File paths should not contain any special caracter or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
