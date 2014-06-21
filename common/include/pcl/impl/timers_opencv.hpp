@@ -42,20 +42,17 @@
 
 namespace pcl
 {
-    namespace gpu
-    {
-        struct ScopeTimerCV
-        {
-            const char* name;
-            cv::TickMeter tm;
-            ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
-            ~ScopeTimerCV() 
-            {
-                tm.stop();
-                std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
-            }
-        };
-    }
+  struct ScopeTimerCV
+  {
+      const char* name;
+      cv::TickMeter tm;
+      ScopeTimerCV(const char *name_) : name(name_) { tm.start(); }
+      ~ScopeTimerCV() 
+      {
+          tm.stop();
+          std::cout << "Time(" << name << ") = " << tm.getTimeMilli() << "ms" << std::endl;        
+      }
+  };
 }
 
 #endif /* PCL_GPU_SCOPE_TIMER_CV_H */
