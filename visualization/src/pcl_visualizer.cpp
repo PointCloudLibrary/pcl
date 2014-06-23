@@ -575,6 +575,8 @@ pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
@@ -622,6 +624,8 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, const std::string& id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
@@ -700,6 +704,8 @@ double q[4];
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string& id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
