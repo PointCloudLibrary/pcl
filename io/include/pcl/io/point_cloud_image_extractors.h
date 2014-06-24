@@ -254,16 +254,16 @@ namespace pcl
         typedef boost::shared_ptr<PointCloudImageExtractorFromLabelField<PointT> > Ptr;
         typedef boost::shared_ptr<const PointCloudImageExtractorFromLabelField<PointT> > ConstPtr;
 
-        /** \brief Different modes for color mapping.
-          * <ul>
-          *   <li><b>COLORS_MONO</b> - shades of gray (according to label id).</li>
-          *   <li><b>COLORS_RGB_RANDOM</b> - randomly generated RGB colors.</li>
-          * </ul>
-          */
+        /** \brief Different modes for color mapping. */
         enum ColorMode
         {
+          /// Shades of gray (according to label id)
           COLORS_MONO,
+          /// Randomly generated RGB colors
           COLORS_RGB_RANDOM,
+          /// Fixed RGB colors from the [Glasbey lookup table](http://fiji.sc/Glasbey),
+          /// assigned in the ascending order of label id
+          COLORS_RGB_GLASBEY,
         };
 
         /** \brief Constructor. */

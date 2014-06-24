@@ -227,6 +227,43 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
+{
+  typedef PointXYZL PointT;
+  PointCloud<PointT> cloud;
+  cloud.width = 2;
+  cloud.height = 2;
+  cloud.is_dense = true;
+  cloud.points.resize (cloud.width * cloud.height);
+  for (size_t i = 0; i < cloud.points.size (); i++)
+    cloud.points[i].label = i % 2;
+
+  pcl::PCLImage image;
+  PointCloudImageExtractorFromLabelField<PointT> pcie;
+  pcie.setColorMode (pcie.COLORS_RGB_GLASBEY);
+
+  ASSERT_TRUE (pcie.extract(cloud, image));
+
+  EXPECT_EQ ("rgb8", image.encoding);
+  EXPECT_EQ (cloud.width, image.width);
+  EXPECT_EQ (cloud.height, image.height);
+
+  // Fill in different labels and extract another image
+  for (size_t i = 0; i < cloud.points.size (); i++)
+    cloud.points[i].label = i % 2 + 10;
+  pcl::PCLImage image2;
+  ASSERT_TRUE (pcie.extract(cloud, image2));
+
+  // The first color should be pure blue
+  EXPECT_EQ (0, image.data[0]);
+  EXPECT_EQ (0, image.data[1]);
+  EXPECT_EQ (255, image.data[2]);
+  // Make sure the colors are the same
+  for (size_t i = 0; i < 2 * 2 * 3; ++i)
+    EXPECT_EQ (image2.data[i], image.data[i]);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PointCloudImageExtractorFromZField)
 {
   typedef PointXYZL PointT;
