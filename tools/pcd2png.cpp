@@ -69,6 +69,7 @@ printHelp (int, char **argv)
   std::cout << "Usage: " << argv[0] << " [Options] input.pcd output.png" << std::endl;
   std::cout << std::endl;
   std::cout << "Options:" << std::endl;
+  std::cout << std::endl;
   std::cout << "     --help   : Show this help" << std::endl;
   std::cout << "     --field  : Set the field to extract data from. Supported fields:"       << std::endl;
   std::cout << "                - normal"                                                    << std::endl;
@@ -88,9 +89,17 @@ printHelp (int, char **argv)
   std::cout << "                field). Supported options:"                                  << std::endl;
   std::cout << "                * mono    : Use shades of gray (default)"                    << std::endl;
   std::cout << "                - rgb     : Use randomly generated RGB colors"               << std::endl;
+  std::cout << "                - glasbey : Use fixed colors from the Glasbey lookup table¹" << std::endl;
   std::cout << std::endl;
-  std::cout << "Note: The converter will try to use RGB field if '--field' option is not"    << std::endl;
-  std::cout << "      supplied."                                                             << std::endl;
+  std::cout << "Notes:"                                                                      << std::endl;
+  std::cout << std::endl;
+  std::cout << "¹) The Glasbey lookup table is a color table structured in a maximally"      << std::endl;
+  std::cout << "   discontinuous manner. Adjacent color bins are chosen to be as distinct"   << std::endl;
+  std::cout << "   from one another as possible (see http://fiji.sc/Glasbey)."               << std::endl;
+  std::cout << "   The label with the smallest id will be assigned the first color from the" << std::endl;
+  std::cout << "   table, the second smallest will have the second color, and so on. Thus,"  << std::endl;
+  std::cout << "   if you have several clouds with the same labels, you will get repetitive" << std::endl;
+  std::cout << "   consistently colored PNG images."                                         << std::endl;
 }
 
 bool
@@ -167,6 +176,10 @@ parseColorsOption (int argc, char** argv, T& pcie)
   {
     pcie.setColorMode(pcie.COLORS_RGB_RANDOM);
   }
+  else if (colors == "glasbey")
+  {
+    pcie.setColorMode(pcie.COLORS_RGB_GLASBEY);
+  }
   else
   {
     return false;
@@ -180,7 +193,7 @@ main (int argc, char** argv)
 {
   print_info ("Convert a PCD file to PNG format.\nFor more information, use: %s --help\n", argv[0]);
 
-  if (argc < 3)
+  if (argc < 3 || pcl::console::find_switch (argc, argv, "--help"))
   {
     printHelp (argc, argv);
     return (-1);
