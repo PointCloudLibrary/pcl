@@ -335,16 +335,16 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt5
-  include(cmake/pcl_find_qt5.cmake)
+  # Find Qt4
+  find_package(Qt4)
+  if (QT4_FOUND)
+    include("${QT_USE_FILE}")
+  endif (QT4_FOUND)
 
-  # Find QT4
-  if(NOT QT5_FOUND)
-      find_package(Qt4)
-      if (QT4_FOUND)
-        include("${QT_USE_FILE}")
-      endif (QT4_FOUND)
-  endif(NOT QT5_FOUND)
+  # Find QT5
+  if(NOT QT4_FOUND)
+      include(cmake/pcl_find_qt5.cmake)
+  endif(NOT QT4_FOUND)
 endif(WITH_QT)
 
 # Find VTK
