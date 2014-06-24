@@ -66,6 +66,7 @@ namespace pcl
   template<> inline bool isFinite<pcl::RGB> (const pcl::RGB&) { return (true); }
   template<> inline bool isFinite<pcl::Label> (const pcl::Label&) { return (true); }
   template<> inline bool isFinite<pcl::Axis> (const pcl::Axis&) { return (true); }
+  template<> inline bool isFinite<pcl::Intensity> (const pcl::Intensity&) { return (true); }
   template<> inline bool isFinite<pcl::MomentInvariants> (const pcl::MomentInvariants&) { return (true); }
   template<> inline bool isFinite<pcl::PrincipalRadiiRSD> (const pcl::PrincipalRadiiRSD&) { return (true); }
   template<> inline bool isFinite<pcl::Boundary> (const pcl::Boundary&) { return (true); }
