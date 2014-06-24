@@ -389,6 +389,43 @@ TEST (PCL, PointCloudImageExtractorBadInput)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PointCloudImageExtractorBlackNaNs)
+{
+  typedef PointNormal PointT;
+  PointCloud<PointT> cloud;
+  cloud.width = 2;
+  cloud.height = 2;
+  cloud.is_dense = false;
+  cloud.points.resize (cloud.width * cloud.height);
+
+  cloud.points[0].curvature = 1.0;
+  cloud.points[1].curvature = 2.0;
+  cloud.points[2].curvature = 1.0;
+  cloud.points[3].curvature = 2.0;
+  cloud.points[3].z = std::numeric_limits<float>::quiet_NaN ();
+
+  pcl::PCLImage image;
+
+  PointCloudImageExtractorFromCurvatureField<PointT> pcie;
+
+  ASSERT_TRUE (pcie.extract(cloud, image));
+
+  {
+    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    EXPECT_EQ (std::numeric_limits<unsigned short>::max(), data[3]);
+  }
+
+  pcie.setPaintNaNsWithBlack (true);
+
+  ASSERT_TRUE (pcie.extract(cloud, image));
+
+  {
+    unsigned short* data = reinterpret_cast<unsigned short*> (&image.data[0]);
+    EXPECT_EQ (0, data[3]);
+  }
+}
+
 int
 main (int argc, char** argv)
 {

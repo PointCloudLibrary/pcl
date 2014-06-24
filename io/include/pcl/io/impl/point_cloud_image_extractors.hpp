@@ -52,7 +52,17 @@ pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl
   if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
     return (false);
 
-  return (this->extractImpl (cloud, img));
+  bool result = this->extractImpl (cloud, img);
+
+  if (paint_nans_with_black_ && result)
+  {
+    size_t size = img.encoding == "mono16" ? 2 : 3;
+    for (size_t i = 0; i < cloud.points.size (); ++i)
+      if (!pcl::isFinite (cloud[i]))
+        std::memset (&img.data[i * size], 0, size);
+  }
+
+  return (result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

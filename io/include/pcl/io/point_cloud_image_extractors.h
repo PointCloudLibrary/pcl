@@ -84,7 +84,9 @@ namespace pcl
         typedef boost::shared_ptr<const PointCloudImageExtractor<PointT> > ConstPtr;
 
         /** \brief Constructor. */
-        PointCloudImageExtractor () {}
+        PointCloudImageExtractor ()
+        : paint_nans_with_black_ (false)
+        {}
 
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractor () {}
@@ -97,6 +99,15 @@ namespace pcl
         bool
         extract (const PointCloud& cloud, pcl::PCLImage& image) const;
 
+        /** \brief Set a flag that controls if image pixels corresponding to
+          * NaN (infinite) points should be painted black.
+          */
+        inline void
+        setPaintNaNsWithBlack (bool flag)
+        {
+          paint_nans_with_black_ = flag;
+        }
+
       protected:
 
         /** \brief Implementation of the extract() function, has to be
@@ -104,6 +115,10 @@ namespace pcl
           */
         virtual bool
         extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const = 0;
+
+        /// A flag that controls if image pixels corresponding to NaN (infinite)
+        /// points should be painted black.
+        bool paint_nans_with_black_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
