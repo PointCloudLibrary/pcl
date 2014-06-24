@@ -94,8 +94,16 @@ namespace pcl
           * \param[out] image the output image
           * \return true if the operation was successful, false otherwise
           */
+        bool
+        extract (const PointCloud& cloud, pcl::PCLImage& image) const;
+
+      protected:
+
+        /** \brief Implementation of the extract() function, has to be
+          * implemented in deriving classes.
+          */
         virtual bool
-        extract (const PointCloud& cloud, pcl::PCLImage& image) const = 0;
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const = 0;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -146,14 +154,6 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractorWithScaling () {}
 
-        /** \brief Obtain the image from the given cloud.
-          * \param[in] cloud organized point cloud to extract image from
-          * \param[out] image the output image
-          * \return true if the operation was successful, false otherwise
-          */
-        virtual bool
-        extract (const PointCloud& cloud, pcl::PCLImage& image) const;
-
         /** \brief Set scaling method. */
         inline void
         setScalingMethod (const ScalingMethod scaling_method)
@@ -169,6 +169,9 @@ namespace pcl
         }
 
       protected:
+
+        virtual bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& image) const;
 
         std::string field_name_;
         ScalingMethod scaling_method_;
@@ -196,14 +199,10 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractorFromNormalField () {}
 
-        /** \brief Obtain the color image from the given cloud.
-          * The cloud should contain "normal" field.
-          * \param[in] cloud organized point cloud to extract image from
-          * \param[out] img the output image
-          * \return true if the operation was successful, false otherwise
-          */
+      protected:
+
         virtual bool
-        extract (const PointCloud& cloud, pcl::PCLImage& img) const;
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -227,21 +226,17 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractorFromRGBField () {}
 
-        /** \brief Obtain the color image from the given cloud.
-          * The cloud should contain either "rgb" or "rgba" field.
-          * \param[in] cloud organized point cloud to extract image from
-          * \param[out] img the output image
-          * \return true if the operation was successful, false otherwise
-          */
+      protected:
+
         virtual bool
-        extract (const PointCloud& cloud, pcl::PCLImage& img) const;
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Image Extractor which uses the data present in the "label" field to produce
       * either monochrome or RGB image where different labels correspond to different
-      * colors. In the monochrome case colors are shades of gray, in the RGB case the
-      * colors are generated randomly.
+      * colors.
+      * See the documentation for ColorMode to learn about available coloring options.
       * \author Sergey Alexandrov
       * \ingroup io
       */
@@ -258,6 +253,7 @@ namespace pcl
         enum ColorMode
         {
           /// Shades of gray (according to label id)
+          /// \note Labels using more than 16 bits will cause problems
           COLORS_MONO,
           /// Randomly generated RGB colors
           COLORS_RGB_RANDOM,
@@ -275,22 +271,17 @@ namespace pcl
         /** \brief Destructor. */
         virtual ~PointCloudImageExtractorFromLabelField () {}
 
-        /** \brief Obtain the label image from the given cloud.
-          * The cloud should contain "label" field.
-          * \note Labels using more than 16 bits will cause problems in COLORS_MONO mode.
-          * \param[in] cloud organized point cloud to extract image from
-          * \param[out] img the output image
-          * \return true if the operation was successful, false otherwise
-          */
-        virtual bool
-        extract (const PointCloud& cloud, pcl::PCLImage& img) const;
-
         /** \brief Set color mapping mode. */
         inline void
         setColorMode (const ColorMode color_mode)
         {
           color_mode_ = color_mode;
         }
+
+      protected:
+
+        virtual bool
+        extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
 
       private:
 

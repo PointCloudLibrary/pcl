@@ -47,11 +47,18 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractor<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
 {
   if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
     return (false);
 
+  return (this->extractImpl (cloud, img));
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
+{
   std::vector<pcl::PCLPointField> fields;
   int field_x_idx = pcl::getFieldIndex (cloud, "normal_x", fields);
   int field_y_idx = pcl::getFieldIndex (cloud, "normal_y", fields);
@@ -86,11 +93,8 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extract (const PointCl
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, "rgb", fields);
   if (field_idx == -1)
@@ -384,11 +388,8 @@ const size_t GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / sizeof (GLASBEY_LUT[0]);
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, "label", fields);
   if (field_idx == -1)
@@ -487,11 +488,8 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extract (const PointClo
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
-pcl::io::PointCloudImageExtractorWithScaling<PointT>::extract (const PointCloud& cloud, pcl::PCLImage& img) const
+pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const
 {
-  if (!cloud.isOrganized () || cloud.points.size () != cloud.width * cloud.height)
-    return (false);
-
   std::vector<pcl::PCLPointField> fields;
   int field_idx = pcl::getFieldIndex (cloud, field_name_, fields);
   if (field_idx == -1)
