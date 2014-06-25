@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 
-PCL_INSTANTIATE (MedianFilter,PCL_XYZ_POINT_TYPES)
+PCL_INSTANTIATE (MedianFilter, PCL_XYZ_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
 
