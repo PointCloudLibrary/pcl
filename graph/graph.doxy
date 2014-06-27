@@ -1,0 +1,21 @@
+/** \addtogroup graph Module graph
+  *
+  * \section secGraphPresentation Overview
+  *
+  * **pcl_graph** is an experimental library that aims to provide a common toolbox to aid development of graph-based 3D
+  * processing algorithms within the PCL framework. The library has a strong influence from
+  * [Boost Graph Library][BGLTOC] and relies on the concepts, classes, and algorithms found there.
+  *
+  * At the heart of the library lies the pcl::graph::point_cloud_graph class, which may be considered to be a blend of a
+  * PCL point cloud and [boost::adjacency_list][AdjacencyList] (the most common graph representation in BGL). As such,
+  * this class may be used in PCL algorithms where a point cloud input is expected, as well as in BGL algorithms, where
+  * a graph is needed.
+  *
+  * [BGLTOC]: http://www.boost.org/doc/libs/1_55_0/libs/graph/doc/table_of_contents.html
+  * [AdjacencyList]: http://www.boost.org/doc/libs/1_55_0/libs/graph/doc/adjacency_list.html
+  *
+  * \section secGraphRequirements Requirements
+  * - \ref common "common"
+  * - [Boost](http://www.boost.org) ≥ 1.53
+  *
+  */
