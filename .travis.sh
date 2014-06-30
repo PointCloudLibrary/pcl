@@ -113,9 +113,9 @@ function doc ()
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
-    # Move generated tutorials to the doc directory
-    mv $TUTORIALS_DIR $DOC_DIR/tutorials
-    mv $ADVANCED_DIR $DOC_DIR/advanced
+    # Copy generated tutorials to the doc directory
+    cp -r $TUTORIALS_DIR/* $DOC_DIR/tutorials
+    cp -r $ADVANCED_DIR/* $DOC_DIR/advanced
     # Commit and push
     cd $DOC_DIR
     git add --all
