@@ -101,6 +101,7 @@ TEST (PCL, compute3DCentroidFloat)
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (centroid [3], 1);
 
   centroid [0] = -100;
   centroid [1] = -200;
@@ -115,6 +116,7 @@ TEST (PCL, compute3DCentroidFloat)
   EXPECT_EQ (centroid [0], 0.0);
   EXPECT_EQ (centroid [1], 1.0);
   EXPECT_EQ (centroid [2], 0.0);
+  EXPECT_EQ (centroid [3], 1.0);
 
   point.x = point.y = point.z = std::numeric_limits<float>::quiet_NaN ();
   cloud.push_back (point);
@@ -128,6 +130,7 @@ TEST (PCL, compute3DCentroidFloat)
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (centroid [3], 1);
 
   centroid [0] = -100;
   centroid [1] = -200;
@@ -142,6 +145,7 @@ TEST (PCL, compute3DCentroidFloat)
   EXPECT_EQ (centroid [0], 0.0);
   EXPECT_EQ (centroid [1], 1.0);
   EXPECT_EQ (centroid [2], 0.0);
+  EXPECT_EQ (centroid [3], 1.0);
 
   pindices.indices = indices;
   EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 4);
@@ -149,6 +153,7 @@ TEST (PCL, compute3DCentroidFloat)
   EXPECT_EQ (centroid [0], 0.0);
   EXPECT_EQ (centroid [1], 1.0);
   EXPECT_EQ (centroid [2], 0.0);
+  EXPECT_EQ (centroid [3], 1.0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,6 +207,7 @@ TEST (PCL, compute3DCentroidDouble)
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (centroid [3], 1);
 
   centroid [0] = -100;
   centroid [1] = -200;
@@ -229,6 +235,7 @@ TEST (PCL, compute3DCentroidDouble)
   EXPECT_EQ (centroid [0], 0);
   EXPECT_EQ (centroid [1], 0);
   EXPECT_EQ (centroid [2], 0);
+  EXPECT_EQ (centroid [3], 1);
 
   centroid [0] = -100;
   centroid [1] = -200;
@@ -243,6 +250,7 @@ TEST (PCL, compute3DCentroidDouble)
   EXPECT_EQ (centroid [0], 0.0);
   EXPECT_EQ (centroid [1], 1.0);
   EXPECT_EQ (centroid [2], 0.0);
+  EXPECT_EQ (centroid [3], 1.0);
   
   pindices.indices = indices;
   EXPECT_EQ (compute3DCentroid (cloud, indices, centroid), 4);
@@ -250,6 +258,7 @@ TEST (PCL, compute3DCentroidDouble)
   EXPECT_EQ (centroid [0], 0.0);
   EXPECT_EQ (centroid [1], 1.0);
   EXPECT_EQ (centroid [2], 0.0);
+  EXPECT_EQ (centroid [3], 1.0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -286,6 +295,7 @@ TEST (PCL, compute3DCentroidCloudIterator)
   EXPECT_EQ (centroid_f[0], 0.0f);
   EXPECT_EQ (centroid_f[1], 1.0f);
   EXPECT_EQ (centroid_f[2], 0.0f);
+  EXPECT_EQ (centroid_f[3], 1.0f);
   
   Eigen::Vector4d centroid_d;
   it.reset ();
@@ -294,6 +304,7 @@ TEST (PCL, compute3DCentroidCloudIterator)
   EXPECT_EQ (centroid_d[0], 0.0);
   EXPECT_EQ (centroid_d[1], 1.0);
   EXPECT_EQ (centroid_d[2], 0.0);
+  EXPECT_EQ (centroid_d[3], 1.0);
 }
 
 

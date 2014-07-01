@@ -62,14 +62,14 @@ TEST (PCL, BaseFeature)
   EXPECT_NEAR (centroid3[0], -0.0290809, 1e-4);
   EXPECT_NEAR (centroid3[1], 0.102653, 1e-4);
   EXPECT_NEAR (centroid3[2], 0.027302, 1e-4);
-  EXPECT_NEAR (centroid3[3], 0, 1e-4);
+  EXPECT_NEAR (centroid3[3], 1, 1e-4);
 
   // compute3Dcentroid
   compute3DCentroid (cloud, centroid3);
   EXPECT_NEAR (centroid3[0], -0.0290809, 1e-4);
   EXPECT_NEAR (centroid3[1], 0.102653, 1e-4);
   EXPECT_NEAR (centroid3[2], 0.027302, 1e-4);
-  EXPECT_NEAR (centroid3[3], 0, 1e-4);
+  EXPECT_NEAR (centroid3[3], 1, 1e-4);
 
   // computeNDCentroid (indices)
   Eigen::VectorXf centroidn;
