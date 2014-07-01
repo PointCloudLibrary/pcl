@@ -79,7 +79,7 @@ TEST (PCL, DeMean)
   EXPECT_NEAR (centroid[0], -0.0290809, 1e-4);
   EXPECT_NEAR (centroid[1],  0.102653,  1e-4);
   EXPECT_NEAR (centroid[2],  0.027302,  1e-4);
-  EXPECT_NEAR (centroid[3],  0,         1e-4);
+  EXPECT_NEAR (centroid[3],  1,         1e-4);
 
   // Check standard demean
   demeanPointCloud (cloud, centroid, cloud_demean);
