@@ -36,7 +36,6 @@ Let's have a look at what `cmake` options got enabled::
 
 You should see something like the following on screen::
    
- BUILD_TESTS                      ON
  BUILD_common                     ON
  BUILD_features                   ON
  BUILD_filters                    ON
@@ -60,8 +59,6 @@ You should see something like the following on screen::
    
 The explanation
 ---------------
-
-* `BUILD_TESTS`: option to enable/disable building of tests
 
 * `BUILD_common`: option to enable/disable building of common library
 
@@ -110,9 +107,9 @@ Tweaking basic settings
 Depending on your project/system, you might want to enable/disable certain
 options. For example, you can prevent the building of:
 
-* tests: setting BUILD_TESTS and BUILD_global_tests to OFF
+* tests: setting `BUILD_global_tests` to `OFF`
 
-* a library: setting BUILD_LIBRARY_NAME to OFF
+* a library: setting `BUILD_LIBRARY_NAME` to `OFF`
 
 Note that if you disable a XXX library that is required for building
 YYY then XXX will be built but won't appear in the cache. 
@@ -143,8 +140,26 @@ you have all the dependencies installed. In this section we will
 discuss each dependency entry so that you can configure/build or
 update/build PCL according to your system. 
 
-General  remarks
-^^^^^^^^^^^^^^^^
+Building unit tests
+^^^^^^^^^^^^^^^^^^^
+
+If you want to contribute to PCL, or are modifying the code, you need
+to turn on building of unit tests. This is accomplished by setting the `BUILD_global_tests`
+option to `ON`, with a few caveats. If you're using `ccmake` and you find that `BUILD_global_tests`
+is reverting to `OFF` when you configure, you can move the cursor up to the `BUILD_global_tests` line to see the 
+error message.
+
+Two options which will need to be turned ON before `BUILD_global_tests` are `BUILD_outofcore` and 
+`BUILD_people`. Your mileage may vary.
+
+Also required for unit tests is the source code for the Google C++ Testing Framework. That is
+usually as simple as downloading the source, extracting it, and pointing the `GTEST_SRC_DIR` and `GTEST_INCLUDE_DIR` 
+options to the applicable source locations. On Ubuntu, you can simply run `apt-get install libgtest-dev`.
+
+These steps enable the `tests` make target, so you can use `make tests` to run tests.
+
+General remarks
+^^^^^^^^^^^^^^^
 Under ${PCL_ROOT}/cmake/Modules there is a list of FindXXX.cmake files
 used to locate dependencies and set their related variables. They have
 a list of default searchable paths where to look for them. In addition,
