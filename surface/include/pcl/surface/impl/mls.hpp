@@ -491,8 +491,14 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
     // Copy all information from the input cloud to the output points (not doing any interpolation)
     for (size_t pp = 0; pp < projected_points.size (); ++pp)
+    {
+      if (projected_points[pp].x != projected_points[pp].x)
+      {
+        PCL_ERROR ("NaN encountered");
+        throw;
+      }
       copyMissingFields (input_->points[(*indices_)[cp]], projected_points[pp]);
-
+    }
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
