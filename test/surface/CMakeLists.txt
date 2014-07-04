@@ -6,6 +6,10 @@ PCL_ADD_TEST(surface_moving_least_squares test_moving_least_squares
              FILES test_moving_least_squares.cpp
              LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+PCL_ADD_TEST(surface_moving_least_squares_problem test_moving_least_squares_problem
+             FILES test_moving_least_squares_problem.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
 PCL_ADD_TEST(surface_gp3 test_gp3
              FILES test_gp3.cpp
              LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
