@@ -495,7 +495,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
       if (projected_points[pp].x != projected_points[pp].x)
       {
         PCL_ERROR ("NaN encountered");
-        throw;
       }
       copyMissingFields (input_->points[(*indices_)[cp]], projected_points[pp]);
     }
