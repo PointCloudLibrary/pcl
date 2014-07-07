@@ -76,9 +76,7 @@ TEST (PCL, MovingLeastSquares)
   for (size_t i = 0; i < mls_points.points.size (); ++i)
   {
     // Check for NaNs in output
-    EXPECT_FALSE (mls_points.points[i].x != mls_points.points[i].x);
-    EXPECT_FALSE (mls_points.points[i].y != mls_points.points[i].y);
-    EXPECT_FALSE (mls_points.points[i].z != mls_points.points[i].z);
+    EXPECT_TRUE (pcl::isFinite(mls_points.points[i]));
   }
 }
 
