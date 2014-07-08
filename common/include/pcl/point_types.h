@@ -255,6 +255,11 @@ namespace pcl
     */
   struct VFHSignature308;
   
+  /** \brief Members: float grsd[21]
+    * \ingroup common
+    */
+  struct GRSDSignature21;
+  
   /** \brief Members: float esf[640]
     * \ingroup common
     */
@@ -582,6 +587,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
     (float[308], histogram, vfh)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,
+    (float[21], histogram, grsd)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
