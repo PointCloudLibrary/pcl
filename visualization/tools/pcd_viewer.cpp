@@ -668,7 +668,7 @@ main (int argc, char** argv)
   if (axes != 0.0 && p)
   {
     float ax_x = 0.0, ax_y = 0.0, ax_z = 0.0;
-    pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z, false);
+    pcl::console::parse_3x_arguments (argc, argv, "-ax_pos", ax_x, ax_y, ax_z);
     // Draw XYZ axes if command-line enabled
     p->addCoordinateSystem (axes, ax_x, ax_y, ax_z, "global");
   }
