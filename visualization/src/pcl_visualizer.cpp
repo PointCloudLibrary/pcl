@@ -187,7 +187,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , style_ (style)
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
-  , coordinate_actor_map_ ()
+  , coordinate_actor_map_ (new CoordinateActorMap)
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
