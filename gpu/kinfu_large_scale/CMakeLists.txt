@@ -31,7 +31,7 @@ if (build)
 	source_group("Source Files" FILES ${srcs} )		
 	
 	set(LIB_NAME "pcl_${SUBSYS_NAME}")
-	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" ${CUDA_INCLUDE_DIRS})
+	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" ${CUDA_INCLUDE_DIRS} ${VTK_INCLUDE_DIRS})
 
 	if (UNIX OR APPLE)
 		set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")			
