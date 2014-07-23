@@ -77,7 +77,7 @@ You can open it with a text editor or with Qt Creator, in this example the UI is
 .. image:: images/qt_visualizer/ui.png
   :height: 518
 
-If you click on Edit `Signals/Slots <http://qt-project.org/doc/qt-4.8/signalsandslots.html>`_ at the top of the Qt window if you will see the relationships 
+If you click on Edit `Signals/Slots <http://qt-project.org/doc/qt-4.8/signalsandslots.html>`_ at the top of the Qt window you will see the relationships 
 between some of the UI objects. In our example the sliderMoved(int) signal is connected to the display(int) slot; this means that everytime we move the slider 
 the digital display is updated accordingly to the slider value.
 
