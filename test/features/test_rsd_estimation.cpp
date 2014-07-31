@@ -109,7 +109,7 @@ TEST (PCL, RSDEstimation)
   EXPECT_EQ (4, (*mat)[103](0, 1));
   EXPECT_EQ (3, (*mat)[103](0, 2));
   EXPECT_EQ (0, (*mat)[103](0, 3));
-  EXPECT_EQ (0, (*mat)[103](0, 4);
+  EXPECT_EQ (0, (*mat)[103](0, 4));
   EXPECT_EQ (0, (*mat)[103](1, 0));
   EXPECT_EQ (1, (*mat)[103](1, 1));
   EXPECT_EQ (7, (*mat)[103](1, 2));
