@@ -109,7 +109,7 @@ main (int argc, char** argv)
   if (copy_normals)
   {
     vtkSmartPointer<vtkPolyDataNormals> ng = vtkSmartPointer<vtkPolyDataNormals>::New ();
-#if OBJ_MAJOR_VERSION < 6
+#if VTK_MAJOR_VERSION < 6
     ng->SetInput (polydata);
 #else
     ng->SetInputData (polydata);
