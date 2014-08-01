@@ -237,6 +237,7 @@ endmacro(PCL_ADD_LIBRARY)
 # _component The part of PCL that this library belongs to.
 # ARGN The source files for the library.
 macro(PCL_CUDA_ADD_LIBRARY _name _component)
+    REMOVE_VTK_DEFINITIONS()
     if(PCL_SHARED_LIBS)
         # to overcome a limitation in cuda_add_library, we add manually PCLAPI_EXPORTS macro
         cuda_add_library(${_name} ${PCL_LIB_TYPE} ${ARGN} OPTIONS -DPCLAPI_EXPORTS)
@@ -375,6 +376,7 @@ endmacro(PCL_ADD_EXECUTABLE_OPT_BUNDLE)
 # _component The part of PCL that this library belongs to.
 # ARGN the source files for the library.
 macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
+    REMOVE_VTK_DEFINITIONS()
     cuda_add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
