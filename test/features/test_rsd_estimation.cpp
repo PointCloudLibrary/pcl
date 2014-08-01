@@ -69,7 +69,7 @@ TEST (PCL, RSDEstimation)
 
   EXPECT_NEAR (normals->points[103].normal_x, 0.694, 0.1);
   EXPECT_NEAR (normals->points[103].normal_y, -0.562, 0.1);
-  EXPECT_NEAR (normals->points[103].normal_y, -0.448, 0.1);
+  EXPECT_NEAR (normals->points[103].normal_z, -0.448, 0.1);
   
   // RSDEstimation
   double max_plane_radius = 0.1;
