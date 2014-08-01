@@ -74,12 +74,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/min_cut_segmentation.h"
        )
     endif()
-    # Random walker requires Eigen::Sparse module that is available since 3.1.0
-    if(NOT ("${EIGEN_VERSION}" VERSION_LESS 3.1.0))
-    list(APPEND incs
-        "include/pcl/${SUBSYS_NAME}/random_walker.h"
-       )
-    endif()
 
     set(impl_incs 
         "include/pcl/${SUBSYS_NAME}/impl/extract_clusters.hpp"
@@ -106,12 +100,6 @@ if(build)
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
     list(APPEND impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/min_cut_segmentation.hpp"
-       )
-    endif()
-    # Random walker requires Eigen::Sparse module that is available since 3.1.0
-    if(NOT ("${EIGEN_VERSION}" VERSION_LESS 3.1.0))
-    list(APPEND impl_incs
-        "include/pcl/${SUBSYS_NAME}/impl/random_walker.hpp"
        )
     endif()
 
