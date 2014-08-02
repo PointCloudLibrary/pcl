@@ -1,0 +1,29 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+	"settings":
+	{
+		"sublimeclang_options":
+		[
+			"-Wall",
+			"-Wno-overloaded-virtual",
+			"-Wno-deprecated",
+			"-Wno-null-conversion",
+			"-Wno-#warnings",
+			"-Wno-unneeded-internal-declaration",
+			"-ferror-limit=0",
+			"-I/usr/include/x86_64-linux-gnu/c++/4.8/",
+			"-I/usr/local/include/pcl-1.7/",
+			"-I/usr/include/eigen3/",
+			"-I/usr/include/vtk-5.8/",
+			"-I/usr/include/qt4/",
+			"-I/usr/include/ni/",
+			"-I/usr/lib/gcc/x86_64-linux-gnu/4.6/include/",
+		],
+	}
+}
