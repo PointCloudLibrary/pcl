@@ -644,8 +644,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       //remove last cluster if no points found...
       if (clusters_[cluster_filtered_idx].indices.size () == 0)
       {
-        clusters_.erase (clusters_.end ());
-        clusters_filtered.erase (clusters_filtered.end ());
+        clusters_.pop_back ();
+        clusters_filtered.pop_back ();
       }
       else
         cluster_filtered_idx++;

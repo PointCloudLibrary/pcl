@@ -52,7 +52,8 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/principal_curvatures.h"
         "include/pcl/${SUBSYS_NAME}/rift.h"
         "include/pcl/${SUBSYS_NAME}/rops_estimation.h"
-        #"include/pcl/${SUBSYS_NAME}/rsd.h"
+        "include/pcl/${SUBSYS_NAME}/rsd.h"
+        "include/pcl/${SUBSYS_NAME}/grsd.h"
         "include/pcl/${SUBSYS_NAME}/statistical_multiscale_interest_region_extraction.h"
         "include/pcl/${SUBSYS_NAME}/vfh.h"
         "include/pcl/${SUBSYS_NAME}/esf.h"
@@ -99,7 +100,8 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/principal_curvatures.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/rift.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/rops_estimation.hpp"
-        #"include/pcl/${SUBSYS_NAME}/impl/rsd.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/rsd.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/grsd.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/statistical_multiscale_interest_region_extraction.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/vfh.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/esf.hpp"
@@ -139,7 +141,8 @@ if(build)
         src/principal_curvatures.cpp
         src/rift.cpp
         src/rops_estimation.cpp
-        #src/rsd.cpp
+        src/rsd.cpp
+        src/grsd.cpp
         src/statistical_multiscale_interest_region_extraction.cpp
         src/vfh.cpp
         src/esf.cpp        

@@ -153,7 +153,7 @@ namespace pcl
 
               if (sdf >= -tranc_dist_mm)
               {
-                float tsdf = fmin (1, sdf / tranc_dist_mm);
+                float tsdf = fmin (1.f, sdf / tranc_dist_mm);
 
                 int weight_prev;
                 float tsdf_prev;

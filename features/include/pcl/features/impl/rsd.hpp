@@ -293,4 +293,4 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
 #define PCL_INSTANTIATE_RSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::RSDEstimation<T,NT,OutT>;
 
-#endif    // PCL_FEATURES_IMPL_VFH_H_ 
+#endif    // PCL_FEATURES_IMPL_RSD_H_ 
