@@ -13,6 +13,7 @@ if(build)
   set(incs
       "include/pcl/${SUBSYS_NAME}/boost.h"
       "include/pcl/${SUBSYS_NAME}/eigen.h"
+      "include/pcl/${SUBSYS_NAME}/get_boundary.h"
       "include/pcl/${SUBSYS_NAME}/line_iterator.h"
       "include/pcl/${SUBSYS_NAME}/mesh_base.h"
       "include/pcl/${SUBSYS_NAME}/mesh_circulators.h"
@@ -23,10 +24,10 @@ if(build)
       "include/pcl/${SUBSYS_NAME}/mesh_traits.h"
       "include/pcl/${SUBSYS_NAME}/organized_index_iterator.h"
       "include/pcl/${SUBSYS_NAME}/planar_polygon.h"
-      "include/pcl/${SUBSYS_NAME}/polygon_operations.h"
       "include/pcl/${SUBSYS_NAME}/polygon_mesh.h"
-      "include/pcl/${SUBSYS_NAME}/triangle_mesh.h"
+      "include/pcl/${SUBSYS_NAME}/polygon_operations.h"
       "include/pcl/${SUBSYS_NAME}/quad_mesh.h"
+      "include/pcl/${SUBSYS_NAME}/triangle_mesh.h"
      )
 
   set(impl_incs
