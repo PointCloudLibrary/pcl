@@ -50,12 +50,26 @@ namespace pcl
   namespace texture_mapping
   {
         
-    /** \brief Structure to store camera pose and focal length. */
+    /** \brief Structure to store camera pose and focal length. 
+      *
+      * One can assign a value to focal_length, to be used along 
+      * both camera axes or, optionally, axis-specific values 
+      * (focal_length_w and focal_length_h). Optionally, one can 
+      * also specify center-of-focus using parameters
+      * center_w and center_h. If the center-of-focus is not 
+      * specified, it will be set to the geometric center of 
+      * the camera, as defined by the width and height parameters.
+      */
     struct Camera
     {
-      Camera () : pose (), focal_length (), height (), width (), texture_file () {}
+      Camera () : pose (), focal_length (), focal_length_w (-1), focal_length_h (-1),
+        center_w (-1), center_h (-1), height (), width (), texture_file () {}
       Eigen::Affine3f pose;
       double focal_length;
+      double focal_length_w;  // optional
+      double focal_length_h;  // optinoal
+      double center_w;  // optional
+      double center_h;  // optional
       double height;
       double width;
       std::string texture_file;
@@ -187,11 +201,25 @@ namespace pcl
           // compute image center and dimension
           double sizeX = cam.width;
           double sizeY = cam.height;
-          double cx = (sizeX) / 2.0;
-          double cy = (sizeY) / 2.0;
+          double cx, cy;
+          if (cam.center_w > 0)
+            cx = cam.center_w;
+          else
+            cx = (sizeX) / 2.0;
+          if (cam.center_h > 0)
+            cy = cam.center_h;
+          else
+            cy = (sizeY) / 2.0;
 
-          double focal_x = cam.focal_length;
-          double focal_y = cam.focal_length;
+          double focal_x, focal_y;
+          if (cam.focal_length_w > 0)
+            focal_x = cam.focal_length_w;
+          else
+            focal_x = cam.focal_length;
+          if (cam.focal_length_h>0)
+            focal_y = cam.focal_length_h;
+          else
+            focal_y = cam.focal_length;
 
           // project point on image frame
           UV_coordinates[0] = static_cast<float> ((focal_x * (pt.x / pt.z) + cx) / sizeX); //horizontal
@@ -298,7 +326,7 @@ namespace pcl
       /** \brief Segment and texture faces by camera visibility. Face-based segmentation.
         * \details With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
         * The mesh will also contain uv coordinates for each face
-        * \param[in/out] tex_mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
+        * \param mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
         * \param[in] cameras vector containing the cameras used for texture mapping.
         */
       void 
@@ -335,7 +363,7 @@ namespace pcl
         * \param[out] radius the radius of the circumscribed circle.
         */
       inline void
-      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circumcenter, double &radius);
  
       
       /** \brief Returns the centroid of a triangle and the corresponding circumscribed circle's radius.

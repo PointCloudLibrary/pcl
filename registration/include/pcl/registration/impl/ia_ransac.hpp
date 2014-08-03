@@ -77,7 +77,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
   if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%zu)!\n",
+    PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
                nr_samples, cloud.points.size ());
     return;
   }
@@ -215,6 +215,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
 
   final_transformation_ = guess;
   int i_iter = 0;
+  converged_ = false;
   if (!guess.isApprox (Eigen::Matrix4f::Identity (), 0.01f)) 
   {
     // If guess is not the Identity matrix we check it.
@@ -243,6 +244,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
     {
       lowest_error = error;
       final_transformation_ = transformation_;
+      converged_=true;
     }
   }
 

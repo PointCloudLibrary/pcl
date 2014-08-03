@@ -87,7 +87,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane ()
 
   if (int (cloud_filtered_->points.size ()) < k_)
   {
-    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %zu points! Aborting.",
+    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
         cloud_filtered_->points.size ());
     return;
   }
@@ -217,7 +217,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
 
   if (int (cloud_filtered_->points.size ()) < k_)
   {
-    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %zu points! Aborting.",
+    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
         cloud_filtered_->points.size ());
     return;
   }
@@ -588,7 +588,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
 
   if (int (cloud_filtered_->points.size ()) < k_)
   {
-    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %zu points! Aborting.",
+    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
         cloud_filtered_->points.size ());
     return;
   }
@@ -599,14 +599,14 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   grid_.setInputCloud (cloud_filtered_);
   grid_.filter (*cloud_downsampled_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering (%f -> %f): %zu out of %zu\n",
+  PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering (%f -> %f): %lu out of %lu\n",
       min_z_bounds_, max_z_bounds_, cloud_downsampled_->points.size (), input_->points.size ());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
   n3d_.compute (*cloud_normals_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] %zu normals estimated. \n", cloud_normals_->points.size ());
+  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->points.size ());
 
   // ---[ Perform segmentation
   seg_.setInputCloud (cloud_downsampled_);
@@ -681,7 +681,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   cluster_.setIndices (boost::make_shared<const pcl::PointIndices> (cloud_object_indices));
   cluster_.extract (clusters2);
 
-  PCL_INFO ("[DominantPlaneSegmentation::compute()] Number of clusters found matching the given constraints: %zu.\n",
+  PCL_INFO ("[DominantPlaneSegmentation::compute()] Number of clusters found matching the given constraints: %lu.\n",
       clusters2.size ());
 
   clusters.resize (clusters2.size ());
@@ -751,7 +751,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
 
   if (int (cloud_filtered_->points.size ()) < k_)
   {
-    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %zu points! Aborting.",
+    PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
         cloud_filtered_->points.size ());
     return;
   }
@@ -762,14 +762,14 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   grid_.setInputCloud (cloud_filtered_);
   grid_.filter (*cloud_downsampled_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering&downsampling (%f -> %f): %zu out of %zu\n",
+  PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering&downsampling (%f -> %f): %lu out of %lu\n",
       min_z_bounds_, max_z_bounds_, cloud_downsampled_->points.size (), input_->points.size ());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
   n3d_.compute (*cloud_normals_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] %zu normals estimated. \n", cloud_normals_->points.size ());
+  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->points.size ());
 
   // ---[ Perform segmentation
   seg_.setInputCloud (cloud_downsampled_);
@@ -842,7 +842,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   cluster_.setIndices (boost::make_shared<const pcl::PointIndices> (cloud_object_indices));
   cluster_.extract (clusters2);
 
-  PCL_INFO ("[DominantPlaneSegmentation::compute_full()] Number of clusters found matching the given constraints: %zu.\n",
+  PCL_INFO ("[DominantPlaneSegmentation::compute_full()] Number of clusters found matching the given constraints: %lu.\n",
       clusters2.size ());
 
   clusters.resize (clusters2.size ());

@@ -69,7 +69,7 @@ Filters
 
 .. image:: images/statistical_removal_2.jpg
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__filters.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02945.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#filtering-tutorial
 
@@ -104,7 +104,7 @@ Features
 **Background**
 
 	A theoretical primer explaining how features work in PCL can be found in the `3D Features tutorial
-	<http:/pointclouds.org/documentation/tutorials/how_features_work.php#how-3d-features-work>`_.
+	<http://pointclouds.org/documentation/tutorials/how_features_work.php>`_.
 	
 	The *features* library contains data structures and mechanisms for 3D feature estimation from point cloud data. 3D features are representations at certain 3D points, or positions, in space, which describe geometrical patterns based on the information available around the point. The data space selected around the query point is usually referred to as the *k-neighborhood*.
 
@@ -124,7 +124,7 @@ Features
 	
 	|
 	
-**Documentation:** http://docs.pointclouds.org/trunk/group__features.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02944.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#features-tutorial
 
@@ -168,7 +168,7 @@ Keypoints
 
 |
 	
-**Documentation:** http://docs.pointclouds.org/trunk/group__keypoints.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02949.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#keypoints-tutorial
 
@@ -218,7 +218,7 @@ Registration
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__registration.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02953.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#registration-tutorial
 
@@ -265,7 +265,7 @@ Kd-tree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__kdtree.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02948.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#kdtree-tutorial
 
@@ -305,7 +305,7 @@ Octree
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__octree.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02950.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#octree-tutorial
 
@@ -346,7 +346,7 @@ Segmentation
 	
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__segmentation.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02956.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#segmentation-tutorial
 
@@ -392,7 +392,7 @@ Sample Consensus
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__sample__consensus.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02954.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#sample-consensus
 
@@ -438,7 +438,7 @@ Surface
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__surface.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02957.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#surface-tutorial
 
@@ -479,7 +479,7 @@ Range Image
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__range__image.html
+**Documentation:** http://docs.pointclouds.org/trunk/a01344.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#range-images
 
@@ -519,7 +519,7 @@ I/O
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__io.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02947.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#i-o
 
@@ -586,7 +586,7 @@ Visualization
 
 |
 
-**Documentation:** http://docs.pointclouds.org/trunk/group__visualization.html
+**Documentation:** http://docs.pointclouds.org/trunk/a02958.html
 
 **Tutorials:** http://pointclouds.org/documentation/tutorials/#visualization-tutorial
 

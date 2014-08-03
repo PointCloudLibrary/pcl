@@ -177,7 +177,7 @@ namespace pcl
       {
         if (model_coefficients.size () != 6)
         {
-          PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%zu)!\n", model_coefficients.size ());
+          PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
           return (false);
         }
 

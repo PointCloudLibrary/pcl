@@ -94,7 +94,7 @@ namespace pcl
         initCompute () { return false; }
 
         /** \brief Utility function that annihilates a point making it fail the \ref pcl::isFinite test
-          * \param[in/out] p point to annihilate
+          * \param p point to annihilate
           */
         static void
         makeInfinite (PointOutT& p)

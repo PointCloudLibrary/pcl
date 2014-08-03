@@ -418,7 +418,7 @@ void openni_wrapper::OpenNIDevice::InitShiftToDepthConversion ()
   {
     // Calculate shift conversion table
 
-    pcl::int32_t nIndex = 0;
+    pcl::uint32_t nIndex = 0;
     pcl::int32_t nShiftValue = 0;
     double dFixedRefX = 0;
     double dMetric = 0;

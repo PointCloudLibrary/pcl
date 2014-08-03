@@ -160,7 +160,6 @@ namespace pcl
       /** \brief Create a binned distance shape histogram
         * \param[in] index the index of the point in indices_
         * \param[in] indices the k-neighborhood point indices in surface_
-        * \param[in] sqr_dists the k-neighborhood point distances in surface_
         * \param[out] bin_distance_shape the resultant histogram
         */
       void

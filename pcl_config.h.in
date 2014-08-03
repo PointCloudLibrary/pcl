@@ -16,6 +16,8 @@
 
 #cmakedefine HAVE_OPENNI 1
 
+#cmakedefine HAVE_OPENNI2 1
+
 #cmakedefine HAVE_QHULL 1
 
 #cmakedefine HAVE_QHULL_2011 1
@@ -44,6 +46,10 @@
 #undef HAVE_OPENNI
 #endif
 
+#ifdef DISABLE_OPENNI2
+#undef HAVE_OPENNI2
+#endif
+
 #ifdef DISABLE_QHULL
 #undef HAVE_QHULL
 #endif
@@ -55,3 +61,7 @@
 #cmakedefine VERBOSITY_LEVEL_INFO
 #cmakedefine VERBOSITY_LEVEL_DEBUG
 #cmakedefine VERBOSITY_LEVEL_VERBOSE
+
+/* Address the cases where on MacOS and OpenGL and GLUT are not frameworks */
+#cmakedefine OPENGL_IS_A_FRAMEWORK
+#cmakedefine GLUT_IS_A_FRAMEWORK

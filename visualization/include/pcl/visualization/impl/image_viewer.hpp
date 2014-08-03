@@ -39,6 +39,7 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 
+#include <vtkVersion.h>
 #include <vtkContextActor.h>
 #include <vtkContextScene.h>
 #include <vtkImageData.h>
@@ -258,7 +259,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {
@@ -323,7 +324,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {
@@ -388,7 +389,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   setSize (source_img.width + target_img.width , std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < (src_size + tgt_size))
+  if (data_size_ < static_cast<size_t> (src_size + tgt_size))
   {
     data_size_ = src_size + tgt_size;
     data_.reset (new unsigned char[data_size_]);
@@ -435,9 +436,13 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
+#if VTK_MAJOR_VERSION < 6
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))

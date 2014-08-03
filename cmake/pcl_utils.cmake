@@ -41,6 +41,20 @@ macro(PREFIX_LIST _output _prefix _list)
     endforeach(_item)
 endmacro(PREFIX_LIST)
 
+###############################################################################
+# Remove vtk definitions
+# This is used for CUDA targets, because nvcc does not like VTK 6+ definitions
+# style.
+macro(REMOVE_VTK_DEFINITIONS)
+    get_directory_property(_dir_defs DIRECTORY ${CMAKE_SOURCE_DIR} COMPILE_DEFINITIONS)
+    set(_vtk_definitions)
+    foreach(_item ${_dir_defs})
+        if(_item MATCHES "vtk*")
+            list(APPEND _vtk_definitions -D${_item})
+        endif()
+    endforeach()
+    remove_definitions(${_vtk_definitions})
+endmacro(REMOVE_VTK_DEFINITIONS)
 
 ###############################################################################
 # Pull the component parts out of the version number.
@@ -84,8 +98,12 @@ macro(SET_INSTALL_DIRS)
   if (NOT DEFINED LIB_INSTALL_DIR)
     set(LIB_INSTALL_DIR "lib")
   endif (NOT DEFINED LIB_INSTALL_DIR)
-    set(INCLUDE_INSTALL_ROOT
-        "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    if(NOT ANDROID)
+      set(INCLUDE_INSTALL_ROOT
+          "include/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
+    else(NOT ANDROID)
+      set(INCLUDE_INSTALL_ROOT "include") # Android, don't put into subdir
+    endif(NOT ANDROID)
     set(INCLUDE_INSTALL_DIR "${INCLUDE_INSTALL_ROOT}/pcl")
     set(DOC_INSTALL_DIR "share/doc/${PROJECT_NAME_LOWER}-${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}")
     set(BIN_INSTALL_DIR "bin")

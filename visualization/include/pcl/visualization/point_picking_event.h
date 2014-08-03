@@ -91,7 +91,13 @@ namespace pcl
           idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2) 
         {}
 
-        /** \brief Obtain the ID of a point that the user just clicked on. */
+        /** \brief Obtain the ID of a point that the user just clicked on.
+          *  \warning If the cloud contains NaNs the index returned by this function will not correspond to the
+          * original indices. To get the correct index either sanitize the input cloud to remove NaNs or use the 
+          * PointPickingEvent::getPoint function to get the x,y,z of the picked point and then search the original 
+          * cloud for the correct index. An example of how to do this can be found in the pp_callback function in
+          * visualization/tools/pcd_viewer.cpp
+          */
         inline int
         getPointIndex () const
         {
@@ -132,6 +138,11 @@ namespace pcl
           * \param[out] index_1 index of the first point selected by user
           * \param[out] index_2 index of the second point selected by user
           * \return true, if two points are available and have been clicked by the user, false otherwise
+          * \warning If the cloud contains NaNs the index returned by this function will not correspond to the
+          * original indices. To get the correct index either sanitize the input cloud to remove NaNs or use the 
+          * PointPickingEvent::getPoint function to get the x,y,z of the picked point and then search the original 
+          * cloud for the correct index. An example of how to do this can be found in the pp_callback function in
+          * visualization/tools/pcd_viewer.cpp
           */
         inline bool
         getPointIndices (int &index_1, int &index_2) const

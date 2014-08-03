@@ -36,10 +36,16 @@
  *
  */
 
+#include <vtkVersion.h>
 #include <vtkImageViewer.h>
 #include <vtkCallbackCommand.h>
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
+
+#if VTK_MAJOR_VERSION >= 6
+#include <vtkImageSlice.h>
+#include <vtkImageSliceMapper.h>
+#endif
 
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/common/float_image_utils.h>
@@ -117,7 +123,11 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 
   vtkSmartPointer<vtkImageData> empty_image = vtkSmartPointer<vtkImageData>::New ();
   vtkSmartPointer<vtkImageSliceMapper> map = vtkSmartPointer<vtkImageSliceMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   map->SetInput (empty_image);
+#else
+  map->SetInputData (empty_image);
+#endif
   slice_->SetMapper (map);
   ren_->AddViewProp (slice_);
   interactor_->SetInteractorStyle (interactor_style_);
@@ -180,9 +190,13 @@ pcl::visualization::ImageViewer::addRGBImage (
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
+#if VTK_MAJOR_VERSION < 6
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, 3 * width * height, 1);
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
   // Now create filter and set previously created transformation
@@ -193,9 +207,12 @@ pcl::visualization::ImageViewer::addRGBImage (
 #  else
     image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
-#else
+#elif VTK_MAJOR_VERSION < 6
   image_viewer_->SetInputData (image);
   interactor_style_->adjustCamera (image, ren_);
+#else
+  algo_->SetInputData (image);
+  algo_->Update ();
 #endif
 }
 
@@ -231,9 +248,13 @@ pcl::visualization::ImageViewer::addMonoImage (
 
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetExtent (0, width - 1, 0, height - 1, 0, 0);
+#if VTK_MAJOR_VERSION < 6
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (1);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 1);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, width * height, 1);
 
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
@@ -245,9 +266,12 @@ pcl::visualization::ImageViewer::addMonoImage (
 #  else
     image_viewer_->SetInputConnection (algo_->GetOutputPort ());
 #  endif
-#else
+#elif VTK_MAJOR_VERSION < 6
   image_viewer_->SetInputData (image);
   interactor_style_->adjustCamera (image, ren_);
+#else
+  algo_->SetInputData (image);
+  algo_->Update ();
 #endif
 }
 
@@ -598,7 +622,11 @@ pcl::visualization::ImageViewer::createLayer (
     rect->set (0, 0, static_cast<float> (width), static_cast<float> (height));
     l.actor->GetScene ()->AddItem (rect);
   }
+#if VTK_MAJOR_VERSION < 6
   image_viewer_->GetRenderer ()->AddActor (l.actor);
+#else
+  ren_->AddActor (l.actor);
+#endif
   // Add another element
   layer_map_.push_back (l);
 
@@ -634,7 +662,11 @@ pcl::visualization::ImageViewer::removeLayer (const std::string &layer_id)
     PCL_DEBUG ("[pcl::visualization::ImageViewer::removeLayer] No layer with ID='%s' found.\n", layer_id.c_str ());
     return;
   }
+#if VTK_MAJOR_VERSION < 6
   image_viewer_->GetRenderer ()->RemoveActor (am_it->actor);
+#else
+  ren_->RemoveActor (am_it->actor);
+#endif
   layer_map_.erase (am_it);
 }
 
@@ -675,7 +707,7 @@ bool
 pcl::visualization::ImageViewer::addCircle (unsigned int x, unsigned int y, double radius,
                                             const std::string &layer_id, double opacity)
 {
-  return (addCircle (x, y, radius, layer_id, opacity));
+  return (addCircle (x, y, radius, 0.0, 1.0, 0.0, layer_id, opacity));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -929,6 +961,58 @@ pcl::visualization::ImageViewer::markPoint (
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void
+pcl::visualization::ImageViewer::markPoints (
+    const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
+    const std::string &layer_id, double opacity)
+{
+  if (uv.size () == 0)
+    return;
+
+  std::vector<float> float_uv (uv.size ());
+  for (std::size_t i = 0; i < uv.size (); ++i)
+    float_uv[i] = static_cast<float> (uv[i]);
+  return (markPoints (float_uv, fg_color, bg_color, size, layer_id, opacity));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::ImageViewer::markPoints (
+    const std::vector<float>& uv, Vector3ub fg_color, Vector3ub bg_color, double size,
+    const std::string &layer_id, double opacity)
+{
+  if (uv.size () == 0)
+    return;
+
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  LayerMap::iterator am_it = std::find_if (layer_map_.begin (), layer_map_.end (), LayerComparator (layer_id));
+  if (am_it == layer_map_.end ())
+  {
+    PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+    interactor_style_->adjustCamera (ren_);
+#endif
+  }
+
+  vtkSmartPointer<context_items::Markers> markers = vtkSmartPointer<context_items::Markers>::New ();
+  markers->setOpacity (opacity);
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+  markers->set (uv);
+#else
+  // translate v which is on odd indices
+  std::vector<float> points = uv;
+  for (std::size_t i = 1; i < points.size (); i+=2)
+    points[i] = getSize ()[1] - points[i];
+  markers->set (points);
+#endif
+  markers->setSize (size);
+  markers->setColors (bg_color[0], bg_color[1], bg_color[2]);
+  markers->setPointColors (fg_color[0], fg_color[1], fg_color[2]);
+  am_it->actor->GetScene ()->AddItem (markers);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void
 pcl::visualization::ImageViewer::render ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
@@ -1087,9 +1171,9 @@ void
 pcl::visualization::ImageViewer::setWindowTitle (const std::string& name)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetWindowName (name.c_str ());
-#else
   image_viewer_->GetRenderWindow ()->SetWindowName (name.c_str ());
+#else
+  win_->SetWindowName (name.c_str ());
 #endif
 }
 
@@ -1098,9 +1182,9 @@ void
 pcl::visualization::ImageViewer::setPosition (int x, int y)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetPosition (x, y);
-#else
   image_viewer_->GetRenderWindow ()->SetPosition (x, y);
+#else
+  win_->SetPosition (x, y);
 #endif
 }
 
@@ -1109,9 +1193,9 @@ int*
 pcl::visualization::ImageViewer::getSize ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  return (win_->GetSize ());
-#else
   return (image_viewer_->GetRenderWindow ()->GetSize ());
+#else
+  return (win_->GetSize ());
 #endif
 }
 
@@ -1120,9 +1204,10 @@ void
 pcl::visualization::ImageViewer::setSize (int xw, int yw)
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
-  win_->SetSize (xw, yw);
-#else
   image_viewer_->GetRenderWindow ()->SetSize (xw, yw);
+#else
+  win_->SetSize (xw, yw);
+
 #endif
 }
 

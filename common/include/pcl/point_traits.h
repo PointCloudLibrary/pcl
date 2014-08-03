@@ -53,6 +53,12 @@
 #include <boost/mpl/bool.hpp>
 #endif
 
+// This is required for the workaround at line 109
+#ifdef _MSC_VER
+#include <Eigen/Core>
+#include <Eigen/src/StlSupport/details.h>
+#endif
+
 namespace pcl
 {
 
@@ -99,6 +105,24 @@ namespace pcl
     {
       typedef PointT type;
     };
+
+#ifdef _MSC_VER
+
+    /* Sometimes when calling functions like `copyPoint()` or `copyPointCloud`
+     * without explicitly specifying point types, MSVC deduces them to be e.g.
+     * `Eigen::internal::workaround_msvc_stl_support<pcl::PointXYZ>` instead of
+     * plain `pcl::PointXYZ`. Subsequently these types are passed to meta-
+     * functions like `has_field` or `fieldList` and make them choke. This hack
+     * makes use of the fact that internally `fieldList` always applies `POD` to
+     * its argument type. This specialization therefore allows to unwrap the
+     * contained point type. */
+    template<typename PointT>
+    struct POD<Eigen::internal::workaround_msvc_stl_support<PointT> >
+    {
+      typedef PointT type;
+    };
+
+#endif
 
     // name
     /* This really only depends on Tag, but we go through some gymnastics to avoid ODR violations.
@@ -185,7 +209,19 @@ namespace pcl
     }
   };
 
-  /** \brief A helper functor that can copy a specific value if the given field exists. */
+  /** \brief A helper functor that can copy a specific value if the given field exists.
+    *
+    * \note In order to actually copy the value an instance of this functor should be passed
+    * to a pcl::for_each_type loop. See the example below.
+    *
+    * \code
+    * PointInT p;
+    * bool exists;
+    * float value;
+    * typedef typename pcl::traits::fieldList<PointInT>::type FieldList;
+    * pcl::for_each_type<FieldList> (pcl::CopyIfFieldExists<PointT, float> (p, "intensity", exists, value));
+    * \endcode
+    */
   template <typename PointInT, typename OutT>
   struct CopyIfFieldExists
   {
@@ -240,7 +276,17 @@ namespace pcl
       OutT &value_;
   };
 
-  /** \brief A helper functor that can set a specific value in a field if the field exists. */
+  /** \brief A helper functor that can set a specific value in a field if the field exists.
+    *
+    * \note In order to actually set the value an instance of this functor should be passed
+    * to a pcl::for_each_type loop. See the example below.
+    *
+    * \code
+    * PointT p;
+    * typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+    * pcl::for_each_type<FieldList> (pcl::SetIfFieldExists<PointT, float> (p, "intensity", 42.0f));
+    * \endcode
+    */
   template <typename PointOutT, typename InT>
   struct SetIfFieldExists
   {

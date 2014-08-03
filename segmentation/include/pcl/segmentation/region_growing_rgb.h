@@ -171,6 +171,7 @@ namespace pcl
 
       /** \brief For a given point this function builds a segment to which it belongs and returns this segment.
         * \param[in] index index of the initial point which will be the seed for growing a segment.
+        * \param cluster
         */
       virtual void
       getSegmentFromPoint (int index, pcl::PointIndices& cluster);

@@ -68,8 +68,13 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 {
   const int n_vertices = static_cast<const int> (vertices.vertices.size ());
 
-  if (n_vertices <= 3)
+  if (n_vertices < 3)
     return;
+  else if (n_vertices == 3)
+  {
+    output.polygons.push_back( vertices );
+    return;
+  }
 
   std::vector<uint32_t> remaining_vertices (n_vertices);
   if (area (vertices.vertices) > 0) // clockwise?
@@ -109,19 +114,36 @@ pcl::EarClipping::triangulate (const Vertices& vertices, PolygonMesh& output)
 float
 pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 {
-  int n = static_cast<int> (vertices.size ());
-  float area = 0.0f;
-  Eigen::Vector2f prev_p, cur_p;
-  for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
-  {
-    prev_p[0] = points_->points[vertices[prev]].x;
-    prev_p[1] = points_->points[vertices[prev]].y;
-    cur_p[0] = points_->points[vertices[cur]].x;
-    cur_p[1] = points_->points[vertices[cur]].y;
+    //if the polygon is projected onto the xy-plane, the area of the polygon is determined
+    //by the trapeze formula of Gauss. However this fails, if the projection is one 'line'.
+    //Therefore the following implementation determines the area of the flat polygon in 3D-space
+    //using Stoke's law: http://code.activestate.com/recipes/578276-3d-polygon-area/
 
-    area += crossProduct (prev_p, cur_p);
-  }
-  return (area * 0.5f);
+    int n = static_cast<int> (vertices.size ());
+    float area = 0.0f;
+    Eigen::Vector3f prev_p, cur_p;
+    Eigen::Vector3f total (0,0,0);
+    Eigen::Vector3f unit_normal;
+
+    if (n > 3)
+    {
+        for (int prev = n - 1, cur = 0; cur < n; prev = cur++)
+        {
+            prev_p = points_->points[vertices[prev]].getVector3fMap();
+            cur_p = points_->points[vertices[cur]].getVector3fMap();
+
+            total += prev_p.cross( cur_p );
+        }
+
+        //unit_normal is unit normal vector of plane defined by the first three points
+        prev_p = points_->points[vertices[1]].getVector3fMap() - points_->points[vertices[0]].getVector3fMap();
+        cur_p = points_->points[vertices[2]].getVector3fMap() - points_->points[vertices[0]].getVector3fMap();
+        unit_normal = (prev_p.cross(cur_p)).normalized();
+
+        area = total.dot( unit_normal );
+    }
+
+    return area * 0.5f; 
 }
 
 
@@ -129,31 +151,27 @@ pcl::EarClipping::area (const std::vector<uint32_t>& vertices)
 bool
 pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& vertices)
 {
-  Eigen::Vector2f p_u, p_v, p_w;
-  p_u[0] = points_->points[vertices[u]].x;
-  p_u[1] = points_->points[vertices[u]].y;
-  p_v[0] = points_->points[vertices[v]].x;
-  p_v[1] = points_->points[vertices[v]].y;
-  p_w[0] = points_->points[vertices[w]].x;
-  p_w[1] = points_->points[vertices[w]].y;
+  Eigen::Vector3f p_u, p_v, p_w;
+  p_u = points_->points[vertices[u]].getVector3fMap();
+  p_v = points_->points[vertices[v]].getVector3fMap();
+  p_w = points_->points[vertices[w]].getVector3fMap();
 
-  // Avoid flat triangles.
-  // FIXME: triangulation would fail if all the triangles are flat in the X-Y axis
   const float eps = 1e-15f;
-  Eigen::Vector2f p_uv, p_uw;
+  Eigen::Vector3f p_uv, p_uw;
   p_uv = p_v - p_u;
   p_uw = p_w - p_u;
-  if (crossProduct (p_uv, p_uw) < eps)
+
+  // Avoid flat triangles.
+  if ((p_uv.cross(p_uw)).norm() < eps)
     return (false);
 
-  Eigen::Vector2f p;
+  Eigen::Vector3f p;
   // Check if any other vertex is inside the triangle.
   for (int k = 0; k < static_cast<int> (vertices.size ()); k++)
   {
     if ((k == u) || (k == v) || (k == w))
       continue;
-    p[0] = points_->points[vertices[k]].x;
-    p[1] = points_->points[vertices[k]].y;
+    p = points_->points[vertices[k]].getVector3fMap();
 
     if (isInsideTriangle (p_u, p_v, p_w, p))
       return (false);
@@ -163,23 +181,30 @@ pcl::EarClipping::isEar (int u, int v, int w, const std::vector<uint32_t>& verti
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EarClipping::isInsideTriangle (const Eigen::Vector2f& u,
-                                    const Eigen::Vector2f& v,
-                                    const Eigen::Vector2f& w,
-                                    const Eigen::Vector2f& p)
+pcl::EarClipping::isInsideTriangle (const Eigen::Vector3f& u,
+                                    const Eigen::Vector3f& v,
+                                    const Eigen::Vector3f& w,
+                                    const Eigen::Vector3f& p)
 {
-  // Check first side.
-  if (crossProduct (w - v, p - v) < 0)
-    return (false);
+  // see http://www.blackpawn.com/texts/pointinpoly/default.html
+  // Barycentric Coordinates
+  Eigen::Vector3f v0 = w - u;
+  Eigen::Vector3f v1 = v - u;
+  Eigen::Vector3f v2 = p - u;
 
-  // Check second side.
-  if (crossProduct (v - u, p - u) < 0)
-    return (false);
+  // Compute dot products
+  float dot00 = v0.dot(v0);
+  float dot01 = v0.dot(v1);
+  float dot02 = v0.dot(v2);
+  float dot11 = v1.dot(v1);
+  float dot12 = v1.dot(v2);
 
-  // Check third side.
-  if (crossProduct (u - w, p - w) < 0)
-    return (false);
+  // Compute barycentric coordinates
+  float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+  float a = (dot11 * dot02 - dot01 * dot12) * invDenom;
+  float b = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
-  return (true);
+  // Check if point is in triangle
+  return (a >= 0) && (b >= 0) && (a + b < 1);
 }
 

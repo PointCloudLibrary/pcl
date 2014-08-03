@@ -123,7 +123,7 @@ main (int argc, char** argv)
   // --------------------------------------------
   pcl::visualization::PCLVisualizer viewer ("3D Viewer");
   viewer.setBackgroundColor (1, 1, 1);
-  viewer.addCoordinateSystem (1.0f);
+  viewer.addCoordinateSystem (1.0f, "global");
   pcl::visualization::PointCloudColorHandlerCustom<PointType> point_cloud_color_handler (point_cloud_ptr, 0, 0, 0);
   viewer.addPointCloud (point_cloud_ptr, point_cloud_color_handler, "original point cloud");
   //PointCloudColorHandlerCustom<pcl::PointWithRange> range_image_color_handler (range_image_ptr, 150, 150, 150);

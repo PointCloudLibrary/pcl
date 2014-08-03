@@ -816,6 +816,22 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
     current_row -= input_->width;
   }
 
+  if (indices_->size () < input_->size ())
+    computeFeaturePart (distanceMap, bad_point, output);
+  else
+    computeFeatureFull (distanceMap, bad_point, output);
+
+  delete[] depthChangeMap;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (const float *distanceMap,
+                                                                             const float &bad_point,
+                                                                             PointCloudOut &output)
+{
+  unsigned index = 0;
+
   if (border_policy_ == BORDER_POLICY_IGNORE)
   {
     // Set all normals that we do not touch to NaN
@@ -993,9 +1009,173 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
       }
     }
   }
+}
 
-  delete[] depthChangeMap;
-  //delete[] distanceMap;
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (const float *distanceMap,
+                                                                             const float &bad_point,
+                                                                             PointCloudOut &output)
+{
+  if (border_policy_ == BORDER_POLICY_IGNORE)
+  {
+    output.is_dense = false;
+    unsigned border = int(normal_smoothing_size_);
+    unsigned bottom = input_->height > border ? input_->height - border : 0;
+    unsigned right = input_->width > border ? input_->width - border : 0;
+    if (use_depth_dependent_smoothing_)
+    {
+      // Iterating over the entire index vector
+      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      {
+        unsigned pt_index = (*indices_)[idx];
+        unsigned u = pt_index % input_->width;
+        unsigned v = pt_index / input_->width;
+        if (v < border || v > bottom)
+        {
+          output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output.points[idx].curvature = bad_point;
+          continue;
+        }
+
+        if (u < border || v > right)
+        {
+          output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output.points[idx].curvature = bad_point;
+          continue;
+        }
+
+        const float depth = input_->points[pt_index].z;
+        if (!pcl_isfinite (depth))
+        {
+          output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output.points[idx].curvature = bad_point;
+          continue;
+        }
+
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
+        if (smoothing > 2.0f)
+        {
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
+          computePointNormal (u, v, pt_index, output [idx]);
+        }
+        else
+        {
+          output[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output[idx].curvature = bad_point;
+        }
+      }
+    }
+    else
+    {
+      float smoothing_constant = normal_smoothing_size_;
+      // Iterating over the entire index vector
+      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      {
+        unsigned pt_index = (*indices_)[idx];
+        unsigned u = pt_index % input_->width;
+        unsigned v = pt_index / input_->width;
+        if (v < border || v > bottom)
+        {
+          output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output.points[idx].curvature = bad_point;
+          continue;
+        }
+
+        if (u < border || v > right)
+        {
+          output.points[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output.points[idx].curvature = bad_point;
+          continue;
+        }
+
+        if (!pcl_isfinite (input_->points[pt_index].z))
+        {
+          output [idx].getNormalVector3fMap ().setConstant (bad_point);
+          output [idx].curvature = bad_point;
+          continue;
+        }
+
+        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+
+        if (smoothing > 2.0f)
+        {
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
+          computePointNormal (u, v, pt_index, output [idx]);
+        }
+        else
+        {
+          output [pt_index].getNormalVector3fMap ().setConstant (bad_point);
+          output [pt_index].curvature = bad_point;
+        }
+      }
+    }
+  }// border_policy_ == BORDER_POLICY_IGNORE
+  else if (border_policy_ == BORDER_POLICY_MIRROR)
+  {
+    output.is_dense = false;
+
+    if (use_depth_dependent_smoothing_)
+    {
+      for (std::size_t idx = 0; idx < indices_->size (); ++idx)
+      {
+        unsigned pt_index = (*indices_)[idx];
+        unsigned u = pt_index % input_->width;
+        unsigned v = pt_index / input_->width;
+
+        const float depth = input_->points[pt_index].z;
+        if (!pcl_isfinite (depth))
+        {
+          output[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output[idx].curvature = bad_point;
+          continue;
+        }
+
+        float smoothing = (std::min)(distanceMap[pt_index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
+
+        if (smoothing > 2.0f)
+        {
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
+          computePointNormalMirror (u, v, pt_index, output [idx]);
+        }
+        else
+        {
+          output[idx].getNormalVector3fMap ().setConstant (bad_point);
+          output[idx].curvature = bad_point;
+        }
+      }
+    }
+    else
+    {
+      float smoothing_constant = normal_smoothing_size_;
+      for (size_t idx = 0; idx < indices_->size (); ++idx)
+      {
+        unsigned pt_index = (*indices_)[idx];
+        unsigned u = pt_index % input_->width;
+        unsigned v = pt_index / input_->width;
+
+        if (!pcl_isfinite (input_->points[pt_index].z))
+        {
+          output [idx].getNormalVector3fMap ().setConstant (bad_point);
+          output [idx].curvature = bad_point;
+          continue;
+        }
+
+        float smoothing = (std::min)(distanceMap[pt_index], smoothing_constant);
+
+        if (smoothing > 2.0f)
+        {
+          setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
+          computePointNormalMirror (u, v, pt_index, output [idx]);
+        }
+        else
+        {
+          output [idx].getNormalVector3fMap ().setConstant (bad_point);
+          output [idx].curvature = bad_point;
+        }
+      }
+    }
+  } // border_policy_ == BORDER_POLICY_MIRROR
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

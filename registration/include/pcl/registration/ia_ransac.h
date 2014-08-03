@@ -65,6 +65,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::max_iterations_;
       using Registration<PointSource, PointTarget>::tree_;
       using Registration<PointSource, PointTarget>::transformation_estimation_;
+      using Registration<PointSource, PointTarget>::converged_;
       using Registration<PointSource, PointTarget>::getClassName;
 
       typedef typename Registration<PointSource, PointTarget>::PointCloudSource PointCloudSource;
@@ -245,6 +246,7 @@ namespace pcl
 
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess The computed transforamtion
         */
       virtual void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);

@@ -49,6 +49,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_cloud.h>
+#include <vtkVersion.h>
 #include <vtkPolyDataReader.h>
 #include <vtkDoubleArray.h>
 #include <vtkDataArray.h>
@@ -281,13 +282,21 @@ update (CallbackParameters* params)
     // Setup the transformator
     vtkSmartPointer<vtkTransformPolyDataFilter> vtk_transformator = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
     vtk_transformator->SetTransform (vtk_transform);
+#if VTK_MAJOR_VERSION < 6
     vtk_transformator->SetInput (vtk_model);
+#else
+    vtk_transformator->SetInputData (vtk_model);
+#endif
     vtk_transformator->Update ();
 
     // Visualize
     vtkSmartPointer<vtkActor> vtk_actor = vtkSmartPointer<vtkActor>::New();
     vtkSmartPointer<vtkPolyDataMapper> vtk_mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
     vtk_mapper->SetInput(vtk_transformator->GetOutput ());
+#else
+    vtk_mapper->SetInputData (vtk_transformator->GetOutput ());
+#endif
     vtk_actor->SetMapper(vtk_mapper);
     // Set the appearance & add to the renderer
     vtk_actor->GetProperty ()->SetColor (0.6, 0.7, 0.9);
@@ -351,7 +360,7 @@ loadScene (const char* file_name, PointCloud<PointXYZ>& non_plane_points, PointC
 
   for ( i = 0, j = 0, id = 0 ; i < inliers->indices.size () ; )
   {
-    if ( id == inliers->indices[i] )
+    if ( static_cast<int> (id) == inliers->indices[i] )
     {
       plane_points.points[i] = all_points->points[id];
       ++id;

@@ -205,7 +205,8 @@ namespace pcl
         filter_field_name_ (""), 
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false)
+        filter_limit_negative_ (false),
+        min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
       }
@@ -260,6 +261,17 @@ namespace pcl
         */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
+
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void 
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+      /** \brief Return the minimum number of points required for a voxel to be used.
+       */
+      inline unsigned int
+      getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -471,6 +483,9 @@ namespace pcl
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
 
+      /** \brief Minimum number of points per voxel for the centroid to be computed */
+      unsigned int min_points_per_voxel_;
+
       typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
@@ -517,7 +532,8 @@ namespace pcl
         filter_field_name_ (""), 
         filter_limit_min_ (-FLT_MAX), 
         filter_limit_max_ (FLT_MAX),
-        filter_limit_negative_ (false)
+        filter_limit_negative_ (false),
+        min_points_per_voxel_ (0)
       {
         filter_name_ = "VoxelGrid";
       }
@@ -572,6 +588,17 @@ namespace pcl
         */
       inline bool 
       getDownsampleAllData () { return (downsample_all_data_); }
+
+      /** \brief Set the minimum number of points required for a voxel to be used.
+        * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
+        */
+      inline void 
+      setMinimumPointsNumberPerVoxel (unsigned int min_points_per_voxel) { min_points_per_voxel_ = min_points_per_voxel; }
+
+	  /** \brief Return the minimum number of points required for a voxel to be used.
+       */
+	  inline unsigned int
+	  getMinimumPointsNumberPerVoxel () { return min_points_per_voxel_; }
 
       /** \brief Set to true if leaf layout information needs to be saved for later access.
         * \param[in] save_leaf_layout the new value (true/false)
@@ -810,6 +837,9 @@ namespace pcl
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
+
+      /** \brief Minimum number of points per voxel for the centroid to be computed */
+      unsigned int min_points_per_voxel_;
 
       /** \brief Downsample a Point Cloud using a voxelized grid approach
         * \param[out] output the resultant point cloud

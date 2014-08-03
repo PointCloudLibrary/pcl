@@ -6,7 +6,7 @@
 # OPENNI_INCLUDE_DIRS - Directories containing the OPENNI include files.
 # OPENNI_LIBRARIES - Libraries needed to use OPENNI.
 # OPENNI_DEFINITIONS - Compiler flags for OPENNI.
-# 
+#
 # For libusb-1.0, add USB_10_ROOT if not found
 
 find_package(PkgConfig QUIET)
@@ -19,21 +19,21 @@ if(NOT WIN32)
             PATH_SUFFIXES libusb-1.0)
 
   find_library(USB_10_LIBRARY
-               NAMES usb-1.0 
+               NAMES usb-1.0
                HINTS ${PC_USB_10_LIBDIR} ${PC_USB_10_LIBRARY_DIRS} "${USB_10_ROOT}" "$ENV{USB_10_ROOT}"
                PATH_SUFFIXES lib)
-               
+
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(USB_10 DEFAULT_MSG USB_10_LIBRARY USB_10_INCLUDE_DIR)
-   
+
   if(NOT USB_10_FOUND)
-    message(STATUS "OpenNI disabled because libusb-1.0 not found.")     
+    message(STATUS "OpenNI disabled because libusb-1.0 not found.")
     return()
   else()
     include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
   endif()
 endif(NOT WIN32)
- 
+
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
   pkg_check_modules(PC_OPENNI openni-dev)
 else()
@@ -49,11 +49,11 @@ endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 #add a hint so that it can find it without the pkg-config
 find_path(OPENNI_INCLUDE_DIR XnStatus.h
-          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni /usr/include/ni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
+          HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni /usr/include/ni /opt/local/include/ni "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
           PATHS "$ENV{OPEN_NI_INSTALL_PATH${OPENNI_SUFFIX}}/Include"
           PATH_SUFFIXES openni include Include)
 #add a hint so that it can find it without the pkg-config
-find_library(OPENNI_LIBRARY 
+find_library(OPENNI_LIBRARY
              NAMES OpenNI${OPENNI_SUFFIX}
              HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
              PATHS "$ENV{OPEN_NI_LIB${OPENNI_SUFFIX}}"
@@ -67,12 +67,11 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenNI DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
-    
+
 mark_as_advanced(OPENNI_LIBRARY OPENNI_INCLUDE_DIR)
 
-if(OPENNI_FOUND)  
+if(OPENNI_FOUND)
   # Add the include directories
-  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})  
+  set(OPENNI_INCLUDE_DIRS ${OPENNI_INCLUDE_DIR})
   message(STATUS "OpenNI found (include: ${OPENNI_INCLUDE_DIRS}, lib: ${OPENNI_LIBRARY})")
 endif(OPENNI_FOUND)
-

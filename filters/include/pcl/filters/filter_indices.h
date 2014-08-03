@@ -169,6 +169,7 @@ namespace pcl
       }
 
     protected:
+
       using Filter<PointT>::initCompute;
       using Filter<PointT>::deinitCompute;
 
@@ -184,6 +185,10 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
+
+      /** \brief Abstract filter method for point cloud. */
+      virtual void
+      applyFilter (PointCloud &output) = 0;
   };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,6 +285,7 @@ namespace pcl
       }
 
     protected:
+
       /** \brief False = normal filter behavior (default), true = inverted behavior. */
       bool negative_;
 
@@ -292,6 +298,10 @@ namespace pcl
       /** \brief Abstract filter method for point cloud indices. */
       virtual void
       applyFilter (std::vector<int> &indices) = 0;
+
+      /** \brief Abstract filter method for point cloud. */
+      virtual void
+      applyFilter (PCLPointCloud2 &output) = 0;
   };
 }
 

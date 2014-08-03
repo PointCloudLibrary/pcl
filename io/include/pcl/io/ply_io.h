@@ -90,13 +90,11 @@ namespace pcl
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
-        , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
-        , range_count_ (0)
-        , range_grid_vertex_indices_element_index_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
+        , polygons_ (0)
       {}
 
       PLYReader (const PLYReader &p)
@@ -106,13 +104,11 @@ namespace pcl
         , orientation_ (Eigen::Matrix3f::Zero ())
         , cloud_ ()
         , vertex_count_ (0)
-        , vertex_properties_counter_ (0)
         , vertex_offset_before_ (0)
         , range_grid_ (0)
-        , range_count_ (0)
-        , range_grid_vertex_indices_element_index_ (0)
         , rgb_offset_before_ (0)
         , do_resize_ (false)
+        , polygons_ (0)
       {
         *this = p;
       }
@@ -123,6 +119,7 @@ namespace pcl
         origin_ = p.origin_;
         orientation_ = p.orientation_;
         range_grid_ = p.range_grid_;
+        polygons_ = p.polygons_;
         return (*this);
       }
 
@@ -170,13 +167,8 @@ namespace pcl
       read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int& ply_version, const int offset = 0);
 
-      /** \brief Read a point cloud data from a PLY file (PLY_V6 only!) and store it into a pcl/PCLPointCloud2.
-        *
-        * \note This function is provided for backwards compatibility only and
-        * it can only read PLY_V6 files correctly, as pcl::PCLPointCloud2
-        * does not contain a sensor origin/orientation. Reading any file
-        * > PLY_V6 will generate a warning.
-        *
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PCLPointCloud2.
+        * \note This function is provided for backwards compatibility only
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         * \param[in] offset the offset in the file where to expect the true header to begin.
@@ -218,6 +210,37 @@ namespace pcl
         return (0);
       }
       
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PolygonMesh.
+        *
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] mesh the resultant PolygonMesh message read from disk
+        * \param[in] origin the sensor data acquisition origin (translation)
+        * \param[in] orientation the sensor data acquisition origin (rotation)
+        * \param[out] ply_version the PLY version read from the file
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh,
+            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+            int& ply_version, const int offset = 0);
+
+      /** \brief Read a point cloud data from a PLY file and store it into a pcl/PolygonMesh.
+        *
+        * \param[in] file_name the name of the file containing the actual PointCloud data
+        * \param[out] mesh the resultant PolygonMesh message read from disk
+        * \param[in] offset the offset in the file where to expect the true header to begin.
+        * One usage example for setting the offset parameter is for reading
+        * data from a TAR "archive containing multiple files: TAR files always
+        * add a 512 byte header in front of the actual file, so set the offset
+        * to the next byte after the header (e.g., 513).
+        */
+      int
+      read (const std::string &file_name, pcl::PolygonMesh &mesh, const int offset = 0);
+
     private:
       ::pcl::io::ply::ply_parser parser_;
 
@@ -298,61 +321,12 @@ namespace pcl
       inline void
       vertexListPropertyEndCallback ();
 
-      /** Callback function for an anonymous vertex double property.
+      /** Callback function for an anonymous vertex scalar property.
         * Writes down a double value in cloud data.
         * param[in] value double value parsed
         */
-      inline void
-      vertexDoublePropertyCallback (pcl::io::ply::float64 value);
-
-      /** Callback function for an anonymous vertex float property.
-        * Writes down a float value in cloud data.
-        * param[in] value float value parsed
-        */
-      inline void
-      vertexFloatPropertyCallback (pcl::io::ply::float32 value);
-
-      /** Callback function for an anonymous vertex int property.
-        * Writes down a int value in cloud data.
-        * param[in] value int value parsed
-        */
-      inline void
-      vertexIntPropertyCallback (pcl::io::ply::int32 value);
-
-      /** Callback function for an anonymous vertex uint property.
-        * Writes down a uint value in cloud data.
-        * param[in] value uint value parsed
-        */
-      inline void
-      vertexUnsignedIntPropertyCallback (pcl::io::ply::uint32 value);
-
-      /** Callback function for an anonymous vertex short property.
-        * Writes down a short value in cloud data.
-        * param[in] value short value parsed
-        */
-      inline void
-      vertexShortPropertyCallback (pcl::io::ply::int16 value);
-
-      /** Callback function for an anonymous vertex ushort property.
-        * Writes down a ushort value in cloud data.
-        * param[in] value ushort value parsed
-        */
-      inline void
-      vertexUnsignedShortPropertyCallback (pcl::io::ply::uint16 value);
-
-      /** Callback function for an anonymous vertex char property.
-        * Writes down a char value in cloud data.
-        * param[in] value char value parsed
-        */
-      inline void
-      vertexCharPropertyCallback (pcl::io::ply::int8 value);
-
-      /** Callback function for an anonymous vertex uchar property.
-        * Writes down a uchar value in cloud data.
-        * param[in] value uchar value parsed
-        */
-      inline void
-      vertexUnsignedCharPropertyCallback (pcl::io::ply::uint8 value);
+      template<typename Scalar> void
+      vertexScalarPropertyCallback (Scalar value);
 
       /** Callback function for vertex RGB color.
         * This callback is in charge of packing red green and blue in a single int
@@ -461,69 +435,13 @@ namespace pcl
       inline void
       cloudWidthCallback (const int &width) { cloud_->width = width; }
         
-      /** Append a double property to the cloud fields.
+      /** Append a scalar property to the cloud fields.
         * param[in] name property name
         * param[in] count property count: 1 for scalar properties and higher for a
         * list property.
         */
-      void
-      appendDoubleProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a float property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendFloatProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append an unsigned int property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendIntProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append an unsigned int property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedIntProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a short property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendShortProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a short property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedShortProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a char property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendCharProperty (const std::string& name, const size_t& count = 1);
-
-      /** Append a char property to the cloud fields.
-        * param[in] name property name
-        * param[in] count property count: 1 for scalar properties and higher for a
-        * list property.
-        */
-      void
-      appendUnsignedCharProperty (const std::string& name, const size_t& count = 1);
+      template<typename Scalar> void
+      appendScalarProperty (const std::string& name, const size_t& count = 1);
 
       /** Amend property from cloud fields identified by \a old_name renaming
         * it \a new_name.
@@ -569,6 +487,30 @@ namespace pcl
       void
       objInfoCallback (const std::string& line);
 
+      /** Callback function for the begin of face line */
+      void
+      faceBeginCallback ();
+
+      /** Callback function for the begin of face vertex_indices property
+        * param[in] size vertex_indices list size
+        */
+      void
+      faceVertexIndicesBeginCallback (pcl::io::ply::uint8 size);
+
+      /** Callback function for each face vertex_indices element
+        * param[in] vertex_index index of the vertex in vertex_indices
+        */
+      void
+      faceVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index);
+
+      /** Callback function for the end of a face vertex_indices property */
+      void
+      faceVertexIndicesEndCallback ();
+
+      /** Callback function for the end of a face element end */
+      void
+      faceEndCallback ();
+
       /// origin
       Eigen::Vector4f origin_;
 
@@ -577,13 +519,14 @@ namespace pcl
 
       //vertex element artifacts
       pcl::PCLPointCloud2 *cloud_;
-      size_t vertex_count_, vertex_properties_counter_;
+      size_t vertex_count_;
       int vertex_offset_before_;
       //range element artifacts
       std::vector<std::vector <int> > *range_grid_;
-      size_t range_count_, range_grid_vertex_indices_element_index_;
       size_t rgb_offset_before_;
       bool do_resize_;
+      //face element artifact
+      std::vector<pcl::Vertices> *polygons_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -832,12 +775,29 @@ namespace pcl
       return (p.read (file_name, cloud));
     }
 
+    /** \brief Load a PLY file into a PolygonMesh type.
+      *
+      * Any PLY files containg sensor data will generate a warning as a
+      * pcl/PolygonMesh message cannot hold the sensor origin.
+      *
+      * \param[in] file_name the name of the file to load
+      * \param[in] mesh the resultant polygon mesh
+      * \ingroup io
+      */
+    inline int
+    loadPLYFile (const std::string &file_name, pcl::PolygonMesh &mesh)
+    {
+      pcl::PLYReader p;
+      return (p.read (file_name, mesh));
+    }
+
     /** \brief Save point cloud data to a PLY file containing n-D points
       * \param[in] file_name the output file name
       * \param[in] cloud the point cloud data message
       * \param[in] origin the sensor data acquisition origin (translation)
       * \param[in] orientation the sensor data acquisition origin (rotation)
       * \param[in] binary_mode true for binary mode, false (default) for ASCII
+      * \param[in] use_camera
       * \ingroup io
       */
     inline int 

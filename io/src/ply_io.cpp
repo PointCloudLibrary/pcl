@@ -67,12 +67,13 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
               boost::bind (&pcl::PLYReader::vertexBeginCallback, this),
               boost::bind (&pcl::PLYReader::vertexEndCallback, this)));
   }
-  // else if (element_name == "face")
-  // {
-  //   return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
-  //             boost::bind (&pcl::PLYReader::faceBegin, this),
-  //             boost::bind (&pcl::PLYReader::faceEnd, this)));
-  // }
+  else if ((element_name == "face") && polygons_)
+  {
+    polygons_->reserve (count);
+    return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
+            boost::bind (&pcl::PLYReader::faceBeginCallback, this),
+            boost::bind (&pcl::PLYReader::faceEndCallback, this)));
+  }
   else if (element_name == "camera")
   {
     cloud_->is_dense = true;
@@ -80,8 +81,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
   }
   else if (element_name == "range_grid")
   {
-    (*range_grid_).resize (count);
-    range_count_ = 0;
+    range_grid_->reserve (count);
     return (boost::tuple<boost::function<void ()>, boost::function<void ()> > (
               boost::bind (&pcl::PLYReader::rangeGridBeginCallback, this),
               boost::bind (&pcl::PLYReader::rangeGridEndCallback, this)));
@@ -99,16 +99,16 @@ pcl::PLYReader::endHeaderCallback ()
   return (cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height);
 }
 
-void
-pcl::PLYReader::appendFloatProperty (const std::string& name, const size_t& size)
+template<typename Scalar> void
+pcl::PLYReader::appendScalarProperty (const std::string& name, const size_t& size)
 {
   cloud_->fields.push_back (::pcl::PCLPointField ());
   ::pcl::PCLPointField &current_field = cloud_->fields.back ();
   current_field.name = name;
   current_field.offset = cloud_->point_step;
-  current_field.datatype = ::pcl::PCLPointField::FLOAT32;
+  current_field.datatype = pcl::traits::asEnum<Scalar>::value;
   current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::pcl::PCLPointField::FLOAT32) * size);
+  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::traits::asEnum<Scalar>::value) * size);
 }
 
 void
@@ -124,90 +124,6 @@ pcl::PLYReader::amendProperty (const std::string& old_name, const std::string& n
     finder->datatype = new_datatype;
 }
 
-void
-pcl::PLYReader::appendUnsignedIntProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (::pcl::PCLPointField ());
-  ::pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = ::pcl::PCLPointField::UINT32;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (::pcl::PCLPointField::UINT32) * size);
-}
-
-void
-pcl::PLYReader::appendIntProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::INT32;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::INT32) * size);
-}
-
-void
-pcl::PLYReader::appendDoubleProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::FLOAT64;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::FLOAT64) * size);
-}
-
-void
-pcl::PLYReader::appendUnsignedCharProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::UINT8;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::UINT8) * size);
-}
-
-void
-pcl::PLYReader::appendCharProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::INT8;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::INT8) * size);
-}
-
-void
-pcl::PLYReader::appendUnsignedShortProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::UINT16;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::UINT16) * size);
-}
-
-void
-pcl::PLYReader::appendShortProperty (const std::string& name, const size_t& size)
-{
-  cloud_->fields.push_back (pcl::PCLPointField ());
-  pcl::PCLPointField &current_field = cloud_->fields.back ();
-  current_field.name = name;
-  current_field.offset = cloud_->point_step;
-  current_field.datatype = pcl::PCLPointField::INT16;
-  current_field.count = static_cast<uint32_t> (size);
-  cloud_->point_step += static_cast<uint32_t> (pcl::getFieldSize (pcl::PCLPointField::INT16) * size);
-}
-
 namespace pcl
 {
   template <>
@@ -216,8 +132,8 @@ namespace pcl
   {
     if (element_name == "vertex")
     {
-      appendFloatProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexFloatPropertyCallback, this, _1));
+      appendScalarProperty<pcl::io::ply::float32> (property_name, 1);
+      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::float32>, this, _1));
     }
     else if (element_name == "camera")
     {
@@ -289,7 +205,7 @@ namespace pcl
           (property_name == "diffuse_red") || (property_name == "diffuse_green") || (property_name == "diffuse_blue"))
       {
         if ((property_name == "red") || (property_name == "diffuse_red"))
-          appendFloatProperty ("rgb");
+          appendScalarProperty<pcl::io::ply::float32> ("rgb");
         return boost::bind (&pcl::PLYReader::vertexColorCallback, this, property_name, _1);
       }
       else if (property_name == "alpha")
@@ -299,13 +215,13 @@ namespace pcl
       }
       else if (property_name == "intensity")
       {
-        appendFloatProperty (property_name);
+        appendScalarProperty<pcl::io::ply::float32> (property_name);
         return boost::bind (&pcl::PLYReader::vertexIntensityCallback, this, _1);
       }
       else
       {
-        appendUnsignedCharProperty (property_name);
-        return boost::bind (&pcl::PLYReader::vertexUnsignedCharPropertyCallback, this, _1);
+        appendScalarProperty<pcl::io::ply::uint8> (property_name);
+        return boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::uint8>, this, _1);
       }
     }
     else
@@ -317,8 +233,8 @@ namespace pcl
   {
     if (element_name == "vertex")
     {
-      appendIntProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexIntPropertyCallback, this, _1));
+      appendScalarProperty<pcl::io::ply::int32> (property_name, 1);
+      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<pcl::io::ply::int32>, this, _1));
     }
     if (element_name == "camera")
     {
@@ -331,69 +247,30 @@ namespace pcl
         return boost::bind (&pcl::PLYReader::cloudHeightCallback, this, _1);
       }
       else
-      {
-        appendIntProperty (property_name, 1);
-        return (boost::bind (&pcl::PLYReader::vertexIntPropertyCallback, this, _1));
-      }
+        return (0);
     }
     else
       return (0);
   }
 
-  template <> boost::function<void (pcl::io::ply::uint32)>
+  template <typename Scalar> boost::function<void (Scalar)>
   PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
     if (element_name == "vertex")
     {
-      appendUnsignedIntProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexUnsignedIntPropertyCallback, this, _1));
+      appendScalarProperty<Scalar> (property_name, 1);
+      return (boost::bind (&pcl::PLYReader::vertexScalarPropertyCallback<Scalar>, this, _1));
     }
     return (0);
   }
 
-  template <> boost::function<void (pcl::io::ply::float64)>
-  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
+  template<typename Scalar> void
+  PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
-    if (element_name == "vertex")
-    {
-      appendDoubleProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexDoublePropertyCallback, this, _1));
-    }
-    return (0);
-  }
-
-  template <> boost::function<void (pcl::io::ply::uint16)>
-  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-  {
-    if (element_name == "vertex")
-    {
-      appendUnsignedShortProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexUnsignedShortPropertyCallback, this, _1));
-    }
-    return (0);
-  }
-
-  template <> boost::function<void (pcl::io::ply::int16)>
-  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-  {
-    if (element_name == "vertex")
-    {
-      appendShortProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexShortPropertyCallback, this, _1));
-    }
-    return (0);
-  }
-
-
-  template <> boost::function<void (pcl::io::ply::int8)>
-  PLYReader::scalarPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
-  {
-    if (element_name == "vertex")
-    {
-      appendCharProperty (property_name, 1);
-      return (boost::bind (&pcl::PLYReader::vertexCharPropertyCallback, this, _1));
-    }
-    return (0);
+    memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
+            &value,
+            sizeof (Scalar));
+    vertex_offset_before_ += static_cast<int> (sizeof (Scalar));
   }
 
   template <typename SizeType> void
@@ -424,12 +301,20 @@ namespace pcl
   boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if ((element_name == "range_grid") && (property_name == "vertex_indices")) 
+    if ((element_name == "range_grid") && (property_name == "vertex_indices") && polygons_) 
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesElementCallback, this, _1),
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesEndCallback, this)
+      );
+    }
+    else if ((element_name == "face") && (property_name == "vertex_indices"))
+    {
+      return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
+        boost::bind (&pcl::PLYReader::faceVertexIndicesBeginCallback, this, _1),
+        boost::bind (&pcl::PLYReader::faceVertexIndicesElementCallback, this, _1),
+        boost::bind (&pcl::PLYReader::faceVertexIndicesEndCallback, this)
       );
     }
     else if (element_name == "vertex")
@@ -485,79 +370,6 @@ namespace pcl
       return boost::tuple<boost::function<void (SizeType)>, boost::function<void (ContentType)>, boost::function<void ()> > (0, 0, 0);
     }
   }
-
-}
-
-void
-pcl::PLYReader::vertexFloatPropertyCallback (pcl::io::ply::float32 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::float32));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float32));
-}
-
-void
-pcl::PLYReader::vertexDoublePropertyCallback (pcl::io::ply::float64 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::float64));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::float64));
-}
-
-void
-pcl::PLYReader::vertexUnsignedIntPropertyCallback (pcl::io::ply::uint32 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::uint32));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::uint32));
-}
-
-void
-pcl::PLYReader::vertexIntPropertyCallback (pcl::io::ply::int32 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::int32));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::int32));
-}
-
-void
-pcl::PLYReader::vertexUnsignedShortPropertyCallback (pcl::io::ply::uint16 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::uint16));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::uint16));
-}
-
-void
-pcl::PLYReader::vertexShortPropertyCallback (pcl::io::ply::int16 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::int16));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::int16));
-}
-
-void
-pcl::PLYReader::vertexUnsignedCharPropertyCallback (pcl::io::ply::uint8 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::uint8));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::uint8));
-}
-
-void
-pcl::PLYReader::vertexCharPropertyCallback (pcl::io::ply::int8 value)
-{
-  memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
-          &value,
-          sizeof (pcl::io::ply::int8));
-  vertex_offset_before_ += static_cast<int> (sizeof (pcl::io::ply::int8));
 }
 
 void
@@ -631,27 +443,52 @@ pcl::PLYReader::vertexEndCallback ()
 }
 
 void
-pcl::PLYReader::rangeGridBeginCallback () { }
+pcl::PLYReader::rangeGridBeginCallback ()
+{
+  range_grid_->push_back (std::vector <int> ());
+}
 
 void
 pcl::PLYReader::rangeGridVertexIndicesBeginCallback (pcl::io::ply::uint8 size)
 {
-  (*range_grid_)[range_count_].reserve (size);
-}
-
-void pcl::PLYReader::rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
-{
-  (*range_grid_)[range_count_].push_back (vertex_index);
+  range_grid_->back ().reserve (size);
 }
 
 void
-pcl::PLYReader::rangeGridVertexIndicesEndCallback () { }
+pcl::PLYReader::rangeGridVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
+{
+  range_grid_->back ().push_back (vertex_index);
+}
 
 void
-pcl::PLYReader::rangeGridEndCallback ()
+pcl::PLYReader::rangeGridVertexIndicesEndCallback () {}
+
+void
+pcl::PLYReader::rangeGridEndCallback () {}
+
+void
+pcl::PLYReader::faceBeginCallback ()
 {
-  ++range_count_;
+  polygons_->push_back (pcl::Vertices ());
 }
+
+void
+pcl::PLYReader::faceVertexIndicesBeginCallback (pcl::io::ply::uint8 size)
+{
+  polygons_->back ().vertices.reserve (size);
+}
+
+void
+pcl::PLYReader::faceVertexIndicesElementCallback (pcl::io::ply::int32 vertex_index)
+{
+  polygons_->back ().vertices.push_back (vertex_index);
+}
+
+void
+pcl::PLYReader::faceVertexIndicesEndCallback () { }
+
+void
+pcl::PLYReader::faceEndCallback () {}
 
 void
 pcl::PLYReader::objInfoCallback (const std::string& line)
@@ -694,26 +531,26 @@ pcl::PLYReader::parse (const std::string& istream_filename)
   ply_parser.end_header_callback (boost::bind (&pcl::PLYReader::endHeaderCallback, this));
 
   pcl::io::ply::ply_parser::scalar_property_definition_callbacks_type scalar_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::float64> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float64>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::int8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int8>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::int32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::int16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float64> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::float32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::int16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint16> (scalar_property_definition_callbacks) = boost::bind (&pcl::PLYReader::scalarPropertyDefinitionCallback<pcl::io::ply::uint16>, this, _1, _2);
   ply_parser.scalar_property_definition_callbacks (scalar_property_definition_callbacks);
 
   pcl::io::ply::ply_parser::list_property_definition_callbacks_type list_property_definition_callbacks;
-  pcl::io::ply::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
-    pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::float64> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float64>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::float32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int32>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint16>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int16>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::uint8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint8>, this, _1, _2);
-  pcl::io::ply::at<pcl::io::ply::uint32, pcl::io::ply::int8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int8>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint8, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint8, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float64> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float64>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::float32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::float32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int32> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int32>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint16>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int16> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int16>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::uint8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::uint8>, this, _1, _2);
+  pcl::io::ply::ply_parser::at<pcl::io::ply::uint32, pcl::io::ply::int8> (list_property_definition_callbacks) = boost::bind (&pcl::PLYReader::listPropertyDefinitionCallback<pcl::io::ply::uint32, pcl::io::ply::int8>, this, _1, _2);
   ply_parser.list_property_definition_callbacks (list_property_definition_callbacks);
 
   return ply_parser.parse (istream_filename);
@@ -722,13 +559,15 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                            Eigen::Vector4f &, Eigen::Quaternionf &,
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                             int &, int &, unsigned int &, const int)
 {
   // Silence compiler warnings
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
   cloud_->width = cloud_->height = 0;
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -798,7 +637,76 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
+                      Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
+                      int &ply_version, const int offset)
+{
+  // kept only for backward compatibility
+  int data_type;
+  unsigned int data_idx;
+  polygons_ = &(mesh.polygons);
+  if (this->readHeader (file_name, mesh.cloud, origin, orientation, ply_version, data_type, data_idx, offset))
+  {
+    PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
+    return (-1);
+  }
 
+  // a range_grid element was found ?
+  size_t r_size;
+  if ((r_size  = (*range_grid_).size ()) > 0 && r_size != vertex_count_)
+  {
+    //cloud.header = cloud_->header;
+    std::vector<pcl::uint8_t> data ((*range_grid_).size () * mesh.cloud.point_step);
+    const static float f_nan = std::numeric_limits <float>::quiet_NaN ();
+    const static double d_nan = std::numeric_limits <double>::quiet_NaN ();
+    for (size_t r = 0; r < r_size; ++r)
+    {
+      if ((*range_grid_)[r].size () == 0)
+      {
+        for (size_t f = 0; f < cloud_->fields.size (); ++f)
+          if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT32)
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+                    reinterpret_cast<const char*> (&f_nan), sizeof (float));
+          else if (cloud_->fields[f].datatype == ::pcl::PCLPointField::FLOAT64)
+            memcpy (&data[r * cloud_->point_step + cloud_->fields[f].offset],
+                    reinterpret_cast<const char*> (&d_nan), sizeof (double));
+          else
+            memset (&data[r * cloud_->point_step + cloud_->fields[f].offset], 0,
+                    pcl::getFieldSize (cloud_->fields[f].datatype) * cloud_->fields[f].count);
+      }
+      else
+        memcpy (&data[r* cloud_->point_step], &cloud_->data[(*range_grid_)[r][0] * cloud_->point_step], cloud_->point_step);
+    }
+    cloud_->data.swap (data);
+  }
+
+  orientation = Eigen::Quaternionf (orientation_);
+  origin = origin_;
+
+  for (size_t i = 0; i < cloud_->fields.size (); ++i)
+  {
+    if (cloud_->fields[i].name == "nx")
+      cloud_->fields[i].name = "normal_x";
+    if (cloud_->fields[i].name == "ny")
+      cloud_->fields[i].name = "normal_y";
+    if (cloud_->fields[i].name == "nz")
+      cloud_->fields[i].name = "normal_z";
+  }
+  return (0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh, const int offset)
+{
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int ply_version;
+  return read (file_name, mesh, origin, orientation, ply_version, offset);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::PLYWriter::generateHeader (const pcl::PCLPointCloud2 &cloud,
                                 const Eigen::Vector4f &origin,
@@ -1591,7 +1499,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Write down vertices
@@ -1710,7 +1618,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Close the file

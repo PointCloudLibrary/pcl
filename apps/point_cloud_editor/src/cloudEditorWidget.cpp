@@ -42,7 +42,15 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <qgl.h>
-#include <GL/glu.h>
+
+#include <pcl/pcl_config.h>
+
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/glu.h>
+#else
+# include <GL/glu.h>
+#endif
+
 #include <pcl/filters/filter.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/point_cloud_editor/cloudEditorWidget.h>

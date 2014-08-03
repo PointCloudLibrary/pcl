@@ -34,6 +34,7 @@
  * $Id$
  *
  */
+
 #ifndef PCL_INTERSECTIONS_H_
 #define PCL_INTERSECTIONS_H_
 
@@ -57,10 +58,11 @@ namespace pcl
     * \param[in] sqr_eps maximum allowable squared distance to the true solution
     * \ingroup common
     */
-  PCL_EXPORTS bool
+  PCL_EXPORTS inline bool
   lineWithLineIntersection (const Eigen::VectorXf &line_a, 
                             const Eigen::VectorXf &line_b, 
-                            Eigen::Vector4f &point, double sqr_eps = 1e-4);
+                            Eigen::Vector4f &point,
+                            double sqr_eps = 1e-4);
 
   /** \brief Get the intersection of a two 3D lines in space as a 3D point
     * \param[in] line_a the coefficients of the first line (point, direction)
@@ -69,24 +71,90 @@ namespace pcl
     * \param[in] sqr_eps maximum allowable squared distance to the true solution
     * \ingroup common
     */
-  PCL_EXPORTS bool
+
+  PCL_EXPORTS inline bool
   lineWithLineIntersection (const pcl::ModelCoefficients &line_a, 
                             const pcl::ModelCoefficients &line_b, 
-                            Eigen::Vector4f &point, double sqr_eps = 1e-4);
+                            Eigen::Vector4f &point,
+                            double sqr_eps = 1e-4);
 
   /** \brief Determine the line of intersection of two non-parallel planes using lagrange multipliers
     * \note Described in: "Intersection of Two Planes, John Krumm, Microsoft Research, Redmond, WA, USA"
     * \param[in] plane_a coefficients of plane A and plane B in the form ax + by + cz + d = 0
-    * \param[out] plane_b coefficients of line where line.tail<3>() = direction vector and
+    * \param[in] plane_b coefficients of line where line.tail<3>() = direction vector and
     * line.head<3>() the point on the line clossest to (0, 0, 0)
+    * \param[out] line the intersected line to be filled
+    * \param[in] angular_tolerance tolerance in radians
     * \return true if succeeded/planes aren't parallel
     */
-  PCL_EXPORTS bool
-  planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
-                              const Eigen::Vector4f &fplane_b,
-                              Eigen::VectorXf &line,
+  PCL_EXPORTS template <typename Scalar> bool
+  planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
+                              const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                              Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line,
                               double angular_tolerance = 0.1);
+
+  PCL_EXPORTS inline bool
+  planeWithPlaneIntersection (const Eigen::Vector4f &plane_a,
+                              const Eigen::Vector4f &plane_b,
+                              Eigen::VectorXf &line,
+                              double angular_tolerance = 0.1)
+  {
+    return (planeWithPlaneIntersection<float> (plane_a, plane_b, line, angular_tolerance));
+  }
+
+  PCL_EXPORTS inline bool
+  planeWithPlaneIntersection (const Eigen::Vector4d &plane_a,
+                              const Eigen::Vector4d &plane_b,
+                              Eigen::VectorXd &line,
+                              double angular_tolerance = 0.1)
+  {
+    return (planeWithPlaneIntersection<double> (plane_a, plane_b, line, angular_tolerance));
+  }
+
+  /** \brief Determine the point of intersection of three non-parallel planes by solving the equations.
+    * \note If using nearly parralel planes you can lower the determinant_tolerance value. This can
+    * lead to inconsistent results.
+    * If the three planes intersects in a line the point will be anywhere on the line.
+    * \param[in] plane_a are the coefficients of the first plane in the form ax + by + cz + d = 0
+    * \param[in] plane_b are the coefficients of the second plane
+    * \param[in] plane_c are the coefficients of the third plane
+    * \param[in] determinant_tolerance is a limit to determine whether planes are parallel or not
+    * \param[out] intersection_point the three coordinates x, y, z of the intersection point
+    * \return true if succeeded/planes aren't parallel
+    */
+  PCL_EXPORTS template <typename Scalar> bool
+  threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
+                           const Eigen::Matrix<Scalar, 4, 1> &plane_b,
+                           const Eigen::Matrix<Scalar, 4, 1> &plane_c,
+                           Eigen::Matrix<Scalar, 3, 1> &intersection_point,
+                           double determinant_tolerance = 1e-6);
+
+
+  PCL_EXPORTS inline bool
+  threePlanesIntersection (const Eigen::Vector4f &plane_a,
+                           const Eigen::Vector4f &plane_b,
+                           const Eigen::Vector4f &plane_c,
+                           Eigen::Vector3f &intersection_point,
+                           double determinant_tolerance = 1e-6)
+  {
+    return (threePlanesIntersection<float> (plane_a, plane_b, plane_c,
+                                            intersection_point, determinant_tolerance));
+  }
+
+  PCL_EXPORTS inline bool
+  threePlanesIntersection (const Eigen::Vector4d &plane_a,
+                           const Eigen::Vector4d &plane_b,
+                           const Eigen::Vector4d &plane_c,
+                           Eigen::Vector3d &intersection_point,
+                           double determinant_tolerance = 1e-6)
+  {
+    return (threePlanesIntersection<double> (plane_a, plane_b, plane_c,
+                                            intersection_point, determinant_tolerance));
+  }
+
 }
 /*@}*/
-#endif  //#ifndef PCL_INTERSECTIONS_H_
 
+#include <pcl/common/impl/intersections.hpp>
+
+#endif  //#ifndef PCL_INTERSECTIONS_H_

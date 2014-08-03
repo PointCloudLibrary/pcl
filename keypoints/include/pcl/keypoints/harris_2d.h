@@ -65,11 +65,15 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::name_;
       using Keypoint<PointInT, PointOutT>::input_;
       using Keypoint<PointInT, PointOutT>::indices_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       typedef enum {HARRIS = 1, NOBLE, LOWE, TOMASI} ResponseMethod;
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses
+        * \param window_width
+        * \param window_height
+        * \param min_distance
         * \param[in] threshold the threshold to filter out weak corners
         */
       HarrisKeypoint2D (ResponseMethod method = HARRIS, int window_width = 3, int window_height = 3, int min_distance = 5, float threshold = 0.0)
@@ -136,13 +140,13 @@ namespace pcl
       detectKeypoints (PointCloudOut &output);
       /** \brief gets the corner response for valid input points*/
       void 
-      responseHarris (PointCloudOut &output, float& highest_response) const;
+      responseHarris (PointCloudOut &output) const;
       void 
-      responseNoble (PointCloudOut &output, float& highest_response) const;
+      responseNoble (PointCloudOut &output) const;
       void 
-      responseLowe (PointCloudOut &output, float& highest_response) const;
+      responseLowe (PointCloudOut &output) const;
       void 
-      responseTomasi (PointCloudOut &output, float& highest_response) const;
+      responseTomasi (PointCloudOut &output) const;
 //      void refineCorners (PointCloudOut &corners) const;
       /** \brief calculates the upper triangular part of unnormalized 
         * covariance matrix over intensities given by the 2D coordinates 

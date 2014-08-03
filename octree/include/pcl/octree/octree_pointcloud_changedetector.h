@@ -98,7 +98,7 @@ namespace pcl
 
           for (it=leaf_containers.begin(); it!=it_end; ++it)
           {
-            if ((*it)->getSize()>=minPointsPerLeaf_arg)
+            if (static_cast<int> ((*it)->getSize ()) >= minPointsPerLeaf_arg)
               (*it)->getPointIndices(indicesVector_arg);
           }
 

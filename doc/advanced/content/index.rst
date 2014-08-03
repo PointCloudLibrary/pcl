@@ -65,9 +65,9 @@ development that everyone should follow:
 
 .. topic:: Rules
 
- * if you make any commits, please **_add the commit log_** or something similar **_to
+ * if you make important commits, please **_add the commit log_** or something similar **_to
    the changelist page_**
-   (http://dev.pointclouds.org/projects/pcl/wiki/ChangeList);
+   (https://github.com/PointCloudLibrary/pcl/blob/master/CHANGES.md);
    
  * if you change anything in an existing algorithm, **_make sure that there are
    unit tests_** for it and **_make sure that they pass before you commit_** the code;
@@ -92,17 +92,12 @@ development that everyone should follow:
 
   Short documentation on how to add new, throw and handle exceptions in PCL.
 
-* :ref:`branches_repository`
-
-  If you're not sure how to best make concurrent commits to the repository to both **trunk**, and any of the existing **branches**, see this example.
-
-
 * :ref:`pcl2`
 
   An in-depth discussion about the PCL 2.x API can be found here.
 
-Commiting changes to trunk
---------------------------
+Commiting changes to the git master
+-----------------------------------
 In order to oversee the commit messages more easier and that the changelist looks homogenous please keep the following format:
 
 "* <fixed|bugfix|changed|new> X in @<classname>@ (#<bug number>)" 

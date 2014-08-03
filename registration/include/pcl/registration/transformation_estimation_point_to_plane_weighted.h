@@ -252,7 +252,7 @@ namespace pcl
           {}
 
           /** Copy constructor
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctor (const OptimizationFunctor &src) : 
             Functor<MatScalar> (src.m_data_points_), estimator_ ()
@@ -261,7 +261,7 @@ namespace pcl
           }
 
           /** Copy operator
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctor& 
           operator = (const OptimizationFunctor &src) 
@@ -298,7 +298,7 @@ namespace pcl
           {}
 
           /** Copy constructor
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices &src)
             : Functor<MatScalar> (src.m_data_points_), estimator_ ()
@@ -307,7 +307,7 @@ namespace pcl
           }
 
           /** Copy operator
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctorWithIndices& 
           operator = (const OptimizationFunctorWithIndices &src) 

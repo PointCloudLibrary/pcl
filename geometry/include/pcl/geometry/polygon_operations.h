@@ -57,6 +57,7 @@ namespace pcl
     * \param [in] polygon input polygon
     * \param [out] approx_polygon approximate polygon
     * \param [in] threshold maximum allowed distance of an input vertex to an output edge
+    * \param refine
     * \param [in] closed whether it is a closed polygon or a polyline
     * \author Suat Gedikli <gedikli@willowgarage.com>
     */

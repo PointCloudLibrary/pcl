@@ -18,9 +18,14 @@ namespace pcl
     PCLHeader (): seq (0), stamp (), frame_id ()
     {}
 
+    /** \brief Sequence number */
     pcl::uint32_t seq;
+    /** \brief A timestamp associated with the time when the data was acquired
+      *
+      * The value represents microseconds since 1970-01-01 00:00:00 (the UNIX epoch).
+      */
     pcl::uint64_t stamp;
-
+    /** \brief Coordinate frame ID */
     std::string frame_id;
 
     typedef boost::shared_ptr<PCLHeader> Ptr;

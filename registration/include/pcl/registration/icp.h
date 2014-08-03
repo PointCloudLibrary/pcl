@@ -161,7 +161,7 @@ namespace pcl
         * method is called. Please note that the align method sets max_iterations_,
         * euclidean_fitness_epsilon_ and transformation_epsilon_ and therefore overrides the default / set
         * values of the DefaultConvergenceCriteria instance.
-        * \param[out] Pointer to the IterativeClosestPoint's DefaultConvergenceCriteria.
+        * \return Pointer to the IterativeClosestPoint's DefaultConvergenceCriteria.
         */
       inline typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr
       getConvergeCriteria ()
@@ -264,6 +264,10 @@ namespace pcl
       virtual void 
       computeTransformation (PointCloudSource &output, const Matrix4 &guess);
 
+      /** \brief Looks at the Estimators and Rejectors and determines whether their blob-setter methods need to be called */
+      virtual void
+      determineRequiredBlobData ();
+
       /** \brief XYZ fields offset. */
       size_t x_idx_offset_, y_idx_offset_, z_idx_offset_;
 
@@ -277,6 +281,9 @@ namespace pcl
       bool source_has_normals_;
       /** \brief Internal check whether target dataset has normals or not. */
       bool target_has_normals_;
+
+      /** \brief Checks for whether estimators and rejectors need various data */
+      bool need_source_blob_, need_target_blob_;
   };
 
   /** \brief @b IterativeClosestPointWithNormals is a special case of

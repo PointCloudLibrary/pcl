@@ -36,6 +36,7 @@
  *
  */
 
+#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderWindow.h>
@@ -80,9 +81,12 @@ pcl::visualization::PCLPlotter::PCLPlotter (char const *name)
   //initializing default state values
   win_width_ = 640;
   win_height_ = 480;
+  win_x_ = 0;
+  win_y_ = 0;
   bkg_color_[0] = 1; bkg_color_[1] = 1; bkg_color_[2] = 1;
   current_plot_ = -1;
   color_series_->SetColorScheme (vtkColorSeries::SPECTRUM);
+  win_name_ = "PCL Plotter";
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,7 +124,11 @@ pcl::visualization::PCLPlotter::addPlotData (
   //adding to chart
   //vtkPlot *line = chart_->AddPlot(vtkChart::LINE);
   vtkPlot *line = chart_->AddPlot (type);
+#if VTK_MAJOR_VERSION < 6
   line->SetInput (table, 0, 1);
+#else
+  line->SetInputData (table, 0, 1);
+#endif
   line->SetWidth (1);
 
   if (color == NULL)    //color automatically based on the ColorScheme
@@ -394,9 +402,12 @@ pcl::visualization::PCLPlotter::plot ()
   //apply current states
   view_->GetRenderer ()->SetBackground (bkg_color_[0], bkg_color_[1], bkg_color_[2]);
   view_->GetRenderWindow ()->SetSize (win_width_, win_height_);
-  
+  view_->GetRenderWindow ()->SetPosition (win_x_, win_y_);
   view_->GetInteractor ()->Initialize ();
-  view_->GetRenderWindow ()->Render();
+  
+  //according to vtk bug 976, SetWindowName must be called after RenderWindow Initialize();
+  view_->GetRenderWindow ()->SetWindowName (win_name_.c_str());
+  view_->GetRenderWindow ()->Render ();
   view_->GetInteractor ()->Start ();
 }
 
@@ -544,6 +555,21 @@ pcl::visualization::PCLPlotter::getWindowSize ()
   return (sz);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setWindowPosition (int x, int y)
+{
+    win_x_ = x;
+    win_y_ = y;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLPlotter::setWindowName (const std::string &name)
+{
+    win_name_ = name;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLPlotter::startInteractor ()
@@ -564,7 +590,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
 
   //find min and max in the data
   double min = data[0], max = data[0];
-  for (int i = 1; i < data.size (); i++)
+  for (size_t i = 1; i < data.size (); i++)
   {
     if (data[i] < min) min = data[i];
     if (data[i] > max) max = data[i];
@@ -581,7 +607,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
   }
 
   //fill the freq for each data
-  for (int i = 0; i < data.size (); i++)
+  for (size_t i = 0; i < data.size (); i++)
   {
     int index = int (floor ((data[i] - min) / size));
     if (index == nbins) index = nbins - 1; //including right boundary

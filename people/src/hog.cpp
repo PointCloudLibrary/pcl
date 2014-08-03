@@ -339,11 +339,11 @@ pcl::people::HOG::compute (float *I, float *descriptor) const
  
   // Select descriptor of internal part of the image (remove borders):
   int k = 0;    
-  for (unsigned int l = 0; l < (n_orients_ * 4); l++)
+  for (int l = 0; l < (n_orients_ * 4); l++)
   {
-    for (unsigned int j = 1; j < (w_ / bin_size_ - 1); j++)
+    for (int j = 1; j < (w_ / bin_size_ - 1); j++)
     {
-      for (unsigned int i = 1; i < (h_ / bin_size_ - 1); i++)
+      for (int i = 1; i < (h_ / bin_size_ - 1); i++)
       {
         descriptor[k] = G[i + j * h_ / bin_size_ + l * (h_ / bin_size_) * (w_ / bin_size_)];
         k++;

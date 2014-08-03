@@ -146,17 +146,17 @@ namespace pcl
 
         /**
           * @brief   registering a callback function for mouse events
-          * @param   the boost function that will be registered as a callback for a mouse event
           * @return  connection object that allows to disconnect the callback function.
           */
+         // param   the boost function that will be registered as a callback for a mouse event
         boost::signals2::connection
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)> );
 
         /**
          * @brief   registering a callback boost::function for keyboard events
-         * @param   the boost function that will be registered as a callback for a keyboard event
          * @return  connection object that allows to disconnect the callback function.
          */
+         // param   the boost function that will be registered as a callback for a keyboard event
         boost::signals2::connection
         registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> );
 

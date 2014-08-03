@@ -70,8 +70,8 @@ pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
     ++cp;
     ++cloud_iterator;
   }
-  centroid[3] = 0;
   centroid /= static_cast<Scalar> (cp);
+  centroid[3] = 1;
   return (cp);
 }
 
@@ -95,8 +95,8 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[1] += cloud[i].y;
       centroid[2] += cloud[i].z;
     }
-    centroid[3] = 0;
     centroid /= static_cast<Scalar> (cloud.size ());
+    centroid[3] = 1;
 
     return (static_cast<unsigned int> (cloud.size ()));
   }
@@ -115,8 +115,8 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[2] += cloud[i].z;
       ++cp;
     }
-    centroid[3] = 0;
     centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
 
     return (cp);
   }
@@ -142,8 +142,8 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[1] += cloud[indices[i]].y;
       centroid[2] += cloud[indices[i]].z;
     }
-    centroid[3] = 0;
     centroid /= static_cast<Scalar> (indices.size ());
+    centroid[3] = 1;
     return (static_cast<unsigned int> (indices.size ()));
   }
   // NaN or Inf values could exist => check for them
@@ -161,8 +161,8 @@ pcl::compute3DCentroid (const pcl::PointCloud<PointT> &cloud,
       centroid[2] += cloud[indices[i]].z;
       ++cp;
     }
-    centroid[3] = 0;
     centroid /= static_cast<Scalar> (cp);
+    centroid[3] = 1;
     return (cp);
   }
 }
@@ -536,7 +536,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   {
     //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
     centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
-    centroid[3] = 0;
+    centroid[3] = 1;
     covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
     covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
     covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
@@ -603,7 +603,7 @@ pcl::computeMeanAndCovarianceMatrix (const pcl::PointCloud<PointT> &cloud,
   //centroid.head<3> () = vec;//= accu.tail<3> ();
   //centroid.head<3> () = accu.tail<3> ();    -- does not compile with Clang 3.0
   centroid[0] = accu[6]; centroid[1] = accu[7]; centroid[2] = accu[8];
-  centroid[3] = 0;
+  centroid[3] = 1;
   covariance_matrix.coeffRef (0) = accu [0] - accu [6] * accu [6];
   covariance_matrix.coeffRef (1) = accu [1] - accu [6] * accu [7];
   covariance_matrix.coeffRef (2) = accu [2] - accu [6] * accu [8];
@@ -857,6 +857,45 @@ pcl::computeNDCentroid (const pcl::PointCloud<PointT> &cloud,
                         Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &centroid)
 {
   return (pcl::computeNDCentroid (cloud, indices.indices, centroid));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> size_t
+pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                      PointOutT& centroid)
+{
+  pcl::CentroidPoint<PointInT> cp;
+
+  if (cloud.is_dense)
+    for (size_t i = 0; i < cloud.size (); ++i)
+      cp.add (cloud[i]);
+  else
+    for (size_t i = 0; i < cloud.size (); ++i)
+      if (pcl::isFinite (cloud[i]))
+        cp.add (cloud[i]);
+
+  cp.get (centroid);
+  return (cp.getSize ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> size_t
+pcl::computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                      const std::vector<int>& indices,
+                      PointOutT& centroid)
+{
+  pcl::CentroidPoint<PointInT> cp;
+
+  if (cloud.is_dense)
+    for (size_t i = 0; i < indices.size (); ++i)
+      cp.add (cloud[indices[i]]);
+  else
+    for (size_t i = 0; i < indices.size (); ++i)
+      if (pcl::isFinite (cloud[indices[i]]))
+        cp.add (cloud[indices[i]]);
+
+  cp.get (centroid);
+  return (cp.getSize ());
 }
 
 #endif  //#ifndef PCL_COMMON_IMPL_CENTROID_H_

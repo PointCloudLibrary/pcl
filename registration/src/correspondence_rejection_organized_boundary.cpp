@@ -62,8 +62,8 @@ pcl::registration::CorrespondenceRejectionOrganizedBoundary::getRemainingCorresp
     int nan_count_tgt = 0;
     for (int x_d = -window_size_/2; x_d <= window_size_/2; ++x_d)
       for (int y_d = -window_size_/2; y_d <= window_size_/2; ++y_d)
-        if (x + x_d >= 0 && x + x_d < cloud->width &&
-            y + y_d >= 0 && y + y_d < cloud->height)
+        if (x + x_d >= 0 && x + x_d < static_cast<int> (cloud->width) &&
+            y + y_d >= 0 && y + y_d < static_cast<int> (cloud->height))
         {
           if (!pcl_isfinite ((*cloud)(x + x_d, y + y_d).z) ||
               fabs ((*cloud)(x, y).z - (*cloud)(x + x_d, y + y_d).z) > depth_step_threshold_)

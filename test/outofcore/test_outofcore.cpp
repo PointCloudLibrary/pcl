@@ -55,8 +55,6 @@ using namespace std;
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-using namespace pcl;
-
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
@@ -523,7 +521,7 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   const Eigen::Vector3d max (1024, 1024, 1024);
 
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
   
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -557,7 +555,7 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   const Eigen::Vector3d min (-1,-1,-1);
   const Eigen::Vector3d max (1,1,1);
   
-  PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
   cloud->width = 8;
   cloud->height =1;
   cloud->reserve (8);
@@ -604,8 +602,8 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -667,8 +665,8 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -716,7 +714,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -763,7 +761,7 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());
 
-  toPCLPointCloud2<PointXYZ> (point_cloud, *input_cloud);
+  pcl::toPCLPointCloud2<pcl::PointXYZ> (point_cloud, *input_cloud);
   ASSERT_EQ (point_cloud.width*point_cloud.height, input_cloud->width*input_cloud->height);
 
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
@@ -785,8 +783,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
 
   //create a point cloud
-  PointCloud<PointT>::Ptr first_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr first_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   first_cloud->width = numPts;
   first_cloud->height = 1;
@@ -818,8 +816,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
   pcl::PCLPointCloud2::Ptr second_cloud_ptr (new pcl::PCLPointCloud2 ());
   
-  toPCLPointCloud2<PointT> (*first_cloud, *first_cloud_ptr);
-  toPCLPointCloud2<PointT> (*second_cloud, *second_cloud_ptr);
+  pcl::toPCLPointCloud2<PointT> (*first_cloud, *first_cloud_ptr);
+  pcl::toPCLPointCloud2<PointT> (*second_cloud, *second_cloud_ptr);
 
   //Create an outofcore tree which just concatenates the two clouds into a single PCD in the root node. Check that the number of points is correct.
   octree_disk shallow_outofcore (0/*depth*/, min, max, filename_otreeB, "ECEF");
@@ -847,7 +845,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   const boost::uint64_t depth = 2;
 
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -899,7 +897,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -937,7 +935,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
 
   uint64_t total_octreeB_LOD_query = 0;
   
-  for (int i=0; i <= octreeB.getDepth (); i++)
+  for (boost::uint64_t i=0; i <= octreeB.getDepth (); i++)
   {
     octreeB.queryBBIncludes (min, max, i, query_result_b);
     total_octreeB_LOD_query += query_result_b->width*query_result_b->height;

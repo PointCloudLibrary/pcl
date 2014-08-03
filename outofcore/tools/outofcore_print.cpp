@@ -87,7 +87,7 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 void
 printDepth(size_t depth)
 {
-  for (int i=0; i < depth; i++)
+  for (size_t i = 0; i < depth; i++)
     PCL_INFO ("  ");
 }
 

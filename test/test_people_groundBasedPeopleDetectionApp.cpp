@@ -60,6 +60,8 @@ PointCloudT::Ptr cloud;
 pcl::people::PersonClassifier<pcl::RGB> person_classifier;
 std::string svm_filename;
 float min_confidence;
+float min_width;
+float max_width;
 float min_height;
 float max_height;
 float voxel_size;
@@ -79,7 +81,7 @@ TEST (PCL, GroundBasedPeopleDetectionApp)
   people_detector.setVoxelSize(voxel_size);                        // set the voxel size
   people_detector.setIntrinsics(rgb_intrinsics_matrix);            // set RGB camera intrinsic parameters
   people_detector.setClassifier(person_classifier);                // set person classifier
-  people_detector.setHeightLimits(min_height, max_height);         // set person classifier
+  people_detector.setPersonClusterLimits(min_height, max_height, min_width, max_width);
 
   // Perform people detection on the new cloud:
   std::vector<pcl::people::PersonCluster<PointT> > clusters;   // vector containing persons clusters
@@ -120,6 +122,8 @@ int main (int argc, char** argv)
   // Algorithm parameters:
   svm_filename = argv[1];
   min_confidence = -1.5;
+  min_width = 0.1;
+  max_width = 8.0;
   min_height = 1.3;
   max_height = 2.3;
   voxel_size = 0.06;

@@ -148,10 +148,9 @@ namespace pcl
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-      computeSampleDistanceThreshold (const PointCloudConstPtr &cloud)
+      computeSampleDistanceThreshold (const PointCloudConstPtr&)
       {
         //// Compute the principal directions via PCA
         //Eigen::Vector4f xyz_centroid;
@@ -176,11 +175,10 @@ namespace pcl
 
       /** \brief Computes an "optimal" sample distance threshold based on the
         * principal directions of the input cloud.
-        * \param[in] cloud the const boost shared pointer to a PointCloud message
         */
       inline void
-      computeSampleDistanceThreshold (const PointCloudConstPtr &cloud,
-                                      const std::vector<int> &indices)
+      computeSampleDistanceThreshold (const PointCloudConstPtr&,
+                                      const std::vector<int>&)
       {
         //// Compute the principal directions via PCA
         //Eigen::Vector4f xyz_centroid;

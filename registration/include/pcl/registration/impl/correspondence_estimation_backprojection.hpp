@@ -39,6 +39,8 @@
 #ifndef PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_ESTIMATION_BACK_PROJECTION_HPP_
 
+#include <pcl/common/copy_point.h>
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename NormalT, typename Scalar> bool
 pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::initCompute ()
@@ -60,7 +62,6 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   if (!initCompute ())
     return;
 
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
   correspondences.resize (indices_->size ());
 
   std::vector<int> nn_indices (k_);
@@ -125,9 +126,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx_i], 
-            pt_src));
+        copyPoint (input_->points[*idx_i], pt_src);
 
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +
@@ -161,8 +160,6 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
   if (!initCompute ())
     return;
 
-  typedef typename pcl::traits::fieldList<PointTarget>::type FieldListTarget;
-  
   // Set the internal point representation of choice
   if(!initComputeReciprocal())
     return;
@@ -241,9 +238,7 @@ pcl::registration::CorrespondenceEstimationBackProjection<PointSource, PointTarg
       {
         PointSource pt_src;
         // Copy the source data to a target PointTarget format so we can search in the tree
-        pcl::for_each_type <FieldListTarget> (pcl::NdConcatenateFunctor <PointSource, PointTarget> (
-            input_->points[*idx_i], 
-            pt_src));
+        copyPoint (input_->points[*idx_i], pt_src);
 
         float cos_angle = source_normals_->points[*idx_i].normal_x * target_normals_->points[nn_indices[j]].normal_x +
                           source_normals_->points[*idx_i].normal_y * target_normals_->points[nn_indices[j]].normal_y +

@@ -194,9 +194,9 @@ TEST (PCL, InverseSymmetric3x3f)
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
     c_matrix = r_matrix;
-//    c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-//    c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-//    c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
     determinant = invert3x3SymMatrix (r_matrix, r_inverse);
@@ -260,9 +260,9 @@ TEST (PCL, InverseSymmetric3x3d)
     r_matrix.coeffRef (6) = r_matrix.coeffRef (2);
     r_matrix.coeffRef (7) = r_matrix.coeffRef (5);
     c_matrix = r_matrix;
-//    c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
-//    c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
-//    c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
+    //c_matrix.coeffRef (3) = c_matrix.coeffRef (1);
+    //c_matrix.coeffRef (6) = c_matrix.coeffRef (2);
+    //c_matrix.coeffRef (7) = c_matrix.coeffRef (5);
 
     // test row-major -> row-major
     determinant = invert3x3SymMatrix (r_matrix, r_inverse);
@@ -426,8 +426,8 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
 
   unsigned test_case = rand_uint () % 10;
 
-	Scalar val1 = Scalar (rand_double ());
-	Scalar val2 = Scalar (rand_double ());
+  Scalar val1 = Scalar (rand_double ());
+  Scalar val2 = Scalar (rand_double ());
 
   // 10% of test cases include equal eigenvalues
   if (test_case == 0)
@@ -458,7 +458,7 @@ inline void generateSymPosMatrix2x2 (Matrix& matrix)
   }
   eigenvalues (0, 0) = val1;
   eigenvalues (1, 1) = val2;
-	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
+  matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -595,9 +595,9 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
 
   unsigned test_case = rand_uint ();
 
-	Scalar val1 = Scalar (rand_double ());
-	Scalar val2 = Scalar (rand_double ());
-	Scalar val3 = Scalar (rand_double ());
+  Scalar val1 = Scalar (rand_double ());
+  Scalar val2 = Scalar (rand_double ());
+  Scalar val3 = Scalar (rand_double ());
 
   // 1%: all three values are equal and non-zero
   if (test_case == 0)
@@ -657,7 +657,7 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
   eigenvalues (1, 1) = val2;
   eigenvalues (2, 2) = val3;
 
-	matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
+  matrix = eigenvectors * eigenvalues * eigenvectors.adjoint();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -797,6 +797,315 @@ TEST (PCL, eigen33f)
   // less than 1% failure rate
   EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
   EXPECT_LE (float(r_fail_count) / float(iterations), 0.01);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformLine)
+{
+  // This also tests transformPoint and transformVector
+  Eigen::VectorXf line;
+  Eigen::VectorXd lined, test;
+  line.resize(6);
+  lined.resize(6);
+  test.resize(6);
+  double tolerance = 1e-7;
+
+  // Simple translation
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 1, -2, 0;
+  transformationd.translation() << 1, -2, 0;
+  line << 1, 2, 3, 0, 1, 0;
+  lined << 1, 2, 3, 0, 1, 0;
+  test << 2, 0, 3, 0, 1, 0;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+
+  // Simple rotation
+  transformation = Eigen::Affine3f::Identity ();
+  transformationd = Eigen::Affine3d::Identity ();
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+
+  line << 1, 2, 3, 0, 1, 0;
+  lined << 1, 2, 3, 0, 1, 0;
+  test << -2, 1, 3, -1, 0, 0;
+  tolerance = 1e-4;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+
+  // Random transformation
+  transformation = Eigen::Affine3f::Identity ();
+  transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 25.97, -2.45, 0.48941;
+  transformationd.translation() << 25.97, -2.45, 0.48941;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/5, Eigen::Vector3f::UnitX())
+  * Eigen::AngleAxisf(M_PI/3, Eigen::Vector3f::UnitY());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/5, Eigen::Vector3d::UnitX())
+  * Eigen::AngleAxisd(M_PI/3, Eigen::Vector3d::UnitY());
+
+  line << -1, 9, 3, 1.5, 2.0, 0.2;
+  lined << -1, 9, 3, 1.5, 2.0, 0.2;
+  test << 28.0681, 3.44044, 7.69363, 0.923205, 2.32281, 0.205528;
+  tolerance = 1e-3;
+
+  EXPECT_TRUE (pcl::transformLine (line, line, transformation));
+  EXPECT_TRUE (pcl::transformLine (lined, lined, transformationd));
+  for (int i = 0; i < 6; i++)
+  {
+    EXPECT_NEAR (line[i], test[i], tolerance);
+    EXPECT_NEAR (lined[i], test[i], tolerance);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformPlane)
+{
+  Eigen::Vector4d test;
+  double tolerance = 1e-8;
+  pcl::ModelCoefficients::Ptr plane (new pcl::ModelCoefficients);
+  plane->values.resize(4);
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+
+  // Simple translation
+  Eigen::Affine3f transformation = Eigen::Affine3f::Identity ();
+  Eigen::Affine3d transformationd = Eigen::Affine3d::Identity ();
+  transformation.translation() << 1, 0, 0;
+  transformationd.translation() << 1, 0, 0;
+  test << 1, 0, 0, -3;
+
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  // Simple rotation
+  transformation.translation() << 0, 0, 0;
+  transformationd.translation() << 0, 0, 0;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/2, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::UnitZ());
+  test << 0, 1, 0, -2;
+  tolerance = 1e-6;
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 1.0;
+  plane->values[1] = 0.0;
+  plane->values[2] = 0.0;
+  plane->values[3] = -2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  // Random transformation
+  transformation.translation() << 12.5, -5.4, 0.1;
+  transformationd.translation() << 12.5, -5.4, 0.1;
+  transformation.linear() = (Eigen::Matrix3f) Eigen::AngleAxisf(M_PI/7, Eigen::Vector3f::UnitY())
+  * Eigen::AngleAxisf(M_PI/4, Eigen::Vector3f::UnitZ());
+  transformationd.linear() = (Eigen::Matrix3d) Eigen::AngleAxisd(M_PI/7, Eigen::Vector3d::UnitY())
+  * Eigen::AngleAxisd(M_PI/4, Eigen::Vector3d::UnitZ());
+  test << 5.35315, 2.89914, 0.196848, -49.2788;
+  tolerance = 1e-4;
+
+  plane->values[0] = 5.4;
+  plane->values[1] = -1.3;
+  plane->values[2] = 2.5;
+  plane->values[3] = 2.0;
+  pcl::transformPlane (plane, plane, transformation);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+
+  plane->values[0] = 5.4;
+  plane->values[1] = -1.3;
+  plane->values[2] = 2.5;
+  plane->values[3] = 2.0;
+  pcl::transformPlane (plane, plane, transformationd);
+  for (int i = 0; i < 4; i++)
+  EXPECT_NEAR (plane->values[i], test[i], tolerance);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, checkCoordinateSystem)
+{
+  Eigen::VectorXd line_x, line_y;
+  Eigen::VectorXd line_xd, line_yd;
+  line_x.resize(6); line_y.resize(6);
+  line_xd.resize(6); line_yd.resize(6);
+
+  Eigen::Vector3d origin, vector_x, vector_y;
+  Eigen::Vector3d origind, vector_xd, vector_yd;
+
+  // No translation, no rotation coordinate system
+  line_x << 0, 0, 0, 0, 1, 0;// Y
+  line_y << 0, 0, 0, 0, 0, 1;// Z
+  line_xd << 0, 0, 0, 0, 1, 0;
+  line_yd << 0, 0, 0, 0, 0, 1;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+
+  origin << 0, 0, 0;
+  vector_x << 0, 1, 0;// Y
+  vector_y << 0, 0, 1;// Z
+  origind << 0, 0, 0;
+  vector_xd << 0, 1, 0;
+  vector_yd << 0, 0, 1;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+
+  // Simple translated coordinate system
+  line_x << 10, -1, 0, 1, 0, 0;// X
+  line_y << 10, -1, 0, 0, 1, 0;// Y
+  line_xd << 10, -1, 0, 1, 0, 0;
+  line_yd << 10, -1, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd));
+
+  origin << 10, -1, 0;
+  vector_x << 1, 0, 0;
+  vector_y << 0, 1, 0;
+  origind << 10, -1, 0;
+  vector_xd << 1, 0, 0;
+  vector_yd << 0, 1, 0;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y ));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd));
+
+  // General coordinate system
+  line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_x, line_y , 1e-7, 5e-3));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (line_xd, line_yd, 1e-7, 5e-3));
+
+  origin << 1234.56, 0.0, 0.0;
+  vector_x << 0.00387281179, 0.00572064891, -0.999976099;
+  vector_y << 0.6113801, -0.79133445, -0.00202810019;
+  origind << 1234.56, 0.0, 0.0;
+  vector_xd << 0.00387281179, 0.00572064891, -0.999976099;
+  vector_yd << 0.6113801, -0.79133445, -0.00202810019;
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origin, vector_x, vector_y , 1e-7, 5e-3));
+  EXPECT_TRUE (pcl::checkCoordinateSystem (origind, vector_xd, vector_yd, 1e-7, 5e-3));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, transformBetween2CoordinateSystems)
+{
+  Eigen::Affine3f transformation;
+  Eigen::Affine3d transformationd;
+  Eigen::VectorXf from_line_x, from_line_y, to_line_x, to_line_y;
+  Eigen::VectorXd from_line_xd, from_line_yd, to_line_xd, to_line_yd;
+  from_line_x.resize(6); from_line_y.resize(6);
+  to_line_x.resize(6); to_line_y.resize(6);
+  from_line_xd.resize(6); from_line_yd.resize(6);
+  to_line_xd.resize(6); to_line_yd.resize(6);
+
+  Eigen::Matrix4d test;
+  double tolerance = 1e-3;
+
+  // Simple translation
+  test << 1, 0, 0, 10,
+  0, 1, 0, -5,
+  0, 0, 1, 1,
+  0, 0, 0, 1;
+
+  from_line_x << 0, 0, 0, 1, 0, 0;
+  from_line_y << 0, 0, 0, 0, 1, 0;
+  to_line_x << 10, -5, 1, 1, 0, 0;
+  to_line_y << 10, -5, 1, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 0, 0, 0, 1, 0, 0;
+  from_line_yd << 0, 0, 0, 0, 1, 0;
+  to_line_xd << 10, -5, 1, 1, 0, 0;
+  to_line_yd << 10, -5, 1, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+
+  // Simple rotation
+  test << 0, 0, 1, 0,
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 0, 1;
+
+  from_line_x << 0, 0, 0, 1, 0, 0;
+  from_line_y << 0, 0, 0, 0, 1, 0;
+  to_line_x << 0, 0, 0, 0, 1, 0;
+  to_line_y << 0, 0, 0, 0, 0, 1;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 0, 0, 0, 1, 0, 0;
+  from_line_yd << 0, 0, 0, 0, 1, 0;
+  to_line_xd << 0, 0, 1, 0, 1, 0;
+  to_line_yd << 0, 0, 1, 0, 0, 1;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
+
+  // General case
+  test << 0.00397405, 0.00563289, -0.999976, -4.9062,
+  0.611348, -0.791359, -0.00213906, -754.746,
+  -0.791352, -0.611325, -0.00658855, 976.972,
+  0, 0, 0, 1;
+
+  from_line_x << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  from_line_y << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  to_line_x << 0, 0, 0, 1, 0, 0;
+  to_line_y << 0, 0, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformation.matrix())(i,j) - test(i,j), tolerance);
+
+  from_line_xd << 1234.56, 0.0, 0.0, 0.00387281179, 0.00572064891, -0.999976099;
+  from_line_yd << 1234.56, 0.0, 0.0, 0.6113801, -0.79133445, -0.00202810019;
+  to_line_xd << 0, 0, 0, 1, 0, 0;
+  to_line_yd << 0, 0, 0, 0, 1, 0;
+  EXPECT_TRUE (pcl::transformBetween2CoordinateSystems (from_line_xd, from_line_yd, to_line_xd, to_line_yd, transformationd));
+
+  for (int i = 0; i < 3; i++)
+  for (int j = 0; j < 3; j++)
+  EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
 }
 
 /* ---[ */

@@ -79,9 +79,9 @@ pcl::io::LZFDepth16ImageReader::read (
   register int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
-  for (int v = 0; v < cloud.height; ++v)
+  for (uint32_t v = 0; v < cloud.height; ++v)
   {
-    for (register int u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
+    for (register uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
       PointT &pt = cloud.points[point_idx];
       unsigned short val;
@@ -326,7 +326,7 @@ pcl::io::LZFYUV422ImageReader::read (
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
   
   register int y_idx = 0;
-  for (size_t i = 0; i < wh2; ++i, y_idx += 2)
+  for (int i = 0; i < wh2; ++i, y_idx += 2)
   {
     int v = color_v[i] - 128;
     int u = color_u[i] - 128;

@@ -145,6 +145,12 @@ namespace pcl
       void
       performProcessing (pcl::PointCloud<PointOutT> &output);
 
+      /** \brief Computes the distance for depth and RGB.
+        * \param[out] val_exp_depth distance values for depth
+        * \param[out] val_exp_rgb distance values for RGB */
+      void
+      computeDistances (Eigen::MatrixXf &val_exp_depth, Eigen::VectorXf &val_exp_rgb);
+
     private:
       int window_size_;
       float sigma_color_, sigma_depth_;

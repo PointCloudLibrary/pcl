@@ -212,8 +212,8 @@ namespace pcl
         
         /** \brief Remove the current 2d actor and create a new 2D actor from the given vtkDoubleArray histogram and add it to the screen.
           * \param[in] xy_array the input vtkDoubleArray holding the histogram data
-          * \param[out] renwinint the resultant render window interactor holding the rendered object
-          * \param[in] id the point cloud object id
+          * \param[out] renwinupd the resultant render window interactor holding the rendered object
+          * \param[in] hsize Histogram size
           */             
         void
         reCreateActor (const vtkSmartPointer<vtkDoubleArray> &xy_array, 

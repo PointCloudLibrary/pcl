@@ -41,6 +41,7 @@
 
 #include <pcl/conversions.h>
 #include <pcl/common/common.h>
+#include <vtkVersion.h>
 #include <vtkCellArray.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPoints.h>
@@ -63,7 +64,11 @@ pcl::VTKUtils::convertToVTK (const pcl::PolygonMesh &triangles, vtkSmartPointer<
   mesh2vtk (triangles, vtk_polygons);
 
   vtkSmartPointer<vtkTriangleFilter> vtk_triangles = vtkTriangleFilter::New ();
+#if VTK_MAJOR_VERSION < 6
   vtk_triangles->SetInput (vtk_polygons);
+#else
+  vtk_triangles->SetInputData (vtk_polygons);
+#endif
   vtk_triangles->Update();
 
   triangles_out_vtk = vtk_triangles->GetOutput ();

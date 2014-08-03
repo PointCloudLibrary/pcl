@@ -49,7 +49,7 @@ namespace pcl
       * \param[in] image_arg input image data
       * \param[in] width_arg image width
       * \param[in] height_arg image height
-      * \param[out] pngData PNG compressed image data
+      * \param[out] pngData_arg PNG compressed image data
       * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
@@ -64,7 +64,7 @@ namespace pcl
       * \param[in] image_arg input image data
       * \param[in] width_arg image width
       * \param[in] height_arg image height
-      * \param[out] pngData PNG compressed image data
+      * \param[out] pngData_arg PNG compressed image data
       * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
@@ -79,7 +79,7 @@ namespace pcl
       * \param[in] image_arg input image data
       * \param[in] width_arg image width
       * \param[in] height_arg image height
-      * \param[out] pngData PNG compressed image data
+      * \param[out] pngData_arg PNG compressed image data
       * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
@@ -94,7 +94,7 @@ namespace pcl
       * \param[in] image_arg input image data
       * \param[in] width_arg image width
       * \param[in] height_arg image height
-      * \param[out] pngData PNG compressed image data
+      * \param[out] pngData_arg PNG compressed image data
       * \param[in] png_level_arg zLib compression level (default level: -1)
       * \ingroup io
       */
@@ -106,11 +106,11 @@ namespace pcl
                          int png_level_arg = -1);
 
     /** \brief Decode compressed PNG to 8-bit image
-      * \param[in] pngData PNG compressed input data
-      * \param[in] imageData image output data
-      * \param[out] width image width
-      * \param[out] height image height
-      * \param[out] channels number of channels
+      * \param[in] pngData_arg PNG compressed input data
+      * \param[in] imageData_arg image output data
+      * \param[out] width_arg image width
+      * \param[out] heigh_argt image height
+      * \param[out] channels_arg number of channels
       * \ingroup io
       */
     PCL_EXPORTS void
@@ -121,11 +121,11 @@ namespace pcl
                       unsigned int& channels_arg);
 
     /** \brief Decode compressed PNG to 16-bit image
-      * \param[in] pngData PNG compressed input data
-      * \param[in] imageData image output data
-      * \param[out] width image width
-      * \param[out] height image height
-      * \param[out] channels number of channels
+      * \param[in] pngData_arg PNG compressed input data
+      * \param[in] imageData_arg image output data
+      * \param[out] width_arg image width
+      * \param[out] height_arg image height
+      * \param[out] channels_arg number of channels
       * \ingroup io
       */
     PCL_EXPORTS void

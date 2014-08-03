@@ -42,7 +42,7 @@ As mentioned above, the TSDF cloud is a section of the TSDF volume grid; which i
 
 *Running pcl_kinfu_largeScale*
 
-Finally, we are ready to start KinFu Large Scale. After building the trunk, we will call the application::
+Finally, we are ready to start KinFu Large Scale. After building the git master, we will call the application::
   
   $ ./bin/pcl_kinfu_largeScale -r -et
   
@@ -148,4 +148,4 @@ There are three executables related to this tutorial:
   
 Conclusion
 ----------
-In this tutorial we have shown the pipeline from scanning to final texturing using KinFu Large Scale. The - *experimental* - code is available in PCL trunk. 
+In this tutorial we have shown the pipeline from scanning to final texturing using KinFu Large Scale. The - *experimental* - code is available in the master branch of PCL.

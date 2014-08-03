@@ -677,9 +677,9 @@ clouds.
 
 The point clouds used are:
 
-* `capture000X.pcd <http://dev.pointclouds.org/attachments/download/742/pairwise_incremental_registration_tutorial_data.tar.gz>`_
-* `table_scene_mug_stereo_textured.pcd <http://dev.pointclouds.org/attachments/download/158/table_scene_mug_stereo_textured.pcd>`_
-* `table_scene_lms400.pcd <http://dev.pointclouds.org/attachments/download/157/table_scene_lms400.pcd>`_
+* `capture000X.pcd <https://github.com/PointCloudLibrary/data/tree/master/tutorials/pairwise>`_
+* `table_scene_mug_stereo_textured.pcd <https://github.com/PointCloudLibrary/data/blob/master/tutorials/table_scene_lms400.pcd?raw=true>`_
+* `table_scene_lms400.pcd <https://github.com/PointCloudLibrary/data/blob/master/tutorials/table_scene_lms400.pcd?raw=true>`_
 
 ``capture0001.pcd`` (organized, 640x480, 57553 NaNs)::
 

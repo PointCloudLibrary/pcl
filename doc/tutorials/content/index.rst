@@ -3,7 +3,7 @@
 The following links describe a set of basic PCL tutorials. Please note that
 their source codes may already be provided as part of the PCL regular releases,
 so check there before you start copy & pasting the code. The list of tutorials
-below is automatically generated from reST files located in our SVN repository.
+below is automatically generated from reST files located in our git repository.
 
 .. note::
 
@@ -56,7 +56,7 @@ Basic Usage
   * :ref:`basic_structures`
 
      ======  ======
-     |mi_0|  Title: **Getting Started / Basic Structures**
+     |mi_1|  Title: **Getting Started / Basic Structures**
 
              Author: *Radu B. Rusu*
 
@@ -65,13 +65,13 @@ Basic Usage
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
-     .. |mi_0| image:: images/pcl_logo.png
+     .. |mi_1| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in your own project**
+     |mi_2|  Title: **Using PCL in your own project**
 
              Author: *Nizar Sallem*
 
@@ -80,13 +80,13 @@ Basic Usage
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
 
-     .. |mi_1| image:: images/pcl_logo.png
+     .. |mi_2| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`building_pcl`
 
      ======  ======
-     |mi_2|  Title: **Explaining PCL's cmake options**
+     |mi_3|  Title: **Explaining PCL's cmake options**
 
              Author: *Nizar Sallem*
 
@@ -95,13 +95,13 @@ Basic Usage
              In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
-     .. |mi_2| image:: images/pcl_ccmake.png
+     .. |mi_3| image:: images/pcl_ccmake.png
                :height: 100px
 
   * :ref:`compiling_pcl_dependencies_windows`
 
      ======  ======
-     |mi_3|  Title: **Compiling PCL's dependencies from source on Windows**
+     |mi_4|  Title: **Compiling PCL's dependencies from source on Windows**
 
              Authors: *Alessio Placitelli* and *Mourad Boufarguine*
 
@@ -110,13 +110,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
      ======  ======
 
-     .. |mi_3| image:: images/windows_logo.png
+     .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_windows`
 
      ======  ======
-     |mi_4|  Title: **Compiling PCL on Windows**
+     |mi_5|  Title: **Compiling PCL on Windows**
 
              Author: *Mourad Boufarguine*
 
@@ -125,13 +125,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL on Microsoft Windows.
      ======  ======
 
-     .. |mi_4| image:: images/windows_logo.png
+     .. |mi_5| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_macosx`
 
      ======  ======
-     |mi_5|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
+     |mi_6|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
 
              Author: *Justin Rosen*
 
@@ -140,13 +140,13 @@ Basic Usage
              This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
      ======  ======
 
-     .. |mi_5| image:: images/macosx_logo.png
+     .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`installing_homebrew`
 
      ======  ======
-     |mi_6|  Title: **Installing on Mac OS X using Homebrew**
+     |mi_7|  Title: **Installing on Mac OS X using Homebrew**
 
              Author: *Geoffrey Biggs*
 
@@ -155,23 +155,53 @@ Basic Usage
              This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
-     .. |mi_6| image:: images/macosx_logo.png
+     .. |mi_7| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`using_pcl_with_eclipse`
 
      ======  ======
-     |mi_7|  Title: **Using Eclipse as your PCL trunk editor**
+     |mi_8|  Title: **Using Eclipse as your PCL editor**
 
              Author: *Koen Buys*
 
-             Compatibility: > PCL 1.7
+             Compatibility: PCL git master
 
-             This tutorial shows you how to get your PCL trunk as a project in Eclipse.
+             This tutorial shows you how to get your PCL as a project in Eclipse.
      ======  ======
 
-     .. |mi_7| image:: images/pcl_logo.png
+     .. |mi_8| image:: images/pcl_logo.png
                :height: 75px
+
+  * :ref:`qt_visualizer`
+
+     ======  ======
+     |mi_9|  Title: **Create a PCL visualizer in Qt with cmake**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to create a PCL visualizer within a Qt application.
+     ======  ======
+
+     .. |mi_9| image:: images/qt_visualizer/qt.png
+               :height: 128px
+
+  * :ref:`matrix_transform`
+
+     =======  ======
+     |mi_10|  Title: **Using matrixes to transform a point cloud**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: > PCL 1.5
+
+              This tutorial shows you how to transform a point cloud using a matrix.
+     =======  ======
+
+     .. |mi_10| image:: images/matrix_transform/cube.png
+               :height: 120px
 
 .. _advanced_usage:
 
@@ -317,6 +347,36 @@ Features
      ======  ======
      
      .. |fe_7| image:: images/narf_keypoint_extraction.png
+               :height: 100px
+
+  * :ref:`moment_of_inertia`
+
+     ======  ======
+     |fe_8|  Title: **Moment of inertia and eccentricity based descriptors**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to compute moment of inertia and eccentricity of the cloud. In addition to this we will learn how to extract AABB and OBB.
+     ======  ======
+
+     .. |fe_8| image:: images/moment_of_inertia.png
+               :height: 100px
+
+  * :ref:`rops_feature`
+
+     ======  ======
+     |fe_9|  Title: **RoPs (Rotational Projection Statistics) feature**
+
+             Author: *Sergey Ushakov*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to compute RoPS feature.
+     ======  ======
+
+     .. |fe_9| image:: images/rops_feature.png
                :height: 100px
 
 .. _filtering_tutorial:
@@ -736,6 +796,21 @@ Registration
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
 
+  * :ref:`interactive_icp`
+
+     ======  ======
+     |re_7|  Title: **Interactive ICP**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial will teach you how to build an interactive ICP program
+     ======  ======
+
+     .. |re_7| image:: images/interactive_icp/monkey.png
+               :height: 120px
+
   * :ref:`normal_distributions_transform`
 
      ======  ======
@@ -758,7 +833,7 @@ Registration
 
              Author: *Martin Saelzle*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              This document shows how to use the In-hand scanner applications to obtain colored models of small objects with RGB-D cameras.
      ======  ======
@@ -860,7 +935,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use region growing segmentation algorithm.
      ======  ======
@@ -875,7 +950,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use color-based region growing segmentation algorithm.
      ======  ======
@@ -890,7 +965,7 @@ Segmentation
 
              Author: *Sergey Ushakov*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use min-cut based segmentation algorithm.
      ======  ======
@@ -905,7 +980,7 @@ Segmentation
 
              Author: *Frits Florentinus*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              This tutorial describes how to use the Conditional Euclidean Clustering class in PCL:
              A segmentation algorithm that clusters points based on Euclidean distance and a user-customizable condition that needs to hold.
@@ -921,7 +996,7 @@ Segmentation
 
              Author: *Yani Ioannou*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial we will learn how to use the difference of normals feature for segmentation.
      ======  ======
@@ -936,13 +1011,43 @@ Segmentation
 
              Author: *Jeremie Papon*
 
-             Compatibility: > PCL 1.7
+             Compatibility: >= PCL 1.7
 
              In this tutorial, we show to break a pointcloud into the mid-level supervoxel representation.
      ======  ======
 
      .. |se_9| image:: images/supervoxel_clustering_small.png
                :height: 100px
+
+  * :ref:`progressive_morphological_filtering`
+
+     =======  ======
+     |se_10|  Title: **Progressive Morphological Filtering**
+
+              Author: *Brad Chambers*
+
+              Compatibility: >= PCL 1.8
+
+              In this tutorial, we show how to segment a point cloud into ground and non-ground returns.
+     =======  ======
+
+     .. |se_10| image:: images/progressive_morphological_filter.png
+               :height: 100px
+
+  * :ref:`model_outlier_removal`
+
+     =======  ======
+     |se_11|  Title: **Model outlier removal**
+
+              Author: *Timo Häckel*
+
+              Compatibility: >= PCL 1.7.2
+
+              This tutorial describes how to extract points from a point cloud using SAC models
+     =======  ======
+
+     .. |se_11| image:: images/pcl_logo.png
+               :height: 75px
                
 .. _surface_tutorial:
 
@@ -993,6 +1098,22 @@ Surface
      
      .. |su_3| image:: images/greedy_triangulation.png
                :height: 100px
+
+  * :ref:`bspline_fitting`
+
+     ======  ======
+     |su_4|  Title: **Fitting trimmed B-splines to unordered point clouds**
+
+             Author: *Thomas Mörwald*
+
+             Compatibility: > PCL 1.7
+
+             In this tutorial we will learn how to reconstruct a smooth surface from an unordered point-cloud by fitting trimmed B-splines.
+     ======  ======
+     
+     .. |su_4| image:: images/bspline_bunny.png
+               :height: 100px
+
 
 .. _visualization_tutorial:
 
@@ -1109,21 +1230,6 @@ Applications
      .. |ap_3| image:: images/mobile_streaming_1.jpg
                :height: 100px
                
-  * :ref:`using_kinfu_large_scale`
-     
-     ======  ======
-     |ap_4|  Title: **Using Kinfu Large Scale to generate a textured mesh**
-
-             Author: *Francisco Heredia and Raphael Favier*
-
-             Compatibility: > PCL 1.5
-
-             This tutorial demonstrates how to use KinFu Large Scale to produce a mesh from a room, and apply texture information in post-processing for a more appealing visual result.
-     ======  ======
-     
-     .. |ap_4| image:: images/using_kinfu_large_scale.jpg
-               :height: 100px
-
   * :ref:`ground_based_rgbd_people_detection`
      
      ======  ======
@@ -1131,7 +1237,7 @@ Applications
 
              Author: *Matteo Munaro*
 
-             Compatibility: > PCL 1.7 trunk
+             Compatibility: >= PCL 1.7
 
              This tutorial presents a method for detecting people on a ground plane with RGB-D data.
      ======  ======

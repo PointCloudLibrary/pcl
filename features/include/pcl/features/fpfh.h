@@ -182,7 +182,7 @@ namespace pcl
     protected:
 
       /** \brief Estimate the set of all SPFH (Simple Point Feature Histograms) signatures for the input cloud
-        * \param[out] spfh_hist_lookup a lookup table for all the SPF feature indices
+        * \param[out] spf_hist_lookup a lookup table for all the SPF feature indices
         * \param[out] hist_f1 the resultant SPFH histogram for feature f1
         * \param[out] hist_f2 the resultant SPFH histogram for feature f2
         * \param[out] hist_f3 the resultant SPFH histogram for feature f3

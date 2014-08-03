@@ -315,12 +315,16 @@ pcl::recognition::ORROctree::getFullLeavesIntersectedBySphere (const float* p, f
         for ( i = 0 ; i < 8 ; ++i )
         {
           child = node->getChild (i);
-          // We do not want to push all children -> only leaves or children with children
-          if ( child->hasData () || child->hasChildren () )
+          // We do not want to push all children -> only children with children or leaves
+          if (child->hasChildren ())
+            nodes.push_back(child);
+          // only push back the child if it is not the leaf of p
+          else if (child->hasData () && !aux::equal3 (p, child->getData ()->getPoint ()))
             nodes.push_back (child);
         }
       }
-      else if ( node->hasData () )
+      // only push back the node if it is not the leaf of p
+      else if (node->hasData () && !aux::equal3<float> (p, node->getData ()->getPoint ()))
         out.push_back (node); // We got a full leaf
     }
   }

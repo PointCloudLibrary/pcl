@@ -56,6 +56,11 @@ In each distributed build environment, there are usually two different roles:
      [pcl] $ mkdir build && cd build
      [pcl/build] $ CC="distcc gcc" CXX="distcc g++" cmake ..
 
+   Sometimes compiling on systems supporting different SSE extensions will lead
+   to problems. Setting PCL_ENABLE_SSE to false will solve this, like::
+   
+   [pcl/build] $ CC="distcc gcc" CXX="distcc g++" cmake -DPCL_ENABLE_SSE:BOOL=FALSE ../pcl
+   
    The output of ``CC="distcc gcc" CXX="distcc g++" cmake ..`` will generate
    something like this. Please note that this is just an example and that the
    messages might vary depending on your operating system and the way your

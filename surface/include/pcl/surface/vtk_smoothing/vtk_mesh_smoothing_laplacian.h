@@ -117,7 +117,7 @@ namespace pcl
       };
 
       /** \brief Turn on/off smoothing along sharp interior edges.
-       * \param[in] status decision whether to enable/disable smoothing along sharp interior edges
+       * \param[in] feature_edge_smoothing whether to enable/disable smoothing along sharp interior edges
        */
       inline void
       setFeatureEdgeSmoothing (bool feature_edge_smoothing)

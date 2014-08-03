@@ -104,8 +104,9 @@ class SimpleHDLViewer
     }
 
     void 
-    cloud_callback (const CloudConstPtr& cloud, float startAngle,
-                    float endAngle)
+    cloud_callback (const CloudConstPtr& cloud,
+                    float /*startAngle*/,
+                    float /*endAngle*/)
     {
       FPS_CALC ("cloud callback");
       boost::mutex::scoped_lock lock (cloud_mutex_);
@@ -114,7 +115,7 @@ class SimpleHDLViewer
 
     void 
     keyboard_callback (const KeyboardEvent& event,
-                       void* cookie)
+                       void* /*cookie*/)
     {
       if (event.keyUp ())
       {
@@ -124,7 +125,7 @@ class SimpleHDLViewer
 
     void 
     mouse_callback (const MouseEvent& mouse_event,
-                    void* cookie)
+                    void* /*cookie*/)
     {
       if (mouse_event.getType () == MouseEvent::MouseButtonPress && 
           mouse_event.getButton () == MouseEvent::LeftButton)
@@ -136,7 +137,7 @@ class SimpleHDLViewer
     void 
     run ()
     {
-      cloud_viewer_->addCoordinateSystem (3.0);
+      cloud_viewer_->addCoordinateSystem (3.0, "global");
       cloud_viewer_->setBackgroundColor (0, 0, 0);
       cloud_viewer_->initCameraParameters ();
       cloud_viewer_->setCameraPosition (0.0, 0.0, 30.0, 0.0, 1.0, 0.0, 0);

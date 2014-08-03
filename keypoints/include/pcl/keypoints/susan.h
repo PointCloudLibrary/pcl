@@ -77,6 +77,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::k_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
       using Keypoint<PointInT, PointOutT>::initCompute;
 
       /** \brief Constructor
@@ -166,8 +167,8 @@ namespace pcl
       detectKeypoints (PointCloudOut &output);
       /** \brief return true if a point lies within the line between the nucleus and the centroid
         * \param[in] nucleus coordinate of the nucleus
-        * \param[in] centroid of the USAN
-        * \parma[in] nucleus to centroid vector (used to speed up since it is constant for a given
+        * \param[in] centroid of the SUSAN
+        * \param[in] nc to centroid vector (used to speed up since it is constant for a given
         * neighborhood)
         * \param[in] point the query point to test against
         * \return true if the point lies within [nucleus centroid]

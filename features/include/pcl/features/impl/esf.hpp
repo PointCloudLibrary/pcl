@@ -74,7 +74,6 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   float h_a3_in[binsize] = {0};
   float h_a3_out[binsize] = {0};
   float h_a3_mix[binsize] = {0};
-  float h_d1[binsize] = {0};
 
   float h_d3_in[binsize] = {0};
   float h_d3_out[binsize] = {0};

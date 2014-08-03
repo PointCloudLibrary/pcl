@@ -6,7 +6,7 @@
   The <b>pcl_keypoints</b> library contains implementations of two point cloud keypoint detection algorithms.
   Keypoints (also referred to as <a href="http://en.wikipedia.org/wiki/Interest_point_detection">interest points</a>) 
   are points in an image or point cloud that are stable, distinctive, and can be identified using a well-defined 
-  detection criteron.  Typically, the number of interest points in a point cloud will be much smaller than the total
+  detection criterion.  Typically, the number of interest points in a point cloud will be much smaller than the total
   number of points in the cloud, and when used in combination with local feature descriptors at each keypoint, the 
   keypoints and descriptors can be used to form a compact&mdash;yet descriptive&mdash;representation of the original 
   data.
@@ -16,7 +16,7 @@
   - \ref search "search"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
-  - \ref range_image "range_image"
+  - \ref pcl::RangeImage "range_image"
   - \ref features "features"
   - \ref filters "filters"
 

@@ -32,7 +32,7 @@ compile a series of 3rd party library dependencies:
 
     used as the matrix backend for SSE optimized math. **mandatory**
 
-    - **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN)
+    - **FLANN** version >= 1.6.8 (http://www.cs.ubc.ca/research/flann/)
 
     used in `kdtree` for fast approximate nearest neighbors search. **mandatory**
 
@@ -52,7 +52,7 @@ compile a series of 3rd party library dependencies:
 
     used to grab point clouds from OpenNI compliant devices. **optional**
 
-    - **Qt** version >= 4.6 (http://qt.nokia.com/)
+    - **Qt** version >= 4.6 (http://qt.digia.com/)
 
     used for developing applications with a graphical user interface (GUI) **optional**
 
@@ -63,8 +63,8 @@ compile a series of 3rd party library dependencies:
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.3**. A Subversion client for Windows, i.e. TortoiseSVN 
-   (http://tortoisesvn.tigris.org/), is also required to download the PCL source code.
+   build system (http://www.cmake.org/), at least version **2.8.3**. A Git
+   client for Windows is also required to download the PCL source code.
    
 Building dependencies
 ---------------------
@@ -159,6 +159,7 @@ like::
       +-- optional python bindings disabled since PYTHON_FOUND is false. 
       + tr1
 
+
     Now, click "Generate". A Visual Studio solution file will be genrated inside the build folder 
     (e.g. C:/PCL_dependencies/boost-cmake/build). Open the `Boost.sln` file, then right click on 
     `INSTALL` project and choose `Build`. The `INSTALL`project will trigger the build of all the projects 
@@ -221,7 +222,7 @@ like::
   
       If you don't have a Python interpreter installed CMake would probably not allow you
       to generate the project files. To solve this problem you can install the Python interpreter
-      (http://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
+      (https://www.python.org/download/windows/) or comment the `add_subdirectory( test )` line 
       from C:/PCL_dependencies/flann-1.7.1-src/CMakeLists.txt .
 
 - **QHull** : 

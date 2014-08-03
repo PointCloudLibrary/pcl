@@ -227,7 +227,7 @@ class ObjectSelection
         ec.setIndices (points_above_plane);
         ec.extract (euclidean_label_indices);
         
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", euclidean_label_indices.size ()); print_info (" clusters]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", euclidean_label_indices.size ()); print_info (" clusters]\n");
       }
 
       // For each cluster found
@@ -270,7 +270,7 @@ class ObjectSelection
         // Estimate normals
         PointCloud<Normal>::Ptr normal_cloud (new PointCloud<Normal>);
         estimateNormals (cloud_, *normal_cloud);
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", normal_cloud->size ()); print_info (" points]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", normal_cloud->size ()); print_info (" points]\n");
 
         OrganizedMultiPlaneSegmentation<PointT, Normal, Label> mps;
         mps.setMinInliers (1000);
@@ -313,7 +313,7 @@ class ObjectSelection
           print_highlight (stderr, "Searching for the largest plane (%2.0d) ", i++);
           TicToc tt; tt.tic ();
           seg.segment (*inliers, coefficients);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", inliers->indices.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", inliers->indices.size ()); print_info (" points]\n");
  
           // No datasets could be found anymore
           if (inliers->indices.empty ())
@@ -335,7 +335,7 @@ class ObjectSelection
           cloud_segmented.swap (cloud_remaining);
         }
       }
-      print_highlight ("Number of planar regions detected: %zu for a cloud of %zu points\n", regions.size (), cloud_->size ());
+      print_highlight ("Number of planar regions detected: %lu for a cloud of %lu points\n", regions.size (), cloud_->size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -358,7 +358,7 @@ class ObjectSelection
         if (cloud_->isOrganized ())
         {
           approximatePolygon (regions[idx], region, 0.01f, false, true);
-          print_highlight ("Planar region: %zu points initial, %zu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
+          print_highlight ("Planar region: %lu points initial, %lu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
         }
         else
         {
@@ -384,7 +384,7 @@ class ObjectSelection
           PointCloud<PointT> plane_hull;
           chull.reconstruct (plane_hull);
           region.setContour (plane_hull);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", plane_hull.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", plane_hull.size ()); print_info (" points]\n");
         }
 
       }
@@ -566,7 +566,7 @@ class ObjectSelection
 
       cloud_viewer_->addPointCloud (cloud_, "scene");
       cloud_viewer_->resetCameraViewpoint ("scene");
-      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0);
+      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0, "global");
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -584,7 +584,7 @@ class ObjectSelection
         return (false);
       }
       print_info ("[done, "); print_value ("%g", tt.toc ()); 
-      print_info (" ms : "); print_value ("%zu", cloud_->size ()); print_info (" points]\n");
+      print_info (" ms : "); print_value ("%lu", cloud_->size ()); print_info (" points]\n");
       
       if (cloud_->isOrganized ())
         search_.reset (new search::OrganizedNeighbor<PointT>);

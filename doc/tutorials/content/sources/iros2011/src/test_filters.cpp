@@ -22,7 +22,7 @@ main (int argc, char ** argv)
   // Load the input file
   PointCloudPtr cloud (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *cloud);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], cloud->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], cloud->size ());
 
   // Threshold depth
   double min_depth, max_depth;
@@ -31,7 +31,7 @@ main (int argc, char ** argv)
   {
     size_t n = cloud->size ();
     cloud = thresholdDepth (cloud, min_depth, max_depth);
-    pcl::console::print_info ("Eliminated %zu points outside depth limits\n", n - cloud->size ());
+    pcl::console::print_info ("Eliminated %lu points outside depth limits\n", n - cloud->size ());
   }
 
   // Downsample and threshold depth
@@ -41,7 +41,7 @@ main (int argc, char ** argv)
   {
     size_t n = cloud->size ();
     cloud = downsample (cloud, leaf_size);
-    pcl::console::print_info ("Downsampled from %zu to %zu points\n", n, cloud->size ());
+    pcl::console::print_info ("Downsampled from %lu to %lu points\n", n, cloud->size ());
   }
 
   // Remove outliers
@@ -51,7 +51,7 @@ main (int argc, char ** argv)
   {
     size_t n = cloud->size ();
     cloud = removeOutliers (cloud, radius, (int)min_neighbors);
-    pcl::console::print_info ("Removed %zu outliers\n", n - cloud->size ());
+    pcl::console::print_info ("Removed %lu outliers\n", n - cloud->size ());
   }
 
   // Save output
