@@ -5,6 +5,7 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/time.h>   // TicToc
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -12,7 +13,7 @@ typedef pcl::PointCloud<PointT> PointCloudT;
 bool next_iteration = false;
 
 void
-printMatix4f (const Eigen::Matrix4f & matrix)
+print4x4Matrix (const Eigen::Matrix4d & matrix)
 {
   printf ("Rotation matrix :\n");
   printf ("    | %6.3f %6.3f %6.3f | \n", matrix (0, 0), matrix (0, 1), matrix (0, 2));
@@ -48,32 +49,32 @@ main (int argc,
     return (-1);
   }
 
+  int iterations = 1;  // Default number of ICP iterations
+  if (argc > 2)
+  {
+    // If the user passed the number of iteration as an argument
+    iterations = atoi (argv[2]);
+    if (iterations < 1)
+    {
+      PCL_ERROR ("Number of initial iterations must be >= 1\n");
+      return (-1);
+    }
+  }
+
+  pcl::console::TicToc time;
+  time.tic ();
   if (pcl::io::loadPLYFile (argv[1], *cloud_in) < 0)
   {
     PCL_ERROR ("Error loading cloud %s.\n", argv[1]);
     return (-1);
   }
-
-  int iterations = 1;
-  // If the user passed the number of iteration as an argument
-  if (argc > 2)
-  {
-    iterations = atoi (argv[2]);
-  }
-
-  if (iterations < 1)
-  {
-    PCL_ERROR("Number of initial iterations must be >= 1\n");
-    return (-1);
-  }
-
-  printf ("\nLoaded file %s with %d points successfully\n\n", argv[1], (int) cloud_in->size ());
+  std::cout << "\nLoaded file " << argv[1] << " (" << cloud_in->size () << " points) in " << time.toc () << " ms\n" << std::endl;
 
   // Defining a rotation matrix and translation vector
-  Eigen::Matrix4f transformation_matrix = Eigen::Matrix4f::Identity ();
+  Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
 
   // A rotation matrix (see https://en.wikipedia.org/wiki/Rotation_matrix)
-  float theta = M_PI / 8;  // The angle of rotation in radians
+  double theta = M_PI / 8;  // The angle of rotation in radians
   transformation_matrix (0, 0) = cos (theta);
   transformation_matrix (0, 1) = -sin (theta);
   transformation_matrix (1, 0) = sin (theta);
@@ -84,27 +85,28 @@ main (int argc,
 
   // Display in terminal the transformation matrix
   std::cout << "Applying this rigid transformation to: cloud_in -> cloud_icp" << std::endl;
-  printMatix4f (transformation_matrix);
+  print4x4Matrix (transformation_matrix);
 
   // Executing the transformation
   pcl::transformPointCloud (*cloud_in, *cloud_icp, transformation_matrix);
   *cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
 
   // The Iterative Closest Point algorithm
-  std::cout << "Initial iterations number is set to : " << iterations;
+  time.tic ();
   pcl::IterativeClosestPoint<PointT, PointT> icp;
   icp.setMaximumIterations (iterations);
   icp.setInputSource (cloud_icp);
   icp.setInputTarget (cloud_in);
   icp.align (*cloud_icp);
-  icp.setMaximumIterations (1);  // For the next time we will call .align() function
+  icp.setMaximumIterations (1);  // We set this variable to 1 for the next time we will call .align () function
+  std::cout << "Applied " << iterations << " ICP iteration(s) in " << time.toc () << " ms" << std::endl;
 
   if (icp.hasConverged ())
   {
-    printf ("\nICP has converged, score is %+.0e\n", icp.getFitnessScore ());
+    std::cout << "\nICP has converged, score is " << icp.getFitnessScore () << std::endl;
     std::cout << "\nICP transformation " << iterations << " : cloud_icp -> cloud_in" << std::endl;
-    transformation_matrix = icp.getFinalTransformation ();
-    printMatix4f (transformation_matrix);
+    transformation_matrix = icp.getFinalTransformation ().cast<double>();
+    print4x4Matrix (transformation_matrix);
   }
   else
   {
@@ -166,15 +168,18 @@ main (int argc,
     // The user pressed "space" :
     if (next_iteration)
     {
+      // The Iterative Closest Point algorithm
+      time.tic ();
       icp.align (*cloud_icp);
+      std::cout << "Applied 1 ICP iteration in " << time.toc () << " ms" << std::endl;
 
       if (icp.hasConverged ())
       {
         printf ("\033[11A");  // Go up 11 lines in terminal output.
         printf ("\nICP has converged, score is %+.0e\n", icp.getFitnessScore ());
         std::cout << "\nICP transformation " << ++iterations << " : cloud_icp -> cloud_in" << std::endl;
-        transformation_matrix *= icp.getFinalTransformation ();  // This is not very accurate !
-        printMatix4f (transformation_matrix);  // Print the transformation between original pose and current pose
+        transformation_matrix *= icp.getFinalTransformation ().cast<double>();  // WARNING /!\ This is not accurate! For "educational" purpose only!
+        print4x4Matrix (transformation_matrix);  // Print the transformation between original pose and current pose
 
         ss.str ("");
         ss << iterations;
