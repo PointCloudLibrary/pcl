@@ -68,34 +68,34 @@ The bool will help us know when the user asks for the next iteration of ICP
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 14-22
+   :lines: 14-23
 
 This functions takes the reference of a 4x4 matrix and prints the rigid transformation in an human 
 readable way.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 24-29
+   :lines: 24-31
 
 This function is the callback for the viewer. This function will be called whenever a key is pressed
 when the viewer window is on top. If "space" is hit; set the bool to true.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 34-37
+   :lines: 37-40
 
 The 3 point clouds we will use to store the data.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 39-63
+   :lines: 42-70
 
 We check the arguments of the program, try to load the PLY file and set
 the number of initial ICP iterations.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 65-84
+   :lines: 72-91
 
 We transform the original point cloud using a rigid matrix transformation.
 See the related tutorial in PCL documentation for more information.
@@ -105,7 +105,7 @@ See the related tutorial in PCL documentation for more information.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 86-93
+   :lines: 93-100
 
 This is the creation of the ICP object. We set the parameters of the ICP algorithm.
 **setMaximumIterations(iterations)** sets the number of initial iterations to do (1
@@ -115,7 +115,7 @@ ICP object will be used (when the user presses "space").
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 95-103
+   :lines: 102-113
 
 Check if the ICP algorithm converged; otherwise exit the program.
 In case of success we store the transformation matrix in a 4x4 matrix and
@@ -124,7 +124,7 @@ matrix is explained later.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 105-114
+   :lines: 115-125
 
 For the visualization we create two viewports in the visualizer vertically
 separated. **bckgr_gray_level** and **txt_gray_lvl** are variables to easily
@@ -133,7 +133,7 @@ white text/point cloud.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 116-127
+   :lines: 127-139
 
 We add the original point cloud in the 2 viewports and display it the same color
 as **txt_gray_lvl**. We add the point cloud we transformed using the matrix in the left
@@ -141,14 +141,14 @@ viewport in green and the point cloud aligned with ICP in red (right viewport).
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 129-135
+   :lines: 141-148
 
 We add descriptions for the point clouds in each viewport so the user knows what is what.
 The string stream ss is needed to transform the integer **iterations** into a string.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 137-146
+   :lines: 150-159
 
 We set the two viewports background color according to **bckgr_gray_level**.
 To get the camera parameters I simply pressed "C" in the viewer. Then I copied the 
@@ -158,13 +158,13 @@ users pressed a keyboard key when viewer windows is on top.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 148-150
+   :lines: 161-164
 
 This is the normal behaviour if no key is pressed. The viewer waits to exit.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 152-154
+   :lines: 166-169
 
 If the user press any key of the keyboard, the function **keyboardEventOccurred** is called;
 this function checks if the key is "space" or not. If yes the global bool **next_iteration**
@@ -174,7 +174,7 @@ and we set max iterations to 1 in lines 90-93.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 156-170
+   :lines: 167-189
 
 As before we check if ICP as converged, if not we exit the program.
 **printf("\033[11A");** is a little trick to go up 11 lines in the terminal to write
@@ -201,7 +201,7 @@ one multiplied 19 times.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 172-175
+   :lines: 190-194
 
 We set the bool to false and the rest is the ending of the program.
 
