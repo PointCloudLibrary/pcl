@@ -1,15 +1,18 @@
 .. _interactive_icp:
 
+===================================
 Interactive Iterative Closest Point
------------------------------------
+===================================
 
 This tutorial will teach you how to write an interactive ICP viewer. The program will 
 load a point cloud and apply a rigid transformation on it. After that the ICP algorithm will
 align the transformed point cloud with the original. Each time the user presses "space"
 an ICP iteration is done and the viewer is refreshed.
 
+.. contents::
+
 Creating a mesh with Blender
-----------------------------
+============================
 You can easily create a sample point cloud with Blender.
 Install and open Blender then delete the cube in the scene by pressing "Del" key :
 
@@ -37,7 +40,7 @@ Export the mesh into a PLY file :
   :height: 481
 
 The code
---------
+========
 
 First, create a file, let's say, ``interactive_icp.cpp`` in your favorite
 editor, and place the following code inside it:
@@ -46,8 +49,8 @@ editor, and place the following code inside it:
    :language: cpp
    :linenos:
 
-The explanation
----------------
+The explanations
+================
 
 Now, let's break down the code piece by piece.
 
@@ -205,9 +208,8 @@ one multiplied 19 times.
 
 We set the bool to false and the rest is the ending of the program.
 
-
 Compiling and running the program
----------------------------------
+=================================
 
 Add the following lines to your CMakeLists.txt file:
 
@@ -224,15 +226,10 @@ by pressing "space".
 
 You will see something similar to this::
 
-  [pcl::PLYReader] monkey.ply:24: property 'float32 focal' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:25: property 'float32 scalex' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:26: property 'float32 scaley' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:27: property 'float32 centerx' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:28: property 'float32 centery' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:31: property 'float32 k1' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:32: property 'float32 k2' of element 'camera' is not handled
+  $ ./interactive_icp ../monkey.ply 5
+  [pcl::PLYReader] ../monkey.ply:12: property 'list uint8 uint32 vertex_indices' of element 'face' is not handled
   
-  Loaded file monkey.ply with 125952 points successfully
+  Loaded file ../monkey.ply (125952 points) in 578 ms
   
   Applying this rigid transformation to: cloud_in -> cloud_icp
   Rotation matrix :
@@ -242,16 +239,17 @@ You will see something similar to this::
   Translation vector :
   t = <  0.000,  0.000,  0.400 >
   
-  Initial iterations number is set to : 1
-  ICP has converged, score is +7e-03
+  Applied 1 ICP iteration(s) in 2109 ms
+  
+  ICP has converged, score is 0.0182442
   
   ICP transformation 1 : cloud_icp -> cloud_in
   Rotation matrix :
-      |  0.996  0.070 -0.046 | 
-  R = | -0.072  0.997 -0.039 | 
-      |  0.043  0.042  0.998 | 
+      |  0.998  0.066 -0.003 | 
+  R = | -0.066  0.997  0.033 | 
+      |  0.005 -0.033  0.999 | 
   Translation vector :
-  t = <  0.038,  0.058, -0.211 >
+  t = <  0.022, -0.017, -0.097 >
 
 If ICP did a perfect job the two matrices should have exactly the same values and
 the matrix found by ICP should have inverted signs outside the diagonal. For example ::
@@ -267,6 +265,11 @@ the matrix found by ICP should have inverted signs outside the diagonal. For exa
       |  0.000  0.000  1.000 | 
   Translation vector :
   t = <  0.000,  0.000, -0.400 >
+
+.. DANGER::
+   If you iterate several times manually using "space"; the results will become more and more erroned because
+   of the matrix multiplication (see line 181 of the original code)
+   If you seek precision, provide an initial number of iterations to the program
 
 .. image:: images/interactive_icp/icp-1.png
   :height: 605
