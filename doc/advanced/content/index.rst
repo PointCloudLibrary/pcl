@@ -125,6 +125,5 @@ Contents
    compiler_optimizations
    single_compile_unit
    pcl_style_guide
-   branches_repository
    how_to_write_a_tutorial
 
