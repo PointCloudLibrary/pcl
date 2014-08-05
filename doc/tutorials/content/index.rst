@@ -171,8 +171,8 @@ Basic Usage
              This tutorial shows you how to get your PCL as a project in Eclipse.
      ======  ======
 
-     .. |mi_8| image:: images/pcl_logo.png
-               :height: 75px
+     .. |mi_8| image:: images/pcl_with_eclipse/eclipse.png
+               :height: 100px
 
   * :ref:`generate_local_doc`
 
