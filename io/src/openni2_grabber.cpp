@@ -1,17 +1,17 @@
 /*
  * Software License Agreement (BSD License)
- * 
+ *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2009-2012, Willow Garage, Inc.
  * Copyright (c) 2012-, Open Perception, Inc.
  * Copyright (c) 2014, respective authors.
- * 
+ *
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
- * 
+ *
  *  * Redistributions of source code must retain the above copyright
  *    notice, this list of conditions and the following disclaimer.
  *  * Redistributions in binary form must reproduce the above
@@ -21,7 +21,7 @@
  *  * Neither the name of the copyright holder(s) nor the names of its
  *    contributors may be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -582,7 +582,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   cloud->sensor_orientation_.w () = 1.0f;
   cloud->sensor_orientation_.x () = 0.0f;
   cloud->sensor_orientation_.y () = 0.0f;
-  cloud->sensor_orientation_.z () = 0.0f;  
+  cloud->sensor_orientation_.z () = 0.0f;
   return (cloud);
 }
 
@@ -601,8 +601,8 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   cloud->points.resize (cloud->height * cloud->width);
 
   // Generate default camera parameters
-  float fx = device_->getColorFocalLength (); // Horizontal focal length
-  float fy = device_->getColorFocalLength (); // Vertcal focal length
+  float fx = device_->getDepthFocalLength (); // Horizontal focal length
+  float fy = device_->getDepthFocalLength (); // Vertcal focal length
   float cx = ((float)cloud->width - 1.f) / 2.f;  // Center x
   float cy = ((float)cloud->height - 1.f) / 2.f; // Center y
 
@@ -644,13 +644,13 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  // set xyz to Nan and rgb to 0 (black)  
+  // set xyz to Nan and rgb to 0 (black)
   if (image_width_ != depth_width_)
   {
     PointT pt;
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
-    pt.a = 255; // point has no color info -> alpha = max => transparent 
+    pt.a = 255; // point has no color info -> alpha = max => transparent
     cloud->points.assign (cloud->points.size (), pt);
   }
 
@@ -726,8 +726,8 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   cloud->points.resize (cloud->height * cloud->width);
 
 
-  float fx = device_->getColorFocalLength (); // Horizontal focal length
-  float fy = device_->getColorFocalLength (); // Vertcal focal length
+  float fx = device_->getDepthFocalLength (); // Horizontal focal length
+  float fy = device_->getDepthFocalLength (); // Vertcal focal length
   float cx = ((float)cloud->width - 1.f) / 2.f;  // Center x
   float cy = ((float)cloud->height - 1.f) / 2.f; // Center y
 
@@ -909,8 +909,8 @@ void pcl::io::OpenNI2Grabber::processDepthFrame (openni::VideoStream& stream)
   float baseline = device_->getBaseline();
   pcl::uint64_t no_sample_value = device_->getShadowValue();
   pcl::uint64_t shadow_value = no_sample_value;
-  
-  boost::shared_ptr<DepthImage> image  = 
+
+  boost::shared_ptr<DepthImage> image  =
    boost::make_shared<DepthImage> (frameWrapper, baseline, focalLength, shadow_value, no_sample_value);
 
   depthCallback (image, NULL);
