@@ -474,6 +474,7 @@ namespace pcl
       mutable boost::shared_array<unsigned char> rgb_array_;
       mutable boost::shared_array<unsigned short> depth_buffer_;
       mutable boost::shared_array<unsigned short> ir_buffer_;
+      mutable unsigned char* rgb_buffer_;
 
       /** \brief The RGB image focal length (fx). */
       double rgb_focal_length_x_;

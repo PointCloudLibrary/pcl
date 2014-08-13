@@ -93,6 +93,7 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , depth_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_principal_point_y_ (std::numeric_limits<double>::quiet_NaN ())
   , rgb_array_size_ (0)
+  , rgb_buffer_ (0)
   , depth_buffer_size_ (0)
 {
   // initialize driver
@@ -626,7 +627,6 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
-  unsigned char* rgb_buffer = rgb_array_.get ();
   boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
 
   cloud->header.frame_id = rgb_frame_id_;
@@ -672,9 +672,9 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   {
     rgb_array_size_ = image_width_ * image_height_ * 3;
     rgb_array_.reset (new unsigned char [rgb_array_size_]);
-    rgb_buffer = rgb_array_.get ();
+    rgb_buffer_ = rgb_array_.get ();
   }
-  image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
+  image->fillRGB (image_width_, image_height_, rgb_buffer_, image_width_ * 3);
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // set xyz to Nan and rgb to 0 (black)  
@@ -731,9 +731,9 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     {
       PointT& pt = cloud->points[point_idx];
       
-      color.Red   = rgb_buffer[value_idx];
-      color.Green = rgb_buffer[value_idx + 1];
-      color.Blue  = rgb_buffer[value_idx + 2];
+      color.Red   = rgb_buffer_[value_idx];
+      color.Green = rgb_buffer_[value_idx + 1];
+      color.Blue  = rgb_buffer_[value_idx + 2];
       
       pt.rgba = color.long_value;
     }
