@@ -149,7 +149,7 @@ like::
     Now, in the CMake log, you should see something like::
     
       Reading boost project directories (per BUILD_PROJECTS) 
-
+      
       + date_time
       + thread
       + serialization
@@ -158,7 +158,6 @@ like::
       + mpi
       +-- optional python bindings disabled since PYTHON_FOUND is false. 
       + tr1
-
 
     Now, click "Generate". A Visual Studio solution file will be genrated inside the build folder 
     (e.g. C:/PCL_dependencies/boost-cmake/build). Open the `Boost.sln` file, then right click on 

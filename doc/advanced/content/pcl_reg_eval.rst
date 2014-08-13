@@ -7,23 +7,23 @@ Data generation
 ===============
 - synthetic data
 - real word data (how to get ground truth?)
- - Kinect
- - PR2 laser scanner
- - SICK laser data
- - small range 3D scanner
- - mid range 3D scanner (Faro)
- - high end 3D scanner (Riegl, Velodyne)
+  - Kinect
+  - PR2 laser scanner
+  - SICK laser data
+  - small range 3D scanner
+  - mid range 3D scanner (Faro)
+  - high end 3D scanner (Riegl, Velodyne)
 - Point Types
- - 2D(?)
- - 3D
- - RGB
+  - 2D(?)
+  - 3D
+  - RGB
 - dynamics
- - static scans
- - scanning while driving (e.g. robots)
+  - static scans
+  - scanning while driving (e.g. robots)
 - size
- - room
- - building
- - outdoor (street)
+  - room
+  - building
+  - outdoor (street)
 
 Architecture
 ============
@@ -41,12 +41,14 @@ ICP
 ^^^
 - how does the algorithm cope with outliers
 - how are the point pairs evaluated:
- - does it use normal or RGB information
- - does it weight the pairs differently
- - which kind of point pairs are used:
-  - one-to-one
-  - one-to-many
-  - many-to-many
+
+  - does it use normal or RGB information
+  - does it weight the pairs differently
+  - which kind of point pairs are used:
+
+    - one-to-one
+    - one-to-many
+    - many-to-many
 
 Similar Projects
 ================

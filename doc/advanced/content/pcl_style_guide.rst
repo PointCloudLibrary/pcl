@@ -336,7 +336,7 @@ download it to some known location and then:
 * open .emacs 
 * add the following before any C/C++ custom hooks
 
-.. code-block:: lisp
+::
 
    (load-file "/location/to/pcl-c-style.el")
    (add-hook 'c-mode-common-hook 'pcl-set-c-style)
