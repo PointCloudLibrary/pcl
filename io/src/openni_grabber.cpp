@@ -92,9 +92,6 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , depth_focal_length_y_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_principal_point_y_ (std::numeric_limits<double>::quiet_NaN ())
-  , rgb_array_size_ (0)
-  , rgb_buffer_ (0)
-  , depth_buffer_size_ (0)
 {
   // initialize driver
   onInit (device_id, depth_mode, image_mode);
@@ -585,13 +582,16 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   register const unsigned short* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth() != depth_width_ || depth_image->getHeight () != depth_height_)
   {
-    if (depth_buffer_size_ < depth_width_ * depth_height_)
+    static unsigned buffer_size = 0;
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
+
+    if (buffer_size < depth_width_ * depth_height_)
     {
-      depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset (new unsigned short [depth_buffer_size_]);
+      buffer_size = depth_width_ * depth_height_;
+      depth_buffer.reset (new unsigned short [buffer_size]);
     }
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get ());
-    depth_map = depth_buffer_.get ();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
   }
 
   register int depth_idx = 0;
@@ -627,6 +627,10 @@ template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wrapper::Image> &image,
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
+  static unsigned rgb_array_size = 0;
+  static boost::shared_array<unsigned char> rgb_array ((unsigned char*)(NULL));
+  static unsigned char* rgb_buffer = 0;
+
   boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
 
   cloud->header.frame_id = rgb_frame_id_;
@@ -657,24 +661,27 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
   {
-    if (depth_buffer_size_ < depth_width_ * depth_height_)
+    static unsigned buffer_size = 0;
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
+
+    if (buffer_size < depth_width_ * depth_height_)
     {
-      depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset (new unsigned short [depth_buffer_size_]);
+      buffer_size = depth_width_ * depth_height_;
+      depth_buffer.reset (new unsigned short [buffer_size]);
     }
 
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get ());
-    depth_map = depth_buffer_.get ();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
   }
 
   // here we need exact the size of the point cloud for a one-one correspondence!
-  if (rgb_array_size_ < image_width_ * image_height_ * 3)
+  if (rgb_array_size < image_width_ * image_height_ * 3)
   {
-    rgb_array_size_ = image_width_ * image_height_ * 3;
-    rgb_array_.reset (new unsigned char [rgb_array_size_]);
-    rgb_buffer_ = rgb_array_.get ();
+    rgb_array_size = image_width_ * image_height_ * 3;
+    rgb_array.reset (new unsigned char [rgb_array_size]);
+    rgb_buffer = rgb_array.get ();
   }
-  image->fillRGB (image_width_, image_height_, rgb_buffer_, image_width_ * 3);
+  image->fillRGB (image_width_, image_height_, rgb_buffer, image_width_ * 3);
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
   // set xyz to Nan and rgb to 0 (black)  
@@ -731,9 +738,9 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     {
       PointT& pt = cloud->points[point_idx];
       
-      color.Red   = rgb_buffer_[value_idx];
-      color.Green = rgb_buffer_[value_idx + 1];
-      color.Blue  = rgb_buffer_[value_idx + 2];
+      color.Red   = rgb_buffer[value_idx];
+      color.Green = rgb_buffer[value_idx + 1];
+      color.Blue  = rgb_buffer[value_idx + 2];
       
       pt.rgba = color.long_value;
     }
@@ -783,18 +790,22 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
 
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight () != depth_height_)
   {
-    if (depth_buffer_size_ < depth_width_ * depth_height_)
+    static unsigned buffer_size = 0;
+    static boost::shared_array<unsigned short> depth_buffer ((unsigned short*)(NULL));
+    static boost::shared_array<unsigned short> ir_buffer ((unsigned short*)(NULL));
+
+    if (buffer_size < depth_width_ * depth_height_)
     {
-      depth_buffer_size_ = depth_width_ * depth_height_;
-      depth_buffer_.reset (new unsigned short [depth_buffer_size_]);
-      ir_buffer_.reset (new unsigned short [depth_buffer_size_]);
+      buffer_size = depth_width_ * depth_height_;
+      depth_buffer.reset (new unsigned short [buffer_size]);
+      ir_buffer.reset (new unsigned short [buffer_size]);
     }
 
-    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer_.get ());
-    depth_map = depth_buffer_.get ();
+    depth_image->fillDepthImageRaw (depth_width_, depth_height_, depth_buffer.get ());
+    depth_map = depth_buffer.get ();
 
-    ir_image->fillRaw (depth_width_, depth_height_, ir_buffer_.get ());
-    ir_map = ir_buffer_.get ();
+    ir_image->fillRaw (depth_width_, depth_height_, ir_buffer.get ());
+    ir_map = ir_buffer.get ();
   }
 
   register int depth_idx = 0;
