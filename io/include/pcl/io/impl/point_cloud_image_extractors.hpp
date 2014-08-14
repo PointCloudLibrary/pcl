@@ -206,12 +206,17 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       // First pass: find unique labels
       for (size_t i = 0; i < cloud.points.size (); ++i)
       {
+        // If we need to paint NaN points with black do not waste colors on them
+        if (paint_nans_with_black_ && !pcl::isFinite (cloud.points[i]))
+          continue;
         uint32_t val;
         pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
         labels.insert (val);
       }
 
       // Assign Glasbey colors in ascending order of labels
+      // Note: the color LUT has a finite size (256 colors), therefore when
+      // there are more labels the colors will repeat
       size_t color = 0;
       for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter)
       {

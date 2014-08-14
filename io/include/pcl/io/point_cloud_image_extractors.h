@@ -298,6 +298,9 @@ namespace pcl
         virtual bool
         extractImpl (const PointCloud& cloud, pcl::PCLImage& img) const;
 
+        // Members derived from the base class
+        using PointCloudImageExtractor<PointT>::paint_nans_with_black_;
+
       private:
 
         ColorMode color_mode_;
