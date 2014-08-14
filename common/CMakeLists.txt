@@ -41,6 +41,7 @@ if(build)
         src/projection_matrix.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
+        src/colors.cpp
         ${range_image_srcs}
         )
 
@@ -107,6 +108,7 @@ if(build)
         include/pcl/common/random.h
         include/pcl/common/generate.h
         include/pcl/common/projection_matrix.h
+        include/pcl/common/colors.h
         )
 
     set(common_incs_impl
