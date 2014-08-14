@@ -254,10 +254,10 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   pcl::PCLImage image2;
   ASSERT_TRUE (pcie.extract(cloud, image2));
 
-  // The first color should be pure blue
-  EXPECT_EQ (0, image.data[0]);
-  EXPECT_EQ (0, image.data[1]);
-  EXPECT_EQ (255, image.data[2]);
+  // The first label should get the first Glasbey color
+  EXPECT_EQ (GLASBEY_LUT[0], image.data[0]);
+  EXPECT_EQ (GLASBEY_LUT[1], image.data[1]);
+  EXPECT_EQ (GLASBEY_LUT[2], image.data[2]);
   // Make sure the colors are the same
   for (size_t i = 0; i < 2 * 2 * 3; ++i)
     EXPECT_EQ (image2.data[i], image.data[i]);
