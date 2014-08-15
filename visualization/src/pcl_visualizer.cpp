@@ -2210,7 +2210,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkDataSet> data = createCube (x_min, x_max, y_min, y_max, z_min, z_max);
 
   // Create an Actor
-  vtkSmartPointer<vtkActor> actor;
+  vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetLighting (false);
