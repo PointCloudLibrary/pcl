@@ -35,6 +35,7 @@
  *
  */
 
+#include <pcl/point_types.h>
 #include <pcl/common/colors.h>
 
 namespace pcl
@@ -302,5 +303,38 @@ namespace pcl
 
   const unsigned int GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
 
+};
+
+pcl::RGB
+pcl::getGlasbeyColor (unsigned int color_id)
+{
+  assert (color_id < GLASBEY_LUT_SIZE);
+  pcl::RGB color;
+  color.r = GLASBEY_LUT[color_id * 3 + 0];
+  color.g = GLASBEY_LUT[color_id * 3 + 1];
+  color.b = GLASBEY_LUT[color_id * 3 + 2];
+  return (color);
+}
+
+pcl::RGB
+pcl::getRandomColor (double min, double max)
+{
+  double sum;
+  static unsigned stepRGBA = 100;
+  double r, g, b;
+  do
+  {
+    sum = 0;
+    r = (rand () % stepRGBA) / static_cast<double> (stepRGBA);
+    while ((g = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) {}
+    while (((b = (rand () % stepRGBA) / static_cast<double> (stepRGBA)) == r) && (b == g)) {}
+    sum = r + g + b;
+  }
+  while (sum <= min || sum >= max);
+  pcl::RGB color;
+  color.r = uint8_t (r * 255.0);
+  color.g = uint8_t (g * 255.0);
+  color.b = uint8_t (b * 255.0);
+  return (color);
 }
 

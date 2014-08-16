@@ -38,10 +38,10 @@
 #ifndef PCL_COMMON_COLORS_H
 #define PCL_COMMON_COLORS_H
 
-#include <vector>
-
 namespace pcl
 {
+
+  struct RGB;
 
   /// Color lookup table consisting of 256 colors structured in a maximally
   /// discontinuous manner. Generated using the method of Glasbey et al.
@@ -50,6 +50,15 @@ namespace pcl
 
   /// Number of colors in Glasbey lookup table
   extern const unsigned int GLASBEY_LUT_SIZE;
+
+  /** Get a color from Glasbey lookup table with a given id.
+    *
+    * The id should be less than \c GLASBEY_LUT_SIZE. */
+  RGB
+  getGlasbeyColor (unsigned int color_id);
+
+  RGB
+  getRandomColor (double min = 0.2, double max = 2.8);
 
 }
 
