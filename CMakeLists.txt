@@ -399,15 +399,6 @@ if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying espe
   endif(MPI_CXX_FOUND)
 endif()
 
-#Find Doxygen and html help compiler if any
-option(WITH_DOCS "Build doxygen documentation" TRUE)
-if(WITH_DOCS)
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-    find_package(HTMLHelp)
-  endif(DOXYGEN_FOUND)
-endif(WITH_DOCS)
-
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)
 if(WITH_PCAP)
