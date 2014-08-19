@@ -111,7 +111,7 @@ function doc ()
 
   # Generate documentation and tutorials
   cd $BUILD_DIR
-  make doc tutorials
+  make doc tutorials advanced
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
