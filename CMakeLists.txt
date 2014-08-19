@@ -391,14 +391,6 @@ else(WITH_VTK AND NOT ANDROID)
   set(HAVE_VTK OFF)
 endif(WITH_VTK AND NOT ANDROID)
 
-# Find MPI
-if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
-  find_package(MPI)
-  if(MPI_CXX_FOUND)
-    include_directories(SYSTEM "${MPI_INCLUDE_PATH}")
-  endif(MPI_CXX_FOUND)
-endif()
-
 #Find Doxygen and html help compiler if any
 option(WITH_DOCS "Build doxygen documentation" TRUE)
 if(WITH_DOCS)
