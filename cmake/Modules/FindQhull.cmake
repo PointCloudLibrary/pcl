@@ -15,8 +15,8 @@ if(QHULL_USE_STATIC)
   set(QHULL_RELEASE_NAME qhullstatic)
   set(QHULL_DEBUG_NAME qhullstatic_d)
 else(QHULL_USE_STATIC)
-  set(QHULL_RELEASE_NAME qhull qhull${QHULL_MAJOR_VERSION})
-  set(QHULL_DEBUG_NAME qhull_d qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION})
+  set(QHULL_RELEASE_NAME qhull_p qhull${QHULL_MAJOR_VERSION} qhull)
+  set(QHULL_DEBUG_NAME qhull_pd qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION} qhull_d)
 endif(QHULL_USE_STATIC)
 
 find_file(QHULL_HEADER
@@ -49,6 +49,8 @@ find_library(QHULL_LIBRARY
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
              PATH_SUFFIXES project build bin lib)
 
+get_filename_component(QHULL_LIBRARY_NAME "${QHULL_LIBRARY}" NAME)
+
 find_library(QHULL_LIBRARY_DEBUG 
              NAMES ${QHULL_DEBUG_NAME} ${QHULL_RELEASE_NAME}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
@@ -58,6 +60,8 @@ find_library(QHULL_LIBRARY_DEBUG
 if(NOT QHULL_LIBRARY_DEBUG)
   set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
 endif(NOT QHULL_LIBRARY_DEBUG)
+
+get_filename_component(QHULL_LIBRARY_DEBUG_NAME "${QHULL_LIBRARY_DEBUG}" NAME)
 
 set(QHULL_INCLUDE_DIRS ${QHULL_INCLUDE_DIR})
 set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
