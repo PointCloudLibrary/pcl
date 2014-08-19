@@ -1,4 +1,3 @@
-option(WITH_DOCS "Build doxygen documentation" FALSE)
 if(WITH_DOCS)
   find_package(Doxygen)
   if(DOXYGEN_FOUND)

@@ -50,3 +50,5 @@ if(USE_PROJECT_FOLDERS)
 endif(USE_PROJECT_FOLDERS)
 
 option(BUILD_tools "Useful PCL-based command line tools" ON)
+
+option(WITH_DOCS "Build doxygen documentation" OFF)
