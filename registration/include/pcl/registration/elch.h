@@ -196,7 +196,7 @@ namespace pcl
           compute_loop_ = false;
         }
 
-        /** \brief Computes now poses for all point clouds by closing the loop
+        /** \brief Computes new poses for all point clouds by closing the loop
          * between start and end point cloud. This will transform all given point
          * clouds for now!
          */
