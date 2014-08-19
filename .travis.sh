@@ -90,6 +90,8 @@ function doc ()
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
         -DSPHINX_HTML_FILE_SUFFIX=php \
+        -DWITH_DOCS=1 \
+        -DWITH_TUTORIALS=1 \
         $PCL_DIR
 
   git config --global user.email "documentation@pointclouds.org"
