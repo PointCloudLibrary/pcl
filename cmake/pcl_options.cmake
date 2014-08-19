@@ -48,3 +48,5 @@ mark_as_advanced(USE_PROJECT_FOLDERS)
 if(USE_PROJECT_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 endif(USE_PROJECT_FOLDERS)
+
+option(BUILD_tools "Useful PCL-based command line tools" ON)
