@@ -1196,6 +1196,21 @@ Visualization
      .. |vi_4| image:: images/pcl_plotter_comprational.png
                :height: 100px               
 
+  * :ref:`visualization`
+
+     ======  ======
+     |vi_5|  Title: **PCL Visualization overview**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: >= PCL 1.0
+
+             This tutorial will give an overview on the usage of the PCL visualization tools.
+     ======  ======
+
+     .. |vi_5| image:: images/visualization_small.png
+               :height: 120px
+
 .. _applications_tutorial:
 
 Applications

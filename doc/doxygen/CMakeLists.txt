@@ -1,4 +1,3 @@
-option(WITH_DOCS "Build doxygen documentation" FALSE)
 if(WITH_DOCS)
   find_package(Doxygen)
   if(DOXYGEN_FOUND)
@@ -36,7 +35,7 @@ if(DOXYGEN_FOUND)
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in" "${doxyfile}")
   add_custom_target(doc ALL "${DOXYGEN_EXECUTABLE}" "${doxyfile}")
   if(USE_PROJECT_FOLDERS)
-    set_target_properties(doc PROPERTIES FOLDER "Documentation")
+    set_target_properties(doc PROPERTIES FOLDER "Documentation (Doxygen)")
   endif(USE_PROJECT_FOLDERS)
   if(DOCUMENTATION_HTML_HELP STREQUAL YES)
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/html"
