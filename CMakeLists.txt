@@ -166,13 +166,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
-# ---[ Project folders
-option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
-mark_as_advanced(USE_PROJECT_FOLDERS)
-if(USE_PROJECT_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-endif(USE_PROJECT_FOLDERS)
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
 set(PCL_VERSION 1.7.2 CACHE STRING "PCL version")
 DISSECT_VERSION()

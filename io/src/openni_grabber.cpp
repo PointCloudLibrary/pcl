@@ -84,6 +84,8 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , point_cloud_rgb_signal_ (), point_cloud_rgba_signal_ ()
   , config2xn_map_ (), depth_callback_handle (), image_callback_handle (), ir_callback_handle ()
   , running_ (false)
+  , rgb_array_size_ (0)
+  , depth_buffer_size_ (0)
   , rgb_focal_length_x_ (std::numeric_limits<double>::quiet_NaN ())
   , rgb_focal_length_y_ (std::numeric_limits<double>::quiet_NaN ())
   , rgb_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
@@ -92,8 +94,6 @@ pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& dep
   , depth_focal_length_y_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_principal_point_x_ (std::numeric_limits<double>::quiet_NaN ())
   , depth_principal_point_y_ (std::numeric_limits<double>::quiet_NaN ())
-  , rgb_array_size_ (0)
-  , depth_buffer_size_ (0)
 {
   // initialize driver
   onInit (device_id, depth_mode, image_mode);
