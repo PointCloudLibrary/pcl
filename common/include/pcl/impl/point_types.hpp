@@ -85,6 +85,7 @@
   (pcl::PointWithScale)         \
   (pcl::PointSurfel)            \
   (pcl::ShapeContext1980)       \
+  (pcl::UniqueShapeContext1960) \
   (pcl::SHOT352)                \
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
@@ -1201,6 +1202,18 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const ShapeContext1980& p);
   };
 
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
+  /** \brief A point structure representing a Unique Shape Context.
+    * \ingroup common
+    */
+  struct UniqueShapeContext1960
+  {
+    float descriptor[1960];
+    float rf[9];
+    static int descriptorSize () { return 1960; }
+
+    friend std::ostream& operator << (std::ostream& os, const UniqueShapeContext1960& p);
+  };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SHOT352& p);
   /** \brief A point structure representing the generic Signature of Histograms of OrienTations (SHOT) - shape only.
