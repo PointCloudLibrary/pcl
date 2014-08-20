@@ -77,7 +77,6 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
-  (pcl::GRSDSignature21)        \
   (pcl::ESFSignature640)        \
   (pcl::Narf36)                 \
   (pcl::IntensityGradient)      \
@@ -138,7 +137,6 @@
   (pcl::NormalBasedSignature12) \
   (pcl::FPFHSignature33)        \
   (pcl::VFHSignature308)        \
-  (pcl::GRSDSignature21)        \
   (pcl::ESFSignature640)        \
   (pcl::Narf36)
 
@@ -1298,18 +1296,6 @@ namespace pcl
     static int descriptorSize () { return 308; }
 
     friend std::ostream& operator << (std::ostream& os, const VFHSignature308& p);
-  };
-  
-  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
-  /** \brief A point structure representing the Global Radius-based Surface Descriptor (GRSD).
-    * \ingroup common
-    */
-  struct GRSDSignature21
-  {
-    float histogram[21];
-    static int descriptorSize () { return 21; }
-
-    friend std::ostream& operator << (std::ostream& os, const GRSDSignature21& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
