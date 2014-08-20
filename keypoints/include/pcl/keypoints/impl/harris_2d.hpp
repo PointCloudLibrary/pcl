@@ -337,7 +337,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointClou
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
-  for (size_t index = 0; index < output_size; ++index)
+  for (int index = 0; index < output_size; ++index)
   {
     PointOutT &out_point = output.points [index];
     const PointInT &in_point = input_->points [index];
@@ -373,7 +373,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloud
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
-  for (size_t index = 0; index < output_size; ++index)      
+  for (int index = 0; index < output_size; ++index)      
   {
     PointOutT &out_point = output.points [index];
     const PointInT &in_point = input_->points [index];
@@ -409,7 +409,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) private (covar) num_threads(threads_)
 #endif
-  for (size_t index = 0; index < output_size; ++index)
+  for (int index = 0; index < output_size; ++index)
   {
     PointOutT &out_point = output.points [index];
     const PointInT &in_point = input_->points [index];

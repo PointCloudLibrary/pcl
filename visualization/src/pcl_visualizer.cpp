@@ -137,6 +137,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
   ren->AddActor (txt);
+  txt->SetInput("0 FPS");
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -2210,7 +2211,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkDataSet> data = createCube (x_min, x_max, y_min, y_max, z_min, z_max);
 
   // Create an Actor
-  vtkSmartPointer<vtkActor> actor;
+  vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetLighting (false);

@@ -60,7 +60,7 @@ Graph
 ^^^^^
 This should hold the SLAM graph. I would propose to use Boost::Graph for it, as it allows us to access a lot of algorithms.
 
-.. todo::
+.. note::
 
    define abstract structure.
 
@@ -159,7 +159,7 @@ GraphHandler
      void addConstraint (Graph &gr, PointCloud &from, PointCloud &to, Pose &pose);
    }
 
-.. todo::
+.. note::
 
    I'm not sure about this one.
 

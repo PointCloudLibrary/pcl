@@ -345,6 +345,8 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
-    add_subdirectory(tools)
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
 
 endif(build)

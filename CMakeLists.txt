@@ -166,13 +166,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
-# ---[ Project folders
-option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
-mark_as_advanced(USE_PROJECT_FOLDERS)
-if(USE_PROJECT_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-endif(USE_PROJECT_FOLDERS)
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
 set(PCL_VERSION 1.7.2 CACHE STRING "PCL version")
 DISSECT_VERSION()
@@ -385,22 +378,6 @@ else(WITH_VTK AND NOT ANDROID)
   set(HAVE_VTK OFF)
 endif(WITH_VTK AND NOT ANDROID)
 
-# Find MPI
-if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
-  find_package(MPI)
-  if(MPI_CXX_FOUND)
-    include_directories(SYSTEM "${MPI_INCLUDE_PATH}")
-  endif(MPI_CXX_FOUND)
-endif()
-
-#Find Doxygen and html help compiler if any
-option(WITH_DOCS "Build doxygen documentation" TRUE)
-if(WITH_DOCS)
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-    find_package(HTMLHelp)
-  endif(DOXYGEN_FOUND)
-endif(WITH_DOCS)
 
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)
