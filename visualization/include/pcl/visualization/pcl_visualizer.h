@@ -282,7 +282,7 @@ namespace pcl
         "addCoordinateSystem (scale, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, int viewport = 0);
+        addCoordinateSystem (double scale, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
@@ -303,7 +303,7 @@ namespace pcl
         "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
+        addCoordinateSystem (double scale, float x, float y, float z, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -326,7 +326,7 @@ namespace pcl
         "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0);
+        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
@@ -373,7 +373,7 @@ namespace pcl
         "removeCoordinateSystem (viewport) is deprecated, please use function "
         "addCoordinateSystem (id, viewport) with id a unique string identifier.")
         bool
-        removeCoordinateSystem (int viewport = 0);
+        removeCoordinateSystem (int viewport);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] id the coordinate system object id (default: reference)
