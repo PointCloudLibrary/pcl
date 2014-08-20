@@ -266,6 +266,7 @@ pcl::registration::ELCH<PointT>::compute ()
     //a = aend * a * aendI;
 
     pcl::transformPointCloud (*(*loop_graph_)[i].cloud, *(*loop_graph_)[i].cloud, a);
+    (*loop_graph_)[i].transform = a;
   }
 
   add_edge (loop_start_, loop_end_, *loop_graph_);
