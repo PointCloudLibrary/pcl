@@ -73,6 +73,7 @@ namespace pcl
         {
           Vertex () : cloud () {}
           PointCloudPtr cloud;
+          Eigen::Affine3f transform;
         };
 
         /** \brief graph structure to hold the SLAM graph */
