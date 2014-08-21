@@ -20,6 +20,8 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/cvfh.h"
         "include/pcl/${SUBSYS_NAME}/our_cvfh.h"
         "include/pcl/${SUBSYS_NAME}/crh.h"
+        "include/pcl/${SUBSYS_NAME}/colorh.h"
+        "include/pcl/${SUBSYS_NAME}/colorh_3d.h"
         "include/pcl/${SUBSYS_NAME}/don.h"
         "include/pcl/${SUBSYS_NAME}/feature.h"
         "include/pcl/${SUBSYS_NAME}/fpfh.h"
@@ -70,6 +72,8 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/our_cvfh.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/crh.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/colorh.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/colorh_3d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/don.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/feature.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp"
@@ -119,6 +123,8 @@ if(build)
         src/cvfh.cpp
         src/our_cvfh.cpp
         src/crh.cpp
+        src/colorh.cpp
+        src/colorh_3d.cpp
         src/don.cpp
         src/fpfh.cpp
         src/gfpfh.cpp
