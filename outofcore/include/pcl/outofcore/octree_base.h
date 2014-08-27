@@ -350,6 +350,7 @@ namespace pcl
          * \param[in] min The minimum corner of the boudning box to query.
          * \param[out] max The maximum corner of the bounding box to query.
          * \param[in] query_depth The depth in the tree at which to look for the points. Only returns points within the given bounding box at the specified \c query_depth.
+         * \param percent
          * \param[out] dst The destination in which to return the points.
          * 
          */

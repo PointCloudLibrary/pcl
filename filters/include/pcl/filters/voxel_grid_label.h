@@ -57,7 +57,7 @@ namespace pcl
 
 
       /** \brief Constructor.
-       * Sets \ref leaf_size_ to 0 and \ref searchable_ to false.
+       * Sets \ref leaf_size_ to 0.
        */
       VoxelGridLabel () {};
 

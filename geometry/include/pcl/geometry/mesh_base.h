@@ -1743,10 +1743,11 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Removes mesh elements and data that are marked as deleted from the container.
-          * \param IndexContainerT   e.g. std::vector \<VertexIndex\>
-          * \param ElementContainerT e.g. std::vector \<Vertex\>
-          * \param DataContainerT    e.g. std::vector \<VertexData\>
-          * \param HasDataT          Integral constant specifying if the mesh has data associated with the elements.
+          * \tparam ElementContainerT e.g. std::vector \<Vertex\>
+          * \tparam DataContainerT    e.g. std::vector \<VertexData\>
+          * \tparam IndexContainerT   e.g. std::vector \<VertexIndex\>
+          * \tparam HasDataT          Integral constant specifying if the mesh has data associated with the elements.
+          *
           * \param[in, out] elements Container for the mesh elements. Resized to the new size.
           * \param[in, out] data_cloud Container for the mesh data. Resized to the new size.
           * \return Container with the same size as the old input data. Holds the indices to the new elements for each non-deleted element and an invalid index if it is deleted.

@@ -171,7 +171,7 @@ namespace pcl
       }
 
       /** \brief Register a different threshold function
-       * \param[in] pointer to a threshold function
+       * \param[in] thresh pointer to a threshold function
        */
       void
       setThresholdFunction (boost::function<bool (double)> thresh)
@@ -180,7 +180,7 @@ namespace pcl
       }
 
       /** \brief Register a different threshold function
-       * \param[in] pointer to a threshold function
+       * \param[in] thresh_function pointer to a threshold function
        * \param[in] instance
        */
       template <typename T> void

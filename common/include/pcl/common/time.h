@@ -155,7 +155,7 @@ namespace pcl
 
       /** \brief Constructor.
         *
-        * \param[i] window_size number of most recent events that are
+        * \param[in] window_size number of most recent events that are
         * considered in frequency estimation (default: 30) */
       EventFrequency (size_t window_size = 30)
       : window_size_ (window_size)
