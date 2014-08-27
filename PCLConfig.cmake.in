@@ -247,6 +247,38 @@ macro(find_openni2)
   endif(OPENNI2_FOUND)
 endmacro(find_openni2)
 
+#remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
+macro(find_ensenso)
+  if(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+    get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
+  endif(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+
+  find_path(ENSENSO_INCLUDE_DIR nxLib.h
+            HINTS ${ENSENSO_ABI_HINT}
+            /opt/ensenso/development/c
+            "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
+            PATH_SUFFIXES include/)
+
+  find_library(ENSENSO_LIBRARY QUIET NAMES NxLib64 NxLib32 nxLib64 nxLib32
+               HINTS ${ENSENSO_ABI_HINT}
+               "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
+               PATH_SUFFIXES lib/)
+
+  set(ENSENSO_LIBRARIES ${ENSENSO_LIBRARY})
+  set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
+
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(ensenso DEFAULT_MSG
+                                    ENSENSO_LIBRARY ENSENSO_INCLUDE_DIR)
+
+  if(ENSENSO_FOUND)
+    get_filename_component(ENSENSO_LIBRARY_PATH ${ENSENSO_LIBRARY} PATH)
+    set(ENSENSO_LIBRARY_DIRS ${ENSENSO_LIBRARY_PATH}) 
+    set(ENSENSO_LIBRARIES "${ENSENSO_LIBRARY}")
+    set(ENSENSO_REDIST_DIR $ENV{ENSENSO_REDIST${ENSENSO_SUFFIX}})
+  endif(ENSENSO_FOUND)
+endmacro(find_ensenso)
+
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
@@ -442,6 +474,8 @@ macro(find_external_library _component _lib _is_optional)
     find_openni()
   elseif("${_lib}" STREQUAL "openni2")
     find_openni2()
+  elseif("${_lib}" STREQUAL "ensenso")
+    find_ensenso()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -718,7 +752,8 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
+
