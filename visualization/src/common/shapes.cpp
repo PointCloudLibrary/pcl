@@ -59,6 +59,7 @@ pcl::visualization::createCylinder (const pcl::ModelCoefficients &coefficients, 
   tuber->SetInputConnection (line->GetOutputPort ());
   tuber->SetRadius (coefficients.values[6]);
   tuber->SetNumberOfSides (numsides);
+  tuber->Update ();
 
   return (tuber->GetOutput ());
 }
@@ -80,6 +81,7 @@ pcl::visualization::createSphere (const pcl::ModelCoefficients &coefficients, in
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
   tf->SetTransform (t);
   tf->SetInputConnection (s_sphere->GetOutputPort ());
+  tf->Update ();
 
   return (tf->GetOutput ());
 }
@@ -105,6 +107,7 @@ pcl::visualization::createCube (const pcl::ModelCoefficients &coefficients)
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
   tf->SetTransform (t);
   tf->SetInputConnection (cube->GetOutputPort ());
+  tf->Update ();
   
   return (tf->GetOutput ());
 }
@@ -130,6 +133,7 @@ pcl::visualization::createCube (const Eigen::Vector3f &translation, const Eigen:
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
   tf->SetTransform (t);
   tf->SetInputConnection (cube->GetOutputPort ());
+  tf->Update ();
   
   return (tf->GetOutput ());
 }
@@ -237,6 +241,7 @@ pcl::visualization::create2DCircle (const pcl::ModelCoefficients &coefficients, 
   vtkSmartPointer<vtkTransformPolyDataFilter> tf = vtkSmartPointer<vtkTransformPolyDataFilter>::New ();
   tf->SetTransform (t);
   tf->SetInputConnection (disk->GetOutputPort ());
+  tf->Update ();
   /*
   tf->SetInputConnection (tube->GetOutputPort ());
   */
