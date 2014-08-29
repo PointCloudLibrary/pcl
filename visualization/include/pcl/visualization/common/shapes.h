@@ -222,7 +222,7 @@ namespace pcl
     create2DCircle (const pcl::ModelCoefficients &coefficients, double z = 0.0);
 
     /** \brief Create a cone shape from a set of model coefficients.
-      * \param[in] coefficients the cone coefficients (point_on_axis, axis_direction, radius)
+      * \param[in] coefficients the cone coefficients (cone_apex, axis_direction, angle)
       * \ingroup visualization
       */
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
