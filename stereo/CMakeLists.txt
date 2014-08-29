@@ -1,6 +1,6 @@
 set(SUBSYS_NAME stereo)
 set(SUBSYS_DESC "Point cloud stereo library")
-set(SUBSYS_DEPS common io)
+set(SUBSYS_DEPS common io filters 2d)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -22,9 +22,10 @@ if(build)
 
     set(srcs
         src/stereo_grabber.cpp
-        src/stereo_matching.cpp
-        src/stereo_block_based.cpp
-        src/stereo_adaptive_cost_so.cpp
+	src/stereo_matching.cpp
+	src/stereo_block_based.cpp
+	src/stereo_adaptive_cost_so.cpp
+        src/stereo_compact_representation.cpp
         src/disparity_map_converter.cpp
         src/digital_elevation_map.cpp
         )
