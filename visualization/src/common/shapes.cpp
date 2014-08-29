@@ -249,10 +249,12 @@ vtkSmartPointer<vtkDataSet>
 pcl::visualization::createCone (const pcl::ModelCoefficients &coefficients)
 {
   vtkSmartPointer<vtkConeSource> cone = vtkSmartPointer<vtkConeSource>::New ();
-  cone->SetHeight (1.0);
+  cone->SetHeight (std::sqrt(coefficients.values[3]*coefficients.values[3] + 
+                   coefficients.values[4]*coefficients.values[4] + 
+                   coefficients.values[5]*coefficients.values[5]));
   cone->SetCenter (coefficients.values[0] + coefficients.values[3] * 0.5, 
-                   coefficients.values[1] + coefficients.values[1] * 0.5,
-                   coefficients.values[2] + coefficients.values[2] * 0.5);
+                   coefficients.values[1] + coefficients.values[4] * 0.5,
+                   coefficients.values[2] + coefficients.values[5] * 0.5);
   cone->SetDirection (-coefficients.values[3], -coefficients.values[4], -coefficients.values[5]);
   cone->SetResolution (100);
   cone->SetAngle (coefficients.values[6]);
