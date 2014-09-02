@@ -11,6 +11,7 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
+  REMOVE_VTK_DEFINITIONS()
   #find_package(OpenCV QUIET)
   
   #find NPP
