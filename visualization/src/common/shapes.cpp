@@ -148,7 +148,7 @@ pcl::visualization::createCube (double x_min, double x_max,
   
   vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New ();
   cube->SetBounds (x_min, x_max, y_min, y_max, z_min, z_max);
-
+  cube->Update ();
   return (cube->GetOutput ());
 }
 
@@ -178,6 +178,7 @@ pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients)
                   + coefficients.values[2] * coefficients.values[2];
 
   plane->Push (-coefficients.values[3] / sqrt(norm_sqr));
+  plane->Update ();
   return (plane->GetOutput ());
 }
 
@@ -205,6 +206,7 @@ pcl::visualization::createPlane (const pcl::ModelCoefficients &coefficients, dou
   y -= coefficients.values[1] * t * norm_sqr;
   z -= coefficients.values[2] * t * norm_sqr;
   plane->SetCenter (x, y, z);
+  plane->Update ();
   
   return (plane->GetOutput ());
 }
@@ -263,7 +265,7 @@ pcl::visualization::createCone (const pcl::ModelCoefficients &coefficients)
   cone->SetDirection (-coefficients.values[3], -coefficients.values[4], -coefficients.values[5]);
   cone->SetResolution (100);
   cone->SetAngle (coefficients.values[6]);
-
+  cone->Update ();
   return (cone->GetOutput ());
 }
 
