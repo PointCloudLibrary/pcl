@@ -802,6 +802,11 @@ int OpenNI2Device::getIRFrameCount ()
   return openni_device_->getPlaybackControl ()->getNumberOfFrames (*getIRVideoStream ());
 }
 
+bool OpenNI2Device::setPlaybackSpeed (double speed)
+{
+    return openni_device_->getPlaybackControl ()->setSpeed (speed) == openni::STATUS_OK;
+}
+
 boost::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {
