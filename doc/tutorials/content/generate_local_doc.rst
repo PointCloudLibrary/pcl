@@ -50,15 +50,15 @@ First you need to install Apache and php::
 
 Then you need to edit the default website location::
 
-  $ sudo gedit /etc/apache2/sites-available/default
+  $ sudo gedit /etc/apache2/sites-available/000-default.conf
 
-Change ``DocumentRoot`` (default = ``/var/www/``) to ``/usr/local/share/doc/pcl-1.7/html/`` (or your local PCL doc build path) 
+Change ``DocumentRoot`` (default = ``/var/www/html``) to ``/usr/local/share/doc/pcl-1.7/html/`` (or your local PCL doc build path) 
 
 After that change the Apache directory options::
 
-  $ sudo gedit +150 /etc/apache2/apache2.conf
+  $ sudo gedit +153 /etc/apache2/apache2.conf
 
-Replace the paragraph at line 150 with::
+Replace the paragraph at line 153 with::
 
   <Directory />
       #Options FollowSymLinks
