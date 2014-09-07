@@ -148,7 +148,7 @@ namespace pcl
         
         /** \brief Slot Called whenever the item selection_model_ changes */
         void
-        itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected );
+        itemSelectionChanged ( const QItemSelection &, const QItemSelection &);
         
         /** \brief Creates a new cloud from the selected items and points */
         void 

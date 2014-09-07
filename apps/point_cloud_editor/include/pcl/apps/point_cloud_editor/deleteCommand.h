@@ -89,18 +89,18 @@ class DeleteCommand : public Command
       assert(false); return (*this);
     }
 
-    /// a copy buffer which backs up the points deleted from the cloud.
-    CopyBuffer deleted_cloud_buffer_;
+    /// a pointer pointing to the cloud
+    CloudPtr cloud_ptr_;
+
+    /// A shared pointer pointing to the selection object.
+    SelectionPtr selection_ptr_;
 
     /// a selection which backs up the index of the deleted points in the
     /// original cloud.
     Selection deleted_selection_;
 
-    /// A shared pointer pointing to the selection object.
-    SelectionPtr selection_ptr_;
-
-    /// a pointer pointing to the cloud
-    CloudPtr cloud_ptr_;
+    /// a copy buffer which backs up the points deleted from the cloud.
+    CopyBuffer deleted_cloud_buffer_;
 };
 
 #endif // DELETE_COMMAND_H_

@@ -195,7 +195,7 @@ pcl::cloud_composer::CloudView::selectedItemChanged (const QItemSelection & sele
 }
 
 void
-pcl::cloud_composer::CloudView::dataChanged (const QModelIndex & topLeft, const QModelIndex & bottomRight)
+pcl::cloud_composer::CloudView::dataChanged (const QModelIndex &, const QModelIndex &)
 {
     
   
@@ -283,7 +283,7 @@ pcl::cloud_composer::CloudView::setInteractorStyle (interactor_styles::INTERACTO
 }
 
 void
-pcl::cloud_composer::CloudView::selectionCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data)
+pcl::cloud_composer::CloudView::selectionCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
   boost::shared_ptr<SelectionEvent> selected (static_cast<SelectionEvent*> (call_data));
   
@@ -297,7 +297,7 @@ pcl::cloud_composer::CloudView::selectionCompleted (vtkObject* caller, unsigned 
 
 
 void
-pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject* caller, unsigned long event_id, void* client_data, void* call_data)
+pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject*, unsigned long, void*, void* call_data)
 {
   boost::shared_ptr<ManipulationEvent> manip_event (static_cast<ManipulationEvent*> (call_data));
   
@@ -308,3 +308,4 @@ pcl::cloud_composer::CloudView::manipulationCompleted (vtkObject* caller, unsign
    
   }
 }
+

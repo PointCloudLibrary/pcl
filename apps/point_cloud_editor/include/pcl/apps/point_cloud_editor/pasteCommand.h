@@ -92,10 +92,8 @@ class PasteCommand : public Command
       assert(false); return (*this);
     }
 
-    /// The size of the cloud before new points are pasted. This value is used
-    /// to mark the point where points were added to the cloud. In order to
-    /// support undo, one only has to resize the cloud using this value.
-    unsigned int prev_cloud_size_;
+    /// a pointer pointing to the copy buffer.
+    ConstCopyBufferPtr copy_buffer_ptr_;
 
     /// A shared pointer pointing to the selection object.
     SelectionPtr selection_ptr_;
@@ -103,7 +101,9 @@ class PasteCommand : public Command
     /// a pointer pointing to the cloud
     CloudPtr cloud_ptr_;
 
-    /// a pointer pointing to the copy buffer.
-    ConstCopyBufferPtr copy_buffer_ptr_;
+    /// The size of the cloud before new points are pasted. This value is used
+    /// to mark the point where points were added to the cloud. In order to
+    /// support undo, one only has to resize the cloud using this value.
+    unsigned int prev_cloud_size_;
 };
 #endif // PASTE_COMMAND_H_

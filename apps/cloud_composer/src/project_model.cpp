@@ -380,7 +380,7 @@ pcl::cloud_composer::ProjectModel::saveSelectedCloudToFile ()
   pcl::PCLPointCloud2::ConstPtr cloud = cloud_to_save->data (ItemDataRole::CLOUD_BLOB).value <pcl::PCLPointCloud2::ConstPtr> ();
   Eigen::Vector4f origin = cloud_to_save->data (ItemDataRole::ORIGIN).value <Eigen::Vector4f> ();
   Eigen::Quaternionf orientation = cloud_to_save->data (ItemDataRole::ORIENTATION).value <Eigen::Quaternionf> ();
-  int result = pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );
+  pcl::io::savePCDFile (filename.toStdString (), *cloud, origin, orientation );
   
 }
 
@@ -539,7 +539,6 @@ void
 pcl::cloud_composer::ProjectModel::selectAllItems (QStandardItem* item)
 {
  
-  int num_rows;
   if (!item)
     item = this->invisibleRootItem ();
   else
@@ -564,7 +563,6 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
   emit newCloudFromSelectionAvailable (onlyCloudItemsSelected ());  
   
   //Find out which style is active, emit the signal 
-  QMap<interactor_styles::INTERACTOR_STYLES, bool>::iterator itr = selected_style_map_.begin();
   foreach (interactor_styles::INTERACTOR_STYLES style, selected_style_map_.keys())
   {
     if (selected_style_map_.value (style))
@@ -578,7 +576,7 @@ pcl::cloud_composer::ProjectModel::emitAllStateSignals ()
 }
 
 void
-pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+pcl::cloud_composer::ProjectModel::itemSelectionChanged ( const QItemSelection &, const QItemSelection &)
 {
   //qDebug () << "Item selection changed!";
   //Set all point selected cloud items back to green text, since if they are selected they get changed to white
