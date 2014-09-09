@@ -92,20 +92,20 @@ class TransformCommand : public Command
     void
     applyTransform(ConstSelectionPtr sel_ptr);
 
+    /// pointers to constructor params
+    ConstSelectionPtr selection_ptr_;
+
+    /// a pointer poiting to the cloud
+    CloudPtr cloud_ptr_;
+
+    float translate_x_, translate_y_, translate_z_;
+
     /// An internal selection object used to perform undo
     SelectionPtr internal_selection_ptr_;
 
     /// the transform matrix to be used to compute the new coordinates
     /// of the selected points
     float transform_matrix_[MATRIX_SIZE];
-
-    float translate_x_, translate_y_, translate_z_;
-
-    /// pointers to constructor params
-    ConstSelectionPtr selection_ptr_;
-
-    /// a pointer poiting to the cloud
-    CloudPtr cloud_ptr_;
 
     /// The transform matrix of the cloud used by this command
     float cloud_matrix_[MATRIX_SIZE];

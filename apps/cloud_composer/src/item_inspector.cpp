@@ -47,7 +47,7 @@ pcl::cloud_composer::ItemInspector::setModel (ProjectModel* new_model)
 }
 
 void
-pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &current, const QModelIndex &)
+pcl::cloud_composer::ItemInspector::selectionChanged (const QModelIndex &, const QModelIndex &)
 {
   //If we have a model loaded, save its tree state 
  // if (current_item_properties_model_)

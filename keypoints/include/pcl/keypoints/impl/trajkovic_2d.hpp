@@ -216,7 +216,6 @@ pcl::TrajkovicKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (Poin
   std::vector<bool> occupency_map (indices.size (), false);
   const int width (input_->width);
   const int height (input_->height);
-  const int occupency_map_size (indices.size ());
 
 #ifdef _OPENMP
 #pragma omp parallel for shared (output) num_threads (threads_)
