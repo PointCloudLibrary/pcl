@@ -845,7 +845,7 @@ namespace pcl
         addPointCloud (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr &cloud,
                        const std::string &id = "cloud", int viewport = 0)
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGB> color_handler (cloud, 255, 255, 255);
           return (addPointCloud<pcl::PointXYZRGB> (cloud, color_handler, id, viewport));
         }
 
@@ -858,7 +858,7 @@ namespace pcl
         addPointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud,
                        const std::string &id = "cloud", int viewport = 0)
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZRGBA> color_handler (cloud, 255, 255, 255);
           return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
         }
 
