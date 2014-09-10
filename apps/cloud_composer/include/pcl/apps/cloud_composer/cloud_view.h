@@ -152,3 +152,4 @@ namespace pcl
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::CloudView);
 #endif
+

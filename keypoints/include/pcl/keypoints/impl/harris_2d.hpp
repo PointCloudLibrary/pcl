@@ -105,7 +105,6 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::computeSecondMomentMatri
   
   int x = static_cast<int> (index % input_->width);
   int y = static_cast<int> (index / input_->width);
-  unsigned count = 0;
   // indices        0   1   2
   // coefficients: ixix  ixiy  iyiy
   memset (coefficients, 0, sizeof (float) * 3);
