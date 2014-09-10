@@ -517,6 +517,8 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
 
+  cloud->header.seq = depth_image->getFrameID ();
+  cloud->header.stamp = depth_image->getTimestamp ();
   cloud->height = depth_height_;
   cloud->width = depth_width_;
   cloud->is_dense = false;
@@ -593,6 +595,8 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 {
   boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
 
+  cloud->header.seq = depth_image->getFrameID ();
+  cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
   cloud->height = std::max (image_height_, depth_height_);
   cloud->width = std::max (image_width_, depth_width_);
@@ -718,6 +722,8 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
 {
   boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > ());
 
+  cloud->header.seq = depth_image->getFrameID ();
+  cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
   cloud->height = depth_height_;
   cloud->width = depth_width_;
