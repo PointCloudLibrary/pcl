@@ -43,9 +43,9 @@
 #include <pcl/impl/instantiate.hpp>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::ShapeContext1980))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA))((pcl::UniqueShapeContext1960))((pcl::ReferenceFrame)))
 #else
-  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::ShapeContext1980))((pcl::ReferenceFrame)))
+  PCL_INSTANTIATE_PRODUCT(UniqueShapeContext, (PCL_XYZ_POINT_TYPES)((pcl::UniqueShapeContext1960))((pcl::ReferenceFrame)))
 #endif
 #endif    // PCL_NO_PRECOMPILE
 

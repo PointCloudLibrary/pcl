@@ -75,6 +75,7 @@ namespace pcl
   template<> inline bool isFinite<pcl::SHOT1344> (const pcl::SHOT1344&) { return (true); }
   template<> inline bool isFinite<pcl::ReferenceFrame> (const pcl::ReferenceFrame&) { return (true); }
   template<> inline bool isFinite<pcl::ShapeContext1980> (const pcl::ShapeContext1980&) { return (true); }
+  template<> inline bool isFinite<pcl::UniqueShapeContext1960> (const pcl::UniqueShapeContext1960&) { return (true); }
   template<> inline bool isFinite<pcl::PFHSignature125> (const pcl::PFHSignature125&) { return (true); }
   template<> inline bool isFinite<pcl::PFHRGBSignature250> (const pcl::PFHRGBSignature250&) { return (true); }
   template<> inline bool isFinite<pcl::PPFSignature> (const pcl::PPFSignature&) { return (true); }
