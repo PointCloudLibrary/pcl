@@ -81,11 +81,6 @@ function test ()
 
 function doc ()
 {
-  echo "test on travis" > test.txt
-  curl --ftp-create-dirs -T test.txt -u jpapon@jeremiepapon.com:$FTP_PASS ftp.jeremiepapon.com/test.txt
-
-
-
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
@@ -117,6 +112,8 @@ function doc ()
   # Generate documentation and tutorials
   cd $BUILD_DIR
   make tutorials
+
+  find /home/travis/build/jpapon/pcl/build/doc/tutorials/html/ -type f -exec curl --ftp-create-dirs -u jpapon@jeremiepapon.com:$FTP_PASS -T {} ftp.jeremiepapon.com/{} \;
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
