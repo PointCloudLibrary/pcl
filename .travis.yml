@@ -42,5 +42,11 @@ before_install:
   - sudo apt-get update -d
 install:
   - sudo apt-get install libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev libboost-chrono1.53-dev libusb-1.0-0-dev libgtest-dev
+addons:
+  artifacts:
+    bucket: html-bucket
+  paths:
+    # singular paths work fine, too
+    - /home/travis/build/jpapon/pcl/build/doc/tutorials/html/*
 script:
   - bash .travis.sh
