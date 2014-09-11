@@ -6,7 +6,7 @@ env:
   matrix:
   - TASK="build"
   global:
-  -secure:
+  - secure:
   Z8O6BqiDO8FVk6JNcuaZxxmEDf6pL+lUlRw6Re10BwHFyOAHiokc0IimwZevG1jqAhX1eRSWPI0sOSwcco5x5ur654zFIyHPhJtc4Q8ZhmXD0sigvPhSkIeiFHXZaYZUj7cHsgoZprsUzSZ/T24H7Ywlxkv+RUQOdpnNhLLTZ0s=
   - secure: XQw5SBf/7b1SHFR+kKklBWhWVgNvm4vIi+wwyajFSbDLOPpsAqtnDKeA2DV9ciaQJ3CVAvBoyxYgzAvpbsb5k95jadbvu9aSlo/AQnAbz+8DhkJL25DwJAn8G4s4zD1MFi7P4fxJHZsv/l9UcdW4BzjEhh0VidWCO4hP6I9BAQc=
   - secure: dRKTSeQI2Jad+/K9XCkNZxuu8exPi2wGzf6D0ogd1Nb2ZIUsOtnHSME4DO+xv7F5ZYrythHTrfezQl5hhcK+cr7A12okxlvmF/gVFuGCBPkUbyWPOrxx/Ic5pqdVnmrMFG1hFmr1KmOxCVx0F48JfGNd4ZgtUBAmnIomRp8sXRI=
