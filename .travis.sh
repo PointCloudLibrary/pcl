@@ -81,10 +81,13 @@ function test ()
 
 function doc ()
 {
+  echo "test on travis" > test.txt
+  curl --ftp-create-dirs -T test.txt -u jpapon:$SCP_PASSWORD ftp://134.76.92.76/workspace/ftp_test/travis.txt
+
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip python-sphinx dvipng
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip texlive-latex-base dvipng
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
