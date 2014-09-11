@@ -84,7 +84,7 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip python-sphinx texlive-xetex
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip python-sphinx dvipng
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -111,7 +111,7 @@ function doc ()
 
   # Generate documentation and tutorials
   cd $BUILD_DIR
-  make doc tutorials advanced
+  make tutorials
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
