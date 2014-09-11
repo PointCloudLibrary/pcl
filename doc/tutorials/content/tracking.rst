@@ -29,9 +29,9 @@ At each loop, tracking program proceeds along with following algorythm.(see fig2
 
 .. math::
 
-	L_j = L_distance ( \times L_color )
+	L_j = L_{distance} ( \times L_{color} )
 
-	w = \sum_ L_j
+	w = \sum{}^{} L_j
 
 
 
