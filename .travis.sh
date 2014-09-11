@@ -84,7 +84,7 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip python-sphinx
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip python-sphinx texlive-xetex
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -107,7 +107,7 @@ function doc ()
   #echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
   cd $DOC_DIR
-  git clone http://github.com:PointCloudLibrary/documentation.git .
+  git clone http://github.com/PointCloudLibrary/documentation.git .
 
   # Generate documentation and tutorials
   cd $BUILD_DIR
