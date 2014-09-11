@@ -84,7 +84,7 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip texlive-latex-base dvipng
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -94,24 +94,26 @@ function doc ()
         -DWITH_TUTORIALS=1 \
         $PCL_DIR
 
-  git config --global user.email "documentation@pointclouds.org"
-  git config --global user.name "PointCloudLibrary (via TravisCI)"
+  #git config --global user.email "documentation@pointclouds.org"
+  #git config --global user.name "PointCloudLibrary (via TravisCI)"
 
-  if [ -z "$id_rsa_{1..23}" ]; then echo 'No $id_rsa_{1..23} found !' ; exit 1; fi
+  #if [ -z "$id_rsa_{1..23}" ]; then echo 'No $id_rsa_{1..23} found !' ; exit 1; fi
 
-  echo -n $id_rsa_{1..23} >> ~/.ssh/travis_rsa_64
-  base64 --decode --ignore-garbage ~/.ssh/travis_rsa_64 > ~/.ssh/id_rsa
+  #echo -n $id_rsa_{1..23} >> ~/.ssh/travis_rsa_64
+  #base64 --decode --ignore-garbage ~/.ssh/travis_rsa_64 > ~/.ssh/id_rsa
 
-  chmod 600 ~/.ssh/id_rsa
+  #chmod 600 ~/.ssh/id_rsa
 
-  echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
+  #echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
   cd $DOC_DIR
-  git clone git@github.com:PointCloudLibrary/documentation.git .
+  git clone http://github.com/PointCloudLibrary/documentation.git .
 
   # Generate documentation and tutorials
   cd $BUILD_DIR
-  make doc tutorials advanced
+  make tutorials
+
+  find /home/travis/build/jpapon/pcl/build/doc/tutorials/html/ -type f -exec curl --ftp-create-dirs -u jpapon@jeremiepapon.com:$FTP_PASS -T {} ftp.jeremiepapon.com/{} \;
 
   # Upload to GitHub if generation succeeded
   if [[ $? == 0 ]]; then
