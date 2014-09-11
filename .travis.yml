@@ -45,6 +45,10 @@ install:
 addons:
   artifacts:
     bucket: html-bucket
+  key:
+    secure: "JNlALvrRRh63cOxSEHI0/5bxW90OkEDyv5m7q4EOHRk3Of+LOAgdWdL7ybdL48YYQA0qlvYkG0itP34F4FNriaXMQfQRfewwCk6kV9ldnEbFpjnI+qOuln/0Gb4F8oloW72WmB/rJMV2GfKkESJfy1MEPLQY1VMpjYD0U8ohOn0="
+  secret:
+    secure: "fQXd75UWGebwrMgvTkukJz48f1a5rwQ29lQ+2baTqcfbAlM2QG0B76kOMZcwOf1ydMCuTwCMlkxX14X2xKWdpcG1ceOXlsngaUNuijF8zbI0RZHm7U8tfuP2W42mJW29HOFKEtNF8OdJIvKPTtTdh80f9FMHZCr9SUGVXoSTAL8="
   paths:
     # singular paths work fine, too
     - /home/travis/build/jpapon/pcl/build/doc/tutorials/html/*
