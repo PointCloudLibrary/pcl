@@ -285,7 +285,7 @@ namespace pcl
                               Eigen::Affine3f &pose2);
   };
 }
-#ifdef PCL_NO_PRECOMPILE
+
 #include <pcl/registration/impl/ppf_registration.hpp>
-#endif // PCL_NO_PRECOMPILE
+
 #endif // PCL_PPF_REGISTRATION_H_
