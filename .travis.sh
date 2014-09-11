@@ -82,7 +82,9 @@ function test ()
 function doc ()
 {
   echo "test on travis" > test.txt
-  curl --ftp-create-dirs -T test.txt -u jpapon:$SCP_PASSWORD ftp://134.76.92.76/workspace/ftp_test/travis.txt
+  curl --ftp-create-dirs -T test.txt -u jpapon@jeremiepapon.com:$FTP_PASS ftp.jeremiepapon.com/test.txt
+
+
 
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
