@@ -54,7 +54,7 @@ namespace pcl
     class OctreePointCloudAdjacencyContainer : public OctreeContainerBase
     {
     public:
-      typedef std::set<OctreePointCloudAdjacencyContainer*> NeighborSetT;
+      typedef std::list<OctreePointCloudAdjacencyContainer*> NeighborSetT;
       //iterators to neighbors
       typedef typename NeighborSetT::iterator iterator;
       typedef typename NeighborSetT::const_iterator const_iterator;
@@ -64,8 +64,6 @@ namespace pcl
       inline const_iterator end () const  { return (neighbors_.end ()); }
       //size of neighbors
       inline size_t size () const { return neighbors_.size (); }
-      //insert for neighbors
-      inline std::pair<iterator, bool> insert (OctreePointCloudAdjacencyContainer* neighbor) { return neighbors_.insert (neighbor); }
       
       /** \brief Class initialization. */
       OctreePointCloudAdjacencyContainer () :
@@ -131,7 +129,7 @@ namespace pcl
       void 
       addNeighbor (OctreePointCloudAdjacencyContainer *neighbor)
       {
-        neighbors_.insert (neighbor);
+        neighbors_.push_back (neighbor);
       }
       
       /** \brief Remove neighbor from neighbor set.
@@ -140,8 +138,14 @@ namespace pcl
       void 
       removeNeighbor (OctreePointCloudAdjacencyContainer *neighbor)
       {
-        neighbors_.erase (neighbor);
-        
+        for (iterator neighb_it = neighbors_.begin(); neighb_it != neighbors_.end(); ++neighb_it)
+        {
+          if ( *neighb_it == neighbor)
+          {
+            neighbors_.erase (neighb_it);
+            return;
+          }
+        }
       }
       
       /** \brief Returns the number of neighbors this leaf has
