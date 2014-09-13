@@ -4480,7 +4480,9 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       boost::filesystem::path path (argv[p_file_indices[i]]);
       if (boost::filesystem::exists (path))
       {
+#if BOOST_VERSION >= 104800
         path = boost::filesystem::canonical (path);
+#endif
         str = path.string ().c_str ();
         sha1.process_bytes (str, std::strlen (str));
         valid = true;
