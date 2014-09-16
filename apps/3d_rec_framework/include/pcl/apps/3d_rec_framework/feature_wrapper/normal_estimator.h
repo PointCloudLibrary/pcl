@@ -13,6 +13,7 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/common/time.h>
+#include <pcl/geometry/mesh_resolution.h>
 
 namespace pcl
 {
@@ -23,39 +24,6 @@ namespace pcl
       {
 
         typedef typename pcl::PointCloud<PointInT>::Ptr PointInTPtr;
-
-        float
-        computeMeshResolution (PointInTPtr & input)
-        {
-          typedef typename pcl::KdTree<PointInT>::Ptr KdTreeInPtr;
-          KdTreeInPtr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> > (false);
-          tree->setInputCloud (input);
-
-          std::vector<int> nn_indices (9);
-          std::vector<float> nn_distances (9);
-          std::vector<int> src_indices;
-
-          float sum_distances = 0.0;
-          std::vector<float> avg_distances (input->points.size ());
-          // Iterate through the source data set
-          for (size_t i = 0; i < input->points.size (); ++i)
-          {
-            tree->nearestKSearch (input->points[i], 9, nn_indices, nn_distances);
-
-            float avg_dist_neighbours = 0.0;
-            for (size_t j = 1; j < nn_indices.size (); j++)
-              avg_dist_neighbours += sqrtf (nn_distances[j]);
-
-            avg_dist_neighbours /= static_cast<float> (nn_indices.size ());
-
-            avg_distances[i] = avg_dist_neighbours;
-            sum_distances += avg_dist_neighbours;
-          }
-
-          std::sort (avg_distances.begin (), avg_distances.end ());
-          float avg = avg_distances[static_cast<int> (avg_distances.size ()) / 2 + 1];
-          return avg;
-        }
 
       public:
 
@@ -114,8 +82,8 @@ namespace pcl
         {
           if (compute_mesh_resolution_)
           {
-            mesh_resolution_ = computeMeshResolution (in);
-            std::cout << "compute mesh resolution:" << mesh_resolution_ << std::endl;
+            mesh_resolution_ = pcl::geometry::computeCloudSurfaceResolution<PointInT> (in);
+            std::cout << "Mesh resolution:" << mesh_resolution_ << std::endl;
           }
 
           if (do_voxel_grid_)
