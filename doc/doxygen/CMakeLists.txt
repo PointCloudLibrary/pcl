@@ -34,6 +34,8 @@ if(DOXYGEN_FOUND)
   set(doxy_html_index_file "${CMAKE_CURRENT_BINARY_DIR}/html/index.html")
   set(doxyfile_in "${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in")
   set(doxyfile "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")
+  file(GLOB_RECURSE ALL_SRCS_STR "${PCL_SOURCE_DIR}/*.h" "${PCL_SOURCE_DIR}/*.hpp" "${PCL_SOURCE_DIR}/*.doxy")
+  string(REPLACE ";" " " ALL_SRCS "${ALL_SRCS_STR}")
   configure_file("${doxyfile_in}" "${doxyfile}")
 
   add_custom_command(OUTPUT "${doxy_html_index_file}"
@@ -44,7 +46,7 @@ if(DOXYGEN_FOUND)
                      # custom_command for ${doxyfile} generation
                      # but I still have to figure out how...
                      MAIN_DEPENDENCY "${doxyfile}" "${doxyfile_in}"
-                     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/pcl.doxy"
+                     DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/pcl.doxy" "${ALL_SRCS}"
                      COMMENT "Generating HTML documentation")
   add_custom_target(doc ALL DEPENDS "${doxy_html_index_file}")
 
