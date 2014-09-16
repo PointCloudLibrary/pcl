@@ -619,6 +619,7 @@ namespace pcl
     }
 
     /** \brief Convert the given edge index to a half-edge index.
+      * \param index
       * \param[in] get_first The first half-edge of the edge is returned if this variable is true; elsewise the second.
       */
     inline pcl::geometry::HalfEdgeIndex

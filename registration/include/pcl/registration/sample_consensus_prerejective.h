@@ -257,22 +257,23 @@ namespace pcl
         * \param sample_indices the resulting sample indices
         */
       void 
-      selectSamples (const PointCloudSource &cloud, int nr_samples, 
-                     std::vector<int> &sample_indices);
+      selectSamples (const PointCloudSource &cloud, int nr_samples, std::vector<int> &sample_indices);
 
       /** \brief For each of the sample points, find a list of points in the target cloud whose features are similar to 
         * the sample points' features. From these, select one randomly which will be considered that sample point's 
-        * correspondence. 
-        * \param input_features a cloud of feature descriptors
+        * correspondence.
         * \param sample_indices the indices of each sample point
+        * \param similar_features correspondence cache, which is used to read/write already computed correspondences
         * \param corresponding_indices the resulting indices of each sample's corresponding point in the target cloud
         */
       void 
-      findSimilarFeatures (const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
-                           std::vector<int> &corresponding_indices);
+      findSimilarFeatures (const std::vector<int> &sample_indices,
+              std::vector<std::vector<int> >& similar_features,
+              std::vector<int> &corresponding_indices);
 
       /** \brief Rigid transformation computation method.
         * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess The computed transformation
         */
       void 
       computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);

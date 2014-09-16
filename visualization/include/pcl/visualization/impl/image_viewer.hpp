@@ -39,6 +39,7 @@
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 
+#include <vtkVersion.h>
 #include <vtkContextActor.h>
 #include <vtkContextScene.h>
 #include <vtkImageData.h>
@@ -435,9 +436,13 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
+#if VTK_MAJOR_VERSION < 6
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))

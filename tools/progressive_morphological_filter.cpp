@@ -44,6 +44,7 @@
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/segmentation/approximate_progressive_morphological_filter.h>
 #include <pcl/segmentation/progressive_morphological_filter.h>
 
 using namespace std;
@@ -83,6 +84,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_base); print_info (")\n");
   print_info ("                     -exponential X = use exponential growth? (default: ");
   print_value ("%s", default_exponential?"true":"false"); print_info (")\n");
+  print_info ("                     -approximate X = use approximate? (default: false\n");
   print_info ("                     -input_dir X  = batch process all PCD files found in input_dir\n");
   print_info ("                     -output_dir X = save the processed files from input_dir in this directory\n");
   print_info ("                     -verbosity X = verbosity level (default: ");
@@ -105,7 +107,7 @@ loadCloud (const std::string &filename, Cloud &cloud)
 }
 
 void
-compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential)
+compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
 {
   // Estimate
   TicToc tt;
@@ -115,16 +117,34 @@ compute (ConstCloudPtr &input, Cloud &output, int max_window_size, float slope, 
 
   std::vector<int> ground;
 
-  ProgressiveMorphologicalFilter<PointType> pmf;
-  pmf.setInputCloud (input);
-  pmf.setMaxWindowSize (max_window_size);
-  pmf.setSlope (slope);
-  pmf.setMaxDistance (max_distance);
-  pmf.setInitialDistance (initial_distance);
-  pmf.setCellSize (cell_size);
-  pmf.setBase (base);
-  pmf.setExponential (exponential);
-  pmf.extract (ground);
+  if (approximate)
+  {
+    PCL_DEBUG ("approx with %d points\n", input->points.size ());
+    ApproximateProgressiveMorphologicalFilter<PointType> pmf;
+    pmf.setInputCloud (input);
+    pmf.setMaxWindowSize (max_window_size);
+    pmf.setSlope (slope);
+    pmf.setMaxDistance (max_distance);
+    pmf.setInitialDistance (initial_distance);
+    pmf.setCellSize (cell_size);
+    pmf.setBase (base);
+    pmf.setExponential (exponential);
+    pmf.extract (ground);
+  }
+  else
+  {
+    PCL_DEBUG ("full\n");
+    ProgressiveMorphologicalFilter<PointType> pmf;
+    pmf.setInputCloud (input);
+    pmf.setMaxWindowSize (max_window_size);
+    pmf.setSlope (slope);
+    pmf.setMaxDistance (max_distance);
+    pmf.setInitialDistance (initial_distance);
+    pmf.setCellSize (cell_size);
+    pmf.setBase (base);
+    pmf.setExponential (exponential);
+    pmf.extract (ground);
+  }
 
   PointIndicesPtr idx (new PointIndices);
   idx->indices = ground;
@@ -153,7 +173,7 @@ saveCloud (const std::string &filename, const Cloud &output)
 }
 
 int
-batchProcess (const vector<string> &pcd_files, string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential)
+batchProcess (const vector<string> &pcd_files, string &output_dir, int max_window_size, float slope, float max_distance, float initial_distance, float cell_size, float base, bool exponential, bool approximate)
 {
   vector<string> st;
   for (size_t i = 0; i < pcd_files.size (); ++i)
@@ -165,7 +185,7 @@ batchProcess (const vector<string> &pcd_files, string &output_dir, int max_windo
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential);
+    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
 
     // Prepare output file name
     string filename = pcd_files[i];
@@ -203,6 +223,7 @@ main (int argc, char** argv)
   float cell_size = default_cell_size;
   float base = default_base;
   bool exponential = default_exponential;
+  bool approximate;
   int verbosity_level = default_verbosity_level;
   parse_argument (argc, argv, "-max_window_size", max_window_size);
   parse_argument (argc, argv, "-slope", slope);
@@ -211,6 +232,7 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-cell_size", cell_size);
   parse_argument (argc, argv, "-base", base);
   parse_argument (argc, argv, "-exponential", exponential);
+  approximate = find_switch (argc, argv, "-approximate");
   parse_argument (argc, argv, "-verbosity", verbosity_level);
   string input_dir, output_dir;
   if (parse_argument (argc, argv, "-input_dir", input_dir) != -1)
@@ -271,7 +293,7 @@ main (int argc, char** argv)
 
     // Perform the feature estimation
     Cloud output;
-    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential);
+    compute (cloud, output, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
 
     // Save into the second file
     saveCloud (argv[p_file_indices[1]], output);
@@ -291,7 +313,7 @@ main (int argc, char** argv)
           PCL_INFO ("[Batch processing mode] Added %s for processing.\n", itr->path ().string ().c_str ());
         }
       }
-      batchProcess (pcd_files, output_dir, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential);
+      batchProcess (pcd_files, output_dir, max_window_size, slope, max_distance, initial_distance, cell_size, base, exponential, approximate);
     }
     else
     {

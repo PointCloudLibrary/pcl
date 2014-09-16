@@ -12,7 +12,7 @@ a breeze to request data streams from OpenNI compatible cameras. This tutorial
 presents how to set up and use the grabber, and since it's so simple, we can
 keep it short :).
 
-The cameras that we have tested so far are the `Primesense Reference Design <http://www.primesense.com/?p=514>`_, `Microsoft Kinect <http://www.xbox.com/kinect/>`_ and `Asus Xtion Pro <http://event.asus.com/wavi/product/WAVI_Pro.aspx>`_ cameras:
+The cameras that we have tested so far are the `Primesense Reference Design <http://www.primesense.com/>`_, `Microsoft Kinect <http://www.xbox.com/kinect/>`_ and `Asus Xtion Pro <http://event.asus.com/wavi/product/WAVI_Pro.aspx>`_ cameras:
 
 
 .. image:: images/openni_cams.jpg

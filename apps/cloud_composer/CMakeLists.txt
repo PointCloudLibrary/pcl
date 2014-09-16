@@ -120,7 +120,7 @@ if(build)
     
     set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
     PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs} ${impl_incs})
-    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters QVTK ${QT_LIBRARIES})
+    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
     # Install include files
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})

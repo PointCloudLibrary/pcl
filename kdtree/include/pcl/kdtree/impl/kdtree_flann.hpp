@@ -48,7 +48,7 @@
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
   : pcl::KdTree<PointT> (sorted)
-  , flann_index_ (), cloud_ (NULL)
+  , flann_index_ (), cloud_ ()
   , index_mapping_ (), identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
@@ -60,7 +60,7 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
 template <typename PointT, typename Dist>
 pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT> &k) 
   : pcl::KdTree<PointT> (false)
-  , flann_index_ (), cloud_ (NULL)
+  , flann_index_ (), cloud_ ()
   , index_mapping_ (), identity_mapping_ (false)
   , dim_ (0), total_nr_points_ (0)
   , param_k_ (::flann::SearchParams (-1 , epsilon_))
@@ -120,7 +120,7 @@ pcl::KdTreeFLANN<PointT, Dist>::setInputCloud (const PointCloudConstPtr &cloud, 
     return;
   }
 
-  flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_, 
+  flann_index_.reset (new FLANNIndex (::flann::Matrix<float> (cloud_.get (), 
                                                               index_mapping_.size (), 
                                                               dim_),
                                       ::flann::KDTreeSingleIndexParams (15))); // max 15 points/leaf
@@ -214,11 +214,6 @@ template <typename PointT, typename Dist> void
 pcl::KdTreeFLANN<PointT, Dist>::cleanup ()
 {
   // Data array cleanup
-  if (cloud_)
-  {
-    free (cloud_);
-    cloud_ = NULL;
-  }
   index_mapping_.clear ();
 
   if (indices_)
@@ -232,14 +227,14 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud)
   // No point in doing anything if the array is empty
   if (cloud.points.empty ())
   {
-    cloud_ = NULL;
+    cloud_.reset ();
     return;
   }
 
   int original_no_of_points = static_cast<int> (cloud.points.size ());
 
-  cloud_ = static_cast<float*> (malloc (original_no_of_points * dim_ * sizeof (float)));
-  float* cloud_ptr = cloud_;
+  cloud_.reset (new float[original_no_of_points * dim_]);
+  float* cloud_ptr = cloud_.get ();
   index_mapping_.reserve (original_no_of_points);
   identity_mapping_ = true;
 
@@ -266,14 +261,14 @@ pcl::KdTreeFLANN<PointT, Dist>::convertCloudToArray (const PointCloud &cloud, co
   // No point in doing anything if the array is empty
   if (cloud.points.empty ())
   {
-    cloud_ = NULL;
+    cloud_.reset ();
     return;
   }
 
   int original_no_of_points = static_cast<int> (indices.size ());
 
-  cloud_ = static_cast<float*> (malloc (original_no_of_points * dim_ * sizeof (float)));
-  float* cloud_ptr = cloud_;
+  cloud_.reset (new float[original_no_of_points * dim_]);
+  float* cloud_ptr = cloud_.get ();
   index_mapping_.reserve (original_no_of_points);
   // its a subcloud -> false
   // true only identity: 

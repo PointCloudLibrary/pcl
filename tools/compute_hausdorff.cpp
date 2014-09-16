@@ -88,7 +88,7 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
   pcl::search::KdTree<PointType> tree_b;
   tree_b.setInputCloud (cloud_b.makeShared ());
   float max_dist_a = -std::numeric_limits<float>::max ();
-  for (int i = 0; i < cloud_a.points.size (); ++i)
+  for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {
     std::vector<int> indices (1);
     std::vector<float> sqr_distances (1);
@@ -102,7 +102,7 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
   pcl::search::KdTree<PointType> tree_a;
   tree_a.setInputCloud (cloud_a.makeShared ());
   float max_dist_b = -std::numeric_limits<float>::max ();
-  for (int i = 0; i < cloud_b.points.size (); ++i)
+  for (size_t i = 0; i < cloud_b.points.size (); ++i)
   {
     std::vector<int> indices (1);
     std::vector<float> sqr_distances (1);

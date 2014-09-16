@@ -163,7 +163,7 @@ namespace pcl
     public:
 
       /** \brief Constructor
-       * \param[in] Regularizer value
+       * \param[in] reg Regularizer value
        **/
       GreedyVerification (float reg = 1.5f) :
         HypothesisVerification<ModelT, SceneT> ()

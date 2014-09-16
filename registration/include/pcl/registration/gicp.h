@@ -48,7 +48,7 @@ namespace pcl
 {
   /** \brief GeneralizedIterativeClosestPoint is an ICP variant that implements the 
     * generalized iterative closest point algorithm as described by Alex Segal et al. in 
-    * http://www.stanford.edu/~avsegal/resources/papers/Generalized_ICP.pdf
+    * http://www.robots.ox.ac.uk/~avsegal/resources/papers/Generalized_ICP.pdf
     * The approach is based on using anistropic cost functions to optimize the alignment 
     * after closest point assignments have been made.
     * The original code uses GSL and ANN while in ours we use an eigen mapped BFGS and 
@@ -122,7 +122,9 @@ namespace pcl
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
         */
-      PCL_DEPRECATED (void setInputCloud (const PointCloudSourceConstPtr &cloud), "[pcl::registration::GeneralizedIterativeClosestPoint::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
+      PCL_DEPRECATED ("[pcl::registration::GeneralizedIterativeClosestPoint::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
+      void
+      setInputCloud (const PointCloudSourceConstPtr &cloud);
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message
@@ -279,7 +281,7 @@ namespace pcl
         * neighbors. K is set via setCorrespondenceRandomness() methode.
         * \param cloud pointer to point cloud
         * \param tree KD tree performer for nearest neighbors search
-        * \return cloud_covariance covariances matrices for each point in the cloud
+        * \param[out] cloud_covariances covariances matrices for each point in the cloud
         */
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 

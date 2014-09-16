@@ -109,7 +109,7 @@ namespace pcl
                         
 		/** \brief Sets truncation threshold for depth image for ICP step only! This helps 
 		  *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
-          * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
+          * \param[in] max_icp_distance Maximal distance, higher values are reset to zero (means no measurement). 
           */
         void
         setDepthTruncationForICP (float max_icp_distance = 0.f);
@@ -143,7 +143,8 @@ namespace pcl
         rows ();
 
         /** \brief Processes next frame.
-          * \param[in] Depth next frame with values in millimeters
+          * \param[in] depth next frame with values in millimeters
+          * \param hint
           * \return true if can render 3D view.
           */
         bool operator() (const DepthMap& depth, Eigen::Affine3f* hint=NULL);

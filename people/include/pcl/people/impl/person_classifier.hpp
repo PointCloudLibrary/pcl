@@ -138,9 +138,9 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   int c1, c2, f1, f2;
   PointT g1, g2, g3, g4;
   float w1, w2;
-  for (unsigned int i = 0; i < height; i++)    // for every row
+  for (int i = 0; i < height; i++)    // for every row
   {
-  for (unsigned int j = 0; j < width; j++)  // for every column
+  for (int j = 0; j < width; j++)  // for every column
   {
     A = T_inv * Eigen::Vector3f(i, j, 1);
     c1 = ceil(A(0));
@@ -150,12 +150,12 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
 
     if ( (f1 < 0) ||
        (c1 < 0) ||
-       (f1 >= input_image->height) ||
-       (c1 >= input_image->height) ||
+       (f1 >= static_cast<int> (input_image->height)) ||
+       (c1 >= static_cast<int> (input_image->height)) ||
        (f2 < 0) ||
        (c2 < 0) ||
-       (f2 >= input_image->width) ||
-       (c2 >= input_image->width))
+       (f2 >= static_cast<int> (input_image->width)) ||
+       (c2 >= static_cast<int> (input_image->width)))
     { // if out of range, continue
     continue;
     }
@@ -203,12 +203,12 @@ pcl::people::PersonClassifier<PointT>::copyMakeBorder (PointCloudPtr& input_imag
   int y_start_out = std::max(0, -ymin);
   //int y_end_out = y_start_out + (y_end_in - y_start_in);
 
-  for (unsigned int i = 0; i < (y_end_in - y_start_in + 1); i++)
+  for (int i = 0; i < (y_end_in - y_start_in + 1); i++)
   {
-  for (unsigned int j = 0; j < (x_end_in - x_start_in + 1); j++)
-  {
-    (*output_image)(x_start_out + j, y_start_out + i) = (*input_image)(x_start_in + j, y_start_in + i);
-  }
+    for (int j = 0; j < (x_end_in - x_start_in + 1); j++)
+    {
+      (*output_image)(x_start_out + j, y_start_out + i) = (*input_image)(x_start_in + j, y_start_in + i);
+    }
   }
 }
 
@@ -243,9 +243,9 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
     // Convert the image to array of float:
     float* sample_float = new float[sample->width * sample->height * 3]; 
     int delta = sample->height * sample->width;
-    for(int row = 0; row < sample->height; row++)
+    for (uint32_t row = 0; row < sample->height; row++)
     {
-      for(int col = 0; col < sample->width; col++)
+      for (uint32_t col = 0; col < sample->width; col++)
       {
         sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
         sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];

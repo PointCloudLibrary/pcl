@@ -38,6 +38,7 @@
 #ifndef PCL_PCL_VISUALIZER_IMPL_H_
 #define PCL_PCL_VISUALIZER_IMPL_H_
 
+#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
 #include <vtkCellArray.h>
 #include <vtkLeaderActor2D.h>
@@ -322,13 +323,25 @@ pcl::visualization::PCLVisualizer::addPolygon (
     vtkSmartPointer<vtkAppendPolyData> all_data = vtkSmartPointer<vtkAppendPolyData>::New ();
     
     // Add old data
+#if VTK_MAJOR_VERSION < 6
     all_data->AddInput (reinterpret_cast<vtkPolyDataMapper*> ((vtkActor::SafeDownCast (am_it->second))->GetMapper ())->GetInput ());
-   
+#else
+    all_data->AddInputData (reinterpret_cast<vtkPolyDataMapper*> ((vtkActor::SafeDownCast (am_it->second))->GetMapper ())->GetInput ());
+#endif
+
     // Add new data
     vtkSmartPointer<vtkDataSetSurfaceFilter> surface_filter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New ();
-    surface_filter->SetInput (vtkUnstructuredGrid::SafeDownCast (data));
+#if VTK_MAJOR_VERSION < 6
+    surface_filter->AddInput (vtkUnstructuredGrid::SafeDownCast (data));
+#else
+    surface_filter->AddInputData (vtkUnstructuredGrid::SafeDownCast (data));
+#endif
     vtkSmartPointer<vtkPolyData> poly_data = surface_filter->GetOutput ();
+#if VTK_MAJOR_VERSION < 6
     all_data->AddInput (poly_data);
+#else
+    all_data->AddInputData (poly_data);
+#endif
 
     // Create an Actor
     vtkSmartPointer<vtkActor> actor;
@@ -376,13 +389,25 @@ pcl::visualization::PCLVisualizer::addPolygon (
     vtkSmartPointer<vtkAppendPolyData> all_data = vtkSmartPointer<vtkAppendPolyData>::New ();
 
     // Add old data
+#if VTK_MAJOR_VERSION < 6
     all_data->AddInput (reinterpret_cast<vtkPolyDataMapper*> ((vtkActor::SafeDownCast (am_it->second))->GetMapper ())->GetInput ());
+#else
+    all_data->AddInputData (reinterpret_cast<vtkPolyDataMapper*> ((vtkActor::SafeDownCast (am_it->second))->GetMapper ())->GetInput ());
+#endif
 
     // Add new data
     vtkSmartPointer<vtkDataSetSurfaceFilter> surface_filter = vtkSmartPointer<vtkDataSetSurfaceFilter>::New ();
+#if VTK_MAJOR_VERSION < 6
     surface_filter->SetInput (vtkUnstructuredGrid::SafeDownCast (data));
+#else
+    surface_filter->SetInputData (vtkUnstructuredGrid::SafeDownCast (data));
+#endif
     vtkSmartPointer<vtkPolyData> poly_data = surface_filter->GetOutput ();
+#if VTK_MAJOR_VERSION < 6
     all_data->AddInput (poly_data);
+#else
+    all_data->AddInputData (poly_data);
+#endif
 
     // Create an Actor
     vtkSmartPointer<vtkActor> actor;
@@ -613,7 +638,11 @@ pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double ra
   //////////////////////////////////////////////////////////////////////////
   // Get the actor pointer
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+#if VTK_MAJOR_VERSION < 6
   vtkAlgorithm *algo = actor->GetMapper ()->GetInput ()->GetProducerPort ()->GetProducer ();
+#else
+  vtkAlgorithm *algo = actor->GetMapper ()->GetInputAlgorithm ();
+#endif
   vtkSphereSource *src = vtkSphereSource::SafeDownCast (algo);
 
   src->SetCenter (double (center.x), double (center.y), double (center.z));
@@ -796,7 +825,11 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   polyData->SetLines (lines);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput (polyData);
+#else
+  mapper->SetInputData (polyData);
+#endif
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
 
@@ -871,7 +904,11 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
   polyData->SetLines(lines);
 
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput (polyData);
+#else
+  mapper->SetInputData (polyData);
+#endif
   mapper->SetColorModeToMapScalars();
   mapper->SetScalarModeToUsePointData();
 
@@ -970,7 +1007,6 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_data->SetLines (line_cells);
   line_data->GetPointData ()->SetTCoords (line_tcoords);
   line_data->GetCellData ()->SetScalars (line_colors);
-  line_data->Update ();
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
@@ -1075,7 +1111,6 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_data->SetLines (line_cells);
   line_data->GetPointData ()->SetTCoords (line_tcoords);
   line_data->GetCellData ()->SetScalars (line_colors);
-  line_data->Update ();
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
@@ -1178,10 +1213,13 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
   line_data->SetLines (line_cells);
   line_data->GetPointData ()->SetTCoords (line_tcoords);
   line_data->GetCellData ()->SetScalars (line_colors);
-  line_data->Update ();
 
   // Update the mapper
+#if VTK_MAJOR_VERSION < 6
   reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
+#else
+  reinterpret_cast<vtkPolyDataMapper*> (actor->GetMapper ())->SetInputData (line_data);
+#endif
 
   return (true);
 }
@@ -1213,7 +1251,6 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData<PointT> (geometry_handler, polydata, initcells);
   // use the given geometry handler
-  polydata->Update ();
 
   // Get the colors from the handler
   bool has_colors = false;
@@ -1277,7 +1314,6 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData<PointT> (geometry_handler, polydata, initcells);
   // use the given geometry handler
-  polydata->Update ();
 
   // Get the colors from the handler
   bool has_colors = false;
@@ -1342,7 +1378,6 @@ pcl::visualization::PCLVisualizer::fromHandlersToScreen (
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData (geometry_handler, polydata, initcells);
   // use the given geometry handler
-  polydata->Update ();
 
   // Get the colors from the handler
   bool has_colors = false;
@@ -1394,12 +1429,10 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkPolyData> polydata = reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   // Convert the PointCloud to VTK PolyData
   convertPointCloudToVTKPolyData<PointT> (cloud, polydata, am_it->second.cells);
-  polydata->Update ();
 
   // Set scalars to blank, since there is no way we can update them here.
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
-  polydata->Update ();
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
@@ -1407,7 +1440,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
+#if VTK_MAJOR_VERSION < 6
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+#else
+  reinterpret_cast<vtkPolyDataMapper*> (am_it->second.actor->GetMapper ())->SetInputData (polydata);
+#endif
   return (true);
 }
 
@@ -1432,7 +1469,6 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Set scalars to blank, since there is no way we can update them here.
   vtkSmartPointer<vtkDataArray> scalars;
   polydata->GetPointData ()->SetScalars (scalars);
-  polydata->Update ();
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
@@ -1440,7 +1476,11 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
+#if VTK_MAJOR_VERSION < 6
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+#else
+  reinterpret_cast<vtkPolyDataMapper*> (am_it->second.actor->GetMapper ())->SetInputData (polydata);
+#endif
   return (true);
 }
 
@@ -1507,13 +1547,16 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   scalars->GetRange (minmax);
   // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
-  polydata->Update ();
 
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
+#if VTK_MAJOR_VERSION < 6
   reinterpret_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->SetInput (polydata);
+#else
+  reinterpret_cast<vtkPolyDataMapper*> (am_it->second.actor->GetMapper ())->SetInputData (polydata);
+#endif
   return (true);
 }
 
@@ -1639,7 +1682,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     allocVtkPolyData (polydata);
     cell_array->GetData ()->SetNumberOfValues (idx);
     cell_array->Squeeze ();
-    polydata->SetStrips (cell_array);
+    polydata->SetPolys (cell_array);
     polydata->SetPoints (points);
   
     if (colors)
@@ -1668,7 +1711,6 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     poly_grid->Allocate (1, 1);
     poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
     poly_grid->SetPoints (points);
-    poly_grid->Update ();
     if (colors)
       poly_grid->GetPointData ()->SetScalars (colors);
 
@@ -1812,8 +1854,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   cells->GetData ()->SetNumberOfValues (idx);
   cells->Squeeze ();
   // Set the the vertices
-  polydata->SetStrips (cells);
-  polydata->Update ();
+  polydata->SetPolys (cells);
 
   return (true);
 }

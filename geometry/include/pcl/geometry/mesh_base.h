@@ -726,7 +726,7 @@ namespace pcl
           return (this->isBoundary (idx_face, boost::integral_constant <bool, CheckVerticesT> ()));
         }
 
-        /** \brief Check if the given face lies on the boundary. This method uses isBoundary <true> which checks if any vertex lies on the boundary. */
+        /** \brief Check if the given face lies on the boundary. This method uses isBoundary \c true which checks if any vertex lies on the boundary. */
         inline bool
         isBoundary (const FaceIndex& idx_face) const
         {
@@ -1306,7 +1306,7 @@ namespace pcl
 
         /** \brief Check if the half-edge bc is the next half-edge of ab.
           * \param[in]  idx_he_ab           Index to the half-edge between the vertices a and b.
-          * \param[in]  idx_ha_bc           Index to the half-edge between the vertices b and c.
+          * \param[in]  idx_he_bc           Index to the half-edge between the vertices b and c.
           * \param[in]  is_new_ab           Half-edge ab is new.
           * \param[in]  is_new_bc           Half-edge bc is new.
           * \param[out] make_adjacent_ab_bc Half-edges ab and bc need to be made adjacent.
@@ -1350,7 +1350,7 @@ namespace pcl
 
         /** \brief Make the half-edges bc the next half-edge of ab.
           * \param[in]      idx_he_ab          Index to the half-edge between the vertices a and b.
-          * \param[in]      idx_ha_bc          Index to the half-edge between the vertices b and c.
+          * \param[in]      idx_he_bc          Index to the half-edge between the vertices b and c.
           * \param[in, out] idx_free_half_edge Free half-edge needed to re-connect the half-edges around vertex b.
           */
         void
@@ -1743,10 +1743,10 @@ namespace pcl
         ////////////////////////////////////////////////////////////////////////
 
         /** \brief Removes mesh elements and data that are marked as deleted from the container.
-          * \IndexContainerT   e.g. std::vector <VertexIndex>
-          * \ElementContainerT e.g. std::vector <Vertex>
-          * \DataContainerT    e.g. std::vector <VertexData>
-          * \HasDataT          Integral constant specifying if the mesh has data associated with the elements.
+          * \param IndexContainerT   e.g. std::vector \<VertexIndex\>
+          * \param ElementContainerT e.g. std::vector \<Vertex\>
+          * \param DataContainerT    e.g. std::vector \<VertexData\>
+          * \param HasDataT          Integral constant specifying if the mesh has data associated with the elements.
           * \param[in, out] elements Container for the mesh elements. Resized to the new size.
           * \param[in, out] data_cloud Container for the mesh data. Resized to the new size.
           * \return Container with the same size as the old input data. Holds the indices to the new elements for each non-deleted element and an invalid index if it is deleted.

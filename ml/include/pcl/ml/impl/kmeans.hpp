@@ -65,9 +65,6 @@ pcl::Kmeans<PointT>::~Kmeans ()
 template <typename PointT> void
 pcl::Kmeans<PointT>::k_means ()
 {
-
-
-
 }
 
 template <typename PointT> void

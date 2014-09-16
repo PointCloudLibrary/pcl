@@ -92,7 +92,7 @@ namespace pcl
       getNormals () const { return (input_normals_); }
 
       /** \brief Set the threshold for shadow points rejection
-        * \param[in] thresold the threshold
+        * \param[in] threshold the threshold
         */
       inline void
       setThreshold (float threshold) { threshold_ = threshold; }

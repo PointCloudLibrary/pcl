@@ -51,6 +51,7 @@
 
 #include <boost/shared_array.hpp>
 
+#include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
 
 class vtkImageSlice;
@@ -901,13 +902,13 @@ namespace pcl
         resetStoppedFlag () { stopped_ = false; }
 
         /** \brief Fire up a mouse event with a specified event ID
-          * \param[int] event_id the id of the event
+          * \param[in] event_id the id of the event
           */
         void 
         emitMouseEvent (unsigned long event_id);
         
         /** \brief Fire up a keyboard event with a specified event ID
-          * \param[int] event_id the id of the event
+          * \param[in] event_id the id of the event
           */
         void 
         emitKeyboardEvent (unsigned long event_id);
@@ -1012,7 +1013,7 @@ namespace pcl
         /** \brief The renderer. */
         vtkSmartPointer<vtkRenderer> ren_;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
         /** \brief Global prop. This is the actual "actor". */
         vtkSmartPointer<vtkImageSlice> slice_;
 #endif

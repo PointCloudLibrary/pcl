@@ -128,8 +128,6 @@ namespace pcl
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud source
         */
       virtual void
       setInputSource (const PointCloudSourceConstPtr& /*cloud*/)
@@ -141,7 +139,7 @@ namespace pcl
 
       /** \brief Add a source cloud to the joint solver
         *
-        * \param[in] source cloud
+        * \param[in] cloud source cloud
         */
       inline void
       addInputSource (const PointCloudSourceConstPtr &cloud)
@@ -154,8 +152,6 @@ namespace pcl
       
       /** \brief Provide a pointer to the input target 
         * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud target
         */
       virtual void
       setInputTarget (const PointCloudTargetConstPtr& /*cloud*/)
@@ -167,7 +163,7 @@ namespace pcl
 
       /** \brief Add a target cloud to the joint solver
         *
-        * \param[in] target cloud
+        * \param[in] cloud target cloud
         */
       inline void
       addInputTarget (const PointCloudTargetConstPtr &cloud)
@@ -183,7 +179,7 @@ namespace pcl
         * input source / target pair. They do not need to have trees 
         * or input clouds set ahead of time.
         *
-        * \param[in] Correspondence estimation
+        * \param[in] ce Correspondence estimation
         */
       inline void
       addCorrespondenceEstimation (CorrespondenceEstimationPtr ce)

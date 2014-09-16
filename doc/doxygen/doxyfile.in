@@ -27,7 +27,7 @@ INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = 
 STRIP_FROM_INC_PATH    = @STRIPPED_HEADERS@
-SHORT_NAMES            = YES
+SHORT_NAMES            = @SHORT_NAMES@
 JAVADOC_AUTOBRIEF      = YES
 QT_AUTOBRIEF           = NO
 MULTILINE_CPP_IS_BRIEF = NO
@@ -51,7 +51,6 @@ SUBGROUPING            = YES
 INLINE_GROUPED_CLASSES = NO
 INLINE_SIMPLE_STRUCTS  = NO
 TYPEDEF_HIDES_STRUCT   = NO
-SYMBOL_CACHE_SIZE      = 0
 LOOKUP_CACHE_SIZE      = 0
 
 #---------------------------------------------------------------------------
@@ -88,7 +87,6 @@ ENABLED_SECTIONS       =
 MAX_INITIALIZER_LINES  = 30
 SHOW_USED_FILES        = YES
 SHOW_FILES             = NO
-SHOW_DIRECTORIES       = NO
 SHOW_NAMESPACES        = YES
 FILE_VERSION_FILTER    = 
 LAYOUT_FILE            = "@PCL_SOURCE_DIR@/doc/doxygen/doxygen_layout.xml"
@@ -169,9 +167,9 @@ HTML_HEADER            =
 HTML_FOOTER            = @PCL_SOURCE_DIR@/doc/doxygen/footer.html
 HTML_STYLESHEET        = 
 HTML_EXTRA_FILES       =
-HTML_COLORSTYLE_HUE    = 220
-HTML_COLORSTYLE_SAT    = 100
-HTML_COLORSTYLE_GAMMA  = 80
+HTML_COLORSTYLE_HUE    = 87
+HTML_COLORSTYLE_SAT    = 46
+HTML_COLORSTYLE_GAMMA  = 73
 HTML_TIMESTAMP         = YES
 HTML_DYNAMIC_SECTIONS  = YES
 GENERATE_DOCSET        = YES
@@ -277,9 +275,10 @@ EXPAND_ONLY_PREDEF     = YES
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           = 
 INCLUDE_FILE_PATTERNS  = *.h
-#PREDEFINED             = protected=private \
-PREDEFINED             = "HAVE_QHULL=1" \
-                         "HAVE_OPENNI=1"
+#PREDEFINED            = protected=private \
+PREDEFINED =           = "HAVE_QHULL=1" \
+                         "HAVE_OPENNI=1" \
+                         "PCL_DEPRECATED(x)="
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 

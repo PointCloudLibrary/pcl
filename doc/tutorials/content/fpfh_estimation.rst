@@ -84,7 +84,7 @@ Estimating FPFH features
 ------------------------
 
 Fast Point Feature Histograms are implemented in PCL as part of the
-`pcl_features <http://docs.pointclouds.org/trunk/group__features.html>`_
+`pcl_features <http://docs.pointclouds.org/trunk/a02944.html>`_
 library. 
 
 The default FPFH implementation uses 11 binning subdivisions (e.g., each of the

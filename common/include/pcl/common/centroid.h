@@ -58,6 +58,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -83,6 +84,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -110,6 +112,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -140,6 +143,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -1111,9 +1115,9 @@ namespace pcl
                    PointOutT& centroid);
 
   /** Compute the centroid of a set of points and return it as a point.
-    *
+    * \param[in] cloud
     * \param[in] indices point cloud indices that need to be used
-    *
+    * \param[out] centroid
     * This is an overloaded function provided for convenience. See the
     * documentation for computeCentroid().
     *

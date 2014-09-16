@@ -16,9 +16,10 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS
 
 if(build)
 
-    include_directories("${PCL_SOURCE_DIR}/test/gtest-1.6.0/include"
-                        "${PCL_SOURCE_DIR}/test/gtest-1.6.0/")
-    add_library(pcl_gtest STATIC gtest-1.6.0/src/gtest-all.cc)
+    find_package(Gtest REQUIRED)
+    include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
+
+    add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 	
     if( MSVC11 ) # VS2012 doesn't correctly support variadic templates yet
         add_definitions("-D_VARIADIC_MAX=10")

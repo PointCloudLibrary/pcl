@@ -136,7 +136,6 @@ namespace pcl
       /** \brief Get the standard deviation multiplier for the distance threshold calculation.
         * \details The distance threshold will be equal to: mean + stddev_mult * stddev.
         * Points will be classified as inlier or outlier if their average neighbor distance is below or above this threshold respectively.
-        * \param[in] stddev_mult The standard deviation multiplier.
         */
       inline double
       getStddevMulThresh ()

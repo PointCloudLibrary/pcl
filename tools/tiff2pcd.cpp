@@ -342,8 +342,8 @@ int main(int argc, char ** argv)
     if(ret == 2 || ret == 3)
     {
       reader->SetFileName (tiff_rgb_files[i].c_str());
+      reader->Update ();
       rgb_data = reader->GetOutput ();
-      rgb_data->Update ();
 
       std::string rgb_filename = tiff_rgb_paths[i].filename().string();
       std::string rgb_time = rgb_filename.substr(6,22);
@@ -380,8 +380,8 @@ int main(int argc, char ** argv)
           if(read == 2 || read == 3)
           {
             depth_reader->SetFileName (tiff_depth_files[j].c_str());
+            depth_reader->Update ();
             depth_data = depth_reader->GetOutput ();
-            depth_data->Update ();
 
             processAndSave(depth_data, rgb_data, depth_time, focal_length, format, color, depth, use_output_path, output_path_);
           }

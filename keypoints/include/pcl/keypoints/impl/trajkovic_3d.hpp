@@ -230,10 +230,9 @@ pcl::TrajkovicKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCl
   std::vector<bool> occupency_map (indices.size (), false);
   const int width (input_->width);
   const int height (input_->height);
-  const int occupency_map_size (indices.size ());
 
 #ifdef _OPENMP
-#pragma omp parallel for shared (output, keypoints_indices_) num_threads (threads_)
+#pragma omp parallel for shared (output) num_threads (threads_)
 #endif
   for (int i = 0; i < indices.size (); ++i)
   {

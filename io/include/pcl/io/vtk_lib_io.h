@@ -54,6 +54,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header 
 #endif
+#include <vtkVersion.h>
 #include <vtkSmartPointer.h>
 #include <vtkStructuredGrid.h>
 #include <vtkPoints.h>

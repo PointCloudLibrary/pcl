@@ -111,21 +111,21 @@ namespace pcl
                      char const *color=NULL);
 	
         /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
-          * \param[in] array_X X coordinates of point correspondence array
-          * \param[in] array_Y Y coordinates of point correspondence array
-          * \param[in] size length of the array arrayX and arrayY
+          * \param[in] array_x X coordinates of point correspondence array
+          * \param[in] array_y Y coordinates of point correspondence array
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
          */
         void 
-        addPlotData (std::vector<double> const &array_X, 
-                     std::vector<double>const &array_Y, 
+        addPlotData (std::vector<double> const &array_x, 
+                     std::vector<double>const &array_y, 
                      char const * name = "Y Axis", 
                      int type = vtkChart::LINE,
                      std::vector<char> const &color = std::vector<char> ());
         
-        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. 
+        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence.
+          * \param plot_data
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 

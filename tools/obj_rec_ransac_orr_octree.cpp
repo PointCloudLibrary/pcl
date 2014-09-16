@@ -54,6 +54,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/ransac_based/orr_octree.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <vtkVersion.h>
 #include <vtkPolyData.h>
 #include <vtkAppendPolyData.h>
 #include <vtkPolyDataReader.h>
@@ -304,7 +305,11 @@ void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
   cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
   cube->Update ();
 
+#if VTK_MAJOR_VERSION < 6
   additive_octree->AddInput (cube->GetOutput ());
+#else
+  additive_octree->AddInputData (cube->GetOutput ());
+#endif
 }
 
 //===============================================================================================================================
@@ -363,7 +368,11 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz, bool show_full_leaves_o
   vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
   vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput(vtk_octree);
+#else
+  mapper->SetInputData (vtk_octree);
+#endif
   octree_actor->SetMapper(mapper);
 
   // Set the appearance & add to the renderer

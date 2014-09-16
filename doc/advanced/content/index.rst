@@ -111,20 +111,10 @@ Improving the PCL documentation
   documentation and tutorials/examples, please read our short guide on how to
   start.
 
-..
-  Profiling your code
+How to build a minimal example
+------------------------------
 
+* :ref:`minimal_example`
 
-Contents
---------
-
-.. toctree::
-  
-   c_cache
-   distcc
-   compiler_optimizations
-   single_compile_unit
-   pcl_style_guide
-   branches_repository
-   how_to_write_a_tutorial
+  In case you need help to debug your code, please follow this guidelines to write a minimal example.
 

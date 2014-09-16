@@ -126,8 +126,8 @@ namespace pcl
       }
 
       /** \brief Computes the descriptors for the previously specified 
-        *        points and input data.
-        * \param[out] descriptors the destination for the computed descriptors.
+        * points and input data.
+        * \param[out] output descriptors the destination for the computed descriptors.
         */
       void
       compute (PointCloudOutT &output);

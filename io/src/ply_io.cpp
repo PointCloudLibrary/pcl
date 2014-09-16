@@ -301,7 +301,7 @@ namespace pcl
   boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if ((element_name == "range_grid") && (property_name == "vertex_indices")) 
+    if ((element_name == "range_grid") && (property_name == "vertex_indices") && polygons_) 
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
@@ -621,8 +621,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {
@@ -681,8 +681,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {

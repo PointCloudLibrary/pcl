@@ -51,6 +51,7 @@
 #include <pcl/people/person_cluster.h>
 #include <pcl/people/head_based_subcluster.h>
 #include <pcl/people/person_classifier.h>
+#include <pcl/common/transforms.h>
 
 namespace pcl
 {
@@ -99,6 +100,14 @@ namespace pcl
       setGround (Eigen::VectorXf& ground_coeffs);
 
       /**
+       * \brief Set the transformation matrix, which is used in order to transform the given point cloud, the ground plane and the intrinsics matrix to the internal coordinate frame.
+       *
+       * \param[in] cloud A pointer to the input cloud.
+       */
+      void
+      setTransformation (const Eigen::Matrix3f& transformation);
+
+      /**
        * \brief Set sampling factor. 
        *
        * \param[in] sampling_factor Value of the downsampling factor (in each dimension) which is applied to the raw point cloud (default = 1.).
@@ -131,6 +140,15 @@ namespace pcl
       setClassifier (pcl::people::PersonClassifier<pcl::RGB> person_classifier);
 
       /**
+       * \brief Set the field of view of the point cloud in z direction.
+       *
+       * \param[in] min The beginning of the field of view in z-direction, should be usually set to zero.
+       * \param[in] max The end of the field of view in z-direction.
+       */
+      void
+      setFOV (float min, float max);
+
+      /**
        * \brief Set sensor orientation (vertical = true means portrait mode, vertical = false means landscape mode).
        *
        * \param[in] vertical Set landscape/portait camera orientation (default = false).
@@ -147,22 +165,15 @@ namespace pcl
       setHeadCentroid (bool head_centroid);
 
       /**
-       * \brief Set minimum and maximum allowed height for a person cluster.
+       * \brief Set minimum and maximum allowed height and width for a person cluster.
        *
        * \param[in] min_height Minimum allowed height for a person cluster (default = 1.3).
        * \param[in] max_height Maximum allowed height for a person cluster (default = 2.3).
+       * \param[in] min_width Minimum width for a person cluster (default = 0.1).
+       * \param[in] max_width Maximum width for a person cluster (default = 8.0).
        */
       void
-      setHeightLimits (float min_height, float max_height);
-
-      /**
-       * \brief Set minimum and maximum allowed number of points for a person cluster.
-       *
-       * \param[in] min_points Minimum allowed number of points for a person cluster.
-       * \param[in] max_points Maximum allowed number of points for a person cluster.
-       */
-      void
-      setDimensionLimits (int min_points, int max_points);
+      setPersonClusterLimits (float min_height, float max_height, float min_width, float max_width);
 
       /**
        * \brief Set minimum distance between persons' heads.
@@ -173,13 +184,15 @@ namespace pcl
       setMinimumDistanceBetweenHeads (float heads_minimum_distance);
 
       /**
-       * \brief Get minimum and maximum allowed height for a person cluster.
+       * \brief Get the minimum and maximum allowed height and width for a person cluster.
        *
        * \param[out] min_height Minimum allowed height for a person cluster.
        * \param[out] max_height Maximum allowed height for a person cluster.
+       * \param[out] min_width Minimum width for a person cluster.
+       * \param[out] max_width Maximum width for a person cluster.
        */
       void
-      getHeightLimits (float& min_height, float& max_height);
+      getPersonClusterLimits (float& min_height, float& max_height, float& min_width, float& max_width);
 
       /**
        * \brief Get minimum and maximum allowed number of points for a person cluster.
@@ -201,6 +214,12 @@ namespace pcl
        */
       Eigen::VectorXf
       getGround ();
+
+      /**
+       * \brief Get the filtered point cloud.
+       */
+      PointCloudPtr
+      getFilteredCloud ();
 
       /**
        * \brief Get pointcloud after voxel grid filtering and ground removal.
@@ -225,6 +244,36 @@ namespace pcl
       void
       swapDimensions (pcl::PointCloud<pcl::RGB>::Ptr& cloud);
 
+     /**
+       * \brief Estimates min_points_ and max_points_ based on the minimal and maximal cluster size and the voxel size.
+       */
+      void
+      updateMinMaxPoints ();
+
+      /**
+       * \brief Applies the transformation to the input point cloud.
+       */
+      void
+      applyTransformationPointCloud ();
+
+      /**
+       * \brief Applies the transformation to the ground plane.
+       */
+      void
+      applyTransformationGround ();
+
+      /**
+       * \brief Applies the transformation to the intrinsics matrix.
+       */
+      void
+      applyTransformationIntrinsics ();
+
+      /**
+       * \brief Reduces the input cloud to one point per voxel and limits the field of view.
+       */
+      void
+      filter ();
+
       /**
        * \brief Perform people detection on the input data and return people clusters information.
        * 
@@ -243,13 +292,28 @@ namespace pcl
       float voxel_size_;                  
       
       /** \brief ground plane coefficients */
-      Eigen::VectorXf ground_coeffs_;            
-      
+      Eigen::VectorXf ground_coeffs_;
+
+      /** \brief flag stating whether the ground coefficients have been set or not */
+      bool ground_coeffs_set_;
+
+      /** \brief the transformed ground coefficients */
+      Eigen::VectorXf ground_coeffs_transformed_;
+
       /** \brief ground plane normalization factor */
-      float sqrt_ground_coeffs_;              
-      
+      float sqrt_ground_coeffs_;
+
+      /** \brief rotation matrix which transforms input point cloud to internal people tracker coordinate frame */
+      Eigen::Matrix3f transformation_;
+
+      /** \brief flag stating whether the transformation matrix has been set or not */
+      bool transformation_set_;
+
       /** \brief pointer to the input cloud */
-      PointCloudPtr cloud_;   
+      PointCloudPtr cloud_;
+
+      /** \brief pointer to the filtered cloud */
+      PointCloudPtr cloud_filtered_;
 
       /** \brief pointer to the cloud after voxel grid filtering and ground removal */
       PointCloudPtr no_ground_cloud_;              
@@ -261,8 +325,20 @@ namespace pcl
       float max_height_;                  
       
       /** \brief person clusters minimum height from the ground plane */
-      float min_height_;                  
-      
+      float min_height_;
+
+      /** \brief person clusters maximum width, used to estimate how many points maximally represent a person cluster */
+      float max_width_;
+
+      /** \brief person clusters minimum width, used to estimate how many points minimally represent a person cluster */
+      float min_width_;
+
+      /** \brief the beginning of the field of view in z-direction, should be usually set to zero */
+      float min_fov_;
+
+      /** \brief the end of the field of view in z-direction */
+      float max_fov_;
+
       /** \brief if true, the sensor is considered to be vertically placed (portrait mode) */
       bool vertical_;                    
       
@@ -276,20 +352,23 @@ namespace pcl
       /** \brief minimum number of points for a person cluster */
       int min_points_;                  
       
-      /** \brief true if min_points and max_points have been set by the user, false otherwise */
-      bool dimension_limits_set_;              
-      
       /** \brief minimum distance between persons' heads */
       float heads_minimum_distance_;            
       
       /** \brief intrinsic parameters matrix of the RGB camera */
-      Eigen::Matrix3f intrinsics_matrix_;          
-      
+      Eigen::Matrix3f intrinsics_matrix_;
+
+      /** \brief flag stating whether the intrinsics matrix has been set or not */
+      bool intrinsics_matrix_set_;
+
+      /** \brief the transformed intrinsics matrix */
+      Eigen::Matrix3f intrinsics_matrix_transformed_;
+
       /** \brief SVM-based person classifier */
       pcl::people::PersonClassifier<pcl::RGB> person_classifier_;  
       
       /** \brief flag stating if the classifier has been set or not */
-      bool person_classifier_set_flag_;        
+      bool person_classifier_set_flag_;
     };
   } /* namespace people */
 } /* namespace pcl */

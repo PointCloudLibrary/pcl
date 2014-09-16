@@ -113,7 +113,8 @@ namespace pcl
         getDeltaHue () { return (delta_hue_); }
 
         /** \brief Cluster extraction in a PointCloud given by <setInputCloud (), setIndices ()>
-          * \param clusters the resultant point clusters
+          * \param indices_in
+          * \param indices_out
           */
         void segment (PointIndices &indices_in, PointIndices &indices_out);
 

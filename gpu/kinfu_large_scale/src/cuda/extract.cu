@@ -286,7 +286,7 @@ namespace pcl
           int ftid = Block::flattenedThreadId ();
 
           int minimum_Z = 0;
-          int maximum_Z = VOLUME_Z;
+          int maximum_Z = VOLUME_Z - 1;
 
           for (int z = minimum_Z; z < maximum_Z; ++z)
           {

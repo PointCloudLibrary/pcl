@@ -92,8 +92,8 @@ namespace pcl
        * \brief Create subclusters centered on the heads position from the current cluster.
        * 
        * \param[in] cluster A PersonCluster.
-       * \param[in] maxima_number Number of local maxima to use as centers of the new cluster.
-       * \param[in] maxima_cloud_indices Cloud indices of local maxima to use as centers of the new cluster.
+       * \param[in] maxima_number_after_filtering Number of local maxima to use as centers of the new cluster.
+       * \param[in] maxima_cloud_indices_filtered Cloud indices of local maxima to use as centers of the new cluster.
        * \param[out] subclusters Output vector of PersonCluster objects derived from the input cluster.
        */
       void

@@ -242,7 +242,7 @@ namespace pcl
       }
 
       /** \brief Set the minimum allowable ratio between eigenvalues to prevent singular covariance matrices.
-        * \param[in] min_points_per_voxel the minimum allowable ratio between eigenvalues
+        * \param[in] min_covar_eigvalue_mult the minimum allowable ratio between eigenvalues
         */
       inline void
       setCovEigValueInflationRatio (double min_covar_eigvalue_mult)
@@ -397,7 +397,7 @@ namespace pcl
 
 
       /** \brief Get a cloud to visualize each voxels normal distribution.
-       * \param[out] a cloud created by sampling the normal distributions of each voxel
+       * \param[out] cell_cloud a cloud created by sampling the normal distributions of each voxel
        */
       void
       getDisplayCloud (pcl::PointCloud<PointXYZ>& cell_cloud);
@@ -438,7 +438,8 @@ namespace pcl
 
       /** \brief Search for the k-nearest occupied voxels for the given query point.
        * \note Only voxels containing a sufficient number of points are used.
-       * \param[in] point the given query point
+       * \param[in] cloud the given query point
+       * \param[in] index the index
        * \param[in] k the number of neighbors to search for
        * \param[out] k_leaves the resultant leaves of the neighboring points
        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
@@ -460,6 +461,7 @@ namespace pcl
        * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
        * \param[out] k_leaves the resultant leaves of the neighboring points
        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
+       * \param[in] max_nn
        * \return number of neighbors found
        */
       int
@@ -495,6 +497,7 @@ namespace pcl
        * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
        * \param[out] k_leaves the resultant leaves of the neighboring points
        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
+       * \param[in] max_nn
        * \return number of neighbors found
        */
       inline int

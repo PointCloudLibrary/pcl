@@ -56,10 +56,10 @@ namespace pcl
 {
   namespace kinfuLS
   {
-    /** \brief WorldModel maintains a 3D point cloud that can be queried and updated via helper functions.
-      * \The world is represented as a point cloud.
-      * \When new points are added to the world, we replace old ones by the newest ones.
-      * \This is acheived by setting old points to nan (for speed)
+    /** \brief WorldModel maintains a 3D point cloud that can be queried and updated via helper functions.\n
+      * The world is represented as a point cloud.\n
+      * When new points are added to the world, we replace old ones by the newest ones.
+      * This is acheived by setting old points to nan (for speed)
       * \author Raphael Favier
       */
     template <typename PointT>
@@ -128,9 +128,9 @@ namespace pcl
           * \param[in] offset_x shift on X, in indices
           * \param[in] offset_y shift on Y, in indices
           * \param[in] offset_z shift on Z, in indices
-          * \param[in] volume_x size of the cube, X axis, in indices
-          * \param[in] volume_y size of the cube, Y axis, in indices
-          * \param[in] volume_z size of the cube, Z axis, in indices
+          * \param[in] size_x size of the cube, X axis, in indices
+          * \param[in] size_y size of the cube, Y axis, in indices
+          * \param[in] size_z size of the cube, Z axis, in indices
           */                    
         void setSliceAsNans (const double origin_x, const double origin_y, const double origin_z,
                             const double offset_x, const double offset_y, const double offset_z,

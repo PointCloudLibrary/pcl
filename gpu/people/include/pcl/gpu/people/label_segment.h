@@ -71,14 +71,14 @@ namespace pcl
     {
       namespace label_skeleton
       {
-        /**
-         * @brief this function smooths the label image based on label and depth
-         * @param[in] lmap_in the cvMat with the labels, must be CV_8UC1
-         * @param[in] dmap the cvMat with the depths, must be CV_16U in mm
-         * @param[out] lmap_out the smoothed output labelmap as cvMat
-         * @param[in] patch_size make the patch size for smoothing
-         * @param[in] depthThres the z-distance thresshold
-         * @todo add a Gaussian contribution function to depth and vote
+        /*
+         * \brief this function smooths the label image based on label and depth
+         * \param[in] lmap_in the cvMat with the labels, must be CV_8UC1
+         * \param[in] dmap the cvMat with the depths, must be CV_16U in mm
+         * \param[out] lmap_out the smoothed output labelmap as cvMat
+         * \param[in] patch_size make the patch size for smoothing
+         * \param[in] depthThres the z-distance thresshold
+         * \todo add a Gaussian contribution function to depth and vote
          **/
         //inline void smoothLabelImage ( cv::Mat&      lmap_in,
         //                        cv::Mat&      dmap,
@@ -147,14 +147,14 @@ namespace pcl
         //  }
         //}
 
-        /**
-         * @brief this function smooths the label image based on label and depth
-         * @param[in] lmap_in the cvMat with the labels, must be CV_8UC1
-         * @param[in] dmap the cvMat with the depths, must be CV_16U in mm
-         * @param[out] lmap_out the smoothed output labelmap as cvMat
-         * @todo make the patch size a parameter
-         * @todo make the z-distance a parameter
-         * @todo add a Gaussian contribution function to depth and vote
+        /*
+         * \brief this function smooths the label image based on label and depth
+         * \param[in] lmap_in the cvMat with the labels, must be CV_8UC1
+         * \param[in] dmap the cvMat with the depths, must be CV_16U in mm
+         * \param[out] lmap_out the smoothed output labelmap as cvMat
+         * \todo make the patch size a parameter
+         * \todo make the z-distance a parameter
+         * \todo add a Gaussian contribution function to depth and vote
          **/
         //inline void smoothLabelImage2 ( cv::Mat&  lmap_in,
         //                        cv::Mat&  dmap,

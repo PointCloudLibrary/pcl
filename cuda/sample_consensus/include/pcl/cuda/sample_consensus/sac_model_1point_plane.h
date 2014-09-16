@@ -213,6 +213,7 @@ namespace pcl
           * \param threshold a maximum admissible distance threshold for determining the 
           * inliers from the outliers
           * \param inliers the resultant model inliers
+          * \param inliers_stencil
           */
         int
         selectWithinDistance (const Coefficients &model_coefficients, 

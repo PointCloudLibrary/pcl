@@ -191,7 +191,7 @@ namespace pcl
         virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > 
         clone () const
         {
-          CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar>::Ptr copy (new CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> (*this));
+          Ptr copy (new CorrespondenceEstimationBackProjection<PointSource, PointTarget, NormalT, Scalar> (*this));
           return (copy);
         }
 

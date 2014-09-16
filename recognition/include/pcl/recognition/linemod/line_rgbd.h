@@ -121,6 +121,7 @@ namespace pcl
         * SparseQuantizedMultiModTemplate format.
         *
         * \param[in] file_name The name of the file that stores the templates.
+        * \param object_id
         *
         * \return true, if the operation was successful, false otherwise.
         */
@@ -187,6 +188,8 @@ namespace pcl
       }
 
       /** \brief Creates a template from the specified data and adds it to the matching queue. 
+        * \param cloud
+        * \param object_id
         * \param[in] mask_xyz the mask that determine which parts of the xyz-modality are used for creating the template.
         * \param[in] mask_rgb the mask that determine which parts of the rgb-modality are used for creating the template.
         * \param[in] region the region which will be associated with the template (can be larger than the actual modality-maps).
@@ -273,8 +276,8 @@ namespace pcl
       removeOverlappingDetections ();
 
       /** \brief Computes the volume of the intersection between two bounding boxes.
-        * \param[in] First bounding box.
-        * \param[in] Second bounding box.
+        * \param[in] box1 First bounding box.
+        * \param[in] box2 Second bounding box.
         */
       static float
       computeBoundingBoxIntersectionVolume (const BoundingBoxXYZ &box1, const BoundingBoxXYZ &box2);

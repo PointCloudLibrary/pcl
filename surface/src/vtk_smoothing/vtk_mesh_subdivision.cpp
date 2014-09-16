@@ -39,6 +39,7 @@
 #include <pcl/surface/vtk_smoothing/vtk_mesh_subdivision.h>
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
+#include <vtkVersion.h>
 #include <vtkLinearSubdivisionFilter.h>
 #include <vtkLoopSubdivisionFilter.h>
 #include <vtkButterflySubdivisionFilter.h>
@@ -78,7 +79,11 @@ pcl::MeshSubdivisionVTK::performProcessing (pcl::PolygonMesh &output)
       break;
   }
 
+#if VTK_MAJOR_VERSION < 6
   vtk_subdivision_filter->SetInput (vtk_polygons_);
+#else
+  vtk_subdivision_filter->SetInputData (vtk_polygons_);
+#endif
   vtk_subdivision_filter->Update ();
 
   vtk_polygons_ = vtk_subdivision_filter->GetOutput ();

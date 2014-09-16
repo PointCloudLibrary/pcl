@@ -60,13 +60,13 @@ pcl::cloud_composer::CloudComposerItem::addChild (CloudComposerItem *item_arg)
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudComposerItem::paintView (boost::shared_ptr<pcl::visualization::PCLVisualizer>) const
 {
   qDebug () << "Paint View in Cloud Composer Item - doing nothing";
 }
 
 void
-pcl::cloud_composer::CloudComposerItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer> vis) const
+pcl::cloud_composer::CloudComposerItem::removeFromView (boost::shared_ptr<pcl::visualization::PCLVisualizer>) const
 {
   qDebug () << "Remove from View in Cloud Composer Item - doing nothing";
 }

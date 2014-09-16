@@ -5,7 +5,7 @@ PCLPlotter
 
 PCLPlotter provides a very straightforward and easy interface for plotting graphs. One can visualize all sort of important plots - 
 from polynomial functions to histograms - inside the library without going to any other softwares (like MATLAB). 
-Please go through the `documentation <http://docs.pointclouds.org/trunk/classpcl_1_1visualization_1_1_p_c_l_plotter.html>`_ when some specific concepts are introduced in this tutorial to know the exact method signatures.
+Please go through the `documentation <http://docs.pointclouds.org/trunk/a01175.html>`_ when some specific concepts are introduced in this tutorial to know the exact method signatures.
 
 The code for the visualization of a plot are usually as simple as the following snippet.
 
@@ -174,7 +174,7 @@ PCLPlotter provides few other important functionalities other than plotting give
 
 'Plotting' Histogram
 --------------------
-PCLPlotter provides a very convenient MATLAB like histogram plotting function (`hist() <http://www.mathworks.com/help/techdoc/ref/hist.html>`_ in MATLAB). It takes raw data and bins them according to their frequency and plot them as bar chart.
+PCLPlotter provides a very convenient MATLAB like histogram plotting function (`hist() <http://www.mathworks.fr/fr/help/matlab/ref/hist.html>`_ in MATLAB). It takes raw data and bins them according to their frequency and plot them as bar chart.
 
 .. code-block:: cpp
     

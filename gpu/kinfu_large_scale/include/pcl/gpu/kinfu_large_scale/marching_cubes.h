@@ -79,7 +79,7 @@ namespace pcl
         ~MarchingCubes();
         
         /** \brief Runs marching cubes triangulation.
-            * \param[in] kinfu KinFu tracker class to take tsdf volume from
+            * \param[in] tsdf
             * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted triangles. If empty, it will be allocated with default size will be used.          
             * \return Array with triangles. Each 3 consequent poits belond to a single triangle. The returned array points to 'triangles_buffer' data.
             */

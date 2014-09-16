@@ -203,7 +203,6 @@ namespace pcl
         *                             individual pixels in the image in the x-direction
         * \param angular_resolution_y the angular difference (in radians) between the
         *                             individual pixels in the image in the y-direction
-        * \param angular_resolution the angle (in radians) between each sample in the depth image
         * \param point_cloud_center the center of bounding sphere
         * \param point_cloud_radius the radius of the bounding sphere
         * \param sensor_pose an affine matrix defining the pose of the sensor (defaults to

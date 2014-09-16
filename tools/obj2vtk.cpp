@@ -76,12 +76,16 @@ main (int argc, char** argv)
   vtkSmartPointer<vtkPolyData> polydata;
   vtkSmartPointer<vtkOBJReader> reader = vtkSmartPointer<vtkOBJReader>::New ();
   reader->SetFileName (argv[obj_file_indices[0]]);
+  reader->Update ();
   polydata = reader->GetOutput ();
-  polydata->Update ();
 
   // Convert to VTK and save
   vtkSmartPointer<vtkPolyDataWriter> writer = vtkSmartPointer<vtkPolyDataWriter>::New ();
+#if VTK_MAJOR_VERSION < 6
   writer->SetInput (polydata);
+#else
+  writer->SetInputData (polydata);
+#endif
   writer->SetFileName (argv[vtk_file_indices[0]]);
   writer->Write ();
 }

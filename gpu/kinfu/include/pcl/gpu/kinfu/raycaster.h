@@ -103,7 +103,7 @@ namespace pcl
       generateSceneView(View& view, const Eigen::Vector3f& light_source_pose) const;
 
       /** \brief Generates depth image using data raycasted by run method. So call it before.
-        * \param[out] view output array for depth image        
+        * \param[out] depth output array for depth image        
         */
       void
       generateDepthImage(Depth& depth) const;

@@ -41,6 +41,6 @@ before_install:
   - sudo add-apt-repository ppa:libreoffice/ppa -y
   - sudo apt-get update -d
 install:
-  - sudo apt-get install cmake libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev
+  - sudo apt-get install libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev libboost-chrono1.53-dev libusb-1.0-0-dev libgtest-dev
 script:
   - bash .travis.sh

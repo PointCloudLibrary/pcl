@@ -53,8 +53,7 @@ namespace pcl
         }
 
         /** \brief Create a set of random tests to evaluate examples.
-         * \param[in] num_of_features Number features to generated.
-         * \param[out] features Generated features.
+         * \param[in] w Number features to generate.
          */
         void setMaxPatchSize(int w)
         {
@@ -135,9 +134,9 @@ namespace pcl
         }
 
         /** \brief Evaluates a feature on the specified set of examples.
-         * \param[in] features The feature to evaluate.
+         * \param[in] feature The feature to evaluate.
          * \param[in] data_set The data set on which the feature is evaluated.
-         * \param[in] example The set of examples of the data set the feature is evaluated on.
+         * \param[in] examples The set of examples of the data set the feature is evaluated on.
          * \param[out] results The destination for the results of the feature evaluation.
          * \param[out] flags Flags that are supplied together with the results.
          */
@@ -152,11 +151,11 @@ namespace pcl
         }
 
         /** \brief Evaluates a feature on the specified example.
-         * \param[in] features The feature to evaluate.
+         * \param[in] feature The feature to evaluate.
          * \param[in] data_set The data set on which the feature is evaluated.
          * \param[in] example The example of the data set the feature is evaluated on.
-         * \param[out] results The destination for the result of the feature evaluation.
-         * \param[out] flags Flags that are supplied together with the results.
+         * \param[out] result The destination for the result of the feature evaluation.
+         * \param[out] flag Flags that are supplied together with the results.
          */
         void evaluateFeature(const FT & feature, DataSet & data_set, const ExampleIndex & example, float & result, unsigned char & flag) const
         {
@@ -184,10 +183,10 @@ namespace pcl
         }
 
         /** \brief Generates evaluation code for the specified feature and writes it to the specified stream.
-         * \param[in] feature The feature for which code is generated.
-         * \param[out] stream The destionation for the code.
          */
-        void generateCodeForEvaluation(const FT &, ::std::ostream &) const
+         // param[in] feature The feature for which code is generated.
+         // param[out] stream The destination for the code.
+        void generateCodeForEvaluation(const FT &/*feature*/, ::std::ostream &/*stream*/) const
         {
 
         }
@@ -514,18 +513,18 @@ namespace pcl
         }
 
         /** \brief Generates code for branch index computation.
-         * \param[in] node The node for which code is generated.
          * \param[out] stream The destination for the generated code.
          */
+        // param[in] node The node for which code is generated.
         void generateCodeForBranchIndexComputation(NodeType & /*node*/, std::ostream & stream) const
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";
         }
 
         /** \brief Generates code for label output.
-         * \param[in] node The node for which code is generated.
          * \param[out] stream The destination for the generated code.
          */
+        // param[in] node The node for which code is generated.
         void generateCodeForOutput(NodeType & /*node*/, std::ostream & stream) const
         {
           stream << "ERROR: RegressionVarianceStatsEstimator does not implement generateCodeForBranchIndex(...)";

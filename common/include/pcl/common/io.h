@@ -402,6 +402,10 @@ namespace pcl
   /** \brief Copy a point cloud inside a larger one interpolating borders.
     * \param[in] cloud_in the input point cloud dataset
     * \param[out] cloud_out the resultant output point cloud dataset
+    * \param top
+    * \param bottom
+    * \param left
+    * \param right
     * Position of cloud_in inside cloud_out is given by \a top, \a left, \a bottom \a right.
     * \param[in] border_type the interpolating method (pcl::BORDER_XXX)
     *  BORDER_REPLICATE:     aaaaaa|abcdefgh|hhhhhhh
@@ -410,6 +414,7 @@ namespace pcl
     *  BORDER_WRAP:          cdefgh|abcdefgh|abcdefg
     *  BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
     *  BORDER_TRANSPARENT:   mnopqr|abcdefgh|tuvwxyz  where m-r and t-z are orignal values of cloud_out
+    * \param value
     * \throw pcl::BadArgumentException if any of top, bottom, left or right is negative.
     * \ingroup common
     */

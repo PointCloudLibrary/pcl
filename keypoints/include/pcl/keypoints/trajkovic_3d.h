@@ -74,6 +74,7 @@ namespace pcl
 
       /** \brief Constructor
         * \param[in] method the method to be used to determine the corner responses
+        * \param[in] window_size
         * \param[in] first_threshold the threshold used in the simple cornerness test.
         * \param[in] second_threshold the threshold used to reject weak corners.
         */

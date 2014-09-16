@@ -1,15 +1,18 @@
 .. _interactive_icp:
 
+===================================
 Interactive Iterative Closest Point
------------------------------------
+===================================
 
 This tutorial will teach you how to write an interactive ICP viewer. The program will 
 load a point cloud and apply a rigid transformation on it. After that the ICP algorithm will
 align the transformed point cloud with the original. Each time the user presses "space"
 an ICP iteration is done and the viewer is refreshed.
 
+.. contents::
+
 Creating a mesh with Blender
-----------------------------
+============================
 You can easily create a sample point cloud with Blender.
 Install and open Blender then delete the cube in the scene by pressing "Del" key :
 
@@ -37,7 +40,7 @@ Export the mesh into a PLY file :
   :height: 481
 
 The code
---------
+========
 
 First, create a file, let's say, ``interactive_icp.cpp`` in your favorite
 editor, and place the following code inside it:
@@ -46,8 +49,8 @@ editor, and place the following code inside it:
    :language: cpp
    :linenos:
 
-The explanation
----------------
+The explanations
+================
 
 Now, let's break down the code piece by piece.
 
@@ -68,34 +71,34 @@ The bool will help us know when the user asks for the next iteration of ICP
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 14-22
+   :lines: 14-24
 
 This functions takes the reference of a 4x4 matrix and prints the rigid transformation in an human 
 readable way.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 24-29
+   :lines: 25-32
 
 This function is the callback for the viewer. This function will be called whenever a key is pressed
 when the viewer window is on top. If "space" is hit; set the bool to true.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 34-37
+   :lines: 38-41
 
 The 3 point clouds we will use to store the data.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 39-63
+   :lines: 42-71
 
-We check the arguments of the program, try to load the PLY file and set
-the number of initial ICP iterations.
+We check the arguments of the program, set the number of initial ICP iterations
+and try to load the PLY file.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 65-84
+   :lines: 72-91
 
 We transform the original point cloud using a rigid matrix transformation.
 See the related tutorial in PCL documentation for more information.
@@ -105,7 +108,7 @@ See the related tutorial in PCL documentation for more information.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 86-93
+   :lines: 93-101
 
 This is the creation of the ICP object. We set the parameters of the ICP algorithm.
 **setMaximumIterations(iterations)** sets the number of initial iterations to do (1
@@ -115,7 +118,7 @@ ICP object will be used (when the user presses "space").
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 95-103
+   :lines: 103-115
 
 Check if the ICP algorithm converged; otherwise exit the program.
 In case of success we store the transformation matrix in a 4x4 matrix and
@@ -124,7 +127,7 @@ matrix is explained later.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 105-114
+   :lines: 117-127
 
 For the visualization we create two viewports in the visualizer vertically
 separated. **bckgr_gray_level** and **txt_gray_lvl** are variables to easily
@@ -133,7 +136,7 @@ white text/point cloud.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 116-127
+   :lines: 129-141
 
 We add the original point cloud in the 2 viewports and display it the same color
 as **txt_gray_lvl**. We add the point cloud we transformed using the matrix in the left
@@ -141,14 +144,14 @@ viewport in green and the point cloud aligned with ICP in red (right viewport).
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 129-135
+   :lines: 143-150
 
 We add descriptions for the point clouds in each viewport so the user knows what is what.
 The string stream ss is needed to transform the integer **iterations** into a string.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 137-146
+   :lines: 152-161
 
 We set the two viewports background color according to **bckgr_gray_level**.
 To get the camera parameters I simply pressed "C" in the viewer. Then I copied the 
@@ -158,13 +161,13 @@ users pressed a keyboard key when viewer windows is on top.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 148-150
+   :lines: 163-166
 
 This is the normal behaviour if no key is pressed. The viewer waits to exit.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 152-154
+   :lines: 169-172
 
 If the user press any key of the keyboard, the function **keyboardEventOccurred** is called;
 this function checks if the key is "space" or not. If yes the global bool **next_iteration**
@@ -174,7 +177,7 @@ and we set max iterations to 1 in lines 90-93.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 156-170
+   :lines: 167-194
 
 As before we check if ICP as converged, if not we exit the program.
 **printf("\033[11A");** is a little trick to go up 11 lines in the terminal to write
@@ -201,13 +204,12 @@ one multiplied 19 times.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
    :language: cpp
-   :lines: 172-175
+   :lines: 195-199
 
 We set the bool to false and the rest is the ending of the program.
 
-
 Compiling and running the program
----------------------------------
+=================================
 
 Add the following lines to your CMakeLists.txt file:
 
@@ -224,15 +226,10 @@ by pressing "space".
 
 You will see something similar to this::
 
-  [pcl::PLYReader] monkey.ply:24: property 'float32 focal' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:25: property 'float32 scalex' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:26: property 'float32 scaley' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:27: property 'float32 centerx' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:28: property 'float32 centery' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:31: property 'float32 k1' of element 'camera' is not handled
-  [pcl::PLYReader] monkey.ply:32: property 'float32 k2' of element 'camera' is not handled
+  $ ./interactive_icp ../monkey.ply 5
+  [pcl::PLYReader] ../monkey.ply:12: property 'list uint8 uint32 vertex_indices' of element 'face' is not handled
   
-  Loaded file monkey.ply with 125952 points successfully
+  Loaded file ../monkey.ply (125952 points) in 578 ms
   
   Applying this rigid transformation to: cloud_in -> cloud_icp
   Rotation matrix :
@@ -242,16 +239,17 @@ You will see something similar to this::
   Translation vector :
   t = <  0.000,  0.000,  0.400 >
   
-  Initial iterations number is set to : 1
-  ICP has converged, score is +7e-03
+  Applied 1 ICP iteration(s) in 2109 ms
+  
+  ICP has converged, score is 0.0182442
   
   ICP transformation 1 : cloud_icp -> cloud_in
   Rotation matrix :
-      |  0.996  0.070 -0.046 | 
-  R = | -0.072  0.997 -0.039 | 
-      |  0.043  0.042  0.998 | 
+      |  0.998  0.066 -0.003 | 
+  R = | -0.066  0.997  0.033 | 
+      |  0.005 -0.033  0.999 | 
   Translation vector :
-  t = <  0.038,  0.058, -0.211 >
+  t = <  0.022, -0.017, -0.097 >
 
 If ICP did a perfect job the two matrices should have exactly the same values and
 the matrix found by ICP should have inverted signs outside the diagonal. For example ::
@@ -267,6 +265,11 @@ the matrix found by ICP should have inverted signs outside the diagonal. For exa
       |  0.000  0.000  1.000 | 
   Translation vector :
   t = <  0.000,  0.000, -0.400 >
+
+.. DANGER::
+   If you iterate several times manually using "space"; the results will become more and more erroned because
+   of the matrix multiplication (see line 181 of the original code)
+   If you seek precision, provide an initial number of iterations to the program
 
 .. image:: images/interactive_icp/icp-1.png
   :height: 605

@@ -167,7 +167,7 @@ namespace pcl
         * \param[in] mask defines the areas where features are searched in. 
         * \param[in] nr_features defines the number of features to be extracted 
         *            (might be less if not sufficient information is present in the modality).
-        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[in] modalityIndex the index which is stored in the extracted features.
         * \param[out] features the destination for the extracted features.
         */
       void
@@ -177,7 +177,7 @@ namespace pcl
       /** \brief Extracts all possible features from the modality within the specified mask.
         * \param[in] mask defines the areas where features are searched in. 
         * \param[in] nr_features IGNORED (TODO: remove this parameter).
-        * \param[in] modality_index the index which is stored in the extracted features.
+        * \param[in] modalityIndex the index which is stored in the extracted features.
         * \param[out] features the destination for the extracted features.
         */
       void

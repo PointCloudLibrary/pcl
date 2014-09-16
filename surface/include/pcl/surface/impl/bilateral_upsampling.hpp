@@ -88,6 +88,9 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
     output.resize (input_->size ());
     float nan = std::numeric_limits<float>::quiet_NaN ();
 
+    Eigen::MatrixXf val_exp_depth_matrix;
+    Eigen::VectorXf val_exp_rgb_vector;
+    computeDistances (val_exp_depth_matrix, val_exp_rgb_vector);
 
     for (int x = 0; x < static_cast<int> (input_->width); ++x)
       for (int y = 0; y < static_cast<int> (input_->height); ++y)
@@ -106,13 +109,14 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
             float dx = float (x - x_w),
                 dy = float (y - y_w);
 
-            float val_exp_depth = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
+            float val_exp_depth = val_exp_depth_matrix(dx+window_size_, dy+window_size_);
 
             float d_color = static_cast<float> (
                 abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
                 abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
                 abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
-            float val_exp_rgb = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
+            
+            float val_exp_rgb = val_exp_rgb_vector(d_color);
 
             if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
             {
@@ -147,6 +151,32 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
     output.height = input_->height;
 }
 
+
+template <typename PointInT, typename PointOutT> void
+pcl::BilateralUpsampling<PointInT, PointOutT>::computeDistances (Eigen::MatrixXf &val_exp_depth, Eigen::VectorXf &val_exp_rgb)
+{
+  val_exp_depth.resize (2*window_size_+1,2*window_size_+1);
+  val_exp_rgb.resize (3*255);
+
+  int j = 0;
+  for (int dx = -window_size_; dx < window_size_+1; ++dx) 
+  {
+    int i = 0;
+    for (int dy = -window_size_; dy < window_size_+1; ++dy)
+    {
+      float val_exp = expf (- (dx*dx + dy*dy) / (2.0f * static_cast<float> (sigma_depth_ * sigma_depth_)));
+      val_exp_depth(i,j) = val_exp;
+      i++;
+    }
+    j++;
+  }
+    
+  for (int d_color = 0; d_color < 3*255; d_color++) 
+  {    
+    float val_exp = expf (- d_color * d_color / (2.0f * sigma_color_ * sigma_color_));
+    val_exp_rgb(d_color) = val_exp;
+  }
+}
 
 
 #define PCL_INSTANTIATE_BilateralUpsampling(T,OutT) template class PCL_EXPORTS pcl::BilateralUpsampling<T,OutT>;

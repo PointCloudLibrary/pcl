@@ -39,6 +39,7 @@
 #include <pcl/surface/vtk_smoothing/vtk_mesh_smoothing_windowed_sinc.h>
 #include <pcl/surface/vtk_smoothing/vtk_utils.h>
 
+#include <vtkVersion.h>
 #include <vtkWindowedSincPolyDataFilter.h>
 
 
@@ -51,7 +52,11 @@ pcl::MeshSmoothingWindowedSincVTK::performProcessing (pcl::PolygonMesh &output)
 
   // Apply the VTK algorithm
   vtkSmartPointer<vtkWindowedSincPolyDataFilter> vtk_smoother = vtkWindowedSincPolyDataFilter::New ();
+#if VTK_MAJOR_VERSION < 6
   vtk_smoother->SetInput (vtk_polygons_);
+#else
+  vtk_smoother->SetInputData (vtk_polygons_);
+#endif
   vtk_smoother->SetNumberOfIterations (num_iter_);
   vtk_smoother->SetPassBand (pass_band_);
   vtk_smoother->SetNormalizeCoordinates (normalize_coordinates_);

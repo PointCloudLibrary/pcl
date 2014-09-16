@@ -91,12 +91,9 @@
 #ifdef HAVE_OPENCV  
   #include <opencv2/highgui/highgui.hpp>
   #include <opencv2/imgproc/imgproc.hpp>
-  #include <pcl/gpu/utils/timers_opencv.hpp>
 //#include "video_recorder.h"
-typedef pcl::gpu::ScopeTimerCV ScopeTimeT;
-#else
-  typedef pcl::ScopeTime ScopeTimeT;
 #endif
+typedef pcl::ScopeTime ScopeTimeT;
 
 #include "../src/internal.h"
   

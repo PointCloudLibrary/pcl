@@ -44,7 +44,6 @@
 
 #include <pcl/common/common.h>
 
-using namespace std;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>
@@ -316,13 +315,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   min_z_ = min_z_arg;
   max_z_ = max_z_arg;
 
-  min_x_ = min (min_x_, max_x_);
-  min_y_ = min (min_y_, max_y_);
-  min_z_ = min (min_z_, max_z_);
+  min_x_ = std::min (min_x_, max_x_);
+  min_y_ = std::min (min_y_, max_y_);
+  min_z_ = std::min (min_z_, max_z_);
 
-  max_x_ = max (min_x_, max_x_);
-  max_y_ = max (min_y_, max_y_);
-  max_z_ = max (min_z_, max_z_);
+  max_x_ = std::max (min_x_, max_x_);
+  max_y_ = std::max (min_y_, max_y_);
+  max_z_ = std::max (min_z_, max_z_);
 
   // generate bit masks for octree
   getKeyBitSize ();
@@ -351,13 +350,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   min_z_ = 0.0f;
   max_z_ = max_z_arg;
 
-  min_x_ = min (min_x_, max_x_);
-  min_y_ = min (min_y_, max_y_);
-  min_z_ = min (min_z_, max_z_);
+  min_x_ = std::min (min_x_, max_x_);
+  min_y_ = std::min (min_y_, max_y_);
+  min_z_ = std::min (min_z_, max_z_);
 
-  max_x_ = max (min_x_, max_x_);
-  max_y_ = max (min_y_, max_y_);
-  max_z_ = max (min_z_, max_z_);
+  max_x_ = std::max (min_x_, max_x_);
+  max_y_ = std::max (min_y_, max_y_);
+  max_z_ = std::max (min_z_, max_z_);
 
   // generate bit masks for octree
   getKeyBitSize ();
@@ -383,13 +382,13 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   min_z_ = 0.0f;
   max_z_ = cubeLen_arg;
 
-  min_x_ = min (min_x_, max_x_);
-  min_y_ = min (min_y_, max_y_);
-  min_z_ = min (min_z_, max_z_);
+  min_x_ = std::min (min_x_, max_x_);
+  min_y_ = std::min (min_y_, max_y_);
+  min_z_ = std::min (min_z_, max_z_);
 
-  max_x_ = max (min_x_, max_x_);
-  max_y_ = max (min_y_, max_y_);
-  max_z_ = max (min_z_, max_z_);
+  max_x_ = std::max (min_x_, max_x_);
+  max_y_ = std::max (min_y_, max_y_);
+  max_z_ = std::max (min_z_, max_z_);
 
   // generate bit masks for octree
   getKeyBitSize ();
@@ -626,11 +625,11 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   max_key_z = static_cast<unsigned int> ((max_z_ - min_z_) / resolution_);
 
   // find maximum amount of keys
-  max_voxels = max (max (max (max_key_x, max_key_y), max_key_z), static_cast<unsigned int> (2));
+  max_voxels = std::max (std::max (std::max (max_key_x, max_key_y), max_key_z), static_cast<unsigned int> (2));
 
 
   // tree depth == amount of bits of max_voxels
-  this->octree_depth_ = max ((min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (ceil (this->Log2 (max_voxels)-minValue)))),
+  this->octree_depth_ = std::max ((std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (ceil (this->Log2 (max_voxels)-minValue)))),
                                   static_cast<unsigned int> (0));
 
   octree_side_len = static_cast<double> (1 << this->octree_depth_) * resolution_-minValue;

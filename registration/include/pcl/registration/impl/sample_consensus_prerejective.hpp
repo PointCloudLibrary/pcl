@@ -69,8 +69,7 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::setTargetF
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamples (
-    const PointCloudSource &cloud, int nr_samples, 
-    std::vector<int> &sample_indices)
+    const PointCloudSource &cloud, int nr_samples, std::vector<int> &sample_indices)
 {
   if (nr_samples > static_cast<int> (cloud.points.size ()))
   {
@@ -79,53 +78,64 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::selectSamp
                nr_samples, cloud.points.size ());
     return;
   }
+  
+  sample_indices.resize (nr_samples);
+  int temp_sample;
 
-  // Iteratively draw random samples until nr_samples is reached
-  sample_indices.clear ();
-  std::vector<bool> sampled_indices (cloud.points.size (), false);
-  while (static_cast<int> (sample_indices.size ()) < nr_samples)
+  // Draw random samples until n samples is reached
+  for (int i = 0; i < nr_samples; i++)
   {
-    // Choose a unique sample at random
-    int sample_index;
-    do
+    // Select a random number
+    sample_indices[i] = getRandomIndex (static_cast<int> (cloud.points.size ()) - i);
+      
+    // Run trough list of numbers, starting at the lowest, to avoid duplicates
+    for (int j = 0; j < i; j++)
     {
-      sample_index = getRandomIndex (static_cast<int> (cloud.points.size ()));
+      // Move value up if it is higher than previous selections to ensure true randomness
+      if (sample_indices[i] >= sample_indices[j])
+      {
+        sample_indices[i]++;
+      }
+      else
+      {
+        // The new number is lower, place it at the correct point and break for a sorted list
+        temp_sample = sample_indices[i];
+        for (int k = i; k > j; k--)
+          sample_indices[k] = sample_indices[k - 1];
+        
+        sample_indices[j] = temp_sample;
+        break;
+      }
     }
-    while (sampled_indices[sample_index]);
-    
-    // Mark index as sampled
-    sampled_indices[sample_index] = true;
-    
-    // Store
-    sample_indices.push_back (sample_index);
   }
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename FeatureT> void 
 pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::findSimilarFeatures (
-    const FeatureCloud &input_features, const std::vector<int> &sample_indices, 
-    std::vector<int> &corresponding_indices)
+        const std::vector<int> &sample_indices,
+        std::vector<std::vector<int> >& similar_features,
+        std::vector<int> &corresponding_indices)
 {
-  std::vector<int> nn_indices (k_correspondences_);
-  std::vector<float> nn_distances (k_correspondences_);
-
+  // Allocate results
   corresponding_indices.resize (sample_indices.size ());
+  std::vector<float> nn_distances (k_correspondences_);
+  
+  // Loop over the sampled features
   for (size_t i = 0; i < sample_indices.size (); ++i)
   {
-    // Find the k features nearest to input_features.points[sample_indices[i]]
-    feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
+    // Current feature index
+    const int idx = sample_indices[i];
+    
+    // Find the k nearest feature neighbors to the sampled input feature if they are not in the cache already
+    if (similar_features[idx].empty ())
+      feature_tree_->nearestKSearch (*input_features_, idx, k_correspondences_, similar_features[idx], nn_distances);
 
     // Select one at random and add it to corresponding_indices
     if (k_correspondences_ == 1)
-    {
-      corresponding_indices[i] = nn_indices[0];
-    }
+      corresponding_indices[i] = similar_features[idx][0];
     else
-    {
-      int random_correspondence = getRandomIndex (k_correspondences_);
-      corresponding_indices[i] = nn_indices[random_correspondence];
-    }
+      corresponding_indices[i] = similar_features[idx][getRandomIndex (k_correspondences_)];
   }
 }
 
@@ -180,11 +190,18 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     return;
   }
   
+  if (k_correspondences_ <= 0)
+  {
+    PCL_ERROR ("[pcl::%s::computeTransformation] ", getClassName ().c_str ());
+    PCL_ERROR ("Illegal correspondence randomness %d, must be > 0!\n",
+            k_correspondences_);
+    return;
+  }
+  
   // Initialize prerejector (similarity threshold already set to default value in constructor)
   correspondence_rejector_poly_->setInputSource (input_);
   correspondence_rejector_poly_->setInputTarget (target_);
   correspondence_rejector_poly_->setCardinality (nr_samples_);
-  std::vector<bool> accepted (input_->size (), false); // Indices of sampled points that passed prerejection
   int num_rejections = 0; // For debugging
   
   // Initialize results
@@ -213,34 +230,25 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
     }
   }
   
+  // Feature correspondence cache
+  std::vector<std::vector<int> > similar_features (input_->size ());
+  
   // Start
   for (int i = 0; i < max_iterations_; ++i)
   {
     // Temporary containers
-    std::vector<int> sample_indices (nr_samples_);
-    std::vector<int> corresponding_indices (nr_samples_);
+    std::vector<int> sample_indices;
+    std::vector<int> corresponding_indices;
     
     // Draw nr_samples_ random samples
     selectSamples (*input_, nr_samples_, sample_indices);
     
-    // Check if all sampled points already been accepted
-    bool samples_accepted = true;
-    for (unsigned int j = 0; j < sample_indices.size(); ++j) {
-      if (!accepted[j]) {
-        samples_accepted = false;
-        break;
-      }
-    }
-
-    // All points have already been accepted, avoid
-    if (samples_accepted)
-      continue;
-    
     // Find corresponding features in the target cloud
-    findSimilarFeatures (*input_features_, sample_indices, corresponding_indices);
+    findSimilarFeatures (sample_indices, similar_features, corresponding_indices);
     
     // Apply prerejection
-    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices)) {
+    if (!correspondence_rejector_poly_->thresholdPolygon (sample_indices, corresponding_indices))
+    {
       ++num_rejections;
       continue;
     }
@@ -262,19 +270,14 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
 
     // If the new fit is better, update results
     inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
-    
-    if (inlier_fraction >= inlier_fraction_) {
-      // Mark the sampled points accepted
-      for (int j = 0; j < nr_samples_; ++j)
-        accepted[j] = true;
-      
-      // Update result if pose hypothesis is better
-      if (error < lowest_error) {
-        inliers_ = inliers;
-        lowest_error = error;
-        converged_ = true;
-        final_transformation_ = transformation_;
-      }
+
+    // Update result if pose hypothesis is better
+    if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
+    {
+      inliers_ = inliers;
+      lowest_error = error;
+      converged_ = true;
+      final_transformation_ = transformation_;
     }
   }
 
@@ -315,16 +318,11 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::getFitness
     // Check if point is an inlier
     if (nn_dists[0] < max_range)
     {
-      // Errors
-      const float dx = input_transformed.points[i].x - target_->points[nn_indices[0]].x;
-      const float dy = input_transformed.points[i].y - target_->points[nn_indices[0]].y;
-      const float dz = input_transformed.points[i].z - target_->points[nn_indices[0]].z;
-      
       // Update inliers
       inliers.push_back (static_cast<int> (i));
       
       // Update fitness score
-      fitness_score += dx*dx + dy*dy + dz*dz;
+      fitness_score += nn_dists[0];
     }
   }
 

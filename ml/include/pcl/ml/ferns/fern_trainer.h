@@ -81,7 +81,7 @@ namespace pcl
       }
 
       /** \brief Sets the maximum depth of the learned tree.
-        * \param[in] max_tree_depth Maximum depth of the learned tree.
+        * \param[in] fern_depth Maximum depth of the learned tree.
         */
       inline void
       setFernDepth (const size_t fern_depth)
@@ -99,7 +99,7 @@ namespace pcl
       }
 
       /** \brief Sets the number of thresholds tested for finding the optimal decision threshold on the feature responses.
-        * \param[in] num_of_thresholds The number of thresholds.
+        * \param[in] num_of_threshold The number of thresholds.
         */
       inline void
       setNumOfThresholds (const size_t num_of_threshold)
@@ -135,7 +135,7 @@ namespace pcl
       }
 
       /** \brief Trains a decision tree using the set training data and settings.
-        * \param[out] tree Destination for the trained tree.
+        * \param[out] fern Destination for the trained tree.
         */
       void
       train (Fern<FeatureType, NodeType> & fern);
