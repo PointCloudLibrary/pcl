@@ -26,7 +26,7 @@ typedef pcl::PointCloud<NormalT> NormalCloudT;
 bool show_voxel_centroids = true;
 bool show_supervoxels = true;
 bool show_supervoxel_normals = false;
-bool show_graph = true;
+bool show_graph = false;
 bool show_normals = false;
 bool show_refined = false;
 bool show_help = true;
@@ -339,33 +339,32 @@ main (int argc, char ** argv)
   std::cout << "Loading viewer...\n";
   while (!viewer->wasStopped ())
   {
-    if (show_voxel_centroids)
-    {
-      if (!viewer->updatePointCloud (voxel_centroid_cloud, "voxel centroids"))
-        viewer->addPointCloud (voxel_centroid_cloud, "voxel centroids");
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
-      if (show_supervoxels)
-        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.5, "voxel centroids");
-      else 
-        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,1.0, "voxel centroids");
-    }
-    else
-    {
-      viewer->removePointCloud ("voxel centroids");
-    }
-    
     if (show_supervoxels)
     {
       if (!viewer->updatePointCloud ((show_refined)?refined_colored_voxel_cloud:colored_voxel_cloud, "colored voxels"))
+      {
         viewer->addPointCloud ((show_refined)?refined_colored_voxel_cloud:colored_voxel_cloud, "colored voxels");
-      viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.9, "colored voxels");
+        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,3.0, "colored voxels");
+      }
     }
     else
     {
       viewer->removePointCloud ("colored voxels");
     }
     
-    
+    if (show_voxel_centroids)
+    {
+      if (!viewer->updatePointCloud (voxel_centroid_cloud, "voxel centroids"))
+      {
+        viewer->addPointCloud (voxel_centroid_cloud, "voxel centroids");
+        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
+      }
+    }
+    else
+    {
+      viewer->removePointCloud ("voxel centroids");
+    }
+
     if (show_supervoxel_normals)
     {
       if (refined_sv_normal_shown != show_refined || !sv_added)
