@@ -32,12 +32,13 @@ if(PXCAPI_DIR)
                PATHS "${PXCAPI_DIR}/sample/common/lib" NO_DEFAULT_PATH
                PATH_SUFFIXES "x64/${msvc_version}" "Win32/${msvc_version}")
                
-  #set(PXCAPI_LIBS ${PXCAPI_LIB} ${PXCAPI_SAMPLE_LIB_RELEASE})
+  set(PXCAPI_LIBS_RELEASE ${PXCAPI_LIB} ${PXCAPI_SAMPLE_LIB_RELEASE})
+  set(PXCAPI_LIBS_DEBUG ${PXCAPI_LIB} ${PXCAPI_SAMPLE_LIB_DEBUG})
 endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(PXCAPI DEFAULT_MSG
-                                  PXCAPI_LIBS PXCAPI_INCLUDE_DIRS)
+                                  PXCAPI_LIBS_RELEASE PXCAPI_INCLUDE_DIRS)
 
 mark_as_advanced(PXCAPI_LIB PXCAPI_SAMPLE_LIB_DEBUG PXCAPI_SAMPLE_LIB_RELEASE)
 
