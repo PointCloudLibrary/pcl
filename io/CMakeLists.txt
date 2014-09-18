@@ -319,7 +319,8 @@ if(build)
 
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})
-	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
+	  target_link_libraries("${LIB_NAME}" release ${PXCAPI_LIBS_RELEASE})
+	  target_link_libraries("${LIB_NAME}" debug ${PXCAPI_LIBS_DEBUG})
 	endif(PXCAPI_FOUND)
 
     if (PCAP_FOUND)
