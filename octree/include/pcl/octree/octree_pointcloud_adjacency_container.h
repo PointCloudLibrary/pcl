@@ -45,7 +45,7 @@ namespace pcl
   
   namespace octree
   {
-    /** \brief @b Octree adjacency leaf container class- stores set of pointers to neighbors, number of points added, and a DataT value
+    /** \brief @b Octree adjacency leaf container class- stores a list of pointers to neighbors, number of points added, and a DataT value
     *    \note This class implements a leaf node that stores pointers to neighboring leaves
     *   \note This class also has a virtual computeData function, which is called by octreePointCloudAdjacency::addPointsFromInputCloud.
     *   \note You should make explicit instantiations of it for your pointtype/datatype combo (if needed) see supervoxel_clustering.hpp for an example of this
@@ -53,19 +53,16 @@ namespace pcl
     template<typename PointInT, typename DataT = PointInT>
     class OctreePointCloudAdjacencyContainer : public OctreeContainerBase
     {
+      template<typename T, typename U, typename V>
+      friend class OctreePointCloudAdjacency;
     public:
-      typedef std::set<OctreePointCloudAdjacencyContainer*> NeighborSetT;
-      //iterators to neighbors
-      typedef typename NeighborSetT::iterator iterator;
-      typedef typename NeighborSetT::const_iterator const_iterator;
-      inline iterator begin () { return (neighbors_.begin ()); }
-      inline iterator end ()   { return (neighbors_.end ()); }
-      inline const_iterator begin () const { return (neighbors_.begin ()); }
-      inline const_iterator end () const  { return (neighbors_.end ()); }
+      typedef std::list<OctreePointCloudAdjacencyContainer*> NeighborListT;
+      typedef typename NeighborListT::const_iterator const_iterator;
+      //const iterators to neighbors
+      inline const_iterator cbegin () const { return (neighbors_.begin ()); }
+      inline const_iterator cend () const  { return (neighbors_.end ()); }
       //size of neighbors
       inline size_t size () const { return neighbors_.size (); }
-      //insert for neighbors
-      inline std::pair<iterator, bool> insert (OctreePointCloudAdjacencyContainer* neighbor) { return neighbors_.insert (neighbor); }
       
       /** \brief Class initialization. */
       OctreePointCloudAdjacencyContainer () :
@@ -79,6 +76,43 @@ namespace pcl
       {
       }
       
+      /** \brief Returns the number of neighbors this leaf has
+       *  \returns number of neighbors
+       */
+      size_t
+      getNumNeighbors () const
+      {
+        return neighbors_.size ();
+      }
+
+      /** \brief Gets the number of points contributing to this leaf */
+      int
+      getPointCounter () const { return num_points_; }
+
+      /** \brief Returns a reference to the data member to access it without copying */
+      DataT&
+      getData () { return data_; }
+
+      /** \brief Sets the data member
+       *  \param[in] data_arg New value for data
+       */
+      void
+      setData (const DataT& data_arg) { data_ = data_arg;}
+
+      /** \brief  virtual method to get size of container 
+       * \return number of points added to leaf node container.
+       */
+      virtual size_t
+      getSize () const
+      {
+        return num_points_;
+      }
+    protected:
+      //iterators to neighbors
+      typedef typename NeighborListT::iterator iterator;
+      inline iterator begin () { return (neighbors_.begin ()); }
+      inline iterator end ()   { return (neighbors_.end ()); }
+
       /** \brief deep copy function */
       virtual OctreePointCloudAdjacencyContainer *
       deepCopy () const
@@ -108,10 +142,6 @@ namespace pcl
       {
       }
       
-      /** \brief Gets the number of points contributing to this leaf */
-      int
-      getPointCounter () const { return num_points_; }
-      
       /** \brief Sets the number of points contributing to this leaf */
       void
       setPointCounter (int points_arg) { num_points_ = points_arg; }
@@ -131,7 +161,7 @@ namespace pcl
       void 
       addNeighbor (OctreePointCloudAdjacencyContainer *neighbor)
       {
-        neighbors_.insert (neighbor);
+        neighbors_.push_back (neighbor);
       }
       
       /** \brief Remove neighbor from neighbor set.
@@ -140,51 +170,28 @@ namespace pcl
       void 
       removeNeighbor (OctreePointCloudAdjacencyContainer *neighbor)
       {
-        neighbors_.erase (neighbor);
-        
-      }
-      
-      /** \brief Returns the number of neighbors this leaf has
-       *  \returns number of neighbors
-       */
-      size_t 
-      getNumNeighbors () const
-      {
-        return neighbors_.size ();
+        for (iterator neighb_it = neighbors_.begin(); neighb_it != neighbors_.end(); ++neighb_it)
+        {
+          if ( *neighb_it == neighbor)
+          {
+            neighbors_.erase (neighb_it);
+            return;
+          }
+        }
       }
       
       /** \brief Sets the whole neighbor set
        * \param[in] neighbor_arg the new set
        */
       void
-      setNeighbors (const NeighborSetT &neighbor_arg)
+      setNeighbors (const NeighborListT &neighbor_arg)
       {
         neighbors_ = neighbor_arg;
       }
       
-      /** \brief Returns a reference to the data member to access it without copying */
-      DataT&
-      getData () { return data_; }
-      
-      /** \brief Sets the data member
-       *  \param[in] data_arg New value for data
-       */
-      void
-      setData (const DataT& data_arg) { data_ = data_arg;}
-      
-      /** \brief  virtual method to get size of container 
-       * \return number of points added to leaf node container.
-       */
-      virtual size_t
-      getSize () const
-      {
-        return num_points_;
-      }
-      
-      
     private:
       int num_points_;
-      NeighborSetT neighbors_;
+      NeighborListT neighbors_;
       DataT data_;
     };
   }
