@@ -4196,7 +4196,10 @@ void
 pcl::visualization::PCLVisualizer::setPosition (int x, int y)
 {
   if (win_)
+  {
     win_->SetPosition (x, y);
+    win_->Render ();
+  }
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -4204,7 +4207,10 @@ void
 pcl::visualization::PCLVisualizer::setSize (int xw, int yw)
 {
   if (win_)
+  {
     win_->SetSize (xw, yw);
+    win_->Render ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
