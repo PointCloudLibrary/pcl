@@ -115,7 +115,8 @@ namespace pcl
    *   \note Usually, color isn't needed (and can be detrimental)- spatial structure is mainly used
     * - J. Papon, A. Abramov, M. Schoeler, F. Woergoetter
     *   Voxel Cloud Connectivity Segmentation - Supervoxels from PointClouds
-    *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013 
+    *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013
+    *  \ingroup segmentation 
     *  \author Jeremie Papon (jpapon@gmail.com)
     */
   template <typename PointT>
