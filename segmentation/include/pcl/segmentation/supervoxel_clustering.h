@@ -412,7 +412,7 @@ namespace pcl
               return leaf_data_left.idx_ < leaf_data_right.idx_;
             }
           };
-          typedef std::set<LeafContainerT*,SupervoxelHelper::compareLeaves> LeafSetT;
+          typedef std::set<LeafContainerT*, typename SupervoxelHelper::compareLeaves> LeafSetT;
           typedef typename LeafSetT::iterator iterator;
           typedef typename LeafSetT::const_iterator const_iterator;
           

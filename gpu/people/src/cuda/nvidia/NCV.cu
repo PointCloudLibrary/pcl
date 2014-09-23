@@ -41,6 +41,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "NCV.hpp"
 
 using namespace std;
