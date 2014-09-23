@@ -84,11 +84,15 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip
+  sudo apt-get install doxygen doxygen-latex graphviz python-pip texlive-latex-base dvipng
   sudo pip install sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $PCL_DIR
+  cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
+        -DSPHINX_HTML_FILE_SUFFIX=php \
+        -DWITH_DOCS=1 \
+        -DWITH_TUTORIALS=1 \
+        $PCL_DIR
 
   git config --global user.email "documentation@pointclouds.org"
   git config --global user.name "PointCloudLibrary (via TravisCI)"
@@ -105,17 +109,23 @@ function doc ()
   cd $DOC_DIR
   git clone git@github.com:PointCloudLibrary/documentation.git .
 
-  # Generate documentation
+  # Generate documentation and tutorials
   cd $BUILD_DIR
-  make doc
-  cd $DOC_DIR
-  git commit -a -m "adding $TRAVIS_COMMIT"
-  git push
+  make doc tutorials advanced
 
-  # Generate tutorials
-  cd $BUILD_DIR
-  make tutorials
-  # upload to github...
+  # Upload to GitHub if generation succeeded
+  if [[ $? == 0 ]]; then
+    # Copy generated tutorials to the doc directory
+    cp -r $TUTORIALS_DIR/* $DOC_DIR/tutorials
+    cp -r $ADVANCED_DIR/* $DOC_DIR/advanced
+    # Commit and push
+    cd $DOC_DIR
+    git add --all
+    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
+    git push --force
+  else
+    exit 2
+  fi
 }
 
 case $TASK in

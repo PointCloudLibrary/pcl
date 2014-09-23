@@ -1,6 +1,10 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+if(POLICY CMP0048)
+  cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
@@ -118,7 +122,7 @@ endif()
 
 if(MSVC)
   SET(CMAKE_COMPILER_IS_MSVC 1)
-  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX /bigobj")
+  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj")
   if("${CMAKE_CXX_FLAGS}" STREQUAL " /DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
 
@@ -162,15 +166,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
-# ---[ Project folders
-option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
-mark_as_advanced(USE_PROJECT_FOLDERS)
-if(USE_PROJECT_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-endif(USE_PROJECT_FOLDERS)
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION 1.7.2 CACHE STRING "PCL version")
+set(PCL_VERSION 1.8.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
@@ -341,16 +338,16 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt5
-  include(cmake/pcl_find_qt5.cmake)
+  # Find Qt4
+  find_package(Qt4)
+  if (QT4_FOUND)
+    include("${QT_USE_FILE}")
+  endif (QT4_FOUND)
 
-  # Find QT4
-  if(NOT QT5_FOUND)
-      find_package(Qt4)
-      if (QT4_FOUND)
-        include("${QT_USE_FILE}")
-      endif (QT4_FOUND)
-  endif(NOT QT5_FOUND)
+  # Find QT5
+  if(NOT QT4_FOUND)
+      include(cmake/pcl_find_qt5.cmake)
+  endif(NOT QT4_FOUND)
 endif(WITH_QT)
 
 # Find VTK
@@ -370,6 +367,10 @@ if(WITH_VTK AND NOT ANDROID)
          include (${VTK_USE_FILE})
          message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARIES}")
       endif (${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
+      if (APPLE)
+          option (VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
+          MARK_AS_ADVANCED (VTK_USE_COCOA)
+      endif (APPLE)
       set(HAVE_VTK ON)
     else ()
       set(VTK_FOUND OFF)
@@ -383,22 +384,6 @@ else(WITH_VTK AND NOT ANDROID)
   set(HAVE_VTK OFF)
 endif(WITH_VTK AND NOT ANDROID)
 
-# Find MPI
-if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
-  find_package(MPI)
-  if(MPI_CXX_FOUND)
-    include_directories(SYSTEM "${MPI_INCLUDE_PATH}")
-  endif(MPI_CXX_FOUND)
-endif()
-
-#Find Doxygen and html help compiler if any
-option(WITH_DOCS "Build doxygen documentation" TRUE)
-if(WITH_DOCS)
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-    find_package(HTMLHelp)
-  endif(DOXYGEN_FOUND)
-endif(WITH_DOCS)
 
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)

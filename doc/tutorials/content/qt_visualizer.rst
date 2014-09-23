@@ -33,7 +33,7 @@ This is how I organized the project: the build folder contains all built files a
       └── pcl_visualizer.pro.user
 
 If you want to change this layout you will have to do minor modifications in the code, especially line 2 of ``pclviewer.cpp``
-Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualiser>`_.
+Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualizer>`_.
 
 .. note::
    File paths should not contain any special caracter or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
@@ -77,7 +77,7 @@ You can open it with a text editor or with Qt Creator, in this example the UI is
 .. image:: images/qt_visualizer/ui.png
   :height: 518
 
-If you click on Edit `Signals/Slots <http://qt-project.org/doc/qt-4.8/signalsandslots.html>`_ at the top of the Qt window if you will see the relationships 
+If you click on Edit `Signals/Slots <http://qt-project.org/doc/qt-4.8/signalsandslots.html>`_ at the top of the Qt window you will see the relationships 
 between some of the UI objects. In our example the sliderMoved(int) signal is connected to the display(int) slot; this means that everytime we move the slider 
 the digital display is updated accordingly to the slider value.
 
@@ -168,6 +168,7 @@ After that is the constructor implementation; we setup the ui and the window tit
 | Here we create a PCL Visualizer name ``viewer`` and we also specify that we don't want an interactor to be created.
 | We don't want an interactor to be created because our ``qvtkWidget`` is already an interactor and it's the one we want to use.
 | So the next step is to configure our newly created PCL Visualiser interactor to use the ``qvtkWidget``.
+
 The ``update()`` method of the ``qvtkWidget`` should be called each time you modify the PCL visualizer; if you don't call it you don't know if the 
 visualizer will be updated before the user try to pan/spin/zoom.
 
@@ -193,6 +194,7 @@ Here we connect slots and signals, this links UI actions to functions. Here is a
    :lines: 53-57
 
 | This is the last part of our constructor; we add the point cloud to the visualizer, call the method ``pSliderValueChanged`` to change the point size to 2.
+
 We finaly reset the camera within the PCL Visualizer not avoid the user having to zoom out and update the qvtkwidget to be 
 sure the modifications will be displayed.
 
@@ -234,6 +236,7 @@ There are two options here :
   * You didn't configure the Qt project; just go to the build folder an run ``cmake ../src && make -j2 && ./pcl_visualizer``
 
 | Notice that when changing the slider color, the cloud is not updated until you release the slider (``sliderReleased ()`` slot).
+
 If you wanted to update the point cloud when the slider value is changed you could just call the ``RGBsliderReleased ()`` function inside the
 ``*sliderValueChanged (int)`` functions. The connect between  ``sliderReleased ()`` / ``RGBsliderReleased ()`` would become useless then.
 

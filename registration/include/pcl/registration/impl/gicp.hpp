@@ -466,6 +466,9 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   final_transformation_(0,3) = previous_transformation_(0,3) + guess(0,3);
   final_transformation_(1,3) = previous_transformation_(1,3) + guess(1,3);
   final_transformation_(2,3) = previous_transformation_(2,3) + guess(2,3);
+
+  // Transform the point cloud
+  pcl::transformPointCloud (*input_, output, final_transformation_);
 }
 
 template <typename PointSource, typename PointTarget> void

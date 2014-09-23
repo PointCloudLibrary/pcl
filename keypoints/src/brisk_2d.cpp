@@ -1715,6 +1715,11 @@ pcl::keypoints::brisk::Layer::halfsample (
     }
   }
 #else
+  (void) (srcimg);
+  (void) (srcwidth);
+  (void) (srcheight);
+  (void) (dstimg); 
+  (void) (dstwidth);
   PCL_ERROR("brisk without SSE4.1 support not implemented");
 #endif
 }
@@ -1824,6 +1829,11 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     p_dest2 = p_dest1 + dstwidth;
   }
 #else
+  (void) (srcimg);
+  (void) (srcwidth);
+  (void) (srcheight);
+  (void) (dstimg); 
+  (void) (dstwidth);
   PCL_ERROR("brisk without SSE4.1 support not implemented");
 #endif
 }

@@ -45,6 +45,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
 
+#include <pcl/pcl_tests.h>
+
 using namespace pcl;
 using namespace pcl::io;
 using namespace std;
@@ -79,7 +81,7 @@ TEST (PCL, DeMean)
   EXPECT_NEAR (centroid[0], -0.0290809, 1e-4);
   EXPECT_NEAR (centroid[1],  0.102653,  1e-4);
   EXPECT_NEAR (centroid[2],  0.027302,  1e-4);
-  EXPECT_NEAR (centroid[3],  0,         1e-4);
+  EXPECT_NEAR (centroid[3],  1,         1e-4);
 
   // Check standard demean
   demeanPointCloud (cloud, centroid, cloud_demean);
@@ -187,6 +189,81 @@ TEST (PCL, Transform)
   EXPECT_EQ (100, points2[3].x);
   EXPECT_EQ (0, points2[3].y);
   EXPECT_EQ (1, points2[3].z);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TransformCopyFields)
+{
+  Eigen::Affine3f transform;
+  transform = Eigen::Translation3f (100, 0, 0);
+
+  PointXYZRGBNormal empty_point;
+  std::vector<int> indices (1);
+
+  PointCloud<PointXYZRGBNormal> cloud (2, 1);
+  cloud.points[0].rgba = 0xFF0000;
+  cloud.points[1].rgba = 0x00FF00;
+
+  // Preserve data in all fields
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloud (cloud, cloud_out, transform, true);
+    ASSERT_EQ (cloud.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
+    EXPECT_RGBA_EQ (cloud.points[1], cloud_out.points[1]);
+  }
+  // Preserve data in all fields (with indices)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloud (cloud, indices, cloud_out, transform, true);
+    ASSERT_EQ (indices.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
+  }
+  // Do not preserve data in all fields
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloud (cloud, cloud_out, transform, false);
+    ASSERT_EQ (cloud.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[1]);
+  }
+  // Do not preserve data in all fields (with indices)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloud (cloud, indices, cloud_out, transform, false);
+    ASSERT_EQ (indices.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
+  }
+  // Preserve data in all fields (with normals version)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloudWithNormals (cloud, cloud_out, transform, true);
+    ASSERT_EQ (cloud.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
+    EXPECT_RGBA_EQ (cloud.points[1], cloud_out.points[1]);
+  }
+  // Preserve data in all fields (with normals and indices version)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloudWithNormals (cloud, indices, cloud_out, transform, true);
+    ASSERT_EQ (indices.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
+  }
+  // Do not preserve data in all fields (with normals version)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloudWithNormals (cloud, cloud_out, transform, false);
+    ASSERT_EQ (cloud.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[1]);
+  }
+  // Do not preserve data in all fields (with normals and indices version)
+  {
+    PointCloud<PointXYZRGBNormal> cloud_out;
+    transformPointCloudWithNormals (cloud, indices, cloud_out, transform, false);
+    ASSERT_EQ (indices.size (), cloud_out.size ());
+    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

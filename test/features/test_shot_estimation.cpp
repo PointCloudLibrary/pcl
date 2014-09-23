@@ -106,6 +106,16 @@ checkDesc<ShapeContext1980>(const pcl::PointCloud<ShapeContext1980>& d0, const p
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
+template <> void
+checkDesc<UniqueShapeContext1960>(const pcl::PointCloud<UniqueShapeContext1960>& d0, const pcl::PointCloud<UniqueShapeContext1960>& d1)
+{
+  ASSERT_EQ (d0.size (), d1.size ());
+  for (size_t i = 0; i < d1.size (); ++i)
+    for (size_t j = 0; j < 1960; ++j)
+      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+}
+
+///////////////////////////////////////////////////////////////////////////////////
 template <typename FeatureEstimation, typename PointT, typename NormalT, typename OutputT>
 struct createSHOTDesc
 {
@@ -187,9 +197,6 @@ struct createSHOTDesc<UniqueShapeContext<PointT, OutputT>, PointT, NormalT, Outp
                 const bool) const
   {
     UniqueShapeContext<PointT, OutputT> usc;
-    //usc.setAzimuthBins (4);
-    //usc.setElevationBins (4);
-    //usc.setRadiusBins (4);
     usc.setMinimalRadius (0.004);
     usc.setPointDensityRadius (0.008);
     usc.setLocalRadius (0.04);
@@ -920,26 +927,20 @@ TEST (PCL,3DSCEstimation)
 TEST (PCL, USCEstimation)
 {
   float meshRes = 0.002f;
-  //size_t nBinsL = 4;
-  //size_t nBinsK = 4;
-  //size_t nBinsJ = 4;
   float radius = 20.0f * meshRes;
   float rmin = radius / 10.0f;
   float ptDensityRad = radius / 5.0f;
 
   // estimate
-  UniqueShapeContext<PointXYZ, ShapeContext1980> uscd;
+  UniqueShapeContext<PointXYZ, UniqueShapeContext1960> uscd;
   uscd.setInputCloud (cloud.makeShared ());
   uscd.setSearchMethod (tree);
   uscd.setRadiusSearch (radius);
-  //uscd.setAzimuthBins (nBinsL);
-  //uscd.setElevationBins (nBinsK);
-  //uscd.setRadiusBins (nBinsJ);
   uscd.setMinimalRadius (rmin);
   uscd.setPointDensityRadius (ptDensityRad);
   uscd.setLocalRadius (radius);
   // Compute the features
-  PointCloud<ShapeContext1980>::Ptr uscds (new PointCloud<ShapeContext1980>);
+  PointCloud<UniqueShapeContext1960>::Ptr uscds (new PointCloud<UniqueShapeContext1960>);
   uscd.compute (*uscds);
   EXPECT_EQ (uscds->size (), cloud.size ());
 
@@ -955,17 +956,17 @@ TEST (PCL, USCEstimation)
 
   //EXPECT_EQ ((*uscds)[0].descriptor.size (), 64);
 
-  EXPECT_NEAR ((*uscds)[160].descriptor[56], 53.0597f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[160].descriptor[734], 80.1063f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[160].descriptor[1222], 93.8412f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[160].descriptor[1605], 0.f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[160].descriptor[1887], 32.6679f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[160].descriptor[355], 123.0733f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[160].descriptor[494], 154.9401f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[160].descriptor[897], 0.f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[160].descriptor[1178], 62.7496f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[160].descriptor[1878], 31.3748f, 1e-4f);
 
-  EXPECT_NEAR ((*uscds)[168].descriptor[72], 65.3358f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[168].descriptor[430], 88.8147f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[168].descriptor[987], 0.f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[168].descriptor[1563], 128.273f, 1e-4f);
-  EXPECT_NEAR ((*uscds)[168].descriptor[1915], 59.2098f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[168].descriptor[57], 39.4986f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[168].descriptor[704], 0.f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[168].descriptor[906], 48.8803f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[168].descriptor[1175], 83.4680f, 1e-4f);
+  EXPECT_NEAR ((*uscds)[168].descriptor[1756], 65.1737f, 1e-4f);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
@@ -973,8 +974,8 @@ TEST (PCL, USCEstimation)
     test_indices->push_back (static_cast<int> (i));
 
   PointCloud<Normal>::Ptr normals (new PointCloud<Normal> ());
-  testSHOTIndicesAndSearchSurface<UniqueShapeContext<PointXYZ, ShapeContext1980>, PointXYZ, Normal, ShapeContext1980> (cloud.makeShared (), normals, test_indices);
-  testSHOTLocalReferenceFrame<UniqueShapeContext<PointXYZ, ShapeContext1980>, PointXYZ, Normal, ShapeContext1980> (cloud.makeShared (), normals, test_indices);
+  testSHOTIndicesAndSearchSurface<UniqueShapeContext<PointXYZ, UniqueShapeContext1960>, PointXYZ, Normal, UniqueShapeContext1960> (cloud.makeShared (), normals, test_indices);
+  testSHOTLocalReferenceFrame<UniqueShapeContext<PointXYZ, UniqueShapeContext1960>, PointXYZ, Normal, UniqueShapeContext1960> (cloud.makeShared (), normals, test_indices);
 }
 
 /* ---[ */

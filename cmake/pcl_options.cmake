@@ -42,3 +42,13 @@ mark_as_advanced(CMAKE_TIMING_VERBOSE)
 option(CMAKE_MSVC_CODE_LINK_OPTIMIZATION "Enable the /GL and /LTCG code and link optimization options for MSVC. Enabled by default." ON)
 mark_as_advanced(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
 
+# Project folders
+option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
+mark_as_advanced(USE_PROJECT_FOLDERS)
+if(USE_PROJECT_FOLDERS)
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+endif(USE_PROJECT_FOLDERS)
+
+option(BUILD_tools "Useful PCL-based command line tools" ON)
+
+option(WITH_DOCS "Build doxygen documentation" OFF)

@@ -621,8 +621,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {
@@ -681,8 +681,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {

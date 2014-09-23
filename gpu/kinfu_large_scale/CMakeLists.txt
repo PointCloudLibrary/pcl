@@ -20,6 +20,7 @@ PCL_SET_SUBSYS_INCLUDE_DIR("${SUBSYS_NAME}" "${SUBSYS_PATH}")
 mark_as_advanced("BUILD_${SUBSYS_NAME}")
 
 if (build)
+	REMOVE_VTK_DEFINITIONS()
 	FILE(GLOB incs include/pcl/gpu/kinfu_large_scale/*.h*)
 	FILE(GLOB impl_incs include/pcl/gpu/kinfu_large_scale/impl/*.h*)
 	FILE(GLOB srcs src/*.cpp src/*.h*)

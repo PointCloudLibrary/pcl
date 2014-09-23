@@ -1021,8 +1021,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
   {
     output.is_dense = false;
     unsigned border = int(normal_smoothing_size_);
-    int bottom = input_->height - border;
-    int right = input_->width - border;
+    unsigned bottom = input_->height > border ? input_->height - border : 0;
+    unsigned right = input_->width > border ? input_->width - border : 0;
     if (use_depth_dependent_smoothing_)
     {
       // Iterating over the entire index vector

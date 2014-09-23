@@ -475,12 +475,11 @@ pcl::cloud_composer::DeleteItemCommand::DeleteItemCommand (QList <const CloudCom
 }
 
 bool
-pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool* tool)
+pcl::cloud_composer::DeleteItemCommand::runCommand (AbstractTool*)
 {
   
   //For delete item command, each selected item should be processed separately
   //e.g. delete every selected item
-  int num_new_items = 0;
   foreach (const CloudComposerItem *item, original_data_)
   {
     QList <CloudComposerItem*> output;
@@ -593,3 +592,4 @@ pcl::cloud_composer::MergeCloudCommand::redo ()
   
   }
 }
+

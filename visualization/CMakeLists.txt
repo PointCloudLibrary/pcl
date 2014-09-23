@@ -172,7 +172,9 @@ if(build)
     if(BUILD_TESTS)
         add_subdirectory(test)
     endif(BUILD_TESTS)
-
-    add_subdirectory(tools)
+    
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
 
 endif(build)

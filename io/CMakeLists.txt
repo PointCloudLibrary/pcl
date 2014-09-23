@@ -13,24 +13,6 @@ endif(WIN32)
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-  set(IMAGE_INCLUDES
-    include/pcl/io/image_metadata_wrapper.h
-    include/pcl/io/image.h
-    include/pcl/io/image_rgb24.h
-    include/pcl/io/image_yuv422.h
-    include/pcl/io/image_ir.h
-    include/pcl/io/image_depth.h
-    include/pcl/io/io_exception.h
-  )
-
-  set(IMAGE_SOURCES
-    src/image_rgb24.cpp
-    src/image_yuv422.cpp
-    src/image_ir.cpp
-    src/image_depth.cpp
-    src/io_exception.cpp
-  )
-
     ## OpenNI 2.x
     OPTION(BUILD_OPENNI2 "Build the OpenNI 2 Grabber." OFF)
     MARK_AS_ADVANCED(BUILD_OPENNI2)
@@ -40,6 +22,22 @@ if(build)
       set(OPENNI2_FOUND FALSE)
     endif()
     if(OPENNI2_FOUND)
+      set(IMAGE_INCLUDES
+        include/pcl/io/image_metadata_wrapper.h
+        include/pcl/io/image.h
+        include/pcl/io/image_rgb24.h
+        include/pcl/io/image_yuv422.h
+        include/pcl/io/image_ir.h
+        include/pcl/io/image_depth.h
+      )
+
+      set(IMAGE_SOURCES
+        src/image_rgb24.cpp
+        src/image_yuv422.cpp
+        src/image_ir.cpp
+        src/image_depth.cpp
+      )
+
         set(OPENNI2_GRABBER_INCLUDES
             include/pcl/io/openni2_grabber.h
             )
@@ -201,6 +199,8 @@ if(build)
         src/image_grabber.cpp
         src/hdl_grabber.cpp
         src/robot_eye_grabber.cpp
+        src/file_io.cpp
+        src/io_exception.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${OPENNI2_GRABBER_SOURCES}
@@ -208,7 +208,6 @@ if(build)
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
         ${PXC_GRABBER_SOURCES}
-        src/file_io.cpp
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -244,6 +243,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
         "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
         "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
+        "include/pcl/${SUBSYS_NAME}/io_exception.h"
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${OPENNI2_GRABBER_INCLUDES}
@@ -345,6 +345,8 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
-    add_subdirectory(tools)
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
 
 endif(build)

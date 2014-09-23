@@ -775,6 +775,38 @@ pcl::io::openni2::OpenNI2Device::getAutoWhiteBalance () const
   return (ret);
 }
 
+int pcl::io::openni2::OpenNI2Device::getDepthFrameCount ()
+{
+  if (!openni_device_->isFile () || !getDepthVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames(*getDepthVideoStream ());
+}
+
+int OpenNI2Device::getColorFrameCount ()
+{
+  if (!openni_device_->isFile () || !getColorVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames (*getColorVideoStream ());
+}
+
+int OpenNI2Device::getIRFrameCount ()
+{
+  if (!openni_device_->isFile () || !getIRVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames (*getIRVideoStream ());
+}
+
+bool OpenNI2Device::setPlaybackSpeed (double speed)
+{
+    return openni_device_->getPlaybackControl ()->setSpeed (speed) == openni::STATUS_OK;
+}
+
 boost::shared_ptr<openni::VideoStream>
 pcl::io::openni2::OpenNI2Device::getIRVideoStream () const
 {

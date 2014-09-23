@@ -282,7 +282,7 @@ namespace pcl
         "addCoordinateSystem (scale, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, int viewport = 0);
+        addCoordinateSystem (double scale, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
@@ -303,7 +303,7 @@ namespace pcl
         "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
+        addCoordinateSystem (double scale, float x, float y, float z, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -326,7 +326,7 @@ namespace pcl
         "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0);
+        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
@@ -373,7 +373,7 @@ namespace pcl
         "removeCoordinateSystem (viewport) is deprecated, please use function "
         "addCoordinateSystem (id, viewport) with id a unique string identifier.")
         bool
-        removeCoordinateSystem (int viewport = 0);
+        removeCoordinateSystem (int viewport);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] id the coordinate system object id (default: reference)
@@ -1595,9 +1595,35 @@ namespace pcl
         bool
         getCameraParameters (int argc, char **argv);
 
-        /** \brief Checks whether the camera parameters were manually loaded from file.*/
+        /** \brief Load camera parameters from a camera parameters file.
+          * \param[in] file the name of the camera parameters file
+          */
+        bool
+        loadCameraParameters (const std::string &file);
+
+        /** \brief Checks whether the camera parameters were manually loaded.
+          * \return True if valid "-cam" option is available in command line.
+          * \sa cameraFileLoaded ()
+          */
         bool
         cameraParamsSet () const;
+
+        /** \brief Checks whether a camera file were automatically loaded.
+          * \return True if a valid camera file is automatically loaded.
+          * \note The camera file is saved by pressing "ctrl + s" during last run of the program
+          * and restored automatically when the program runs this time.
+          * \sa cameraParamsSet ()
+          */
+        bool
+        cameraFileLoaded () const;
+
+        /** \brief Get camera file for camera parameter saving/restoring.
+          * \note This will be valid only when valid "-cam" option were available in command line
+          * or a saved camera file were automatically loaded. 
+          * \sa cameraParamsSet (), cameraFileLoaded ()
+          */
+        std::string
+        getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
         void
@@ -1689,6 +1715,18 @@ namespace pcl
         void
         saveScreenshot (const std::string &file);
 
+        /** \brief Save the camera parameters to disk, as a .cam file.
+          * \param[in] file the name of the .cam file
+          */
+        void
+        saveCameraParameters (const std::string &file);
+
+        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
+          * \param[out] camera the name of the pcl::visualization::Camera
+          */
+        void
+        getCameraParameters (Camera &camera);
+
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
         getRenderWindow ()
@@ -1710,6 +1748,12 @@ namespace pcl
           return (cloud_actor_map_);
         }
         
+        /** \brief Return a pointer to the ShapeActorMap this visualizer uses. */
+        ShapeActorMapPtr
+        getShapeActorMap ()
+        {
+          return (shape_actor_map_);
+        }
 
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
@@ -1846,8 +1890,11 @@ namespace pcl
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
         
-        /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
+        /** \brief Boolean that holds whether or not the camera parameters were manually initialized */
         bool camera_set_;
+
+        /** \brief Boolean that holds whether or not a camera file were automatically loaded */
+        bool camera_file_loaded_;
 
         /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_;
@@ -2063,6 +2110,13 @@ namespace pcl
         int
         textureFromTexMaterial (const pcl::TexMaterial& tex_mat,
                                 vtkTexture* vtk_tex) const;
+
+        /** \brief Get camera file for camera parameter saving/restoring from command line.
+          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * \return empty string if failed.
+          */
+        std::string
+        getUniqueCameraFile (int argc, char **argv);
         
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:

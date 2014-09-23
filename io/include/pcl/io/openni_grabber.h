@@ -469,6 +469,12 @@ namespace pcl
       openni_wrapper::OpenNIDevice::CallbackHandle ir_callback_handle;
       bool running_;
 
+      mutable unsigned rgb_array_size_;
+      mutable unsigned depth_buffer_size_;
+      mutable boost::shared_array<unsigned char> rgb_array_;
+      mutable boost::shared_array<unsigned short> depth_buffer_;
+      mutable boost::shared_array<unsigned short> ir_buffer_;
+
       /** \brief The RGB image focal length (fx). */
       double rgb_focal_length_x_;
       /** \brief The RGB image focal length (fy). */

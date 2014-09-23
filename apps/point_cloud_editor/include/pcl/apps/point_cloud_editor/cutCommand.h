@@ -93,13 +93,6 @@ class CutCommand : public Command
       assert(false); return (*this);
     }
 
-    /// The copy buffer which backs up the points removed from the cloud.
-    CopyBuffer cut_cloud_buffer_;
-
-    /// a selection which backs up the index of the points cut in the
-    /// original cloud.
-    Selection cut_selection_;
-
     /// A shared pointer pointing to the selection object.
     SelectionPtr selection_ptr_;
 
@@ -108,6 +101,13 @@ class CutCommand : public Command
 
     /// a pointer pointing to the copy buffer.
     CopyBufferPtr copy_buffer_ptr_;
+
+    /// a selection which backs up the index of the points cut in the
+    /// original cloud.
+    Selection cut_selection_;
+
+    /// The copy buffer which backs up the points removed from the cloud.
+    CopyBuffer cut_cloud_buffer_;
 
 };
 

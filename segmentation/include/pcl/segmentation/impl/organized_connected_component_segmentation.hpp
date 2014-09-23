@@ -182,7 +182,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
         {
           if (labels[current_row + colIdx].label == invalid_label)
             labels[current_row + colIdx].label = labels[previous_row + colIdx].label;
-          else
+          else if (labels[previous_row + colIdx].label != invalid_label)
           {
             unsigned root1 = findRoot (run_ids, labels[current_row + colIdx].label);
             unsigned root2 = findRoot (run_ids, labels[previous_row + colIdx].label);

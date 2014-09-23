@@ -157,7 +157,9 @@ namespace pcl
       inline void 
       setNrSubdivisions (int nr_subdiv) { nr_subdiv_ = nr_subdiv; }
 
-      /** \brief Get the number of subdivisions for the considered distance interval. */
+      /** \brief Get the number of subdivisions for the considered distance interval. 
+        * \return the number of subdivisions
+	*/
       inline int 
       getNrSubdivisions () const { return (nr_subdiv_); }
 
@@ -169,7 +171,9 @@ namespace pcl
       inline void 
       setPlaneRadius (double plane_radius) { plane_radius_ = plane_radius; }
 
-      /** \brief Get the maximum radius, above which everything can be considered planar. */
+      /** \brief Get the maximum radius, above which everything can be considered planar.
+        * \return the plane_radius used
+	*/
       inline double 
       getPlaneRadius () const { return (plane_radius_); }
 
@@ -187,11 +191,15 @@ namespace pcl
       inline void
       setSaveHistograms (bool save) { save_histograms_ = save; }
 
-      /** \brief Returns whether the full distance-angle histograms are being saved. */
+      /** \brief Returns whether the full distance-angle histograms are being saved. 
+        * \return true if the histograms are being be saved
+	*/
       inline bool
       getSaveHistograms () const { return (save_histograms_); }
 
-      /** \brief Returns a pointer to the list of full distance-angle histograms for all points. */
+      /** \brief Returns a pointer to the list of full distance-angle histograms for all points.
+        * \return the histogram being saved when computing RSD
+	*/
       inline boost::shared_ptr<std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > >
       getHistograms () const { return (histograms_); }
 

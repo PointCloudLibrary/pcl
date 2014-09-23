@@ -96,6 +96,9 @@
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/common/time.h>
+#include <boost/uuid/sha1.hpp>
+#include <boost/filesystem.hpp>
+#include <pcl/console/parse.h>
 
 #if defined(_WIN32)
   // Remove macros defined in Windows.h
@@ -120,6 +123,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , shape_actor_map_ (new ShapeActorMap)
   , coordinate_actor_map_ (new CoordinateActorMap)
   , camera_set_ ()
+  , camera_file_loaded_ (false)
 {
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
@@ -133,6 +137,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
   ren->AddActor (txt);
+  txt->SetInput("0 FPS");
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -151,6 +156,9 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
     win_->AddRenderer (renderer);
+
+  // Set renderer window in case no interactor is created
+  style_->setRenderWindow (win_);
 
   // Create the interactor style
   style_->Initialize ();
@@ -180,11 +188,10 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , style_ (style)
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
-  , coordinate_actor_map_ ()
+  , coordinate_actor_map_ (new CoordinateActorMap)
   , camera_set_ ()
+  , camera_file_loaded_ (false)
 {
-  style_ = style;
-
   // Create a Renderer
   vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
   ren->AddObserver (vtkCommand::EndEvent, update_fps_);
@@ -202,18 +209,6 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
 
-  // Get screen size
-  int *scr_size = win_->GetScreenSize ();
-
-  // Set default camera parameters
-  initCameraParameters ();
-
-  // Parse the camera settings and update the internal camera
-  camera_set_ = getCameraParameters (argc, argv);
-  // Set the window size as 1/2 of the screen size or the user given parameter
-  win_->SetSize (scr_size[0]/2, scr_size[1]/2);
-  win_->SetPosition (0, 0);
-
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
 
@@ -223,11 +218,45 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   while ((renderer = rens_->GetNextItem ()) != NULL)
     win_->AddRenderer (renderer);
 
+  // Set renderer window in case no interactor is created
+  style_->setRenderWindow (win_);
+
   // Create the interactor style
   style_->Initialize ();
   style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
   style_->UseTimersOn ();
+
+  // Get screen size
+  int *scr_size = win_->GetScreenSize ();
+
+  // Set default camera parameters
+  initCameraParameters ();
+
+  // Parse the camera settings and update the internal camera
+  camera_set_ = getCameraParameters (argc, argv);
+  // Calculate unique camera filename for camera parameter saving/restoring
+  if (!camera_set_)
+  {
+    std::string camera_file = getUniqueCameraFile (argc, argv);
+    if (!camera_file.empty ())
+    {
+      if (boost::filesystem::exists (camera_file) && style_->loadCameraParameters (camera_file))
+      {
+        camera_file_loaded_ = true;
+      }
+      else
+      {
+        style_->setCameraFile (camera_file);
+      }
+    }
+  }
+  // Set the window size as 1/2 of the screen size or the user given parameter
+  if (!camera_set_ && !camera_file_loaded_)
+  {
+    win_->SetSize (scr_size[0]/2, scr_size[1]/2);
+    win_->SetPosition (0, 0);
+  }
 
   if (create_interactor)
     createInteractor ();
@@ -393,6 +422,20 @@ pcl::visualization::PCLVisualizer::saveScreenshot (const std::string &file)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::saveCameraParameters (const std::string &file)
+{
+  style_->saveCameraParameters (file);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::getCameraParameters (pcl::visualization::Camera &camera)
+{
+  style_->getCameraParameters (camera);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 boost::signals2::connection
 pcl::visualization::PCLVisualizer::registerKeyboardCallback (boost::function<void (const pcl::visualization::KeyboardEvent&)> callback)
 {
@@ -533,6 +576,8 @@ pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std::string &id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
@@ -580,6 +625,8 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const std:
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, const std::string& id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
@@ -658,6 +705,8 @@ double q[4];
 void
 pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string& id, int viewport)
 {
+  if (scale <= 0.0)
+    scale = 1.0;
   vtkSmartPointer<vtkAxes> axes = vtkSmartPointer<vtkAxes>::New ();
   axes->SetOrigin (0, 0, 0);
   axes->SetScaleFactor (scale);
@@ -1706,6 +1755,20 @@ pcl::visualization::PCLVisualizer::cameraParamsSet () const
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::cameraFileLoaded () const
+{
+  return (camera_file_loaded_);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::visualization::PCLVisualizer::getCameraFile () const
+{
+  return (style_->getCameraFile ());
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::updateCamera ()
 {
@@ -1889,6 +1952,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
       cam->SetPosition (pos_x, pos_y, pos_z);
       cam->SetFocalPoint (view_x, view_y, view_z);
       cam->SetViewUp (up_x, up_y, up_z);
+      renderer->ResetCameraClippingRange ();
     }
     ++i;
   }
@@ -1924,74 +1988,14 @@ pcl::visualization::PCLVisualizer::setCameraParameters (const Eigen::Matrix3f &i
                                                         const Eigen::Matrix4f &extrinsics,
                                                         int viewport)
 {
-  // Position = extrinsic translation
-  Eigen::Vector3f pos_vec = extrinsics.block<3, 1> (0, 3);
-
-  // Rotate the view vector
-  Eigen::Matrix3f rotation = extrinsics.block<3, 3> (0, 0);
-  Eigen::Vector3f y_axis (0.f, 1.f, 0.f);
-  Eigen::Vector3f up_vec (rotation * y_axis);
-
-  // Compute the new focal point
-  Eigen::Vector3f z_axis (0.f, 0.f, 1.f);
-  Eigen::Vector3f focal_vec = pos_vec + rotation * z_axis;
-
-  // Get the width and height of the image - assume the calibrated centers are at the center of the image
-  Eigen::Vector2i window_size;
-  window_size[0] = static_cast<int> (intrinsics (0, 2));
-  window_size[1] = static_cast<int> (intrinsics (1, 2));
-
-  // Compute the vertical field of view based on the focal length and image heigh
-  double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
-
-
-  rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
-  {
-    // Modify all renderer's cameras
-    if (viewport == 0 || viewport == i)
-    {
-      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
-      cam->SetPosition (pos_vec[0], pos_vec[1], pos_vec[2]);
-      cam->SetFocalPoint (focal_vec[0], focal_vec[1], focal_vec[2]);
-      cam->SetViewUp (up_vec[0], up_vec[1], up_vec[2]);
-      cam->SetUseHorizontalViewAngle (0);
-      cam->SetViewAngle (fovy);
-      cam->SetClippingRange (0.01, 1000.01);
-      win_->SetSize (window_size[0], window_size[1]);
-    }
-    ++i;
-  }
-  win_->Render ();
+  style_->setCameraParameters (intrinsics, extrinsics, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::setCameraParameters (const pcl::visualization::Camera &camera, int viewport)
 {
-  rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
-  {
-    // Modify all renderer's cameras
-    if (viewport == 0 || viewport == i)
-    {
-      vtkSmartPointer<vtkCamera> cam = renderer->GetActiveCamera ();
-      cam->SetPosition (camera.pos[0], camera.pos[1], camera.pos[2]);
-      cam->SetFocalPoint (camera.focal[0], camera.focal[1], camera.focal[2]);
-      cam->SetViewUp (camera.view[0], camera.view[1], camera.view[2]);
-      cam->SetClippingRange (camera.clip);
-      cam->SetUseHorizontalViewAngle (0);
-      cam->SetViewAngle (camera.fovy * 180.0 / M_PI);
-
-      win_->SetSize (static_cast<int> (camera.window_size[0]),
-                     static_cast<int> (camera.window_size[1]));
-    }
-    ++i;
-  }
+  style_->setCameraParameters (camera, viewport);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -2076,131 +2080,34 @@ pcl::visualization::PCLVisualizer::resetCameraViewpoint (const std::string &id)
 bool
 pcl::visualization::PCLVisualizer::getCameraParameters (int argc, char **argv)
 {
-  Camera camera_temp;
   for (int i = 1; i < argc; i++)
   {
     if ((strcmp (argv[i], "-cam") == 0) && (++i < argc))
     {
-      std::ifstream fs;
       std::string camfile = std::string (argv[i]);
-      std::string line;
 
-      std::vector<std::string> camera;
       if (camfile.find (".cam") == std::string::npos)
       {
         // Assume we have clip/focal/pos/view
+        std::vector<std::string> camera;
         boost::split (camera, argv[i], boost::is_any_of ("/"), boost::token_compress_on);
+        return (style_->getCameraParameters (camera));
       }
       else
       {
         // Assume that if we don't have clip/focal/pos/view, a filename.cam was given as a parameter
-        fs.open (camfile.c_str ());
-        while (!fs.eof ())
-        {
-          getline (fs, line);
-          if (line == "")
-            continue;
-
-          boost::split (camera, line, boost::is_any_of ("/"), boost::token_compress_on);
-          break;
-        }
-        fs.close ();
+        return (style_->loadCameraParameters (camfile));
       }
-
-      // look for '/' as a separator
-      if (camera.size () != 7)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Camera parameters given, but with an invalid number of options (%lu vs 7)!\n", static_cast<unsigned long> (camera.size ()));
-        return (false);
-      }
-
-      std::string clip_str  = camera.at (0);
-      std::string focal_str = camera.at (1);
-      std::string pos_str   = camera.at (2);
-      std::string view_str  = camera.at (3);
-      std::string fovy_str  = camera.at (4);
-      std::string win_size_str = camera.at (5);
-      std::string win_pos_str  = camera.at (6);
-
-      // Get each camera setting separately and parse for ','
-      std::vector<std::string> clip_st;
-      boost::split (clip_st, clip_str, boost::is_any_of (","), boost::token_compress_on);
-      if (clip_st.size () != 2)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera clipping angle!\n");
-        return (false);
-      }
-      camera_temp.clip[0] = atof (clip_st.at (0).c_str ());
-      camera_temp.clip[1] = atof (clip_st.at (1).c_str ());
-
-      std::vector<std::string> focal_st;
-      boost::split (focal_st, focal_str, boost::is_any_of (","), boost::token_compress_on);
-      if (focal_st.size () != 3)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera focal point!\n");
-        return (false);
-      }
-      camera_temp.focal[0] = atof (focal_st.at (0).c_str ());
-      camera_temp.focal[1] = atof (focal_st.at (1).c_str ());
-      camera_temp.focal[2] = atof (focal_st.at (2).c_str ());
-
-      std::vector<std::string> pos_st;
-      boost::split (pos_st, pos_str, boost::is_any_of (","), boost::token_compress_on);
-      if (pos_st.size () != 3)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera position!\n");
-        return (false);
-      }
-      camera_temp.pos[0] = atof (pos_st.at (0).c_str ());
-      camera_temp.pos[1] = atof (pos_st.at (1).c_str ());
-      camera_temp.pos[2] = atof (pos_st.at (2).c_str ());
-
-      std::vector<std::string> view_st;
-      boost::split (view_st, view_str, boost::is_any_of (","), boost::token_compress_on);
-      if (view_st.size () != 3)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for camera viewup!\n");
-        return (false);
-      }
-      camera_temp.view[0] = atof (view_st.at (0).c_str ());
-      camera_temp.view[1] = atof (view_st.at (1).c_str ());
-      camera_temp.view[2] = atof (view_st.at (2).c_str ());
-
-      std::vector<std::string> fovy_size_st;
-      boost::split (fovy_size_st, fovy_str, boost::is_any_of (","), boost::token_compress_on);
-      if (fovy_size_st.size () != 1)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for field of view angle!\n");
-        return (false);
-      }
-      camera_temp.fovy = atof (fovy_size_st.at (0).c_str ());
-
-      std::vector<std::string> win_size_st;
-      boost::split (win_size_st, win_size_str, boost::is_any_of (","), boost::token_compress_on);
-      if (win_size_st.size () != 2)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window size!\n");
-        return (false);
-      }
-      camera_temp.window_size[0] = atof (win_size_st.at (0).c_str ());
-      camera_temp.window_size[1] = atof (win_size_st.at (1).c_str ());
-
-      std::vector<std::string> win_pos_st;
-      boost::split (win_pos_st, win_pos_str, boost::is_any_of (","), boost::token_compress_on);
-      if (win_pos_st.size () != 2)
-      {
-        pcl::console::print_error ("[PCLVisualizer::getCameraParameters] Invalid parameters given for window position!\n");
-        return (false);
-      }
-      camera_temp.window_pos[0] = atof (win_pos_st.at (0).c_str ());
-      camera_temp.window_pos[1] = atof (win_pos_st.at (1).c_str ());
-
-      setCameraParameters (camera_temp);
-
-      return (true);
     }
   }
   return (false);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::loadCameraParameters (const std::string &file)
+{
+  return (style_->loadCameraParameters (file));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -2305,7 +2212,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkDataSet> data = createCube (x_min, x_max, y_min, y_max, z_min, z_max);
 
   // Create an Actor
-  vtkSmartPointer<vtkActor> actor;
+  vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetLighting (false);
@@ -4289,7 +4196,10 @@ void
 pcl::visualization::PCLVisualizer::setPosition (int x, int y)
 {
   if (win_)
+  {
     win_->SetPosition (x, y);
+    win_->Render ();
+  }
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -4297,7 +4207,10 @@ void
 pcl::visualization::PCLVisualizer::setSize (int xw, int yw)
 {
   if (win_)
+  {
     win_->SetSize (xw, yw);
+    win_->Render ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -4551,4 +4464,46 @@ pcl::visualization::PCLVisualizer::textureFromTexMaterial (const pcl::TexMateria
   }
 
   return (0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
+{
+  std::vector<int> p_file_indices;
+  boost::uuids::detail::sha1 sha1;
+  unsigned int digest[5];
+  const char *str;
+  std::ostringstream sstream;
+  bool valid = false;
+
+  p_file_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
+  if (p_file_indices.size () != 0)
+  {
+    // Calculate sha1 using canonical paths
+    for (size_t i = 0; i < p_file_indices.size (); ++i)
+    {
+      boost::filesystem::path path (argv[p_file_indices[i]]);
+      if (boost::filesystem::exists (path))
+      {
+#if BOOST_VERSION >= 104800
+        path = boost::filesystem::canonical (path);
+#endif
+        str = path.string ().c_str ();
+        sha1.process_bytes (str, std::strlen (str));
+        valid = true;
+      }
+    }
+
+    // Build camera filename
+    if (valid)
+    {
+      sha1.get_digest (digest);
+      sstream << ".";
+      sstream << std::hex << digest[0] << digest[1] << digest[2] << digest[3] << digest[4];
+      sstream << ".cam";
+    }
+  }
+
+  return (sstream.str ());
 }

@@ -42,6 +42,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <pcl/pcl_exports.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
@@ -195,7 +196,7 @@ namespace pcl
      * \author Kripasindhu Sarkar
      * \ingroup visualization
      */
-    class PCLPainter2D: public vtkContextItem
+    class PCL_EXPORTS PCLPainter2D: public vtkContextItem
     {
     public:
 

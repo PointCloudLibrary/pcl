@@ -4,10 +4,10 @@ set (SUBSYS_DEPS common io filters sample_consensus segmentation search kdtree f
 set (DEFAULT ON)
 set (REASON "")
 
-PCL_SUBSYS_OPTION (build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND (build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
+PCL_SUBSYS_OPTION (BUILD_tools "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
+PCL_SUBSYS_DEPEND (BUILD_tools "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS})
 
-if (build)
+if (BUILD_tools)
 
   PCL_ADD_EXECUTABLE(pcl_sac_segmentation_plane "${SUBSYS_NAME}" sac_segmentation_plane.cpp)
   target_link_libraries(pcl_sac_segmentation_plane pcl_common pcl_io pcl_sample_consensus pcl_segmentation)
@@ -200,12 +200,15 @@ if (build)
       PCL_ADD_EXECUTABLE(pcl_obj2vtk "${SUBSYS_NAME}" obj2vtk.cpp)
       target_link_libraries(pcl_obj2vtk pcl_common pcl_io)
 
+      PCL_ADD_EXECUTABLE(pcl_obj2pcd "${SUBSYS_NAME}" obj2pcd.cpp)
+      target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
+
       PCL_ADD_EXECUTABLE(pcl_vtk2pcd "${SUBSYS_NAME}" vtk2pcd.cpp)
       target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
 
       if(BUILD_visualization)
-  
-        PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS visualization)
+
+        PCL_SUBSYS_DEPEND(BUILD_tools "${SUBSYS_NAME}" DEPS visualization)
 
         PCL_ADD_EXECUTABLE(pcl_obj_rec_ransac_model_opps "${SUBSYS_NAME}" obj_rec_ransac_model_opps.cpp)
         target_link_libraries(pcl_obj_rec_ransac_model_opps pcl_common pcl_visualization pcl_recognition)
@@ -269,4 +272,4 @@ if (build)
   endif(Tide_FOUND)
   
 
-endif ()
+endif (BUILD_tools)
