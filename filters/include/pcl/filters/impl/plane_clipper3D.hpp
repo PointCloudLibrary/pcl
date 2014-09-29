@@ -40,6 +40,7 @@
 template<typename PointT>
 pcl::PlaneClipper3D<PointT>::PlaneClipper3D (const Eigen::Vector4f& plane_params)
 : plane_params_ (plane_params)
+, threshold_(std::numeric_limits<double>::max ())
 {
 }
 
@@ -75,7 +76,17 @@ pcl::PlaneClipper3D<PointT>::getDistance (const PointT& point) const
 template<typename PointT> bool
 pcl::PlaneClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  return ((plane_params_[0] * point.x + plane_params_[1] * point.y + plane_params_[2] * point.z ) >= -plane_params_[3]);
+  bool pt_is_on_plane = ((plane_params_[0] * point.x + plane_params_[1] * point.y + plane_params_[2] * point.z ) >= -plane_params_[3]);
+  if (!pt_is_on_plane)
+  {
+    // Calculate the distance from the point to the plane normal as the dot product
+    // D = (P-A).N/|N|
+    Eigen::Vector4f pt (point.x, point.y, point.z, 1);
+    float distance = fabsf (plane_params_.dot (pt));
+    pt_is_on_plane = (distance < threshold_);
+  }
+
+  return pt_is_on_plane;
 }
 
 /**

@@ -75,6 +75,22 @@ namespace pcl
         */
       const Eigen::Vector4f& getPlaneParameters () const;
 
+      /**
+       * \brief Set distance to the plane threshold.
+       * \details Distance threshold determines how close a point must be to the plane model in order
+       * to be considered as inlier. This allows to get the same results as produced by
+       * SAC segmentation methods. Default threshold value is std::numeric_limits<double>::min.
+       * \param[in] threshold distance to the plane threshold
+        */
+      inline void
+      setDistanceThreshold (double threshold)  { threshold_ = threshold; }
+
+      /**
+       * \brief Get the distance to the plane threshold as set by the user.
+       */
+      inline double
+      getDistanceThreshold () { return (threshold_); }
+
       virtual bool
       clipPoint3D (const PointT& point) const;
 
