@@ -174,7 +174,7 @@ macro(find_qhull)
   endif(QHULL_FOUND)
 endmacro(find_qhull)
 
-#remove this as soon as openni-dev is shipped with FindOpenni.cmake
+#remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
   if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
     set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
@@ -182,7 +182,7 @@ macro(find_openni)
   endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
 
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI openni-dev)
+    pkg_check_modules(PC_OPENNI libopenni)
   endif(PKG_CONFIG_FOUND)
   find_path(OPENNI_INCLUDE_DIRS XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
@@ -210,7 +210,7 @@ macro(find_openni)
   endif(OPENNI_FOUND)
 endmacro(find_openni)
 
-#remove this as soon as openni2-dev is shipped with FindOpenni2.cmake
+#remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
   if(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
     get_filename_component(OPENNI2_LIBRARY_HINT "OPENNI_LIBRARY-NOTFOUND" PATH)
@@ -222,7 +222,7 @@ macro(find_openni2)
   endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI2 openni2-dev)
+    pkg_check_modules(PC_OPENNI2 libopenni2)
   endif(PKG_CONFIG_FOUND)
   
   find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
