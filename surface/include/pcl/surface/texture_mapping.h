@@ -99,8 +99,8 @@ namespace pcl
   {
     public:
      
-      typedef boost::shared_ptr< PointInT > Ptr;
-      typedef boost::shared_ptr< const PointInT > ConstPtr;
+      typedef boost::shared_ptr< TextureMapping < PointInT > > Ptr;
+      typedef boost::shared_ptr< const TextureMapping < PointInT > > ConstPtr;
 
       typedef pcl::PointCloud<PointInT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
@@ -193,7 +193,7 @@ namespace pcl
         * \returns false if the point is not visible by the camera
         */
       inline bool
-      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, Eigen::Vector2f &UV_coordinates)
+      getPointUVCoordinates (const PointInT &pt, const Camera &cam, Eigen::Vector2f &UV_coordinates)
       {
         // if the point is in front of the camera
         if (pt.z > 0)
@@ -243,7 +243,7 @@ namespace pcl
         * \returns true if the point is occluded.
         */
       inline bool
-      isPointOccluded (const pcl::PointXYZ &pt, const OctreePtr octree);
+      isPointOccluded (const PointInT &pt, const OctreePtr octree);
 
       /** \brief Remove occluded points from a point cloud
         * \param[in] input_cloud the cloud on which to perform occlusion detection
@@ -385,7 +385,7 @@ namespace pcl
         * \returns false if the point is not visible by the camera
         */
       inline bool
-      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
+      getPointUVCoordinates (const PointInT &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
 
       /** \brief Returns true if all the vertices of one face are projected on the camera's image plane.
         * \param[in] camera camera on which to project the face.
@@ -398,7 +398,7 @@ namespace pcl
         */
       inline bool
       isFaceProjected (const Camera &camera, 
-                       const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
+                       const PointInT &p1, const PointInT &p2, const PointInT &p3, 
                        pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
 
       /** \brief Returns True if a point lays within a triangle
