@@ -46,7 +46,9 @@
 #include <cmath>
 #include <queue>
 #include <string>
+#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#endif
 
 /**
   * \file pcl/common/time.h

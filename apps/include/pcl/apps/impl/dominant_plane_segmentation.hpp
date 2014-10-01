@@ -35,7 +35,9 @@
 
 #pragma once
 #include <boost/thread/thread.hpp>
+#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#endif
 
 #include <pcl/apps/dominant_plane_segmentation.h>
 #include <pcl/visualization/pcl_visualizer.h>

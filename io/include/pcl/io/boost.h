@@ -63,7 +63,9 @@
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/vector.hpp>
 #include <boost/algorithm/string.hpp>
+#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#endif
 #if BOOST_VERSION >= 104700
 #include <boost/chrono.hpp>
 #endif
