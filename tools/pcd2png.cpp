@@ -89,15 +89,15 @@ printHelp (int, char **argv)
   std::cout << "                the field type) will be used."                                << std::endl;
   std::cout << "     --colors : Choose color mapping mode for labels (only for label field)." << std::endl;
   std::cout << "                Supported options:"                                           << std::endl;
-  std::cout << "                * mono    : Use shades of gray (default)"                     << std::endl;
-  std::cout << "                - rgb     : Use randomly generated RGB colors"                << std::endl;
-  std::cout << "                - glasbey : Use fixed colors from the Glasbey lookup table¹"  << std::endl;
+  std::cout << "                - mono    : Shades of gray"                                   << std::endl;
+  std::cout << "                - rgb     : Randomly generated RGB colors"                    << std::endl;
+  std::cout << "                * glasbey : Fixed colors from the Glasbey table¹ (default)"   << std::endl;
   std::cout << std::endl;
   std::cout << "Notes:"                                                                       << std::endl;
   std::cout << std::endl;
   std::cout << "¹) The Glasbey lookup table is a color table structured in a maximally"       << std::endl;
   std::cout << "   discontinuous manner. Adjacent color bins are chosen to be as distinct"    << std::endl;
-  std::cout << "   from one another as possible (see http://fiji.sc/Glasbey)."                << std::endl;
+  std::cout << "   from one another as possible (see https://github.com/taketwo/glasbey)."    << std::endl;
   std::cout << "   The label with the smallest id will be assigned the first color from the"  << std::endl;
   std::cout << "   table, the second smallest will have the second color, and so on. Thus,"   << std::endl;
   std::cout << "   if you have several clouds with the same labels, you will get repetitive"  << std::endl;
@@ -167,7 +167,7 @@ parseScaleOption (int argc, char** argv, T& pcie)
 template<typename T> bool
 parseColorsOption (int argc, char** argv, T& pcie)
 {
-  std::string colors = "mono";
+  std::string colors = "glasbey";
   pcl::console::parse_argument (argc, argv, "--colors", colors);
   print_info ("Colors: "); print_value ("%s\n", colors.c_str());
   if (colors == "mono")
