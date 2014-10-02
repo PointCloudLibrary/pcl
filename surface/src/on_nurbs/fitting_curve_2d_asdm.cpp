@@ -71,6 +71,9 @@ FittingCurve2dASDM::assemble (const FittingCurve2dAPDM::Parameter &parameter)
     wInt = m_data->interior_weight[0];
   }
 
+  m_data->interior_ncps_prev = -1;
+  m_data->closest_ncps_prev = -1;
+
   double wCageReg = parameter.smoothness;
 
   unsigned nrows = 4 * nInt + 2 * nCageReg + 4 * nClosestP;

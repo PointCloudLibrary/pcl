@@ -155,6 +155,12 @@ NurbsSolve::AddRow(const std::vector<double>& row,
                    const std::vector<double>& f,
                    const std::vector<int>& sparsePattern)
 {
+  if(row.size()!=sparsePattern.size())
+    throw std::runtime_error("[NurbsSolve::AddRow] size does not match. (row,sparsePattern)");
+
+  if(f.size()!=m_feig.cols())
+    throw std::runtime_error("[NurbsSolve::AddRow] size does not match. (f,m_feig)");
+
   double newVal = 0.0;
   int j,jj;
   for(unsigned iSparse=0; iSparse<sparsePattern.size(); ++iSparse)

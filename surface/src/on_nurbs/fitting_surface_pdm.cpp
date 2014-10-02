@@ -861,7 +861,7 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
         spPattern.push_back(indx);
       //  lhs[ indx ] =
       //      weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
-        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);  );
+        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]) );
 
       } // i
 
@@ -934,7 +934,7 @@ FittingSurface::addBoundaryRegularisation (int order, int resU, int resV, double
         spPattern.push_back(indx);
     //    lhs[ indx ] =
     //        weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]);
-        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]); );
+        lhs.push_back( weight * (N0[order * m_nurbs.Order (0) + i] * N1[j] + N0[i] * N1[order * m_nurbs.Order (1) + j]) );
 
       } // i
 
