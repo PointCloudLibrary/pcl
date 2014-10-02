@@ -59,7 +59,7 @@ You can find the input file at *pcl/test/bunny.pcd*.
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
    :language: cpp
    :linenos:
-   :lines: 1-169
+   :lines: 1-220
 
 
 The explanation
@@ -257,6 +257,7 @@ Saving and viewing the result
 -----------------------------
 
 * Saving as OpenNURBS (3dm) file
+
 You can save the B-spline surface by using the commands provided by OpenNurbs:
 
 .. literalinclude:: sources/bspline_fitting/bspline_fitting.cpp
@@ -266,6 +267,7 @@ You can save the B-spline surface by using the commands provided by OpenNurbs:
 The files generated can be viewed with the pcl/examples/surface/example_nurbs_viewer_surface.cpp.
 
 * Saving as triangle mesh into a vtk file
+
 You can save the triangle mesh for example by saving into a VTK file by:
 
     #include <pcl/io/vtk_io.h>

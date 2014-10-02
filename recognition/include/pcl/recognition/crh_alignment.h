@@ -111,15 +111,15 @@ namespace pcl
       }
 
       /** \brief returns the computed transformations
-       * \param[out] transformations
+       * \param[out] transforms transformations
        */
       void getTransforms(std::vector<Eigen::Matrix4f, Eigen::aligned_allocator<Eigen::Matrix4f> > & transforms) {
         transforms = transforms_;
       }
 
       /** \brief sets model and input views
-       * \param[in] model view
        * \param[in] input_view
+       * \param[in] target_view
        */
       void
       setInputAndTargetView (PointTPtr & input_view, PointTPtr & target_view)
@@ -177,9 +177,9 @@ namespace pcl
       }
 
       /** \brief Computes the roll angle that aligns input to modle.
-       * \param[in] CRH histogram of the input cloud
-       * \param[in] CRH histogram of the target cloud
-       * \param[out] Vector containing angles where the histograms correlate
+       * \param[in] input_ftt CRH histogram of the input cloud
+       * \param[in] target_ftt CRH histogram of the target cloud
+       * \param[out] peaks Vector containing angles where the histograms correlate
        */
       void
       computeRollAngle (pcl::PointCloud<pcl::Histogram<nbins_> > & input_ftt, pcl::PointCloud<pcl::Histogram<nbins_> > & target_ftt,

@@ -426,7 +426,7 @@ namespace pcl
 
     /** \brief Save point cloud data to a binary file when available else to ASCII.
       * \param[in] file_name the output file name
-      * \param[in] cloud the point cloud data message
+      * \param[in] blob the point cloud data message
       * \param[in] precision float precision when saving to ASCII files
       * \ingroup io
       */

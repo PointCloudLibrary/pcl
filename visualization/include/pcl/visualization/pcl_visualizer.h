@@ -278,9 +278,11 @@ namespace pcl
           * \param[in] scale the scale of the axes (default: 1)
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
-        PCL_DEPRECATED (void addCoordinateSystem (double scale, int viewport = 0),
+        PCL_DEPRECATED (
         "addCoordinateSystem (scale, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.");
+        "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.")
+        void
+        addCoordinateSystem (double scale, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
@@ -297,9 +299,11 @@ namespace pcl
           * \param[in] z the Z position of the axes
           * \param[in] viewport the view port where the 3D axes should be added (default: all)
           */
-        PCL_DEPRECATED (void addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0),
+        PCL_DEPRECATED (
         "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.");
+        "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.")
+        void
+        addCoordinateSystem (double scale, float x, float y, float z, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -318,9 +322,11 @@ namespace pcl
            * \param[in] t transformation matrix
            * \param[in] viewport the view port where the 3D axes should be added (default: all)
            */
-        PCL_DEPRECATED (void addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0),
+        PCL_DEPRECATED (
         "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
-        "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.");
+        "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.")
+        void
+        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
@@ -341,6 +347,7 @@ namespace pcl
            *
            * All axies use right hand rule. x=red axis, y=green axis, z=blue axis
            * z direction is point into the screen.
+           * \code
            *     z
            *      \
            *       \
@@ -353,16 +360,20 @@ namespace pcl
            *         |
            *         |
            *         y
+           * \endcode
            */
+
         void
         addCoordinateSystem (double scale, const Eigen::Affine3f& t, const std::string &id = "reference", int viewport = 0);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] viewport view port where the 3D axes should be removed from (default: all)
           */
-        PCL_DEPRECATED (bool removeCoordinateSystem (int viewport = 0),
+        PCL_DEPRECATED (
         "removeCoordinateSystem (viewport) is deprecated, please use function "
-        "addCoordinateSystem (id, viewport) with id a unique string identifier.");
+        "addCoordinateSystem (id, viewport) with id a unique string identifier.")
+        bool
+        removeCoordinateSystem (int viewport);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] id the coordinate system object id (default: reference)
@@ -520,6 +531,18 @@ namespace pcl
           */
         bool
         updateShapePose (const std::string &id, const Eigen::Affine3f& pose);
+
+        /** \brief Set the pose of an existing coordinate system.
+          *
+          * Returns false if the coordinate system doesn't exist, true if the pose was successfully
+          * updated.
+          *
+          * \param[in] id the point cloud object id (i.e., given on \a addCoordinateSystem etc.)
+          * \param[in] pose the new pose
+          * \return false if no coordinate system with the specified ID was found
+          */
+        bool
+        updateCoordinateSystemPose (const std::string &id, const Eigen::Affine3f& pose);
 
         /** \brief Set the pose of an existing point cloud.
           *
@@ -839,6 +862,19 @@ namespace pcl
           return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
         }
 
+        /** \brief Add a PointXYZL Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (addPointCloud<pcl::PointXYZL> (cloud, color_handler, id, viewport));
+        }
+
         /** \brief Updates the XYZ data for an existing cloud object id on screen.
           * \param[in] cloud the input point cloud dataset
           * \param[in] id the point cloud object id to update (default: cloud)
@@ -875,6 +911,19 @@ namespace pcl
         {
           pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
           return (updatePointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id));
+        }
+
+        /** \brief Updates the XYZL data for an existing cloud object id on screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                          const std::string &id = "cloud")
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (updatePointCloud<pcl::PointXYZL> (cloud, color_handler, id));
         }
 
         /** \brief Add a PolygonMesh object to screen
@@ -945,7 +994,6 @@ namespace pcl
 
         /** \brief Add a TextureMesh object to screen
           * \param[in] polymesh the textured polygonal mesh
-          * \param[in] path_to_tex_files path to texture files (usuallay same directory as your mesh file)
           * \param[in] id the texture mesh object id (default: "texture")
           * \param[in] viewport the view port where the TextureMesh should be added (default: all)
           */
@@ -1185,6 +1233,9 @@ namespace pcl
                  const std::string &id = "line", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1197,7 +1248,10 @@ namespace pcl
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b,
                   const std::string &id = "arrow", int viewport = 0);
 
-        /** \brief Add a line arrow segment between two points, and display the distance between them
+        /** \brief Add a line arrow segment between two points, and (optianally) display the distance between them
+          *
+          * Arrow head is attached on the **start** point (\c pt1) of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r the red channel of the color that the line should be rendered with
@@ -1212,6 +1266,9 @@ namespace pcl
                   const std::string &id = "arrow", int viewport = 0);
 
         /** \brief Add a line arrow segment between two points, and display the distance between them in a given color
+          *
+          * Arrow heads are attached to both end points of the arrow.
+          *
           * \param[in] pt1 the first (start) point on the line
           * \param[in] pt2 the second (end) point on the line
           * \param[in] r_line the red channel of the color that the line should be rendered with
@@ -1564,9 +1621,35 @@ namespace pcl
         bool
         getCameraParameters (int argc, char **argv);
 
-        /** \brief Checks whether the camera parameters were manually loaded from file.*/
+        /** \brief Load camera parameters from a camera parameters file.
+          * \param[in] file the name of the camera parameters file
+          */
+        bool
+        loadCameraParameters (const std::string &file);
+
+        /** \brief Checks whether the camera parameters were manually loaded.
+          * \return True if valid "-cam" option is available in command line.
+          * \sa cameraFileLoaded ()
+          */
         bool
         cameraParamsSet () const;
+
+        /** \brief Checks whether a camera file were automatically loaded.
+          * \return True if a valid camera file is automatically loaded.
+          * \note The camera file is saved by pressing "ctrl + s" during last run of the program
+          * and restored automatically when the program runs this time.
+          * \sa cameraParamsSet ()
+          */
+        bool
+        cameraFileLoaded () const;
+
+        /** \brief Get camera file for camera parameter saving/restoring.
+          * \note This will be valid only when valid "-cam" option were available in command line
+          * or a saved camera file were automatically loaded. 
+          * \sa cameraParamsSet (), cameraFileLoaded ()
+          */
+        std::string
+        getCameraFile () const;
 
         /** \brief Update camera parameters and render. */
         void
@@ -1631,6 +1714,7 @@ namespace pcl
         /** \brief Set the camera clipping distances.
           * \param[in] near the near clipping distance (no objects closer than this to the camera will be drawn)
           * \param[in] far the far clipping distance (no objects further away than this to the camera will be drawn)
+          * \param[in] viewport the viewport to modify camera of (0 modifies all cameras)
           */
         void
         setCameraClipDistances (double near, double far, int viewport = 0);
@@ -1657,6 +1741,18 @@ namespace pcl
         void
         saveScreenshot (const std::string &file);
 
+        /** \brief Save the camera parameters to disk, as a .cam file.
+          * \param[in] file the name of the .cam file
+          */
+        void
+        saveCameraParameters (const std::string &file);
+
+        /** \brief Get camera parameters and save them to a pcl::visualization::Camera.
+          * \param[out] camera the name of the pcl::visualization::Camera
+          */
+        void
+        getCameraParameters (Camera &camera);
+
         /** \brief Return a pointer to the underlying VTK Render Window used. */
         vtkSmartPointer<vtkRenderWindow>
         getRenderWindow ()
@@ -1678,6 +1774,12 @@ namespace pcl
           return (cloud_actor_map_);
         }
         
+        /** \brief Return a pointer to the ShapeActorMap this visualizer uses. */
+        ShapeActorMapPtr
+        getShapeActorMap ()
+        {
+          return (shape_actor_map_);
+        }
 
         /** \brief Set the position in screen coordinates.
           * \param[in] x where to move the window to (X)
@@ -1814,8 +1916,11 @@ namespace pcl
         /** \brief Internal pointer to widget which contains a set of axes */
         vtkSmartPointer<vtkOrientationMarkerWidget> axes_widget_;
         
-        /** \brief Boolean that holds whether or not the camera parameters were manually initialized*/
+        /** \brief Boolean that holds whether or not the camera parameters were manually initialized */
         bool camera_set_;
+
+        /** \brief Boolean that holds whether or not a camera file were automatically loaded */
+        bool camera_file_loaded_;
 
         /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_;
@@ -2031,6 +2136,13 @@ namespace pcl
         int
         textureFromTexMaterial (const pcl::TexMaterial& tex_mat,
                                 vtkTexture* vtk_tex) const;
+
+        /** \brief Get camera file for camera parameter saving/restoring from command line.
+          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * \return empty string if failed.
+          */
+        std::string
+        getUniqueCameraFile (int argc, char **argv);
         
         //There's no reason these conversion functions shouldn't be public and static so others can use them.
       public:

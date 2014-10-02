@@ -34,7 +34,7 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  */
-#include "../src/internal.h"
+#include <pcl/gpu/kinfu_large_scale/device.h>
 #include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
 #include <pcl/gpu/kinfu_large_scale/impl/standalone_marching_cubes.hpp>
 #include <pcl/gpu/kinfu_large_scale/world_model.h>

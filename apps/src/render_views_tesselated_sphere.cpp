@@ -61,7 +61,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
   vtkSmartPointer<vtkTransformFilter> trans_filter_center = vtkSmartPointer<vtkTransformFilter>::New ();
   trans_filter_center->SetTransform (trans_center);
+#if VTK_MAJOR_VERSION < 6
   trans_filter_center->SetInput (polydata_);
+#else
+  trans_filter_center->SetInputData (polydata_);
+#endif
   trans_filter_center->Update ();
 
   vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
@@ -116,7 +120,6 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
-  sphere->Update ();
 
   std::vector<Eigen::Vector3f> cam_positions;
   if (!use_vertices_)

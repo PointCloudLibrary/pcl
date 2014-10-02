@@ -198,7 +198,7 @@ main (int argc, char ** argv)
     filename.append(files[i]);
     PointCloudPtr input (new PointCloud);
     pcl::io::loadPCDFile (filename, *input);
-    pcl::console::print_info ("Loaded %s (%zu points)\n", filename.c_str(), input->size ());
+    pcl::console::print_info ("Loaded %s (%lu points)\n", filename.c_str(), input->size ());
 
     std::cout << files[i] << std::endl;
     // Construct the object model

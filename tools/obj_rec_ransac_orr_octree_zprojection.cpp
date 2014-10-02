@@ -54,6 +54,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/recognition/ransac_based/orr_octree_zprojection.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <vtkVersion.h>
 #include <vtkRenderWindow.h>
 #include <vtkPolyData.h>
 #include <vtkAppendPolyData.h>
@@ -206,7 +207,11 @@ void show_octree (ORROctree* octree, PCLVisualizer& viz)
   vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
   vtkSmartPointer<vtkActor> octree_actor = vtkSmartPointer<vtkActor>::New();
   vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   mapper->SetInput(vtk_octree);
+#else
+  mapper->SetInputData (vtk_octree);
+#endif
   octree_actor->SetMapper(mapper);
 
   // Set the appearance & add to the renderer
@@ -250,9 +255,17 @@ void show_octree_zproj (ORROctreeZProjection* zproj, PCLVisualizer& viz)
   vtkRenderer *renderer = viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ();
   vtkSmartPointer<vtkActor> upper_actor = vtkSmartPointer<vtkActor>::New(), lower_actor = vtkSmartPointer<vtkActor>::New();
   vtkSmartPointer<vtkDataSetMapper> upper_mapper = vtkSmartPointer<vtkDataSetMapper>::New (), lower_mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+#if VTK_MAJOR_VERSION < 6
   upper_mapper->SetInput(upper_bound->GetOutput ());
+#else
+  upper_mapper->SetInputData (upper_bound->GetOutput ());
+#endif
   upper_actor->SetMapper(upper_mapper);
+#if VTK_MAJOR_VERSION < 6
   lower_mapper->SetInput(lower_bound->GetOutput ());
+#else
+  lower_mapper->SetInputData (lower_bound->GetOutput ());
+#endif
   lower_actor->SetMapper(lower_mapper);
 
   // Set the appearance & add to the renderer
@@ -272,7 +285,11 @@ void node_to_cube (ORROctree::Node* node, vtkAppendPolyData* additive_octree)
   cube->SetBounds (b[0], b[1], b[2], b[3], b[4], b[5]);
   cube->Update ();
 
+#if VTK_MAJOR_VERSION < 6
   additive_octree->AddInput (cube->GetOutput ());
+#else
+  additive_octree->AddInputData (cube->GetOutput ());
+#endif
 }
 
 //===============================================================================================================================
@@ -284,7 +301,11 @@ void rectangle_to_vtk (float x1, float x2, float y1, float y2, float z, vtkAppen
   cube->SetBounds (x1, x2, y1, y2, z, z);
   cube->Update ();
 
+#if VTK_MAJOR_VERSION < 6
   additive_rectangle->AddInput (cube->GetOutput ());
+#else
+  additive_rectangle->AddInputData (cube->GetOutput ());
+#endif
 }
 
 //===============================================================================================================================

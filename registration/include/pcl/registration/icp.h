@@ -161,7 +161,7 @@ namespace pcl
         * method is called. Please note that the align method sets max_iterations_,
         * euclidean_fitness_epsilon_ and transformation_epsilon_ and therefore overrides the default / set
         * values of the DefaultConvergenceCriteria instance.
-        * \param[out] Pointer to the IterativeClosestPoint's DefaultConvergenceCriteria.
+        * \return Pointer to the IterativeClosestPoint's DefaultConvergenceCriteria.
         */
       inline typename pcl::registration::DefaultConvergenceCriteria<Scalar>::Ptr
       getConvergeCriteria ()

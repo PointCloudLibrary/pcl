@@ -797,6 +797,7 @@ namespace pcl
       * \param[in] origin the sensor data acquisition origin (translation)
       * \param[in] orientation the sensor data acquisition origin (rotation)
       * \param[in] binary_mode true for binary mode, false (default) for ASCII
+      * \param[in] use_camera
       * \ingroup io
       */
     inline int 

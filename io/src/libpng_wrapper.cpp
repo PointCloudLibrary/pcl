@@ -43,13 +43,13 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <assert.h>
 
 
 // user defined I/O callback methods for libPNG
 namespace 
 {
+  using pcl::uint8_t;
   /////////////////////////////////////////////////////////////////////////////////////////
   void 
   user_read_data (png_structp png_ptr, png_bytep data, png_size_t length)

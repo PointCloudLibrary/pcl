@@ -35,13 +35,13 @@ if(build)
         src/common.cpp
         src/correspondence.cpp
         src/distances.cpp
-        src/intersections.cpp
         src/parse.cpp
         src/poses_from_matches.cpp
         src/print.cpp
         src/projection_matrix.cpp
         src/time_trigger.cpp
         src/gaussian.cpp
+        src/colors.cpp
         ${range_image_srcs}
         )
 
@@ -55,7 +55,6 @@ if(build)
         include/pcl/point_traits.h
         include/pcl/point_types_conversion.h
         include/pcl/point_representation.h
-        include/pcl/correspondence.h
         include/pcl/point_types.h
         include/pcl/for_each_type.h
         include/pcl/pcl_tests.h
@@ -109,6 +108,7 @@ if(build)
         include/pcl/common/random.h
         include/pcl/common/generate.h
         include/pcl/common/projection_matrix.h
+        include/pcl/common/colors.h
         )
 
     set(common_incs_impl
@@ -117,6 +117,7 @@ if(build)
         include/pcl/common/impl/centroid.hpp
         include/pcl/common/impl/common.hpp
         include/pcl/common/impl/eigen.hpp
+        include/pcl/common/impl/intersections.hpp
         include/pcl/common/impl/copy_point.hpp
         include/pcl/common/impl/io.hpp
         include/pcl/common/impl/file_io.hpp
@@ -133,6 +134,7 @@ if(build)
         include/pcl/common/impl/random.hpp
         include/pcl/common/impl/generate.hpp
         include/pcl/common/impl/projection_matrix.hpp
+        include/pcl/common/impl/accumulators.hpp
         )
 
     set(impl_incs 

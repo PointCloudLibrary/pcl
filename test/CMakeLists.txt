@@ -16,9 +16,10 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS
 
 if(build)
 
-    include_directories("${PCL_SOURCE_DIR}/test/gtest-1.6.0/include"
-                        "${PCL_SOURCE_DIR}/test/gtest-1.6.0/")
-    add_library(pcl_gtest STATIC gtest-1.6.0/src/gtest-all.cc)
+    find_package(Gtest REQUIRED)
+    include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
+
+    add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 	
     if( MSVC11 ) # VS2012 doesn't correctly support variadic templates yet
         add_definitions("-D_VARIADIC_MAX=10")
@@ -43,6 +44,7 @@ if(build)
     add_subdirectory(keypoints)
     add_subdirectory(surface)
     add_subdirectory(segmentation)
+    add_subdirectory(sample_consensus)
 
     PCL_ADD_TEST(a_bearing_angle_image_test test_bearing_angle_image
                  FILES test_bearing_angle_image.cpp
@@ -58,11 +60,6 @@ if(build)
                  LINK_WITH pcl_gtest pcl_search pcl_io pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/table_scene_mug_stereo_textured.pcd")
 
-    PCL_ADD_TEST(a_sample_consensus_test test_sample_consensus
-                 FILES test_sample_consensus.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_sample_consensus pcl_kdtree pcl_features
-                 ARGUMENTS "${PCL_SOURCE_DIR}/test/sac_plane_test.pcd")
-    
     PCL_ADD_TEST(a_transforms_test test_transforms
                  FILES test_transforms.cpp
                  LINK_WITH pcl_gtest pcl_io

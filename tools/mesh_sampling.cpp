@@ -38,6 +38,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/transforms.h>
+#include <vtkVersion.h>
 #include <vtkPLYReader.h>
 #include <vtkOBJReader.h>
 #include <vtkTriangle.h>
@@ -196,20 +197,23 @@ main (int argc, char **argv)
   {
     vtkSmartPointer<vtkOBJReader> readerQuery = vtkSmartPointer<vtkOBJReader>::New ();
     readerQuery->SetFileName (argv[obj_file_indices[0]]);
+    readerQuery->Update ();
     polydata1 = readerQuery->GetOutput ();
-    polydata1->Update ();
   }
 
   //make sure that the polygons are triangles!
   vtkSmartPointer<vtkTriangleFilter> triangleFilter = vtkSmartPointer<vtkTriangleFilter>::New ();
+#if VTK_MAJOR_VERSION < 6
   triangleFilter->SetInput (polydata1);
+#else
+  triangleFilter->SetInputData (polydata1);
+#endif
   triangleFilter->Update ();
 
   vtkSmartPointer<vtkPolyDataMapper> triangleMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   triangleMapper->SetInputConnection (triangleFilter->GetOutputPort ());
   triangleMapper->Update();
   polydata1 = triangleMapper->GetInput();
-  polydata1->Update ();
 
   bool INTER_VIS = false;
   bool VIS = true;

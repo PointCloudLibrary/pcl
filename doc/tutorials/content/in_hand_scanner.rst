@@ -125,7 +125,7 @@ How to use it
 
 In the following section I will go through the steps to scan in a model of the 'lion' object which is about 15 cm high.
 
-.. image:: images/ihs_lion_photo.JPG
+.. image:: images/ihs_lion_photo.jpg
   :alt: Lion object.
   :width: 500px
   :height: 782px

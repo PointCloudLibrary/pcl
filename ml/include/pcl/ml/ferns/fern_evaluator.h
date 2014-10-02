@@ -68,7 +68,7 @@ namespace pcl
     ~FernEvaluator();
 
     /** \brief Evaluates the specified examples using the supplied tree. 
-      * \param[in] tree The decision tree.
+      * \param[in] fern The decision tree.
       * \param[in] feature_handler The feature handler used to train the tree.
       * \param[in] stats_estimator The statistics estimation instance used while training the tree.
       * \param[in] data_set The data set used for evaluation.
@@ -84,7 +84,7 @@ namespace pcl
               std::vector<LabelType> & label_data);
     
     /** \brief Evaluates the specified examples using the supplied tree and adds the results to the supplied results array. 
-      * \param[in] tree The decision tree.
+      * \param[in] fern The decision tree.
       * \param[in] feature_handler The feature handler used to train the tree.
       * \param[in] stats_estimator The statistics estimation instance used while training the tree.
       * \param[in] data_set The data set used for evaluation.
@@ -100,7 +100,7 @@ namespace pcl
                     std::vector<LabelType> & label_data);
     
     /** \brief Evaluates the specified examples using the supplied tree. 
-      * \param[in] tree The decision tree.
+      * \param[in] fern The decision tree.
       * \param[in] feature_handler The feature handler used to train the tree.
       * \param[in] stats_estimator The statistics estimation instance used while training the tree.
       * \param[in] data_set The data set used for evaluation.

@@ -55,6 +55,8 @@ if(Qt5Core_FOUND)
     # set(CMAKE_AUTOMOC ON)
     # set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+    set(QT_QTOPENGL_INCLUDE_DIR Qt5OpenGL_INCLUDE_DIRS)
+
     # Replace qt4 macros.
     macro(qt4_wrap_cpp)
         qt5_wrap_cpp(${ARGN})

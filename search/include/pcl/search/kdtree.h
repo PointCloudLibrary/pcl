@@ -76,8 +76,8 @@ namespace pcl
         using pcl::search::Search<PointT>::radiusSearch;
         using pcl::search::Search<PointT>::sorted_results_;
 
-        typedef boost::shared_ptr<KdTree<PointT> > Ptr;
-        typedef boost::shared_ptr<const KdTree<PointT> > ConstPtr;
+        typedef boost::shared_ptr<KdTree<PointT, Tree> > Ptr;
+        typedef boost::shared_ptr<const KdTree<PointT, Tree> > ConstPtr;
 
         typedef boost::shared_ptr<Tree> KdTreePtr;
         typedef boost::shared_ptr<const Tree> KdTreeConstPtr;

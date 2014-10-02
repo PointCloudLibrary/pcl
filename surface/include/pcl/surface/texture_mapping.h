@@ -99,8 +99,8 @@ namespace pcl
   {
     public:
      
-      typedef boost::shared_ptr< PointInT > Ptr;
-      typedef boost::shared_ptr< const PointInT > ConstPtr;
+      typedef boost::shared_ptr< TextureMapping < PointInT > > Ptr;
+      typedef boost::shared_ptr< const TextureMapping < PointInT > > ConstPtr;
 
       typedef pcl::PointCloud<PointInT> PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
@@ -193,7 +193,7 @@ namespace pcl
         * \returns false if the point is not visible by the camera
         */
       inline bool
-      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, Eigen::Vector2f &UV_coordinates)
+      getPointUVCoordinates (const PointInT &pt, const Camera &cam, Eigen::Vector2f &UV_coordinates)
       {
         // if the point is in front of the camera
         if (pt.z > 0)
@@ -243,7 +243,7 @@ namespace pcl
         * \returns true if the point is occluded.
         */
       inline bool
-      isPointOccluded (const pcl::PointXYZ &pt, const OctreePtr octree);
+      isPointOccluded (const PointInT &pt, const OctreePtr octree);
 
       /** \brief Remove occluded points from a point cloud
         * \param[in] input_cloud the cloud on which to perform occlusion detection
@@ -326,7 +326,7 @@ namespace pcl
       /** \brief Segment and texture faces by camera visibility. Face-based segmentation.
         * \details With N camera, faces will be arranged into N+1 groups: 1 for each camera, plus 1 for faces not visible from any camera.
         * The mesh will also contain uv coordinates for each face
-        * \param[in/out] tex_mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
+        * \param mesh input mesh that needs sorting. Should contain only 1 sub-mesh.
         * \param[in] cameras vector containing the cameras used for texture mapping.
         */
       void 
@@ -363,7 +363,7 @@ namespace pcl
         * \param[out] radius the radius of the circumscribed circle.
         */
       inline void
-      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circomcenter, double &radius);
+      getTriangleCircumcenterAndSize (const pcl::PointXY &p1, const pcl::PointXY &p2, const pcl::PointXY &p3, pcl::PointXY &circumcenter, double &radius);
  
       
       /** \brief Returns the centroid of a triangle and the corresponding circumscribed circle's radius.
@@ -385,7 +385,7 @@ namespace pcl
         * \returns false if the point is not visible by the camera
         */
       inline bool
-      getPointUVCoordinates (const pcl::PointXYZ &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
+      getPointUVCoordinates (const PointInT &pt, const Camera &cam, pcl::PointXY &UV_coordinates);
 
       /** \brief Returns true if all the vertices of one face are projected on the camera's image plane.
         * \param[in] camera camera on which to project the face.
@@ -398,7 +398,7 @@ namespace pcl
         */
       inline bool
       isFaceProjected (const Camera &camera, 
-                       const pcl::PointXYZ &p1, const pcl::PointXYZ &p2, const pcl::PointXYZ &p3, 
+                       const PointInT &p1, const PointInT &p2, const PointInT &p3, 
                        pcl::PointXY &proj1, pcl::PointXY &proj2, pcl::PointXY &proj3);
 
       /** \brief Returns True if a point lays within a triangle

@@ -112,7 +112,7 @@ namespace pcl
        * 3x3 Sobel kernel in the X direction
        */
 
-      void sobelKernelX (pcl::PointCloud<PointT> &Kernel);
+      void sobelKernelX (pcl::PointCloud<PointT> &kernel);
 
       /**
        *
@@ -121,7 +121,7 @@ namespace pcl
        * 3x3 Prewitt kernel in the X direction
        */
 
-      void prewittKernelX (pcl::PointCloud<PointT> &Kernel);
+      void prewittKernelX (pcl::PointCloud<PointT> &kernel);
 
       /**
        *
@@ -139,7 +139,7 @@ namespace pcl
        * 3x3 Sobel kernel in the Y direction
        */
 
-      void sobelKernelY (pcl::PointCloud<PointT> &Kernel);
+      void sobelKernelY (pcl::PointCloud<PointT> &kernel);
 
       /**
        *
@@ -148,7 +148,7 @@ namespace pcl
        * 3x3 Prewitt kernel in the Y direction
        */
 
-      void prewittKernelY (pcl::PointCloud<PointT> &Kernel);
+      void prewittKernelY (pcl::PointCloud<PointT> &kernel);
 
       /**
        *

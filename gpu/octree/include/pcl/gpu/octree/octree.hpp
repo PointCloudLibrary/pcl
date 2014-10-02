@@ -147,7 +147,7 @@ namespace pcl
             /** \brief Batch exact k-nearest search on GPU for k == 1 only!
               * \param[in] queries array of centers
               * \param[in] k nubmer of neighbors (only k == 1 is supported)
-              * \param[out] result array of results
+              * \param[out] results array of results
               */
             void nearestKSearchBatch(const Queries& queries, int k, NeighborIndices& results) const;
 

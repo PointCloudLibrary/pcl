@@ -56,7 +56,7 @@ TEST (PCL, FeaturePtr)
   VFHEstimation<PointXYZ, PointNormal, VFHSignature308>::Ptr vfh (new VFHEstimation<PointXYZ, PointNormal, VFHSignature308> ());
   vfh->setViewPoint (1.0f, 1.0f, 1.0f);
 
-  UniqueShapeContext<PointXYZ, ShapeContext1980, ReferenceFrame>::Ptr usc (new UniqueShapeContext<PointXYZ, ShapeContext1980, ReferenceFrame> ());
+  UniqueShapeContext<PointXYZ, UniqueShapeContext1960, ReferenceFrame>::Ptr usc (new UniqueShapeContext<PointXYZ, UniqueShapeContext1960, ReferenceFrame> ());
   usc->setMinimalRadius (5);
 
   StatisticalMultiscaleInterestRegionExtraction<PointXYZ>::Ptr smire (new StatisticalMultiscaleInterestRegionExtraction<PointXYZ> ());

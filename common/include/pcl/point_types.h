@@ -215,6 +215,11 @@ namespace pcl
     */
   struct ShapeContext1980;
 
+  /** \brief Members: float descriptor[1960], rf[9]
+    * \ingroup common
+    */
+  struct UniqueShapeContext1960;
+
   /** \brief Members: float pfh[125]
     * \ingroup common
     */
@@ -254,6 +259,11 @@ namespace pcl
     * \ingroup common
     */
   struct VFHSignature308;
+  
+  /** \brief Members: float grsd[21]
+    * \ingroup common
+    */
+  struct GRSDSignature21;
   
   /** \brief Members: float esf[640]
     * \ingroup common
@@ -560,6 +570,11 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ShapeContext1980,
     (float[9], rf, rf)
 )
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::UniqueShapeContext1960,
+    (float[1960], descriptor, shape_context)
+    (float[9], rf, rf)
+)
+
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SHOT352,
     (float[352], descriptor, shot)
     (float[9], rf, rf)
@@ -582,6 +597,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::BRISKSignature512,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::VFHSignature308,
     (float[308], histogram, vfh)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GRSDSignature21,
+    (float[21], histogram, grsd)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
@@ -727,6 +746,11 @@ namespace pcl
     /** Metafunction to check if a given point type has curvature field. */
     template <typename PointT>
     struct has_curvature : has_field<PointT, pcl::fields::curvature>
+    { };
+
+    /** Metafunction to check if a given point type has intensity field. */
+    template <typename PointT>
+    struct has_intensity : has_field<PointT, pcl::fields::intensity>
     { };
 
     /** Metafunction to check if a given point type has either rgb or rgba field. */

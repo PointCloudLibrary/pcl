@@ -165,7 +165,7 @@ namespace pcl
     /** \brief Initializes the LUT.
       * \param[in] range_x_arg the range of the LUT in x-direction.
       * \param[in] range_y_arg the range of the LUT in y-direction.
-      * \parma[in] range_z_arg the range of the LUT in z-direction.
+      * \param[in] range_z_arg the range of the LUT in z-direction.
       */
     void 
     initializeLUT (const int range_x_arg, const int range_y_arg, const int range_z_arg)
@@ -718,13 +718,6 @@ static void accumBilateral(long delta, long i, long j, long * A, long * b, int t
  *
  * Implements section 2.6 "Extension to Dense Depth Sensors."
  *
- * \param[in]  src  The source 16-bit depth image (in mm).
- * \param[out] dst  The destination 8-bit image. Each bit represents one bin of
- *                  the view cone.
- * \param distance_threshold   Ignore pixels beyond this distance.
- * \param difference_threshold When computing normals, ignore contributions of pixels whose
- *                             depth difference with the central pixel is above this threshold.
- *
  * \todo Should also need camera model, or at least focal lengths? Replace distance_threshold with mask?
  */
 template <typename PointInT> void
@@ -739,9 +732,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
 
   surface_normal_orientations_.resize (width, height, 0.0f);
 
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (int row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (int col_index = 0; col_index < width; ++col_index)
     {
       const float value = input_->points[row_index*width + col_index].z;
       if (pcl_isfinite (value))
@@ -954,9 +947,9 @@ pcl::SurfaceNormalModality<PointInT>::computeAndQuantizeSurfaceNormals2 ()
   map[0x1<<7] = 7;
 
   quantized_surface_normals_.resize (width, height);
-  for (size_t row_index = 0; row_index < height; ++row_index)
+  for (int row_index = 0; row_index < height; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width; ++col_index)
+    for (int col_index = 0; col_index < width; ++col_index)
     {
       quantized_surface_normals_ (col_index, row_index) = map[lp_normals[row_index*width + col_index]];
     }

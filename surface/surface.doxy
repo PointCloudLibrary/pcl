@@ -13,7 +13,7 @@ composed of multiple scans that are not aligned perfectly.  The complexity
 of the surface estimation can be adjusted, and normals can be estimated in
 the same step if needed.
 
-\image html http://www.pointclouds.org/documentation/tutorials/_images/resampling_1.png
+\image html http://www.pointclouds.org/documentation/tutorials/_images/resampling_1.jpg
 
 Meshing is a general way to create a surface out of points, and currently
 there are two algorithms provided: a very fast triangulation of the original

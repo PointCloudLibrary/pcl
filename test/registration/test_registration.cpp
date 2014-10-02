@@ -48,6 +48,7 @@
 #include <pcl/registration/joint_icp.h>
 #include <pcl/registration/icp_nl.h>
 #include <pcl/registration/gicp.h>
+#include <pcl/registration/gicp6d.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/registration/transformation_validation_euclidean.h>
 #include <pcl/registration/correspondence_rejection_median_distance.h>
@@ -69,6 +70,7 @@ using namespace pcl::io;
 using namespace std;
 
 PointCloud<PointXYZ> cloud_source, cloud_target, cloud_reg;
+PointCloud<PointXYZRGBA> cloud_with_color;
 
 template <typename PointSource, typename PointTarget>
 class RegistrationWrapper : public Registration<PointSource, PointTarget>
@@ -520,7 +522,62 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
-  
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GeneralizedIterativeClosestPoint6D)
+{
+  typedef PointXYZRGBA PointT;
+  Eigen::Affine3f delta_transform;
+  PointCloud<PointT>::Ptr src_full (new PointCloud<PointT>);
+  copyPointCloud (cloud_with_color, *src_full);
+  PointCloud<PointT>::Ptr tgt_full (new PointCloud<PointT>);
+  sampleRandomTransform (delta_transform, M_PI/0.1, .03);
+  pcl::transformPointCloud (cloud_with_color, *tgt_full, delta_transform);
+  PointCloud<PointT> output;
+
+  // VoxelGrid filter
+  PointCloud<PointT>::Ptr src (new PointCloud<PointT>);
+  PointCloud<PointT>::Ptr tgt (new PointCloud<PointT>);
+  pcl::VoxelGrid<PointT> sor;
+  sor.setLeafSize (0.02f, 0.02f, 0.02f);
+  sor.setInputCloud (src_full);
+  sor.filter (*src);
+  sor.setInputCloud (tgt_full);
+  sor.filter (*tgt);
+
+  GeneralizedIterativeClosestPoint6D reg;
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (50);
+  reg.setTransformationEpsilon (1e-8);
+
+  // Register
+  reg.align (output);
+  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.003);
+
+  // Check again, for all possible caching schemes
+  for (int iter = 0; iter < 4; iter++)
+  {
+    bool force_cache = (bool) iter/2;
+    bool force_cache_reciprocal = (bool) iter%2;
+    pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+    // Ensure that, when force_cache is not set, we are robust to the wrong input
+    if (force_cache)
+      tree->setInputCloud (tgt);
+    reg.setSearchMethodTarget (tree, force_cache);
+
+    pcl::search::KdTree<PointT>::Ptr tree_recip (new pcl::search::KdTree<PointT>);
+    if (force_cache_reciprocal)
+      tree_recip->setInputCloud (src);
+    reg.setSearchMethodSource (tree_recip, force_cache_reciprocal);
+
+    // Register
+    reg.align (output);
+    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_LT (reg.getFitnessScore (), 0.003);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -919,9 +976,9 @@ TEST (PCL, PPFRegistration)
 int
 main (int argc, char** argv)
 {
-  if (argc < 3)
+  if (argc < 4)
   {
-    std::cerr << "No test files given. Please download `bun0.pcd` and `bun4.pcd` and pass their path to the test." << std::endl;
+    std::cerr << "No test files given. Please download `bun0.pcd`, `bun4.pcd` and `milk_color.pcd` pass their path to the test." << std::endl;
     return (-1);
   }
 
@@ -934,6 +991,11 @@ main (int argc, char** argv)
   if (loadPCDFile (argv[2], cloud_target) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
+    return (-1);
+  }
+  if (loadPCDFile (argv[3], cloud_with_color) < 0)
+  {
+    std::cerr << "Failed to read test file. Please download `milk_color.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
 

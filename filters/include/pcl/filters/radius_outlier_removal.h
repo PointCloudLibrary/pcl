@@ -131,7 +131,7 @@ namespace pcl
       /** \brief Get the number of neighbors that need to be present in order to be classified as an inlier.
         * \details The number of points within setRadiusSearch() from the query point will need to be equal or greater
         * than this number in order to be classified as an inlier point (i.e. will not be filtered).
-        * \param min_pts The minimum number of neighbors (default = 1).
+        * \return The minimum number of neighbors (default = 1).
         */
       inline int
       getMinNeighborsInRadius ()

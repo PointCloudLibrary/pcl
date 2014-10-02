@@ -64,7 +64,7 @@ What `PointT` types are available in PCL?
 
 To cover all possible cases that we could think of, we defined a plethora of
 point types in PCL. The following might be only a snippet, please see
-`point_types.hpp <http://docs.pointclouds.org/point__types_8hpp_source.html>`_
+`point_types.hpp <https://github.com/PointCloudLibrary/pcl/blob/master/common/include/pcl/impl/point_types.hpp>`_
 for the complete list.
 
 This list is important, because before defining your own custom type, you need

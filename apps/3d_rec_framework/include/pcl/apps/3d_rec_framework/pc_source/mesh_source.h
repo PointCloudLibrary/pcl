@@ -192,7 +192,6 @@ namespace pcl
             filter_scale->Update ();
 
             vtkSmartPointer<vtkPolyData> mapper = filter_scale->GetOutput ();
-            mapper->Update ();
 
             //generate views
             pcl::apps::RenderViewsTesselatedSphere render_views;

@@ -11,6 +11,7 @@ mark_as_advanced("BUILD_${SUBSYS_NAME}")
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
+  REMOVE_VTK_DEFINITIONS()
   #find_package(OpenCV QUIET)
   
   #find NPP
@@ -22,7 +23,7 @@ if(build)
     find_cuda_helper_libs(nppi)
     find_cuda_helper_libs(npps)
 
-    set(CUDA_npp_LIBRARY "${CUDA_nppc_LIBRARY};${CUDA_nppi_LIBRARY};${CUDA_npps_LIBRARY}" CACHE STRING "npp library")
+    set(CUDA_npp_LIBRARY ${CUDA_nppc_LIBRARY} ${CUDA_nppi_LIBRARY} ${CUDA_npps_LIBRARY} CACHE STRING "npp library")
   endif()
 
   #Label_skeleton
@@ -44,7 +45,6 @@ if(build)
   if (UNIX OR APPLE)
     set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
   endif()
-
   if(NOT UNIX OR APPLE)
     add_definitions(-DPCLAPI_EXPORTS)
   endif()
@@ -54,7 +54,7 @@ if(build)
   set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
   PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${hdrs} ${srcs_cuda} ${objs_cuda})
-  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" "${CUDA_npp_LIBRARY}")
+  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_search pcl_surface pcl_segmentation pcl_features pcl_sample_consensus pcl_gpu_utils pcl_gpu_containers "${CUDA_CUDART_LIBRARY}" ${CUDA_npp_LIBRARY})
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "${SUBSYS_DEPS}" "" "" "" "")
 
   # install include files

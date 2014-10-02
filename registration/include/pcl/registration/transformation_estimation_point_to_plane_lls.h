@@ -142,7 +142,7 @@ namespace pcl
           * \param[in] tx the x translation
           * \param[in] ty the y translation
           * \param[in] tz the z translation
-          * \param[out] transformation the resultant transformation matrix
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
         constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,

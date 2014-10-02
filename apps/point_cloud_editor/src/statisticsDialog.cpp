@@ -40,7 +40,7 @@
 
 #include <pcl/apps/point_cloud_editor/statisticsDialog.h>
 
-StatisticsDialog::StatisticsDialog(QWidget *parent)
+StatisticsDialog::StatisticsDialog(QWidget *)
 {
   button_box_ = new QDialogButtonBox;
   button_box_->addButton(tr("Hide"), QDialogButtonBox::AcceptRole);

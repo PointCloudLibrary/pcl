@@ -352,7 +352,7 @@ namespace pcl
 
         rayCastKernel<<<grid, block>>>(rc, *buffer);
         cudaSafeCall (cudaGetLastError ());
-        //cudaSafeCall(cudaDeviceSynchronize());
+        cudaSafeCall(cudaDeviceSynchronize());
       }
     }
   }

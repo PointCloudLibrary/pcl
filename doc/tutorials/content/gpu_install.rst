@@ -17,7 +17,7 @@ In order to run the code you'll need a decent Nvidia GPU with Fermi or Kepler ar
 
 This should indicate which GPU you have on your system, if you don't have an Nvidia GPU, we're sorry, but you
 won't be able to use PCL GPU.
-The output of this you can compare with `this link <http://www.nvidia.co.uk/object/cuda_gpus_uk.html>`_  
+The output of this you can compare with `this link <http://www.nvidia.co.uk/object/cuda-parallel-computing-uk.html>`_  
 on the Nvidia website, your card should mention compute capability of 2.x (Fermi) or 3.x (Kepler) or higher.
 If you want to run with a GUI, you can also run::
 

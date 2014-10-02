@@ -51,7 +51,6 @@
 #ifdef HAVE_OPENCV
   #include <opencv2/opencv.hpp>
   #include <opencv2/gpu/gpu.hpp>
-  #include <pcl/gpu/utils/timers_opencv.hpp>
 #endif
 
 using namespace std;

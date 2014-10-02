@@ -53,6 +53,7 @@
 #endif
 
 #include <cmath>
+#include <pcl/ModelCoefficients.h>
 
 #include <Eigen/StdVector>
 #include <Eigen/Core>
@@ -70,88 +71,15 @@ namespace pcl
     * \param[in] c constant parameter
     * \param[out] roots solutions of x^2 + b*x + c = 0
     */
-  template<typename Scalar, typename Roots> inline void
-  computeRoots2 (const Scalar& b, const Scalar& c, Roots& roots)
-  {
-    roots (0) = Scalar (0);
-    Scalar d = Scalar (b * b - 4.0 * c);
-    if (d < 0.0) // no real roots!!!! THIS SHOULD NOT HAPPEN!
-      d = 0.0;
-
-    Scalar sd = ::std::sqrt (d);
-
-    roots (2) = 0.5f * (b + sd);
-    roots (1) = 0.5f * (b - sd);
-  }
+  template <typename Scalar, typename Roots> void
+  computeRoots2 (const Scalar &b, const Scalar &c, Roots &roots);
 
   /** \brief computes the roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     * \param[in] m input matrix
     * \param[out] roots roots of the characteristic polynomial of the input matrix m, which are the eigenvalues
     */
-  template<typename Matrix, typename Roots> inline void
-  computeRoots (const Matrix& m, Roots& roots)
-  {
-    typedef typename Matrix::Scalar Scalar;
-
-    // The characteristic equation is x^3 - c2*x^2 + c1*x - c0 = 0.  The
-    // eigenvalues are the roots to this equation, all guaranteed to be
-    // real-valued, because the matrix is symmetric.
-    Scalar c0 =            m (0, 0) * m (1, 1) * m (2, 2)
-            + Scalar (2) * m (0, 1) * m (0, 2) * m (1, 2)
-                         - m (0, 0) * m (1, 2) * m (1, 2)
-                         - m (1, 1) * m (0, 2) * m (0, 2)
-                         - m (2, 2) * m (0, 1) * m (0, 1);
-    Scalar c1 = m (0, 0) * m (1, 1) -
-                m (0, 1) * m (0, 1) +
-                m (0, 0) * m (2, 2) -
-                m (0, 2) * m (0, 2) +
-                m (1, 1) * m (2, 2) -
-                m (1, 2) * m (1, 2);
-    Scalar c2 = m (0, 0) + m (1, 1) + m (2, 2);
-
-
-    if (fabs (c0) < Eigen::NumTraits<Scalar>::epsilon ())// one root is 0 -> quadratic equation
-      computeRoots2 (c2, c1, roots);
-    else
-    {
-      const Scalar s_inv3 = Scalar (1.0 / 3.0);
-      const Scalar s_sqrt3 = std::sqrt (Scalar (3.0));
-      // Construct the parameters used in classifying the roots of the equation
-      // and in solving the equation for the roots in closed form.
-      Scalar c2_over_3 = c2*s_inv3;
-      Scalar a_over_3 = (c1 - c2 * c2_over_3) * s_inv3;
-      if (a_over_3 > Scalar (0))
-        a_over_3 = Scalar (0);
-
-      Scalar half_b = Scalar (0.5) * (c0 + c2_over_3 * (Scalar (2) * c2_over_3 * c2_over_3 - c1));
-
-      Scalar q = half_b * half_b + a_over_3 * a_over_3*a_over_3;
-      if (q > Scalar (0))
-        q = Scalar (0);
-
-      // Compute the eigenvalues by solving for the roots of the polynomial.
-      Scalar rho = std::sqrt (-a_over_3);
-      Scalar theta = std::atan2 (std::sqrt (-q), half_b) * s_inv3;
-      Scalar cos_theta = std::cos (theta);
-      Scalar sin_theta = std::sin (theta);
-      roots (0) = c2_over_3 + Scalar (2) * rho * cos_theta;
-      roots (1) = c2_over_3 - rho * (cos_theta + s_sqrt3 * sin_theta);
-      roots (2) = c2_over_3 - rho * (cos_theta - s_sqrt3 * sin_theta);
-
-      // Sort in increasing order.
-      if (roots (0) >= roots (1))
-        std::swap (roots (0), roots (1));
-      if (roots (1) >= roots (2))
-      {
-        std::swap (roots (1), roots (2));
-        if (roots (0) >= roots (1))
-          std::swap (roots (0), roots (1));
-      }
-
-      if (roots (0) <= 0) // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
-        computeRoots2 (c2, c1, roots);
-    }
-  }
+  template <typename Matrix, typename Roots> void
+  computeRoots (const Matrix &m, Roots &roots);
 
   /** \brief determine the smallest eigenvalue and its corresponding eigenvector
     * \param[in] mat input matrix that needs to be symmetric and positive semi definite
@@ -159,43 +87,8 @@ namespace pcl
     * \param[out] eigenvector the corresponding eigenvector to the smallest eigenvalue of the input matrix
     * \ingroup common
     */
-  template <typename Matrix, typename Vector> inline void
-  eigen22 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
-  {
-    // if diagonal matrix, the eigenvalues are the diagonal elements
-    // and the eigenvectors are not unique, thus set to Identity
-    if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
-    {
-      if (mat.coeff (0) < mat.coeff (2))
-      {
-        eigenvalue = mat.coeff (0);
-        eigenvector [0] = 1.0;
-        eigenvector [1] = 0.0;
-      }
-      else
-      {
-        eigenvalue = mat.coeff (2);
-        eigenvector [0] = 0.0;
-        eigenvector [1] = 1.0;
-      }
-      return;
-    }
-    
-    // 0.5 to optimize further calculations
-    typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
-    typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
-
-    typename Matrix::Scalar temp = trace * trace - determinant;
-
-    if (temp < 0)
-      temp = 0;
-
-    eigenvalue = trace - ::std::sqrt (temp);
-    
-    eigenvector [0] = - mat.coeff (1);
-    eigenvector [1] = mat.coeff (0) - eigenvalue;
-    eigenvector.normalize ();
-  }
+  template <typename Matrix, typename Vector> void
+  eigen22 (const Matrix &mat, typename Matrix::Scalar &eigenvalue, Vector &eigenvector);
 
   /** \brief determine the smallest eigenvalue and its corresponding eigenvector
     * \param[in] mat input matrix that needs to be symmetric and positive semi definite
@@ -203,58 +96,8 @@ namespace pcl
     * \param[out] eigenvalues the smallest eigenvalue of the input matrix
     * \ingroup common
     */
-  template <typename Matrix, typename Vector> inline void
-  eigen22 (const Matrix& mat, Matrix& eigenvectors, Vector& eigenvalues)
-  {
-    // if diagonal matrix, the eigenvalues are the diagonal elements
-    // and the eigenvectors are not unique, thus set to Identity
-    if (fabs(mat.coeff (1)) <= std::numeric_limits<typename Matrix::Scalar>::min ())
-    {
-      if (mat.coeff (0) < mat.coeff (3))
-      {
-        eigenvalues.coeffRef (0) = mat.coeff (0);
-        eigenvalues.coeffRef (1) = mat.coeff (3);
-        eigenvectors.coeffRef (0) = 1.0;
-        eigenvectors.coeffRef (1) = 0.0;
-        eigenvectors.coeffRef (2) = 0.0;
-        eigenvectors.coeffRef (3) = 1.0;        
-      }
-      else
-      {
-        eigenvalues.coeffRef (0) = mat.coeff (3);
-        eigenvalues.coeffRef (1) = mat.coeff (0);
-        eigenvectors.coeffRef (0) = 0.0;
-        eigenvectors.coeffRef (1) = 1.0;
-        eigenvectors.coeffRef (2) = 1.0;
-        eigenvectors.coeffRef (3) = 0.0;        
-      }
-      return;
-    }
-
-    // 0.5 to optimize further calculations
-    typename Matrix::Scalar trace = static_cast<typename Matrix::Scalar> (0.5) * (mat.coeff (0) + mat.coeff (3));
-    typename Matrix::Scalar determinant = mat.coeff (0) * mat.coeff (3) - mat.coeff (1) * mat.coeff (1);
-
-    typename Matrix::Scalar temp = trace * trace - determinant;
-
-    if (temp < 0)
-      temp = 0;
-    else
-      temp = ::std::sqrt (temp);
-
-    eigenvalues.coeffRef (0) = trace - temp;
-    eigenvalues.coeffRef (1) = trace + temp;
-
-    // either this is in a row or column depending on RowMajor or ColumnMajor
-    eigenvectors.coeffRef (0) = - mat.coeff (1);
-    eigenvectors.coeffRef (2) = mat.coeff (0) - eigenvalues.coeff (0);
-    typename Matrix::Scalar norm = static_cast<typename Matrix::Scalar> (1.0) / 
-                                   static_cast<typename Matrix::Scalar> (::std::sqrt (eigenvectors.coeffRef (0) * eigenvectors.coeffRef (0) + eigenvectors.coeffRef (2) * eigenvectors.coeffRef (2)));
-    eigenvectors.coeffRef (0) *= norm;
-    eigenvectors.coeffRef (2) *= norm;
-    eigenvectors.coeffRef (1) = eigenvectors.coeffRef (2);
-    eigenvectors.coeffRef (3) = -eigenvectors.coeffRef (0);
-  }
+  template <typename Matrix, typename Vector> void
+  eigen22 (const Matrix &mat, Matrix &eigenvectors, Vector &eigenvalues);
 
   /** \brief determines the corresponding eigenvector to the given eigenvalue of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
@@ -262,36 +105,8 @@ namespace pcl
     * \param[out] eigenvector the corresponding eigenvector for the input eigenvalue
     * \ingroup common
     */
-  template<typename Matrix, typename Vector> inline void
-  computeCorrespondingEigenVector (const Matrix& mat, const typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // Scale the matrix so its entries are in [-1,1].  The scaling is applied
-    // only when at least one matrix entry has magnitude larger than 1.
-
-    Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min ())
-      scale = Scalar (1.0);
-
-    Matrix scaledMat = mat / scale;
-
-    scaledMat.diagonal ().array () -= eigenvalue / scale;
-
-    Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
-    Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
-    Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-
-    if (len1 >= len2 && len1 >= len3)
-      eigenvector = vec1 / std::sqrt (len1);
-    else if (len2 >= len1 && len2 >= len3)
-      eigenvector = vec2 / std::sqrt (len2);
-    else
-      eigenvector = vec3 / std::sqrt (len3);
-  }
+  template <typename Matrix, typename Vector> void
+  computeCorrespondingEigenVector (const Matrix &mat, const typename Matrix::Scalar &eigenvalue, Vector &eigenvector);
   
   /** \brief determines the eigenvector and eigenvalue of the smallest eigenvalue of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
@@ -300,59 +115,16 @@ namespace pcl
     * \note if the smallest eigenvalue is not unique, this function may return any eigenvector that is consistent to the eigenvalue.
     * \ingroup common
     */
-  template<typename Matrix, typename Vector> inline void
-  eigen33 (const Matrix& mat, typename Matrix::Scalar& eigenvalue, Vector& eigenvector)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // Scale the matrix so its entries are in [-1,1].  The scaling is applied
-    // only when at least one matrix entry has magnitude larger than 1.
-
-    Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min ())
-      scale = Scalar (1.0);
-
-    Matrix scaledMat = mat / scale;
-
-    Vector eigenvalues;
-    computeRoots (scaledMat, eigenvalues);
-
-    eigenvalue = eigenvalues (0) * scale;
-
-    scaledMat.diagonal ().array () -= eigenvalues (0);
-
-    Vector vec1 = scaledMat.row (0).cross (scaledMat.row (1));
-    Vector vec2 = scaledMat.row (0).cross (scaledMat.row (2));
-    Vector vec3 = scaledMat.row (1).cross (scaledMat.row (2));
-
-    Scalar len1 = vec1.squaredNorm ();
-    Scalar len2 = vec2.squaredNorm ();
-    Scalar len3 = vec3.squaredNorm ();
-
-    if (len1 >= len2 && len1 >= len3)
-      eigenvector = vec1 / std::sqrt (len1);
-    else if (len2 >= len1 && len2 >= len3)
-      eigenvector = vec2 / std::sqrt (len2);
-    else
-      eigenvector = vec3 / std::sqrt (len3);
-  }
+  template <typename Matrix, typename Vector> void
+  eigen33 (const Matrix &mat, typename Matrix::Scalar &eigenvalue, Vector &eigenvector);
 
   /** \brief determines the eigenvalues of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
     * \param[out] evals resulting eigenvalues in ascending order
     * \ingroup common
     */
-  template<typename Matrix, typename Vector> inline void
-  eigen33 (const Matrix& mat, Vector& evals)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min ())
-      scale = Scalar (1.0);
-
-    Matrix scaledMat = mat / scale;
-    computeRoots (scaledMat, evals);
-    evals *= scale;
-  }
+  template <typename Matrix, typename Vector> void
+  eigen33 (const Matrix &mat, Vector &evals);
 
   /** \brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
@@ -360,187 +132,8 @@ namespace pcl
     * \param[out] evals corresponding eigenvectors in correct order according to eigenvalues
     * \ingroup common
     */
-  template<typename Matrix, typename Vector> inline void
-  eigen33 (const Matrix& mat, Matrix& evecs, Vector& evals)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // Scale the matrix so its entries are in [-1,1].  The scaling is applied
-    // only when at least one matrix entry has magnitude larger than 1.
-
-    Scalar scale = mat.cwiseAbs ().maxCoeff ();
-    if (scale <= std::numeric_limits<Scalar>::min ())
-      scale = Scalar (1.0);
-
-    Matrix scaledMat = mat / scale;
-
-    // Compute the eigenvalues
-    computeRoots (scaledMat, evals);
-
-    if ((evals (2) - evals (0)) <= Eigen::NumTraits<Scalar>::epsilon ())
-    {
-      // all three equal
-      evecs.setIdentity ();
-    }
-    else if ((evals (1) - evals (0)) <= Eigen::NumTraits<Scalar>::epsilon () )
-    {
-      // first and second equal
-      Matrix tmp;
-      tmp = scaledMat;
-      tmp.diagonal ().array () -= evals (2);
-
-      Vector vec1 = tmp.row (0).cross (tmp.row (1));
-      Vector vec2 = tmp.row (0).cross (tmp.row (2));
-      Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-      Scalar len1 = vec1.squaredNorm ();
-      Scalar len2 = vec2.squaredNorm ();
-      Scalar len3 = vec3.squaredNorm ();
-
-      if (len1 >= len2 && len1 >= len3)
-        evecs.col (2) = vec1 / std::sqrt (len1);
-      else if (len2 >= len1 && len2 >= len3)
-        evecs.col (2) = vec2 / std::sqrt (len2);
-      else
-        evecs.col (2) = vec3 / std::sqrt (len3);
-
-      evecs.col (1) = evecs.col (2).unitOrthogonal ();
-      evecs.col (0) = evecs.col (1).cross (evecs.col (2));
-    }
-    else if ((evals (2) - evals (1)) <= Eigen::NumTraits<Scalar>::epsilon () )
-    {
-      // second and third equal
-      Matrix tmp;
-      tmp = scaledMat;
-      tmp.diagonal ().array () -= evals (0);
-
-      Vector vec1 = tmp.row (0).cross (tmp.row (1));
-      Vector vec2 = tmp.row (0).cross (tmp.row (2));
-      Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-      Scalar len1 = vec1.squaredNorm ();
-      Scalar len2 = vec2.squaredNorm ();
-      Scalar len3 = vec3.squaredNorm ();
-
-      if (len1 >= len2 && len1 >= len3)
-        evecs.col (0) = vec1 / std::sqrt (len1);
-      else if (len2 >= len1 && len2 >= len3)
-        evecs.col (0) = vec2 / std::sqrt (len2);
-      else
-        evecs.col (0) = vec3 / std::sqrt (len3);
-
-      evecs.col (1) = evecs.col (0).unitOrthogonal ();
-      evecs.col (2) = evecs.col (0).cross (evecs.col (1));
-    }
-    else
-    {
-      Matrix tmp;
-      tmp = scaledMat;
-      tmp.diagonal ().array () -= evals (2);
-
-      Vector vec1 = tmp.row (0).cross (tmp.row (1));
-      Vector vec2 = tmp.row (0).cross (tmp.row (2));
-      Vector vec3 = tmp.row (1).cross (tmp.row (2));
-
-      Scalar len1 = vec1.squaredNorm ();
-      Scalar len2 = vec2.squaredNorm ();
-      Scalar len3 = vec3.squaredNorm ();
-#ifdef _WIN32
-      Scalar *mmax = new Scalar[3];
-#else
-      Scalar mmax[3];
-#endif
-      unsigned int min_el = 2;
-      unsigned int max_el = 2;
-      if (len1 >= len2 && len1 >= len3)
-      {
-        mmax[2] = len1;
-        evecs.col (2) = vec1 / std::sqrt (len1);
-      }
-      else if (len2 >= len1 && len2 >= len3)
-      {
-        mmax[2] = len2;
-        evecs.col (2) = vec2 / std::sqrt (len2);
-      }
-      else
-      {
-        mmax[2] = len3;
-        evecs.col (2) = vec3 / std::sqrt (len3);
-      }
-
-      tmp = scaledMat;
-      tmp.diagonal ().array () -= evals (1);
-
-      vec1 = tmp.row (0).cross (tmp.row (1));
-      vec2 = tmp.row (0).cross (tmp.row (2));
-      vec3 = tmp.row (1).cross (tmp.row (2));
-
-      len1 = vec1.squaredNorm ();
-      len2 = vec2.squaredNorm ();
-      len3 = vec3.squaredNorm ();
-      if (len1 >= len2 && len1 >= len3)
-      {
-        mmax[1] = len1;
-        evecs.col (1) = vec1 / std::sqrt (len1);
-        min_el = len1 <= mmax[min_el] ? 1 : min_el;
-        max_el = len1 > mmax[max_el] ? 1 : max_el;
-      }
-      else if (len2 >= len1 && len2 >= len3)
-      {
-        mmax[1] = len2;
-        evecs.col (1) = vec2 / std::sqrt (len2);
-        min_el = len2 <= mmax[min_el] ? 1 : min_el;
-        max_el = len2 > mmax[max_el] ? 1 : max_el;
-      }
-      else
-      {
-        mmax[1] = len3;
-        evecs.col (1) = vec3 / std::sqrt (len3);
-        min_el = len3 <= mmax[min_el] ? 1 : min_el;
-        max_el = len3 > mmax[max_el] ? 1 : max_el;
-      }
-
-      tmp = scaledMat;
-      tmp.diagonal ().array () -= evals (0);
-
-      vec1 = tmp.row (0).cross (tmp.row (1));
-      vec2 = tmp.row (0).cross (tmp.row (2));
-      vec3 = tmp.row (1).cross (tmp.row (2));
-
-      len1 = vec1.squaredNorm ();
-      len2 = vec2.squaredNorm ();
-      len3 = vec3.squaredNorm ();
-      if (len1 >= len2 && len1 >= len3)
-      {
-        mmax[0] = len1;
-        evecs.col (0) = vec1 / std::sqrt (len1);
-        min_el = len3 <= mmax[min_el] ? 0 : min_el;
-        max_el = len3 > mmax[max_el] ? 0 : max_el;
-      }
-      else if (len2 >= len1 && len2 >= len3)
-      {
-        mmax[0] = len2;
-        evecs.col (0) = vec2 / std::sqrt (len2);
-        min_el = len3 <= mmax[min_el] ? 0 : min_el;
-        max_el = len3 > mmax[max_el] ? 0 : max_el;
-      }
-      else
-      {
-        mmax[0] = len3;
-        evecs.col (0) = vec3 / std::sqrt (len3);
-        min_el = len3 <= mmax[min_el] ? 0 : min_el;
-        max_el = len3 > mmax[max_el] ? 0 : max_el;
-      }
-
-      unsigned mid_el = 3 - min_el - max_el;
-      evecs.col (min_el) = evecs.col ((min_el + 1) % 3).cross ( evecs.col ((min_el + 2) % 3) ).normalized ();
-      evecs.col (mid_el) = evecs.col ((mid_el + 1) % 3).cross ( evecs.col ((mid_el + 2) % 3) ).normalized ();
-#ifdef _WIN32
-      delete [] mmax;
-#endif
-    }
-    // Rescale back to the original size.
-    evals *= scale;
-  }
+  template <typename Matrix, typename Vector> void
+  eigen33 (const Matrix &mat, Matrix &evecs, Vector &evals);
 
   /** \brief Calculate the inverse of a 2x2 matrix
     * \param[in] matrix matrix to be inverted
@@ -549,23 +142,8 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert2x2 (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    Scalar det = matrix.coeff (0) * matrix.coeff (3) - matrix.coeff (1) * matrix.coeff (2) ;
-
-    if (det != 0)
-    {
-      //Scalar inv_det = Scalar (1.0) / det;
-      inverse.coeffRef (0) =   matrix.coeff (3);
-      inverse.coeffRef (1) = - matrix.coeff (1);
-      inverse.coeffRef (2) = - matrix.coeff (2);
-      inverse.coeffRef (3) =   matrix.coeff (0);
-      inverse /= det;
-    }
-    return det;
-  }
+  template <typename Matrix> typename Matrix::Scalar
+  invert2x2 (const Matrix &matrix, Matrix &inverse);
 
   /** \brief Calculate the inverse of a 3x3 symmetric matrix.
     * \param[in] matrix matrix to be inverted
@@ -574,39 +152,8 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert3x3SymMatrix (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
-    // elements
-    // a b c
-    // b d e
-    // c e f
-    //| a b c |-1             |   fd-ee    ce-bf   be-cd  |
-    //| b d e |    =  1/det * |   ce-bf    af-cc   bc-ae  |
-    //| c e f |               |   be-cd    bc-ae   ad-bb  |
-
-    //det = a(fd-ee) + b(ec-fb) + c(eb-dc)
-
-    Scalar fd_ee = matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (7) * matrix.coeff (5);
-    Scalar ce_bf = matrix.coeff (2) * matrix.coeff (5) - matrix.coeff (1) * matrix.coeff (8);
-    Scalar be_cd = matrix.coeff (1) * matrix.coeff (5) - matrix.coeff (2) * matrix.coeff (4);
-
-    Scalar det = matrix.coeff (0) * fd_ee + matrix.coeff (1) * ce_bf + matrix.coeff (2) * be_cd;
-
-    if (det != 0)
-    {
-      //Scalar inv_det = Scalar (1.0) / det;
-      inverse.coeffRef (0) = fd_ee;
-      inverse.coeffRef (1) = inverse.coeffRef (3) = ce_bf;
-      inverse.coeffRef (2) = inverse.coeffRef (6) = be_cd;
-      inverse.coeffRef (4) = (matrix.coeff (0) * matrix.coeff (8) - matrix.coeff (2) * matrix.coeff (2));
-      inverse.coeffRef (5) = inverse.coeffRef (7) = (matrix.coeff (1) * matrix.coeff (2) - matrix.coeff (0) * matrix.coeff (5));
-      inverse.coeffRef (8) = (matrix.coeff (0) * matrix.coeff (4) - matrix.coeff (1) * matrix.coeff (1));
-      inverse /= det;
-    }
-    return det;
-  }
+  template <typename Matrix> typename Matrix::Scalar
+  invert3x3SymMatrix (const Matrix &matrix, Matrix &inverse);
 
   /** \brief Calculate the inverse of a general 3x3 matrix.
     * \param[in] matrix matrix to be inverted
@@ -614,46 +161,16 @@ namespace pcl
     * \return determinant of the original matrix => if 0 no inverse exists => result is invalid
     * \ingroup common
     */
-  template<typename Matrix> inline typename Matrix::Scalar
-  invert3x3Matrix (const Matrix& matrix, Matrix& inverse)
-  {
-    typedef typename Matrix::Scalar Scalar;
+  template <typename Matrix> typename Matrix::Scalar
+  invert3x3Matrix (const Matrix &matrix, Matrix &inverse);
 
-    //| a b c |-1             |   ie-hf    hc-ib   fb-ec  |
-    //| d e f |    =  1/det * |   gf-id    ia-gc   dc-fa  |
-    //| g h i |               |   hd-ge    gb-ha   ea-db  |
-    //det = a(ie-hf) + d(hc-ib) + g(fb-ec)
-
-    Scalar ie_hf = matrix.coeff (8) * matrix.coeff (4) - matrix.coeff (7) * matrix.coeff (5);
-    Scalar hc_ib = matrix.coeff (7) * matrix.coeff (2) - matrix.coeff (8) * matrix.coeff (1);
-    Scalar fb_ec = matrix.coeff (5) * matrix.coeff (1) - matrix.coeff (4) * matrix.coeff (2);
-    Scalar det = matrix.coeff (0) * (ie_hf) + matrix.coeff (3) * (hc_ib) + matrix.coeff (6) * (fb_ec) ;
-
-    if (det != 0)
-    {
-      inverse.coeffRef (0) = ie_hf;
-      inverse.coeffRef (1) = hc_ib;
-      inverse.coeffRef (2) = fb_ec;
-      inverse.coeffRef (3) = matrix.coeff (6) * matrix.coeff (5) - matrix.coeff (8) * matrix.coeff (3);
-      inverse.coeffRef (4) = matrix.coeff (8) * matrix.coeff (0) - matrix.coeff (6) * matrix.coeff (2);
-      inverse.coeffRef (5) = matrix.coeff (3) * matrix.coeff (2) - matrix.coeff (5) * matrix.coeff (0);
-      inverse.coeffRef (6) = matrix.coeff (7) * matrix.coeff (3) - matrix.coeff (6) * matrix.coeff (4);
-      inverse.coeffRef (7) = matrix.coeff (6) * matrix.coeff (1) - matrix.coeff (7) * matrix.coeff (0);
-      inverse.coeffRef (8) = matrix.coeff (4) * matrix.coeff (0) - matrix.coeff (3) * matrix.coeff (1);
-
-      inverse /= det;
-    }
-    return det;
-  }
-
-  template<typename Matrix> inline typename Matrix::Scalar
-  determinant3x3Matrix (const Matrix& matrix)
-  {
-    // result is independent of Row/Col Major storage!
-    return matrix.coeff (0) * (matrix.coeff (4) * matrix.coeff (8) - matrix.coeff (5) * matrix.coeff (7)) +
-           matrix.coeff (1) * (matrix.coeff (5) * matrix.coeff (6) - matrix.coeff (3) * matrix.coeff (8)) +
-           matrix.coeff (2) * (matrix.coeff (3) * matrix.coeff (7) - matrix.coeff (4) * matrix.coeff (6)) ;
-  }
+  /** \brief Calculate the determinant of a 3x3 matrix.
+    * \param[in] matrix matrix
+    * \return determinant of the matrix
+    * \ingroup common
+    */
+  template <typename Matrix> typename Matrix::Scalar
+  determinant3x3Matrix (const Matrix &matrix);
   
   /** \brief Get the unique 3D rotation that will rotate \a z_axis into (0,0,1) and \a y_direction into a vector
     * with x=0 (or into (0,1,0) should \a y_direction be orthogonal to \a z_axis)
@@ -745,8 +262,20 @@ namespace pcl
     * \param[in] yaw the resulting yaw angle
     * \ingroup common
     */
+  template <typename Scalar> void
+  getEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t, Scalar &roll, Scalar &pitch, Scalar &yaw);
+
   inline void
-  getEulerAngles (const Eigen::Affine3f& t, float& roll, float& pitch, float& yaw);
+  getEulerAngles (const Eigen::Affine3f &t, float &roll, float &pitch, float &yaw)
+  {
+    getEulerAngles<float> (t, roll, pitch, yaw);
+  }
+
+  inline void
+  getEulerAngles (const Eigen::Affine3d &t, double &roll, double &pitch, double &yaw)
+  {
+    getEulerAngles<double> (t, roll, pitch, yaw);
+  }
 
   /** Extract x,y,z and the Euler angles (XYZ-convention) from the given transformation
     * \param[in] t the input transformation matrix
@@ -758,10 +287,26 @@ namespace pcl
     * \param[out] yaw the resulting yaw angle
     * \ingroup common
     */
+  template <typename Scalar> void
+  getTranslationAndEulerAngles (const Eigen::Transform<Scalar, 3, Eigen::Affine> &t,
+                                Scalar &x, Scalar &y, Scalar &z,
+                                Scalar &roll, Scalar &pitch, Scalar &yaw);
+
   inline void
-  getTranslationAndEulerAngles (const Eigen::Affine3f& t, 
-                                float& x, float& y, float& z,
-                                float& roll, float& pitch, float& yaw);
+  getTranslationAndEulerAngles (const Eigen::Affine3f &t,
+                                float &x, float &y, float &z,
+                                float &roll, float &pitch, float &yaw)
+  {
+    getTranslationAndEulerAngles<float> (t, x, y, z, roll, pitch, yaw);
+  }
+
+  inline void
+  getTranslationAndEulerAngles (const Eigen::Affine3d &t,
+                                double &x, double &y, double &z,
+                                double &roll, double &pitch, double &yaw)
+  {
+    getTranslationAndEulerAngles<double> (t, x, y, z, roll, pitch, yaw);
+  }
 
   /** \brief Create a transformation from the given translation and Euler angles (XYZ-convention)
     * \param[in] x the input x translation
@@ -773,7 +318,7 @@ namespace pcl
     * \param[out] t the resulting transformation matrix
     * \ingroup common
     */
-  template <typename Scalar> inline void
+  template <typename Scalar> void
   getTransformation (Scalar x, Scalar y, Scalar z, Scalar roll, Scalar pitch, Scalar yaw, 
                      Eigen::Transform<Scalar, 3, Eigen::Affine> &t);
 
@@ -802,7 +347,12 @@ namespace pcl
     * \ingroup common
     */
   inline Eigen::Affine3f
-  getTransformation (float x, float y, float z, float roll, float pitch, float yaw);
+  getTransformation (float x, float y, float z, float roll, float pitch, float yaw)
+  {
+    Eigen::Affine3f t;
+    getTransformation<float> (x, y, z, roll, pitch, yaw, t);
+    return (t);
+  }
 
   /** \brief Write a matrix to an output stream
     * \param[in] matrix the matrix to output
@@ -861,6 +411,306 @@ namespace pcl
   template <typename Derived, typename OtherDerived> 
   typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
   umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling = false);
+
+/** \brief Transform a point using an affine matrix
+  * \param[in] point_in the vector to be transformed
+  * \param[out] point_out the transformed vector
+  * \param[in] transformation the transformation matrix
+  *
+  * \note Can be used with \c point_in = \c point_out
+  */
+  template<typename Scalar> inline void
+  transformPoint (const Eigen::Matrix<Scalar, 3, 1> &point_in,
+                        Eigen::Matrix<Scalar, 3, 1> &point_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+  {
+    Eigen::Matrix<Scalar, 4, 1> point;
+    point << point_in, 1.0;
+    point_out = (transformation * point).template head<3> ();
+  }
+
+  inline void
+  transformPoint (const Eigen::Vector3f &point_in,
+                        Eigen::Vector3f &point_out,
+                  const Eigen::Affine3f &transformation)
+  {
+    transformPoint<float> (point_in, point_out, transformation);
+  }
+
+  inline void
+  transformPoint (const Eigen::Vector3d &point_in,
+                        Eigen::Vector3d &point_out,
+                  const Eigen::Affine3d &transformation)
+  {
+    transformPoint<double> (point_in, point_out, transformation);
+  }
+
+/** \brief Transform a vector using an affine matrix
+  * \param[in] vector_in the vector to be transformed
+  * \param[out] vector_out the transformed vector
+  * \param[in] transformation the transformation matrix
+  *
+  * \note Can be used with \c vector_in = \c vector_out
+  */
+  template <typename Scalar> inline void
+  transformVector (const Eigen::Matrix<Scalar, 3, 1> &vector_in,
+                         Eigen::Matrix<Scalar, 3, 1> &vector_out,
+                   const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation)
+  {
+    vector_out = transformation.linear () * vector_in;
+  }
+
+  inline void
+  transformVector (const Eigen::Vector3f &vector_in,
+                         Eigen::Vector3f &vector_out,
+                   const Eigen::Affine3f &transformation)
+  {
+    transformVector<float> (vector_in, vector_out, transformation);
+  }
+
+  inline void
+  transformVector (const Eigen::Vector3d &vector_in,
+                         Eigen::Vector3d &vector_out,
+                   const Eigen::Affine3d &transformation)
+  {
+    transformVector<double> (vector_in, vector_out, transformation);
+  }
+
+/** \brief Transform a line using an affine matrix
+  * \param[in] line_in the line to be transformed
+  * \param[out] line_out the transformed line
+  * \param[in] transformation the transformation matrix
+  *
+  * Lines must be filled in this form:\n
+  * line[0-2] = Origin coordinates of the vector\n
+  * line[3-5] = Direction vector
+  *
+  * \note Can be used with \c line_in = \c line_out
+  */
+  template <typename Scalar> bool
+  transformLine (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_in,
+                       Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_out,
+                 const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline bool
+  transformLine (const Eigen::VectorXf &line_in,
+                       Eigen::VectorXf &line_out,
+                 const Eigen::Affine3f &transformation)
+  {
+    return (transformLine<float> (line_in, line_out, transformation));
+  }
+
+  inline bool
+  transformLine (const Eigen::VectorXd &line_in,
+                       Eigen::VectorXd &line_out,
+                 const Eigen::Affine3d &transformation)
+  {
+    return (transformLine<double> (line_in, line_out, transformation));
+  }
+
+/** \brief Transform plane vectors using an affine matrix
+  * \param[in] plane_in the plane coefficients to be transformed
+  * \param[out] plane_out the transformed plane coefficients to fill
+  * \param[in] transformation the transformation matrix
+  *
+  * The plane vectors are filled in the form ax+by+cz+d=0
+  * Can be used with non Hessian form planes coefficients
+  * Can be used with \c plane_in = \c plane_out
+  */
+  template <typename Scalar> void
+  transformPlane (const Eigen::Matrix<Scalar, 4, 1> &plane_in,
+                        Eigen::Matrix<Scalar, 4, 1> &plane_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline void
+  transformPlane (const Eigen::Matrix<double, 4, 1> &plane_in,
+                        Eigen::Matrix<double, 4, 1> &plane_out,
+                  const Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<double> (plane_in, plane_out, transformation);
+  }
+
+  inline void
+  transformPlane (const Eigen::Matrix<float, 4, 1> &plane_in,
+                        Eigen::Matrix<float, 4, 1> &plane_out,
+                  const Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<float> (plane_in, plane_out, transformation);
+  }
+
+/** \brief Transform plane vectors using an affine matrix
+  * \param[in] plane_in the plane coefficients to be transformed
+  * \param[out] plane_out the transformed plane coefficients to fill
+  * \param[in] transformation the transformation matrix
+  *
+  * The plane vectors are filled in the form ax+by+cz+d=0
+  * Can be used with non Hessian form planes coefficients
+  * Can be used with \c plane_in = \c plane_out
+  * \warning ModelCoefficients stores floats only !
+  */
+  template<typename Scalar> void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<double> (plane_in, plane_out, transformation);
+  }
+
+  inline void
+  transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
+                        pcl::ModelCoefficients::Ptr plane_out,
+                  const Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    transformPlane<float> (plane_in, plane_out, transformation);
+  }
+
+/** \brief Check coordinate system integrity
+  * \param[in] line_x the first axis
+  * \param[in] line_y the second axis
+  * \param[in] norm_limit the limit to ignore norm rounding errors
+  * \param[in] dot_limit the limit to ignore dot product rounding errors
+  * \return True if the coordinate system is consistent, false otherwise.
+  *
+  * Lines must be filled in this form:\n
+  * line[0-2] = Origin coordinates of the vector\n
+  * line[3-5] = Direction vector
+  *
+  * Can be used like this :\n
+  * line_x = X axis and line_y = Y axis\n
+  * line_x = Z axis and line_y = X axis\n
+  * line_x = Y axis and line_y = Z axis\n
+  * Because X^Y = Z, Z^X = Y and Y^Z = X.
+  * Do NOT invert line order !
+  *
+  * Determine whether a coordinate system is consistent or not by checking :\n
+  * Line origins: They must be the same for the 2 lines\n
+  * Norm: The 2 lines must be normalized\n
+  * Dot products: Must be 0 or perpendicular vectors
+  */
+  template<typename Scalar> bool
+  checkCoordinateSystem (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &line_y,
+                         const Scalar norm_limit = 1e-3,
+                         const Scalar dot_limit = 1e-3);
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<double, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<double, Eigen::Dynamic, 1> &line_y,
+                         const double norm_limit = 1e-3,
+                         const double dot_limit = 1e-3)
+  {
+    return (checkCoordinateSystem<double> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<float, Eigen::Dynamic, 1> &line_x,
+                         const Eigen::Matrix<float, Eigen::Dynamic, 1> &line_y,
+                         const float norm_limit = 1e-3,
+                         const float dot_limit = 1e-3)
+  {
+    return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+/** \brief Check coordinate system integrity
+  * \param[in] origin the origin of the coordinate system
+  * \param[in] x_direction the first axis
+  * \param[in] y_direction the second axis
+  * \param[in] norm_limit the limit to ignore norm rounding errors
+  * \param[in] dot_limit the limit to ignore dot product rounding errors
+  * \return True if the coordinate system is consistent, false otherwise.
+  *
+  * Read the other variant for more information
+  */
+  template <typename Scalar> inline bool
+  checkCoordinateSystem (const Eigen::Matrix<Scalar, 3, 1> &origin,
+                         const Eigen::Matrix<Scalar, 3, 1> &x_direction,
+                         const Eigen::Matrix<Scalar, 3, 1> &y_direction,
+                         const Scalar norm_limit = 1e-3,
+                         const Scalar dot_limit = 1e-3)
+  {
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<Scalar, Eigen::Dynamic, 1> line_y;
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<Scalar> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<double, 3, 1> &origin,
+                         const Eigen::Matrix<double, 3, 1> &x_direction,
+                         const Eigen::Matrix<double, 3, 1> &y_direction,
+                         const double norm_limit = 1e-3,
+                         const double dot_limit = 1e-3)
+  {
+    Eigen::Matrix<double, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<double, Eigen::Dynamic, 1> line_y;
+    line_x.resize (6);
+    line_y.resize (6);
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<double> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+  inline bool
+  checkCoordinateSystem (const Eigen::Matrix<float, 3, 1> &origin,
+                         const Eigen::Matrix<float, 3, 1> &x_direction,
+                         const Eigen::Matrix<float, 3, 1> &y_direction,
+                         const float norm_limit = 1e-3,
+                         const float dot_limit = 1e-3)
+  {
+    Eigen::Matrix<float, Eigen::Dynamic, 1> line_x;
+    Eigen::Matrix<float, Eigen::Dynamic, 1> line_y;
+    line_x.resize (6);
+    line_y.resize (6);
+    line_x << origin, x_direction;
+    line_y << origin, y_direction;
+    return (checkCoordinateSystem<float> (line_x, line_y, norm_limit, dot_limit));
+  }
+
+/** \brief Compute the transformation between two coordinate systems
+  * \param[in] from_line_x X axis from the origin coordinate system
+  * \param[in] from_line_y Y axis from the origin coordinate system
+  * \param[in] to_line_x X axis from the destination coordinate system
+  * \param[in] to_line_y Y axis from the destination coordinate system
+  * \param[out] transformation the transformation matrix to fill
+  * \return true if transformation was filled, false otherwise.
+  *
+  * Line must be filled in this form:\n
+  * line[0-2] = Coordinate system origin coordinates \n
+  * line[3-5] = Direction vector (norm doesn't matter)
+  */
+  template <typename Scalar> bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<Scalar, 3, Eigen::Affine> &transformation);
+
+  inline bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<double, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<double, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<double, 3, Eigen::Affine> &transformation)
+  {
+    return (transformBetween2CoordinateSystems<double> (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  }
+
+  inline bool
+  transformBetween2CoordinateSystems (const Eigen::Matrix<float, Eigen::Dynamic, 1> from_line_x,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> from_line_y,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> to_line_x,
+                                      const Eigen::Matrix<float, Eigen::Dynamic, 1> to_line_y,
+                                      Eigen::Transform<float, 3, Eigen::Affine> &transformation)
+  {
+    return (transformBetween2CoordinateSystems<float> (from_line_x, from_line_y, to_line_x, to_line_y, transformation));
+  }
+
 }
 
 #include <pcl/common/impl/eigen.hpp>

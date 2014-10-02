@@ -40,7 +40,8 @@
 
 #include <pcl/common/time.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-
+#include "estimate_combined.h"
+#include "internal.h"
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
@@ -51,7 +52,6 @@
 #ifdef HAVE_OPENCV
   #include <opencv2/opencv.hpp>
   //~ #include <opencv2/gpu/gpu.hpp>
-  //~ #include <pcl/gpu/utils/timers_opencv.hpp>
 #endif
 
 using namespace std;
@@ -295,7 +295,9 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
   }  
   depthRawScaled_.create (rows, cols);
   // see estimate tranform for the magic numbers
-  gbuf_.create (27, 20*60);
+  int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
+  int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
+  gbuf_.create (27, r * c);
   sumbuf_.create (27);
 }
 

@@ -115,7 +115,8 @@ namespace pcl
    *   \note Usually, color isn't needed (and can be detrimental)- spatial structure is mainly used
     * - J. Papon, A. Abramov, M. Schoeler, F. Woergoetter
     *   Voxel Cloud Connectivity Segmentation - Supervoxels from PointClouds
-    *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013 
+    *   In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2013
+    *  \ingroup segmentation 
     *  \author Jeremie Papon (jpapon@gmail.com)
     */
   template <typename PointT>
@@ -239,7 +240,7 @@ namespace pcl
       setInputCloud (const typename pcl::PointCloud<PointT>::ConstPtr& cloud);
       
       /** \brief This method sets the normals to be used for supervoxels (should be same size as input cloud)
-      * \param[in] cloud The input normals                         
+      * \param[in] normal_cloud The input normals                         
       */
       virtual void
       setNormalCloud (typename NormalCloudT::ConstPtr normal_cloud);
@@ -329,16 +330,16 @@ namespace pcl
       prepareForSegmentation ();
 
       /** \brief This selects points to use as initial supervoxel centroids
-       *  \param[out] seed_points The selected points
+       *  \param[out] seed_indices The selected leaf indices
        */
       void
-      selectInitialSupervoxelSeeds (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
+      selectInitialSupervoxelSeeds (std::vector<int> &seed_indices);
       
       /** \brief This method creates the internal supervoxel helpers based on the provided seed points
-       *  \param[in] seed_points The selected points
+       *  \param[in] seed_indices Indices of the leaves to use as seeds
        */
       void
-      createSupervoxelHelpers (std::vector<PointT, Eigen::aligned_allocator<PointT> > &seed_points);
+      createSupervoxelHelpers (std::vector<int> &seed_indices);
       
       /** \brief This performs the superpixel evolution */
       void
@@ -399,6 +400,22 @@ namespace pcl
       class SupervoxelHelper
       {
         public:
+          /** \brief Comparator for LeafContainerT pointers - used for sorting set of leaves
+           * \note Compares by index in the overall leaf_vector. Order isn't important, so long as it is fixed.
+           */
+          struct compareLeaves
+          {
+            bool operator() (LeafContainerT* const &left, LeafContainerT* const &right) const
+            {
+              const VoxelData& leaf_data_left = left->getData ();
+              const VoxelData& leaf_data_right = right->getData ();
+              return leaf_data_left.idx_ < leaf_data_right.idx_;
+            }
+          };
+          typedef std::set<LeafContainerT*, typename SupervoxelHelper::compareLeaves> LeafSetT;
+          typedef typename LeafSetT::iterator iterator;
+          typedef typename LeafSetT::const_iterator const_iterator;
+          
           SupervoxelHelper (uint32_t label, SupervoxelClustering* parent_arg):
             label_ (label),
             parent_ (parent_arg)
@@ -477,15 +494,19 @@ namespace pcl
           
           size_t
           size () const { return leaves_.size (); }
-      private:
+        private:
           //Stores leaves
-          std::set<LeafContainerT*> leaves_;
+          LeafSetT leaves_;
           uint32_t label_;
           VoxelData centroid_;
           SupervoxelClustering* parent_;
-          
-
+        public:
+          //Type VoxelData may have fixed-size Eigen objects inside
+          EIGEN_MAKE_ALIGNED_OPERATOR_NEW
       };
+      
+      //Make boost::ptr_list can access the private class SupervoxelHelper
+      friend void boost::checked_delete<> (const typename pcl::SupervoxelClustering<PointT>::SupervoxelHelper *);
       
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;

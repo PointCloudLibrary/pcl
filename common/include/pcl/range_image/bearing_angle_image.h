@@ -69,7 +69,9 @@ namespace pcl
       reset ();
 
       /** \brief Calculate the angle between the laser beam and the segment joining two consecutive
-        * \measurement points.
+        * measurement points.
+        * \param point1
+        * \param point2
         */
       double
       getAngle (const PointXYZ &point1, const PointXYZ &point2);

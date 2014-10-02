@@ -301,7 +301,7 @@ namespace pcl
   boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> >
   pcl::PLYReader::listPropertyDefinitionCallback (const std::string& element_name, const std::string& property_name)
   {
-    if ((element_name == "range_grid") && (property_name == "vertex_indices")) 
+    if ((element_name == "range_grid") && (property_name == "vertex_indices") && polygons_) 
     {
       return boost::tuple<boost::function<void (pcl::io::ply::uint8)>, boost::function<void (pcl::io::ply::int32)>, boost::function<void ()> > (
         boost::bind (&pcl::PLYReader::rangeGridVertexIndicesBeginCallback, this, _1),
@@ -559,13 +559,15 @@ pcl::PLYReader::parse (const std::string& istream_filename)
 ////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PLYReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
-                            Eigen::Vector4f &, Eigen::Quaternionf &,
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation,
                             int &, int &, unsigned int &, const int)
 {
   // Silence compiler warnings
   cloud_ = &cloud;
   range_grid_ = new std::vector<std::vector<int> >;
   cloud_->width = cloud_->height = 0;
+  origin = Eigen::Vector4f::Zero ();
+  orientation = Eigen::Quaternionf::Identity ();
   if (!parse (file_name))
   {
     PCL_ERROR ("[pcl::PLYReader::read] problem parsing header!\n");
@@ -619,8 +621,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {
@@ -679,8 +681,8 @@ pcl::PLYReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
     cloud_->data.swap (data);
   }
 
-  orientation = Eigen::Quaternionf (orientation_);
-  origin = origin_;
+  orientation_ = Eigen::Quaternionf (orientation);
+  origin_ = origin;
 
   for (size_t i = 0; i < cloud_->fields.size (); ++i)
   {
@@ -1497,7 +1499,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Write down vertices
@@ -1616,7 +1618,7 @@ pcl::io::savePLYFileBinary (const std::string &file_name, const pcl::PolygonMesh
   }
   // Faces
   fs << "\nelement face "<< nr_faces;
-  fs << "\nproperty list uchar int vertex_index";
+  fs << "\nproperty list uchar int vertex_indices";
   fs << "\nend_header\n";
 
   // Close the file

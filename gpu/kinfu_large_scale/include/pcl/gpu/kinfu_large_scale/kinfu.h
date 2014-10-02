@@ -47,7 +47,7 @@
 #include <vector>
 //#include <boost/graph/buffer_concepts.hpp>
 
-#include "internal.h"
+#include <pcl/gpu/kinfu_large_scale/device.h>
 
 #include <pcl/gpu/kinfu_large_scale/float3_operations.h>
 #include <pcl/gpu/containers/device_array.h>
@@ -58,9 +58,6 @@
 
 #include <pcl/gpu/kinfu_large_scale/cyclical_buffer.h>
 //#include <pcl/gpu/kinfu_large_scale/standalone_marching_cubes.h>
-
-
-
 
 namespace pcl
 {
@@ -116,7 +113,7 @@ namespace pcl
                           
           /** \brief Sets truncation threshold for depth image for ICP step only! This helps 
             *  to filter measurements that are outside tsdf volume. Pass zero to disable the truncation.
-            * \param[in] max_icp_distance_ Maximal distance, higher values are reset to zero (means no measurement). 
+            * \param[in] max_icp_distance Maximal distance, higher values are reset to zero (means no measurement). 
             */
           void
           setDepthTruncationForICP (float max_icp_distance = 0.f);
@@ -150,7 +147,7 @@ namespace pcl
           rows ();
 
           /** \brief Processes next frame.
-            * \param[in] Depth next frame with values in millimeters
+            * \param[in] depth next frame with values in millimeters
             * \return true if can render 3D view.
             */
           bool operator() (const DepthMap& depth);

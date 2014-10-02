@@ -46,6 +46,7 @@
 #include <pcl/visualization/histogram_visualizer.h>
 #include <pcl/visualization/boost.h>
 
+#include <vtkVersion.h>
 #include <vtkXYPlotActor.h>
 #include <vtkDoubleArray.h>
 #include <vtkTextProperty.h>
@@ -260,7 +261,12 @@ pcl::visualization::PCLHistogramVisualizer::reCreateActor (
     const vtkSmartPointer<vtkDoubleArray> &xy_array, RenWinInteract* renwinupd, const int hsize)
 {
   renwinupd->ren_->RemoveActor2D (renwinupd->xy_plot_);
+#if VTK_MAJOR_VERSION < 6
   renwinupd->xy_plot_->RemoveAllInputs ();
+#else
+  renwinupd->xy_plot_->RemoveAllDataSetInputConnections ();
+#endif
+
   
   double min_max[2];
   xy_array->GetRange (min_max, 1);

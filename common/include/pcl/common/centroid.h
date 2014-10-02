@@ -58,6 +58,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -83,6 +84,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -110,6 +112,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -140,6 +143,7 @@ namespace pcl
     * \param[out] centroid the output centroid
     * \return number of valid point used to determine the centroid. In case of dense point clouds, this is the same as the size of input cloud.
     * \note if return value is 0, the centroid is not changed, thus not valid.
+    * The last compononent of the vector is set to 1, this allow to transform the centroid vector with 4x4 matrices.
     * \ingroup common
     */
   template <typename PointT, typename Scalar> inline unsigned int
@@ -944,6 +948,184 @@ namespace pcl
   {
     return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
   }
+
+}
+
+#include <pcl/common/impl/accumulators.hpp>
+
+namespace pcl
+{
+
+  /** A generic class that computes the centroid of points fed to it.
+    *
+    * Here by "centroid" we denote not just the mean of 3D point coordinates,
+    * but also mean of values in the other data fields. The general-purpose
+    * \ref computeNDCentroid() function also implements this sort of
+    * functionality, however it does it in a "dumb" way, i.e. regardless of the
+    * semantics of the data inside a field it simply averages the values. In
+    * certain cases (e.g. for \c x, \c y, \c z, \c intensity fields) this
+    * behavior is reasonable, however in other cases (e.g. \c rgb, \c rgba,
+    * \c label fields) this does not lead to meaningful results.
+    *
+    * This class is capable of computing the centroid in a "smart" way, i.e.
+    * taking into account the meaning of the data inside fields. Currently the
+    * following fields are supported:
+    *
+    * - XYZ (\c x, \c y, \c z)
+    *
+    *   Separate average for each field.
+    *
+    * - Normal (\c normal_x, \c normal_y, \c normal_z)
+    *
+    *   Separate average for each field, and the resulting vector is normalized.
+    *
+    * - Curvature (\c curvature)
+    *
+    *   Average.
+    *
+    * - RGB/RGBA (\c rgb or \c rgba)
+    *
+    *   Separate average for R, G, B, and alpha channels.
+    *
+    * - Intensity (\c intensity)
+    *
+    *   Average.
+    *
+    * - Label (\c label)
+    *
+    *   Majority vote. If several labels have the same largest support then the
+    *   smaller label wins.
+    *
+    * The template parameter defines the type of points that may be accumulated
+    * with this class. This may be an arbitrary PCL point type, and centroid
+    * computation will happen only for the fields that are present in it and are
+    * supported.
+    *
+    * Current centroid may be retrieved at any time using get(). Note that the
+    * function is templated on point type, so it is possible to fetch the
+    * centroid into a point type that differs from the type of points that are
+    * being accumulated. All the "extra" fields for which the centroid is not
+    * being calculated will be left untouched.
+    *
+    * Example usage:
+    *
+    * \code
+    * // Create and accumulate points
+    * CentroidPoint<pcl::PointXYZ> centroid;
+    * centroid.add (pcl::PointXYZ (1, 2, 3);
+    * centroid.add (pcl::PointXYZ (5, 6, 7);
+    * // Fetch centroid using `get()`
+    * pcl::PointXYZ c1;
+    * centroid.get (c1);
+    * // The expected result is: c1.x == 3, c1.y == 4, c1.z == 5
+    * // It is also okay to use `get()` with a different point type
+    * pcl::PointXYZRGB c2;
+    * centroid.get (c2);
+    * // The expected result is: c2.x == 3, c2.y == 4, c2.z == 5,
+    * // and c2.rgb is left untouched
+    * \endcode
+    *
+    * \note Assumes that the points being inserted are valid.
+    *
+    * \note This class template can be successfully instantiated for *any*
+    * PCL point type. Of course, each of the field averages is computed only if
+    * the point type has the corresponding field.
+    *
+    * \ingroup common
+    * \author Sergey Alexandrov */
+  template <typename PointT>
+  class CentroidPoint
+  {
+
+    public:
+
+      CentroidPoint ()
+      : num_points_ (0)
+      {
+      }
+
+      /** Add a new point to the centroid computation.
+        *
+        * In this function only the accumulators and point counter are updated,
+        * actual centroid computation does not happen until get() is called. */
+      void
+      add (const PointT& point)
+      {
+        // Invoke add point on each accumulator
+        boost::fusion::for_each (accumulators_, detail::AddPoint<PointT> (point));
+        ++num_points_;
+      }
+
+      /** Retrieve the current centroid.
+        *
+        * Computation (division of accumulated values by the number of points
+        * and normalization where applicable) happens here. The result is not
+        * cached, so any subsequent call to this function will trigger
+        * re-computation.
+        *
+        * If the number of accumulated points is zero, then the point will be
+        * left untouched. */
+      template <typename PointOutT> void
+      get (PointOutT& point) const
+      {
+        if (num_points_ != 0)
+        {
+          // Filter accumulators so that only those that are compatible with
+          // both PointT and requested point type remain
+          typename pcl::detail::Accumulators<PointT, PointOutT>::type ca (accumulators_);
+          // Invoke get point on each accumulator in filtered list
+          boost::fusion::for_each (ca, detail::GetPoint<PointOutT> (point, num_points_));
+        }
+      }
+
+      /** Get the total number of points that were added. */
+      size_t
+      getSize () const
+      {
+        return (num_points_);
+      }
+
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    private:
+
+      size_t num_points_;
+      typename pcl::detail::Accumulators<PointT>::type accumulators_;
+
+  };
+
+  /** Compute the centroid of a set of points and return it as a point.
+    *
+    * Implementation leverages \ref CentroidPoint class and therefore behaves
+    * differently from \ref compute3DCentroid() and \ref computeNDCentroid().
+    * See \ref CentroidPoint documentation for explanation.
+    *
+    * \param[in] cloud input point cloud
+    * \param[out] centroid output centroid
+    *
+    * \return number of valid points used to determine the centroid (will be the
+    * same as the size of the cloud if it is dense)
+    *
+    * \note If return value is \c 0, then the centroid is not changed, thus is
+    * not valid.
+    *
+    * \ingroup common */
+  template <typename PointInT, typename PointOutT> size_t
+  computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                   PointOutT& centroid);
+
+  /** Compute the centroid of a set of points and return it as a point.
+    * \param[in] cloud
+    * \param[in] indices point cloud indices that need to be used
+    * \param[out] centroid
+    * This is an overloaded function provided for convenience. See the
+    * documentation for computeCentroid().
+    *
+    * \ingroup common */
+  template <typename PointInT, typename PointOutT> size_t
+  computeCentroid (const pcl::PointCloud<PointInT>& cloud,
+                   const std::vector<int>& indices,
+                   PointOutT& centroid);
 
 }
 /*@}*/

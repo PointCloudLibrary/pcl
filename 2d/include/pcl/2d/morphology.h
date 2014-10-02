@@ -135,7 +135,7 @@ namespace pcl
                    const pcl::PointCloud<PointT> &input1, 
                    const pcl::PointCloud<PointT> &input2);
 
-      /** \Set operation \f$ output = input1 \cap input2 \f$
+      /** \brief Set operation \f$ output = input1 \cap input2 \f$
         * \param[out] output Output point cloud passed by reference
         * \param[in] input1
         * \param[in] input2

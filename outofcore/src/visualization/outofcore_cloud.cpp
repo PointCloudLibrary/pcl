@@ -24,6 +24,7 @@
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 
 // VTK
+#include <vtkVersion.h>
 #include <vtkActor.h>
 #include <vtkPolyData.h>
 #include <vtkProperty.h>
@@ -159,10 +160,18 @@ OutofcoreCloud::updateVoxelData ()
     double y = voxel_centers[i].y;
     double z = voxel_centers[i].z;
 
+#if VTK_MAJOR_VERSION < 6
     voxel_data->AddInput (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
+#else
+    voxel_data->AddInputData (getVtkCube (x - s, x + s, y - s, y + s, z - s, z + s));
+#endif
   }
 
+#if VTK_MAJOR_VERSION < 6
   voxel_mapper->SetInput (voxel_data->GetOutput ());
+#else
+  voxel_mapper->SetInputData (voxel_data->GetOutput ());
+#endif
 
   voxel_actor_->SetMapper (voxel_mapper);
   voxel_actor_->GetProperty ()->SetRepresentationToWireframe ();
@@ -304,7 +313,7 @@ OutofcoreCloud::render (vtkRenderer* renderer)
       }
     }
 
-    for (int i = 0; i < actors_to_remove.size (); i++)
+    for (size_t i = 0; i < actors_to_remove.size (); i++)
     {
       points_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetNumberOfPoints ();
       data_loaded_ -= actors_to_remove.back ()->GetMapper ()->GetInput ()->GetActualMemorySize();

@@ -82,7 +82,6 @@ Work in progress: patch by Marco (AUG,19th 2012)
 #endif
 typedef pcl::ScopeTime ScopeTimeT;
 
-#include "../src/internal.h"
 #include <pcl/gpu/kinfu_large_scale/screenshot_manager.h>
 
 using namespace std;
@@ -148,11 +147,15 @@ struct SampledScopeTime : public StopWatch
   ~SampledScopeTime()
   {
     static int i_ = 0;
-    time_ms_ += getTime ();    
+    static boost::posix_time::ptime starttime_ = boost::posix_time::microsec_clock::local_time();
+    time_ms_ += getTime ();
     if (i_ % EACH == 0 && i_)
     {
-      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )" << endl;
-      time_ms_ = 0;        
+      boost::posix_time::ptime endtime_ = boost::posix_time::microsec_clock::local_time();
+      cout << "Average frame time = " << time_ms_ / EACH << "ms ( " << 1000.f * EACH / time_ms_ << "fps )"
+           << "( real: " << 1000.f * EACH / (endtime_-starttime_).total_milliseconds() << "fps )"  << endl;
+      time_ms_ = 0;
+      starttime_ = endtime_;
     }
     ++i_;
   }
@@ -1312,7 +1315,7 @@ main (int argc, char* argv[])
   pc::parse_argument (argc, argv, "--shifting_distance", shift_distance);
   pc::parse_argument (argc, argv, "-sd", shift_distance);
 
-  int snapshot_rate = pcl::device::kinfuLS::SNAPSHOT_RATE; // defined in internal.h
+  int snapshot_rate = pcl::device::kinfuLS::SNAPSHOT_RATE; // defined in device.h
   pc::parse_argument (argc, argv, "--snapshot_rate", snapshot_rate);
   pc::parse_argument (argc, argv, "-sr", snapshot_rate);
 

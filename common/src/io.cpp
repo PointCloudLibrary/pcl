@@ -474,3 +474,44 @@ pcl::copyPointCloud (const pcl::PCLPointCloud2 &cloud_in,
   cloud_out.data         = cloud_in.data;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+int
+pcl::interpolatePointIndex (int p, int len, InterpolationType type)
+{
+  if (static_cast<unsigned> (p) >= static_cast<unsigned> (len))
+  {
+    if (type == BORDER_REPLICATE)
+      p = p < 0 ? 0 : len - 1;
+    else if (type == BORDER_REFLECT || type == BORDER_REFLECT_101)
+    {
+      int delta = type == BORDER_REFLECT_101;
+      if (len == 1)
+        return 0;
+      do
+      {
+        if (p < 0)
+          p = -p - 1 + delta;
+        else
+          p = len - 1 - (p - len) - delta;
+      }
+      while (static_cast<unsigned> (p) >= static_cast<unsigned> (len));
+    }
+    else if (type == BORDER_WRAP)
+    {
+      if (p < 0)
+        p -= ((p-len+1)/len)*len;
+      if (p >= len)
+        p %= len;
+    }
+    else if (type == BORDER_CONSTANT)
+      p = -1;
+    else
+    {
+      PCL_THROW_EXCEPTION (BadArgumentException,
+                           "[pcl::interpolate_point_index] error: Unhandled interpolation type "
+                           << type << " !");
+    }
+  }
+
+  return (p);
+}

@@ -59,7 +59,7 @@ boost::mutex io_mutex;
 size_t 
 getTotalSystemMemory ()
 {
-  size_t memory = std::numeric_limits<size_t>::max ();
+  uint64_t memory = std::numeric_limits<size_t>::max ();
 
 #ifdef _SC_AVPHYS_PAGES
   uint64_t pages = sysconf (_SC_AVPHYS_PAGES);
@@ -79,19 +79,19 @@ getTotalSystemMemory ()
   }
 #endif
 
-  if (memory > std::numeric_limits<size_t>::max ())
+  if (memory > uint64_t (std::numeric_limits<size_t>::max ()))
   {
     memory = std::numeric_limits<size_t>::max ();
   }
   
-  print_info ("Total available memory size: %lluMB.\n", memory / 1048576);
-  return memory;
+  print_info ("Total available memory size: %lluMB.\n", memory / 1048576ull);
+  return size_t (memory);
 }
 
-const int BUFFER_SIZE = int (getTotalSystemMemory () / (640 * 480));
+const size_t BUFFER_SIZE = size_t (getTotalSystemMemory () / (640 * 480 * sizeof (pcl::PointXYZRGBA)));
 #else
 
-const int BUFFER_SIZE = 200;
+const size_t BUFFER_SIZE = 200;
 #endif
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ class PCDBuffer
 
   private:
     PCDBuffer (const PCDBuffer&); // Disabled copy constructor
-    PCDBuffer& operator =(const PCDBuffer&); // Disabled assignment operator
+    PCDBuffer& operator = (const PCDBuffer&); // Disabled assignment operator
 
     boost::mutex bmutex_;
     boost::condition_variable buff_empty_;
@@ -336,23 +336,108 @@ ctrlC (int)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-int 
+void
+printHelp (int default_buff_size, int, char **argv)
+{
+  using pcl::console::print_error;
+  using pcl::console::print_info;
+
+  print_error ("Syntax is: %s ((<device_id> | <path-to-oni-file>) [-xyz] [-shift] [-buf X]  | -l [<device_id>] | -h | --help)]\n", argv [0]);
+  print_info ("%s -h | --help : shows this help\n", argv [0]);
+  print_info ("%s -xyz : save only XYZ data, even if the device is RGB capable\n", argv [0]);
+  print_info ("%s -shift : use OpenNI shift values rather than 12-bit depth\n", argv [0]);
+  print_info ("%s -buf X ; use a buffer size of X frames (default: ", argv [0]);
+  print_value ("%d", default_buff_size); print_info (")\n");
+  print_info ("%s -l : list all available devices\n", argv [0]);
+  print_info ("%s -l <device-id> :list all available modes for specified device\n", argv [0]);
+  print_info ("\t\t<device_id> may be \"#1\", \"#2\", ... for the first, second etc device in the list\n");
+#ifndef _WIN32
+  print_info ("\t\t                   bus@address for the device connected to a specific usb-bus / address combination\n");
+  print_info ("\t\t                   <serial-number>\n");
+#endif
+  print_info ("\n\nexamples:\n");
+  print_info ("%s \"#1\"\n", argv [0]);
+  print_info ("\t\t uses the first device.\n");
+  print_info ("%s  \"./temp/test.oni\"\n", argv [0]);
+  print_info ("\t\t uses the oni-player device to play back oni file given by path.\n");
+  print_info ("%s -l\n", argv [0]);
+  print_info ("\t\t list all available devices.\n");
+  print_info ("%s -l \"#2\"\n", argv [0]);
+  print_info ("\t\t list all available modes for the second device.\n");
+  #ifndef _WIN32
+  print_info ("%s A00361800903049A\n", argv [0]);
+  print_info ("\t\t uses the device with the serial number \'A00361800903049A\'.\n");
+  print_info ("%s 1@16\n", argv [0]);
+  print_info ("\t\t uses the device on address 16 at USB bus 1.\n");
+  #endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+int
 main (int argc, char** argv)
 {
   print_highlight ("PCL OpenNI Recorder for saving buffered PCD (binary compressed to disk). See %s -h for options.\n", argv[0]);
 
+  std::string device_id ("");
   int buff_size = BUFFER_SIZE;
-  
-  if (find_switch (argc, argv, "-h") || find_switch (argc, argv, "--help"))
-  {
-    print_info ("Options are: \n"
-              "             -xyz    = save only XYZ data, even if the device is RGB capable\n"
-              "             -shift  = use OpenNI shift values rather than 12-bit depth\n"
-              "             -buf X  = use a buffer size of X frames (default: "); 
-    print_value ("%d", buff_size); print_info (")\n");
-    return (0);
-  }
 
+  if (argc >= 2)
+  {
+    device_id = argv[1];
+    if (device_id == "--help" || device_id == "-h")
+    {
+      printHelp (buff_size, argc, argv);
+      return 0;
+    }
+    else if (device_id == "-l")
+    {
+      if (argc >= 3)
+      {
+        pcl::OpenNIGrabber grabber (argv[2]);
+        boost::shared_ptr<openni_wrapper::OpenNIDevice> device = grabber.getDevice ();
+        cout << "Supported depth modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
+        std::vector<std::pair<int, XnMapOutputMode > > modes = grabber.getAvailableDepthModes ();
+        for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+        {
+          cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+        }
+
+        if (device->hasImageStream ())
+        {
+          cout << endl << "Supported image modes for device: " << device->getVendorName () << " , " << device->getProductName () << endl;
+          modes = grabber.getAvailableImageModes ();
+          for (std::vector<std::pair<int, XnMapOutputMode > >::const_iterator it = modes.begin (); it != modes.end (); ++it)
+          {
+            cout << it->first << " = " << it->second.nXRes << " x " << it->second.nYRes << " @ " << it->second.nFPS << endl;
+          }
+        }
+      }
+      else
+      {
+        openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
+        if (driver.getNumberDevices() > 0)
+        {
+          for (unsigned deviceIdx = 0; deviceIdx < driver.getNumberDevices (); ++deviceIdx)
+          {
+            cout << "Device: " << deviceIdx + 1 << ", vendor: " << driver.getVendorName (deviceIdx) << ", product: " << driver.getProductName (deviceIdx)
+              << ", connected: " << driver.getBus(deviceIdx) << " @ " << driver.getAddress (deviceIdx) << ", serial number: \'" << driver.getSerialNumber (deviceIdx) << "\'" << endl;
+          }
+
+        }
+        else
+          cout << "No devices connected." << endl;
+
+        cout <<"Virtual Devices available: ONI player" << endl;
+      }
+      return 0;
+    }
+  }
+  else
+  {
+    openni_wrapper::OpenNIDriver& driver = openni_wrapper::OpenNIDriver::getInstance ();
+    if (driver.getNumberDevices () > 0)
+      cout << "Device Id not set, using first device." << endl;
+  }
 
   bool just_xyz = find_switch (argc, argv, "-xyz");
   openni_wrapper::OpenNIDevice::DepthMode depth_mode = openni_wrapper::OpenNIDevice::OpenNI_12_bit_depth;
@@ -364,9 +449,9 @@ main (int argc, char** argv)
   else
     print_highlight ("Using default buffer size of %d frames.\n", buff_size);
 
-  print_highlight ("Starting the producer and consumer threads... Press Cltr+C to end\n");
+  print_highlight ("Starting the producer and consumer threads... Press Ctrl+C to end\n");
  
-  OpenNIGrabber grabber ("");
+  OpenNIGrabber grabber (device_id);
   if (grabber.providesCallback<OpenNIGrabber::sig_cb_openni_point_cloud_rgba> () && 
       !just_xyz)
   {

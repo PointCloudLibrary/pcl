@@ -120,7 +120,7 @@ if(build)
     
     set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
     PCL_ADD_EXECUTABLE("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${cloud_composer_ui} ${cloud_composer_moc} ${srcs} ${resource_srcs} ${item_srcs} ${selector_srcs} ${impl_incs})
-    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters QVTK ${QT_LIBRARIES})
+    target_link_libraries("${EXE_NAME}" pcl_common pcl_io pcl_visualization pcl_filters ${QVTK_LIBRARY} ${QT_LIBRARIES})
 
     # Install include files
     PCL_ADD_INCLUDES("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${incs} ${item_incs} ${selector_incs})
@@ -140,6 +140,10 @@ if(build)
     QT4_WRAP_CPP(INTERFACE_HEADERS_MOC ${INTERFACE_HEADERS} OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
     PCL_ADD_LIBRARY(pcl_cc_tool_interface "${SUBSUBSYS_NAME}" ${INTERFACE_SOURCES} ${INTERFACE_HEADERS_MOC})
     target_link_libraries(pcl_cc_tool_interface pcl_common ${QT_LIBRARIES})
+
+    IF(APPLE)
+       SET_TARGET_PROPERTIES(pcl_cc_tool_interface PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+    ENDIF()
     
     include(ComposerTool.cmake REQUIRED)
     

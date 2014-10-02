@@ -113,7 +113,6 @@ namespace pcl
         OctreeIteratorBase (const OctreeIteratorBase& src, unsigned int max_depth_arg = 0) :
             octree_ (src.octree_), current_state_(0), max_octree_depth_(max_depth_arg)
         {
-          this->reset ();
         }
 
         /** \brief Copy operator.
@@ -135,7 +134,7 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator
-         * \param[in] OctreeIteratorBase to compare with
+         * \param[in] other OctreeIteratorBase to compare with
          */
         bool operator==(const OctreeIteratorBase& other) const
         {
@@ -145,7 +144,7 @@ namespace pcl
         }
 
         /** \brief Inequal comparison operator
-         * \param[in] OctreeIteratorBase to compare with
+         * \param[in] other OctreeIteratorBase to compare with
          */
         bool operator!=(const OctreeIteratorBase& other) const
         {

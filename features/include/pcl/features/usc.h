@@ -54,13 +54,13 @@ namespace pcl
     *     International Workshop on 3D Object Retrieval (3DOR 10) -
     *     in conjuction with ACM Multimedia 2010
     *
-    * The suggested PointOutT is pcl::ShapeContext1980
+    * The suggested PointOutT is pcl::UniqueShapeContext1960
     *
     * \author Alessandro Franchi, Federico Tombari, Samuele Salti (original code)
     * \author Nizar Sallem (port to PCL)
     * \ingroup features
     */
-  template <typename PointInT, typename PointOutT = pcl::ShapeContext1980, typename PointRFT = pcl::ReferenceFrame>
+  template <typename PointInT, typename PointOutT = pcl::UniqueShapeContext1960, typename PointRFT = pcl::ReferenceFrame>
   class UniqueShapeContext : public Feature<PointInT, PointOutT>,
                              public FeatureWithLocalReferenceFrames<PointInT, PointRFT>
   {
@@ -85,31 +85,22 @@ namespace pcl
       /** \brief Constructor. */
       UniqueShapeContext () :
         radii_interval_(0), theta_divisions_(0), phi_divisions_(0), volume_lut_(0),
-        azimuth_bins_(12), elevation_bins_(11), radius_bins_(15),
-        min_radius_(0.1), point_density_radius_(0.2), descriptor_length_ (), local_radius_ (2.5)
+        azimuth_bins_(14), elevation_bins_(14), radius_bins_(10),
+        min_radius_(0.1), point_density_radius_(0.1), descriptor_length_ (), local_radius_ (2.0)
       {
         feature_name_ = "UniqueShapeContext";
-        search_radius_ = 2.5;
+        search_radius_ = 2.0;
       }
 
       virtual ~UniqueShapeContext() { }
-
-      //inline void
-      //setAzimuthBins (size_t bins) { azimuth_bins_ = bins; }
 
       /** \return The number of bins along the azimuth. */
       inline size_t
       getAzimuthBins () const { return (azimuth_bins_); }
 
-      //inline void
-      //setElevationBins (size_t bins) { elevation_bins_ = bins; }
-
       /** \return The number of bins along the elevation */
       inline size_t
       getElevationBins () const { return (elevation_bins_); }
-
-      //inline void
-      //setRadiusBins (size_t bins) { radius_bins_ = bins; }
 
       /** \return The number of bins along the radii direction. */
       inline size_t

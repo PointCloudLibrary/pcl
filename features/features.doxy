@@ -19,11 +19,11 @@ An example of two of the most widely used geometric point features are the
 underlying surface's estimated curvature and normal at a query point <b>p</b>.
 Both of them are considered local features, as they characterize a point using
 the information provided by its k closest point neighbors. For determining
-these neighbors efficienctly, the input dataset is usually split into smaller
+these neighbors efficiently, the input dataset is usually split into smaller
 chunks using spatial decomposition techniques such as octrees or kD-trees (see
 the figure below - left: kD-tree, right: octree), and then closest point
 searches are performed in that space. Depending on the application one can opt
-for either determining a fixed number of k points in the vecinity of p, or all
+for either determining a fixed number of k points in the vicinity of p, or all
 points which are found inside of a sphere of radius r centered at p.
 Unarguably, one the easiest methods for estimating the surface normals and
 curvature changes at a point p is to perform an eigendecomposition (i.e.
@@ -43,6 +43,6 @@ Please visit http://www.pointclouds.org for more information.
   - \ref search "search"
   - \ref kdtree "kdtree"
   - \ref octree "octree"
-  - \ref range_image "range_image"
+  - \ref pcl::RangeImage "range_image"
 
 */

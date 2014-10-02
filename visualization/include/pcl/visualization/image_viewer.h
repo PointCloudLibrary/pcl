@@ -51,6 +51,7 @@
 
 #include <boost/shared_array.hpp>
 
+#include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
 
 class vtkImageSlice;
@@ -439,6 +440,18 @@ namespace pcl
           */
         void
         markPoints (const std::vector<int>& uv, Vector3ub fg_color, Vector3ub bg_color = red_color, double size = 3.0,
+                    const std::string &layer_id = "markers", double opacity = 1.0);
+
+        /** \brief Sets the pixel at coordinates(u,v) to color while setting the neighborhood to another (float coordinates version).
+          * \param[in] uv the u/x, v/y coordinate of the pixels to be marked
+          * \param[in] fg_color the pixel color
+          * \param[in] bg_color the neighborhood color
+          * \param[in] size edge of the square surrounding each pixel
+          * \param[in] layer_id the name of the layer (default: "markers")
+          * \param[in] opacity the opacity of the layer (default: 1.0)
+          */
+        void
+        markPoints (const std::vector<float>& uv, Vector3ub fg_color, Vector3ub bg_color = red_color, double size = 3.0,
                     const std::string &layer_id = "markers", double opacity = 1.0);
 
         /** \brief Set the window title name
@@ -889,13 +902,13 @@ namespace pcl
         resetStoppedFlag () { stopped_ = false; }
 
         /** \brief Fire up a mouse event with a specified event ID
-          * \param[int] event_id the id of the event
+          * \param[in] event_id the id of the event
           */
         void 
         emitMouseEvent (unsigned long event_id);
         
         /** \brief Fire up a keyboard event with a specified event ID
-          * \param[int] event_id the id of the event
+          * \param[in] event_id the id of the event
           */
         void 
         emitKeyboardEvent (unsigned long event_id);
@@ -1000,7 +1013,7 @@ namespace pcl
         /** \brief The renderer. */
         vtkSmartPointer<vtkRenderer> ren_;
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION >= 10))
+#if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
         /** \brief Global prop. This is the actual "actor". */
         vtkSmartPointer<vtkImageSlice> slice_;
 #endif

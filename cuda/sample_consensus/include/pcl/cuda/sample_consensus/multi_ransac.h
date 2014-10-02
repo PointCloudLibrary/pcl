@@ -143,7 +143,6 @@ namespace pcl
         getAllInlierCounts () { return all_inlier_counts_; }
 
         /** \brief Return the model coefficients of the best model found so far. 
-          * \param model_coefficients the resultant model coefficients
           */
         inline std::vector<float4>
         getAllModelCoefficients () 
@@ -152,7 +151,6 @@ namespace pcl
         }
 
         /** \brief Return the model coefficients of the best model found so far. 
-          * \param model_coefficients the resultant model coefficients
           */
         inline std::vector<float3>
         getAllModelCentroids () 

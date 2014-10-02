@@ -222,7 +222,7 @@ main (int argc, char** argv)
   }
   else
   {
-    print_error ("Leaf size must be specified with either 1 or 3 numbers (%zu given). ", values.size ());
+    print_error ("Leaf size must be specified with either 1 or 3 numbers (%lu given). ", values.size ());
   }
   print_info ("Using a leaf size of: "); print_value ("%f, %f, %f\n", leaf_x, leaf_y, leaf_z);
 

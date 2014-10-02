@@ -57,7 +57,7 @@ Basic Usage
   * :ref:`basic_structures`
 
      ======  ======
-     |mi_0|  Title: **Getting Started / Basic Structures**
+     |mi_1|  Title: **Getting Started / Basic Structures**
 
              Author: *Radu B. Rusu*
 
@@ -66,13 +66,13 @@ Basic Usage
              Presents the basic data structures in PCL and discusses their usage with a simple code example.
      ======  ======
 
-     .. |mi_0| image:: images/pcl_logo.png
+     .. |mi_1| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`using_pcl_pcl_config`
 
      ======  ======
-     |mi_1|  Title: **Using PCL in your own project**
+     |mi_2|  Title: **Using PCL in your own project**
 
              Author: *Nizar Sallem*
 
@@ -81,13 +81,13 @@ Basic Usage
              In this tutorial, we will learn how to link your own project to PCL using cmake.
      ======  ======
 
-     .. |mi_1| image:: images/pcl_logo.png
+     .. |mi_2| image:: images/pcl_logo.png
                :height: 75px
 
   * :ref:`building_pcl`
 
      ======  ======
-     |mi_2|  Title: **Explaining PCL's cmake options**
+     |mi_3|  Title: **Explaining PCL's cmake options**
 
              Author: *Nizar Sallem*
 
@@ -96,13 +96,13 @@ Basic Usage
              In this tutorial, we will explain the basic PCL cmake options, and ways to tweak them to fit your project.
      ======  ======
 
-     .. |mi_2| image:: images/pcl_ccmake.png
+     .. |mi_3| image:: images/pcl_ccmake.png
                :height: 100px
 
   * :ref:`compiling_pcl_dependencies_windows`
 
      ======  ======
-     |mi_3|  Title: **Compiling PCL's dependencies from source on Windows**
+     |mi_4|  Title: **Compiling PCL's dependencies from source on Windows**
 
              Authors: *Alessio Placitelli* and *Mourad Boufarguine*
 
@@ -111,13 +111,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL's 3rd party dependencies from source on Microsoft Windows.
      ======  ======
 
-     .. |mi_3| image:: images/windows_logo.png
+     .. |mi_4| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_windows`
 
      ======  ======
-     |mi_4|  Title: **Compiling PCL on Windows**
+     |mi_5|  Title: **Compiling PCL on Windows**
 
              Author: *Mourad Boufarguine*
 
@@ -126,13 +126,13 @@ Basic Usage
              In this tutorial, we will explain how to compile PCL on Microsoft Windows.
      ======  ======
 
-     .. |mi_4| image:: images/windows_logo.png
+     .. |mi_5| image:: images/windows_logo.png
                :height: 100px
 
   * :ref:`compiling_pcl_macosx`
 
      ======  ======
-     |mi_5|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
+     |mi_6|  Title: **Compiling PCL and its dependencies from MacPorts and source on Mac OS X**
 
              Author: *Justin Rosen*
 
@@ -141,13 +141,13 @@ Basic Usage
              This tutorial explains how to build the Point Cloud Library **from MacPorts and source** on Mac OS X platforms.
      ======  ======
 
-     .. |mi_5| image:: images/macosx_logo.png
+     .. |mi_6| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`installing_homebrew`
 
      ======  ======
-     |mi_6|  Title: **Installing on Mac OS X using Homebrew**
+     |mi_7|  Title: **Installing on Mac OS X using Homebrew**
 
              Author: *Geoffrey Biggs*
 
@@ -156,13 +156,13 @@ Basic Usage
              This tutorial explains how to install the Point Cloud Library on Mac OS X using Homebrew. Both direct installation and compiling PCL from source are explained.
      ======  ======
 
-     .. |mi_6| image:: images/macosx_logo.png
+     .. |mi_7| image:: images/macosx_logo.png
                :height: 100px
 
   * :ref:`using_pcl_with_eclipse`
 
      ======  ======
-     |mi_7|  Title: **Using Eclipse as your PCL editor**
+     |mi_8|  Title: **Using Eclipse as your PCL editor**
 
              Author: *Koen Buys*
 
@@ -171,8 +171,53 @@ Basic Usage
              This tutorial shows you how to get your PCL as a project in Eclipse.
      ======  ======
 
-     .. |mi_7| image:: images/pcl_logo.png
+     .. |mi_8| image:: images/pcl_with_eclipse/eclipse.png
+               :height: 100px
+
+  * :ref:`generate_local_doc`
+
+     =======  ======
+     |mi_11|  Title: **Generate a local documentation for PCL**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: PCL > 1.0
+
+              This tutorial shows you how to generate and use a local documentation for PCL.
+     =======  ======
+
+     .. |mi_11| image:: images/pcl_logo.png
                :height: 75px
+
+  * :ref:`qt_visualizer`
+
+     ======  ======
+     |mi_9|  Title: **Create a PCL visualizer in Qt with cmake**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to create a PCL visualizer within a Qt application.
+     ======  ======
+
+     .. |mi_9| image:: images/qt_visualizer/qt.png
+               :height: 128px
+
+  * :ref:`matrix_transform`
+
+     =======  ======
+     |mi_10|  Title: **Using matrixes to transform a point cloud**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: > PCL 1.5
+
+              This tutorial shows you how to transform a point cloud using a matrix.
+     =======  ======
+
+     .. |mi_10| image:: images/matrix_transform/cube.png
+               :height: 120px
 
 .. _advanced_usage:
 
@@ -767,6 +812,21 @@ Registration
      .. |re_3| image:: images/iterative_closest_point.gif
                :height: 100px
 
+  * :ref:`interactive_icp`
+
+     ======  ======
+     |re_7|  Title: **Interactive ICP**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial will teach you how to build an interactive ICP program
+     ======  ======
+
+     .. |re_7| image:: images/interactive_icp/monkey.png
+               :height: 120px
+
   * :ref:`normal_distributions_transform`
 
      ======  ======
@@ -974,6 +1034,36 @@ Segmentation
 
      .. |se_9| image:: images/supervoxel_clustering_small.png
                :height: 100px
+
+  * :ref:`progressive_morphological_filtering`
+
+     =======  ======
+     |se_10|  Title: **Progressive Morphological Filtering**
+
+              Author: *Brad Chambers*
+
+              Compatibility: >= PCL 1.8
+
+              In this tutorial, we show how to segment a point cloud into ground and non-ground returns.
+     =======  ======
+
+     .. |se_10| image:: images/progressive_morphological_filter.png
+               :height: 100px
+
+  * :ref:`model_outlier_removal`
+
+     =======  ======
+     |se_11|  Title: **Model outlier removal**
+
+              Author: *Timo Häckel*
+
+              Compatibility: >= PCL 1.7.2
+
+              This tutorial describes how to extract points from a point cloud using SAC models
+     =======  ======
+
+     .. |se_11| image:: images/pcl_logo.png
+               :height: 75px
                
 .. _surface_tutorial:
 
@@ -1106,6 +1196,21 @@ Visualization
      .. |vi_4| image:: images/pcl_plotter_comprational.png
                :height: 100px               
 
+  * :ref:`visualization`
+
+     ======  ======
+     |vi_5|  Title: **PCL Visualization overview**
+
+             Author: *Radu B. Rusu*
+
+             Compatibility: >= PCL 1.0
+
+             This tutorial will give an overview on the usage of the PCL visualization tools.
+     ======  ======
+
+     .. |vi_5| image:: images/visualization_small.png
+               :height: 120px
+
 .. _applications_tutorial:
 
 Applications
@@ -1170,6 +1275,7 @@ Applications
      
      .. |ap_5| image:: images/ground_based_rgbd_people_detection/Index_photo.jpg
                :height: 120px
+
 .. _gpu:
 
 GPU
@@ -1219,6 +1325,7 @@ GPU
      
      .. |gp_2| image:: images/gpu/people/c2_100.jpg
                :height: 100px
+
  ..
   * :ref:`normal_estimation_integral_images`
     Surface normal estimation

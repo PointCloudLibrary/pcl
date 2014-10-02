@@ -1039,7 +1039,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
       }
     }
   }
-  PCL_DEBUG ("Number of triangles: %zu\n", polygons.size());
+  PCL_DEBUG ("Number of triangles: %lu\n", polygons.size());
   PCL_DEBUG ("Number of unconnected parts: %d\n", nr_parts);
   if (increase_nnn4fn > 0)
     PCL_WARN ("Number of neighborhood size increase requests for fringe neighbors: %d\n", increase_nnn4fn);
@@ -1051,7 +1051,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
   // sorting and removing doubles from fringe queue 
   std::sort (fringe_queue_.begin (), fringe_queue_.end ());
   fringe_queue_.erase (std::unique (fringe_queue_.begin (), fringe_queue_.end ()), fringe_queue_.end ());
-  PCL_DEBUG ("Number of processed points: %zu / %zu\n", fringe_queue_.size(), indices_->size ());
+  PCL_DEBUG ("Number of processed points: %lu / %lu\n", fringe_queue_.size(), indices_->size ());
   return (true);
 }
 

@@ -1,14 +1,14 @@
 .. _rops_feature:
 
 RoPs (Rotational Projection Statistics) feature
----------------------------
+-----------------------------------------------
 
 In this tutorial we will learn how to use the `pcl::ROPSEstimation` class in order to extract points features.
 The feature extraction method implemented in this class was proposed by Yulan Guo, Ferdous Sohel, Mohammed Bennamoun, Min Lu and
 Jianwei Wanalso in their article "Rotational Projection Statistics for 3D Local Surface Description and Object Recognition"
 
 Theoretical Primer
----------------------------
+------------------
 
 The idea of the feature extraction method is as follows.
 Having a mesh and a set of points for which feature must be computed we perform some simple steps. First of all for a given point of interest
@@ -25,6 +25,7 @@ For every axis Ox, Oy and Oz the following steps are performed, we will refer to
   * for each projection distribution matrix is built, this matrix simply shows how much points fall onto each bin. Number of bins represents the matrix dimension and is the parameter of the algorithm, as well as the support radius;
   * for each distribution matrix central moments are calculated: M11, M12, M21, M22, E. Here E is the Shannon entropy;
   * calculated values are then concatenated to form the sub-feature.
+
 We iterate through these steps several times. Number of iterations depends on the given number of rotations.
 Sub-features for different axes are concatenated to form the final RoPS descriptor.
 
@@ -34,9 +35,9 @@ The code
 For this tutorial we will use the model from the Queen's Dataset. You can choose any other point cloud, but in order to make the
 code work you will need to use the triangulation algorithm in order to obtain polygons. You can find the proposed model here:
 
-  * `points <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains the point cloud
-  * `indices <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains indices of the points for which RoPs must be computed
-  * `triangles <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains the polygons
+  * `points <https://github.com/PointCloudLibrary/data/blob/master/tutorials/min_cut_segmentation_tutorial.pcd>`_ - contains the point cloud
+  * `indices - contains indices of the points for which RoPs must be computed
+  * `triangles - contains the polygons
 
 Next what you need to do is to create a file ``rops_feature.cpp`` in any editor you prefer and copy the following code inside of it:
 
