@@ -48,6 +48,7 @@
 #endif
 #endif
 
+#include <vtkVersion.h>
 #include <vtkAppendPolyData.h>
 #include <vtkAssemblyPath.h>
 #include <vtkAxesActor.h>
