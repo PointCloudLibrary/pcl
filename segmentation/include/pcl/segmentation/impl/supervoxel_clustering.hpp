@@ -49,10 +49,9 @@ pcl::SupervoxelClustering<PointT>::SupervoxelClustering (float voxel_resolution,
   seed_resolution_ (seed_resolution),
   adjacency_octree_ (),
   voxel_centroid_cloud_ (),
-  color_importance_(0.1f),
-  spatial_importance_(0.4f),
-  normal_importance_(1.0f),
-  label_colors_ (0)
+  color_importance_ (0.1f),
+  spatial_importance_ (0.4f),
+  normal_importance_ (1.0f)
 {
   adjacency_octree_.reset (new OctreeAdjacencyT (resolution_));
   if (use_single_camera_transform)
@@ -333,8 +332,6 @@ pcl::SupervoxelClustering<PointT>::makeSupervoxels (std::map<uint32_t,typename S
     sv_itr->getVoxels (supervoxel_clusters[label]->voxels_);
     sv_itr->getNormals (supervoxel_clusters[label]->normals_);
   }
-  //Make sure that color vector is big enough
-  initializeLabelColors ();
 }
 
 
@@ -544,60 +541,6 @@ pcl::SupervoxelClustering<PointT>::getSupervoxelAdjacency (std::multimap<uint32_
     //if (neighbor_labels.size () == 0)
     //  std::cout << label<<"(size="<<sv_itr->size () << ") has "<<neighbor_labels.size () << "\n";
   }
-  
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-pcl::SupervoxelClustering<PointT>::getColoredCloud () const
-{
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-  pcl::copyPointCloud (*input_,*colored_cloud);
-  
-  pcl::PointCloud <pcl::PointXYZRGBA>::iterator i_colored;
-  typename pcl::PointCloud <PointT>::const_iterator i_input = input_->begin ();
-  std::vector <int> indices;
-  std::vector <float> sqr_distances;
-  for (i_colored = colored_cloud->begin (); i_colored != colored_cloud->end (); ++i_colored,++i_input)
-  {
-    if ( !pcl::isFinite<PointT> (*i_input))
-      i_colored->rgb = 0;
-    else
-    {     
-      i_colored->rgb = 0;
-      LeafContainerT *leaf = adjacency_octree_->getLeafContainerAtPoint (*i_input);
-      VoxelData& voxel_data = leaf->getData ();
-      if (voxel_data.owner_)
-        i_colored->rgba = label_colors_[voxel_data.owner_->getLabel ()];
-      
-    }
-    
-  }
-  
-  return (colored_cloud);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
-pcl::SupervoxelClustering<PointT>::getColoredVoxelCloud () const
-{
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
-  for (typename HelperListT::const_iterator sv_itr = supervoxel_helpers_.cbegin (); sv_itr != supervoxel_helpers_.cend (); ++sv_itr)
-  {
-    typename PointCloudT::Ptr voxels;
-    sv_itr->getVoxels (voxels);
-    pcl::PointCloud<pcl::PointXYZRGBA> rgb_copy;
-    copyPointCloud (*voxels, rgb_copy);
-    
-    pcl::PointCloud<pcl::PointXYZRGBA>::iterator rgb_copy_itr = rgb_copy.begin ();
-    for ( ; rgb_copy_itr != rgb_copy.end (); ++rgb_copy_itr) 
-      rgb_copy_itr->rgba = label_colors_ [sv_itr->getLabel ()];
-    
-    *colored_cloud += rgb_copy;
-  }
-  
-  return colored_cloud;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -727,28 +670,6 @@ template <typename PointT> void
 pcl::SupervoxelClustering<PointT>::setNormalImportance (float val)
 {
   normal_importance_ = val;
-}
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void
-pcl::SupervoxelClustering<PointT>::initializeLabelColors ()
-{
-  uint32_t max_label = static_cast<uint32_t> (getMaxLabel ());
-  //If we already have enough colors, return
-  if (label_colors_.size () > max_label)
-    return;
-  
-  //Otherwise, generate new colors until we have enough
-  label_colors_.reserve (max_label + 1);
-  srand (static_cast<unsigned int> (time (0)));
-  while (label_colors_.size () <= max_label )
-  {
-    uint8_t r = static_cast<uint8_t>( (rand () % 256));
-    uint8_t g = static_cast<uint8_t>( (rand () % 256));
-    uint8_t b = static_cast<uint8_t>( (rand () % 256));
-    label_colors_.push_back (static_cast<uint32_t>(r) << 16 | static_cast<uint32_t>(g) << 8 | static_cast<uint32_t>(b));
-  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

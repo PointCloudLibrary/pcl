@@ -291,9 +291,8 @@ main (int argc, char ** argv)
   std::cout << "Extracting supervoxels!\n";
   super.extract (supervoxel_clusters);
   std::cout << "Found " << supervoxel_clusters.size () << " Supervoxels!\n";
-  PointCloudT::Ptr colored_voxel_cloud = super.getColoredVoxelCloud ();
+  PointLCloudT::Ptr labeled_voxel_cloud = super.getLabeledVoxelCloud ();
   PointCloudT::Ptr voxel_centroid_cloud = super.getVoxelCentroidCloud ();
-  PointCloudT::Ptr full_colored_cloud = super.getColoredCloud ();
   PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
   PointLCloudT::Ptr full_labeled_cloud = super.getLabeledCloud ();
   
@@ -305,16 +304,25 @@ main (int argc, char ** argv)
   std::cout << "Refining supervoxels \n";
   super.refineSupervoxels (3, refined_supervoxel_clusters);
 
-  PointCloudT::Ptr refined_colored_voxel_cloud = super.getColoredVoxelCloud ();
+  PointLCloudT::Ptr refined_labeled_voxel_cloud = super.getLabeledVoxelCloud ();
   PointNCloudT::Ptr refined_sv_normal_cloud = super.makeSupervoxelNormalCloud (refined_supervoxel_clusters);
   PointLCloudT::Ptr refined_full_labeled_cloud = super.getLabeledCloud ();
-  PointCloudT::Ptr refined_full_colored_cloud = super.getColoredCloud ();
   
   // THESE ONLY MAKE SENSE FOR ORGANIZED CLOUDS
-  pcl::io::savePNGFile (out_path, *full_colored_cloud, "rgb");
-  pcl::io::savePNGFile (refined_out_path, *refined_full_colored_cloud, "rgb");
-  pcl::io::savePNGFile (out_label_path, *full_labeled_cloud, "label");
-  pcl::io::savePNGFile (refined_out_label_path, *refined_full_labeled_cloud, "label");
+  if (cloud->isOrganized ())
+  {
+    pcl::io::savePNGFile (out_label_path, *full_labeled_cloud, "label");
+    pcl::io::savePNGFile (refined_out_label_path, *refined_full_labeled_cloud, "label");
+    //Save RGB from labels
+    pcl::io::PointCloudImageExtractorFromLabelField<PointLT> pcie (pcie.io::PointCloudImageExtractorFromLabelField<PointLT>::COLORS_RGB_GLASBEY);
+    //We need to set this to account for NAN points in the organized cloud
+    pcie.setPaintNaNsWithBlack (true);
+    pcl::PCLImage image;
+    pcie.extract (*full_labeled_cloud, image);
+    pcl::io::savePNGFile (out_path, image);
+    pcie.extract (*refined_full_labeled_cloud, image);
+    pcl::io::savePNGFile (refined_out_path, image);
+  }
   
   std::cout << "Constructing Boost Graph Library Adjacency List...\n";
   typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float> VoxelAdjacencyList;
@@ -341,9 +349,9 @@ main (int argc, char ** argv)
   {
     if (show_supervoxels)
     {
-      if (!viewer->updatePointCloud ((show_refined)?refined_colored_voxel_cloud:colored_voxel_cloud, "colored voxels"))
+      if (!viewer->updatePointCloud ((show_refined)?refined_labeled_voxel_cloud:labeled_voxel_cloud, "colored voxels"))
       {
-        viewer->addPointCloud ((show_refined)?refined_colored_voxel_cloud:colored_voxel_cloud, "colored voxels");
+        viewer->addPointCloud ((show_refined)?refined_labeled_voxel_cloud:labeled_voxel_cloud, "colored voxels");
         viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,3.0, "colored voxels");
       }
     }
