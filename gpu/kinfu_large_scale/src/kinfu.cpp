@@ -251,6 +251,7 @@ pcl::gpu::kinfuLS::KinfuTracker::reset ()
   
   
   lost_=false;
+  has_shifted_=false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -653,8 +654,8 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
 
   ///////////////////////////////////////////////////////////////////////////////////////////  
   // check if we need to shift
-  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
-  if(has_shifted)
+  has_shifted_ = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
+  if(has_shifted_)
     PCL_WARN ("SHIFTING\n");
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -702,7 +703,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
     pcl::device::kinfuLS::sync ();
   }
 
-  if(has_shifted && perform_last_scan_)
+  if(has_shifted_ && perform_last_scan_)
     extractAndSaveWorld ();
 
     

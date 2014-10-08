@@ -235,6 +235,13 @@ namespace pcl
             PCL_WARN("ICP is %s\n", !disable_icp_?"ENABLED":"DISABLED");
           }
 
+          /** \brief Return whether the last update resulted in a shift */
+          inline bool
+          hasShifted () const
+          {
+            return (has_shifted_);
+          }
+
         private:
           
           /** \brief Allocates all GPU internal buffers.
@@ -440,6 +447,9 @@ namespace pcl
                
           
           bool disable_icp_;
+
+          /** \brief True or false depending on if there was a shift in the last pose update */
+          bool has_shifted_;
           
         public:
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
