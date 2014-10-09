@@ -153,7 +153,7 @@ pcl::LCCPSegmentation<PointT>::removeSmallSegments (uint32_t min_segment_size_ar
     while (continue_filtering)
     {
       continue_filtering = false;
-      uint nr_filtered = 0;
+      unsigned int nr_filtered = 0;
 
       // Iterate through all supervoxels, check if they are in a "small" segment -> change label to largest neighborID
       for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all SuperVoxels
@@ -336,13 +336,13 @@ pcl::LCCPSegmentation<PointT>::recursiveGrouping (VertexID const &query_point_id
 }
 
 template <typename PointT> void
-pcl::LCCPSegmentation<PointT>::applyKconvexity (uint k_arg)
+pcl::LCCPSegmentation<PointT>::applyKconvexity (unsigned int k_arg)
 {
   if (k_arg == 0)
     return;
 
   bool is_convex;
-  uint kcount = 0;
+  unsigned int kcount = 0;
 
   EdgeIterator edge_itr, edge_itr_end, next_edge;
   boost::tie (edge_itr, edge_itr_end) = boost::edges (sv_adjacency_list_);
