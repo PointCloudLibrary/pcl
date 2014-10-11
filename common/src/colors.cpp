@@ -339,7 +339,7 @@ pcl::getRandomColor (double min, double max)
 }
 
 unsigned int
-pcl::getGlasbeyLUTSize(void)
+pcl::getGlasbeyLUTSize ()
 {
-	return pcl::GLASBEY_LUT_SIZE;
+  return pcl::GLASBEY_LUT_SIZE;
 }

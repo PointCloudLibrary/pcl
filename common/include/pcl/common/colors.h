@@ -61,7 +61,7 @@ namespace pcl
   getRandomColor (double min = 0.2, double max = 2.8);
 
   PCL_EXPORTS unsigned int
-  getGlasbeyLUTSize(void);
+  getGlasbeyLUTSize ();
 
 }
 
