@@ -99,6 +99,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 
   // Create the image filter and PNG writer objects
   wif_ = vtkSmartPointer<vtkWindowToImageFilter>::New ();
+  wif_->ReadFrontBufferOff ();
   snapshot_writer_ = vtkSmartPointer<vtkPNGWriter>::New ();
   snapshot_writer_->SetInputConnection (wif_->GetOutputPort ());
 
