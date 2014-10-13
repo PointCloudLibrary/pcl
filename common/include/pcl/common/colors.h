@@ -54,11 +54,14 @@ namespace pcl
   /** Get a color from Glasbey lookup table with a given id.
     *
     * The id should be less than \c GLASBEY_LUT_SIZE. */
-  RGB
+  PCL_EXPORTS RGB
   getGlasbeyColor (unsigned int color_id);
 
-  RGB
+  PCL_EXPORTS RGB
   getRandomColor (double min = 0.2, double max = 2.8);
+
+  PCL_EXPORTS unsigned int
+  getGlasbeyLUTSize ();
 
 }
 

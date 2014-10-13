@@ -200,7 +200,7 @@ namespace pcl
       /** \brief Set the value used for k convexity. For k>0 convex connections between p_i and p_j require k common neighbors of these patches that have a convex connection to both.
        *  \param[in] k factor used for extended convexity check */
       inline void
-      setKFactor (uint k)
+      setKFactor (unsigned int k)
       {
         k_factor_ = k;
       }
@@ -233,7 +233,7 @@ namespace pcl
       /** \brief Connections are only convex if this is true for at least k common neighbors of the two patches. Call setKFactor (..) before segment (..) to use this.
        *  \param[in] k_arg Factor used for extended convexity check */
       void
-      applyKconvexity (uint k_arg);
+      applyKconvexity (unsigned int k_arg);
 
       /** \brief Returns true if the connection between source and target is convex.
        *  \param[in] source_label_arg Label of one Supervoxel connected to the edge that should be checked
@@ -267,7 +267,7 @@ namespace pcl
       float voxel_resolution_;
 
       /** \brief Factor used for k-convexity */
-      uint k_factor_;
+      unsigned int k_factor_;
 
       /** \brief Stores which SuperVoxel labels were already visited during recursive grouping.    processed_[sv_Label] = false (default)/true (already processed) */
       std::map<uint32_t, bool> processed_;
