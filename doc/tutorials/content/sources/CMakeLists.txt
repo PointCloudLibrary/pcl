@@ -15,6 +15,7 @@ foreach(subdir
           cylinder_segmentation
           extract_indices
           #feature_evaluation
+	  global_hypothesis_verification
           greedy_projection
 		  implicit_shape_model
           iterative_closest_point
