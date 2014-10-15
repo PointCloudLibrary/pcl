@@ -320,7 +320,22 @@ Features
      .. |fe_4| image:: images/pfh_estimation.png
                :height: 100px
 
-  * :ref:`fpfh_estimation`
+  * :ref:`fpfh_estimation`* :ref:`global_hypothesis_verification`
+
+     ======  ======
+     |rc_3|  Title: **Hypothesis Verification for 3D Object Recognition**
+
+             Author: *Daniele De Gregorio, Federico Tombari*
+
+             Compatibility: > PCL 1.7
+
+             This tutorial aims at explaining how to do 3D object recognition in clutter by verifying model hypotheses in cluttered and  heavily occluded 3D scenes.
+     ======  ======
+
+     .. |rc_3| image:: images/global_hypothesis_verification/multiple.png
+               :height: 100px
+
+.. _registration_tutorial:
     
      ======  ======
      |fe_5|  Title: **Fast Point Feature Histograms (FPFH) descriptors**
@@ -761,6 +776,23 @@ Recognition
 
      .. |rc_2| image:: images/implicit_shape_model.png
                :height: 100px
+
+  * :ref:`global_hypothesis_verification`
+
+     ======  ======
+     |rc_3|  Title: **Hypothesis Verification for 3D Object Recognition**
+
+             Author: *Daniele De Gregorio, Federico Tombari*
+
+             Compatibility: > PCL 1.7
+
+             This tutorial aims at explaining how to do 3D object recognition in clutter by verifying model hypotheses in cluttered and  heavily occluded 3D scenes.
+     ======  ======
+
+     .. |rc_3| image:: images/global_hypothesis_verification/multiple.png
+               :height: 100px
+
+.. _registration_tutorial:
 
 .. _registration_tutorial:
 
