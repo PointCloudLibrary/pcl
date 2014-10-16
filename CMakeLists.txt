@@ -288,6 +288,17 @@ if(WITH_FZAPI)
   endif(FZAPI_FOUND)
 endif(WITH_FZAPI)
 
+# IDS-Imaging - Ensenso
+option(WITH_ENSENSO "Build IDS-Imaging Ensenso's camera support" TRUE)
+if(WITH_ENSENSO)
+  set(ENSENSO_ABI_DIR "$ENV{PROGRAMW6432}/Ensenso/development/c" CACHE PATH "directory of Ensenso ABI")
+  find_package(Ensenso) # FindEnsenso.cmake
+  if (ENSENSO_FOUND)
+    set(HAVE_ENSENSO ON)
+    include_directories(SYSTEM "${ENSENSO_INCLUDE_DIRS}")
+  endif(ENSENSO_FOUND)
+endif(WITH_ENSENSO)
+
 # Intel Perceptional Computing Interface (PXCAPI)
 option(WITH_PXCAPI "Build PXC Device support" TRUE)
 if(WITH_PXCAPI)
@@ -441,3 +452,4 @@ MAKE_DEP_GRAPH()
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
+

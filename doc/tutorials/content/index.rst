@@ -601,6 +601,21 @@ I/O
      .. |i_o6| image:: images/dinast_cyclopes.png
                :height: 100px
 
+  * :ref:`ensenso_cameras`
+
+     ======  ======
+     |i_o7|  Title: **Grabbing point clouds from Ensenso cameras**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: >= PCL 1.8.0
+
+             In this tutorial, we will learn how to acquire point cloud data from an IDS-Imaging Ensenso camera.
+     ======  ======
+
+     .. |i_o7| image:: images/ensenso/ids.png
+               :height: 165px
+
 
 .. _keypoints_tutorial:
 

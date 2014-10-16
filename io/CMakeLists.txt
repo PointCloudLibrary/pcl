@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -137,6 +137,23 @@ if(build)
             )
     endif(FZAPI_FOUND)
 
+    ## Ensenso
+    OPTION(BUILD_ENSENSO "Build the Ensenso Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_ENSENSO)
+    if(NOT BUILD_ENSENSO)
+      # Set ENSENSO_FOUND to false locally to avoid building anything Ensenso related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_ENSENSO
+      set(ENSENSO_FOUND FALSE)
+    endif()
+    if(ENSENSO_FOUND)
+        set(ENSENSO_GRABBER_INCLUDES
+            include/pcl/io/ensenso_grabber.h
+            )
+        set(ENSENSO_GRABBER_SOURCES
+            src/ensenso_grabber.cpp
+            )
+    endif(ENSENSO_FOUND)
+
 	if(PXCAPI_FOUND)
 		set(PXC_GRABBER_INCLUDES
 			include/pcl/io/pxc_grabber.h
@@ -207,6 +224,7 @@ if(build)
         ${IMAGE_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
+        ${ENSENSO_GRABBER_SOURCES}
         ${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
@@ -250,6 +268,7 @@ if(build)
         ${IMAGE_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
+        ${ENSENSO_GRABBER_INCLUDES}
         ${PXC_GRABBER_INCLUDES}
         )
 
@@ -317,6 +336,10 @@ if(build)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
 
+    if(ENSENSO_FOUND)
+      target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
+    endif(ENSENSO_FOUND)
+
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})
 	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
@@ -334,6 +357,9 @@ if(build)
     if(OPENNI2_FOUND)
       list(APPEND EXT_DEPS libopenni2)
     endif(OPENNI2_FOUND)
+    if(ENSENSO_FOUND)
+      list(APPEND EXT_DEPS ensenso)
+    endif(ENSENSO_FOUND)
 
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
