@@ -64,45 +64,45 @@ struct CloudStyle
   double b;
   double size;
 
-  CloudStyle(double r, double g, double b, double size) : r(r), g(g), b(b), size(size)
+  CloudStyle (double r, double g, double b, double size) : r (r), g (g), b (b), size (size)
   {
   }
 };
 
-CloudStyle style_white(255.0, 255.0, 255.0, 4.0);
-CloudStyle style_red(255.0, 0.0, 0.0, 3.0);
-CloudStyle style_green(0.0, 255.0, 0.0, 5.0);
-CloudStyle style_cyan(93.0, 200.0, 217.0, 4.0);
-CloudStyle style_violet(255.0, 0.0, 255.0, 8.0);
+CloudStyle style_white (255.0, 255.0, 255.0, 4.0);
+CloudStyle style_red (255.0, 0.0, 0.0, 3.0);
+CloudStyle style_green (0.0, 255.0, 0.0, 5.0);
+CloudStyle style_cyan (93.0, 200.0, 217.0, 4.0);
+CloudStyle style_violet (255.0, 0.0, 255.0, 8.0);
 
 std::string model_filename_;
 std::string scene_filename_;
 
 //Algorithm params 
-bool show_keypoints_(false);
-bool use_hough_(true);
-float model_ss_(0.02f);
-float scene_ss_(0.02f);
-float rf_rad_(0.015f);
-float descr_rad_(0.02f);
-float cg_size_(0.01f);
-float cg_thresh_(5.0f);
-int icp_max_iter_(5);
-float icp_corr_distance_(0.005f);
-float hv_clutter_reg_(5.0f);
-float hv_inlier_th_(0.005f);
-float hv_occlusion_th_(0.01f);
-float hv_rad_clutter_(0.03f);
-float hv_regularizer_(3.0f);
-float hv_rad_normals_(0.05);
-bool hv_detect_clutter_(true);
+bool show_keypoints_ (false);
+bool use_hough_ (true);
+float model_ss_ (0.02f);
+float scene_ss_ (0.02f);
+float rf_rad_ (0.015f);
+float descr_rad_ (0.02f);
+float cg_size_ (0.01f);
+float cg_thresh_ (5.0f);
+int icp_max_iter_ (5);
+float icp_corr_distance_ (0.005f);
+float hv_clutter_reg_ (5.0f);
+float hv_inlier_th_ (0.005f);
+float hv_occlusion_th_ (0.01f);
+float hv_rad_clutter_ (0.03f);
+float hv_regularizer_ (3.0f);
+float hv_rad_normals_ (0.05);
+bool hv_detect_clutter_ (true);
 
 /**
  * Prints out Help message
  * @param filename Runnable App Name
  */
 void
-showHelp(char *filename)
+showHelp (char *filename)
 {
   std::cout << std::endl;
   std::cout << "***************************************************************************" << std::endl;
@@ -138,7 +138,7 @@ showHelp(char *filename)
  * @param argv
  */
 void
-parseCommandLine(int argc, char *argv[])
+parseCommandLine (int argc, char *argv[])
 {
   //Show help
   if (pcl::console::find_switch(argc, argv, "-h"))
@@ -204,7 +204,7 @@ parseCommandLine(int argc, char *argv[])
 }
 
 int
-main(int argc, char *argv[])
+main (int argc, char *argv[])
 {
   parseCommandLine(argc, argv);
 
