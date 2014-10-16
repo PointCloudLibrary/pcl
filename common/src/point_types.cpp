@@ -189,6 +189,13 @@ namespace pcl
     return (os);
   }
 
+  std::ostream&
+  operator << (std::ostream& os, const PointXYZLNormal& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
+    return (os);
+  }
+
   std::ostream& 
   operator << (std::ostream& os, const PointWithRange& p)
   {

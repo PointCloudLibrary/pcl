@@ -63,6 +63,7 @@
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointXYZINormal)        \
+  (pcl::PointXYZLNormal)        \
   (pcl::PointWithRange)         \
   (pcl::PointWithViewpoint)     \
   (pcl::MomentInvariants)       \
@@ -112,6 +113,7 @@
   (pcl::PointNormal)          \
   (pcl::PointXYZRGBNormal)    \
   (pcl::PointXYZINormal)      \
+  (pcl::PointXYZLNormal)      \
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)       \
@@ -120,7 +122,8 @@
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
   (pcl::PointXYZL)            \
-  (pcl::PointXYZRGBL)
+  (pcl::PointXYZRGBL)         \
+  (pcl::PointXYZLNormal)
 
 // Define all point types that include normal[3] data
 #define PCL_NORMAL_POINT_TYPES  \
@@ -128,6 +131,7 @@
   (pcl::PointNormal)            \
   (pcl::PointXYZRGBNormal)      \
   (pcl::PointXYZINormal)        \
+  (pcl::PointXYZLNormal)        \
   (pcl::PointSurfel)
 
 // Define all point types that represent features
@@ -972,10 +976,56 @@ namespace pcl
       data[3] = 1.0f;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
       intensity = 0.0f;
+      curvature = 0;
     }
   
     friend std::ostream& operator << (std::ostream& os, const PointXYZINormal& p);
   };
+
+//----
+  struct EIGEN_ALIGN16 _PointXYZLNormal
+  {
+    PCL_ADD_POINT4D; // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+    PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
+    union
+    {
+      struct
+      {
+        uint32_t label;
+        float curvature;
+      };
+      float data_c[4];
+    };
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
+  /** \brief A point structure representing Euclidean xyz coordinates, a label, together with normal coordinates and the surface curvature estimate.
+    * \ingroup common
+    */
+  struct PointXYZLNormal : public _PointXYZLNormal
+  {
+    inline PointXYZLNormal (const _PointXYZLNormal &p)
+    {
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
+      normal_x = p.normal_x; normal_y = p.normal_y; normal_z = p.normal_z; data_n[3] = 0.0f;
+      curvature = p.curvature;
+      label = p.label;
+    }
+
+    inline PointXYZLNormal ()
+    {
+      x = y = z = 0.0f;
+      data[3] = 1.0f;
+      normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+      label = 0;
+      curvature = 0;
+    }
+
+    friend std::ostream& operator << (std::ostream& os, const PointXYZLNormal& p);
+  };
+
+//  ---
 
 
   struct EIGEN_ALIGN16 _PointWithRange
