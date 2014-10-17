@@ -42,28 +42,13 @@ Take a look at the various parts of the code to see how it works.
 Input Parameters
 ****************
 
-.. code-block:: c++
-   :linenos:
+.. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
+   :language: c++
+   :lines: 107-112
 
-    /**
-     * Prints out Help message
-     * @param filename Runnable App Name
-     */
-    void showHelp(char *filename) {
-        ...
-    }
-
-.. code-block:: c++
-   :linenos:
-
-    /**
-     * Parses Command Line Arguments (Argc,Argv)
-     * @param argc
-     * @param argv
-     */
-    void parseCommandLine(int argc, char *argv[]) {
-       ...
-    }
+.. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
+   :language: c++
+   :lines: 142-149
 
 ``showHelp`` function prints out the input parameters accepted by the program. ``parseCommandLine`` binds the user input with program parameters.
 
@@ -91,7 +76,7 @@ Helpers
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 60-76
+   :lines: 60-83
 
 This simple struct is used to create `Color` presets for the clouds being visualized. 
 
@@ -111,7 +96,7 @@ Take a look at the full pipeline:
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 236-366
+   :lines: 245-374
    :emphasize-lines: 6,9
 
 For a full explanation of the above code see `3D Object Recognition based on Correspondence Grouping <http://pointclouds.org/documentation/tutorials/correspondence_grouping.php>`_.
@@ -125,21 +110,21 @@ We create a ``instances`` list to store the "coarse" transformations :
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 381-391
+   :lines: 389-399
 
 
 then, we run ICP on the ``instances`` wrt. the ``scene`` to obtain the ``registered_instances``: 
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 393-423
+   :lines: 401-431
 
 Hypotheses Verification
 ***********************
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 426-459
+   :lines: 433-466
 
 ``GlobalHypothesesVerification`` takes as input a list of ``registered_instances`` and a ``scene`` so we can ``verify()`` them
 to get a ``hypotheses_mask``: this is a `bool` array where ``hypotheses_mask[i]`` is ``TRUE`` if ``registered_instances[i]`` is a
@@ -157,7 +142,7 @@ Each ``registered_instances[i]`` will be displayed with two optional colors: ``s
 
 .. literalinclude:: sources/global_hypothesis_verification/global_hypothesis_verification.cpp
    :language: c++
-   :lines: 461-580
+   :lines: 468-525
 
 
 Compiling and running the program
