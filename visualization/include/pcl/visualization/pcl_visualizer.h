@@ -600,6 +600,21 @@ namespace pcl
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset containing the XYZ data and normals
+          * \param[in] pcs the input point cloud dataset containing the principal curvatures data
+          * \param[in] level display only every level'th point. Default: 100
+          * \param[in] scale the normal arrow scale. Default: 1.0
+          * \param[in] id the point cloud object id. Default: "cloud"
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        template <typename PointNT> bool
+        addPointCloudPrincipalCurvatures (
+            const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+            int level = 100, float scale = 1.0f,
+            const std::string &id = "cloud", int viewport = 0);
+        
+        /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing the XYZ data
           * \param[in] normals the input point cloud dataset containing the normal data
           * \param[in] pcs the input point cloud dataset containing the principal curvatures data
@@ -608,10 +623,10 @@ namespace pcl
           * \param[in] id the point cloud object id. Default: "cloud"
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
-        bool
+        template <typename PointT, typename PointNT> bool
         addPointCloudPrincipalCurvatures (
-            const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
-            const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+            const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
             const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
             int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
@@ -1280,11 +1295,11 @@ namespace pcl
           * \param[in] id the line id/name (default: "arrow")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
-	      template <typename P1, typename P2> bool
-	      addArrow (const P1 &pt1, const P2 &pt2,
-		              double r_line, double g_line, double b_line,
-		              double r_text, double g_text, double b_text,
-		              const std::string &id = "arrow", int viewport = 0);
+              template <typename P1, typename P2> bool
+              addArrow (const P1 &pt1, const P2 &pt2,
+                              double r_line, double g_line, double b_line,
+                              double r_text, double g_text, double b_text,
+                              const std::string &id = "arrow", int viewport = 0);
 
 
         /** \brief Add a sphere shape from a point and a radius
