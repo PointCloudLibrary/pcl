@@ -429,6 +429,12 @@ namespace pcl
         bool
         removeAllShapes (int viewport = 0);
 
+        /** \brief Removes  all existing 3D axes (coordinate systems)
+          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
+          */
+        bool
+        removeAllCoordinateSystems (int viewport = 0);
+
         /** \brief Set the viewport's background color.
           * \param[in] r the red component of the RGB color
           * \param[in] g the green component of the RGB color

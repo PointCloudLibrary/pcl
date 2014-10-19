@@ -897,6 +897,22 @@ pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
   return (true);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::removeAllCoordinateSystems (int viewport)
+{
+  // Check to see if the given ID entry exists
+  CoordinateActorMap::iterator am_it = coordinate_actor_map_->begin ();
+  while (am_it != coordinate_actor_map_->end () )
+  {
+    if (removeCoordinateSystem (am_it->first, viewport))
+      am_it = coordinate_actor_map_->begin ();
+    else
+      ++am_it;
+  }
+  return (true);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::removeActorFromRenderer (const vtkSmartPointer<vtkLODActor> &actor, int viewport)
