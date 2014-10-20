@@ -109,7 +109,7 @@ namespace pcl
 
       /** \brief Get the axis along which we need to search for a line. */
       inline Eigen::Vector3f
-      getAxis ()  { return (axis_); }
+      getAxis () const { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the line direction and the given axis (in radians).
@@ -118,7 +118,7 @@ namespace pcl
       setEpsAngle (const double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold (in radians). */
-      inline double getEpsAngle () { return (eps_angle_); }
+      inline double getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
