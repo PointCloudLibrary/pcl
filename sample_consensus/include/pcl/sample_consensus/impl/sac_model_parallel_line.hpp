@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
+#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
+#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
 
 #include <pcl/sample_consensus/sac_model_parallel_line.h>
 
@@ -116,5 +116,5 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
 
 #define PCL_INSTANTIATE_SampleConsensusModelParallelLine(T) template class PCL_EXPORTS pcl::SampleConsensusModelParallelLine<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
+#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
 

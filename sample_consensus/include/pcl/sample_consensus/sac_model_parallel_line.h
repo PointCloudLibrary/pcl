@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLELLINE_H_
-#define PCL_SAMPLE_CONSENSUS_MODEL_PARALLELLINE_H_
+#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLEL_LINE_H_
+#define PCL_SAMPLE_CONSENSUS_MODEL_PARALLEL_LINE_H_
 
 #include <pcl/sample_consensus/sac_model_line.h>
 #include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
@@ -55,7 +55,7 @@ namespace pcl
     *   - \b line_direction.x : the X coordinate of a line's direction
     *   - \b line_direction.y : the Y coordinate of a line's direction
     *   - \b line_direction.z : the Z coordinate of a line's direction
-    * 
+    *
     * \author Radu B. Rusu
     * \ingroup sample_consensus
     */
@@ -73,8 +73,8 @@ namespace pcl
         * \param[in] cloud the input point cloud dataset
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud, 
-                                        bool random = false) 
+      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud,
+                                        bool random = false)
         : SampleConsensusModelLine<PointT> (cloud, random)
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
@@ -86,32 +86,32 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud, 
+      SampleConsensusModelParallelLine (const PointCloudConstPtr &cloud,
                                         const std::vector<int> &indices,
-                                        bool random = false) 
+                                        bool random = false)
         : SampleConsensusModelLine<PointT> (cloud, indices, random)
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
       {
       }
-      
+
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelParallelLine () {}
 
       /** \brief Set the axis along which we need to search for a plane perpendicular to.
         * \param[in] ax the axis along which we need to search for a plane perpendicular to
         */
-      inline void 
+      inline void
       setAxis (const Eigen::Vector3f &ax) { axis_ = ax; axis_.normalize (); }
 
       /** \brief Get the axis along which we need to search for a plane perpendicular to. */
-      inline Eigen::Vector3f 
+      inline Eigen::Vector3f
       getAxis ()  { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
         * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
         */
-      inline void 
+      inline void
       setEpsAngle (const double ea) { eps_angle_ = ea; }
 
       /** \brief Get the angle epsilon (delta) threshold. */
@@ -122,38 +122,38 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         * \param[out] inliers the resultant model inliers
         */
-      void 
-      selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            const double threshold, 
+      void
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
                             std::vector<int> &inliers);
 
-      /** \brief Count all the points which respect the given model coefficients as inliers. 
-        * 
+      /** \brief Count all the points which respect the given model coefficients as inliers.
+        *
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
                            const double threshold);
 
       /** \brief Compute all squared distances from the cloud data to a given line model.
         * \param[in] model_coefficients the coefficients of a line model that we need to compute distances to
         * \param[out] distances the resultant estimated squared distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
                            std::vector<double> &distances);
 
       /** \brief Return an unique id for this model (SACMODEL_PARALLEL_LINE). */
-      inline pcl::SacModel 
+      inline pcl::SacModel
       getModelType () const { return (SACMODEL_PARALLEL_LINE); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
+      bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
     protected:
@@ -169,4 +169,4 @@ namespace pcl
 #include <pcl/sample_consensus/impl/sac_model_parallel_line.hpp>
 #endif
 
-#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLELLINE_H_
+#endif  //#ifndef PCL_SAMPLE_CONSENSUS_MODEL_PARALLEL_LINE_H_
