@@ -47,6 +47,10 @@ namespace pcl
 {
   /** \brief SampleConsensusModelParallelLine defines a model for 3D line segmentation using additional angular
     * constraints.
+    *
+    * Checking for inliers will not only involve a "distance to model" criterion, but also an additional "maximum
+    * angular deviation" between the line's direction and a user-specified axis.
+    *
     * The model coefficients are defined as:
     *   - \b point_on_line.x  : the X coordinate of a point on the line
     *   - \b point_on_line.y  : the Y coordinate of a point on the line
@@ -97,23 +101,23 @@ namespace pcl
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelParallelLine () {}
 
-      /** \brief Set the axis along which we need to search for a plane perpendicular to.
-        * \param[in] ax the axis along which we need to search for a plane perpendicular to
+      /** \brief Set the axis along which we need to search for a line.
+        * \param[in] ax the axis along which we need to search for a line
         */
       inline void
       setAxis (const Eigen::Vector3f &ax) { axis_ = ax; axis_.normalize (); }
 
-      /** \brief Get the axis along which we need to search for a plane perpendicular to. */
+      /** \brief Get the axis along which we need to search for a line. */
       inline Eigen::Vector3f
       getAxis ()  { return (axis_); }
 
       /** \brief Set the angle epsilon (delta) threshold.
-        * \param[in] ea the maximum allowed difference between the plane normal and the given axis.
+        * \param[in] ea the maximum allowed difference between the line direction and the given axis (in radians).
         */
       inline void
       setEpsAngle (const double ea) { eps_angle_ = ea; }
 
-      /** \brief Get the angle epsilon (delta) threshold. */
+      /** \brief Get the angle epsilon (delta) threshold (in radians). */
       inline double getEpsAngle () { return (eps_angle_); }
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
@@ -156,10 +160,10 @@ namespace pcl
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
     protected:
-      /** \brief The axis along which we need to search for a plane perpendicular to. */
+      /** \brief The axis along which we need to search for a line. */
       Eigen::Vector3f axis_;
 
-      /** \brief The maximum allowed difference between the plane normal and the given axis. */
+      /** \brief The maximum allowed difference between the line direction and the given axis. */
       double eps_angle_;
   };
 }
