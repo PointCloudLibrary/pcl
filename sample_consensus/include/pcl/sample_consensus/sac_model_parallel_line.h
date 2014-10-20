@@ -42,7 +42,6 @@
 #define PCL_SAMPLE_CONSENSUS_MODEL_PARALLEL_LINE_H_
 
 #include <pcl/sample_consensus/sac_model_line.h>
-#include <pcl/sample_consensus/sac_model_perpendicular_plane.h>
 
 namespace pcl
 {

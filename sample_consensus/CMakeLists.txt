@@ -16,6 +16,7 @@ if(build)
         src/sac_model_cylinder.cpp
         src/sac_model_cone.cpp
         src/sac_model_line.cpp
+        src/sac_model_parallel_line.cpp
         src/sac_model_stick.cpp
         src/sac_model_normal_parallel_plane.cpp
         src/sac_model_normal_plane.cpp

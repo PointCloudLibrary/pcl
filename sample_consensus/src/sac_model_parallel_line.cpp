@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009-2012, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2014-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -36,16 +35,16 @@
  *
  */
 
-#include <pcl/sample_consensus/impl/sac_model_line.hpp>
+#include <pcl/sample_consensus/impl/sac_model_parallel_line.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(SampleConsensusModelLine, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(SampleConsensusModelParallelLine, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
 #else
-  PCL_INSTANTIATE(SampleConsensusModelLine, PCL_XYZ_POINT_TYPES)
+  PCL_INSTANTIATE(SampleConsensusModelParallelLine, PCL_XYZ_POINT_TYPES)
 #endif
 #endif    // PCL_NO_PRECOMPILE
 
