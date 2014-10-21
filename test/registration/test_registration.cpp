@@ -489,7 +489,6 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
-
   GeneralizedIterativeClosestPoint<PointT, PointT> reg;
   reg.setInputSource (src);
   reg.setInputTarget (tgt);
@@ -522,6 +521,19 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
+
+  // Test guess matrix
+  Eigen::Isometry3f transform = Eigen::Isometry3f (Eigen::AngleAxisf (0.25 * M_PI, Eigen::Vector3f::UnitX ())
+                                                 * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
+                                                 * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (20.0, -8.0, 1.0);
+  pcl::transformPointCloud (*src, *tgt, transform.matrix ()); // tgt is now a copy of src with a transformation matrix applied
+  reg.setInputSource (src);
+  reg.setInputTarget (tgt);
+  reg.setMaximumIterations (1); // Allow only 1 iteration
+  reg.align (output, transform.matrix ());
+  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
