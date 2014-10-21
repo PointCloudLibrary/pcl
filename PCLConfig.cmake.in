@@ -264,16 +264,14 @@ macro(find_ensenso)
                "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
                PATH_SUFFIXES lib/)
 
-  set(ENSENSO_LIBRARIES ${ENSENSO_LIBRARY})
-  set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
-
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(ensenso DEFAULT_MSG
                                     ENSENSO_LIBRARY ENSENSO_INCLUDE_DIR)
 
   if(ENSENSO_FOUND)
     get_filename_component(ENSENSO_LIBRARY_PATH ${ENSENSO_LIBRARY} PATH)
-    set(ENSENSO_LIBRARY_DIRS ${ENSENSO_LIBRARY_PATH}) 
+    set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
+    set(ENSENSO_LIBRARY_DIRS ${ENSENSO_LIBRARY_PATH})
     set(ENSENSO_LIBRARIES "${ENSENSO_LIBRARY}")
     set(ENSENSO_REDIST_DIR $ENV{ENSENSO_REDIST${ENSENSO_SUFFIX}})
   endif(ENSENSO_FOUND)
