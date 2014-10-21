@@ -498,7 +498,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -527,13 +527,13 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
                                                  * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
                                                  * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
   transform.translation () = Eigen::Vector3f (20.0, -8.0, 1.0);
-  pcl::transformPointCloud (*src, *tgt, transform.matrix ()); // tgt is now a copy of src with a transformation matrix applied
+  PointCloud<PointT>::Ptr transformed_tgt (new PointCloud<PointT>);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ()); // transformed_tgt is now a copy of tgt with a transformation matrix applied
   reg.setInputSource (src);
-  reg.setInputTarget (tgt);
-  reg.setMaximumIterations (1); // Allow only 1 iteration
+  reg.setInputTarget (transformed_tgt);
   reg.align (output, transform.matrix ());
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
