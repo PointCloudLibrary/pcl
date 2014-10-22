@@ -59,6 +59,7 @@
 #include <vtkAppendPolyData.h>
 #include <vtkTextProperty.h>
 #include <vtkLODActor.h>
+#include <vtkLineSource.h>
 
 #include <pcl/visualization/common/shapes.h>
 
@@ -539,9 +540,9 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
-					     double r_line, double g_line, double b_line,
-					     double r_text, double g_text, double b_text,
-					     const std::string &id, int viewport)
+                                            double r_line, double g_line, double b_line,
+                                            double r_text, double g_text, double b_text,
+                                            const std::string &id, int viewport)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
@@ -842,6 +843,135 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 
   // Save the pointer/ID pair to the global actor map
   (*cloud_actor_map_)[id].actor = actor;
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> bool
+pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
+  const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+  const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+  int level, float scale,
+  const std::string &id, int viewport)
+{
+  return (addPointCloudPrincipalCurvatures<PointNT, PointNT> (cloud, cloud, pcs, level, scale, id, viewport));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT> bool
+pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
+  const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+  const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+  const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+  int level, float scale,
+  const std::string &id, int viewport)
+{
+  if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
+  {
+    pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
+    return (false);
+  }
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it != cloud_actor_map_->end ())
+  {
+    pcl::console::print_warn (stderr, "[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkAppendPolyData> polydata_1 = vtkSmartPointer<vtkAppendPolyData>::New ();
+  vtkSmartPointer<vtkAppendPolyData> polydata_2 = vtkSmartPointer<vtkAppendPolyData>::New ();
+
+  // Setup two colors - one for each line
+  unsigned char green[3] = {0, 255, 0};
+  unsigned char blue[3] = {0, 0, 255};
+
+  // Setup the colors array
+  vtkSmartPointer<vtkUnsignedCharArray> line_1_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_1_colors->SetNumberOfComponents (3);
+  line_1_colors->SetName ("Colors");
+  vtkSmartPointer<vtkUnsignedCharArray> line_2_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_2_colors->SetNumberOfComponents (3);
+  line_2_colors->SetName ("Colors");
+
+  // Create the first sets of lines
+  for (size_t i = 0; i < cloud->points.size (); i+=level)
+  {
+    PointT p = cloud->points[i];
+    p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
+    p.y += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[1]) * scale;
+    p.z += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[2]) * scale;
+
+    vtkSmartPointer<vtkLineSource> line_1 = vtkSmartPointer<vtkLineSource>::New ();
+    line_1->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_1->SetPoint2 (p.x, p.y, p.z);
+    line_1->Update ();
+#if VTK_MAJOR_VERSION < 6
+    polydata_1->AddInput (line_1->GetOutput ());
+#else
+    polydata_1->AddInputData (line_1->GetOutput ());
+#endif
+    line_1_colors->InsertNextTupleValue (green);
+  }
+  polydata_1->Update ();
+  vtkSmartPointer<vtkPolyData> line_1_data = polydata_1->GetOutput ();
+  line_1_data->GetCellData ()->SetScalars (line_1_colors);
+
+  // Create the second sets of lines
+  for (size_t i = 0; i < cloud->points.size (); i += level)
+  {
+    Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
+                        pcs->points[i].principal_curvature[1],
+                        pcs->points[i].principal_curvature[2]);
+    Eigen::Vector3f normal (normals->points[i].normal[0],
+                            normals->points[i].normal[1],
+                            normals->points[i].normal[2]);
+    Eigen::Vector3f pc_c = pc.cross (normal);
+
+    PointT p = cloud->points[i];
+    p.x += (pcs->points[i].pc2 * pc_c[0]) * scale;
+    p.y += (pcs->points[i].pc2 * pc_c[1]) * scale;
+    p.z += (pcs->points[i].pc2 * pc_c[2]) * scale;
+
+    vtkSmartPointer<vtkLineSource> line_2 = vtkSmartPointer<vtkLineSource>::New ();
+    line_2->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_2->SetPoint2 (p.x, p.y, p.z);
+    line_2->Update ();
+#if VTK_MAJOR_VERSION < 6
+    polydata_2->AddInput (line_2->GetOutput ());
+#else
+    polydata_2->AddInputData (line_2->GetOutput ());
+#endif
+
+    line_2_colors->InsertNextTupleValue (blue);
+  }
+  polydata_2->Update ();
+  vtkSmartPointer<vtkPolyData> line_2_data = polydata_2->GetOutput ();
+  line_2_data->GetCellData ()->SetScalars (line_2_colors);
+
+  // Assemble the two sets of lines
+  vtkSmartPointer<vtkAppendPolyData> alldata = vtkSmartPointer<vtkAppendPolyData>::New ();
+#if VTK_MAJOR_VERSION < 6
+  alldata->AddInput (line_1_data);
+  alldata->AddInput (line_2_data);
+#else
+  alldata->AddInputData (line_1_data);
+  alldata->AddInputData (line_2_data);
+#endif
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (alldata->GetOutput (), actor);
+  actor->GetMapper ()->SetScalarModeToUseCellData ();
+
+  // Add it to all renderers
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  CloudActor act;
+  act.actor = actor;
+  (*cloud_actor_map_)[id] = act;
   return (true);
 }
 
