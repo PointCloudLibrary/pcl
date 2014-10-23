@@ -11,6 +11,6 @@ PCL_ADD_TEST(sample_consensus_quadric_models test_sample_consensus_quadric_model
              FILES test_sample_consensus_quadric_models.cpp
              LINK_WITH pcl_gtest pcl_sample_consensus)
 
-PCL_ADD_TEST(sample_consensus_line_model test_sample_consensus_line_model
-             FILES test_sample_consensus_line_model.cpp
+PCL_ADD_TEST(sample_consensus_line_models test_sample_consensus_line_models
+             FILES test_sample_consensus_line_models.cpp
              LINK_WITH pcl_gtest pcl_sample_consensus)
