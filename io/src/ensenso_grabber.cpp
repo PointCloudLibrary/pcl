@@ -64,6 +64,7 @@ ensensoExceptionHandling (const NxLibException &ex,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::EnsensoGrabber::EnsensoGrabber () :
     device_open_ (false),
+    tcp_open_ (false),
     running_ (false)
 {
   point_cloud_signal_ = createSignal<sig_cb_ensenso_point_cloud> ();
@@ -90,6 +91,8 @@ pcl::EnsensoGrabber::~EnsensoGrabber () throw ()
     root_.reset ();
 
     disconnect_all_slots<sig_cb_ensenso_point_cloud> ();
+    if (tcp_open_)
+      closeTcpPort ();
     nxLibFinalize ();
   }
   catch (...)
@@ -221,6 +224,13 @@ pcl::EnsensoGrabber::isRunning () const
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::isTcpPortOpen () const
+{
+  return (tcp_open_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 std::string
 pcl::EnsensoGrabber::getName () const
 {
@@ -313,11 +323,12 @@ pcl::EnsensoGrabber::getFramesPerSecond () const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::openTcpPort (const int port) const
+pcl::EnsensoGrabber::openTcpPort (const int port)
 {
   try
   {
     nxLibOpenTcpPort (port);
+    tcp_open_ = true;
   }
   catch (NxLibException &ex)
   {
@@ -329,11 +340,12 @@ pcl::EnsensoGrabber::openTcpPort (const int port) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::closeTcpPort () const
+pcl::EnsensoGrabber::closeTcpPort ()
 {
   try
   {
     nxLibCloseTcpPort ();
+    tcp_open_ = false;
   }
   catch (NxLibException &ex)
   {

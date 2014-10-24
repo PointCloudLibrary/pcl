@@ -107,6 +107,10 @@ namespace pcl
       bool
       isRunning () const;
 
+      /** @brief Check if a TCP port is opened */
+      bool
+      isTcpPortOpen () const;
+
       /** @brief Get class name
        * @returns a string containing the class name
        */
@@ -175,14 +179,14 @@ namespace pcl
        * @param[in] port The port number
        * @return True if successful, false otherwise */
       bool
-      openTcpPort (const int port = 24000) const;
+      openTcpPort (const int port = 24000);
 
       /** @brief Close TCP port program
        * @return True if successful, false otherwise
        * @warning If you do not close the TCP port the program might exit with the port still open, if it is the case
        * use @code ps -ef@endcode and @code kill PID @endcode to kill the application and effectively close the port. */
       bool
-      closeTcpPort (void) const;
+      closeTcpPort (void);
 
       /** @brief Returns the full NxLib tree as a JSON string
        * @param[in] pretty_format JSON formatting style
@@ -280,6 +284,9 @@ namespace pcl
 
       /** @brief Whether an Ensenso device is opened or not */
       bool device_open_;
+
+      /** @brief Whether an TCP port is opened or not */
+      bool tcp_open_;
 
       /** @brief Whether an Ensenso device is running or not */
       bool running_;
