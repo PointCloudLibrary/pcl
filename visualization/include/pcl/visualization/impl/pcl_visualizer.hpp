@@ -1887,7 +1887,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   if (!polydata)
     return (false);
-  vtkSmartPointer<vtkCellArray> cells = polydata->GetStrips ();
+  vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
   if (!cells)
     return (false);
   vtkSmartPointer<vtkPoints> points   = polydata->GetPoints ();
