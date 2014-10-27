@@ -325,8 +325,8 @@ LCCPSegmentation Parameters: \n\
 
   if (min_segment_size > 0)
   {
-    PCL_INFO ("Removing small segments\n");
-    lccp.removeSmallSegments (min_segment_size);
+    PCL_INFO ("Merging small segments\n");
+    lccp.mergeSmallSegments (min_segment_size);
   }
 
   PCL_INFO ("Interpolation voxel cloud -> input cloud and relabeling\n");
