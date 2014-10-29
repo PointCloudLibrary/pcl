@@ -40,6 +40,7 @@
 #include <cmath>
 #include <limits.h>
 
+#include <boost/format.hpp>
 
 
 // PCL input/output
