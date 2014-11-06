@@ -312,8 +312,16 @@ namespace pcl
       EuclideanClusterExtraction () : tree_ (), 
                                       cluster_tolerance_ (0),
                                       min_pts_per_cluster_ (1), 
+																			clusters_ (0),
                                       max_pts_per_cluster_ (std::numeric_limits<int>::max ())
       {};
+
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      /** \brief Deconstructor. */
+      ~EuclideanClusterExtraction ()
+      {
+				clusters_.clear ();
+			};
 
       /** \brief Provide a pointer to the search object.
         * \param[in] tree a pointer to the spatial search object.
@@ -387,6 +395,15 @@ namespace pcl
       void 
       extract (std::vector<PointIndices> &clusters);
 
+			/** \brief If the cloud was successfully segmented, then function
+			* returns colored cloud. Otherwise it returns an empty pointer.
+			* Points that belong to the same segment have the same color.
+			* But this function doesn't guarantee that different segments will have different
+			* color(it all depends on RNG). Points that were not listed in the indices array will have red color.
+			*/
+      pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+      getColoredCloud ();
+
     protected:
       // Members derived from the base class
       using BasePCLBase::input_;
@@ -408,6 +425,9 @@ namespace pcl
 
       /** \brief Class getName method. */
       virtual std::string getClassName () const { return ("EuclideanClusterExtraction"); }
+
+			/** \brief After the segmentation it will contain the segments. */
+      std::vector <pcl::PointIndices> clusters_;
 
   };
 
