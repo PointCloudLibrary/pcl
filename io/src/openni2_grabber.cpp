@@ -612,10 +612,10 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 
   // Load pre-calibrated camera parameters if they exist
   if (pcl_isfinite (depth_parameters_.focal_length_x))
-    fx =  1.0f / static_cast<float> (depth_parameters_.focal_length_x);
+    fx =  static_cast<float> (depth_parameters_.focal_length_x);
 
   if (pcl_isfinite (depth_parameters_.focal_length_y))
-    fy =  1.0f / static_cast<float> (depth_parameters_.focal_length_y);
+    fy =  static_cast<float> (depth_parameters_.focal_length_y);
 
   if (pcl_isfinite (depth_parameters_.principal_point_x))
     cx =  static_cast<float> (depth_parameters_.principal_point_x);
