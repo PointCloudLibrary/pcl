@@ -637,22 +637,22 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_x = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getImageFocalLength (depth_width_);
+  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
   register float centerX = ((float)cloud->width - 1.f) / 2.f;
   register float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (rgb_focal_length_x_))
-    constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
+  if (pcl_isfinite (depth_focal_length_x_))
+    constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (pcl_isfinite (rgb_focal_length_y_))
-    constant_y =  1.0f / static_cast<float> (rgb_focal_length_y_);
+  if (pcl_isfinite (depth_focal_length_y_))
+    constant_y =  1.0f / static_cast<float> (depth_focal_length_y_);
   
-  if (pcl_isfinite (rgb_principal_point_x_))
-    centerX =  static_cast<float> (rgb_principal_point_x_);
+  if (pcl_isfinite (depth_principal_point_x_))
+    centerX =  static_cast<float> (depth_principal_point_x_);
   
-  if (pcl_isfinite (rgb_principal_point_y_))
-    centerY =  static_cast<float> (rgb_principal_point_y_);
+  if (pcl_isfinite (depth_principal_point_y_))
+    centerY =  static_cast<float> (depth_principal_point_y_);
 
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
