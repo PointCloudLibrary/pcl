@@ -471,7 +471,7 @@ LCCPSegmentation Parameters: \n\
       if (show_adjacency)
       {
         viewer->removeShape ("adjacency_graph");
-        viewer->addModelFromPolyData (polyData, "adjacency_graph");
+        viewer->addModelFromPolyData (polyData, 1.0f, "adjacency_graph");
       }
       else
       {

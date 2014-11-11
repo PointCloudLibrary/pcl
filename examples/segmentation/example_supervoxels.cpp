@@ -507,7 +507,7 @@ addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
   cells->InsertNextCell (polyLine);
   // Add the lines to the dataset
   polyData->SetLines (cells);
-  viewer->addModelFromPolyData (polyData,supervoxel_name);
+  viewer->addModelFromPolyData (polyData, 1.0f, supervoxel_name);
 }
 
 

@@ -184,12 +184,12 @@ void update (CallbackParameters* params)
   // The lines
   string lines_str_id = "opps";
   params->viz_.removeShape(lines_str_id);
-  params->viz_.addModelFromPolyData (vtk_opps, lines_str_id);
+  params->viz_.addModelFromPolyData (vtk_opps, 1.0f, lines_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.0, 0.0, 1.0, lines_str_id);
   // The normals
   string normals_str_id = "opps normals";
   params->viz_.removeShape(normals_str_id);
-  params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), normals_str_id);
+  params->viz_.addModelFromPolyData (vtk_hh->GetOutput (), 1.0f, normals_str_id);
   params->viz_.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, normals_str_id);
 
 }

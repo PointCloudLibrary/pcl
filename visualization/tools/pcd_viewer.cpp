@@ -372,7 +372,7 @@ main (int argc, char** argv)
     // Add as actor
     std::stringstream cloud_name ("vtk-");
     cloud_name << argv[vtk_file_indices.at (i)] << "-" << i;
-    p->addModelFromPolyData (polydata, cloud_name.str (), viewport);
+    p->addModelFromPolyData (polydata, 1.0f, cloud_name.str (), viewport);
 
     // Change the shape rendered color
     if (fcolorparam && fcolor_r.size () > i && fcolor_g.size () > i && fcolor_b.size () > i)

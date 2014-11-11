@@ -221,7 +221,7 @@ main (int argc, char **argv)
   if (INTER_VIS)
   {
     visualization::PCLVisualizer vis;
-    vis.addModelFromPolyData (polydata1, "mesh1", 0);
+    vis.addModelFromPolyData (polydata1, 1.0f, "mesh1", 0);
     vis.setRepresentationToSurfaceForAllActors ();
     vis.spin();
   }
