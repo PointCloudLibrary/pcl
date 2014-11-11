@@ -191,11 +191,11 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 
     float norm = 0.0f;
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
-      norm += feature[i_dim];
-    if (abs (norm) < std::numeric_limits <float>::epsilon ())
-      norm = 1.0f / norm;
-    else
+      norm += abs (feature[i_dim]);
+    if (norm < std::numeric_limits <float>::epsilon ())
       norm = 1.0f;
+    else
+      norm = 1.0f / norm;
 
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
       output.points[i_point].histogram[i_dim] = feature[i_dim] * norm;
