@@ -136,6 +136,7 @@ pcl::visualization::ImageViewer::addMask (
                      static_cast<unsigned char> (g*255.0), 
                      static_cast<unsigned char> (b*255.0));
   points->setOpacity (opacity);
+  points->set (xy);
   am_it->actor->GetScene ()->AddItem (points);
   return (true);
 }
