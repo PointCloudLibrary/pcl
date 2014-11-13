@@ -692,7 +692,7 @@ pcl::visualization::ImageViewer::addCircle (
                      static_cast<unsigned char> (255.0 * g),
                      static_cast<unsigned char> (255.0 * b));
   circle->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   circle->set (static_cast<float> (x), static_cast<float> (y), static_cast<float> (radius));
 #else
   circle->set (static_cast<float> (x), static_cast<float> (getSize ()[1] - y), static_cast<float> (radius));
@@ -732,7 +732,7 @@ pcl::visualization::ImageViewer::addFilledRectangle (
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   rect->set (static_cast<float> (x_min), static_cast<float> (y_min),
              static_cast<float> (x_max - x_min), static_cast<float> (y_max - y_min));
 #else
@@ -860,7 +860,7 @@ pcl::visualization::ImageViewer::addLine (unsigned int x_min, unsigned int y_min
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   line->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   line->set (static_cast<float> (x_min), static_cast<float> (y_min),
              static_cast<float> (x_max), static_cast<float> (y_max));
 #else
@@ -904,7 +904,7 @@ pcl::visualization::ImageViewer::addText (unsigned int x, unsigned int y,
                    static_cast<unsigned char> (255.0 * g),
                    static_cast<unsigned char> (255.0 * b));
   text->setOpacity (opacity);
-#if ((VTK_MAJOR_VERSION == 5) && (VTKOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   text->set (static_cast<float> (x), static_cast<float> (y), text_string);
 #else
   text->set (static_cast<float> (x), static_cast<float> (getSize ()[1] - y), text_string);
@@ -947,7 +947,7 @@ pcl::visualization::ImageViewer::markPoint (
   disk->setColors (bg_color[0], bg_color[1], bg_color[2]);
   disk->setOpacity (opacity);
 
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
   point->set (static_cast<float> (u), static_cast<float> (v));
   disk->set (static_cast<float> (u), static_cast<float> (v), static_cast<float> (radius));
 #else
@@ -989,7 +989,7 @@ pcl::visualization::ImageViewer::markPoints (
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::markPoint] No layer with ID='%s' found. Creating new one...\n", layer_id.c_str ());
     am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7))
     interactor_style_->adjustCamera (ren_);
 #endif
   }
