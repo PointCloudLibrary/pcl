@@ -197,6 +197,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   poly->setColors (static_cast<unsigned char> (r * 255.0), 
                    static_cast<unsigned char> (g * 255.0), 
                    static_cast<unsigned char> (b * 255.0));
+  poly->setOpacity (opacity);
   poly->set (xy);
   am_it->actor->GetScene ()->AddItem (poly);
 
