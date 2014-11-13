@@ -721,8 +721,7 @@ if(WIN32 AND NOT MINGW)
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
 else(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
-  get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
+  set(PCL_ROOT "@CMAKE_INSTALL_PREFIX@")
 endif(WIN32 AND NOT MINGW)
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree
