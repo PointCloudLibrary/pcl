@@ -189,21 +189,6 @@ Basic Usage
      .. |mi_11| image:: images/pcl_logo.png
                :height: 75px
 
-  * :ref:`qt_visualizer`
-
-     ======  ======
-     |mi_9|  Title: **Create a PCL visualizer in Qt with cmake**
-
-             Author: *Victor Lamoine*
-
-             Compatibility: > PCL 1.5
-
-             This tutorial shows you how to create a PCL visualizer within a Qt application.
-     ======  ======
-
-     .. |mi_9| image:: images/qt_visualizer/qt.png
-               :height: 128px
-
   * :ref:`matrix_transform`
 
      =======  ======
@@ -1240,6 +1225,37 @@ Visualization
 
      .. |vi_5| image:: images/visualization_small.png
                :height: 120px
+
+  * :ref:`qt_visualizer`
+
+     ======  ======
+     |vi_6|  Title: **Create a PCL visualizer in Qt with cmake**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: > PCL 1.5
+
+             This tutorial shows you how to create a PCL visualizer within a Qt application.
+     ======  ======
+
+     .. |vi_6| image:: images/qt_visualizer/qt.png
+               :height: 128px
+
+  * :ref:`qt_colorize_cloud`
+
+     ======  ======
+     |vi_7|  Title: **Create a PCL visualizer in Qt to colorize clouds**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: > PCL 1.5
+
+              This tutorial shows you how to color point clouds within a Qt application.
+     ======  ======
+
+     .. |vi_7| image:: images/qt_visualizer/qt.png
+               :height: 128px
+
 
 .. _applications_tutorial:
 
