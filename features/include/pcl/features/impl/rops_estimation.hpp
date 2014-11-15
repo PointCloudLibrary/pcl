@@ -191,7 +191,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 
     float norm = 0.0f;
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
-      norm += abs (feature[i_dim]);
+      norm += std::abs (feature[i_dim]);
     if (norm < std::numeric_limits <float>::epsilon ())
       norm = 1.0f;
     else
@@ -278,7 +278,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     scatter_matrices[i_triangle] = coeff * curr_scatter_matrix;
   }
 
-  if (abs (total_area) < std::numeric_limits <float>::epsilon ())
+  if (std::abs (total_area) < std::numeric_limits <float>::epsilon ())
     total_area = 1.0f / total_area;
   else
     total_area = 1.0f;
