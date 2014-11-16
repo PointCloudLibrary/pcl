@@ -46,10 +46,6 @@ if(build)
     add_subdirectory(segmentation)
     add_subdirectory(sample_consensus)
 
-    PCL_ADD_TEST(a_bearing_angle_image_test test_bearing_angle_image
-                 FILES test_bearing_angle_image.cpp
-                 LINK_WITH pcl_gtest pcl_common pcl_io)
-
 	  PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
                  FILES test_recognition_ism.cpp
                  LINK_WITH pcl_gtest pcl_io pcl_features
