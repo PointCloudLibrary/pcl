@@ -29,8 +29,7 @@ This is how I organized the project: the build folder contains all built files a
       ├── pclviewer.cpp
       ├── pclviewer.h
       ├── pclviewer.ui
-      ├── pcl_visualizer.pro
-      └── pcl_visualizer.pro.user
+      └── pcl_visualizer.pro
 
 If you want to change this layout you will have to do minor modifications in the code, especially line 2 of ``pclviewer.cpp``
 Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualizer>`_.
