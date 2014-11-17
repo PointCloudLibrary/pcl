@@ -320,7 +320,7 @@ namespace pcl
                    unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     Type value;
-    if (st == "nan")
+    if (boost::iequals(st, "nan"))
     {
       value = std::numeric_limits<Type>::quiet_NaN ();
       cloud.is_dense = false;
@@ -343,7 +343,7 @@ namespace pcl
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     int8_t value;
-    if (st == "nan")
+    if (boost::iequals(st, "nan"))
     {
       value = static_cast<int8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
@@ -369,7 +369,7 @@ namespace pcl
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     uint8_t value;
-    if (st == "nan")
+    if (boost::iequals(st, "nan"))
     {
       value = static_cast<uint8_t> (std::numeric_limits<int>::quiet_NaN ());
       cloud.is_dense = false;
