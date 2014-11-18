@@ -285,6 +285,58 @@ pcl::EnsensoGrabber::configureCapture (const bool auto_exposure,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
+pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
+{
+  if (!device_open_)
+    return (false);
+
+  if (running_)
+    return (false);
+
+  try
+  {
+    NxLibCommand (cmdCapture).execute ();
+
+    // Stereo matching task
+    NxLibCommand (cmdComputeDisparityMap).execute ();
+
+    // Convert disparity map into XYZ data for each pixel
+    NxLibCommand (cmdComputePointMap).execute ();
+
+    // Get info about the computed point map and copy it into a std::vector
+    double timestamp;
+    std::vector<float> pointMap;
+    int width, height;
+    camera_[itmImages][itmRaw].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);  // Get raw image timestamp
+    camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
+    camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
+
+    // Copy point cloud and convert in meters
+    cloud.header.stamp = getPCLStamp (timestamp);
+    cloud.resize (height * width);
+    cloud.width = width;
+    cloud.height = height;
+    cloud.is_dense = false;
+
+    // Copy data in point cloud (and convert milimeters in meters)
+    for (size_t i = 0; i < pointMap.size (); i += 3)
+    {
+      cloud.points[i / 3].x = pointMap[i] / 1000.0;
+      cloud.points[i / 3].y = pointMap[i + 1] / 1000.0;
+      cloud.points[i / 3].z = pointMap[i + 2] / 1000.0;
+    }
+
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "grabSingleCloud");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
 pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target,
                                               const float euler_angle,
                                               const Eigen::Vector3f rotation_axis,
@@ -484,6 +536,17 @@ pcl::EnsensoGrabber::eulerAnglesToTransformationJson (const double x,
     ensensoExceptionHandling (ex, "eulerAnglesToTransformationJson");
     return ("");
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+pcl::uint64_t
+pcl::EnsensoGrabber::getPCLStamp (const double ensenso_stamp)
+{
+#if defined _WIN32 || defined _WIN64
+  return (ensenso_stamp * 1000000.0);
+#else
+  return ( (ensenso_stamp - 11644473600.0) * 1000000.0);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

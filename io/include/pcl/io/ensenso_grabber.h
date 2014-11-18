@@ -153,6 +153,13 @@ namespace pcl
                         const std::string trigger_mode = "Software",
                         const bool use_disparity_map_area_of_interest = false) const;
 
+      /** @brief Capture a single point cloud and store it
+       * @param[out] cloud The cloud to be filled
+       * @return True if successful, false otherwise
+       * @warning A device must be opened and not running */
+      bool
+      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
+
       /** @brief Update Link node in NxLib tree
        * @param[in] target "Hand" or "Workspace" for example
        * @param[in] euler_angle
@@ -298,6 +305,15 @@ namespace pcl
 
       /** @brief Mutual exclusion for FPS computation */
       mutable boost::mutex fps_mutex_;
+
+      /** @brief Convert an Ensenso time stamp into a PCL/ROS time stamp
+       * @param[in] ensenso_stamp
+       * @return PCL stamp
+       * The Ensenso API returns the time elapsed from January 1st, 1601 (UTC); on Linux OS the reference time is January 1st, 1970 (UTC).
+       * See <a href="http://www.ensenso.de/manual/index.html?json_types.htm">timestamp page</a> for more info about the time stamp conversion. */
+      pcl::uint64_t
+      static
+      getPCLStamp (const double ensenso_stamp);
 
       /** @brief Continously asks for point clouds data from the device and publishes it if available. */
       void
