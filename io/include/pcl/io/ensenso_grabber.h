@@ -43,6 +43,7 @@
 
 #include <pcl/common/time.h>
 #include <pcl/io/eigen.h>
+#include <Eigen/Geometry>
 #include <pcl/io/boost.h>
 #include <boost/thread.hpp>
 
@@ -224,13 +225,64 @@ namespace pcl
        * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
        */
       bool
-      transformationJsonToEulerAngles (const std::string &json,
+      jsonTransformationToEulerAngles (const std::string &json,
                                        double &x,
                                        double &y,
                                        double &z,
                                        double &w,
                                        double &p,
                                        double &r) const;
+
+      /** @brief Get the angle axis parameters corresponding to a JSON string
+       * @param[in] json A string containing the angle axis transformation in JSON format
+       * @param[out] alpha Euler angle
+       * @param[out] axis Axis vector
+       * @param[out] translation Translation vector
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      jsonTransformationToAngleAxis (const std::string json,
+                                     double &alpha,
+                                     Eigen::Vector3d &axis,
+                                     Eigen::Vector3d &translation) const;
+
+
+      /** @brief Get the JSON string corresponding to a 4x4 matrix
+       * @param[in] transformation The input transformation
+       * @param[out] matrix A matrix containing JSON transformation
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="index.html?cmdconverttransformation.htm">ConvertTransformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      jsonTransformationToMatrix (const std::string transformation,
+                                  Eigen::Affine3d &matrix) const;
+
+
+      /** @brief Get the JSON string corresponding to the Euler angles transformation
+       * @param[in] x The X translation
+       * @param[in] y The Y translation
+       * @param[in] z The Z translation
+       * @param[in] w The yaW angle
+       * @param[in] p The Pitch angle
+       * @param[in] r The Roll angle
+       * @param[out] json A string containing the Euler angles transformation in JSON format
+       * @param[in] pretty_format JSON formatting style
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      eulerAnglesTransformationToJson (const double x,
+                                       const double y,
+                                       const double z,
+                                       const double w,
+                                       const double p,
+                                       const double r,
+                                       std::string &json,
+                                       const bool pretty_format = true) const;
 
       /** @brief Get the JSON string corresponding to an angle axis transformation
        * @param[in] x The X angle
@@ -240,41 +292,35 @@ namespace pcl
        * @param[in] ry The Y component of the Euler axis
        * @param[in] rz The Z componenet of the Euler axis
        * @param[in] alpha The Euler rotation angle
+       * @param[out] json A string containing the angle axis transformation in JSON format
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the angle axis transformation in JSON format
+       * @return True if successful, false otherwise
        * @warning The units are meters and radians! (the Euler axis doesn't need to be normalized)
        * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
        */
-      std::string
-      angleAxisToTransformationJson (const double x,
+      bool
+      angleAxisTransformationToJson (const double x,
                                      const double y,
                                      const double z,
                                      const double rx,
                                      const double ry,
                                      const double rz,
                                      const double alpha,
+                                     std::string &json,
                                      const bool pretty_format = true) const;
 
-      /** @brief Get the JSON string corresponding to the Euler angles transformation
-       * @param[in] x The X translation
-       * @param[in] y The Y translation
-       * @param[in] z The Z translation
-       * @param[in] w The yaW angle
-       * @param[in] p The Pitch angle
-       * @param[in] r The Roll angle
+      /** @brief Get the JSON string corresponding to a 4x4 matrix
+       * @param[in] matrix The input matrix
+       * @param[out] json A string containing the matrix transformation in JSON format
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the Euler angles transformation in JSON format
+       * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
-       */
-      std::string
-      eulerAnglesToTransformationJson (const double x,
-                                       const double y,
-                                       const double z,
-                                       const double w,
-                                       const double p,
-                                       const double r,
-                                       const bool pretty_format = true) const;
+       * @note See: <a href="http://www.ensenso.de/manual/index.html?cmdconverttransformation.htm">ConvertTransformation page</a>
+       * in the EnsensoSDK documentation */
+      bool
+      matrixTransformationToJson (const Eigen::Affine3d &matrix,
+                                  std::string &json,
+                                  const bool pretty_format = true) const;
 
       /** @brief Reference to the NxLib tree root
        * @warning You must handle NxLib exceptions manually when playing with @ref root_ !

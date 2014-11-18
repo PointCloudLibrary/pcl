@@ -37,9 +37,7 @@
  */
 
 #include <pcl/pcl_config.h>
-
 #include <pcl/io/ensenso_grabber.h>
-
 #include <pcl/exceptions.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
@@ -441,7 +439,7 @@ pcl::EnsensoGrabber::getResultAsJson (const bool pretty_format) const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::transformationJsonToEulerAngles (const std::string &json,
+pcl::EnsensoGrabber::jsonTransformationToEulerAngles (const std::string &json,
                                                       double &x,
                                                       double &y,
                                                       double &z,
@@ -469,20 +467,127 @@ pcl::EnsensoGrabber::transformationJsonToEulerAngles (const std::string &json,
 
   catch (NxLibException &ex)
   {
-    ensensoExceptionHandling (ex, "transformationJsonToEulerAngles");
+    ensensoExceptionHandling (ex, "jsonTransformationToEulerAngles");
     return (false);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string
-pcl::EnsensoGrabber::angleAxisToTransformationJson (const double x,
+bool
+pcl::EnsensoGrabber::jsonTransformationToAngleAxis (const std::string json,
+                                                    double &alpha,
+                                                    Eigen::Vector3d &axis,
+                                                    Eigen::Vector3d &translation) const
+{
+  try
+  {
+    NxLibItem tf ("/tmpTF");
+    tf.setJson(json);
+    translation[0] = tf[itmTranslation][0].asDouble ();
+    translation[1] = tf[itmTranslation][1].asDouble ();
+    translation[2] = tf[itmTranslation][2].asDouble ();
+
+    alpha = tf[itmRotation][itmAngle].asDouble ();  // Angle of rotation
+    axis[0] = tf[itmRotation][itmAxis][0].asDouble ();  // X component of Euler vector
+    axis[1] = tf[itmRotation][itmAxis][1].asDouble ();  // Y component of Euler vector
+    axis[2] = tf[itmRotation][itmAxis][2].asDouble ();  // Z component of Euler vector
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "jsonTransformationToAngleAxis");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::jsonTransformationToMatrix (const std::string transformation,
+                                                 Eigen::Affine3d &matrix) const
+{
+  try
+  {
+    NxLibCommand convert_transformation (cmdConvertTransformation);
+    convert_transformation.parameters ()[itmTransformation].setJson (transformation);
+    convert_transformation.execute ();
+    Eigen::Affine3d tmp (Eigen::Affine3d::Identity ());
+
+    // Rotation
+    tmp.linear ().col (0) = Eigen::Vector3d (convert_transformation.result ()[itmTransformation][0][0].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][0][1].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][0][2].asDouble ());
+
+    tmp.linear ().col (1) = Eigen::Vector3d (convert_transformation.result ()[itmTransformation][1][0].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][1][1].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][1][2].asDouble ());
+
+    tmp.linear ().col (2) = Eigen::Vector3d (convert_transformation.result ()[itmTransformation][2][0].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][2][1].asDouble (),
+                                             convert_transformation.result ()[itmTransformation][2][2].asDouble ());
+
+    // Translation
+    tmp.translation () = Eigen::Vector3d (convert_transformation.result ()[itmTransformation][3][0].asDouble (),
+                                          convert_transformation.result ()[itmTransformation][3][1].asDouble (),
+                                          convert_transformation.result ()[itmTransformation][3][2].asDouble ());
+    matrix = tmp;
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "jsonTransformationToMatrix");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::eulerAnglesTransformationToJson (const double x,
+                                                      const double y,
+                                                      const double z,
+                                                      const double w,
+                                                      const double p,
+                                                      const double r,
+                                                      std::string &json,
+                                                      const bool pretty_format) const
+{
+  try
+  {
+    NxLibCommand chain (cmdChainTransformations);
+    NxLibItem tf = chain.parameters ()[itmTransformations];
+
+    if (!angleAxisTransformationToJson (x, y, z, 0, 0, 1, r, json))
+      return (false);
+    tf[0].setJson (json, false);  // Roll
+
+    if (!angleAxisTransformationToJson (0, 0, 0, 0, 1, 0, p, json))
+       return (false);
+    tf[1].setJson (json, false);  // Pitch
+
+    if (!angleAxisTransformationToJson (0, 0, 0, 1, 0, 0, w, json))
+       return (false);
+    tf[2].setJson (json, false);  // yaW
+
+    chain.execute ();
+    json = chain.result ()[itmTransformation].asJson (pretty_format);
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "eulerAnglesTransformationToJson");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::angleAxisTransformationToJson (const double x,
                                                     const double y,
                                                     const double z,
                                                     const double rx,
                                                     const double ry,
                                                     const double rz,
                                                     const double alpha,
+                                                    std::string &json,
                                                     const bool pretty_format) const
 {
   try
@@ -497,44 +602,57 @@ pcl::EnsensoGrabber::angleAxisToTransformationJson (const double x,
     tf[itmRotation][itmAxis][1].set (ry);  // Y component of Euler vector
     tf[itmRotation][itmAxis][2].set (rz);  // Z component of Euler vector
 
-    std::string json = tf.asJson (pretty_format);
+    json = tf.asJson (pretty_format);
     tf.erase ();
-    return (json);
+    return (true);
   }
 
   catch (NxLibException &ex)
   {
-    ensensoExceptionHandling (ex, "angleAxisToTransformationJson");
-    return ("");
+    ensensoExceptionHandling (ex, "angleAxisTransformationToJson");
+    return (false);
   }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string
-pcl::EnsensoGrabber::eulerAnglesToTransformationJson (const double x,
-                                                      const double y,
-                                                      const double z,
-                                                      const double w,
-                                                      const double p,
-                                                      const double r,
-                                                      const bool pretty_format) const
+bool
+pcl::EnsensoGrabber::matrixTransformationToJson (const Eigen::Affine3d &matrix,
+                                                 std::string &json,
+                                                 const bool pretty_format) const
 {
   try
   {
-    NxLibCommand chain (cmdChainTransformations);
-    NxLibItem tf = chain.parameters ()[itmTransformations];
+    NxLibCommand convert_transformation (cmdConvertTransformation);
+    // Rotation
+    convert_transformation.parameters ()[itmTransformation][0][0].set (matrix.linear ().col (0)[0]);
+    convert_transformation.parameters ()[itmTransformation][0][1].set (matrix.linear ().col (0)[1]);
+    convert_transformation.parameters ()[itmTransformation][0][2].set (matrix.linear ().col (0)[2]);
+    convert_transformation.parameters ()[itmTransformation][0][3].set (0.0);
 
-    tf[0].setJson (angleAxisToTransformationJson (x, y, z, 0, 0, 1, r), false);  // Roll
-    tf[1].setJson (angleAxisToTransformationJson (0, 0, 0, 0, 1, 0, p), false);  // Pitch
-    tf[2].setJson (angleAxisToTransformationJson (0, 0, 0, 1, 0, 0, w), false);  // yaW
+    convert_transformation.parameters ()[itmTransformation][1][0].set (matrix.linear ().col (1)[0]);
+    convert_transformation.parameters ()[itmTransformation][1][1].set (matrix.linear ().col (1)[1]);
+    convert_transformation.parameters ()[itmTransformation][1][2].set (matrix.linear ().col (1)[2]);
+    convert_transformation.parameters ()[itmTransformation][1][3].set (0.0);
 
-    chain.execute ();
-    return (chain.result ()[itmTransformation].asJson (pretty_format));
+    convert_transformation.parameters ()[itmTransformation][2][0].set (matrix.linear ().col (2)[0]);
+    convert_transformation.parameters ()[itmTransformation][2][1].set (matrix.linear ().col (2)[1]);
+    convert_transformation.parameters ()[itmTransformation][2][2].set (matrix.linear ().col (2)[2]);
+    convert_transformation.parameters ()[itmTransformation][2][3].set (0.0);
+
+    // Translation
+    convert_transformation.parameters ()[itmTransformation][3][0].set (matrix.translation ()[0]);
+    convert_transformation.parameters ()[itmTransformation][3][1].set (matrix.translation ()[1]);
+    convert_transformation.parameters ()[itmTransformation][3][2].set (matrix.translation ()[1]);
+    convert_transformation.parameters ()[itmTransformation][3][3].set (1.0);
+
+    convert_transformation.execute ();
+    json = convert_transformation.result ()[itmTransformation].asJson (pretty_format);
+    return (true);
   }
   catch (NxLibException &ex)
   {
-    ensensoExceptionHandling (ex, "eulerAnglesToTransformationJson");
-    return ("");
+    ensensoExceptionHandling (ex, "matrixTransformationToJson");
+    return (false);
   }
 }
 
