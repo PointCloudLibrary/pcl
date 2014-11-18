@@ -82,7 +82,7 @@ namespace pcl
       /** @brief Searches for available devices
        * @returns the number of Ensenso devices connected */
       int
-      enumDevices ();
+      enumDevices () const;
 
       /** @brief Opens an Ensenso device
        * @param[in] device the device ID to open
@@ -221,7 +221,7 @@ namespace pcl
                                        double &z,
                                        double &w,
                                        double &p,
-                                       double &r);
+                                       double &r) const;
 
       /** @brief Get the JSON string corresponding to an angle axis transformation
        * @param[in] x The X angle
@@ -244,7 +244,7 @@ namespace pcl
                                      const double ry,
                                      const double rz,
                                      const double alpha,
-                                     const bool pretty_format = true);
+                                     const bool pretty_format = true) const;
 
       /** @brief Get the JSON string corresponding to the Euler angles transformation
        * @param[in] x The X translation
@@ -265,7 +265,7 @@ namespace pcl
                                        const double w,
                                        const double p,
                                        const double r,
-                                       const bool pretty_format = true);
+                                       const bool pretty_format = true) const;
 
       /** @brief Reference to the NxLib tree root
        * @warning You must handle NxLib exceptions manually when playing with root!

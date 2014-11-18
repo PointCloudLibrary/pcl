@@ -103,7 +103,7 @@ pcl::EnsensoGrabber::~EnsensoGrabber () throw ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::EnsensoGrabber::enumDevices ()
+pcl::EnsensoGrabber::enumDevices () const
 {
   int camera_count = 0;
 
@@ -395,7 +395,7 @@ pcl::EnsensoGrabber::transformationJsonToEulerAngles (const std::string &json,
                                                       double &z,
                                                       double &w,
                                                       double &p,
-                                                      double &r)
+                                                      double &r) const
 {
   try
   {
@@ -431,7 +431,7 @@ pcl::EnsensoGrabber::angleAxisToTransformationJson (const double x,
                                                     const double ry,
                                                     const double rz,
                                                     const double alpha,
-                                                    const bool pretty_format)
+                                                    const bool pretty_format) const
 {
   try
   {
@@ -465,7 +465,7 @@ pcl::EnsensoGrabber::eulerAnglesToTransformationJson (const double x,
                                                       const double w,
                                                       const double p,
                                                       const double r,
-                                                      const bool pretty_format)
+                                                      const bool pretty_format) const
 {
   try
   {
