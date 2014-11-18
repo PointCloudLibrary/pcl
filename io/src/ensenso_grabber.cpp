@@ -335,25 +335,262 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target,
-                                              const float euler_angle,
-                                              const Eigen::Vector3f rotation_axis,
-                                              const Eigen::Vector3f translation)
+pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
 {
   if (!device_open_)
     return (false);
+
+  if (running_)
+    return (false);
+
+  try
+  {
+    if (!clearCalibrationPatternBuffer ())
+      return (false);
+    (*root_)[itmParameters][itmPattern][itmGridSpacing].set (grid_spacing);  // GridSize can't be changed, it's protected in the tree
+    // With the speckle projector on it is nearly impossible to recognize the pattern
+    // (the 3D calibration is based on stero images, not on 3D depth map)
+
+    // Most important parameters are: projector=off, front_light=on
+    configureCapture (true, true, 1, 0.32, true, 1, false, false, false, 10, false, 80, "Software", false);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "initExtrinsicCalibration");
+    return (false);
+  }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::clearCalibrationPatternBuffer () const
+{
+  if (!device_open_)
+    return (false);
+
+  if (running_)
+    return (false);
+
+  try
+  {
+    NxLibCommand (cmdDiscardPatterns).execute ();
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "clearCalibrationPatternBuffer");
+    return (false);
+  }
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::EnsensoGrabber::captureCalibrationPattern () const
+{
+  if (!device_open_)
+    return (-1);
+
+  if (running_)
+    return (-1);
+
+  try
+  {
+    NxLibCommand (cmdCapture).execute ();
+    NxLibCommand (cmdCollectPattern).execute ();
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "captureCalibrationPattern");
+    return (-1);
+  }
+
+  return ( (*root_)[itmParameters][itmPatternCount].asInt ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const
+{
+  if (!device_open_)
+    return (false);
+
+  if (running_)
+    return (false);
+
+  try
+  {
+    NxLibCommand estimate_pattern_pose (cmdEstimatePatternPose);
+    estimate_pattern_pose.execute ();
+    NxLibItem tf = estimate_pattern_pose.result ()[itmPatternPose];
+    // Convert tf into a matrix
+    if (!jsonTransformationToMatrix (tf.asJson (), pattern_pose))
+      return (false);
+    pattern_pose.translation () /= 1000.0;  // Convert translation in meters (Ensenso API returns milimeters)
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "estimateCalibrationPatternPoses");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > &robot_poses,
+                                               std::string &json,
+                                               const std::string setup,
+                                               const std::string target,
+                                               const Eigen::Affine3d &guess_tf,
+                                               const bool pretty_format) const
+{
+  try
+  {
+    std::vector<std::string> robot_poses_json;
+    robot_poses_json.resize (robot_poses.size ());
+    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    {
+      if (!matrixTransformationToJson (robot_poses[i], robot_poses_json[i]))
+        return (false);
+    }
+
+    // Feed all robot poses into the calibration command
+    NxLibCommand calibrate (cmdCalibrateHandEye);
+    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    {
+      // Very weird behaviour here:
+      // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node
+      // because for an unknown reason sometimes the old transformations are erased in the tree ("null" in the tree)
+      calibrate.parameters ()[itmTransformations][i].setJson (robot_poses_json[i], false);
+    }
+
+    // Set Hand-Eye calibration parameters
+    if (setup.compare ("Fixed"))
+      calibrate.parameters ()[itmSetup].set (valFixed);
+    else
+      calibrate.parameters ()[itmSetup].set (valMoving);
+
+    calibrate.parameters ()[itmTarget].set (target);
+
+    // Set guess matrix
+    if (guess_tf.matrix () != Eigen::Matrix4d::Identity ())
+    {
+      // Matrix > JSON > Angle axis
+      NxLibItem tf ("/tmpTF");
+      if (!matrixTransformationToJson (guess_tf, json))
+        return (false);
+      tf.setJson (json);
+
+
+      // Rotation
+      double theta = tf[itmRotation][itmAngle].asDouble ();  // Angle of rotation
+      double x = tf[itmRotation][itmAxis][0].asDouble ();   // X component of Euler vector
+      double y = tf[itmRotation][itmAxis][1].asDouble ();   // Y component of Euler vector
+      double z = tf[itmRotation][itmAxis][2].asDouble ();   // Z component of Euler vector
+
+      (*root_)[itmLink][itmRotation][itmAngle].set (theta);
+      (*root_)[itmLink][itmRotation][itmAxis][0].set (x);
+      (*root_)[itmLink][itmRotation][itmAxis][1].set (y);
+      (*root_)[itmLink][itmRotation][itmAxis][2].set (z);
+
+      // Translation
+      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0]);
+      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1]);
+      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2]);
+    }
+
+    calibrate.execute ();  // Might take up to 120 sec (maximum allowed by Ensenso API)
+
+    if (calibrate.successful ())
+    {
+      json = calibrate.result ().asJson (pretty_format);
+      return (true);
+    }
+    else
+      return (false);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "computeCalibrationMatrix");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::storeEEPROMExtrinsicCalibration () const
+{
+  try
+  {
+    NxLibCommand store (cmdStoreCalibration);
+    store.execute ();
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "storeEEPROMExtrinsicCalibration");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::clearEEPROMExtrinsicCalibration ()
+{
+  try
+  {
+    setExtrinsicCalibration("");
+    NxLibCommand store (cmdStoreCalibration);
+    store.execute ();
+    return (true);
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "clearEEPROMExtrinsicCalibration");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
+                                              Eigen::Vector3d &rotation_axis,
+                                              const Eigen::Vector3d &translation,
+                                              const std::string target)
+{
+  if (!device_open_)
+    return (false);
+
+  if (rotation_axis != Eigen::Vector3d (0, 0, 0))  // Otherwise the vector becomes NaN
+    rotation_axis.normalize ();
 
   try
   {
     NxLibItem calibParams = camera_[itmLink];
     calibParams[itmTarget].set (target);
     calibParams[itmRotation][itmAngle].set (euler_angle);
-    calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
-    calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
-    calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
-    calibParams[itmTranslation][0].set (translation[0]);
-    calibParams[itmTranslation][1].set (translation[1]);
-    calibParams[itmTranslation][2].set (translation[2]);
+
+    /* FIXME: Bug in Ensenso API: http://ensenso.de/manual/index.html?about.htm see version 1.2.125
+     The re-normalisation is still not working proprely, when it does, use this code rather than the workaround
+     calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
+     calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
+     calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
+     */
+
+    // Workaround
+    std::string axis_x, axis_y, axis_z;
+    axis_x = boost::lexical_cast<std::string> (rotation_axis[0]);
+    axis_y = boost::lexical_cast<std::string> (rotation_axis[1]);
+    axis_z = boost::lexical_cast<std::string> (rotation_axis[2]);
+    calibParams[itmRotation][itmAxis][0].setJson (axis_x);
+    calibParams[itmRotation][itmAxis][1].setJson (axis_y);
+    calibParams[itmRotation][itmAxis][2].setJson (axis_z);
+    // End of workaround
+
+    calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
+    calibParams[itmTranslation][1].set (translation[1] * 1000.0);
+    calibParams[itmTranslation][2].set (translation[2] * 1000.0);
   }
   catch (NxLibException &ex)
   {
@@ -361,6 +598,35 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target,
     return (false);
   }
   return (true);
+}
+
+bool
+pcl::EnsensoGrabber::setExtrinsicCalibration (const std::string target)
+{
+  if (!device_open_)
+    return (false);
+
+  Eigen::Vector3d rotation (Eigen::Vector3d::Zero ());
+  Eigen::Vector3d translation (Eigen::Vector3d::Zero ());
+  return (setExtrinsicCalibration (0.0, rotation, translation, target));
+}
+
+bool
+pcl::EnsensoGrabber::setExtrinsicCalibration (const Eigen::Affine3d &transformation,
+                                              const std::string target)
+{
+  std::string json;
+  if (!matrixTransformationToJson (transformation, json))
+    return (false);
+
+  double euler_angle;
+  Eigen::Vector3d rotation_axis;
+  Eigen::Vector3d translation;
+
+  if (!jsonTransformationToAngleAxis (json, euler_angle, rotation_axis, translation))
+    return (false);
+
+  return (setExtrinsicCalibration (euler_angle, rotation_axis, translation, target));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -726,4 +992,3 @@ pcl::EnsensoGrabber::processGrabbing ()
     }
   }
 }
-

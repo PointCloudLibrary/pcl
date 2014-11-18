@@ -44,8 +44,10 @@
 #include <pcl/common/time.h>
 #include <pcl/io/eigen.h>
 #include <Eigen/Geometry>
+#include <Eigen/StdVector>
 #include <pcl/io/boost.h>
 #include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp> // TODO: Remove when setExtrinsicCalibration is fixed
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
@@ -161,13 +163,76 @@ namespace pcl
       bool
       grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
 
+      /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso patterns
+       * @param[in] grid_spacing
+       * @return True if successful, false otherwise
+       * Configure the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
+       * Discard all previous patterns, configure @c grid_spacing
+       * @warning A device must be opened and must not be running.
+       * @note See the <a href="http://www.ensenso.de/manual/index.html?calibratehandeyeparameters.htm">Ensenso manual</a> for more
+       * information about the extrinsic calibration process.
+       * @note <a href="http://www.ensenso.de/manual/index.html?gridsize.htm">GridSize</a> item is protected in the NxTree, you can't modify it.
+       */
+      bool
+      initExtrinsicCalibration (const int grid_spacing) const;
+
+      /** @brief Clear calibration patterns buffer */
+      bool
+      clearCalibrationPatternBuffer () const;
+
+      /** @brief Captures a calibration pattern
+       * @return the number of calibration patterns stored, -1 on error
+       * @warning A device must be opened and must not be running.
+       * @note You should use @ref initExtrinsicCalibration before */
+      int
+      captureCalibrationPattern () const;
+
+      /** @brief Estimate the calibration pattern pose
+       * @param[out] pattern_pose the calibration pattern pose
+       * @return true if successful, false otherwise
+       * @warning A device must be opened and must not be running.
+       * @note At least one calibration pattern must have been captured before, use @ref captureCalibrationPattern before */
+      bool
+      estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const;
+
+      /** @brief Computes the calibration matrices using the collected patterns and the robot poses
+       * @param[in] robot_poses A list of robot poses, 1 for each pattern aquired (in the same order)
+       * @param[out] json The calibration data in JSON format
+       * @param[in] setup Moving or Fixed, please refer to the Ensenso documentation
+       * @param[in] target Please refer to the Ensenso documentation
+       * @param[in] guess_tf Guess transformation for the calibration matrix
+       * @param[in] pretty_format JSON formatting style
+       * @return True if sucessful, false otherwise
+       * @warning This can take up to 120 seconds
+       * @note Check the result with @ref getResultAsJson.
+       * If you want to permanently store the result, use @ref storeEEPROMExtrinsicCalibration. */
+      bool
+      computeCalibrationMatrix (const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > &robot_poses,
+                                std::string &json,
+                                const std::string setup = "Moving",  // Default values: Moving or Fixed
+                                const std::string target = "Hand",  // Default values: Hand or Workspace
+                                const Eigen::Affine3d &guess_tf = Eigen::Affine3d::Identity (),
+                                const bool pretty_format = true) const;
+
+      /** @brief Stores the calibration previously computed in the EEPROM
+       * @return True if successful, false otherwise
+       * @note The target has already been specified in @ref computeCalibrationMatrix */
+      bool
+      storeEEPROMExtrinsicCalibration () const;
+
+      /** @brief Clear the extrinsic calibration stored in the EEPROM
+       * @param[in] target The target to overwrite
+       * @return True if successful, false otherwise */
+      bool
+      clearEEPROMExtrinsicCalibration ();
+
       /** @brief Update Link node in NxLib tree
        * @param[in] target "Hand" or "Workspace" for example
        * @param[in] euler_angle
        * @param[in] rotation_axis
-       * @param[in] translation
+       * @param[in] translation Translation in meters
        * @return True if successful, false otherwise
-       * @warning Translation are in millimetres, rotation angles in radians!
+       * @warning Translation are in meters, rotation angles in radians! (stored in mm/radians in Ensenso tree)
        * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
        * This method overwrites the Link node but does not write to the EEPROM.
        *
@@ -175,12 +240,37 @@ namespace pcl
        * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
-       * Make sure it is the identity transformation if you want the original point cloud!*/
+       * Make sure it is the identity transformation if you want the original point cloud!
+       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
       bool
-      setExtrinsicCalibration (const std::string target = "Hand",
-                               const float euler_angle = 0.0,
-                               const Eigen::Vector3f rotation_axis = Eigen::Vector3f (0.0, 0.0, 0.0),
-                               const Eigen::Vector3f translation = Eigen::Vector3f (0.0, 0.0, 0.0));
+      setExtrinsicCalibration (const double euler_angle,
+                               Eigen::Vector3d &rotation_axis,
+                               const Eigen::Vector3d &translation,
+                               const std::string target = "Hand");
+
+      /** @brief Update Link node in NxLib tree with an identity matrix
+       * @param[in] target "Hand" or "Workspace" for example
+       * @return True if successful, false otherwise */
+      bool
+      setExtrinsicCalibration (const std::string target = "Hand");
+
+      /** @brief Update Link node in NxLib tree
+       * @param[in] transformation Transformation matrix
+       * @param[in] target "Hand" or "Workspace" for example
+       * @return True if successful, false otherwise
+       * @warning Translation are in meters, rotation angles in radians! (stored in mm/radians in Ensenso tree)
+       * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
+       * This method overwrites the Link node but does not write to the EEPROM.
+       *
+       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * section of the Ensenso manual.
+       *
+       * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
+       * Make sure it is the identity transformation if you want the original point cloud!
+       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
+      bool
+      setExtrinsicCalibration (const Eigen::Affine3d &transformation,
+                               const std::string target = "Hand");
 
       /** @brief Obtain the number of frames per second (FPS) */
       float
