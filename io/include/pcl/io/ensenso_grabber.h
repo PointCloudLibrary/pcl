@@ -56,7 +56,7 @@ namespace pcl
   struct PointXYZ;
   template <typename T> class PointCloud;
 
-  /** @brief Grabber for IDS-Imaging Enenso's devices
+  /** @brief Grabber for IDS-Imaging Ensenso's devices.\n
    * The <a href="http://www.ensenso.de/manual/">Ensenso SDK</a> allow to use multiple Ensenso devices to produce a single cloud.\n
    * This feature is not implemented here, it is up to the user to configure multiple Ensenso cameras.\n
    * @author Victor Lamoine (victor.lamoine@gmail.com)\n
@@ -80,22 +80,23 @@ namespace pcl
       ~EnsensoGrabber () throw ();
 
       /** @brief Searches for available devices
-       * @returns the number of Ensenso devices connected */
+       * @returns The number of Ensenso devices connected */
       int
       enumDevices () const;
 
       /** @brief Opens an Ensenso device
-       * @param[in] device the device ID to open
-       * @return true if successful, false otherwise */
+       * @param[in] device The device ID to open
+       * @return True if successful, false otherwise */
       bool
       openDevice (const int device = 0);
 
-      /** @brief Closes the Ensenso device */
+      /** @brief Closes the Ensenso device
+       * @return True if successful, false otherwise */
       bool
       closeDevice ();
 
-      /** @brief Start the data acquisition 
-        * @note Opens device "0" if no device is open */
+      /** @brief Start the point cloud acquisition
+       * @note Opens device "0" if no device is open */
       void
       start ();
 
@@ -103,23 +104,24 @@ namespace pcl
       void
       stop ();
 
-      /** @brief Check if the data acquisition is still running */
+      /** @brief Check if the data acquisition is still running
+       * @return True if running, false otherwise */
       bool
       isRunning () const;
 
-      /** @brief Check if a TCP port is opened */
+      /** @brief Check if a TCP port is opened
+       * @return True if open, false otherwise */
       bool
       isTcpPortOpen () const;
 
       /** @brief Get class name
-       * @returns a string containing the class name
-       */
+       * @returns A string containing the class name */
       std::string
       getName () const;
 
       /** @brief Configure Ensenso capture settings
        * @param[in] auto_exposure If set to yes, the exposure parameter will be ignored
-       * @param[in] auto_gain if set yo yes, the gain parameter will be ignored
+       * @param[in] auto_gain If set yo yes, the gain parameter will be ignored
        * @param[in] bining Pixel bining: 1, 2 or 4
        * @param[in] exposure In milliseconds, from 0.01 to 20 ms
        * @param[in] front_light Infrared front light (usefull for calibration)
@@ -127,7 +129,7 @@ namespace pcl
        * @param[in] gain_boost
        * @param[in] hardware_gamma
        * @param[in] hdr High Dynamic Range (check compatibility with other options in Ensenso manual)
-       * @param[in] pixel_clock in MegaHertz, from 5 to 85
+       * @param[in] pixel_clock In MegaHertz, from 5 to 85
        * @param[in] projector Use the central infrared projector or not
        * @param[in] target_brightness Between 40 and 210
        * @param[in] trigger_mode
@@ -161,15 +163,16 @@ namespace pcl
        * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
        * This method overwrites the Link node but does not write to the EEPROM.
        *
-       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a> section of the Ensenso manual.
+       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
        * Make sure it is the identity transformation if you want the original point cloud!*/
       bool
       setExtrinsicCalibration (const std::string target = "Hand",
-                              const float euler_angle = 0.0,
-                              const Eigen::Vector3f rotation_axis = Eigen::Vector3f (0.0, 0.0, 0.0),
-                              const Eigen::Vector3f translation = Eigen::Vector3f (0.0, 0.0, 0.0));
+                               const float euler_angle = 0.0,
+                               const Eigen::Vector3f rotation_axis = Eigen::Vector3f (0.0, 0.0, 0.0),
+                               const Eigen::Vector3f translation = Eigen::Vector3f (0.0, 0.0, 0.0));
 
       /** @brief Obtain the number of frames per second (FPS) */
       float
@@ -184,14 +187,13 @@ namespace pcl
       /** @brief Close TCP port program
        * @return True if successful, false otherwise
        * @warning If you do not close the TCP port the program might exit with the port still open, if it is the case
-       * use @code ps -ef@endcode and @code kill PID @endcode to kill the application and effectively close the port. */
+       * use @code ps -ef @endcode and @code kill PID @endcode to kill the application and effectively close the port. */
       bool
       closeTcpPort (void);
 
       /** @brief Returns the full NxLib tree as a JSON string
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the NxLib tree in JSON format
-       */
+       * @return A string containing the NxLib tree in JSON format */
       std::string
       getTreeAsJson (const bool pretty_format = true) const;
 
@@ -268,8 +270,8 @@ namespace pcl
                                        const bool pretty_format = true) const;
 
       /** @brief Reference to the NxLib tree root
-       * @warning You must handle NxLib exceptions manually when playing with root!
-       * See void ensensoExceptionHandling in ensenso_grabber.cpp */
+       * @warning You must handle NxLib exceptions manually when playing with @ref root_ !
+       * See @ref ensensoExceptionHandling in ensenso_grabber.cpp */
       boost::shared_ptr<const NxLibItem> root_;
 
     protected:
@@ -297,7 +299,7 @@ namespace pcl
       /** @brief Mutual exclusion for FPS computation */
       mutable boost::mutex fps_mutex_;
 
-      /** @brief Continously asks for data from the device and publishes it if available. */
+      /** @brief Continously asks for point clouds data from the device and publishes it if available. */
       void
       processGrabbing ();
   };
