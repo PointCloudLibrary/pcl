@@ -281,12 +281,13 @@ namespace pcl
        * See @ref ensensoExceptionHandling in ensenso_grabber.cpp */
       boost::shared_ptr<const NxLibItem> root_;
 
+      /** @brief Reference to the camera tree
+       *  @warning You must handle NxLib exceptions manually when playing with @ref camera_ ! */
+      NxLibItem camera_;
+
     protected:
       /** @brief Grabber thread */
       boost::thread grabber_thread_;
-
-      /** @brief Reference to the camera tree */
-      NxLibItem camera_;
 
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;
