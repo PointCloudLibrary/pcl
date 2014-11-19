@@ -23,7 +23,10 @@ endif(${CMAKE_VERSION} VERSION_LESS 2.8.5)
 set(Boost_NO_BOOST_CMAKE ON)
 
 # Optional boost modules
-find_package(Boost 1.40.0 QUIET COMPONENTS serialization mpi)
+find_package(Boost 1.40.0 QUIET COMPONENTS serialization mpi program_options)
+if(Boost_MPI_FOUND)
+  set(BOOST_MPI_FOUND TRUE)
+endif(Boost_MPI_FOUND)
 if(Boost_SERIALIZATION_FOUND)
   set(BOOST_SERIALIZATION_FOUND TRUE)
 endif(Boost_SERIALIZATION_FOUND)

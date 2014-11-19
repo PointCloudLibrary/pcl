@@ -345,41 +345,6 @@ namespace pcl
     };
 
     template<>
-    struct IntensityFieldAccessor<pcl::PointXYZLNormal>
-    {
-      inline float
-      operator () (const pcl::PointXYZLNormal &p) const
-      {
-        return (static_cast<float>(p.label));
-      }
-
-      inline void
-      get (const pcl::PointXYZLNormal &p, float &intensity) const
-      {
-        intensity = static_cast<float>(p.label);
-      }
-
-      inline void
-      set (pcl::PointXYZLNormal &p, float intensity) const
-      {
-        p.label = static_cast<uint32_t>(intensity);
-        
-      }
-
-      inline void
-      demean (pcl::PointXYZLNormal& p, float value) const
-      {
-        p.label -= static_cast<uint32_t>(value);
-      }
-
-      inline void
-      add (pcl::PointXYZLNormal& p, float value) const
-      {
-        p.label += static_cast<uint32_t>(value);
-      }
-    };
-
-    template<>
     struct IntensityFieldAccessor<pcl::InterestPoint>
     {
       inline float

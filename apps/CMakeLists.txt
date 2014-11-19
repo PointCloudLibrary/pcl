@@ -211,6 +211,16 @@ if(build)
     target_link_libraries (pcl_grabcut_2d pcl_common pcl_io pcl_segmentation pcl_search ${GLUT_LIBRARIES} ${OPENGL_LIBRARIES})
   endif(OPENGL_FOUND AND GLUT_FOUND)
 
+  if (OPENGM_FOUND AND NLOPT_FOUND)
+
+    include_directories(${OPENGM_INCLUDE_DIR})
+    include_directories(${NLOPT_INCLUDE_DIRS})
+
+    PCL_ADD_EXECUTABLE(pcl_dem_ground_segmentation_example ${SUBSYS_NAME} src/dem_ground_segmentation_example.cpp include/pcl/${SUBSYS_NAME}/dem_ground_segmentation.h ${incs} src/dem_ground_segmentation.cpp)
+    target_link_libraries(pcl_dem_ground_segmentation_example pcl_common pcl_io pcl_stereo pcl_apps ${Boost_FILESYSTEM_LIBRARY} ${Boost_PROGRAM_OPTIONS_LIBRARY} ${NLOPT_LIBRARIES})
+
+  endif() # OPENGM_FOUND + NLOPT_FOUND
+
   collect_subproject_directory_names("${CMAKE_CURRENT_SOURCE_DIR}" "CMakeLists.txt" PCL_APPS_MODULES_NAMES PCL_APPS_MODULES_DIRS ${SUBSYS_NAME})
   set(PCL_APPS_MODULES_NAMES_UNSORTED ${PCL_APPS_MODULES_NAMES})
   topological_sort(PCL_APPS_MODULES_NAMES PCL_APPS_ _DEPENDS)

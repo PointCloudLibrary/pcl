@@ -408,6 +408,18 @@ if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
 endif(WITH_OPENGL)
 
+# NLopt
+option(WITH_NLOPT "Use NLopt library for nonlinear optimization" FALSE)
+if(WITH_NLOPT)
+  find_package(Nlopt)
+endif(WITH_NLOPT)
+
+# OpenGM
+option(WITH_OPENGM "Use OpenGM library for discrete factor graph models and distributive operations on these models." FALSE)
+if(WITH_OPENGM)
+  find_package(OpenGM)
+endif(WITH_OPENGM)
+
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
 set(pcl_config_h "${CMAKE_CURRENT_BINARY_DIR}/include/pcl/pcl_config.h")
