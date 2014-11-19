@@ -41,8 +41,16 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QMouseEvent>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <qgl.h>
+
+#include <pcl/pcl_config.h>
+
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/glu.h>
+#else
+# include <GL/glu.h>
+#endif
+
 #include <pcl/filters/filter.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/apps/point_cloud_editor/cloudEditorWidget.h>
@@ -556,10 +564,10 @@ CloudEditorWidget::initFileLoadMap()
 bool
 CloudEditorWidget::isColored (const std::string &fileName) const
 {
-  sensor_msgs::PointCloud2 cloud2;
+  pcl::PCLPointCloud2 cloud2;
   pcl::PCDReader reader;
   reader.readHeader(fileName, cloud2);
-  std::vector< sensor_msgs::PointField > fs = cloud2.fields;
+  std::vector< pcl::PCLPointField > fs = cloud2.fields;
   for(unsigned int i = 0; i < fs.size(); ++i)
   {
     std::string name(fs[i].name);

@@ -49,7 +49,7 @@ The code
 --------
 
 First of all you will need the point cloud for this tutorial.
-`This <http://svn.pointclouds.org/data/tutorials/min_cut_segmentation_tutorial.pcd>`_ is a good one for the purposes of the algorithm.
+`This <https://raw.github.com/PointCloudLibrary/data/master/tutorials/min_cut_segmentation_tutorial.pcd>`_ is a good one for the purposes of the algorithm.
 Next what you need to do is to create a file ``min_cut_segmentation.cpp`` in any editor you prefer and copy the following code inside of it:
 
 .. literalinclude:: sources/min_cut_segmentation/min_cut_segmentation.cpp

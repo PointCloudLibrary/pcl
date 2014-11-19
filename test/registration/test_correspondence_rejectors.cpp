@@ -112,10 +112,10 @@ TEST (CorrespondenceRejectors, CorrespondenceRejectionPoly)
   std::srand (1e6);
   
   // Create a rejection object
-  pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ> reject;
+  pcl::registration::CorrespondenceRejectorPoly<pcl::PointXYZ, pcl::PointXYZ> reject;
+  reject.setIterations (10000);
   reject.setCardinality (3);
   reject.setSimilarityThreshold (0.75f);
-  reject.setIterations (10000);
   reject.setInputSource (cloud.makeShared ());
   reject.setInputTarget (target.makeShared ());
   

@@ -8,7 +8,7 @@ In this tutorial we learn how to use a RandomSampleConsensus with a plane model 
 Theoretical Primer
 ------------------
 
-The abbreviation of "RANdom SAmple Consensus" is RANSAC, and it is an iterative mthod that is used to estimate parameters of a meathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  The inliers distribution can be explained by a set of parameters and a model.  The outlying data does not fit the model.  Another necessary assumption is that there is a procedure which can estimate the parameters of whatever model optimally explains this data.
+The abbreviation of "RANdom SAmple Consensus" is RANSAC, and it is an iterative method that is used to estimate parameters of a meathematical model from a set of data containing outliers.  This algorithm was published by Fischler and Bolles in 1981.  The RANSAC algorithm assumes that all of the data we are looking at is comprised of both inliers and outliers.  Inliers can be explained by a model with a particular set of parameter values, while outliers do not fit that model in any circumstance.  Another necessary assumption is that a procedure which can optimally estimate the parameters of the chosen model from the data is available.
 
 From [Wikipedia]_:
 
@@ -64,7 +64,7 @@ Next we create a vector of ints that can store the locations of our inlier point
    :language: cpp
    :lines: 65-85
 
-This last bit of code copys all of the points that fit our model to another cloud and then display either that or our original cloud in the viewer.
+This last bit of code copies all of the points that fit our model to another cloud and then display either that or our original cloud in the viewer.
 
 .. literalinclude:: sources/random_sample_consensus/random_sample_consensus.cpp
    :language: cpp
@@ -81,7 +81,7 @@ Add the following lines to your CMakeLists.txt file:
    :language: cmake
    :linenos:
 
-After you have made the executable, you can run it. Simply do::
+After you have built the executable, you can run it. Simply do::
 
   $ ./random_sample_consensus
 

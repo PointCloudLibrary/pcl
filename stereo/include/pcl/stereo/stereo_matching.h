@@ -37,7 +37,7 @@
 #ifndef PCL_STEREO_H_
 #define PCL_STEREO_H_
 
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_types.h>
 
 namespace pcl
@@ -192,7 +192,7 @@ namespace pcl
         * \param[in] baseline distance between the two cameras (calibration parameter); the measure unit used to 
         * specify this parameter will be the same as the 3D points in the output point cloud
         * \param[out] cloud output 3D point cloud; it is organized and non-dense, with NaNs where 3D points are invalid
-        * \param[in] input 3D cloud (same size of the output cloud) used to associate to each 3D point of the
+        * \param[in] texture 3D cloud (same size of the output cloud) used to associate to each 3D point of the
         * output cloud a color triplet
         */
       virtual bool 
@@ -507,8 +507,6 @@ namespace pcl
       //Parameters for 2-pass SO optimization
       int smoothness_strong_;
       int smoothness_weak_;
-
-      double lut_[256];
   };
 }
 

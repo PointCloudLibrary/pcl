@@ -45,6 +45,13 @@
 
 #include <QtGui>
 #include <QMainWindow>
+#include <QActionGroup>
+#include <QSpinBox>
+#include <QSlider>
+#include <QMessageBox>
+#include <QMenu>
+#include <QMenuBar>
+#include <QToolBar>
 #include <pcl/apps/point_cloud_editor/localTypes.h>
 
 // Forward declaration to prevent circular inclusion

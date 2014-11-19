@@ -33,11 +33,11 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/visualization/vtk/pcl_image_canvas_source_2d.h>
+#include <vtkImageData.h>
+#include <vtkObjectFactory.h>
 
 namespace pcl
 {
@@ -47,3 +47,12 @@ namespace pcl
     vtkStandardNewMacro (PCLImageCanvasSource2D)
   }
 }
+
+//////////////////////////////////////////////////////////////////////////////
+void 
+pcl::visualization::PCLImageCanvasSource2D::DrawImage (vtkImageData* image)
+{
+  this->ImageData->DeepCopy (image);
+  this->Modified ();
+}
+

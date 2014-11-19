@@ -42,7 +42,7 @@ As mentioned above, the TSDF cloud is a section of the TSDF volume grid; which i
 
 *Running pcl_kinfu_largeScale*
 
-Finally, we are ready to start KinFu Large Scale. After building the trunk, we will call the application::
+Finally, we are ready to start KinFu Large Scale. After building the git master, we will call the application::
   
   $ ./bin/pcl_kinfu_largeScale -r -et
   
@@ -113,13 +113,13 @@ The viewer below displays a sample of the output obtained after the entire pipel
 
 .. raw:: html
 
-    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/data/tutorials/kinfu_large_scale/Tutorial_Cloud_Couch_bin_compressed.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=https://raw.github.com/PointCloudLibrary/data/master/tutorials/kinfu_large_scale/Tutorial_Cloud_Couch_bin_compressed.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
 
 To further demonstrate the capabilities of KinFu Large Scale, we made another example with a room.
 
 .. raw:: html
 
-    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=http://svn.pointclouds.org/data/tutorials/kinfu_large_scale/using_kinfu_large_scale_output.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
+    <iframe src="http://pointclouds.org/assets/viewer/pcl_viewer.html?load=https://raw.github.com/PointCloudLibrary/data/master/tutorials/kinfu_large_scale/using_kinfu_large_scale_output.pcd&scale=0.004&psize=1" align="center" width="600" height="400" marginwidth="0" marginheight="0" frameborder='no' allowfullscreen mozallowfullscreen webkitallowfullscreen style="max-width: 100%;"></iframe>
 
 
 General Recommendations
@@ -148,4 +148,4 @@ There are three executables related to this tutorial:
   
 Conclusion
 ----------
-In this tutorial we have shown the pipeline from scanning to final texturing using KinFu Large Scale. The - *experimental* - code is available in PCL trunk. 
+In this tutorial we have shown the pipeline from scanning to final texturing using KinFu Large Scale. The - *experimental* - code is available in the master branch of PCL.

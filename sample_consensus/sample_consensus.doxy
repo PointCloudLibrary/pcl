@@ -5,7 +5,7 @@
 
   The <b>pcl_sample_consensus</b> library holds SAmple Consensus (SAC) methods like 
   <a href="http://en.wikipedia.org/wiki/RANSAC">RANSAC</a> and models like planes and cylinders.  These can
-  combined freely in order to detect specific models and their paramters in point clouds.
+  combined freely in order to detect specific models and their parameters in point clouds.
 
   Some of the models implemented in this library include: lines, planes, cylinders, and spheres.  Plane fitting
   is often applied to the task of detecting common indoor surfaces, such as walls, floors, and table tops.
@@ -14,22 +14,22 @@
 
   \image html http://www.pointclouds.org/assets/images/contents/documentation/sample_consensus_planes_cylinders.png
 
-  As of PCL 1.0, the following models are supported:
+  The following models are supported:
   <ul>
-    <li><a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a> - used to determine plane models. The <b>four</b> coefficients of the plane are its <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian Normal form</a>: [<b>normal_x normal_y normal_z d</b>]</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_line.html">SACMODEL_LINE</a> - used to determine line models. The <b>six</b> coefficients of the line are given by a point on the line and the direction of the line as: [<b>point_on_line.x point_on_line.y point_on_line.z line_direction.x line_direction.y line_direction.z</b>]</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_circle2_d.html">SACMODEL_CIRCLE2D</a> - used to determine 2D circles in a plane. The circle's <b>three</b> coefficients are given by its center and radius as: [<b>center.x center.y radius</b>]</li>
-    <li>SACMODEL_CIRCLE3D - not implemented yet</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_sphere.html">SACMODEL_SPHERE</a> - used to determine sphere models. The <b>four</b> coefficients of the sphere are given by its 3D center and radius as: [<b>center.x center.y center.z radius</b>]</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_cylinder.html">SACMODEL_CYLINDER</a> - used to determine cylinder models. The <b>seven</b> coefficients of the cylinder are given by a point on its axis, the axis direction, and a radius, as: [<b>point_on_axis.x point_on_axis.y point_on_axis.z axis_direction.x axis_direction.y axis_direction.z radius</b>]</li>
-    <li>SACMODEL_CONE - not implemented yet</li>
+    <li>\link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink - used to determine plane models. The <b>four</b> coefficients of the plane are its <a href="http://mathworld.wolfram.com/HessianNormalForm.html">Hessian Normal form</a>: [<b>normal_x normal_y normal_z d</b>]</li>
+    <li>\link pcl::SampleConsensusModelLine SACMODEL_LINE \endlink - used to determine line models. The <b>six</b> coefficients of the line are given by a point on the line and the direction of the line as: [<b>point_on_line.x point_on_line.y point_on_line.z line_direction.x line_direction.y line_direction.z</b>]</li>
+    <li>\link pcl::SampleConsensusModelCircle2D SACMODEL_CIRCLE2D \endlink - used to determine 2D circles in a plane. The circle's <b>three</b> coefficients are given by its center and radius as: [<b>center.x center.y radius</b>]</li>
+    <li>\link pcl::SampleConsensusModelCircle3D SACMODEL_CIRCLE3D \endlink - used to determine 3D circles in a plane. The circle's <b>seven</b> coefficients are given by its center, radius and normal as: [<b>center.x, center.y, center.z, radius, normal.x, normal.y, normal.z</b>]</li>
+    <li>\link pcl::SampleConsensusModelSphere SACMODEL_SPHERE \endlink - used to determine sphere models. The <b>four</b> coefficients of the sphere are given by its 3D center and radius as: [<b>center.x center.y center.z radius</b>]</li>
+    <li>\link pcl::SampleConsensusModelCylinder SACMODEL_CYLINDER \endlink - used to determine cylinder models. The <b>seven</b> coefficients of the cylinder are given by a point on its axis, the axis direction, and a radius, as: [<b>point_on_axis.x point_on_axis.y point_on_axis.z axis_direction.x axis_direction.y axis_direction.z radius</b>]</li>
+    <li>\link pcl::SampleConsensusModelCone SACMODEL_CONE \endlink - used to determine cone models. The <b>seven</b> coefficients of the cone are given by a point of its apex, the axis direction and the opening angle, as: [<b>apex.x, apex.y, apex.z, axis_direction.x, axis_direction.y, axis_direction.z, opening_angle</b>]</li>
     <li>SACMODEL_TORUS - not implemented yet</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_parallel_line.html">SACMODEL_PARALLEL_LINE</a> - a model for determining a line <b>parallel</b> with a given axis, within a maximum specified angular deviation. The line coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_line.html">SACMODEL_LINE</a>.</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_perpendicular_plane.html">SACMODEL_PERPENDICULAR_PLANE</a> - a model for determining a plane <b>perpendicular</b> to an user-specified axis, within a maximum specified angular deviation. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
+    <li>\link pcl::SampleConsensusModelParallelLine SACMODEL_PARALLEL_LINE \endlink - a model for determining a line <b>parallel</b> with a given axis, within a maximum specified angular deviation. The line coefficients are similar to \link pcl::SampleConsensusModelLine SACMODEL_LINE \endlink.</li>
+    <li>\link pcl::SampleConsensusModelPerpendicularPlane SACMODEL_PERPENDICULAR_PLANE \endlink - a model for determining a plane <b>perpendicular</b> to an user-specified axis, within a maximum specified angular deviation. The plane coefficients are similar to \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
     <li>SACMODEL_PARALLEL_LINES - not implemented yet</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_normal_plane.html">SACMODEL_NORMAL_PLANE</a> - a model for determining plane models using an additional constraint: the surface normals at each inlier point has to be parallel to the surface normal of the output plane, within a maximum specified angular deviation. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_parallel_plane.html">SACMODEL_PARALLEL_PLANE</a> - a model for determining a plane <b>parallel</b> to an user-specified axis, within a maximim specified angular deviation. <a href="../classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
-    <li><a href="classpcl_1_1_sample_consensus_model_normal_parallel_plane.html">SACMODEL_NORMAL_PARALLEL_PLANE</a> defines a model for 3D plane segmentation using additional surface normal constraints. The plane must lie <b>parallel</b> to a user-specified axis. SACMODEL_NORMAL_PARALLEL_PLANE therefore is equivallent to SACMODEL_NORMAL_PLANE + SACMODEL_PARALLEL_PLANE. The plane coefficients are similar to <a href="classpcl_1_1_sample_consensus_model_plane.html">SACMODEL_PLANE</a>.</li>
+    <li>\link pcl::SampleConsensusModelNormalPlane SACMODEL_NORMAL_PLANE \endlink - a model for determining plane models using an additional constraint: the surface normals at each inlier point has to be parallel to the surface normal of the output plane, within a maximum specified angular deviation. The plane coefficients are similar to \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
+    <li>\link pcl::SampleConsensusModelParallelPlane SACMODEL_PARALLEL_PLANE \endlink - a model for determining a plane <b>parallel</b> to an user-specified axis, within a maximum specified angular deviation. \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
+    <li>\link pcl::SampleConsensusModelNormalParallelPlane SACMODEL_NORMAL_PARALLEL_PLANE \endlink defines a model for 3D plane segmentation using additional surface normal constraints. The plane must lie <b>parallel</b> to a user-specified axis. SACMODEL_NORMAL_PARALLEL_PLANE therefore is equivalent to SACMODEL_NORMAL_PLANE + SACMODEL_PARALLEL_PLANE. The plane coefficients are similar to \link pcl::SampleConsensusModelPlane SACMODEL_PLANE \endlink.</li>
   </ul>
 
   The following list describes the robust sample consensus estimators implemented:

@@ -45,9 +45,9 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(SampleConsensusModelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(SampleConsensusModelPerpendicularPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
-  PCL_INSTANTIATE(SampleConsensusModelParallelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(SampleConsensusModelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(SampleConsensusModelPerpendicularPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(SampleConsensusModelParallelPlane, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(SampleConsensusModelPlane, PCL_XYZ_POINT_TYPES)
   PCL_INSTANTIATE(SampleConsensusModelPerpendicularPlane, PCL_XYZ_POINT_TYPES)

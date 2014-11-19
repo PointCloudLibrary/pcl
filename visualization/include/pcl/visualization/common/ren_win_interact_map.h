@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -31,14 +34,21 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
+
 #ifndef PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
 #define PCL_PCL_VISUALIZER_REN_WIN_INTERACT_MAP_H_
 
-#include <pcl/visualization/vtk.h>
 #include <map>
+#include <string>
+
+template <typename T> class vtkSmartPointer;
+class vtkXYPlotActor;
+class vtkRenderer;
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
+class vtkInteractorStyleTrackballCamera;
+class PCLVisualizerInteractor;
 
 namespace pcl
 {
@@ -48,12 +58,7 @@ namespace pcl
     {
       public:
 
-        RenWinInteract () : xy_plot_ (vtkSmartPointer<vtkXYPlotActor>::New ()), 
-                            ren_ (vtkSmartPointer<vtkRenderer>::New ()), 
-                            win_ (vtkSmartPointer<vtkRenderWindow>::New ()),
-                            interactor_ (),
-                            style_ ()
-        {}
+        RenWinInteract ();
 
         /** \brief The XY plot actor holding the actual data. */
         vtkSmartPointer<vtkXYPlotActor> xy_plot_;

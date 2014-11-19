@@ -116,13 +116,13 @@ Estimating PFH features
 -----------------------
 
 Point Feature Histograms are implemented in PCL as part of the `pcl_features
-<http://docs.pointclouds.org/trunk/group__features.html>`_ library. 
+<http://docs.pointclouds.org/trunk/a02944.html>`_ library. 
 
 The default PFH implementation uses 5 binning subdivisions (e.g., each of the
 four feature values will use this many bins from its value interval), and does
 not include the distances (as explained above -- although the
 **computePairFeatures** method can be called by the user to obtain the
-distances too, if desired) which results in a 125-byte array (:math:`3^5`) of
+distances too, if desired) which results in a 125-byte array (:math:`5^3`) of
 float values. These are stored in a **pcl::PFHSignature125** point type.
 
 The following code snippet will estimate a set of PFH features for all the
@@ -193,4 +193,23 @@ the input point cloud that contains the normals (could be equal to cloud if
 neighbors from *cloud*, *nr_split* is the number of subdivisions to use for the
 binning process for each feature interval, and *pfh_histogram* is the output
 resultant histogram as an array of float values.
+
+.. note::
+  
+  For efficiency reasons, the **compute** method in **PFHEstimation** does not check if the normals contains NaN or infinite values.
+  Passing such values to **compute()** will result in undefined output.
+  It is advisable to check the normals, at least during the design of the processing chain or when setting the parameters.
+  This can be done by inserting the following code before the call to **compute()**:
+
+  .. code-block:: cpp
+
+     for (int i = 0; i < normals->points.size(); i++)
+     {
+       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       {
+         PCL_WARN("normals[%d] is not finite\n", i);
+       }
+     }
+
+  In production code, preprocessing steps and parameters should be set so that normals are finite or raise an error.
 

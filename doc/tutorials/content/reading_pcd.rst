@@ -33,15 +33,15 @@ creates a PointCloud<PointXYZ> boost shared pointer and initializes it.
 loads the PointCloud data from disk (we assume that test_pcd.pcd has already
 been created from the previous tutorial) into the binary blob.
 
-Alternatively, you can read a PointCloud2 blob (available only in PCL 1.x). Due
+Alternatively, you can read a PCLPointCloud2 blob (available only in PCL 1.x). Due
 to the dynamic nature of point clouds, we prefer to read them as binary blobs,
 and then convert to the actual representation that we want to use.
 
 .. code-block:: cpp
 
-   sensor_msgs::PointCloud2 cloud_blob;
+   pcl::PCLPointCloud2 cloud_blob;
    pcl::io::loadPCDFile ("test_pcd.pcd", cloud_blob);
-   pcl::fromROSMsg (cloud_blob, *cloud); //* convert from sensor_msgs/PointCloud2 to pcl::PointCloud<T>
+   pcl::fromPCLPointCloud2 (cloud_blob, *cloud); //* convert from pcl/PCLPointCloud2 to pcl::PointCloud<T>
 
 reads and converts the binary blob into the templated PointCloud format, here
 using pcl::PointXYZ as the underlying point type.

@@ -127,7 +127,8 @@ namespace pcl
       }
 
       /** \brief Set the tolerance in meters for difference in perpendicular distance (d component of plane equation) to the plane between neighboring points, to be considered part of the same plane.
-        * \param[in] distance_threshold the tolerance in meters
+        * \param[in] distance_threshold the tolerance in meters 
+        * \param depth_dependent
         */
       inline void
       setDistanceThreshold (float distance_threshold, bool depth_dependent)

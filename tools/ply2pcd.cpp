@@ -50,11 +50,11 @@ using namespace pcl::console;
 void
 printHelp (int, char **argv)
 {
-  print_error ("Syntax is: %s input.ply output.pcd\n", argv[0]);
+  print_error ("Syntax is: %s [-format 0|1] input.ply output.pcd\n", argv[0]);
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -70,7 +70,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &cloud, bool format)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &cloud, bool format)
 {
   TicToc tt;
   tt.tic ();
@@ -110,7 +110,7 @@ main (int argc, char** argv)
   print_info ("PCD output format: "); print_value ("%s\n", (format ? "binary" : "ascii"));
 
   // Load the first file
-  sensor_msgs::PointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   if (!loadCloud (argv[ply_file_indices[0]], cloud)) 
     return (-1);
 

@@ -42,6 +42,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <pcl/pcl_exports.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
@@ -58,8 +59,6 @@
 #include <vtkOpenGLContextDevice2D.h>
 #include <vtkPoints2D.h>
 #include "vtkCommand.h"
-
-#include <vtkRegressionTestImage.h>
 
 namespace pcl
 {
@@ -197,7 +196,7 @@ namespace pcl
      * \author Kripasindhu Sarkar
      * \ingroup visualization
      */
-    class PCLPainter2D: public vtkContextItem
+    class PCL_EXPORTS PCLPainter2D: public vtkContextItem
     {
     public:
 
@@ -206,10 +205,10 @@ namespace pcl
       /** \brief Constructor of the class
        */
       PCLPainter2D (char const * name = "PCLPainter2D");
-      vtkTypeRevisionMacro (PCLPainter2D, vtkContextItem);
+      vtkTypeMacro (PCLPainter2D, vtkContextItem);
 
       /** \brief Paint event for the chart, called whenever the chart needs to be drawn
-       *  \param[in] name Name of the window
+       *  \param[in] painter Name of the window
        */
       virtual bool 
       Paint (vtkContext2D *painter);
@@ -326,8 +325,7 @@ namespace pcl
       scalePen(double x, double y);
       
       /** \brief Create a translation matrix and concatenate it with the current transformation.
-       * \param[in] x translation along X axis
-       * \param[in] y translation along Y axis
+       * \param[in] matrix the transformation matrix
        */
       void 
       setTransform(vtkMatrix3x3 *matrix);

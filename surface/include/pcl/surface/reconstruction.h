@@ -43,7 +43,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/search/pcl_search.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/surface/boost.h>
 
 namespace pcl
@@ -209,7 +209,7 @@ namespace pcl
         * \param[out] output the resultant reconstructed surface model
         *
         * \note This method copies the input point cloud data from
-        * PointCloud<T> to PointCloud2, and is implemented here for backwards
+        * PointCloud<T> to PCLPointCloud2, and is implemented here for backwards
         * compatibility only!
         *
         */

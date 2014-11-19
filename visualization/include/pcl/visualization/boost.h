@@ -44,6 +44,8 @@
 #  pragma GCC system_header 
 #endif
 
+//https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifndef Q_MOC_RUN
 #include <boost/function.hpp>
 #include <boost/shared_array.hpp>
 #define BOOST_PARAMETER_MAX_ARITY 7
@@ -58,7 +60,10 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/foreach.hpp>
+#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#endif
 #include <boost/filesystem.hpp>
+#endif
 
 #endif    // PCL_VISUALIZATION_BOOST_H_

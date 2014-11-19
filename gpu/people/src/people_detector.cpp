@@ -100,6 +100,11 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
   cloud_host_.points.resize(cols * rows);
   cloud_host_.is_dense = false;
 
+  cloud_host_color_.width = cols;
+  cloud_host_color_.height = rows;
+  cloud_host_color_.resize(cols * rows);
+  cloud_host_color_.is_dense = false;
+
   hue_host_.width  = cols;
   hue_host_.height = rows;
   hue_host_.points.resize(cols * rows);
@@ -486,7 +491,9 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
 
   // Process all points in the indices vector
   int total = static_cast<int> (indices.size ());
+#ifdef _OPENMP
 #pragma omp parallel for
+#endif
   for (int k = 0; k < total; ++k)
   {
     int i = indices[k];
@@ -495,7 +502,10 @@ pcl::gpu::people::PeopleDetector::shs5(const pcl::PointCloud<PointT> &cloud, con
 
     mask[i] = 255;
 
-    int id = omp_get_thread_num();
+    int id = 0;
+#ifdef _OPENMP
+    id = omp_get_thread_num();
+#endif
     std::vector<int>& seed_queue = storage[id];
     seed_queue.clear();
     seed_queue.reserve(cloud.size());

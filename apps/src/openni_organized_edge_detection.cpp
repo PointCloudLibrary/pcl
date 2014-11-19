@@ -66,7 +66,7 @@ class OpenNIOrganizedEdgeDetection
       viewer->setSize (640, 480);
       viewer->addPointCloud<PointT> (cloud, "cloud");
       viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, "cloud");
-      viewer->addCoordinateSystem (0.2f);
+      viewer->addCoordinateSystem (0.2f, "global");
       viewer->initCameraParameters ();
       viewer->registerKeyboardCallback (&OpenNIOrganizedEdgeDetection::keyboard_callback, *this);
       viewer->resetCameraViewpoint ("cloud");

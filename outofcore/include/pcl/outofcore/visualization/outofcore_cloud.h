@@ -1,6 +1,8 @@
 #ifndef PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
 #define PCL_OUTOFCORE_OUTOFCORE_CLOUD_H_
 
+#include <stdint.h>
+
 // PCL
 //#include <pcl/common/time.h>
 //#include <pcl/point_cloud.h>
@@ -153,12 +155,12 @@ class OutofcoreCloud : public Object
       {
         displayDepth = 0;
       }
-      else if (displayDepth > octree_->getDepth ())
+      else if (static_cast<unsigned int> (displayDepth) > octree_->getDepth ())
       {
         displayDepth = octree_->getDepth ();
       }
 
-      if (display_depth_ != displayDepth)
+      if (display_depth_ != static_cast<uint64_t> (displayDepth))
       {
         display_depth_ = displayDepth;
         updateVoxelData ();

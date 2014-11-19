@@ -42,9 +42,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  // TODO: the PointCloud2 implementation is not yet using the keep_organized_ system -FF
+  // TODO: the PCLPointCloud2 implementation is not yet using the keep_organized_ system -FF
   if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;
@@ -109,7 +109,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &indices)
+pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
 {
   if (negative_)
   {
@@ -151,7 +151,7 @@ pcl::ExtractIndices<sensor_msgs::PointCloud2>::applyFilter (std::vector<int> &in
 #include <pcl/point_types.h>
 
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointXYZRGBNormal))
+  PCL_INSTANTIATE(ExtractIndices, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::Normal)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(ExtractIndices, PCL_POINT_TYPES)
 #endif

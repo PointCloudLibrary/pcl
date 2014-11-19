@@ -65,9 +65,8 @@ is needed only to build PCL tests. We do not provide GTest installers. **optiona
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
-   build system (http://www.cmake.org/), at least version **2.8.7**. A Subversion client 
-   for Windows, i.e. TortoiseSVN (http://tortoisesvn.tigris.org/), is also required 
-   to download the PCL source code.
+   build system (http://www.cmake.org/), at least version **2.8.7**. A Git client
+   for Windows is also required to download the PCL source code.
 
 Downloading PCL source code
 ---------------------------
@@ -86,37 +85,9 @@ The invocation to download the source code is thus, using a command line:
   cd wherever/you/want/to/put/the/repo/
   git clone https://github.com/PointCloudLibrary/pcl.git
 
-You could also use Github for Windows( http://windows.github.com/ ), but that is potentially more
+You could also use Github for Windows (https://windows.github.com/), but that is potentially more
 troublesome than setting up git on windows.
 
-Alternatively you could use the old subversion repository:
-
-For this,
-you will need Tortoise SVN to download sources from PCL svn server.
-
-Subversion is a version control system similar to CVS which allows developers to simultaneously work on PCL. 
-The download operation of the most recent source from the main development line, known as trunk, is called `checkout`.
-
-.. note::
-    In this tutorial, we will build the svn trunk of PCL. If you want, you can build a PCL branch instead. 
-    You can also build an official release using the source archive from http://pointclouds.org/downloads/.	
-    You can grab PCL branches using Tortoise SVN from :
-    
-    - pcl-1.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.x
-    
-    - pcl-1.5.x branch from http://svn.pointclouds.org/pcl/branches/pcl-1.5.x
-
-First create a folder that will holds PCL source code and binaries. In the remaining of this tutorial we will be using C:\\PCL.
-To checkout PCL source code, navigate to the C:\\PCL folder using Windows file manager. Then right click and choose
-`SVN Checkout...` from the contextual menu. Set "URL of repository" to http://svn.pointclouds.org/pcl/trunk and
-"Checkout directory" to C:\\PCL\\trunk.
-
-.. image:: images/windows/SVNCheckout_pcl_trunk.png
-   :alt: SVN Checkout dialog
-   :align: center
-   
-Click "OK" and the download should start. At the end of this process, you will have PCL source code in C:\\PCL\\trunk.
-   
 Configuring PCL
 ---------------
 
@@ -127,7 +98,7 @@ You can also build static PCL libraries if you want.
 
 Run the CMake-gui application and fill in the fields::
 
-  Where is the source code   : C:/PCL/trunk
+  Where is the source code   : C:/PCL/pcl
   Where to build the binaries: C:/PCL
 
 Now hit the "Configure" button. You will be asked for a `generator`. A generator is simply a compiler. 
@@ -352,7 +323,7 @@ Advanced topics
 	Then, you need to enable the `documentation` project in Visual Studio by checking the **BUILD_DOCUMENTATION** checkbox in CMake.
 	
 	You can also build one single CHM file that will gather all the generated html files into one file. You need the `Microsoft
-	HTML HELP Workshop <http://www.microsoft.com/downloads/en/details.aspx?familyid=00535334-c8a6-452f-9aa0-d597d16580cc&displaylang=en>`_.
+	HTML HELP Workshop <http://www.microsoft.com/en-us/download/details.aspx?id=21138>`_.
 	After you install the `Microsoft HTML HELP Workshop`, hit `Configure`. If CMake is not able to find **HTML_HEL_COMPILER**, then fill
 	it manually with the path to `hhc.exe` (e.g. C:/Program Files (x86)/HTML Help Workshop/hhc.exe), then click `Configure` and `Generate`.
 	

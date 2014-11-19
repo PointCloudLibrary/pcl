@@ -116,7 +116,9 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
     }
 
     // If extracting removed clusters, all clusters need to be saved, otherwise only the ones within the given cluster size range
-    if (extract_removed_clusters_ || (current_cluster.size () >= min_cluster_size_ && current_cluster.size () <= max_cluster_size_))
+    if (extract_removed_clusters_ ||
+        (static_cast<int> (current_cluster.size ()) >= min_cluster_size_ &&
+         static_cast<int> (current_cluster.size ()) <= max_cluster_size_))
     {
       pcl::PointIndices pi;
       pi.header = input_->header;
@@ -124,9 +126,9 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
       for (int ii = 0; ii < static_cast<int> (current_cluster.size ()); ++ii)  // ii = indices iterator
         pi.indices[ii] = current_cluster[ii];
 
-      if (extract_removed_clusters_ && current_cluster.size () < min_cluster_size_)
+      if (extract_removed_clusters_ && static_cast<int> (current_cluster.size ()) < min_cluster_size_)
         small_clusters_->push_back (pi);
-      else if (extract_removed_clusters_ && current_cluster.size () > max_cluster_size_)
+      else if (extract_removed_clusters_ && static_cast<int> (current_cluster.size ()) > max_cluster_size_)
         large_clusters_->push_back (pi);
       else
         clusters.push_back (pi);

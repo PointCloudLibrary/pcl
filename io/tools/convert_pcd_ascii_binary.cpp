@@ -59,7 +59,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  sensor_msgs::PointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   Eigen::Vector4f origin; Eigen::Quaternionf orientation;
 
   if (pcl::io::loadPCDFile (string (argv[1]), cloud, origin, orientation) < 0)

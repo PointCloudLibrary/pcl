@@ -34,3 +34,12 @@ if(OPENNI_FOUND AND BUILD_OPENNI)
     target_link_libraries(pcl_openni_image pcl_common pcl_io pcl_kdtree pcl_visualization)
 endif()
 
+if(OPENNI2_FOUND AND BUILD_OPENNI2)
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni2_viewer ${SUBSYS_NAME} openni2_viewer.cpp)
+    target_link_libraries(pcl_openni2_viewer pcl_common pcl_io pcl_kdtree pcl_visualization)
+endif()
+
+if(ENSENSO_FOUND AND BUILD_ENSENSO)
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ensenso_viewer ${SUBSYS_NAME} ensenso_viewer.cpp)
+    target_link_libraries(pcl_ensenso_viewer pcl_common pcl_io pcl_visualization)
+endif()

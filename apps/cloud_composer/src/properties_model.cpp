@@ -128,9 +128,10 @@ pcl::cloud_composer::PropertiesModel::copyProperties (const PropertiesModel* to_
 
 
 void
-pcl::cloud_composer::PropertiesModel::propertyChanged (QStandardItem* property_item)
+pcl::cloud_composer::PropertiesModel::propertyChanged (QStandardItem*)
 {
   //qDebug () << "Property Changed in properties model";
   parent_item_->propertyChanged ();
   
 }
+

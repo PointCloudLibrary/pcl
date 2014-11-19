@@ -54,7 +54,7 @@ pcl::CovarianceSampling<PointT, PointNT>::initCompute ()
 
   if (num_samples_ > indices_->size ())
   {
-    PCL_ERROR ("[pcl::CovarianceSampling::initCompute] The number of samples you asked for (%d) is larger than the number of input indices (%zu)\n",
+    PCL_ERROR ("[pcl::CovarianceSampling::initCompute] The number of samples you asked for (%d) is larger than the number of input indices (%lu)\n",
                num_samples_, indices_->size ());
     return false;
   }
@@ -93,7 +93,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber ()
 
   Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
 
-  double max_ev = std::numeric_limits<double>::min (),
+  double max_ev = -std::numeric_limits<double>::max (),
       min_ev = std::numeric_limits<double>::max ();
   for (size_t i = 0; i < 6; ++i)
   {
@@ -117,7 +117,7 @@ pcl::CovarianceSampling<PointT, PointNT>::computeConditionNumber (const Eigen::M
 
   Eigen::MatrixXcd complex_eigenvalues = eigen_solver.eigenvalues ();
 
-  double max_ev = std::numeric_limits<double>::min (),
+  double max_ev = -std::numeric_limits<double>::max (),
       min_ev = std::numeric_limits<double>::max ();
   for (size_t i = 0; i < 6; ++i)
   {

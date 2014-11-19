@@ -3,6 +3,7 @@
 #include <pcl/outofcore/visualization/grid.h>
 
 // VTK
+#include <vtkVersion.h>
 #include <vtkActor.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkDoubleArray.h>
@@ -36,7 +37,7 @@ Grid::Grid (std::string name, int size/*=10*/, double spacing/*=1.0*/) :
   grid_->SetYCoordinates (y_array);
   grid_->SetZCoordinates (xz_array);
 
-#if VTK_MAJOR_VERSION <= 5
+#if VTK_MAJOR_VERSION < 6
   grid_mapper->SetInputConnection (grid_->GetProducerPort ());
 #else
   grid_mapper->SetInputData(grid_);

@@ -6,8 +6,8 @@
 int
 main (int argc, char** argv)
 {
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
-  sensor_msgs::PointCloud2::Ptr cloud_filtered (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud_filtered (new pcl::PCLPointCloud2 ());
 
   // Fill in the cloud data
   pcl::PCDReader reader;
@@ -18,7 +18,7 @@ main (int argc, char** argv)
        << " data points (" << pcl::getFieldsList (*cloud) << ").";
 
   // Create the filtering object
-  pcl::VoxelGrid<sensor_msgs::PointCloud2> sor;
+  pcl::VoxelGrid<pcl::PCLPointCloud2> sor;
   sor.setInputCloud (cloud);
   sor.setLeafSize (0.01f, 0.01f, 0.01f);
   sor.filter (*cloud_filtered);

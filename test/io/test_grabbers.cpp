@@ -118,6 +118,7 @@ TEST (PCL, ImageGrabberTIFF)
   boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)> 
     fxn = boost::bind (cloud_callback, &signal_received, &cloud_buffer, _1);
   grabber.registerCallback (fxn);
+  grabber.setCameraIntrinsics (525., 525., 320., 240.); // Setting old intrinsics which were used to generate these tests
   grabber.start ();
   for (size_t i = 0; i < grabber.size (); i++)
   {
@@ -377,7 +378,11 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   double cx_multiplier = 0.8;
   double cy_multiplier = 1.3;
   double fx_old, fy_old, cx_old, cy_old;
-  grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old);
+  //grabber.getCameraIntrinsics (fx_old, fy_old, cx_old, cy_old); Need to use old intrinsics, can't trust defaults
+  fx_old = 525;
+  fy_old = 525;
+  cx_old = 320;
+  cy_old = 240;
   double fx_new = fx_multiplier * fx_old;
   double fy_new = fy_multiplier * fy_old;
   double cx_new = cx_multiplier * cx_old;
@@ -407,9 +412,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsTIFF)
   {
     EXPECT_EQ (pcds_[i]->width, tiff_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, tiff_clouds[i]->height);
-    for (int x = 0; x < pcds_[i]->width; x++)
+    for (uint32_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (int y = 0; y < pcds_[i]->height; y++)
+      for (uint32_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &tiff_pt = tiff_clouds[i]->operator()(x,y);
@@ -479,9 +484,9 @@ TEST (PCL, ImageGrabberSetIntrinsicsPCLZF)
   {
     EXPECT_EQ (pcds_[i]->width, pclzf_clouds[i]->width);
     EXPECT_EQ (pcds_[i]->height, pclzf_clouds[i]->height);
-    for (int x = 0; x < pcds_[i]->width; x++)
+    for (uint32_t x = 0; x < pcds_[i]->width; x++)
     {
-      for (int y = 0; y < pcds_[i]->height; y++)
+      for (uint32_t y = 0; y < pcds_[i]->height; y++)
       {
         const PointT &pcd_pt = pcds_[i]->operator()(x,y);
         const PointT &pclzf_pt = pclzf_clouds[i]->operator()(x,y);

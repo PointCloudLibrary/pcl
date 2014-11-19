@@ -120,7 +120,7 @@ main (int argc, char **argv)
     CloudPtr tmp (new Cloud);
     icp->align (*tmp);
 
-    t = icp->getFinalTransformation () * t;
+    t = t * icp->getFinalTransformation ();
 
     pcl::transformPointCloud (*data, *tmp, t);
 

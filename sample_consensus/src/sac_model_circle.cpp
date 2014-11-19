@@ -43,7 +43,7 @@
 #include <pcl/point_types.h>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(SampleConsensusModelCircle2D, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB))
+  PCL_INSTANTIATE(SampleConsensusModelCircle2D, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(SampleConsensusModelCircle2D, PCL_XYZ_POINT_TYPES)
 #endif

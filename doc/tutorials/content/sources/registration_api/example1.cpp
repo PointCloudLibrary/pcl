@@ -21,7 +21,6 @@
 #include <pcl/visualization/pcl_visualizer.h>
 
 using namespace std;
-using namespace sensor_msgs;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;

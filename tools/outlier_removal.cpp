@@ -35,7 +35,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -79,7 +79,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud,
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud,
            Eigen::Vector4f &translation, Eigen::Quaternionf &orientation)
 {
   TicToc tt;
@@ -95,7 +95,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud,
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          std::string method,
          int min_pts, double radius,
          int mean_k, double std_dev_mul, bool negative, bool keep_organized)
@@ -103,7 +103,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
                             xyz_cloud (new pcl::PointCloud<PointXYZ> ());
-  fromROSMsg (*input, *xyz_cloud_pre);
+  fromPCLPointCloud2 (*input, *xyz_cloud_pre);
 
   pcl::PointIndices::Ptr removed_indices (new PointIndices),
                          indices (new PointIndices);
@@ -128,7 +128,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     filter.setStddevMulThresh (std_dev_mul);
     filter.setNegative (negative);
     filter.setKeepOrganized (keep_organized);
-    PCL_INFO ("Computing filtered cloud from %zu points with mean_k %d, std_dev_mul %f, inliers %d ...", xyz_cloud->size (), filter.getMeanK (), filter.getStddevMulThresh (), filter.getNegative ());
+    PCL_INFO ("Computing filtered cloud from %lu points with mean_k %d, std_dev_mul %f, inliers %d ...", xyz_cloud->size (), filter.getMeanK (), filter.getStddevMulThresh (), filter.getNegative ());
     filter.filter (*xyz_cloud_filtered);
     // Get the indices that have been explicitly removed
     filter.getRemovedIndices (*removed_indices);
@@ -141,7 +141,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     filter.setMinNeighborsInRadius (min_pts);
     filter.setNegative (negative);
     filter.setKeepOrganized (keep_organized);
-    PCL_INFO ("Computing filtered cloud from %zu points with radius %f, min_pts %d ...", xyz_cloud->size (), radius, min_pts);
+    PCL_INFO ("Computing filtered cloud from %lu points with radius %f, min_pts %d ...", xyz_cloud->size (), radius, min_pts);
     filter.filter (*xyz_cloud_filtered);
     // Get the indices that have been explicitly removed
     filter.getRemovedIndices (*removed_indices);
@@ -152,12 +152,12 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
     return;
   }
     
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_filtered->width * xyz_cloud_filtered->height); print_info (" points, %zu indices removed]\n", removed_indices->indices.size ());
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", xyz_cloud_filtered->width * xyz_cloud_filtered->height); print_info (" points, %lu indices removed]\n", removed_indices->indices.size ());
 
   if (keep_organized)
   {
-    sensor_msgs::PointCloud2 output_filtered;
-    toROSMsg (*xyz_cloud_filtered, output_filtered);
+    pcl::PCLPointCloud2 output_filtered;
+    toPCLPointCloud2 (*xyz_cloud_filtered, output_filtered);
     concatenateFields (*input, output_filtered, output);
   }
   else 
@@ -167,7 +167,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
       indices->indices.push_back (valid_indices[removed_indices->indices[i]]);
 
     // Extract the indices of the remaining points
-    pcl::ExtractIndices<sensor_msgs::PointCloud2> ei;
+    pcl::ExtractIndices<pcl::PCLPointCloud2> ei;
     ei.setInputCloud (input);
     ei.setIndices (indices);
     ei.setNegative (true);
@@ -176,7 +176,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output,
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output,
            const Eigen::Vector4f &translation, const Eigen::Quaternionf &rotation)
 {
   TicToc tt;
@@ -231,7 +231,7 @@ main (int argc, char** argv)
   // Load the first file
   Eigen::Vector4f translation;
   Eigen::Quaternionf rotation;
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud, translation, rotation))
     return (-1);
   
@@ -242,7 +242,7 @@ main (int argc, char** argv)
   }
 
   // Do the smoothing
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   compute (cloud, output, method, min_pts, radius, mean_k, std_dev_mul, negative, keep_organized);
 
   // Save into the second file

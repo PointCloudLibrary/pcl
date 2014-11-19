@@ -257,7 +257,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
   // Set the point representation
   reg.setPointRepresentation (boost::make_shared<const MyPointRepresentation> (point_representation));
 
-  reg.setInputCloud (points_with_normals_src);
+  reg.setInputSource (points_with_normals_src);
   reg.setInputTarget (points_with_normals_tgt);
 
 
@@ -275,7 +275,7 @@ void pairAlign (const PointCloud::Ptr cloud_src, const PointCloud::Ptr cloud_tgt
     points_with_normals_src = reg_result;
 
     // Estimate
-    reg.setInputCloud (points_with_normals_src);
+    reg.setInputSource (points_with_normals_src);
     reg.align (*reg_result);
 
 		//accumulate transformation between each Iteration
@@ -362,7 +362,7 @@ int main (int argc, char** argv)
     pcl::transformPointCloud (*temp, *result, GlobalTransform);
 
     //update the global transform
-    GlobalTransform = pairTransform * GlobalTransform;
+    GlobalTransform = GlobalTransform * pairTransform;
 
 		//save aligned pair, transformed into the first cloud's frame
     std::stringstream ss;

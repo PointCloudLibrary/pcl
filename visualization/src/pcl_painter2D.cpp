@@ -38,8 +38,6 @@
 
 #include <pcl/visualization/pcl_painter2D.h>
 
-vtkCxxRevisionMacro (pcl::visualization::PCLPainter2D, "$Revision: 1.2 $");
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::visualization::PCLPainter2D::PCLPainter2D(char const * name)
 {

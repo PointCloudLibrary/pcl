@@ -104,6 +104,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::tree_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       /** \brief Constructor.
         * \param[in] salient_radius the radius of the spherical neighborhood used to compute the scatter matrix.
@@ -140,7 +141,7 @@ namespace pcl
 
       /** \brief Set the radius used for the estimation of the surface normals of the input cloud. If the radius is
 	* too large, the temporal performances of the detector may degrade significantly.
-        * \param[in] normals_radius the radius used to estimate surface normals
+        * \param[in] normal_radius the radius used to estimate surface normals
         */
       void
       setNormalRadius (double normal_radius);
@@ -197,14 +198,14 @@ namespace pcl
       /** \brief Compute the boundary points for the given input cloud.
         * \param[in] input the input cloud
         * \param[in] border_radius the radius used to compute the boundary points
-        * \param[in] the decision boundary that marks the points as boundary
+        * \param[in] angle_threshold the decision boundary that marks the points as boundary
         * \return the vector of boolean values in which the information about the boundary points is stored
         */
       bool*
       getBoundaryPoints (PointCloudIn &input, double border_radius, float angle_threshold);
 
       /** \brief Compute the scatter matrix for a point index.
-        * \param[in] index the index of the point
+        * \param[in] current_index the index of the point
         * \param[out] cov_m the point scatter matrix
         */
       void

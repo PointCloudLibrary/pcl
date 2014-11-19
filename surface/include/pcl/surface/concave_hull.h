@@ -134,8 +134,10 @@ namespace pcl
       }
 
       /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
-      PCL_DEPRECATED (int getDim () const, "[pcl::ConcaveHull::getDim] This method is deprecated. Please use getDimension () instead.");
-
+      PCL_DEPRECATED ("[pcl::ConcaveHull::getDim] This method is deprecated. Please use getDimension () instead.")
+      int
+      getDim () const;
+      
       /** \brief Returns the dimensionality (2 or 3) of the calculated hull. */
       inline int
       getDimension () const

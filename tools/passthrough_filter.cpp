@@ -36,7 +36,7 @@
  * $Id$
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -74,7 +74,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -89,7 +89,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          std::string field_name, float min, float max, bool inside, bool keep_organized)
 {
   // Estimate
@@ -98,7 +98,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 
   print_highlight (stderr, "Computing ");
 
-  PassThrough<sensor_msgs::PointCloud2> passthrough_filter;
+  PassThrough<pcl::PCLPointCloud2> passthrough_filter;
   passthrough_filter.setInputCloud (input);
   passthrough_filter.setFilterFieldName (field_name);
   passthrough_filter.setFilterLimits (min, max);
@@ -110,7 +110,7 @@ compute (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointClou
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -131,12 +131,12 @@ batchProcess (const vector<string> &pcd_files, string &output_dir,
   for (size_t i = 0; i < pcd_files.size (); ++i)
   {
     // Load the first file
-    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
     if (!loadCloud (pcd_files[i], *cloud)) 
       return (-1);
 
     // Perform the feature estimation
-    sensor_msgs::PointCloud2 output;
+    pcl::PCLPointCloud2 output;
     compute (cloud, output, field_name, min, max, inside, keep_organized);
 
     // Prepare output file name
@@ -203,12 +203,12 @@ main (int argc, char** argv)
     }
 
     // Load the first file
-    sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+    pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
     if (!loadCloud (argv[p_file_indices[0]], *cloud))
       return (-1);
 
     // Perform the feature estimation
-    sensor_msgs::PointCloud2 output;
+    pcl::PCLPointCloud2 output;
     compute (cloud, output, field_name, min, max, inside, keep_organized);
 
     // Save into the second file

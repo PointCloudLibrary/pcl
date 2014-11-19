@@ -54,7 +54,8 @@ namespace pcl
       * For additional details, see 
       *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
       *
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
+      * \note The class is templated on the source and target point types as well as on the output scalar of the
+      * transformation matrix (i.e., float or double). Default: float.
       * \author Michael Dixon
       * \ingroup registration
       */
@@ -141,7 +142,7 @@ namespace pcl
           * \param[in] tx the x translation
           * \param[in] ty the y translation
           * \param[in] tz the z translation
-          * \param[out] transformation the resultant transformation matrix
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
         constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,

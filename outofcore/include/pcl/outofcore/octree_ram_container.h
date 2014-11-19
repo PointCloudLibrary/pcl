@@ -84,14 +84,14 @@ namespace pcl
         insertRange (const PointT* const * start, const uint64_t count);
 
         void
-        insertRange (AlignedPointTVector &p)
+        insertRange (AlignedPointTVector& /*p*/)
         {
           PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
           //insertRange (&(p.begin ()), p.size ());
         }
 
         void
-        insertRange (const AlignedPointTVector &p)
+        insertRange (const AlignedPointTVector& /*p*/)
         {
           PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeRamContainer] Inserting eigen-aligned point vectors is not implemented using the ram containers\n");
         }
@@ -154,10 +154,10 @@ namespace pcl
 
       protected:
         //no copy construction
-        OutofcoreOctreeRamContainer (const OutofcoreOctreeRamContainer &rval) { }
+        OutofcoreOctreeRamContainer (const OutofcoreOctreeRamContainer& /*rval*/) { }
 
         OutofcoreOctreeRamContainer&
-        operator= (const OutofcoreOctreeRamContainer& rval) { }
+        operator= (const OutofcoreOctreeRamContainer& /*rval*/) { }
 
         //the actual container
         //std::deque<PointT> container;

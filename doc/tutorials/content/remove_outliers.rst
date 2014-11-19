@@ -38,29 +38,31 @@ Initially the program ensures that the user has specified a command line argumen
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 9-12
+   :lines: 9-13
 
 In the following lines, we first define the PointCloud structures and fill one of them with random points:
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 13-26
+   :lines: 14-27
 
-Here is where things are a little bit different depending on which filter class is being used.  If the user wants to use the *CondtionalRemoval* class, then they must specify the command line argument, '-c'.  This triggers an if statement and causes these lines of code to be executed:
-
-.. literalinclude:: sources/remove_outliers/remove_outliers.cpp
-   :language: cpp
-   :lines: 38-50
-
-After creating and filling our input cloud, we create the condition which a given point must satisfy for it to remain in our PointCloud.  To do this we must add two comparisons to the conditon.  We are going to use greater than 0.0, and less than 0.8.  This condition is then used to build the filter. 
+Here is where things are a little bit different depending on which filter class is being used -- an if statement involving the command line options divides the program flow.
 
 For the *RadiusOutlierRemoval*, the user must specify '-r' as the command line argument so that this code is executed:
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 29-35
+   :lines: 29-37
 
-Then, we create the RadiusOutlierRemoval filter object, set it's parameters and apply it to our input cloud.  The radius of search is set to 0.8, and a point must have a minimum of 2 neighbors in that radius to be kept as part of the PointCloud.
+Basically, we create the RadiusOutlierRemoval filter object, set its parameters and apply it to our input cloud.  The radius of search is set to 0.8, and a point must have a minimum of 2 neighbors in that radius to be kept as part of the PointCloud.
+
+For the *ConditionalRemoval* class, the user must specify '-c' as the command line argument so that this code is executed:
+
+.. literalinclude:: sources/remove_outliers/remove_outliers.cpp
+   :language: cpp
+   :lines: 38-52
+
+Basically, we create the condition which a given point must satisfy for it to remain in our PointCloud.  In this example, we use add two comparisons to the conditon: greater than (GT) 0.0 and less than (LT) 0.8.  This condition is then used to build the filter. 
 
 In both cases the code above creates the filter object that we are going to use and sets certain parameters that are necessary for the filtering to take place.
 
@@ -68,7 +70,7 @@ The following code just outputs PointCloud before filtering and then after apply
 
 .. literalinclude:: sources/remove_outliers/remove_outliers.cpp
    :language: cpp
-   :lines: 56-66
+   :lines: 57-67
 
 Compiling and running remove_outliers.cpp
 ---------------------------------------------

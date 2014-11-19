@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,7 +34,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: $
  */
 
 #ifndef PCL_VISUALIZATION_AREA_PICKING_EVENT_H_
@@ -49,7 +49,7 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (std::size_t nb_points, const std::vector<int>& indices)
+        AreaPickingEvent (int nb_points, const std::vector<int>& indices)
           : nb_points_ (nb_points)
           , indices_ (indices)
         {}
@@ -61,14 +61,14 @@ namespace pcl
         inline bool
         getPointsIndices (std::vector<int>& indices) const
         {
-          if (nb_points_ == -1)
+          if (nb_points_ <= 0)
             return (false);
           indices = indices_;
           return (true);
         }
 
       private:
-        std::size_t nb_points_;
+        int nb_points_;
         std::vector<int> indices_;
     };
   } //namespace visualization

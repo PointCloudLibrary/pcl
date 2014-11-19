@@ -1,39 +1,40 @@
- /*
-  * Software License Agreement (BSD License)
-  *
-  *  Point Cloud Library (PCL) - www.pointclouds.org
-  *  Copyright (c) 2010-2011, Willow Garage, Inc.
-  *
-  *  All rights reserved.
-  *
-  *  Redistribution and use in source and binary forms, with or without
-  *  modification, are permitted provided that the following conditions
-  *  are met:
-  *
-  *   * Redistributions of source code must retain the above copyright
-  *     notice, this list of conditions and the following disclaimer.
-  *   * Redistributions in binary form must reproduce the above
-  *     copyright notice, this list of conditions and the following
-  *     disclaimer in the documentation and/or other materials provided
-  *     with the distribution.
-  *   * Neither the name of Willow Garage, Inc. nor the names of its
-  *     contributors may be used to endorse or promote products derived
-  *     from this software without specific prior written permission.
-  *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-  *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-  *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-  *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-  *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-  *  POSSIBILITY OF SUCH DAMAGE.
-  *
-  */
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 #ifndef PCL_VISUALUALIZATION_PCL_PLOTTER_H_
 #define	PCL_VISUALUALIZATION_PCL_PLOTTER_H_
 
@@ -42,15 +43,22 @@
 #include <utility>
 #include <cfloat>
 
-//VTK includes
-#include <pcl/visualization/vtk.h>
-
-//pcl includes
 #include <pcl/visualization/common/common.h>
 #include <pcl/point_types.h>
 #include <pcl/correspondence.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/io.h>
+
+class PCLVisualizerInteractor;
+class vtkRenderWindow;
+class vtkRenderWindowInteractor;
+class vtkContextView;
+class vtkChartXY;
+class vtkColorSeries;
+
+#include <vtkSmartPointer.h>
+#include <vtkCommand.h>
+#include <vtkChart.h>
 
 namespace pcl
 {
@@ -103,21 +111,21 @@ namespace pcl
                      char const *color=NULL);
 	
         /** \brief Adds a plot with correspondences in vectors arrayX and arrayY. This is the vector version of the addPlotData function. 
-          * \param[in] array_X X coordinates of point correspondence array
-          * \param[in] array_Y Y coordinates of point correspondence array
-          * \param[in] size length of the array arrayX and arrayY
+          * \param[in] array_x X coordinates of point correspondence array
+          * \param[in] array_y Y coordinates of point correspondence array
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
          */
         void 
-        addPlotData (std::vector<double> const &array_X, 
-                     std::vector<double>const &array_Y, 
+        addPlotData (std::vector<double> const &array_x, 
+                     std::vector<double>const &array_y, 
                      char const * name = "Y Axis", 
                      int type = vtkChart::LINE,
                      std::vector<char> const &color = std::vector<char> ());
         
-        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence. 
+        /** \brief Adds a plot with correspondences in vector of pairs. The the first and second field of the pairs of the vector forms the correspondence.
+          * \param plot_data
           * \param[in] name name of the plot which appears in the legend when toggled on
           * \param[in] type type of the graph plotted. vtkChart::LINE for line plot, vtkChart::BAR for bar plot, and vtkChart::POINTS for a scattered point plot
           * \param[in] color a character array of 4 fields denoting the R,G,B and A component of the color of the plot ranging from 0 to 255. If this argument is not passed (or NULL is passed) the plot is colored based on a color scheme 
@@ -220,7 +228,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
         
@@ -247,7 +255,7 @@ namespace pcl
           * \param[in] win_height the height of the window
           */
         bool 
-        addFeatureHistogram (const sensor_msgs::PointCloud2 &cloud, 
+        addFeatureHistogram (const pcl::PCLPointCloud2 &cloud,
                              const std::string &field_name, 
                              const int index,
                              const std::string &id = "cloud", int win_width = 640, int win_height = 200);
@@ -347,6 +355,19 @@ namespace pcl
         void
         setWindowSize (int w, int h);
         
+        /** \brief Set the position in screen coordinates.
+        * \param[in] x where to move the window to (X)
+        * \param[in] y where to move the window to (Y)
+        */
+        void
+        setWindowPosition (int x, int y);
+        
+        /** \brief Set the visualizer window name.
+        * \param[in] name the name of the window
+        */
+        void
+        setWindowName (const std::string &name);
+        
         /** \brief set/get method for the window size.
           * \return[in] array containing the width and height of the window
           */
@@ -355,17 +376,11 @@ namespace pcl
 
         /** \brief Return a pointer to the underlying VTK RenderWindow used. */
         vtkSmartPointer<vtkRenderWindow>
-        getRenderWindow ()
-        {
-          return (view_->GetRenderWindow ());
-        }
+        getRenderWindow ();
         
         /** \brief Set the view's interactor. */
         void
-        setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> interactor)
-        {
-          view_->SetInteractor (interactor);
-        }
+        setViewInteractor (vtkSmartPointer<vtkRenderWindowInteractor> interactor);
         
         /** \brief Initialize and Start the view's interactor. */
         void
@@ -376,16 +391,11 @@ namespace pcl
 
         /** \brief Returns true when the user tried to close the window */
         bool
-        wasStopped () const { if (view_->GetInteractor() != NULL) return (stopped_); else return (true); }
+        wasStopped () const;
         
         /** \brief Stop the interaction and close the visualizaton window. */
         void
-        close ()
-        {
-          stopped_ = true;
-          // This tends to close the window...
-          view_->GetInteractor()->TerminateApp ();
-        }
+        close ();
       
       private:
         vtkSmartPointer<vtkContextView> view_;  
@@ -395,7 +405,9 @@ namespace pcl
         //extra state variables
         int current_plot_;          //stores the id of the current (most recent) plot, used in automatic coloring and other state change schemes 
         int win_width_, win_height_;
+        int win_x_, win_y_; //window position according to screen coordinate
         double bkg_color_[3];
+        std::string win_name_;
           
         //####event callback class####
         struct ExitMainLoopTimerCallback : public vtkCommand
@@ -405,22 +417,8 @@ namespace pcl
             return (new ExitMainLoopTimerCallback);
           }
           virtual void 
-          Execute (vtkObject* vtkNotUsed (caller), unsigned long event_id, void* call_data)
-          {
-            if (event_id != vtkCommand::TimerEvent)
-              return;
-            int timer_id = *(reinterpret_cast<int*> (call_data));
+          Execute (vtkObject*, unsigned long event_id, void* call_data);
 
-            if (timer_id != right_timer_id)
-              return;
-
-            // Stop vtk loop and send notification to app to wake it up
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-            interactor->stopLoop ();
-#else
-            interactor->TerminateApp ();
-#endif
-          }
           int right_timer_id;
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
           PCLVisualizerInteractor *interactor;
@@ -435,13 +433,9 @@ namespace pcl
           {
             return new ExitCallback;
           }
-          virtual void Execute (vtkObject*, unsigned long event_id, void*)
-          {
-            if (event_id != vtkCommand::ExitEvent)
-              return;
-            plotter->stopped_ = true;
-            plotter->view_->GetInteractor ()->TerminateApp ();
-          }
+          virtual void 
+          Execute (vtkObject*, unsigned long event_id, void*);
+
           PCLPlotter *plotter;
         };
         

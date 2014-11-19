@@ -52,7 +52,7 @@ namespace pcl
   namespace outofcore
   {
     /** \brief Abstract octree iterator class
-     *  \note This class is based on the octree_iterator written by Julius Kammerl adapted to the outofcore octree. The interface is very similar, but it does \b not inherit the \ref pcl_octree iterator base.
+     *  \note This class is based on the octree_iterator written by Julius Kammerl adapted to the outofcore octree. The interface is very similar, but it does \b not inherit the \ref pcl::octree iterator base.
      *  \ingroup outofcore
      *  \author Stephen Fox (foxstephend@gmail.com)
      */

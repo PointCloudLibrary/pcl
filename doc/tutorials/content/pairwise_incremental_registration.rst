@@ -10,7 +10,7 @@ to incrementally register a series of point clouds two by two.
 | This is done by finding the best transform between each consecutive cloud, and accumulating these transforms over the whole set of clouds.
 
 | Your data set should consist of clouds that have been roughly pre-aligned in a common frame (e.g. in a robot's odometry or map frame) and overlap with one another.
-| We provide a set of clouds at `svn.pointclouds.org/data/tutorials/pairwise/ <http://svn.pointclouds.org/data/tutorials/pairwise/>`_.
+| We provide a set of clouds at `github.com/PointCloudLibrary/data/tree/master/tutorials/pairwise/ <https://github.com/PointCloudLibrary/data/tree/master/tutorials/pairwise>`_.
 
 
 The code
@@ -173,20 +173,9 @@ Create CMakeLists.txt file and add the following line in it:
    :language: cmake
    :linenos:
    
-Note that the line 
 
-.. code-block:: cmake
-
-	add_definitions(-Wno-deprecated -DEIGEN_DONT_VECTORIZE -DEIGEN_DISABLE_UNALIGNED_ARRAY_ASSERT)
-
-is usefull only on 32-bit systems, that would (sometimes) trigger the following Eigen exception::
-
-	Eigen::internal::plain_array<T, Size, MatrixOrArrayOptions, 16>::plain_array() [with T = float, int Size = 16, int MatrixOrArrayOptions = 0]: Assertion `(reinterpret_cast<size_t>(array) & 0xf) == 0 && "this assertion is explained here: " "http://eigen.tuxfamily.org/dox-devel/TopicUnalignedArrayAssert.html" " **** READ THIS WEB PAGE !!! ****"' failed.``
-
-
-
-Copy the files from `svn.pointclouds.org/data/tutorials/pairwise
-<http://svn.pointclouds.org/data/tutorials/pairwise/>`_ in your working folder.
+Copy the files from `github.com/PointCloudLibrary/data/tree/master/tutorials/pairwise
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/pairwise/>`_ in your working folder.
   
 
 After you have made the executable (cmake ., make), you can run it. Simply do::
@@ -207,7 +196,7 @@ You will see something similar to:
   
 Visualize the final results by running::
 
-  $ pcd_viewer [1-4].pcd	
+  $ pcl_viewer 1.pcd 2.pcd 3.pcd 4.pcd
   
 .. image:: images/pairwise_incremental_registration/4.png
   :height: 300

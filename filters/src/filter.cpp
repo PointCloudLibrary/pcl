@@ -39,7 +39,7 @@
  */
 
 #include <pcl/filters/impl/filter.hpp>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 /** \brief Base method for feature estimation for all points given in <setInputCloud (), setIndices ()> using
@@ -47,7 +47,7 @@
  * \param output the resultant filtered point cloud dataset
  */
 void
-pcl::Filter<sensor_msgs::PointCloud2>::filter (PointCloud2 &output)
+pcl::Filter<pcl::PCLPointCloud2>::filter (PCLPointCloud2 &output)
 {
   if (!initCompute ())
     return;

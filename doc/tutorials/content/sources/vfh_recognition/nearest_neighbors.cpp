@@ -24,7 +24,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   // Load the file as a PCD
   try
   {
-    sensor_msgs::PointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud;
     int version;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
@@ -48,7 +48,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
   pcl::io::loadPCDFile (path.string (), point);
   vfh.second.resize (308);
 
-  std::vector <sensor_msgs::PointField> fields;
+  std::vector <pcl::PCLPointField> fields;
   getFieldIndex (point, "vfh", fields);
 
   for (size_t i = 0; i < fields[vfh_idx].count; ++i)
@@ -216,14 +216,14 @@ main (int argc, char** argv)
       m++;
     }
 
-    sensor_msgs::PointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud;
     pcl::console::print_highlight (stderr, "Loading "); pcl::console::print_value (stderr, "%s ", cloud_name.c_str ());
     if (pcl::io::loadPCDFile (cloud_name, cloud) == -1)
       break;
 
     // Convert from blob to PointCloud
     pcl::PointCloud<pcl::PointXYZ> cloud_xyz;
-    pcl::fromROSMsg (cloud, cloud_xyz);
+    pcl::fromPCLPointCloud2 (cloud, cloud_xyz);
 
     if (cloud_xyz.points.size () == 0)
       break;
@@ -267,7 +267,7 @@ main (int argc, char** argv)
     p.addText (cloud_name, 20, 10, cloud_name, viewport);
   }
   // Add coordianate systems to all viewports
-  p.addCoordinateSystem (0.1, 0);
+  p.addCoordinateSystem (0.1, "global", 0);
 
   p.spin ();
   return (0);

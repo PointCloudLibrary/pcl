@@ -51,6 +51,7 @@
 #ifdef __GNUC__
 #pragma GCC system_header
 #endif
+#include <vtkVersion.h>
 #include <vtkFloatArray.h>
 #include <vtkPointData.h>
 #include <vtkPoints.h>
@@ -72,7 +73,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   cloud.points.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Check if XYZ is present
@@ -161,7 +162,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   cloud.points.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Check if XYZ is present
@@ -280,7 +281,7 @@ template <typename PointT> void
 pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyData* const pdata)
 {
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   // Coordinates (always must have coordinates)
@@ -377,7 +378,7 @@ pcl::io::pointCloudTovtkPolyData (const pcl::PointCloud<PointT>& cloud, vtkPolyD
 
   // Add 0D topology to every point
   vtkSmartPointer<vtkVertexGlyphFilter> vertex_glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
-  #if VTK_MAJOR_VERSION <= 5
+  #if VTK_MAJOR_VERSION < 6
     vertex_glyph_filter->AddInputConnection (temp_polydata->GetProducerPort ());
   #else
     vertex_glyph_filter->SetInputData (temp_polydata);
@@ -392,7 +393,7 @@ template <typename PointT> void
 pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vtkStructuredGrid* const structured_grid)
 {
   // Get a list of all the fields available
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<typename pcl::traits::fieldList<PointT>::type>(pcl::detail::FieldAdder<PointT>(fields));
 
   int dimensions[3] = {cloud.width, cloud.height, 1};

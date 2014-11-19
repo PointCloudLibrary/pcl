@@ -82,7 +82,6 @@ namespace pcl
           * \param[in] src the TransformationEstimationLM object to copy into this 
           */
         TransformationEstimationLM (const TransformationEstimationLM &src) : 
-          weights_ (src.weights_), 
           tmp_src_ (src.tmp_src_), 
           tmp_tgt_ (src.tmp_tgt_), 
           tmp_idx_src_ (src.tmp_idx_src_), 
@@ -96,7 +95,6 @@ namespace pcl
         TransformationEstimationLM&
         operator = (const TransformationEstimationLM &src)
         {
-          weights_ = src.weights_;
           tmp_src_ = src.tmp_src_; 
           tmp_tgt_ = src.tmp_tgt_; 
           tmp_idx_src_ = src.tmp_idx_src_;
@@ -204,9 +202,6 @@ namespace pcl
           return ((p_src - t).norm ());
         }
 
-        /** \brief The vector of residual weights. Used internall in the LM loop. */
-        std::vector<double> weights_;
-
         /** \brief Temporary pointer to the source dataset. */
         mutable const PointCloudSource *tmp_src_;
 
@@ -272,7 +267,7 @@ namespace pcl
           {}
 
           /** Copy constructor
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctor (const OptimizationFunctor &src) : 
             Functor<MatScalar> (src.m_data_points_), estimator_ ()
@@ -281,7 +276,7 @@ namespace pcl
           }
 
           /** Copy operator
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctor& 
           operator = (const OptimizationFunctor &src) 
@@ -318,7 +313,7 @@ namespace pcl
           {}
 
           /** Copy constructor
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctorWithIndices (const OptimizationFunctorWithIndices &src)
             : Functor<MatScalar> (src.m_data_points_), estimator_ ()
@@ -327,7 +322,7 @@ namespace pcl
           }
 
           /** Copy operator
-            * \param[in] the optimization functor to copy into this
+            * \param[in] src the optimization functor to copy into this
             */
           inline OptimizationFunctorWithIndices& 
           operator = (const OptimizationFunctorWithIndices &src) 

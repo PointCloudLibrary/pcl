@@ -9,7 +9,14 @@
 #define PCL_SIMULATION_SUM_REDUCE
 
 #include <GL/glew.h>
-#include <GL/gl.h>
+
+#include <pcl/pcl_config.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/gl.h>
+#else
+# include <GL/gl.h>
+#endif
+
 #include <pcl/simulation/glsl_shader.h>
 #include <pcl/simulation/model.h>
 

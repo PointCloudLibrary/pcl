@@ -40,6 +40,7 @@
 #include "internal.hpp"
 #include "utils/boxutils.hpp"
 
+#include<algorithm>
 #include<limits>
 
 using namespace pcl::gpu;

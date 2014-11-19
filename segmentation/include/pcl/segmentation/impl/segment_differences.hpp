@@ -39,7 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_SEGMENT_DIFFERENCES_H_
 
 #include <pcl/segmentation/segment_differences.h>
-#include <pcl/common/concatenate.h>
+#include <pcl/common/io.h>
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
@@ -64,7 +64,7 @@ pcl::getPointCloudDifference (
     // Search for the closest point in the target data set (number of neighbors to find = 1)
     if (!tree->nearestKSearch (src.points[i], 1, nn_indices, nn_distances))
     {
-      PCL_WARN ("No neighbor found for point %zu (%f %f %f)!\n", i, src.points[i].x, src.points[i].y, src.points[i].z);
+      PCL_WARN ("No neighbor found for point %lu (%f %f %f)!\n", i, src.points[i].x, src.points[i].y, src.points[i].z);
       continue;
     }
 
@@ -85,11 +85,7 @@ pcl::getPointCloudDifference (
     //output.is_dense = false;
 
   // Copy all the data fields from the input cloud to the output one
-  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
-  // Iterate over each point
-  for (size_t i = 0; i < src_indices.size (); ++i)
-    // Iterate over each dimension
-    pcl::for_each_type <FieldList> (NdConcatenateFunctor <PointT, PointT> (src.points[src_indices[i]], output.points[i]));
+  copyPointCloud (src, src_indices, output);
 }
 
 //////////////////////////////////////////////////////////////////////////

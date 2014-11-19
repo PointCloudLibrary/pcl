@@ -48,7 +48,7 @@
 #include <pcl/common/time_trigger.h>
 #include <string>
 #include <vector>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 namespace pcl
 {
@@ -62,6 +62,7 @@ namespace pcl
      * \param[in] directory Directory which contains an ordered set of images corresponding to an [RGB]D video, stored as TIFF, PNG, JPG, or PPM files. The naming convention is: frame_[timestamp]_["depth"/"rgb"].[extension]
      * \param[in] frames_per_second frames per second. If 0, start() functions like a trigger, publishing the next PCD in the list.
      * \param[in] repeat whether to play PCD file in an endless loop or not.
+     * \param pclzf_mode
      */
     ImageGrabberBase (const std::string& directory, float frames_per_second, bool repeat, bool pclzf_mode);
 
@@ -141,9 +142,13 @@ namespace pcl
     std::string
     getPrevDepthFileName () const;
 
+    /** \brief Get the depth filename at a particular index */
+    std::string
+    getDepthFileNameAtIndex (size_t idx) const;
+
     /** \brief Query only the timestamp of an index, if it exists */
     bool
-    getTimestampAtIndex (size_t idx, uint64_t &timestamp) const;
+    getTimestampAtIndex (size_t idx, pcl::uint64_t &timestamp) const;
 
     /** \brief Manually set RGB image files.
      * \param[in] rgb_image_files A vector of [tiff/png/jpg/ppm] files to use as input. There must be a 1-to-1 correspondence between these and the depth images you set
@@ -163,7 +168,7 @@ namespace pcl
                          const double principal_point_x, 
                          const double principal_point_y);
     
-    /** \brief Get the current focal length and center pixel. If the intrinsics have been manually set with @setCameraIntrinsics@, this will return those values. Else, if start () has been called and the grabber has found a frame_[timestamp].xml file, this will return the most recent values read. Else, returns factory defaults.
+    /** \brief Get the current focal length and center pixel. If the intrinsics have been manually set with setCameraIntrinsics, this will return those values. Else, if start () has been called and the grabber has found a frame_[timestamp].xml file, this will return the most recent values read. Else, returns factory defaults.
      *  \param[out] focal_length_x Horizontal focal length (fx)
      *  \param[out] focal_length_y Vertical focal length (fy)
      *  \param[out] principal_point_x Horizontal coordinates of the principal point (cx)
@@ -186,18 +191,19 @@ namespace pcl
     setNumberOfThreads (unsigned int nr_threads = 0);
 
     protected:
-    /** \brief Convenience function to see how many frames this consists of */
+    /** \brief Convenience function to see how many frames this consists of
+      */
     size_t
     numFrames () const;
     
     /** \brief Gets the cloud in ROS form at location idx */
     bool
-    getCloudAt (size_t idx, sensor_msgs::PointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
+    getCloudAt (size_t idx, pcl::PCLPointCloud2 &blob, Eigen::Vector4f &origin, Eigen::Quaternionf &orientation) const;
 
 
     private:
     virtual void 
-    publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
+    publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
 
 
     // to separate and hide the implementation from interface: PIMPL
@@ -237,7 +243,7 @@ namespace pcl
 
     protected:
     virtual void 
-    publish (const sensor_msgs::PointCloud2& blob, 
+    publish (const pcl::PCLPointCloud2& blob,
              const Eigen::Vector4f& origin, 
              const Eigen::Quaternionf& orientation) const;
     boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
@@ -279,12 +285,12 @@ namespace pcl
   template<typename PointT> const boost::shared_ptr< const pcl::PointCloud<PointT> >
   ImageGrabber<PointT>::operator[] (size_t idx) const
   {
-    sensor_msgs::PointCloud2 blob;
+    pcl::PCLPointCloud2 blob;
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
     getCloudAt (idx, blob, origin, orientation);
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
     return (cloud);
@@ -299,10 +305,10 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> void
-  ImageGrabber<PointT>::publish (const sensor_msgs::PointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
+  ImageGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-    pcl::fromROSMsg (blob, *cloud);
+    pcl::fromPCLPointCloud2 (blob, *cloud);
     cloud->sensor_origin_ = origin;
     cloud->sensor_orientation_ = orientation;
 

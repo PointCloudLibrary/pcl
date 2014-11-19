@@ -42,7 +42,7 @@
 #define PCL_GEOMETRY_MESH_CONVERSION_H
 
 #include <pcl/PolygonMesh.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 namespace pcl
 {
@@ -62,7 +62,7 @@ namespace pcl
       typedef typename HalfEdgeMesh::FaceIndex FaceIndex;
 
       pcl::Vertices polygon;
-      pcl::toROSMsg (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
+      pcl::toPCLPointCloud2 (half_edge_mesh.getVertexDataCloud (), face_vertex_mesh.cloud);
 
       face_vertex_mesh.polygons.reserve (half_edge_mesh.sizeFaces ());
       for (size_t i=0; i<half_edge_mesh.sizeFaces (); ++i)
@@ -96,7 +96,7 @@ namespace pcl
       BOOST_STATIC_ASSERT (HalfEdgeMesh::HasVertexData::value); // Output mesh must have data associated with the vertices!
 
       VertexDataCloud vertices;
-      pcl::fromROSMsg (face_vertex_mesh.cloud, vertices);
+      pcl::fromPCLPointCloud2 (face_vertex_mesh.cloud, vertices);
 
       half_edge_mesh.reserveVertices (vertices.size ());
       half_edge_mesh.reserveEdges (3 * face_vertex_mesh.polygons.size ());

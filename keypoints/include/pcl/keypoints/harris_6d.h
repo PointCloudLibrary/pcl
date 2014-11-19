@@ -66,10 +66,10 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::k_;
       using Keypoint<PointInT, PointOutT>::search_radius_;
       using Keypoint<PointInT, PointOutT>::search_parameter_;
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       /**
        * @brief Constructor
-       * @param method the method to be used to determine the corner responses
        * @param radius the radius for normal estimation as well as for non maxima suppression
        * @param threshold the threshold to filter out weak corners
        */

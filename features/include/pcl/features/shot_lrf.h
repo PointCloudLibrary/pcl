@@ -91,11 +91,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Computes disambiguated local RF for a point index
-        * \param[in] cloud input point cloud
-        * \param[in] search_radius the neighborhood radius
-        * \param[in] central_point the point from the input_ cloud at which the local RF is computed
-        * \param[in] indices the neighbours indices
-        * \param[in] dists the squared distances to the neighbours
+        * \param[in] index the index
         * \param[out] rf reference frame to compute
         */
       float

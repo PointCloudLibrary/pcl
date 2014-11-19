@@ -46,8 +46,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/io/openni_grabber.h>
-#include <sensor_msgs/PointCloud2.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/PCLPointCloud2.h>
+#include <pcl/conversions.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/console/parse.h>
 #include <pcl/common/time.h>
@@ -77,8 +77,8 @@ class Recorder
             tide::BlockElement::Ptr block(new tide::SimpleBlock(1,
                         blk_offset.total_microseconds() / 10000));
             // Here the frame data itself is added to the block
-            sensor_msgs::PointCloud2 blob;
-            pcl::toROSMsg(*cloud, blob);
+            pcl::PCLPointCloud2 blob;
+            pcl::toPCLPointCloud2(*cloud, blob);
             tide::Block::FramePtr frame_ptr(new tide::Block::Frame(blob.data.begin(),
                         blob.data.end()));
             block->push_back(frame_ptr);
@@ -114,7 +114,7 @@ class Recorder
 
         int Run()
         {
-            // Write the EBML Header. This specifies that the file is an EBML
+            // Write the EBML PCLHeader. This specifies that the file is an EBML
             // file, and is a Tide document.
             tide::EBMLElement ebml_el;
             ebml_el.write(stream_);
@@ -159,7 +159,7 @@ class Recorder
             // codec used.
             tide::TrackEntry::Ptr track(new tide::TrackEntry(1, 1, "pointcloud2"));
             track->name("3D video");
-            track->codec_name("sensor_msgs::PointCloud2");
+            track->codec_name("pcl::PCLPointCloud2");
             // Adding each level 1 element (only the first occurance, in the case of
             // clusters) to the index makes opening the file later much faster.
             segment.index.insert(std::make_pair(tracks.id(),
@@ -356,10 +356,10 @@ class Player
                 // very small to reduce overhead.
                 tide::BlockElement::FramePtr frame_data(*block->begin());
                 // Copy the frame data into a serialised cloud structure
-                sensor_msgs::PointCloud2 blob;
+                pcl::PCLPointCloud2 blob;
                 blob.height = 480;
                 blob.width = 640;
-                sensor_msgs::PointField ptype;
+                pcl::PCLPointField ptype;
                 ptype.name = "x";
                 ptype.offset = 0;
                 ptype.datatype = 7;
@@ -381,7 +381,7 @@ class Player
                 blob.is_dense = false;
                 blob.data.assign(frame_data->begin(), frame_data->end());
                 pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
-                pcl::fromROSMsg(blob, *cloud);
+                pcl::fromPCLPointCloud2(blob, *cloud);
                 // Sleep until the block's display time. The played_time is
                 // updated to account for the time spent preparing the data.
                 played_time = bpt::microsec_clock::local_time() - pb_start;

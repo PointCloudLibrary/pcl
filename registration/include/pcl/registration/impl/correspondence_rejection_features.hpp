@@ -74,9 +74,6 @@ pcl::registration::CorrespondenceRejectorFeatures::setTargetFeature (
 template <typename FeatureT> inline typename pcl::PointCloud<FeatureT>::ConstPtr 
 pcl::registration::CorrespondenceRejectorFeatures::getTargetFeature (const std::string &key)
 {
-  typedef pcl::PointCloud<FeatureT> FeatureCloud;
-  typedef typename FeatureCloud::ConstPtr FeatureCloudConstPtr;
-
   if (features_map_.count (key) == 0)
     return (boost::shared_ptr<const pcl::PointCloud<FeatureT> > ());
   else

@@ -255,8 +255,8 @@ TEST(Edge, canny)
 }
 
 void threshold(pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud, float thresh){
-  for(int i = 0;i < cloud->height;i++){
-    for(int j = 0;j < cloud->width;j++){
+  for(size_t i = 0;i < cloud->height;i++){
+    for(size_t j = 0;j < cloud->width;j++){
       if((*cloud)(j,i).intensity > thresh)
         (*cloud)(j,i).intensity = 1;
       else

@@ -82,12 +82,12 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
 {
   if (tree->getInputCloud ()->points.size () != cloud.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%zu) than the input cloud (%zu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
     return;
   }
   if (cloud.points.size () != normals.points.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%zu) different than normals (%zu)!\n", cloud.points.size (), normals.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
     return;
   }
 
@@ -310,7 +310,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   if ((min_axis / max_axis) > axis_ratio_)
   {
-    PCL_WARN("Both axis are equally easy/difficult to disambiguate\n");
+    PCL_WARN ("Both axes are equally easy/difficult to disambiguate\n");
 
     Eigen::Vector3f evy_copy = evy;
     Eigen::Vector3f evxminus = evx * -1;
@@ -376,6 +376,10 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
                                                                                      std::vector<pcl::PointIndices> & cluster_indices)
 {
   PointCloudOut ourcvfh_output;
+
+  cluster_axes_.clear ();
+  cluster_axes_.resize (centroids_dominant_orientations_.size ());
+
   for (size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
   {
 
@@ -383,6 +387,9 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     PointInTPtr grid (new pcl::PointCloud<PointInT>);
     sgurf (centroids_dominant_orientations_[i], dominant_normals_[i], processed, transformations, grid, cluster_indices[i]);
 
+    // Make a note of how many transformations correspond to each cluster
+    cluster_axes_[i] = transformations.size ();
+    
     for (size_t t = 0; t < transformations.size (); t++)
     {
 
@@ -489,7 +496,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
             weights[ii] *= 0.5f - wz * 0.5f;
         }
 
-        int h_index = static_cast<int> (std::floor (size_hists * (d / distance_normalization_factor)));
+        int h_index = (d <= 0) ? 0 : std::ceil (size_hists * (d / distance_normalization_factor)) - 1;
         for (int j = 0; j < num_hists; j++)
           quadrants[j][h_index] += hist_incr * weights[j];
 
@@ -512,11 +519,15 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       }
 
       ourcvfh_output.points.push_back (vfh_signature.points[0]);
-
+      ourcvfh_output.width = ourcvfh_output.points.size ();
       delete[] weights;
     }
   }
 
+  if (ourcvfh_output.points.size ())
+  {
+    ourcvfh_output.height = 1;
+  }
   output = ourcvfh_output;
 }
 
@@ -633,8 +644,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       //remove last cluster if no points found...
       if (clusters_[cluster_filtered_idx].indices.size () == 0)
       {
-        clusters_.erase (clusters_.end ());
-        clusters_filtered.erase (clusters_filtered.end ());
+        clusters_.pop_back ();
+        clusters_filtered.pop_back ();
       }
       else
         cluster_filtered_idx++;

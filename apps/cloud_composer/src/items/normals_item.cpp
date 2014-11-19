@@ -42,9 +42,9 @@ pcl::cloud_composer::NormalsItem::paintView (boost::shared_ptr<pcl::visualizatio
   if (parent ()->type () == CLOUD_ITEM)
   {
     QVariant cloud_ptr = parent ()->data (ItemDataRole::CLOUD_BLOB);
-    sensor_msgs::PointCloud2::ConstPtr cloud_blob = cloud_ptr.value<sensor_msgs::PointCloud2::ConstPtr> ();
+    pcl::PCLPointCloud2::ConstPtr cloud_blob = cloud_ptr.value<pcl::PCLPointCloud2::ConstPtr> ();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg (*cloud_blob, *cloud); 
+    pcl::fromPCLPointCloud2 (*cloud_blob, *cloud);
     double scale = properties_->getProperty ("Scale").toDouble ();
     int level = properties_->getProperty ("Level").toInt ();
     qDebug () << "Removing old normals...";

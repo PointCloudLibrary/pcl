@@ -39,11 +39,11 @@
  */
 
 #include <pcl/filters/impl/statistical_outlier_removal.hpp>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
-pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointCloud2 &output)
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
   output.is_dense = true;
   // If fields x/y/z are not present, we cannot filter
@@ -64,7 +64,7 @@ pcl::StatisticalOutlierRemoval<sensor_msgs::PointCloud2>::applyFilter (PointClou
   }
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromROSMsg (*input_, *cloud);
+  pcl::fromPCLPointCloud2 (*input_, *cloud);
 
   // Initialize the spatial locator
   if (!tree_)

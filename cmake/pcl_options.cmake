@@ -18,6 +18,10 @@ else(PCL_SHARED_LIBS)
 endif(PCL_SHARED_LIBS)
 mark_as_advanced(PCL_SHARED_LIBS)
 
+# Build with dynamic linking for Boost (advanced users)
+option(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32 "Build against a dynamically linked Boost on Win32 platforms." OFF)
+mark_as_advanced(PCL_BUILD_WITH_BOOST_DYNAMIC_LINKING_WIN32)
+
 # Precompile for a minimal set of point types instead of all.
 option(PCL_ONLY_CORE_POINT_TYPES "Compile explicitly only for a small subset of point types (e.g., pcl::PointXYZ instead of PCL_XYZ_POINT_TYPES)." OFF)
 mark_as_advanced(PCL_ONLY_CORE_POINT_TYPES)
@@ -38,3 +42,13 @@ mark_as_advanced(CMAKE_TIMING_VERBOSE)
 option(CMAKE_MSVC_CODE_LINK_OPTIMIZATION "Enable the /GL and /LTCG code and link optimization options for MSVC. Enabled by default." ON)
 mark_as_advanced(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
 
+# Project folders
+option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
+mark_as_advanced(USE_PROJECT_FOLDERS)
+if(USE_PROJECT_FOLDERS)
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+endif(USE_PROJECT_FOLDERS)
+
+option(BUILD_tools "Useful PCL-based command line tools" ON)
+
+option(WITH_DOCS "Build doxygen documentation" OFF)

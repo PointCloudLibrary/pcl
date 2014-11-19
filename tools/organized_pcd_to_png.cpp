@@ -52,7 +52,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -73,7 +73,7 @@ saveImage (const std::string &filename, const PointCloud<RGB> &image)
   tt.tic ();
 
   print_highlight ("Saving "); print_value ("%s ", filename.c_str ());
-  io::savePNGFile (filename, image);
+  io::savePNGFile (filename, image, "rgb");
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", image.width * image.height); print_info (" points]\n");
 }
@@ -82,6 +82,7 @@ saveImage (const std::string &filename, const PointCloud<RGB> &image)
 int
 main (int argc, char** argv)
 {
+  print_error ("This tool is deprecated, please use \"pcl_pcd2png\" instead!\n");
   print_info ("Convert the RGB information of an organized PCD file to a PNG image. For more information, use: %s -h\n", argv[0]);
 
   if (argc < 3)
@@ -106,13 +107,13 @@ main (int argc, char** argv)
   }
 
   // Load the first file
-  sensor_msgs::PointCloud2 cloud;
+  pcl::PCLPointCloud2 cloud;
   if (!loadCloud (argv[pcd_file_indices[0]], cloud))
     return (-1);
 
 
   PointCloud<RGB> image;
-  fromROSMsg (cloud, image);
+  fromPCLPointCloud2 (cloud, image);
 
 
   // Check if the cloud is organized

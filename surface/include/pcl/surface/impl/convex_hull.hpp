@@ -81,15 +81,15 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   bool xz_proj_safe = true;
 
   // Check the input's normal to see which projection to use
-  PointInT p0 = input_->points[0];
-  PointInT p1 = input_->points[indices_->size () - 1];
-  PointInT p2 = input_->points[indices_->size () / 2];
+  PointInT p0 = input_->points[(*indices_)[0]];
+  PointInT p1 = input_->points[(*indices_)[indices_->size () - 1]];
+  PointInT p2 = input_->points[(*indices_)[indices_->size () / 2]];
   Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
   {
-    p0 = input_->points[rand () % indices_->size ()];
-    p1 = input_->points[rand () % indices_->size ()];
-    p2 = input_->points[rand () % indices_->size ()];
+    p0 = input_->points[(*indices_)[rand () % indices_->size ()]];
+    p1 = input_->points[(*indices_)[rand () % indices_->size ()]];
+    p2 = input_->points[(*indices_)[rand () % indices_->size ()]];
     dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
     
@@ -133,8 +133,10 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = NULL;
 
+#ifndef HAVE_QHULL_2011
   if (compute_area_)
     outfile = stderr;
+#endif
 
   // option flags for qhull, see qh_opt.htm
   const char* flags = qhull_flags.c_str ();
@@ -156,7 +158,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   } 
   else if (yz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -164,7 +166,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
   else if (xz_proj_safe)
   {
-    for (size_t i = 0; i < input_->points.size (); ++i, j+=dimension)
+    for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
       points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
       points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
@@ -178,11 +180,17 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
    
   // Compute convex hull
   int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
-    
-  // 0 if no error from qhull
-  if (exitcode != 0)
+#ifdef HAVE_QHULL_2011
+  if (compute_area_)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), indices_->size ());
+    qh_prepare_output();
+  }
+#endif
+    
+  // 0 if no error from qhull or it doesn't find any vertices
+  if (exitcode != 0 || qh num_vertices == 0)
+  {
+    PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), indices_->size ());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
@@ -283,8 +291,10 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   // output from qh_produce_output(), use NULL to skip qh_produce_output()
   FILE *outfile = NULL;
 
+#ifndef HAVE_QHULL_2011
   if (compute_area_)
     outfile = stderr;
+#endif
 
   // option flags for qhull, see qh_opt.htm
   const char *flags = qhull_flags.c_str ();
@@ -304,11 +314,17 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
 
   // Compute convex hull
   int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
+#ifdef HAVE_QHULL_2011
+  if (compute_area_)
+  {
+    qh_prepare_output();
+  }
+#endif
 
   // 0 if no error from qhull
   if (exitcode != 0)
   {
-    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%zu)!\n", getClassName ().c_str (), input_->points.size ());
+    PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->points.size ());
 
     hull.points.resize (0);
     hull.width = hull.height = 0;
@@ -433,8 +449,8 @@ pcl::ConvexHull<PointInT>::performReconstruction (PolygonMesh &output)
   pcl::PointCloud<PointInT> hull_points;
   performReconstruction (hull_points, output.polygons, true);
 
-  // Convert the PointCloud into a PointCloud2
-  pcl::toROSMsg (hull_points, output.cloud);
+  // Convert the PointCloud into a PCLPointCloud2
+  pcl::toPCLPointCloud2 (hull_points, output.cloud);
 }
 
 //////////////////////////////////////////////////////////////////////////

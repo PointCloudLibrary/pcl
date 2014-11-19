@@ -48,39 +48,39 @@ using namespace pcl;
 
 void example_edge ()
 {
-  Edge<pcl::PointXYZRGB> *edge = new Edge<pcl::PointXYZRGB> ();
+  Edge<pcl::PointXYZRGB> edge;
 
   /*dummy clouds*/
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   /*example 1*/
-  edge->output_type_ = Edge<pcl::PointXYZRGB>::OUTPUT_X_Y;
-  edge->detectEdgeRoberts (*output_cloud, *input_cloud);
+  edge.output_type_ = Edge<pcl::PointXYZRGB>::OUTPUT_X_Y;
+  edge.detectEdgeRoberts (*output_cloud, *input_cloud);
 
   /*example 2*/
-  edge->hysteresis_threshold_low_ = 20;
-  edge->hysteresis_threshold_high_ = 80;
-  edge->non_max_suppression_radius_x_ = 3;
-  edge->non_max_suppression_radius_y_ = 3;
-  edge->detectEdgeCanny (*output_cloud, *input_cloud);
+  edge.hysteresis_threshold_low_ = 20;
+  edge.hysteresis_threshold_high_ = 80;
+  edge.non_max_suppression_radius_x_ = 3;
+  edge.non_max_suppression_radius_y_ = 3;
+  edge.detectEdgeCanny (*output_cloud, *input_cloud);
 
   /*example 3*/
-  edge->detector_kernel_type_ = Edge<pcl::PointXYZRGB>::PREWITT;
-  edge->hysteresis_thresholding_ = true;
-  edge->hysteresis_threshold_low_ = 20;
-  edge->hysteresis_threshold_high_ = 80;
-  edge->non_maximal_suppression_ = true;
-  edge->non_max_suppression_radius_x_ = 1;
-  edge->non_max_suppression_radius_y_ = 1;
-  edge->output_type_ = Edge<pcl::PointXYZRGB>::OUTPUT_X_Y;
-  edge->detectEdge (*output_cloud, *input_cloud);
+  edge.detector_kernel_type_ = Edge<pcl::PointXYZRGB>::PREWITT;
+  edge.hysteresis_thresholding_ = true;
+  edge.hysteresis_threshold_low_ = 20;
+  edge.hysteresis_threshold_high_ = 80;
+  edge.non_maximal_suppression_ = true;
+  edge.non_max_suppression_radius_x_ = 1;
+  edge.non_max_suppression_radius_y_ = 1;
+  edge.output_type_ = Edge<pcl::PointXYZRGB>::OUTPUT_X_Y;
+  edge.detectEdge (*output_cloud, *input_cloud);
 }
 
 void example_convolution ()
 {
-  Kernel<pcl::PointXYZRGB> *kernel = new Kernel<pcl::PointXYZRGB> ();
-  Convolution<pcl::PointXYZRGB> *convolution = new Convolution<pcl::PointXYZRGB> ();
+  Kernel<pcl::PointXYZRGB> kernel;
+  Convolution<pcl::PointXYZRGB> convolution;
 
   /*dummy clouds*/
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -88,27 +88,27 @@ void example_convolution ()
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   /*example 1 : Gaussian Smoothing*/
-  kernel->sigma_ = 2.0;
-  kernel->kernel_size_ = 3;
-  kernel->gaussianKernel (*kernel_cloud);
-  convolution->kernel_ = *kernel_cloud;
-  convolution->convolve (*output_cloud, *input_cloud);
+  kernel.sigma_ = 2.0;
+  kernel.kernel_size_ = 3;
+  kernel.gaussianKernel (*kernel_cloud);
+  convolution.kernel_ = *kernel_cloud;
+  convolution.convolve (*output_cloud, *input_cloud);
 
   /*example 2 : forward derivative in X direction*/
-  kernel->kernel_type_ = Kernel<pcl::PointXYZRGB>::DERIVATIVE_FORWARD_X;
-  kernel->fetchKernel (*kernel_cloud);
-  convolution->kernel_ = *kernel_cloud;
-  convolution->convolve (*output_cloud, *input_cloud);
+  kernel.kernel_type_ = Kernel<pcl::PointXYZRGB>::DERIVATIVE_FORWARD_X;
+  kernel.fetchKernel (*kernel_cloud);
+  convolution.kernel_ = *kernel_cloud;
+  convolution.convolve (*output_cloud, *input_cloud);
 
   /*example 3*/
-  kernel->kernel_type_ = Kernel<pcl::PointXYZRGB>::DERIVATIVE_FORWARD_X;
-  kernel->fetchKernel (convolution->kernel_);
-  convolution->convolve (*output_cloud, *input_cloud);
+  kernel.kernel_type_ = Kernel<pcl::PointXYZRGB>::DERIVATIVE_FORWARD_X;
+  kernel.fetchKernel (convolution.kernel_);
+  convolution.convolve (*output_cloud, *input_cloud);
 }
 
 void example_morphology ()
 {
-  Morphology<pcl::PointXYZRGB> *morphology = new Morphology<pcl::PointXYZRGB> ();
+  Morphology<pcl::PointXYZRGB> morphology;
 
   /*dummy clouds*/
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
@@ -116,15 +116,15 @@ void example_morphology ()
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr output_cloud (new pcl::PointCloud<pcl::PointXYZRGB>);
 
   /*example 1 : Gaussian Smoothing*/
-  morphology->structuringElementCircular (*structuring_element_cloud, 3);
-  morphology->structuring_element_ = *structuring_element_cloud;
-  morphology->operator_type_ = Morphology<pcl::PointXYZRGB>::EROSION_GRAY;
-  morphology->applyMorphologicalOperation (*output_cloud, *input_cloud);
+  morphology.structuringElementCircular (*structuring_element_cloud, 3);
+  morphology.structuring_element_ = *structuring_element_cloud;
+  morphology.operator_type_ = Morphology<pcl::PointXYZRGB>::EROSION_GRAY;
+  morphology.applyMorphologicalOperation (*output_cloud, *input_cloud);
 
   /*example 2 : forward derivative in X direction*/
-  morphology->structuringElementCircular (morphology->structuring_element_, 3);
-  morphology->operator_type_ = Morphology<pcl::PointXYZRGB>::EROSION_GRAY;
-  morphology->applyMorphologicalOperation (*output_cloud, *input_cloud);
+  morphology.structuringElementCircular (morphology.structuring_element_, 3);
+  morphology.operator_type_ = Morphology<pcl::PointXYZRGB>::EROSION_GRAY;
+  morphology.applyMorphologicalOperation (*output_cloud, *input_cloud);
 
 }
 

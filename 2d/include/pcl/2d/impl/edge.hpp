@@ -49,21 +49,21 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
 {
   //pcl::console::TicToc tt;
   //tt.tic ();
-  convolution_->setInputCloud (input_);
+  convolution_.setInputCloud (input_);
   pcl::PointCloud<PointXYZI>::Ptr kernel_x (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_x (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::SOBEL_X);
-  kernel_->fetchKernel (*kernel_x);
-  convolution_->setKernel (*kernel_x);
-  convolution_->filter (*magnitude_x);
+  kernel_.setKernelType (kernel<PointXYZI>::SOBEL_X);
+  kernel_.fetchKernel (*kernel_x);
+  convolution_.setKernel (*kernel_x);
+  convolution_.filter (*magnitude_x);
   //PCL_ERROR ("Convolve X: %g\n", tt.toc ()); tt.tic ();
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_y (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_y (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::SOBEL_Y);
-  kernel_->fetchKernel (*kernel_y);
-  convolution_->setKernel (*kernel_y);
-  convolution_->filter (*magnitude_y);
+  kernel_.setKernelType (kernel<PointXYZI>::SOBEL_Y);
+  kernel_.fetchKernel (*kernel_y);
+  convolution_.setKernel (*kernel_y);
+  convolution_.filter (*magnitude_y);
   //PCL_ERROR ("Convolve Y: %g\n", tt.toc ()); tt.tic ();
 
   const int height = input_->height;
@@ -93,21 +93,21 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection (
     const pcl::PointCloud<PointInT> &input_y,
     pcl::PointCloud<PointOutT> &output)
 {
-  convolution_->setInputCloud (input_x.makeShared());
+  convolution_.setInputCloud (input_x.makeShared());
   pcl::PointCloud<PointXYZI>::Ptr kernel_x (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_x (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::SOBEL_X);
-  kernel_->fetchKernel (*kernel_x);
-  convolution_->setKernel (*kernel_x);
-  convolution_->filter (*magnitude_x);
+  kernel_.setKernelType (kernel<PointXYZI>::SOBEL_X);
+  kernel_.fetchKernel (*kernel_x);
+  convolution_.setKernel (*kernel_x);
+  convolution_.filter (*magnitude_x);
 
-  convolution_->setInputCloud (input_y.makeShared());
+  convolution_.setInputCloud (input_y.makeShared());
   pcl::PointCloud<PointXYZI>::Ptr kernel_y (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_y (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::SOBEL_Y);
-  kernel_->fetchKernel (*kernel_y);
-  convolution_->setKernel (*kernel_y);
-  convolution_->filter (*magnitude_y);
+  kernel_.setKernelType (kernel<PointXYZI>::SOBEL_Y);
+  kernel_.fetchKernel (*kernel_y);
+  convolution_.setKernel (*kernel_y);
+  convolution_.filter (*magnitude_y);
 
   const int height = input_x.height;
   const int width = input_x.width;
@@ -132,21 +132,21 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection (
 template <typename PointInT, typename PointOutT> void
 pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<PointOutT> &output)
 {
-  convolution_->setInputCloud (input_);
+  convolution_.setInputCloud (input_);
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_x (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_x (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::PREWITT_X);
-  kernel_->fetchKernel (*kernel_x);
-  convolution_->setKernel (*kernel_x);
-  convolution_->filter (*magnitude_x);
+  kernel_.setKernelType (kernel<PointXYZI>::PREWITT_X);
+  kernel_.fetchKernel (*kernel_x);
+  convolution_.setKernel (*kernel_x);
+  convolution_.filter (*magnitude_x);
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_y (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_y (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::PREWITT_Y);
-  kernel_->fetchKernel (*kernel_y);
-  convolution_->setKernel (*kernel_y);
-  convolution_->filter (*magnitude_y);
+  kernel_.setKernelType (kernel<PointXYZI>::PREWITT_Y);
+  kernel_.fetchKernel (*kernel_y);
+  convolution_.setKernel (*kernel_y);
+  convolution_.filter (*magnitude_y);
 
   const int height = input_->height;
   const int width = input_->width;
@@ -171,21 +171,21 @@ pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<PointOutT> &o
 template <typename PointInT, typename PointOutT> void
 pcl::Edge<PointInT, PointOutT>::detectEdgeRoberts (pcl::PointCloud<PointOutT> &output)
 {
-  convolution_->setInputCloud (input_);
+  convolution_.setInputCloud (input_);
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_x (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_x (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::ROBERTS_X);
-  kernel_->fetchKernel (*kernel_x);
-  convolution_->setKernel (*kernel_x);
-  convolution_->filter (*magnitude_x);
+  kernel_.setKernelType (kernel<PointXYZI>::ROBERTS_X);
+  kernel_.fetchKernel (*kernel_x);
+  convolution_.setKernel (*kernel_x);
+  convolution_.filter (*magnitude_x);
 
   pcl::PointCloud<PointXYZI>::Ptr kernel_y (new pcl::PointCloud<PointXYZI>);
   pcl::PointCloud<PointXYZI>::Ptr magnitude_y (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::ROBERTS_Y);
-  kernel_->fetchKernel (*kernel_y);
-  convolution_->setKernel (*kernel_y);
-  convolution_->filter (*magnitude_y);
+  kernel_.setKernelType (kernel<PointXYZI>::ROBERTS_Y);
+  kernel_.fetchKernel (*kernel_y);
+  convolution_.setKernel (*kernel_y);
+  convolution_.filter (*magnitude_y);
 
   const int height = input_->height;
   const int width = input_->width;
@@ -216,7 +216,7 @@ pcl::Edge<PointInT, PointOutT>::cannyTraceEdge (
   int newCol = col + colOffset;
   PointXYZI &pt = maxima (newCol, newRow);
 
-  if (newRow > 0 && newRow < maxima.height && newCol > 0 && newCol < maxima.width)
+  if (newRow > 0 && newRow < static_cast<int> (maxima.height) && newCol > 0 && newCol < static_cast<int> (maxima.width))
   {
     if (pt.intensity == 0.0f || pt.intensity == std::numeric_limits<float>::max ())
       return;
@@ -343,13 +343,13 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeCanny (pcl::PointCloud<PointOutT> &out
   // Noise reduction using gaussian blurring
   pcl::PointCloud<PointXYZI>::Ptr gaussian_kernel (new pcl::PointCloud<PointXYZI>);
   PointCloudInPtr smoothed_cloud (new PointCloudIn);
-  kernel_->setKernelSize (3);
-  kernel_->setKernelSigma (1.0);
-  kernel_->setKernelType (kernel<PointXYZI>::GAUSSIAN);
-  kernel_->fetchKernel (*gaussian_kernel);
-  convolution_->setKernel (*gaussian_kernel);
-  convolution_->setInputCloud (input_);
-  convolution_->filter (*smoothed_cloud);
+  kernel_.setKernelSize (3);
+  kernel_.setKernelSigma (1.0);
+  kernel_.setKernelType (kernel<PointXYZI>::GAUSSIAN);
+  kernel_.fetchKernel (*gaussian_kernel);
+  convolution_.setKernel (*gaussian_kernel);
+  convolution_.setInputCloud (input_);
+  convolution_.filter (*smoothed_cloud);
   //PCL_ERROR ("Gaussian blur: %g\n", tt.toc ()); tt.tic ();
   
   // Edge detection usign Sobel
@@ -416,19 +416,19 @@ pcl::Edge<PointInT, PointOutT>::canny (
 
   // Noise reduction using gaussian blurring
   pcl::PointCloud<PointXYZI>::Ptr gaussian_kernel (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelSize (3);
-  kernel_->setKernelSigma (1.0);
-  kernel_->setKernelType (kernel<PointXYZI>::GAUSSIAN);
-  kernel_->fetchKernel (*gaussian_kernel);
-  convolution_->setKernel (*gaussian_kernel);
+  kernel_.setKernelSize (3);
+  kernel_.setKernelSigma (1.0);
+  kernel_.setKernelType (kernel<PointXYZI>::GAUSSIAN);
+  kernel_.fetchKernel (*gaussian_kernel);
+  convolution_.setKernel (*gaussian_kernel);
 
   PointCloudIn smoothed_cloud_x;
-  convolution_->setInputCloud (input_x.makeShared());
-  convolution_->filter (smoothed_cloud_x);
+  convolution_.setInputCloud (input_x.makeShared());
+  convolution_.filter (smoothed_cloud_x);
 
   PointCloudIn smoothed_cloud_y;
-  convolution_->setInputCloud (input_y.makeShared());
-  convolution_->filter (smoothed_cloud_y);
+  convolution_.setInputCloud (input_y.makeShared());
+  convolution_.filter (smoothed_cloud_y);
 
 
   // Edge detection usign Sobel
@@ -480,18 +480,15 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeLoG (
     const float kernel_sigma, const float kernel_size,
     pcl::PointCloud<PointOutT> &output)
 {
-  convolution_->setInputCloud (input_);
-
-  const int height = input_->height;
-  const int width = input_->width;
+  convolution_.setInputCloud (input_);
 
   pcl::PointCloud<PointXYZI>::Ptr log_kernel (new pcl::PointCloud<PointXYZI>);
-  kernel_->setKernelType (kernel<PointXYZI>::LOG);
-  kernel_->setKernelSigma (kernel_sigma);
-  kernel_->setKernelSize (kernel_size);
-  kernel_->fetchKernel (*log_kernel);
-  convolution_->setKernel (*log_kernel);
-  convolution_->filter (output);
+  kernel_.setKernelType (kernel<PointXYZI>::LOG);
+  kernel_.setKernelSigma (kernel_sigma);
+  kernel_.setKernelSize (kernel_size);
+  kernel_.fetchKernel (*log_kernel);
+  convolution_.setKernel (*log_kernel);
+  convolution_.filter (output);
 }
 
 #endif

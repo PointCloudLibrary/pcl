@@ -386,5 +386,26 @@ pcl::getMinMax (const PointT &histogram, int len, float &min_p, float &max_p)
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> inline float
+pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon) 
+{
+  float area = 0.0f;
+  int num_points = polygon.size ();
+  int j = 0;
+  Eigen::Vector3f va,vb,res;
+
+  res(0) = res(1) = res(2) = 0.0f;
+  for (int i = 0; i < num_points; ++i) 
+  {
+    j = (i + 1) % num_points;
+    va = polygon[i].getVector3fMap ();
+    vb = polygon[j].getVector3fMap ();
+    res += va.cross (vb);
+  }
+  area = res.norm ();
+  return (area*0.5);
+}
+
 #endif  //#ifndef PCL_COMMON_IMPL_H_
 

@@ -95,7 +95,7 @@ main (int argc, char** argv)
                                                   1, "output cloud");
 
   // Starting visualizer
-  viewer_final->addCoordinateSystem (1.0);
+  viewer_final->addCoordinateSystem (1.0, "global");
   viewer_final->initCameraParameters ();
 
   // Wait until visualizer window is closed.

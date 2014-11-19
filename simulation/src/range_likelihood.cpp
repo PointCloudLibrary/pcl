@@ -1,12 +1,20 @@
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <time.h>
+
+#include <pcl/pcl_config.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+#endif
 
 #include <pcl/common/time.h>
 #include <pcl/simulation/range_likelihood.h>
 
 // For adding noise:
-static boost::minstd_rand generator (27u); // seed
+static boost::minstd_rand generator (static_cast<unsigned int> (std::time (0))); // seed
 
 //#define SIMULATION_DEBUG 1
 #define DO_TIMING_PROFILE 0

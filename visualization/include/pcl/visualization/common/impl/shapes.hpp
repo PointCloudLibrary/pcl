@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -31,9 +34,13 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
+
+#pragma once
+#include <vtkSmartPointer.h>
+#include <vtkPoints.h>
+#include <vtkPolygon.h>
+#include <vtkUnstructuredGrid.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> vtkSmartPointer<vtkDataSet> 
@@ -60,7 +67,6 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
   poly_grid->Allocate (1, 1);
   poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
   poly_grid->SetPoints (poly_points);
-  poly_grid->Update ();
 
   return (poly_grid);
 }
@@ -97,7 +103,6 @@ pcl::visualization::createPolygon (const pcl::PlanarPolygon<PointT> &planar_poly
   poly_grid->Allocate (1, 1);
   poly_grid->InsertNextCell (polygon->GetCellType (), polygon->GetPointIds ());
   poly_grid->SetPoints (poly_points);
-  poly_grid->Update ();
 
   return (poly_grid);
 }

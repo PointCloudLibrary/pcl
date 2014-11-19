@@ -38,7 +38,7 @@
 #include <pcl/surface/on_nurbs/nurbs_data.h>
 #include <pcl/surface/on_nurbs/triangulation.h>
 #include <pcl/surface/on_nurbs/fitting_curve_2d_apdm.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -157,7 +157,7 @@ Triangulation::isInside(const ON_NurbsCurve &curve, const pcl::PointXYZ &v)
 //
 //  }
 //
-//  toROSMsg (*cloud, mesh.cloud);
+//  toPCLPointCloud2 (*cloud, mesh.cloud);
 //}
 
 void
@@ -194,7 +194,7 @@ Triangulation::convertSurface2PolygonMesh (const ON_NurbsSurface &nurbs, Polygon
     v.z = float (point[2]);
   }
 
-  toROSMsg (*cloud, mesh.cloud);
+  toPCLPointCloud2 (*cloud, mesh.cloud);
 }
 
 void
@@ -320,7 +320,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     // TODO: add normals to mesh
   }
 
-  toROSMsg (*cloud, mesh.cloud);
+  toPCLPointCloud2 (*cloud, mesh.cloud);
 }
 
 void
@@ -458,7 +458,7 @@ Triangulation::convertTrimmedSurface2PolygonMesh (const ON_NurbsSurface &nurbs, 
     p2 (2) = point[2];
   }
 
-  toROSMsg (*cloud, mesh.cloud);
+  toPCLPointCloud2 (*cloud, mesh.cloud);
 }
 
 void

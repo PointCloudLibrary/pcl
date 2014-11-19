@@ -29,9 +29,8 @@ Please visit http://www.pointclouds.org for more information.
 <h1>Quick Links</h1>
 <ul>
   <li>Main website: http://www.pointclouds.org</li>
-  <li>Developer Zone: http://dev.pointclouds.org</li>
-  <li>SVN Repository: http://svn.pointclouds.org</li>
-  <li>Build farm: http://build.pointclouds.org</li>
+  <li>Developer Zone: https://github.com/PointCloudLibrary</li>
+  <li>Build farm: https://travis-ci.org/PointCloudLibrary/pcl</li>
 </ul>
 
 <h1>References</h1>

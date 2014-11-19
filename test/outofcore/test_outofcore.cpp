@@ -55,12 +55,10 @@ using namespace std;
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-using namespace pcl;
-
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 using namespace pcl::outofcore;
 
@@ -523,7 +521,7 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   const Eigen::Vector3d max (1024, 1024, 1024);
 
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
   
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -557,7 +555,7 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   const Eigen::Vector3d min (-1,-1,-1);
   const Eigen::Vector3d max (1,1,1);
   
-  PointCloud<PointT>::Ptr cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
   cloud->width = 8;
   cloud->height =1;
   cloud->reserve (8);
@@ -588,7 +586,7 @@ TEST_F (OutofcoreTest, Outofcore_PointCloud2Basic)
   const double min[3] = { -1.0, -1.0, -1.0 };
   const double max[3] = { 1.0, 1.0, 1.0 };
 
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2 ());
 
 }
 */
@@ -604,8 +602,8 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -667,8 +665,8 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -716,7 +714,7 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -732,9 +730,9 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
     test_cloud->points.push_back (tmp);
   }
 
-  boost::shared_ptr<sensor_msgs::PointCloud2> point_cloud (new sensor_msgs::PointCloud2 ());
+  boost::shared_ptr<pcl::PCLPointCloud2> point_cloud (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *point_cloud);
+  pcl::toPCLPointCloud2 (*test_cloud, *point_cloud);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
@@ -761,9 +759,9 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
     point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
 
 
-  sensor_msgs::PointCloud2::Ptr input_cloud (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());
 
-  toROSMsg<PointXYZ> (point_cloud, *input_cloud);
+  pcl::toPCLPointCloud2<pcl::PointXYZ> (point_cloud, *input_cloud);
   ASSERT_EQ (point_cloud.width*point_cloud.height, input_cloud->width*input_cloud->height);
 
   octree_disk octreeA (min, max, smallest_voxel_dim, filename_otreeA, "ECEF");
@@ -785,8 +783,8 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
 
   //create a point cloud
-  PointCloud<PointT>::Ptr first_cloud (new PointCloud<PointT> ());
-  PointCloud<PointT>::Ptr second_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr first_cloud (new pcl::PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
 
   first_cloud->width = numPts;
   first_cloud->height = 1;
@@ -815,11 +813,11 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
     second_cloud->points.push_back (tmp);
   }
 
-  sensor_msgs::PointCloud2::Ptr first_cloud_ptr (new sensor_msgs::PointCloud2 ());
-  sensor_msgs::PointCloud2::Ptr second_cloud_ptr (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr second_cloud_ptr (new pcl::PCLPointCloud2 ());
   
-  toROSMsg<PointT> (*first_cloud, *first_cloud_ptr);
-  toROSMsg<PointT> (*second_cloud, *second_cloud_ptr);
+  pcl::toPCLPointCloud2<PointT> (*first_cloud, *first_cloud_ptr);
+  pcl::toPCLPointCloud2<PointT> (*second_cloud, *second_cloud_ptr);
 
   //Create an outofcore tree which just concatenates the two clouds into a single PCD in the root node. Check that the number of points is correct.
   octree_disk shallow_outofcore (0/*depth*/, min, max, filename_otreeB, "ECEF");
@@ -827,7 +825,7 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   shallow_outofcore.addPointCloud (first_cloud);
   shallow_outofcore.addPointCloud (second_cloud);
   
-  sensor_msgs::PointCloud2::Ptr result (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr result (new pcl::PCLPointCloud2 ());
   shallow_outofcore.queryBBIncludes (min, max, 0, result);
   
   size_t num_points_queried = result->width*result->height;
@@ -847,7 +845,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   const boost::uint64_t depth = 2;
 
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -863,9 +861,9 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
     test_cloud->points.push_back (tmp);
   }
 
-  sensor_msgs::PointCloud2::Ptr dst_blob (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *dst_blob);
+  pcl::toPCLPointCloud2 (*test_cloud, *dst_blob);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
@@ -873,7 +871,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   uint64_t points_added = octreeA.addPointCloud (dst_blob, false);
   EXPECT_EQ (points_added, dst_blob->width*dst_blob->height);
   
-  sensor_msgs::PointCloud2::Ptr dst_blob2 (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob2 (new pcl::PCLPointCloud2 ());
   
   octreeA.queryBoundingBox (min, max, 2, dst_blob2);
   std::list<std::string> filenames;
@@ -886,7 +884,7 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
 }
 
 
-//test that the PointCloud2 query returns the same points as the templated queries
+//test that the PCLPointCloud2 query returns the same points as the templated queries
 TEST_F (OutofcoreTest, PointCloud2_Query)
 {
 
@@ -899,7 +897,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  PointCloud<PointT>::Ptr test_cloud (new PointCloud<PointT> ());
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
 
   test_cloud->width = numPts;
   test_cloud->height = 1;
@@ -915,9 +913,9 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
     test_cloud->points.push_back (tmp);
   }
 
-  sensor_msgs::PointCloud2::Ptr dst_blob (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
   
-  pcl::toROSMsg (*test_cloud, *dst_blob);
+  pcl::toPCLPointCloud2 (*test_cloud, *dst_blob);
 
   octree_disk octreeA (depth, min, max, filename_otreeA, "ECEF");
   octree_disk octreeB (depth, min, max, filename_otreeB, "ECEF");
@@ -928,16 +926,16 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   ASSERT_EQ (points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud does not match the number of poitns in the input point cloud\n";
   ASSERT_EQ (LOD_points_added, dst_blob->width*dst_blob->height) << "Number of points returned by addPointCloud_and_genLOD does not match the number of points in the input point cloud\n";
 
-  sensor_msgs::PointCloud2::Ptr query_result_a (new sensor_msgs::PointCloud2 ());
-  sensor_msgs::PointCloud2::Ptr query_result_b (new sensor_msgs::PointCloud2 ());
+  pcl::PCLPointCloud2::Ptr query_result_a (new pcl::PCLPointCloud2 ());
+  pcl::PCLPointCloud2::Ptr query_result_b (new pcl::PCLPointCloud2 ());
 
   octreeA.queryBBIncludes (min, max, int (octreeA.getDepth ()), query_result_a);
   
-  EXPECT_EQ (test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height) << "PointCloud2 Query number of points returned failed\n";
+  EXPECT_EQ (test_cloud->width*test_cloud->height, query_result_a->width*query_result_a->height) << "PCLPointCloud2 Query number of points returned failed\n";
 
   uint64_t total_octreeB_LOD_query = 0;
   
-  for (int i=0; i <= octreeB.getDepth (); i++)
+  for (boost::uint64_t i=0; i <= octreeB.getDepth (); i++)
   {
     octreeB.queryBBIncludes (min, max, i, query_result_b);
     total_octreeB_LOD_query += query_result_b->width*query_result_b->height;
@@ -946,7 +944,7 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
     query_result_b->height =0;
   }
   
-  EXPECT_EQ (test_cloud->width*test_cloud->height, total_octreeB_LOD_query) << "PointCloud2 Query number of points returned failed\n";
+  EXPECT_EQ (test_cloud->width*test_cloud->height, total_octreeB_LOD_query) << "PCLPointCloud2 Query number of points returned failed\n";
 
   cleanUpFilesystem ();
 }

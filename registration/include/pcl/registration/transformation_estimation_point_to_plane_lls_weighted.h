@@ -54,7 +54,8 @@ namespace pcl
       * For additional details, see 
       *   "Linear Least-Squares Optimization for Point-to-Plane ICP Surface Registration", Kok-Lim Low, 2004
       *
-      * \note The class is templated on the source and target point types as well as on the output scalar of the transformation matrix (i.e., float or double). Default: float.
+      * \note The class is templated on the source and target point types as well as on the output scalar of the
+      * transformation matrix (i.e., float or double). Default: float.
       * \author Alex Ichim
       * \ingroup registration
       */
@@ -135,6 +136,7 @@ namespace pcl
         /** \brief Estimate a rigid rotation transformation between a source and a target
           * \param[in] source_it an iterator over the source point cloud dataset
           * \param[in] target_it an iterator over the target point cloud dataset
+          * \param weights_it
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         void 
@@ -150,7 +152,7 @@ namespace pcl
           * \param[in] tx the x translation
           * \param[in] ty the y translation
           * \param[in] tz the z translation
-          * \param[out] transformation the resultant transformation matrix
+          * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
         constructTransformationMatrix (const double & alpha, const double & beta, const double & gamma,

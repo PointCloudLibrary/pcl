@@ -166,10 +166,10 @@ namespace pcl
 
         template< class T2 >
         static int Solve( const SparseSymmetricMatrix<T>& M , const Vector<T2>& b , int iters , Vector<T2>& solution , MapReduceVector<T2>& scratch , T2 eps=1e-8 , int reset=1 , bool addDCTerm=false , bool solveNormal=false );
-#ifdef _WIN32
+#if defined _WIN32 && !defined __MINGW32__
         template< class T2 >
         static int SolveAtomic( const SparseSymmetricMatrix<T>& M , const Vector<T2>& b , int iters , Vector<T2>& solution , T2 eps=1e-8 , int reset=1 , int threads=0  , bool solveNormal=false );
-#endif // _WIN32
+#endif // _WIN32 || __MINGW32__
         template<class T2>
         static int Solve( const SparseSymmetricMatrix<T>& M , const Vector<T2>& diagonal , const Vector<T2>& b , int iters , Vector<T2>& solution , int reset=1 );
 

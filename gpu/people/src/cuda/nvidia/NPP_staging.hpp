@@ -166,6 +166,7 @@ NCVStatus nppiStInterpolateFrames(const NppStInterpolationState *pState);
  * \param nSrcStep          [IN]  Source image line step
  * \param pDst              [OUT] Destination image pointer (CUDA device memory)
  * \param dstSize           [OUT] Destination image size
+ * \param nDstStep
  * \param oROI              [IN]  Region of interest in the source image
  * \param borderType        [IN]  Type of border
  * \param pKernel           [IN]  Pointer to row kernel values (CUDA device memory)
@@ -199,6 +200,7 @@ NCVStatus nppiStFilterRowBorder_32f_C1R(const Ncv32f *pSrc,
  * \param nSrcStep          [IN]  Source image line step
  * \param pDst              [OUT] Destination image pointer (CUDA device memory)
  * \param dstSize           [OUT] Destination image size
+ * \param nDstStep
  * \param oROI              [IN]  Region of interest in the source image
  * \param borderType        [IN]  Type of border
  * \param pKernel           [IN]  Pointer to column kernel values (CUDA device memory)
@@ -226,7 +228,7 @@ NCVStatus nppiStFilterColumnBorder_32f_C1R(const Ncv32f *pSrc,
 /** Size of buffer required for vector image warping.
  * 
  * \param srcSize           [IN]  Source image size
- * \param nStep             [IN]  Source image line step
+ * \param nSrcStep          [IN]  Source image line step
  * \param hpSize            [OUT] Where to store computed size (host memory)
  *
  * \return NCV status code
@@ -283,6 +285,7 @@ NCVStatus nppiStVectorWarp_PSF1x1_32f_C1(const Ncv32f *pSrc,
  * \param pU                [IN]  Pointer to horizontal displacement field (CUDA device memory)
  * \param pV                [IN]  Pointer to vertical displacement field (CUDA device memory)
  * \param nVFStep           [IN]  Displacement field line step
+ * \param pBuffer
  * \param timeScale         [IN]  Value by which displacement field will be scaled for warping
  * \param pDst              [OUT] Destination image pointer (CUDA device memory)
  *

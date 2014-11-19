@@ -21,5 +21,9 @@ function(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)
    
   add_dependencies(${TOOL_TARGET} pcl_cc_tool_interface ${DEPS})
   target_link_libraries(${TOOL_TARGET} pcl_cc_tool_interface pcl_common pcl_io ${DEPS} ${QT_LIBRARIES}) 
+
+  IF(APPLE)
+    SET_TARGET_PROPERTIES(${TOOL_TARGET} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  ENDIF()
    
 endfunction(define_composer_tool TOOL_NAME TOOL_SOURCES TOOL_HEADERS DEPS)

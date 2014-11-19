@@ -41,7 +41,7 @@
 #define PCL_FILTER_H_
 
 #include <pcl/pcl_base.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/filters/boost.h>
 #include <cfloat>
 #include <pcl/PointIndices.h>
@@ -185,15 +185,15 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS Filter<sensor_msgs::PointCloud2> : public PCLBase<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS Filter<pcl::PCLPointCloud2> : public PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef boost::shared_ptr< Filter<sensor_msgs::PointCloud2> > Ptr;
-      typedef boost::shared_ptr< const Filter<sensor_msgs::PointCloud2> > ConstPtr;
+      typedef boost::shared_ptr< Filter<pcl::PCLPointCloud2> > Ptr;
+      typedef boost::shared_ptr< const Filter<pcl::PCLPointCloud2> > ConstPtr;
 
-      typedef sensor_msgs::PointCloud2 PointCloud2;
-      typedef PointCloud2::Ptr PointCloud2Ptr;
-      typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
+      typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+      typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
       /** \brief Empty constructor. 
         * \param[in] extract_removed_indices set to true if the filtered data indices should be saved in a 
@@ -229,7 +229,7 @@ namespace pcl
         * \param[out] output the resultant filtered point cloud dataset
         */
       void
-      filter (PointCloud2 &output);
+      filter (PCLPointCloud2 &output);
 
     protected:
 
@@ -249,7 +249,7 @@ namespace pcl
         * \param[out] output the resultant filtered point cloud
         */
       virtual void
-      applyFilter (PointCloud2 &output) = 0;
+      applyFilter (PCLPointCloud2 &output) = 0;
 
       /** \brief Get a string representation of the name of this class. */
       inline const std::string&

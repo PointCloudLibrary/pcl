@@ -43,39 +43,16 @@
 
 namespace pcl
 { 
-  /** \brief A point structure representing Digital Elevation Map.
-    * \ingroup stereo
-    */
-  struct EIGEN_ALIGN16 _PointDEM
-  {
-    PCL_ADD_POINT4D;
-    float intensity;
-    float height_variance;
-    float intensity_variance;
-    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-  };
-
-  struct PointDEM : public _PointDEM
-  {
-    inline PointDEM()
-    {
-      x = y = z = 0.0f;
-      intensity = 0.0f;
-      height_variance = intensity_variance = 0.0f;
-    }
-    inline bool
-    isValid()
-    {
-      return (height_variance >= 0.0f && intensity_variance >= 0.0f);
-    }
-  };
-
-  /** \brief Build a Digital Elevation Map in the column-disparity space from a disparity map and color image of the scene.
+  /** \brief Build a Digital Elevation Map in the column-disparity space from a disparity map and a color image of the scene.
     *
-    * Exampe of usage:
+    * Example of usage:
     * 
     * \code
-    *  pcl::PointCloud<pcl::PointDEM>::Ptr cloud;
+    *  pcl::PointCloud<pcl::PointDEM>::Ptr cloud (new
+    *      pcl::PointCloud<pcl::PointDEM>);
+    *  pcl::PointCloud<pcl::RGB>::Ptr left_image (new 
+    *    pcl::PointCloud<pcl::RGB>);
+    *  // Fill left image cloud.
     *  
     *  pcl::DigitalElevationMapBuilder<pcl::PointDEM> demb;
     *  demb.setBaseline (0.8387445f);
@@ -86,12 +63,12 @@ namespace pcl
     *  demb.setDisparityThresholdMax (80.0f);
     *  demb.setResolution (64, 32);
     *
-    *  // Left view of the scene. Must be converted to pcd format with png2pcd.
-    *  demb.loadImage ("left_image.pcd");
+    *  // Left view of the scene.
+    *  demb.loadImage (left_image);
     *  // Disparity map of the scene.
     *  demb.loadDisparityMap ("disparity_map.txt", 640, 480);
     *
-    *  demb.compute(cloud);
+    *  demb.compute(*cloud);
     * \endcode
     *
     * \author Timur Ibadov (ibadov.timur@gmail.com)
@@ -101,6 +78,15 @@ namespace pcl
   class DigitalElevationMapBuilder : public DisparityMapConverter <PointT>
   {
     public:
+      using DisparityMapConverter<PointT>::baseline_;
+      using DisparityMapConverter<PointT>::translateCoordinates;
+      using DisparityMapConverter<PointT>::image_;
+      using DisparityMapConverter<PointT>::disparity_map_;
+      using DisparityMapConverter<PointT>::disparity_map_width_;
+      using DisparityMapConverter<PointT>::disparity_map_height_;
+      using DisparityMapConverter<PointT>::disparity_threshold_min_;
+      using DisparityMapConverter<PointT>::disparity_threshold_max_;
+    
       /** \brief DigitalElevationMapBuilder constructor. */
       DigitalElevationMapBuilder ();
       /** \brief Empty destructor. */
@@ -113,14 +99,14 @@ namespace pcl
       void
       setResolution (size_t resolution_column, size_t resolution_disparity);
 
-      /** \brief Get column resolution od the DEM.
-        * \return column resolution od the DEM.
+      /** \brief Get column resolution of the DEM.
+        * \return column resolution of the DEM.
         */
       size_t
       getColumnResolution () const;
 
-      /** \brief Get disparity resolution od the DEM.
-        * \return disparity resolution od the DEM.
+      /** \brief Get disparity resolution of the DEM.
+        * \return disparity resolution of the DEM.
         */
       size_t
       getDisparityResolution () const;
@@ -137,32 +123,87 @@ namespace pcl
       size_t
       getMinPointsInCell() const;
 
-      /** \brief Compute Digital Elevation Map.
+      /** \brief Compute the Digital Elevation Map.
         * \param[out] out_cloud the variable to return the resulting cloud.
         */
       void 
-      compute (PointCloudPointer &out_cloud);
+      compute (pcl::PointCloud<PointT> &out_cloud);
 
     protected:
       /** \brief Column resolution of the DEM. */
       size_t resolution_column_;
-      /** \brief disparuty resolution of the DEM. */
+      /** \brief disparity resolution of the DEM. */
       size_t resolution_disparity_;
 
       /** \brief Minimum amount of points in a DEM's cell. */
       size_t min_points_in_cell_;
   };
+
+  /** \brief Type for histograms for computing values of the bins in the Digital Elevation Map.
+    *
+    * \author Timur Ibadov (ibadov.timur@gmail.com)
+    * \ingroup stereo
+    */
+  class FeatureHistogram
+  {
+    public:
+      /** \brief Public constructor. */
+      FeatureHistogram (size_t number_of_bins);
+      /** \brief Public destructor. */
+      virtual ~FeatureHistogram ();
+
+      /** \brief Set min and max thresholds. */
+      void
+      setThresholds(float min, float max);
+
+      /** \brief Get the lower threshold. */
+      float
+      getThresholdMin() const;
+
+      /** \brief Get the upper threshold. */
+      float
+      getThresholdMax() const;
+
+      /** \brief Get the number of elements was added to the histogram. */
+      size_t
+      getNumberOfElements() const;
+
+      /** \brief Get number of bins in the histogram. */
+      size_t
+      getNumberOfBins() const;
+
+      /** \brief Increase a bin, that corresponds the value. */
+      void
+      addValue (float value);
+
+      /** \brief Get value, corresponds to the greatest bin. */
+      float
+      getMeanValue ();
+
+      /** \brief Get variance of the value. */
+      float
+      getVariance (float mean);
+
+    protected:
+      /** \brief Vector, that contain the histogram. */
+      std::vector <unsigned> histogram_;
+
+      /** \brief Min threshold. */
+      float threshold_min_;
+      /** \brief Max threshold. */
+      float threshold_max_;
+      /** \brief "Width" of a bin. */
+      float step_;
+
+      /** \brief Number of values was added to the histogram. */
+      size_t number_of_elements_;
+
+      /** \brief Number of bins. */
+      size_t number_of_bins_;
+  };
 }
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (_PointDEM,
-                                    (float, x, x)
-                                    (float, y, y)
-                                    (float, z, z)
-                                    (float, intensity, intensity)
-                                    (float, height_variance, height_variance)
-                                    (float, intensity_variance, intensity_variance)
- )
-
-
+//#include <pcl/stereo/impl/digital_elevation_map.hpp>
+//class PCL_EXPORTS pcl::FeatureHistogram;
 
 #endif // PCL_DIGITAL_ELEVATION_MAP_H_

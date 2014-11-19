@@ -14,7 +14,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
   if (found_rgb)
   {
     pcl::PointCloud<pcl::PointXYZRGB> newcloud;
-    pcl::fromROSMsg (plg->cloud, newcloud);
+    pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
 
     PCL_DEBUG("RGB Triangle mesh: ");
     PCL_DEBUG("Mesh polygons: %ld", plg->polygons.size ());
@@ -39,7 +39,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
   else
   {
     pcl::PointCloud<pcl::PointXYZ> newcloud;
-    pcl::fromROSMsg (plg->cloud, newcloud);
+    pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
     for(size_t i=0; i< plg->polygons.size (); i++)
     { // each triangle/polygon
@@ -122,7 +122,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
   if (found_rgb)
   {
     pcl::PointCloud<pcl::PointXYZRGB> newcloud;  
-    pcl::fromROSMsg (plg->cloud, newcloud);
+    pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
     for(size_t i = 0; i< plg->polygons.size (); i++)
     { // each triangle/polygon
@@ -152,7 +152,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
   else
   {
     pcl::PointCloud<pcl::PointXYZ> newcloud;  
-    pcl::fromROSMsg (plg->cloud, newcloud);
+    pcl::fromPCLPointCloud2 (plg->cloud, newcloud);
     Eigen::Vector4f tmp;
     for(size_t i=0; i< plg->polygons.size (); i++)
     { // each triangle/polygon

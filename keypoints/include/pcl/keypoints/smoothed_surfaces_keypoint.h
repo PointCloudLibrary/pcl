@@ -61,6 +61,7 @@ namespace pcl
       using PCLBase<PointT>::input_;
       using Keypoint<PointT, PointT>::name_;
       using Keypoint<PointT, PointT>::tree_;
+      using Keypoint<PointT, PointT>::keypoints_indices_;
       using Keypoint<PointT, PointT>::initCompute;
 
       typedef pcl::PointCloud<PointT> PointCloudT;

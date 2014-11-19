@@ -49,13 +49,11 @@ namespace pcl
   class Keypoint
   {
     private:
-      Edge *edge_detection;
-      Convolution *conv_2d;
+      Edge edge_detection;
+      Convolution conv_2d;
     public:
       Keypoint  ()
       {
-        edge_detection = new Edge ();
-        conv_2d = new Convolution ();
       }
       
       void 

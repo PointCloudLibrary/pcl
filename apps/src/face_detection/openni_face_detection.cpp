@@ -8,6 +8,7 @@
 #include "pcl/recognition/face_detection/rf_face_detector_trainer.h"
 #include "pcl/apps/face_detection/openni_frame_source.h"
 #include "pcl/apps/face_detection/face_detection_apps_utils.h"
+#include <pcl/common/time.h>
 #include <pcl/console/parse.h>
 #include <pcl/features/integral_image_normal.h>
 
@@ -17,7 +18,7 @@ void run(pcl::RFFaceDetectorTrainer & fdrf, bool heat_map = false, bool show_vot
   OpenNIFrameSource::PointCloudPtr scene_vis;
 
   pcl::visualization::PCLVisualizer vis ("Face dection");
-  vis.addCoordinateSystem (0.1);
+  vis.addCoordinateSystem (0.1, "global");
 
   //keyboard callback to stop getting frames and finalize application
   boost::function<void(const pcl::visualization::KeyboardEvent&)> keyboard_cb = boost::bind (&OpenNIFrameSource::OpenNIFrameSource::onKeyboardEvent, &camera,

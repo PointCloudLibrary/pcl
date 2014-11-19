@@ -88,7 +88,7 @@ parseFileExtensionArgument (int argc, char** argv, std::string extension)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   using namespace pcl::console;
   TicToc tt;
@@ -104,7 +104,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   using namespace pcl::console;
   TicToc tt;
@@ -133,17 +133,17 @@ main (int argc, char** argv)
   std::vector<int> file_indices = parseFileExtensionArgument (argc, argv, ".pcd");
 
   //pcl::PointCloud<pcl::PointXYZ> cloud_all;
-  sensor_msgs::PointCloud2 cloud_all;
+  pcl::PCLPointCloud2 cloud_all;
   for (size_t i = 0; i < file_indices.size (); ++i)
   {
     // Load the Point Cloud
-    sensor_msgs::PointCloud2 cloud;
+    pcl::PCLPointCloud2 cloud;
     loadCloud (argv[file_indices[i]], cloud);
     //pcl::PointCloud<pcl::PointXYZ> cloud;
     //pcl::io::loadPCDFile (argv[file_indices[i]], cloud);
     //cloud_all += cloud;
     pcl::concatenatePointCloud (cloud_all, cloud, cloud_all);
-    PCL_INFO ("Total number of points so far: %u. Total data size: %zu bytes.\n", cloud_all.width * cloud_all.height, cloud_all.data.size ());
+    PCL_INFO ("Total number of points so far: %u. Total data size: %lu bytes.\n", cloud_all.width * cloud_all.height, cloud_all.data.size ());
   }
 
   saveCloud ("output.pcd", cloud_all);

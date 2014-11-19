@@ -203,7 +203,7 @@ namespace pcl
         std::string tree_name_;
 
         /** \brief Delineates the point types of the field; maps to JSON "pointtype":string:
-         *  \note This is inconsistent with "point type" fields used in PointCloud2 and in other places in PCL
+         *  \note This is inconsistent with "point type" fields used in PCLPointCloud2 and in other places in PCL
          */
         std::string point_type_;
         

@@ -76,13 +76,9 @@ TYPED_TEST (TestGetBoundary, GetBoundaryHalfEdges)
 {
   typedef typename TestFixture::Mesh Mesh;
 
-  typedef typename Mesh::VertexIndex   VertexIndex;
-  typedef typename Mesh::HalfEdgeIndex HalfEdgeIndex;
-  typedef typename Mesh::FaceIndex     FaceIndex;
 
   typedef typename Mesh::VertexIndices   VertexIndices;
   typedef typename Mesh::HalfEdgeIndices HalfEdgeIndices;
-  typedef typename Mesh::FaceIndices     FaceIndices;
 
   //  0 -  1 -  2 -  3
   //  |    |    |    |

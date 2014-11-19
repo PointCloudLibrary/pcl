@@ -1,6 +1,6 @@
 #include <pcl/apps/cloud_composer/items/fpfh_item.h>
 #include <pcl/apps/cloud_composer/qt.h>
-
+#include <vtkRenderWindow.h>
 
 pcl::cloud_composer::FPFHItem::FPFHItem (QString name, pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfh_ptr, double radius)
   : CloudComposerItem (name)

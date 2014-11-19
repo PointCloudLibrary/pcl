@@ -101,7 +101,7 @@ namespace pcl
       ~Kmeans ();
 
       /** \brief This method sets the k-means cluster size.
-        * \param[in] number of clusters
+        * \param[in] k number of clusters
         */
       void
       setClusterSize (unsigned int k) {num_clusters_ = k;};

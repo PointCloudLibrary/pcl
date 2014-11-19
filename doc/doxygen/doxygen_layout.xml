@@ -18,7 +18,6 @@
       <tab type="files" visible="yes" title=""/>
       <tab type="globals" visible="yes" title=""/>
     </tab>
-    <tab type="dirs" visible="no" title=""/>
     <tab type="examples" visible="no" title=""/>  
   </navindex>
 

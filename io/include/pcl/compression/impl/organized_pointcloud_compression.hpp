@@ -280,7 +280,10 @@ namespace pcl
     {
       uint32_t cloud_width;
       uint32_t cloud_height;
-      float maxDepth, focalLength, disparityShift, disparityScale;
+      float maxDepth;
+      float focalLength;
+      float disparityShift = 0.0f;
+      float disparityScale;
 
       // disparity and rgb image data
       std::vector<uint16_t> disparityData;

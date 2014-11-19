@@ -34,11 +34,18 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
  */
 
 #ifndef PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
 #define	PCL_VISUALIZATION_IMAGE_VISUALIZER_HPP_
+
+#include <vtkVersion.h>
+#include <vtkContextActor.h>
+#include <vtkContextScene.h>
+#include <vtkImageData.h>
+#include <vtkImageFlip.h>
+#include <vtkPointData.h>
+#include <vtkImageViewer.h>
 
 #include <pcl/visualization/common/common.h>
 #include <pcl/search/organized.h>
@@ -252,7 +259,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {
@@ -261,7 +268,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -271,7 +278,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g), 
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));  
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
   am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
@@ -317,7 +324,7 @@ pcl::visualization::ImageViewer::addRectangle (
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();
-  max_pt_2d.x = max_pt_2d.y = std::numeric_limits<float>::min ();
+  max_pt_2d.x = max_pt_2d.y = -std::numeric_limits<float>::max ();
   // Search for the two extrema
   for (size_t i = 0; i < pp_2d.size (); ++i)
   {
@@ -326,7 +333,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -336,7 +343,7 @@ pcl::visualization::ImageViewer::addRectangle (
                    static_cast<unsigned char> (255.0 * g), 
                    static_cast<unsigned char> (255.0 * b));
   rect->setOpacity (opacity);
-  rect->set (min_pt_2d.x, min_pt_2d.y, (max_pt_2d.x - min_pt_2d.x), (max_pt_2d.y - min_pt_2d.y));
+  rect->set (min_pt_2d.x, min_pt_2d.y, max_pt_2d.x, max_pt_2d.y);
   am_it->actor->GetScene ()->AddItem (rect);
 
   return (true);
@@ -382,7 +389,7 @@ pcl::visualization::ImageViewer::showCorrespondences (
   setSize (source_img.width + target_img.width , std::max (source_img.height, target_img.height));
 
   // Set data size
-  if (data_size_ < (src_size + tgt_size))
+  if (data_size_ < static_cast<size_t> (src_size + tgt_size))
   {
     data_size_ = src_size + tgt_size;
     data_.reset (new unsigned char[data_size_]);
@@ -429,9 +436,13 @@ pcl::visualization::ImageViewer::showCorrespondences (
   
   vtkSmartPointer<vtkImageData> image = vtkSmartPointer<vtkImageData>::New ();
   image->SetDimensions (source_img.width + target_img.width, std::max (source_img.height, target_img.height), 1);
+#if VTK_MAJOR_VERSION < 6
   image->SetScalarTypeToUnsignedChar ();
   image->SetNumberOfScalarComponents (3);
   image->AllocateScalars ();
+#else
+  image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+#endif
   image->GetPointData ()->GetScalars ()->SetVoidArray (data, data_size_, 1);
   vtkSmartPointer<PCLContextImageItem> image_item = vtkSmartPointer<PCLContextImageItem>::New ();
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))

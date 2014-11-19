@@ -44,7 +44,7 @@
 
 #include <pcl/common/point_operators.h>
 #include <pcl/point_types.h>
-#include <pcl/ros/register_point_struct.h>
+#include <pcl/register_point_struct.h>
 
 namespace pcl
 {
@@ -77,8 +77,8 @@ namespace pcl
         }
 
         /** \brief Equal comparison operator - set to false
-         * \param[in] OctreePointCloudVoxelCentroidContainer to compare with
          */
+         // param[in] OctreePointCloudVoxelCentroidContainer to compare with
         virtual bool operator==(const OctreeContainerBase&) const
         {
           return ( false );
@@ -168,8 +168,7 @@ namespace pcl
         }
 
         /** \brief Add DataT object to leaf node at octree key.
-          * \param[in] key_arg octree key addressing a leaf node.
-          * \param[in] data_arg DataT object to be added.
+          * \param pointIdx_arg
           */
         virtual void 
         addPointIdx (const int pointIdx_arg)

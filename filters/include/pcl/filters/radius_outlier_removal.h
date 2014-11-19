@@ -131,7 +131,7 @@ namespace pcl
       /** \brief Get the number of neighbors that need to be present in order to be classified as an inlier.
         * \details The number of points within setRadiusSearch() from the query point will need to be equal or greater
         * than this number in order to be classified as an inlier point (i.e. will not be filtered).
-        * \param min_pts The minimum number of neighbors (default = 1).
+        * \return The minimum number of neighbors (default = 1).
         */
       inline int
       getMinNeighborsInRadius ()
@@ -190,25 +190,25 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS RadiusOutlierRemoval<sensor_msgs::PointCloud2> : public Filter<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS RadiusOutlierRemoval<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
   {
-    using Filter<sensor_msgs::PointCloud2>::filter_name_;
-    using Filter<sensor_msgs::PointCloud2>::getClassName;
+    using Filter<pcl::PCLPointCloud2>::filter_name_;
+    using Filter<pcl::PCLPointCloud2>::getClassName;
 
-    using Filter<sensor_msgs::PointCloud2>::removed_indices_;
-    using Filter<sensor_msgs::PointCloud2>::extract_removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::removed_indices_;
+    using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
 
     typedef pcl::search::Search<pcl::PointXYZ> KdTree;
     typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
 
-    typedef sensor_msgs::PointCloud2 PointCloud2;
-    typedef PointCloud2::Ptr PointCloud2Ptr;
-    typedef PointCloud2::ConstPtr PointCloud2ConstPtr;
+    typedef pcl::PCLPointCloud2 PCLPointCloud2;
+    typedef PCLPointCloud2::Ptr PCLPointCloud2Ptr;
+    typedef PCLPointCloud2::ConstPtr PCLPointCloud2ConstPtr;
 
     public:
       /** \brief Empty constructor. */
       RadiusOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<sensor_msgs::PointCloud2>::Filter (extract_removed_indices), 
+        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices),
         search_radius_ (0.0), min_pts_radius_ (1), tree_ ()
       {
         filter_name_ = "RadiusOutlierRemoval";
@@ -262,7 +262,7 @@ namespace pcl
       KdTreePtr tree_;
 
       void
-      applyFilter (PointCloud2 &output);
+      applyFilter (PCLPointCloud2 &output);
   };
 }
 

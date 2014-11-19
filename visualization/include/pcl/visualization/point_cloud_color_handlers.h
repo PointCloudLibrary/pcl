@@ -126,7 +126,7 @@ namespace pcl
         int field_idx_;
 
         /** \brief The list of fields available for this PointCloud. */
-        std::vector<sensor_msgs::PointField> fields_;
+        std::vector<pcl::PCLPointField> fields_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -431,16 +431,144 @@ namespace pcl
         std::string field_name_;
     };
 
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as
+      * the color at each point. Transparency is handled.
+      * \author Nizar Sallem
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerRGBAField : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointT> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField ()
+        {
+          capable_ = false;
+        }
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud)
+          : PointCloudColorHandler<PointT> (cloud)
+        {
+          setInputCloud (cloud);
+        }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerRGBAField () {}
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("rgba"); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
+
+      protected:
+        /** \brief Class getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerRGBAField"); }
+
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::field_idx_;
+        using PointCloudColorHandler<PointT>::fields_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Label field handler class for colors. Paints the points according to their
+      * labels, assigning a unique color from a predefined color lookup table to each label.
+      * \author Sergey Alexandrov
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerLabelField : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointT> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerLabelField ()
+        {
+          capable_ = false;
+        }
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud)
+          : PointCloudColorHandler<PointT> (cloud)
+        {
+          setInputCloud (cloud);
+        }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerLabelField () {}
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("label"); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and 
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
+
+      protected:
+        /** \brief Class getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerLabelField"); }
+
+      private:
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::field_idx_;
+        using PointCloudColorHandler<PointT>::fields_;
+    };
+
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors.
       * \author Radu B. Rusu 
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandler<pcl::PCLPointCloud2>
     {
       public:
-        typedef sensor_msgs::PointCloud2 PointCloud;
+        typedef pcl::PCLPointCloud2 PointCloud;
         typedef PointCloud::Ptr PointCloudPtr;
         typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -503,9 +631,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerRandom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRandom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -515,7 +643,7 @@ namespace pcl
 
         /** \brief Constructor. */
         PointCloudColorHandlerRandom (const PointCloudConstPtr &cloud) :
-          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud)
+          PointCloudColorHandler<pcl::PCLPointCloud2> (cloud)
         {
           capable_ = true;
         }
@@ -547,9 +675,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerCustom<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerCustom<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -557,7 +685,7 @@ namespace pcl
         /** \brief Constructor. */
         PointCloudColorHandlerCustom (const PointCloudConstPtr &cloud,
                                       double r, double g, double b) :
-          PointCloudColorHandler<sensor_msgs::PointCloud2> (cloud),
+          PointCloudColorHandler<pcl::PCLPointCloud2> (cloud),
           r_ (r), g_ (g), b_ (b)
         {
           capable_ = true;
@@ -594,9 +722,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerRGBField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -634,9 +762,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerHSVField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerHSVField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -681,9 +809,9 @@ namespace pcl
       * \ingroup visualization
       */
     template <>
-    class PCL_EXPORTS PointCloudColorHandlerGenericField<sensor_msgs::PointCloud2> : public PointCloudColorHandler<sensor_msgs::PointCloud2>
+    class PCL_EXPORTS PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
     {
-      typedef PointCloudColorHandler<sensor_msgs::PointCloud2>::PointCloud PointCloud;
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
       typedef PointCloud::Ptr PointCloudPtr;
       typedef PointCloud::ConstPtr PointCloudConstPtr;
 
@@ -719,6 +847,89 @@ namespace pcl
         /** \brief Name of the field used to create the color handler. */
         std::string field_name_;
     };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as
+      * the color at each point. Transparency is handled.
+      * \author Nizar Sallem
+      * \ingroup visualization
+      */
+    template <>
+    class PCL_EXPORTS PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
+    {
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerRGBAField<PointCloud> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerRGBAField<PointCloud> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerRGBAField (const PointCloudConstPtr &cloud);
+
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerRGBAField () {}
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Get the name of the class. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerRGBAField"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("rgba"); }
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Label field handler class for colors. Paints the points according to their
+      * labels, assigning a unique color from a predefined color lookup table to each label.
+      * \author Sergey Alexandrov
+      * \ingroup visualization
+      */
+    template <>
+    class PCL_EXPORTS PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
+    {
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointCloud> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointCloud> > ConstPtr;
+
+        /** \brief Constructor. */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud);
+
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerLabelField () {}
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Get the name of the class. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerLabelField"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("label"); }
+    };
+
   }
 }
 

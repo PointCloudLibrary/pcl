@@ -486,25 +486,22 @@ namespace pcl
       void
       clusterCorrespondences (std::vector<Correspondences> &model_instances);
 
-      ///** \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
-      //  * 
-      //  * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
-      //  * \param[in] corrs a set of correspondences.
-      //  * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
-      //  * \return true if the recognition had been successful or false if errors have occurred.
-      //  */
+      /*  \brief Finds the transformation matrix between the input and the scene cloud for a set of correspondences using a RANSAC algorithm.
+        * \param[in] the scene cloud in which the PointSceneT has been converted to PointModelT.
+        * \param[in] corrs a set of correspondences.
+        * \param[out] transform the transformation matrix between the input cloud and the scene cloud that aligns the found correspondences.
+        * \return true if the recognition had been successful or false if errors have occurred.
+        */
       //bool
       //getTransformMatrix (const PointCloudConstPtr &scene_cloud, const Correspondences &corrs, Eigen::Matrix4f &transform);
 
       /** \brief The Hough space voting procedure.
-        *
         * \return true if the voting had been successful or false if errors have occurred.
         */
       bool
       houghVoting ();
 
       /** \brief Computes the reference frame for an input cloud.
-        * 
         * \param[in] input the input cloud.
         * \param[out] rf the resulting reference frame.
         */

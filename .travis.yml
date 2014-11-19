@@ -1,0 +1,46 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+env:
+  matrix:
+    - TASK="build"
+  global:
+    - secure: XQw5SBf/7b1SHFR+kKklBWhWVgNvm4vIi+wwyajFSbDLOPpsAqtnDKeA2DV9ciaQJ3CVAvBoyxYgzAvpbsb5k95jadbvu9aSlo/AQnAbz+8DhkJL25DwJAn8G4s4zD1MFi7P4fxJHZsv/l9UcdW4BzjEhh0VidWCO4hP6I9BAQc=
+    - secure: dRKTSeQI2Jad+/K9XCkNZxuu8exPi2wGzf6D0ogd1Nb2ZIUsOtnHSME4DO+xv7F5ZYrythHTrfezQl5hhcK+cr7A12okxlvmF/gVFuGCBPkUbyWPOrxx/Ic5pqdVnmrMFG1hFmr1KmOxCVx0F48JfGNd4ZgtUBAmnIomRp8sXRI=
+    - secure: ah6/Y0D8bBFfAU38RdWsLJ/0Gp5uN5KEHVOnyhEUx1wDaBcDl9+aIE9Xyah44ei/fqQg1MXBfgMnaF7oHpDs4dAKITYP4wV8WDX1DCl1dalIrWMTSFYRknc3Y6hT+HadMlkcV9CCLEhZ7gyyNkm+idbekt/WbQE6Jls/vBhdZxI=
+    - secure: V8XIEPjagHSFInXjogs8ypsC/gL5dq4VENYZbC9q8KYrNT9y1DLnMgNh9pGad25OjOqftBFwsgx6QYo357+MwpynfF+KcYNybjuR/vVGXpLcm0Uytnp6bE7oQbQ1s806TlXHb0Xk/bO2cLRYCCMCkhUOm+Dreu1uhKpoI/z0VMs=
+    - secure: vPRheiXkGnzBHRaVFsA3VtwK6DtWG48VIdbOxboaR6jb9jT9yNz5EQrapiLOFFkhGsZ1mCgeunR58BGUPiSl8gEvOheBBUgZW6x8kbHDpxSUc2H70bLRAKxP4t8e3ZDFg2RjGnvXkGhzUTu9oWnbfWxGAILJAOpNoT0MqDgP+Z0=
+    - secure: bT9kXekVN89zJeS4IEobLOeuAmRJqsgTjZky/mGqmOY1H8oIgcHC+41twB+nxkaU2mQskOvG45UwnAAW/8X6WdTbwKYeFWI5mXpCiXoiGL/dsYiig3GzYYv32ZJQL9B8tkEW6Xc0GY6v4K91Xw+HoKLi/tjxh3NjQxpfktwwCBQ=
+    - secure: kp5CTFyo/E5+v382ypD1mIP7RIVOq5A1NDur1NrYI9or+8+zGcK5A2/Ex6Bb6rac5l7cVcqx6Xel+clxH2eQP2D8GqkaxdZs/u9L7MdFqsfn/QYOIshYlowRoLX86W0KOhsTdLLv2mOS6DnWhIuhgDfrczD3hFQdP9PMTBpd65A=
+    - secure: YXJJRdv5OD/Qo1vNqPnFfx//SotxecFQyXjzEKQ8Zxu+EfVKVs95DUiUX+hiDlPrVGKhI3kTvza+lkaIv9fkjWiwSja5LsUbW/+2cwkhoHmOzVtdcpascfP7fcXc0kWTuvg1FLGNBv26SEym1FfNzp0Sm+ANZsCc4fQVXjDhQSY=
+    - secure: wyWnJoZydXcFW359Vid6YfG9l0WTFqIpuEhgFV8gtSbkrSU0JrrUrKuN5ld/cPb+sRa/I8FAftSDsH4CW67impwLmfNfGf4wZTOBvBKyDGjlI+TLEo4ew/yq+MYIkkEleCWOj5eUkAHPHUUhJzI8SvX+ZuxiJEXapoV0xymbrig=
+    - secure: vCvNI8egL2DRCicbWTuLOyXiW8478tedYvRneDMtCDB2lYToG32sYY0fS9KIciNohgObC8dbVraScgobL5cL4Ir4qrTUfBvGJ71OOMVujNEvkTts4YyI5zhA1PeEJ9+xcbQkE0/f78g7HQnd2LjZLXSxxrFVyJnjGaq1siNNRik=
+    - secure: iUjKlT1bJq3pZp3tS0yOmycSZwmGSbrfTe9fWs0P78o3WRYlzBx4IWa+RZb1l0l6LpCUo00wdgeKKhvzClHFza31fumZJKkFeDf/jxAM2TtSbcIxxXwqpi4yJJZs7SkYrU/lugv0NI6UHtl5wAkIp8sjtCCHVYJjlYNHaLhL75o=
+    - secure: DWrK3JsbzV5iUK3Xj6MpVWwlZv85GxdLl8c73ONcynZJ1tzUU3bfdvOtMxJrAnmH9QANw5RGORgbOyiDnvydCCpmL9RjswFqfkQX0mRTV8UYDPlJ1bBZJkX8I97yw8W1UyK1Q76kfr5bZjhikpsS/81Ll6z6Kj9FOte6KFfbznk=
+    - secure: B32G/fehtPQdu1bF+dbCJ/Eo22MiszxZj7UOwNggRFifoxTmRdffZyuqapW0PLCTbBEvlS6UfajGOmVvZx5QH8Q/gtutJqXDTMgWpOai66JUwnpn6AX6NnhFGc+s2cpp3V2+5I26OrFkaXTcS7flz32XJdKZmPgvjY1qoppmyzo=
+    - secure: u0cyLpY3LVF1gA8Sj4Q7X4Xv4bBT7m8IBDnm/AS412H0dM47dcFu8uxVFgWRu3WrM8T87Uc7+ftHkxKJezXgDPEVUixAnwLg2nEVEf6v3HC/HW+X9m98q1mELKXTLxc/f57rAIhhYPkjQh+leg6JmrhG1t0X7kh7d3CY0wwdSL0=
+    - secure: KlIjQVEWlr+H/PAKIAcKS6WO1EFBdXXvXLisEnferB1RWgGwuLRgtIZzI+BJdt/7BMSyWvRExqt6xNyfqpxKXl1kdJawc3rpeYufklHQgmB2qGBSrpMtNr0S3gPFePBdnETbdPHwA63QCrpRKcrHqJxmeIzAmstH736iRXuubFs=
+    - secure: ldwk79cqSgaEUZLt5rbNLRcNaVf/bx2zjBEDbvzAF9JCqVx/L5zCRTr5raHsxzBOzz25Qs3nFW81e1WLwxMAWshvI7EM/YG8GXqECvJGWpHBwcZI1SVP3zMhpH/jJE8vbMFaM2NOmhMT03z91vt0NlvR4DJMY0KV351awGSL2Do=
+    - secure: SyLCwwc+jjkdmNUkRdGRDR2lNrPCu1ZvPstvVWQke5uw3BlnVKXWK7V3yq9g11ZsCl/7aldBexjf7pqeXbJ5Wl5goiI3E+/Ooujd/EWkMn9K3YlG57p8Zdw/A/fUMJgAH3qrM//ihdO0KDJD8eCGLlm4qV0SnlWFPQ+Dy8BsAc8=
+    - secure: DaqjsZS60Y070Gw2lUNltzDltiYKB8IlYqsp0SyOjZAKlDGgp97+9YGEaIGcKF1qw3VGswg+7rrjWQ59iiwstTqgvx1mTTik0Qc0RCc8GtvIm+PS9TOhWxQginmhZmET9QKnGB7uj6K63qN8V8MZakZWIJxgUXx8jGiCTD22/eQ=
+    - secure: x4x3vHY6Wf4kxjAT8dbWRl8n4PxTGv8RtzfGIZYXvJgbnY2qW+cJ8Edp64V1LegvQbBQmKqAP9YSLHwZsuL3LxfVqt/seRs+DJMDVUd9jVYmym0rPqemJLezapalEg6qfLuoeNkDPWvIVccQCDEBPfaUdD0ZXYo44LS5jIV0+T8=
+    - secure: Pm2hyxdSLnY3ltrAva0FwNWWEQQcnf1JK2Fhjc3sWFpStMF7Obk93u4G5M6f2f28ZY6HFaMRYC1qEz/+yMIjsusIv8j0E6hgB/EnoM0dlxCc0aryH3X2IOYBVjRMjOFPmhYbNBoMmZWLluHWSyVSqr9k9nxowMfM3mi4fah11aQ=
+    - secure: WTZ238yAEfXRyll1n8yau3FUW9HTvq6scKIl9AmNZrnzTr9dktupWrBVV6CtvaufT1mSmDigZ7VGC6T71HkyRIyb2qfVTrnjnxE96Wtcci6PfkuQc2L2puuZYo8dXaBRoOgJKGHFo/uKVKWnp7t55dp3lBJJmclHhon+K2hMSJw=
+    - secure: LNsNoBvqY/jYDoBjWCE5cM+f1H8xOwSBc/tbWZo6E/jPRjUOLzXSicMMUMrlVto+bFzSUT8OVajV3XmoRx+Qntzv6bDSAGjdycvHd2YZQPn8BYrsFtR4So7SsJkF9FlxzbiOXaiSRpwGn7TP/DO7Neubrr4IS2ef4nWowGrnCE8=
+    - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
+matrix:
+  include:
+    - compiler: clang
+      env: TASK="test"
+    - env: TASK="doc"
+before_install:
+  - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
+  - sudo add-apt-repository ppa:apokluda/boost1.53 -y
+  - sudo add-apt-repository ppa:yade-users/external -y
+  - sudo add-apt-repository ppa:libreoffice/ppa -y
+  - sudo apt-get update -d
+install:
+  - sudo apt-get install libvtk5-qt4-dev libflann-dev libeigen3-dev libopenni-dev libqhull-dev libboost-filesystem1.53-dev libboost-iostreams1.53-dev libboost-thread1.53-dev libboost-chrono1.53-dev libusb-1.0-0-dev libgtest-dev
+script:
+  - bash .travis.sh

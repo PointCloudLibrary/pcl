@@ -627,6 +627,8 @@ namespace pcl
         * being removed by the filter
         * \param extract_removed_indices extract filtered indices from indices vector
         */
+      PCL_DEPRECATED ("ConditionalRemoval(ConditionBasePtr condition, bool extract_removed_indices = false) is deprecated, "
+      "please use the setCondition (ConditionBasePtr condition) function instead.")
       ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
         Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
         user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
@@ -681,8 +683,6 @@ namespace pcl
         */
       void
       applyFilter (PointCloud &output);
-
-      typedef typename pcl::traits::fieldList<PointT>::type FieldList;
 
       /** \brief True if capable. */
       bool capable_;

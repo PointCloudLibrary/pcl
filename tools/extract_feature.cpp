@@ -36,7 +36,7 @@
  *
  */
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/print.h>
@@ -77,7 +77,7 @@ printHelp (int, char **argv)
 }
 
 bool
-loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
+loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 {
   TicToc tt;
   print_highlight ("Loading "); print_value ("%s ", filename.c_str ());
@@ -93,7 +93,7 @@ loadCloud (const std::string &filename, sensor_msgs::PointCloud2 &cloud)
 
 template <typename FeatureAlgorithm, typename PointIn, typename NormalT, typename PointOut>
 void
-computeFeatureViaNormals (const sensor_msgs::PointCloud2::ConstPtr &input, sensor_msgs::PointCloud2 &output,
+computeFeatureViaNormals (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
          int argc, char** argv, bool set_search_flag = true)
 {
   int n_k = default_n_k;
@@ -107,7 +107,7 @@ computeFeatureViaNormals (const sensor_msgs::PointCloud2::ConstPtr &input, senso
 
   // Convert data to PointCloud<PointIn>
   typename PointCloud<PointIn>::Ptr xyz (new PointCloud<PointIn>);
-  fromROSMsg (*input, *xyz);
+  fromPCLPointCloud2 (*input, *xyz);
 
   // Estimate
   TicToc tt;
@@ -142,11 +142,11 @@ computeFeatureViaNormals (const sensor_msgs::PointCloud2::ConstPtr &input, senso
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output.width * output.height); print_info (" points]\n");
 
   // Convert data back
-  toROSMsg (output_features, output);
+  toPCLPointCloud2 (output_features, output);
 }
 
 void
-saveCloud (const std::string &filename, const sensor_msgs::PointCloud2 &output)
+saveCloud (const std::string &filename, const pcl::PCLPointCloud2 &output)
 {
   TicToc tt;
   tt.tic ();
@@ -184,12 +184,12 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-feature", feature_name);
 
   // Load the first file
-  sensor_msgs::PointCloud2::Ptr cloud (new sensor_msgs::PointCloud2);
+  pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
   if (!loadCloud (argv[p_file_indices[0]], *cloud))
     return (-1);
 
   // Perform the feature estimation
-  sensor_msgs::PointCloud2 output;
+  pcl::PCLPointCloud2 output;
   if (feature_name == "PFHEstimation") 
     computeFeatureViaNormals< PFHEstimation<PointXYZ, Normal, PFHSignature125>, PointXYZ, Normal, PFHSignature125>
       (cloud, output, argc, argv);

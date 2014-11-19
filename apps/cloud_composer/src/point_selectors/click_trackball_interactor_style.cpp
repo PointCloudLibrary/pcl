@@ -51,7 +51,7 @@ void
 pcl::cloud_composer::ClickTrackballStyleInteractor::OnLeftButtonUp ()
 {
   vtkInteractorStyleTrackballActor::OnLeftButtonUp();
-  vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
+  vtkSmartPointer<vtkActor> selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
   if (selected_actor)
   {
     ManipulationEvent* manip_event = new ManipulationEvent ();
@@ -86,7 +86,7 @@ void
 pcl::cloud_composer::ClickTrackballStyleInteractor::OnRightButtonUp ()
 {
   vtkInteractorStyleTrackballActor::OnRightButtonUp();
-  vtkActor* selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
+  vtkSmartPointer<vtkActor> selected_actor = vtkActor::SafeDownCast(this->InteractionProp);
   if (selected_actor)
   {
     ManipulationEvent* manip_event = new ManipulationEvent ();

@@ -43,6 +43,8 @@
 #include <pcl/io/boost.h>
 #include <cmath>
 #include <sstream>
+#include <pcl/PolygonMesh.h>
+#include <pcl/TextureMesh.h>
 
 namespace pcl
 {
@@ -81,11 +83,11 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       virtual int 
-      readHeader (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
+      readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
                   Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
                   int &file_version, int &data_type, unsigned int &data_idx, const int offset = 0) = 0;
 
-      /** \brief Read a point cloud data from a FILE file and store it into a sensor_msgs/PointCloud2.
+      /** \brief Read a point cloud data from a FILE file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
         * \param[out] origin the sensor acquisition origin (only for > FILE_V7 - null if not present)
@@ -98,14 +100,14 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       virtual int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, 
+      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &file_version, 
             const int offset = 0) = 0;
 
-      /** \brief Read a point cloud data from a FILE file (FILE_V6 only!) and store it into a sensor_msgs/PointCloud2.
+      /** \brief Read a point cloud data from a FILE file (FILE_V6 only!) and store it into a pcl/PCLPointCloud2.
         * 
         * \note This function is provided for backwards compatibility only and
-        * it can only read FILE_V6 files correctly, as sensor_msgs::PointCloud2
+        * it can only read FILE_V6 files correctly, as pcl::PCLPointCloud2
         * does not contain a sensor origin/orientation. Reading any file 
         * > FILE_V6 will generate a warning. 
         *
@@ -119,7 +121,7 @@ namespace pcl
         * to the next byte after the header (e.g., 513).
         */
       int 
-      read (const std::string &file_name, sensor_msgs::PointCloud2 &cloud, const int offset = 0)
+      read (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0)
       {
         Eigen::Vector4f origin;
         Eigen::Quaternionf orientation;
@@ -139,7 +141,7 @@ namespace pcl
       template<typename PointT> inline int
       read (const std::string &file_name, pcl::PointCloud<PointT> &cloud, const int offset  =0)
       {
-        sensor_msgs::PointCloud2 blob;
+        pcl::PCLPointCloud2 blob;
         int file_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_, 
                         file_version, offset);
@@ -147,7 +149,7 @@ namespace pcl
         // Exit in case of error
         if (res < 0)
           return res;
-        pcl::fromROSMsg (blob, cloud);
+        pcl::fromPCLPointCloud2 (blob, cloud);
         return (0);
       }
   };
@@ -175,7 +177,7 @@ namespace pcl
         * FILE format, false (default) for ASCII
         */
       virtual int
-      write (const std::string &file_name, const sensor_msgs::PointCloud2 &cloud, 
+      write (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              const bool binary = false) = 0;
@@ -189,7 +191,7 @@ namespace pcl
         * \param[in] orientation the sensor acquisition orientation
         */
       inline int
-      write (const std::string &file_name, const sensor_msgs::PointCloud2::ConstPtr &cloud, 
+      write (const std::string &file_name, const pcl::PCLPointCloud2::ConstPtr &cloud,
              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity (),
              const bool binary = false)
@@ -211,8 +213,8 @@ namespace pcl
         Eigen::Vector4f origin = cloud.sensor_origin_;
         Eigen::Quaternionf orientation = cloud.sensor_orientation_;
 
-        sensor_msgs::PointCloud2 blob;
-        pcl::toROSMsg (cloud, blob);
+        pcl::PCLPointCloud2 blob;
+        pcl::toPCLPointCloud2 (cloud, blob);
 
         // Save the data
         return (write (file_name, blob, origin, orientation, binary));
@@ -231,7 +233,7 @@ namespace pcl
     * \param[out] stream the ostringstream to copy into
     */
   template <typename Type> inline void
-  copyValueString (const sensor_msgs::PointCloud2 &cloud, 
+  copyValueString (const pcl::PCLPointCloud2 &cloud,
                    const unsigned int point_index, 
                    const int point_size, 
                    const unsigned int field_idx, 
@@ -246,7 +248,7 @@ namespace pcl
       stream << boost::numeric_cast<Type>(value);
   }
   template <> inline void
-  copyValueString<int8_t> (const sensor_msgs::PointCloud2 &cloud, 
+  copyValueString<int8_t> (const pcl::PCLPointCloud2 &cloud,
                            const unsigned int point_index, 
                            const int point_size, 
                            const unsigned int field_idx, 
@@ -262,7 +264,7 @@ namespace pcl
       stream << boost::numeric_cast<int>(value);
   }
   template <> inline void
-  copyValueString<uint8_t> (const sensor_msgs::PointCloud2 &cloud, 
+  copyValueString<uint8_t> (const pcl::PCLPointCloud2 &cloud,
                             const unsigned int point_index, 
                             const int point_size, 
                             const unsigned int field_idx, 
@@ -289,7 +291,7 @@ namespace pcl
     * \return true if the value is finite, false otherwise
     */
   template <typename Type> inline bool
-  isValueFinite (const sensor_msgs::PointCloud2 &cloud, 
+  isValueFinite (const pcl::PCLPointCloud2 &cloud,
                  const unsigned int point_index, 
                  const int point_size, 
                  const unsigned int field_idx, 
@@ -314,7 +316,7 @@ namespace pcl
     * \param[in] fields_count the current fields count
     */
   template <typename Type> inline void
-  copyStringValue (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+  copyStringValue (const std::string &st, pcl::PCLPointCloud2 &cloud,
                    unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     Type value;
@@ -337,7 +339,7 @@ namespace pcl
   }
 
   template <> inline void
-  copyStringValue<int8_t> (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+  copyStringValue<int8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     int8_t value;
@@ -363,7 +365,7 @@ namespace pcl
   }
 
   template <> inline void
-  copyStringValue<uint8_t> (const std::string &st, sensor_msgs::PointCloud2 &cloud,
+  copyStringValue<uint8_t> (const std::string &st, pcl::PCLPointCloud2 &cloud,
                            unsigned int point_index, unsigned int field_idx, unsigned int fields_count)
   {
     uint8_t value;
@@ -386,6 +388,77 @@ namespace pcl
     memcpy (&cloud.data[point_index * cloud.point_step + 
                         cloud.fields[field_idx].offset + 
                         fields_count * sizeof (uint8_t)], reinterpret_cast<char*> (&value), sizeof (uint8_t));
+  }
+
+  namespace io
+  {
+    /** \brief Load a file into a PointCloud2 according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] blob the resultant pcl::PointCloud2 blob
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::PCLPointCloud2& blob);
+
+    /** \brief Load a file into a template PointCloud type according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] cloud the resultant templated point cloud
+      * \ingroup io
+      */
+    template<typename PointT> int
+    load (const std::string& file_name, pcl::PointCloud<PointT>& cloud);
+
+    /** \brief Load a file into a PolygonMesh according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant pcl::PolygonMesh
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::PolygonMesh& mesh);
+
+    /** \brief Load a file into a TextureMesh according to extension.
+      * \param[in] file_name the name of the file to load
+      * \param[out] mesh the resultant pcl::TextureMesh
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    load (const std::string& file_name, pcl::TextureMesh& mesh);
+
+    /** \brief Save point cloud data to a binary file when available else to ASCII.
+      * \param[in] file_name the output file name
+      * \param[in] blob the point cloud data message
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string& file_name, const pcl::PCLPointCloud2& blob, unsigned precision = 5);
+
+    /** \brief Save point cloud to a binary file when available else to ASCII.
+      * \param[in] file_name the output file name
+      * \param[in] cloud the point cloud
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    template<typename PointT> int
+    save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, unsigned precision = 5);
+
+    /** \brief Saves a TextureMesh to a binary file when available else to ASCII.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] tex_mesh the texture mesh to save
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string &file_name, const pcl::TextureMesh &tex_mesh, unsigned precision = 5);
+
+    /** \brief Saves a PolygonMesh to a binary file when available else to ASCII.
+      * \param[in] file_name the name of the file to write to disk
+      * \param[in] mesh the polygonal mesh to save
+      * \param[in] precision float precision when saving to ASCII files
+      * \ingroup io
+      */
+    PCL_EXPORTS int
+    save (const std::string &file_name, const pcl::PolygonMesh &mesh, unsigned precision = 5);
   }
 }
 

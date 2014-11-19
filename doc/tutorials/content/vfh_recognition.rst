@@ -60,7 +60,7 @@ manually.
 
 
 Our Kd-Tree implementation of choice for the purpose of this tutorial is of
-course, `FLANN <http://www.cs.ubc.ca/~mariusm/index.php/FLANN/FLANN>`_.
+course, `FLANN <http://www.cs.ubc.ca/research/flann/>`_.
 
 
 Training
@@ -78,7 +78,7 @@ below:
 Since we're only trying to cover the explicity training/testing of VFH
 signatures in this tutorial, we provide a set of datasets already collected at:
 `vfh_recognition_tutorial_data.tbz
-<http://svn.pointclouds.org/data/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_.
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_.
 The data is a subset of the objects presented in the figure below (left), and
 look like the point clouds on the right. We used the pan-tilt table shown above
 to acquire the data.
@@ -254,14 +254,14 @@ Create a new ``CMakeLists.txt`` file, and put the following content into it
 
 .. note::
 	
-	If you are running this tutorial on Windows, you have to install (`HDF5 1.8.7 Shared Library <http://www.hdfgroup.org/ftp/HDF5/hdf5-1.8.7/bin/windows/>`_). If CMake is not able to find HDF5, 
+	If you are running this tutorial on Windows, you have to install (`HDF5 1.8.7 Shared Library <http://www.hdfgroup.org/ftp/HDF5/current/bin/windows/>`_). If CMake is not able to find HDF5, 
 	you can manually supply the include directory in HDF5_INCLUDE_DIR variable and the full path of **hdf5dll.lib** in HDF5_hdf5_LIBRARY variable. 
 	Make sure that the needed dlls are in the same folder as the executables.
 
 The above assumes that your two source files (``build_tree.cpp`` and ``nearest_neighbors.cpp``) are stored into the *src/* subdirectory.
 
 Then, make sure that the datasets you downloaded (`vfh_recognition_tutorial_data.tbz
-<http://svn.pointclouds.org/data/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_) are unpacked in this directory, thus creating a *data/* subdirectory.
+<https://raw.github.com/PointCloudLibrary/data/master/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_) are unpacked in this directory, thus creating a *data/* subdirectory.
 
 After you have made the executable, you can run them like so::
 

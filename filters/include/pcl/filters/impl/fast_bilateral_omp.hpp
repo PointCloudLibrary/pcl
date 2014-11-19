@@ -56,7 +56,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   }
 
   copyPointCloud (*input_, output);
-  float base_max = std::numeric_limits<float>::min (),
+  float base_max = -std::numeric_limits<float>::max (),
         base_min = std::numeric_limits<float>::max ();
   bool found_finite = false;
   for (size_t x = 0; x < output.width; ++x)

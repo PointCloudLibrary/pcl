@@ -49,7 +49,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, QWidget *parent, Qt::WFlags flags)
+pcl::modeler::RenderWindow::RenderWindow(RenderWindowItem* render_window_item, QWidget *parent, Qt::WindowFlags flags)
   : QVTKWidget(parent, flags),
   axes_(vtkSmartPointer<vtkCubeAxesActor>::New()),
   render_window_item_(render_window_item)

@@ -41,7 +41,7 @@
 #define PCL_OUTOFCORE_OCTREE_BASE_NODE_H_
 
 #include <pcl/common/io.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/outofcore/boost.h>
 #include <pcl/outofcore/octree_base.h>
@@ -81,7 +81,7 @@ namespace pcl
      *
      *  \brief OutofcoreOctreeBaseNode Class internally representing nodes of an
      *  outofcore octree, with accessors to its data via the \ref
-     *  octree_disk_container class or \ref octree_ram_container class,
+     *  pcl::outofcore::OutofcoreOctreeDiskContainer class or \ref pcl::outofcore::OutofcoreOctreeRamContainer class,
      *  whichever it is templated against.  
      * 
      *  \ingroup outofcore
@@ -130,8 +130,8 @@ namespace pcl
 
         //query
         /** \brief gets the minimum and maximum corner of the bounding box represented by this node
-         * \param[out] minCoord returns the minimum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
-         * \param[out] maxCoord returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
+         * \param[out] min_bb returns the minimum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
+         * \param[out] max_bb returns the maximum corner of the bounding box indexed by 0-->X, 1-->Y, 2-->Z 
          */
         virtual inline void
         getBoundingBox (Eigen::Vector3d &min_bb, Eigen::Vector3d &max_bb) const
@@ -180,27 +180,28 @@ namespace pcl
          *  \param[out] dst_blob destion of points returned by the queries
          */
         virtual void
-        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const sensor_msgs::PointCloud2::Ptr &dst_blob);
+        queryBBIncludes (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, size_t query_depth, const pcl::PCLPointCloud2::Ptr &dst_blob);
 
         /** \brief Recursively add points that fall into the queried bounding box up to the \b query_depth 
          *
          *  \param[in] min_bb the minimum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] max_bb the maximum corner of the bounding box, indexed by X,Y,Z coordinates
          *  \param[in] query_depth
+         *  \param percent
          *  \param[out] v std::list of points returned by the query
          */
         virtual void
         queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const double percent, AlignedPointTVector &v);
 
         virtual void
-        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const sensor_msgs::PointCloud2::Ptr& dst_blob, double percent = 1.0);
+        queryBBIncludes_subsample (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, boost::uint64_t query_depth, const pcl::PCLPointCloud2::Ptr& dst_blob, double percent = 1.0);
 
         /** \brief Recursive acquires PCD paths to any node with which the queried bounding box intersects (at query_depth only).
          */
         virtual void
         queryBBIntersects (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const boost::uint32_t query_depth, std::list<std::string> &file_names);
 
-        /** \brief Write the voxel size to stdout at \ref query_depth 
+        /** \brief Write the voxel size to stdout at \c query_depth 
          * \param[in] query_depth The depth at which to print the size of the voxel/bounding boxes
          */
         virtual void
@@ -208,7 +209,7 @@ namespace pcl
 
         /** \brief add point to this node if we are a leaf, or find the leaf below us that is supposed to take the point 
          *  \param[in] p vector of points to add to the leaf
-         *  \param[in] skipBBCheck whether to check if the point's coordinates fall within the bounding box
+         *  \param[in] skip_bb_check whether to check if the point's coordinates fall within the bounding box
          */
         virtual boost::uint64_t
         addDataToLeaf (const AlignedPointTVector &p, const bool skip_bb_check = true);
@@ -216,17 +217,17 @@ namespace pcl
         virtual boost::uint64_t
         addDataToLeaf (const std::vector<const PointT*> &p, const bool skip_bb_check = true);
 
-        /** \brief Add a single PointCloud2 object into the octree.
+        /** \brief Add a single PCLPointCloud2 object into the octree.
          *
          * \param[in] input_cloud
          * \param[in] skip_bb_check (default = false)
          */
         virtual boost::uint64_t
-        addPointCloud (const sensor_msgs::PointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
+        addPointCloud (const pcl::PCLPointCloud2::Ptr &input_cloud, const bool skip_bb_check = false);
 
-        /** \brief Add a single PointCloud2 into the octree and build the subsampled LOD during construction; this method of LOD construction is <b>not</b> multiresolution. Rather, there are no redundant data. */
+        /** \brief Add a single PCLPointCloud2 into the octree and build the subsampled LOD during construction; this method of LOD construction is <b>not</b> multiresolution. Rather, there are no redundant data. */
         virtual boost::uint64_t
-        addPointCloud_and_genLOD (const sensor_msgs::PointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
+        addPointCloud_and_genLOD (const pcl::PCLPointCloud2::Ptr input_cloud); //, const bool skip_bb_check);
         
         /** \brief Recursively add points to the leaf and children subsampling LODs
          * on the way down.
@@ -243,7 +244,7 @@ namespace pcl
         writeVPythonVisual (std::ofstream &file);
 
         virtual int
-        read (sensor_msgs::PointCloud2::Ptr &output_cloud);
+        read (pcl::PCLPointCloud2::Ptr &output_cloud);
 
         virtual inline node_type_t
         getNodeType () const
@@ -312,9 +313,9 @@ namespace pcl
          * If creating root, path is full name. If creating any other
          * node, path is dir; throws exception if directory or metadata not found
          *
-         * \param[in] Directory pathname
+         * \param[in] directory_path pathname
          * \param[in] super
-         * \param[in] loadAll
+         * \param[in] load_all
          * \throws PCLException if directory is missing
          * \throws PCLException if node index is missing
          */
@@ -346,14 +347,14 @@ namespace pcl
         virtual size_t
         countNumChildren () const;
 
-        /** \brief Counts the number of loaded chilren by testing the \ref children_ array; 
+        /** \brief Counts the number of loaded chilren by testing the \c children_ array; 
          *  used to update num_loaded_chilren_ internally 
          */
         virtual size_t
         countNumLoadedChildren () const;
         
         /** \brief Save node's metadata to file
-         * \param[in] recursive: if false, save only this node's metadata to file; if true, recursively
+         * \param[in] recursive if false, save only this node's metadata to file; if true, recursively
          * save all children's metadata to files as well
          */
         void
@@ -386,23 +387,23 @@ namespace pcl
         addDataAtMaxDepth (const AlignedPointTVector &p, const bool skip_bb_check = true);
 
         /** \brief Add data to the leaf when at max depth of tree. If
-         *   \ref skip_bb_check is true, adds to the node regardless of the
+         *   \c skip_bb_check is true, adds to the node regardless of the
          *   bounding box it represents; otherwise only adds points that
          *   fall within the bounding box 
          *
-         *  \param[in] input_cloud PointCloud2 points to attempt to add to the tree; 
-         *  \warning PointCloud2 inserted into the tree must have x,y,z fields, and must be of same type of any other points inserted in the tree
+         *  \param[in] input_cloud PCLPointCloud2 points to attempt to add to the tree;
+         *  \warning PCLPointCloud2 inserted into the tree must have x,y,z fields, and must be of same type of any other points inserted in the tree
          *  \param[in] skip_bb_check (default true) if @b true, doesn't check that points
          *  are in the proper bounding box; if @b false, only adds the
          *  points that fall into the bounding box to this node 
          *  \return number of points successfully added
          */
         boost::uint64_t
-        addDataAtMaxDepth (const sensor_msgs::PointCloud2::Ptr input_cloud, const bool skip_bb_check = true);
+        addDataAtMaxDepth (const pcl::PCLPointCloud2::Ptr input_cloud, const bool skip_bb_check = true);
         
         /** \brief Tests whether the input bounding box intersects with the current node's bounding box 
          *  \param[in] min_bb The minimum corner of the input bounding box
-         *  \param[in] min_bb The maximum corner of the input bounding box
+         *  \param[in] max_bb The maximum corner of the input bounding box
          *  \return bool True if any portion of the bounding box intersects with this node's bounding box; false otherwise
          */
         inline bool
@@ -416,7 +417,7 @@ namespace pcl
         inline bool
         inBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb) const;
 
-        /** \brief Tests whether \ref point falls within the input bounding box
+        /** \brief Tests whether \c point falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          *  \param[in] point The test point
@@ -424,7 +425,7 @@ namespace pcl
         bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Vector3d &point);
 
-        /** \brief Tests whether \ref p falls within the input bounding box
+        /** \brief Tests whether \c p falls within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
          *  \param[in] p The point to be tested
@@ -432,10 +433,13 @@ namespace pcl
         static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const PointT &p);
 
-        /** \brief Tests whether \ref x, \ref y, and \ref z fall within the input bounding box
+        /** \brief Tests whether \c x, \c y, and \c z fall within the input bounding box
          *  \param[in] min_bb The minimum corner of the input bounding box
          *  \param[in] max_bb The maximum corner of the input bounding box
-         **/
+         *  \param x
+         *  \param y
+         *  \param z
+          **/
         static bool
         pointInBoundingBox (const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const double x, const double y, const double z);
 
@@ -443,7 +447,7 @@ namespace pcl
         inline bool
         pointInBoundingBox (const PointT &p) const;
 
-        /** \brief Creates child node \ref idx
+        /** \brief Creates child node \c idx
          *  \param[in] idx Index (0-7) of the child node
          */
         void
@@ -517,7 +521,7 @@ namespace pcl
          *  This could be overloaded with a parallelized implementation
          */
         void
-        sortOctantIndices (const sensor_msgs::PointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
+        sortOctantIndices (const pcl::PCLPointCloud2::Ptr &input_cloud, std::vector< std::vector<int> > &indices, const Eigen::Vector3d &mid_xyz);
 
         /** \brief Enlarges the shortest two sidelengths of the
          *  bounding box to a cubic shape; operation is done in

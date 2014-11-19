@@ -24,7 +24,7 @@ but it actually runs the equivalent of 'ccache g++'.
 
 Using colorgcc to colorize output
 ---------------------------------
-`colorgcc<https://github.com/johannes/colorgcc>`_ is a colorizer for the output
+`colorgcc <https://github.com/johannes/colorgcc>`_ is a colorizer for the output
 of GCC, and allows you to better interpret the compiler warnings/errors.
 
 To enable both colorgcc and ccache, perform the following steps:

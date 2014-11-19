@@ -88,6 +88,16 @@ namespace boost
     {
       typedef allow_parallel_edge_tag type;
     };
+
+  namespace detail
+  {
+    template <>
+      struct is_random_access<eigen_listS>
+      {
+        enum { value = false };
+        typedef mpl::false_ type;
+      };
+  }
 }
 
 #endif    // PCL_REGISTRATION_BOOST_GRAPH_H_

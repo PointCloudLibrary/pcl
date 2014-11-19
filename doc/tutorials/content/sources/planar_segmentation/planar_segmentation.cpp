@@ -9,31 +9,31 @@
 int
  main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
-  cloud.width  = 15;
-  cloud.height = 1;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud->width  = 15;
+  cloud->height = 1;
+  cloud->points.resize (cloud->width * cloud->height);
 
   // Generate the data
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud->points.size (); ++i)
   {
-    cloud.points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud.points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud.points[i].z = 1.0;
+    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    cloud->points[i].z = 1.0;
   }
 
   // Set a few outliers
-  cloud.points[0].z = 2.0;
-  cloud.points[3].z = -2.0;
-  cloud.points[6].z = 4.0;
+  cloud->points[0].z = 2.0;
+  cloud->points[3].z = -2.0;
+  cloud->points[6].z = 4.0;
 
-  std::cerr << "Point cloud data: " << cloud.points.size () << " points" << std::endl;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-    std::cerr << "    " << cloud.points[i].x << " " 
-                        << cloud.points[i].y << " " 
-                        << cloud.points[i].z << std::endl;
+  std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
+  for (size_t i = 0; i < cloud->points.size (); ++i)
+    std::cerr << "    " << cloud->points[i].x << " "
+                        << cloud->points[i].y << " "
+                        << cloud->points[i].z << std::endl;
 
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -46,7 +46,7 @@ int
   seg.setMethodType (pcl::SAC_RANSAC);
   seg.setDistanceThreshold (0.01);
 
-  seg.setInputCloud (cloud.makeShared ());
+  seg.setInputCloud (cloud);
   seg.segment (*inliers, *coefficients);
 
   if (inliers->indices.size () == 0)
@@ -62,9 +62,9 @@ int
 
   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
   for (size_t i = 0; i < inliers->indices.size (); ++i)
-    std::cerr << inliers->indices[i] << "    " << cloud.points[inliers->indices[i]].x << " "
-                                               << cloud.points[inliers->indices[i]].y << " "
-                                               << cloud.points[inliers->indices[i]].z << std::endl;
+    std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
+                                               << cloud->points[inliers->indices[i]].y << " "
+                                               << cloud->points[inliers->indices[i]].z << std::endl;
 
   return (0);
 }

@@ -12,6 +12,7 @@
 	- <a href="http://pointclouds.org/documentation/tutorials/reading_pcd.php#reading-pcd">Reading PointCloud data from PCD files</a>
 	- <a href="http://pointclouds.org/documentation/tutorials/writing_pcd.php#writing-pcd">Writing PointCloud data to PCD files</a>
 	- <a href="http://pointclouds.org/documentation/tutorials/openni_grabber.php#openni-grabber">The OpenNI Grabber Framework in PCL</a>
+	- <a href="http://pointclouds.org/documentation/tutorials/ensenso_cameras.php">Grabbing point clouds from Ensenso cameras</a>
 	
   PCL is agnostic with respect to the data sources that are used to generate 3D
   point clouds. While OpenNI-compatible cameras have recently been at the
@@ -31,5 +32,6 @@
   - \ref common "common"
   - \ref octree "octree"
 	- OpenNi for kinect handling
+	- uEye and Ensenso SDK for Ensenso handling
 
 */

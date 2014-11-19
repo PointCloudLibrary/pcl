@@ -72,9 +72,9 @@ namespace pcl
 	  template<bool use_max>
 	  struct IndOp
 	  {
-		  __device__ __forceinline__ tuple<float, int> operator()(const tuple<float, int>& e1, const tuple<float, int>& e2) const
+		  __device__ __forceinline__ thrust::tuple<float, int> operator()(const thrust::tuple<float, int>& e1, const thrust::tuple<float, int>& e2) const
 		  {	
-			  tuple<float, int> res;
+			  thrust::tuple<float, int> res;
 			  
 			  if (use_max)
 			    res.get<0>() = fmax(e1.get<0>(), e2.get<0>());			  			  
@@ -89,10 +89,10 @@ namespace pcl
 	  struct X
 	  {			  
 		  __device__ __forceinline__ 
-		  tuple<float, int> 
-		  operator()(const tuple<PointType, int>& in) const
+		  thrust::tuple<float, int> 
+		  operator()(const thrust::tuple<PointType, int>& in) const
 		  {
-			return tuple<float, int>(in.get<0>().x, in.get<1>());			  
+			return thrust::tuple<float, int>(in.get<0>().x, in.get<1>());			  
 		  }
 	  };
 
@@ -112,12 +112,12 @@ namespace pcl
 		  LineDist(const PointType& p1, const PointType& p2) : x1(tr(p1)), x2(tr(p2)) {}
 		  
 		  __device__ __forceinline__
-		  tuple<float, int> operator()(const tuple<PointType, int>& in) const
+		  thrust::tuple<float, int> operator()(const thrust::tuple<PointType, int>& in) const
 		  {			  
 			  float3 x0 = tr(in.get<0>());
 
 			  float dist = norm(cross(x0 - x1, x0 - x2))/norm(x1 - x2);			  
-			  return tuple<float, int>(dist, in.get<1>());
+			  return thrust::tuple<float, int>(dist, in.get<1>());
 		  }	      
 	  };
 
@@ -131,11 +131,11 @@ namespace pcl
 		  }
 		  
 		  __device__ __forceinline__
-		  tuple<float, int> operator()(const tuple<PointType, int>& in) const
+		  thrust::tuple<float, int> operator()(const thrust::tuple<PointType, int>& in) const
 		  {
 			  float3 x0 = tr(in.get<0>());
               float dist = fabs(dot(n, x0 - x1));
-			  return tuple<float, int>(dist, in.get<1>());
+			  return thrust::tuple<float, int>(dist, in.get<1>());
 		  }
 	  };
 	  
@@ -145,9 +145,9 @@ namespace pcl
 	    counting_iterator<int> cbeg(0);
 		counting_iterator<int> cend = cbeg + thrust::distance(beg, end);
 			 		
-	    tuple<float, int> t = transform_reduce( 
-		  make_zip_iterator(make_tuple(beg, cbeg)), 
-		  make_zip_iterator(make_tuple(end, cend)), 
+	    thrust::tuple<float, int> t = transform_reduce( 
+		  make_zip_iterator(thrust::make_tuple(beg, cbeg)), 
+		  make_zip_iterator(thrust::make_tuple(end, cend)), 
 		  unop, init, binary);
 		
 		return t.get<1>();
@@ -156,14 +156,14 @@ namespace pcl
 	  template<typename It, typename Unary>
       int transform_reduce_min_index(It beg, It end, Unary unop)
 	  {
-		tuple<float, int> min_tuple(std::numeric_limits<float>::max(), 0);
+		thrust::tuple<float, int> min_tuple(std::numeric_limits<float>::max(), 0);
 		return transform_reduce_index(beg, end, unop, min_tuple, IndOp<false>());
 	  }
 
 	  template<typename It, typename Unary>
       int transform_reduce_max_index(It beg, It end, Unary unop)
 	  {
-		tuple<float, int> max_tuple(std::numeric_limits<float>::min(), 0);
+		thrust::tuple<float, int> max_tuple(std::numeric_limits<float>::min(), 0);
 		return transform_reduce_index(beg, end, unop, max_tuple, IndOp<true>());
 	  }	 
   }

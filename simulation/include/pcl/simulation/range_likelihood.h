@@ -2,8 +2,15 @@
 #define PCL_RANGE_LIKELIHOOD
 
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
+#include <pcl/pcl_config.h>
+#ifdef OPENGL_IS_A_FRAMEWORK
+# include <OpenGL/gl.h>
+# include <OpenGL/glu.h>
+#else
+# include <GL/gl.h>
+# include <GL/glu.h>
+#endif
 
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/normal_distribution.hpp>

@@ -98,7 +98,7 @@ pcl::registration::TransformationEstimationSVDScale<PointSource, PointTarget, Sc
   scale2 = sum_tt_ / sum_ss;
   float scale = scale2;
   transformation_matrix.topLeftCorner (3, 3) = scale * R;
-  const Eigen::Matrix<Scalar, 3, 1> Rc (R * centroid_src.head (3));
+  const Eigen::Matrix<Scalar, 3, 1> Rc (scale * R * centroid_src.head (3));
   transformation_matrix.block (0, 3, 3, 1) = centroid_tgt. head (3) - Rc;
 }
 

@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2011, Willow Garage, Inc.
+ *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +17,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Willow Garage, Inc. nor the names of its
+ *   * Neither the name of the copyright holder(s) nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,15 +34,24 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id$
- *
  */
 
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/interactor_style.h>
+#include <vtkVersion.h>
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
-#include <vtkRendererCollection.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkDataSet.h>
+#include <vtkPolyData.h>
+#include <vtkIdTypeArray.h>
+#include <vtkExtractGeometry.h>
+#include <vtkPointData.h>
+#include <vtkVertexGlyphFilter.h>
+#include <vtkPlanes.h>
+#include <vtkXYPlotActor.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -104,29 +114,22 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
 int
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
-  // Save the area picker
-  vtkSmartPointer<vtkAreaPicker> picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
-  if (!picker)
+  vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+  
+  if (!point_picker)
   {
     pcl::console::print_error ("Point picker not available, not selecting any points!\n");
     return -1;
   }
-  //iren->GetMousePosition (&mouse_x, &mouse_y);
+
   int mouse_x = iren->GetEventPosition ()[0];
   int mouse_y = iren->GetEventPosition ()[1];
 
-  // Switch picker to a point picker and get picked point index
-  vtkSmartPointer<vtkPointPicker> point_picker = vtkSmartPointer<vtkPointPicker>::New ();
-  point_picker->SetTolerance (point_picker->GetTolerance () * 2);
-  iren->SetPicker (point_picker);
   iren->StartPickCallback ();
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
-  int idx = static_cast<int> (point_picker->GetPointId ());
 
-  // Put back the area picker
-  iren->SetPicker (picker);
-  return (idx);
+  return (static_cast<int> (point_picker->GetPointId ()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,19 +138,17 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     vtkRenderWindowInteractor *iren,
     float &x, float &y, float &z)
 {
-  vtkSmartPointer<vtkAreaPicker> picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
-  if (!picker)
+  vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
+
+  if (!point_picker)
   {
     pcl::console::print_error ("Point picker not available, not selecting any points!\n");
-    return -1;
+    return (-1);
   }
-  //iren->GetMousePosition (&mouse_x, &mouse_y);
+
   int mouse_x = iren->GetEventPosition ()[0];
   int mouse_y = iren->GetEventPosition ()[1];
 
-  vtkSmartPointer<vtkPointPicker> point_picker = vtkSmartPointer<vtkPointPicker>::New ();
-  point_picker->SetTolerance (point_picker->GetTolerance () * 2);
-  iren->SetPicker (point_picker);
   iren->StartPickCallback ();
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
@@ -160,8 +161,6 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     x = float (p[0]); y = float (p[1]); z = float (p[2]);
   }
 
-  // Put back the area picker
-  iren->SetPicker (picker);
   return (idx);
 }
 
@@ -194,7 +193,7 @@ pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowIntera
     vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New ();
     extract_geometry->SetImplicitFunction (frustum);
 
-#if VTK_MAJOR_VERSION <= 5
+#if VTK_MAJOR_VERSION < 6
     extract_geometry->SetInput (picker->GetDataSet ());
 #else
     extract_geometry->SetInputData (picker->GetDataSet ());

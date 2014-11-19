@@ -38,7 +38,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 #include <pcl/point_traits.h>
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
@@ -72,7 +72,7 @@ TEST (PCL, ComplexPCDFileASCII)
         "0 0 0 0 0 100 0 0 0 0 0 0 0 0 0 0 100 0 0 0 0 0 0 0 0 0 0 100 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 -69.234001 -65.460999 19.173";
   fs.close ();
 
-  sensor_msgs::PointCloud2 blob;
+  pcl::PCLPointCloud2 blob;
   int res = loadPCDFile ("complex_ascii.pcd", blob);
   EXPECT_NE (int (res), -1);
   EXPECT_EQ (blob.width, 1);
@@ -84,27 +84,27 @@ TEST (PCL, ComplexPCDFileASCII)
   EXPECT_EQ (blob.fields[0].name, "fpfh");
   EXPECT_EQ (blob.fields[0].offset, 0);
   EXPECT_EQ (blob.fields[0].count, 33);
-  EXPECT_EQ (blob.fields[0].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[0].datatype, pcl::PCLPointField::FLOAT32);
 
   EXPECT_EQ (blob.fields[1].name, "_");
   EXPECT_EQ (blob.fields[1].offset, 4 * 33);
   EXPECT_EQ (blob.fields[1].count, 10);
-  EXPECT_EQ (blob.fields[1].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::FLOAT32);
   
   EXPECT_EQ (blob.fields[2].name, "x");
   EXPECT_EQ (blob.fields[2].offset, 4 * 33 + 10 * 1);
   EXPECT_EQ (blob.fields[2].count, 1);
-  EXPECT_EQ (blob.fields[2].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[2].datatype, pcl::PCLPointField::FLOAT32);
   
   EXPECT_EQ (blob.fields[3].name, "y");
   EXPECT_EQ (blob.fields[3].offset, 4 * 33 + 10 * 1 + 4);
   EXPECT_EQ (blob.fields[3].count, 1);
-  EXPECT_EQ (blob.fields[3].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[3].datatype, pcl::PCLPointField::FLOAT32);
   
   EXPECT_EQ (blob.fields[4].name, "z");
   EXPECT_EQ (blob.fields[4].offset, 4 * 33 + 10 * 1 + 4 + 4);
   EXPECT_EQ (blob.fields[4].count, 1);
-  EXPECT_EQ (blob.fields[4].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (blob.fields[4].datatype, pcl::PCLPointField::FLOAT32);
 
   int x_idx = pcl::getFieldIndex (blob, "x");
   EXPECT_EQ (x_idx, 2);
@@ -176,7 +176,7 @@ TEST (PCL, AllTypesPCDFile)
         "-50 250 251 -250 2500 2501 -250000 250000 250001 250.05 -250.05 -251.05";
   fs.close ();
 
-  sensor_msgs::PointCloud2 blob;
+  pcl::PCLPointCloud2 blob;
   int res = loadPCDFile ("all_types.pcd", blob);
   EXPECT_NE (int (res), -1);
   EXPECT_EQ (blob.width, 1);
@@ -213,14 +213,14 @@ TEST (PCL, AllTypesPCDFile)
   EXPECT_EQ (blob.fields[6].count, 1);
   EXPECT_EQ (blob.fields[7].count, 2);
 
-  EXPECT_EQ (blob.fields[0].datatype, sensor_msgs::PointField::INT8);
-  EXPECT_EQ (blob.fields[1].datatype, sensor_msgs::PointField::UINT8);
-  EXPECT_EQ (blob.fields[2].datatype, sensor_msgs::PointField::INT16);
-  EXPECT_EQ (blob.fields[3].datatype, sensor_msgs::PointField::UINT16);
-  EXPECT_EQ (blob.fields[4].datatype, sensor_msgs::PointField::INT32);
-  EXPECT_EQ (blob.fields[5].datatype, sensor_msgs::PointField::UINT32);
-  EXPECT_EQ (blob.fields[6].datatype, sensor_msgs::PointField::FLOAT32);
-  EXPECT_EQ (blob.fields[7].datatype, sensor_msgs::PointField::FLOAT64);
+  EXPECT_EQ (blob.fields[0].datatype, pcl::PCLPointField::INT8);
+  EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::UINT8);
+  EXPECT_EQ (blob.fields[2].datatype, pcl::PCLPointField::INT16);
+  EXPECT_EQ (blob.fields[3].datatype, pcl::PCLPointField::UINT16);
+  EXPECT_EQ (blob.fields[4].datatype, pcl::PCLPointField::INT32);
+  EXPECT_EQ (blob.fields[5].datatype, pcl::PCLPointField::UINT32);
+  EXPECT_EQ (blob.fields[6].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (blob.fields[7].datatype, pcl::PCLPointField::FLOAT64);
 
   int8_t b1;
   uint8_t b2;
@@ -349,7 +349,7 @@ TEST (PCL, ConcatenateFields)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, IO)
 {
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   PointCloud<PointXYZI> cloud;
 
   cloud.width  = 640;
@@ -382,78 +382,78 @@ TEST (PCL, IO)
   EXPECT_FLOAT_EQ (last.intensity, static_cast<float> (nr_p - 1));
 
   // Test getFieldIndex
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
   pcl::getFields (cloud, fields);
   EXPECT_EQ (fields.size (), size_t (4));
   int x_idx = pcl::getFieldIndex (cloud, "x", fields);
   EXPECT_EQ (x_idx, 0);
   EXPECT_EQ (fields[x_idx].offset, uint32_t (0));
   EXPECT_EQ (fields[x_idx].name, "x");
-  EXPECT_EQ (fields[x_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (fields[x_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (fields[x_idx].count, uint32_t (1));
 
   int y_idx = pcl::getFieldIndex (cloud, "y", fields);
   EXPECT_EQ (y_idx, 1);
   EXPECT_EQ (fields[y_idx].offset, uint32_t (4));
   EXPECT_EQ (fields[y_idx].name, "y");
-  EXPECT_EQ (fields[y_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (fields[y_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (fields[y_idx].count, uint32_t (1));
 
   int z_idx = pcl::getFieldIndex (cloud, "z", fields);
   EXPECT_EQ (z_idx, 2);
   EXPECT_EQ (fields[z_idx].offset, uint32_t (8));
   EXPECT_EQ (fields[z_idx].name, "z");
-  EXPECT_EQ (fields[z_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (fields[z_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (fields[z_idx].count, uint32_t (1));
 
   int intensity_idx = pcl::getFieldIndex (cloud, "intensity", fields);
   EXPECT_EQ (intensity_idx, 3);
   EXPECT_EQ (fields[intensity_idx].offset, uint32_t (16));      // NOTE: intensity_idx.offset should be 12, but we are padding in PointXYZ (!)
   EXPECT_EQ (fields[intensity_idx].name, "intensity");
-  EXPECT_EQ (fields[intensity_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (fields[intensity_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (fields[intensity_idx].count, uint32_t (1));
 
   // Convert from data type to blob
-  toROSMsg (cloud, cloud_blob);
+  toPCLPointCloud2 (cloud, cloud_blob);
 
   // Test getFieldIndex
   x_idx = pcl::getFieldIndex (cloud_blob, "x");
   EXPECT_EQ (x_idx, 0);
   EXPECT_EQ (cloud_blob.fields[x_idx].offset, uint32_t (0));
   EXPECT_EQ (cloud_blob.fields[x_idx].name, "x");
-  EXPECT_EQ (cloud_blob.fields[x_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (cloud_blob.fields[x_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (cloud_blob.fields[x_idx].count, uint32_t (1));
   y_idx = pcl::getFieldIndex (cloud_blob, "y");
   EXPECT_EQ (y_idx, 1);
   EXPECT_EQ (cloud_blob.fields[y_idx].offset, uint32_t (4));
   EXPECT_EQ (cloud_blob.fields[y_idx].name, "y");
-  EXPECT_EQ (cloud_blob.fields[y_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (cloud_blob.fields[y_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (cloud_blob.fields[y_idx].count, uint32_t (1));
   z_idx = pcl::getFieldIndex (cloud_blob, "z");
   EXPECT_EQ (z_idx, 2);
   EXPECT_EQ (cloud_blob.fields[z_idx].offset, uint32_t (8));
   EXPECT_EQ (cloud_blob.fields[z_idx].name, "z");
-  EXPECT_EQ (cloud_blob.fields[z_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (cloud_blob.fields[z_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (cloud_blob.fields[z_idx].count, uint32_t (1));
   intensity_idx = pcl::getFieldIndex (cloud_blob, "intensity");
   EXPECT_EQ (intensity_idx, 3);
-  //EXPECT_EQ (cloud_blob.fields[intensity_idx].offset, (uint32_t)12);      // NOTE: the fields.offset is 16 in PointCloud<PointXYZI>, but we are obtaining the correct offset in toROSMsg
-  EXPECT_EQ (cloud_blob.fields[intensity_idx].offset, uint32_t (16));      // NOTE: the fields.offset is 16 in PointCloud<PointXYZI>, but we are obtaining the correct offset in toROSMsg
+  //EXPECT_EQ (cloud_blob.fields[intensity_idx].offset, (uint32_t)12);      // NOTE: the fields.offset is 16 in PointCloud<PointXYZI>, but we are obtaining the correct offset in toPCLPointCloud2
+  EXPECT_EQ (cloud_blob.fields[intensity_idx].offset, uint32_t (16));      // NOTE: the fields.offset is 16 in PointCloud<PointXYZI>, but we are obtaining the correct offset in toPCLPointCloud2
   EXPECT_EQ (cloud_blob.fields[intensity_idx].name, "intensity");
-  EXPECT_EQ (cloud_blob.fields[intensity_idx].datatype, sensor_msgs::PointField::FLOAT32);
+  EXPECT_EQ (cloud_blob.fields[intensity_idx].datatype, pcl::PCLPointField::FLOAT32);
   EXPECT_EQ (cloud_blob.fields[intensity_idx].count, uint32_t (1));
   
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
   for (size_t i = 0; i < nr_p; ++i)
     EXPECT_EQ (cloud.points[i].intensity, i);
 
-  EXPECT_EQ (uint32_t (cloud_blob.width), cloud.width);    // test for toROSMsg ()
-  EXPECT_EQ (uint32_t (cloud_blob.height), cloud.height);  // test for toROSMsg ()
-  EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);  // test for toROSMsg ()
+  EXPECT_EQ (uint32_t (cloud_blob.width), cloud.width);    // test for toPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud_blob.height), cloud.height);  // test for toPCLPointCloud2 ()
+  EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);  // test for toPCLPointCloud2 ()
   //EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-  //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toROSMsg ()
+  //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toPCLPointCloud2 ()
   EXPECT_EQ (size_t (cloud_blob.data.size ()),             // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toROSMsg ()
+             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toPCLPointCloud2 ()
 
   // Make sure we have permissions to write there
   PCDWriter w;
@@ -470,22 +470,22 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
 
   // Make sure we have permissions to write there
   res = savePCDFile ("test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
@@ -501,22 +501,22 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
 
   // Save as ASCII
   try
@@ -536,22 +536,22 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
 
   // Save as ASCII
   try
@@ -571,22 +571,22 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (float (cloud.points[nr_p - 1].intensity), float (last.intensity)); // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (float (cloud.points[nr_p - 1].intensity), float (last.intensity)); // test for fromPCLPointCloud2 ()
 
   std::vector<int> indices (cloud.width * cloud.height / 2);
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) indices[i] = i;
@@ -608,17 +608,17 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p / 2);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p / 2);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (float (cloud.points[0].intensity), float (first.intensity));  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (float (cloud.points[0].intensity), float (first.intensity));  // test for fromPCLPointCloud2 ()
 
   indices.resize (cloud.width * cloud.height / 2);
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) indices[i] = i;
@@ -640,23 +640,23 @@ TEST (PCL, IO)
               cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p / 4);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p / 4);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PCDReaderWriter)
 {
-  sensor_msgs::PointCloud2 cloud_blob;
+  pcl::PCLPointCloud2 cloud_blob;
   PointCloud<PointXYZI> cloud;
 
   cloud.width  = 640;
@@ -679,15 +679,15 @@ TEST (PCL, PCDReaderWriter)
   last.x = cloud.points[nr_p - 1].x; last.y = cloud.points[nr_p - 1].y; last.z = cloud.points[nr_p - 1].z; last.intensity  = cloud.points[nr_p - 1].intensity;
 
   // Convert from data type to blob
-  toROSMsg (cloud, cloud_blob);
+  toPCLPointCloud2 (cloud, cloud_blob);
 
-  EXPECT_EQ (uint32_t (cloud_blob.width), cloud.width);    // test for toROSMsg ()
-  EXPECT_EQ (uint32_t (cloud_blob.height), cloud.height);  // test for toROSMsg ()
-  EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);  // test for toROSMsg ()
+  EXPECT_EQ (uint32_t (cloud_blob.width), cloud.width);    // test for toPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud_blob.height), cloud.height);  // test for toPCLPointCloud2 ()
+  EXPECT_EQ (bool (cloud_blob.is_dense), cloud.is_dense);  // test for toPCLPointCloud2 ()
   //EXPECT_EQ ((size_t)cloud_blob.data.size () * 2,         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-  //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toROSMsg ()
+  //           cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toPCLPointCloud2 ()
   EXPECT_EQ (size_t (cloud_blob.data.size ()),         // PointXYZI is 16*2 (XYZ+1, Intensity+3)
-             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toROSMsg ()
+             cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for toPCLPointCloud2 ()
 
   PCDWriter writer;
   writer.write ("test_pcl_io.pcd", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true);
@@ -703,22 +703,22 @@ TEST (PCL, PCDReaderWriter)
              cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  // test for loadPCDFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob, cloud);
+  fromPCLPointCloud2 (cloud_blob, cloud);
 
-  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromROSMsg ()
-  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromROSMsg ()
-  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromROSMsg ()
+  EXPECT_EQ (uint32_t (cloud.width), cloud_blob.width);    // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (uint32_t (cloud.height), cloud_blob.height);  // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (int (cloud.is_dense), cloud_blob.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (size_t (cloud.points.size ()), nr_p);         // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[0].x, first.x);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].y, first.y);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].z, first.z);     // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[0].intensity, first.intensity);  // test for fromPCLPointCloud2 ()
 
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromROSMsg ()
-  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromROSMsg ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].x, last.x);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].y, last.y);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].z, last.z);    // test for fromPCLPointCloud2 ()
+  EXPECT_FLOAT_EQ (cloud.points[nr_p - 1].intensity, last.intensity); // test for fromPCLPointCloud2 ()
 }
 
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
@@ -808,7 +808,7 @@ TEST (PCL, ASCIIReader)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, PLYReaderWriter)
 {
-  sensor_msgs::PointCloud2 cloud_blob, cloud_blob2;
+  pcl::PCLPointCloud2 cloud_blob, cloud_blob2;
   PointCloud<PointXYZI> cloud, cloud2;
 
   cloud.width  = 640;
@@ -828,15 +828,15 @@ TEST (PCL, PLYReaderWriter)
   }
 
   // Convert from data type to blob
-  toROSMsg (cloud, cloud_blob);
+  toPCLPointCloud2 (cloud, cloud_blob);
 
-  EXPECT_EQ (cloud_blob.width, cloud.width);    // test for toROSMsg ()
-  EXPECT_EQ (cloud_blob.height, cloud.height);  // test for toROSMsg ()
-  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);  // test for toROSMsg ()
+  EXPECT_EQ (cloud_blob.width, cloud.width);    // test for toPCLPointCloud2 ()
+  EXPECT_EQ (cloud_blob.height, cloud.height);  // test for toPCLPointCloud2 ()
+  EXPECT_EQ (cloud_blob.is_dense, cloud.is_dense);  // test for toPCLPointCloud2 ()
   EXPECT_EQ (cloud_blob.data.size (), 
              cloud_blob.width * cloud_blob.height * sizeof (PointXYZI));  
 
-  // test for toROSMsg ()
+  // test for toPCLPointCloud2 ()
   PLYWriter writer;
   writer.write ("test_pcl_io.ply", cloud_blob, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), true, true);
 
@@ -849,19 +849,19 @@ TEST (PCL, PLYReaderWriter)
              cloud_blob2.width * cloud_blob2.height * sizeof (PointXYZ));  // test for loadPLYFile ()
 
   // Convert from blob to data type
-  fromROSMsg (cloud_blob2, cloud2);
+  fromPCLPointCloud2 (cloud_blob2, cloud2);
 
-  // EXPECT_EQ (cloud.width, cloud2.width);    // test for fromROSMsg ()
-  // EXPECT_EQ (cloud.height, cloud2.height);  // test for fromROSMsg ()
-  // EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromROSMsg ()
-  EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromROSMsg ()
+  // EXPECT_EQ (cloud.width, cloud2.width);    // test for fromPCLPointCloud2 ()
+  // EXPECT_EQ (cloud.height, cloud2.height);  // test for fromPCLPointCloud2 ()
+  // EXPECT_EQ (cloud.is_dense, cloud2.is_dense);   // test for fromPCLPointCloud2 ()
+  EXPECT_EQ (cloud.size (), cloud2.size ());         // test for fromPCLPointCloud2 ()
 
   for (uint32_t counter = 0; counter < cloud.size (); ++counter)
   {
-    EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromROSMsg ()
-    EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromROSMsg ()
-    EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromROSMsg ()
-    EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromROSMsg ()
+    EXPECT_FLOAT_EQ (cloud[counter].x, cloud2[counter].x);     // test for fromPCLPointCloud2 ()
+    EXPECT_FLOAT_EQ (cloud[counter].y, cloud2[counter].y);     // test for fromPCLPointCloud2 ()
+    EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromPCLPointCloud2 ()
+    EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromPCLPointCloud2 ()
   }
 }
 
@@ -927,8 +927,8 @@ TEST (PCL, EigenConversions)
   for (int i = 0; i < int (cloud.points.size ()); ++i)
     cloud.points[i].x = cloud.points[i].y = cloud.points[i].z = static_cast<float> (i);
 
-  sensor_msgs::PointCloud2 blob;
-  toROSMsg (cloud, blob);
+  pcl::PCLPointCloud2 blob;
+  toPCLPointCloud2 (cloud, blob);
 
   Eigen::MatrixXf mat;
   getPointCloudAsEigen (blob, mat);
@@ -944,7 +944,7 @@ TEST (PCL, EigenConversions)
   }
   
   getEigenAsPointCloud (mat, blob);
-  fromROSMsg (blob, cloud);
+  fromPCLPointCloud2 (blob, cloud);
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
     EXPECT_EQ (cloud.points[i].x, i);
@@ -1044,8 +1044,8 @@ TEST (PCL, LZF)
     ASSERT_EQ (cloud2.points[i].z, cloud.points[i].z);
   }
 
-  sensor_msgs::PointCloud2 blob;
-  pcl::toROSMsg (cloud, blob);
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
   res = writer.writeBinaryCompressed ("test_pcl_io_compressed.pcd", blob);
   EXPECT_EQ (res, 0);
 
@@ -1087,8 +1087,8 @@ TEST (PCL, LZFExtended)
     cloud.points[i].rgb = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
   }
 
-  sensor_msgs::PointCloud2 blob;
-  pcl::toROSMsg (cloud, blob);
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
 
   PCDWriter writer;
   int res = writer.writeBinaryCompressed ("test_pcl_io_compressed.pcd", blob);

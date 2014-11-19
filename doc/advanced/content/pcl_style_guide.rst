@@ -330,13 +330,13 @@ editors, etc.
 """"""""""""
 
 You can use the following `PCL C/C++ style file
-<http://dev.pointclouds.org/attachments/download/748/pcl-c-style.el>`_,
+<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/doc/advanced/content/files/pcl-c-style.el>`_,
 download it to some known location and then:
 
 * open .emacs 
 * add the following before any C/C++ custom hooks
 
-.. code-block:: lisp
+::
 
    (load-file "/location/to/pcl-c-style.el")
    (add-hook 'c-mode-common-hook 'pcl-set-c-style)
@@ -350,8 +350,37 @@ You can find a semi-finished config for `Uncrustify <http://uncrustify.sourcefor
 2.6.3 Eclipse
 """""""""""""
 
-You can find a PCL code style file for Eclipse here: `http://svn.pointclouds.org/pcl/trunk/doc/advanced/content/files/`
-Be warned that this can still contain errors, please mention on the user mailing list if this file needs changes. (feel free to patch)
+| You can find a PCL code style file for Eclipse `on GitHub <https://github.com/PointCloudLibrary/pcl/tree/master/doc/advanced/content/files>`_.
+| To add the new formatting style go to: Windows > Preferences > C/C++ > Code Style > Formatter
+
+| To format portion of codes, select the code and press Ctrl + Shift + F.
+| If you want to format the whole code in your project go to the tree and right click on the project: Source > Format.
+
+Note that the Eclipse formatter style is configured to wrap all arguments in a function, feel free to re-arange the arguments if you feel the need; for example,
+this improves readability:
+
+.. code-block:: cpp
+
+   int
+   displayPoint (float x, float y, float z,
+                 float r, float g, float b
+                );
+
+This eclipse formatter fails to add a space before brackets when using PCL macros:
+
+.. code-block:: cpp
+
+   PCL_ERROR("Text\n");
+
+should be
+
+.. code-block:: cpp
+
+   PCL_ERROR ("Text\n");
+
+.. note::
+
+   This style sheet is not perfect, please mention errors on the user mailing list and feel free to patch!
 
 3. Structuring
 ==============

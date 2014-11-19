@@ -24,7 +24,7 @@ main (int argc, char ** argv)
   // Load the points
   PointCloudPtr cloud (new PointCloud);
   pcl::io::loadPCDFile (argv[1], *cloud);
-  pcl::console::print_info ("Loaded %s (%zu points)\n", argv[1], cloud->size ());
+  pcl::console::print_info ("Loaded %s (%lu points)\n", argv[1], cloud->size ());
 
   // Compute surface elements
   SurfaceElementsPtr surfels (new SurfaceElements);

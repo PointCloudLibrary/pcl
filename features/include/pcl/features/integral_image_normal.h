@@ -50,6 +50,18 @@
 namespace pcl
 {
   /** \brief Surface normal estimation on organized data using integral images.
+    *
+    *        For detailed information about this method see:
+    *
+    *        S. Holzer and R. B. Rusu and M. Dixon and S. Gedikli and N. Navab, 
+    *        Adaptive Neighborhood Selection for Real-Time Surface Normal Estimation 
+    *        from Organized Point Cloud Data Using Integral Images, IROS 2012.
+    *
+    *        D. Holz, S. Holzer, R. B. Rusu, and S. Behnke (2011, July). 
+    *        Real-Time Plane Segmentation using RGB-D Cameras. In Proceedings of 
+    *        the 15th RoboCup International Symposium, Istanbul, Turkey.
+    *        http://www.ais.uni-bonn.de/~holz/papers/holz_2011_robocup.pdf 
+    *
     * \author Stefan Holzer
     */
   template <typename PointInT, typename PointOutT>
@@ -59,6 +71,7 @@ namespace pcl
     using Feature<PointInT, PointOutT>::feature_name_;
     using Feature<PointInT, PointOutT>::tree_;
     using Feature<PointInT, PointOutT>::k_;
+    using Feature<PointInT, PointOutT>::indices_;
 
     public:
       typedef boost::shared_ptr<IntegralImageNormalEstimation<PointInT, PointOutT> > Ptr;
@@ -303,11 +316,27 @@ namespace pcl
       
     protected:
 
-      /** \brief Computes the normal for the complete cloud.
+      /** \brief Computes the normal for the complete cloud or only \a indices_ if provided.
         * \param[out] output the resultant normals
         */
       void
       computeFeature (PointCloudOut &output);
+
+      /** \brief Computes the normal for the complete cloud.
+        * \param[in] distance_map distance map
+        * \param[in] bad_point constant given to invalid normal components
+        * \param[out] output the resultant normals
+        */
+      void
+      computeFeatureFull (const float* distance_map, const float& bad_point, PointCloudOut& output);
+
+      /** \brief Computes the normal for part of the cloud specified by \a indices_
+        * \param[in] distance_map distance map
+        * \param[in] bad_point constant given to invalid normal components
+        * \param[out] output the resultant normals
+        */
+      void
+      computeFeaturePart (const float* distance_map, const float& bad_point, PointCloudOut& output);
 
       /** \brief Initialize the data structures, based on the normal estimation method chosen. */
       void

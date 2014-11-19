@@ -60,6 +60,7 @@ PointCloud<BRISKSignature512>::Ptr cloud_descriptors_gt (new PointCloud<BRISKSig
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BRISK_2D)
 {
+#if defined(__SSE4_1__) && !defined(__i386__)
   // Compute BRISK keypoints 
   BriskKeypoint2D<PointT> brisk_keypoint_estimation;
   brisk_keypoint_estimation.setThreshold (60);
@@ -118,6 +119,9 @@ TEST (PCL, BRISK_2D)
 
     EXPECT_NEAR (0.0f, sqr_dist, 1e-4);
   }
+#else
+  PCL_WARN ("Not compiled with SSE4.1, skipping test of Brisk.\n");
+#endif
 }
 
 

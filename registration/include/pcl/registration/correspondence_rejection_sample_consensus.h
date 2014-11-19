@@ -81,6 +81,7 @@ namespace pcl
           , target_ ()
           , best_transformation_ ()
           , refine_ (false)
+          , save_inliers_ (false)
         {
           rejection_name_ = "CorrespondenceRejectorSampleConsensus";
         }
@@ -99,11 +100,14 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED (virtual void setInputCloud (const PointCloudConstPtr &cloud), 
-            "[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
 
         /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED (PointCloudConstPtr const getInputCloud (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
+        PointCloudConstPtr const
+        getInputCloud ();
 
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -121,7 +125,9 @@ namespace pcl
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED (virtual void setTargetCloud (const PointCloudConstPtr &cloud), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.")
+        virtual void
+        setTargetCloud (const PointCloudConstPtr &cloud);
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -132,6 +138,35 @@ namespace pcl
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudConstPtr const 
         getInputTarget () { return (target_ ); }
+
+
+        /** \brief See if this rejector requires source points */
+        bool
+        requiresSourcePoints () const
+        { return (true); }
+
+        /** \brief Blob method for setting the source cloud */
+        void
+        setSourcePoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudPtr cloud (new PointCloud);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputSource (cloud);
+        }
+        
+        /** \brief See if this rejector requires a target cloud */
+        bool
+        requiresTargetPoints () const
+        { return (true); }
+
+        /** \brief Method for setting the target cloud */
+        void
+        setTargetPoints (pcl::PCLPointCloud2::ConstPtr cloud2)
+        { 
+          PointCloudPtr cloud (new PointCloud);
+          fromPCLPointCloud2 (*cloud2, *cloud);
+          setInputTarget (cloud);
+        }
 
         /** \brief Set the maximum distance between corresponding points.
           * Correspondences with distances below the threshold are considered as inliers.
@@ -144,12 +179,14 @@ namespace pcl
           * \return Distance threshold in the same dimension as source and target data sets.
           */
         inline double 
-        getInlierThreshold() { return inlier_threshold_; };
+        getInlierThreshold () { return inlier_threshold_; };
 
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED (void setMaxIterations (int max_iterations), "[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.")
+        void
+        setMaxIterations (int max_iterations);
 
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
@@ -160,7 +197,9 @@ namespace pcl
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED (int getMaxIterations (), "[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.");
+        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.")
+        int
+        getMaxIterations ();
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run
@@ -189,6 +228,24 @@ namespace pcl
         {
           return (refine_);
         }
+
+        /** \brief Get the inlier indices found by the correspondence rejector. This information is only saved if setSaveInliers(true) was called in advance.
+          * \param[out] inlier_indices Indices for the inliers
+          */
+        inline void
+        getInliersIndices (std::vector<int> &inlier_indices) { inlier_indices = inlier_indices_; }
+
+        /** \brief Set whether to save inliers or not
+          * \param[in] s True to save inliers / False otherwise
+          */
+        inline void
+        setSaveInliers (bool s) { save_inliers_ = s; }
+
+        /** \brief Get whether the rejector is configured to save inliers */
+        inline bool
+        getSaveInliers () { return save_inliers_; }
+
+
       protected:
 
         /** \brief Apply the rejection algorithm.
@@ -211,6 +268,9 @@ namespace pcl
         Eigen::Matrix4f best_transformation_;
 
         bool refine_;
+        std::vector<int> inlier_indices_;
+        bool save_inliers_;
+
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };

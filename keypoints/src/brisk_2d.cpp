@@ -42,7 +42,7 @@
 #include <pcl/keypoints/brisk_2d.h>
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-#ifdef HAVE_SSE4_1_EXTENSIONS
+#if defined(__SSE4_1__) && !defined(__i386__)
 #include <tmmintrin.h>
 #endif
 
@@ -1568,7 +1568,7 @@ pcl::keypoints::brisk::Layer::halfsample (
     int dstwidth, int dstheight)
 {
   (void)dstheight;
-#ifdef HAVE_SSE4_1_EXTENSIONS
+#if defined(__SSE4_1__) && !defined(__i386__)
   const unsigned short leftoverCols = static_cast<unsigned short> ((srcwidth % 16) / 2); // take care with border...
   const bool noleftover = (srcwidth % 16) == 0; // note: leftoverCols can be zero but this still false...
 
@@ -1715,6 +1715,11 @@ pcl::keypoints::brisk::Layer::halfsample (
     }
   }
 #else
+  (void) (srcimg);
+  (void) (srcwidth);
+  (void) (srcheight);
+  (void) (dstimg); 
+  (void) (dstwidth);
   PCL_ERROR("brisk without SSE4.1 support not implemented");
 #endif
 }
@@ -1728,7 +1733,7 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     int dstwidth, int dstheight)
 {
   (void)dstheight;
-#ifdef HAVE_SSE4_1_EXTENSIONS
+#if defined(__SSE4_1__) && !defined(__i386__)
   const unsigned short leftoverCols = static_cast<unsigned short> (((srcwidth / 3) * 3) % 15);// take care with border...
 
   // make sure the destination image is of the right size:
@@ -1824,6 +1829,11 @@ pcl::keypoints::brisk::Layer::twothirdsample (
     p_dest2 = p_dest1 + dstwidth;
   }
 #else
+  (void) (srcimg);
+  (void) (srcwidth);
+  (void) (srcheight);
+  (void) (dstimg); 
+  (void) (dstwidth);
   PCL_ERROR("brisk without SSE4.1 support not implemented");
 #endif
 }

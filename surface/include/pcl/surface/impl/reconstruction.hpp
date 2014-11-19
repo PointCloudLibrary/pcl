@@ -72,7 +72,7 @@ pcl::SurfaceReconstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   }
 
   // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
   output.polygons.clear ();
   output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   // Perform the actual surface reconstruction
@@ -152,7 +152,7 @@ pcl::MeshConstruction<PointInT>::reconstruct (pcl::PolygonMesh &output)
   }
 
   // Set up the output dataset
-  pcl::toROSMsg (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
+  pcl::toPCLPointCloud2 (*input_, output.cloud); /// NOTE: passing in boost shared pointer with * as const& should be OK here
   //  output.polygons.clear ();
   //  output.polygons.reserve (2*indices_->size ()); /// NOTE: usually the number of triangles is around twice the number of vertices
   // Perform the actual surface reconstruction

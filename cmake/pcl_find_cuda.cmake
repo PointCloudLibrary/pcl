@@ -11,6 +11,11 @@ if (NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND 
   message(STATUS "Setting CMAKE_HOST_COMPILER to /usr/bin/gcc instead of ${CMAKE_C_COMPILER}.  See http://dev.pointclouds.org/issues/979")
 endif()
 
+if(MSVC11)
+	# Setting this to true brakes Visual Studio builds.
+	set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF CACHE BOOL "CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE")
+endif()
+
 set(CUDA_FIND_QUIETLY TRUE)
 find_package(CUDA 4)
 

@@ -65,9 +65,6 @@ pcl::Kmeans<PointT>::~Kmeans ()
 template <typename PointT> void
 pcl::Kmeans<PointT>::k_means ()
 {
-
-
-
 }
 
 template <typename PointT> void
@@ -82,7 +79,7 @@ pcl::Kmeans<PointT>::cluster (std::vector<PointIndices> &clusters)
   }
 
   pcl::PointCloud <PointT> point;
-  std::vector<sensor_msgs::PointField> fields;
+  std::vector<pcl::PCLPointField> fields;
 
   int user_index = -1;
   // if no cluster field name is set, check for X Y Z
@@ -168,7 +165,7 @@ pcl::Kmeans<PointT>::cluster (std::vector<PointIndices> &clusters)
   std::cout << "t: " << t << std::endl;
 */
   
-  //std::vector <sensor_msgs::PointField> fields;
+  //std::vector <pcl::PCLPointField> fields;
   //pcl::getFieldIndex (*input_, "xyz", fields);
   
   

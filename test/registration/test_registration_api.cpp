@@ -55,6 +55,7 @@
 #include <pcl/registration/correspondence_rejection_var_trimmed.h>
 #include <pcl/registration/transformation_estimation_lm.h>
 #include <pcl/registration/transformation_estimation_svd.h>
+#include <pcl/registration/transformation_estimation_dual_quaternion.h>
 #include <pcl/registration/transformation_estimation_point_to_plane_lls.h>
 #include <pcl/registration/transformation_estimation_point_to_plane.h>
 #include <pcl/features/normal_3d.h>
@@ -130,8 +131,11 @@ TEST (PCL, CorrespondenceRejectorDistance)
   // re-do correspondence estimation
   boost::shared_ptr<pcl::Correspondences> correspondences (new pcl::Correspondences);
   pcl::registration::CorrespondenceEstimation<PointXYZ, PointXYZ> corr_est;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   corr_est.setInputCloud (source);        // test for PCL_DEPRECATED
   source = corr_est.getInputCloud ();     // test for PCL_DEPRECATED
+#pragma GCC diagnostic pop
   corr_est.setInputSource (source);
   corr_est.setInputTarget (target);
   corr_est.determineCorrespondences (*correspondences);
@@ -233,8 +237,11 @@ TEST (PCL, CorrespondenceRejectorSampleConsensus)
 
   boost::shared_ptr<pcl::Correspondences> correspondences_result_rej_sac (new pcl::Correspondences);
   pcl::registration::CorrespondenceRejectorSampleConsensus<PointXYZ> corr_rej_sac;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   corr_rej_sac.setInputCloud (source);        // test for PCL_DEPRECATED
   source = corr_rej_sac.getInputCloud ();     // test for PCL_DEPRECATED
+#pragma GCC diagnostic pop
   corr_rej_sac.setInputSource (source);
   corr_rej_sac.setInputTarget (target);
   corr_rej_sac.setInlierThreshold (rej_sac_max_dist);
@@ -404,7 +411,7 @@ TEST (PCL, TransformationEstimationSVD)
   // Check if the estimation with correspondences gives the same results
   Eigen::Matrix4f T_SVD_2;
   pcl::Correspondences corr; corr.reserve (source->size ());
-  for (int i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_svd.estimateRigidTransformation(*source, *target, corr, T_SVD_2);
 
   const Eigen::Quaternionf   R_SVD_2 (T_SVD_2.topLeftCorner  <3, 3> ());
@@ -418,6 +425,49 @@ TEST (PCL, TransformationEstimationSVD)
   EXPECT_FLOAT_EQ (t_SVD_1.x (), t_SVD_2.x ());
   EXPECT_FLOAT_EQ (t_SVD_1.y (), t_SVD_2.y ());
   EXPECT_FLOAT_EQ (t_SVD_1.z (), t_SVD_2.z ());
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, TransformationEstimationDualQuaternion)
+{
+  // Ideal conditions for the estimation (no noise, exact correspondences)
+  CloudXYZConstPtr source (new CloudXYZ (cloud_target));
+  CloudXYZPtr      target (new CloudXYZ ());
+  pcl::transformPointCloud (*source, *target, T_ref);
+
+  Eigen::Matrix4f T_DQ_1;
+  const pcl::registration::TransformationEstimationDualQuaternion<PointXYZ, PointXYZ> trans_est_dual_quaternion;
+  trans_est_dual_quaternion.estimateRigidTransformation(*source, *target, T_DQ_1);
+
+  const Eigen::Quaternionf   R_DQ_1 (T_DQ_1.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_DQ_1 (T_DQ_1.topRightCorner <3, 1> ());
+
+  EXPECT_NEAR (R_DQ_1.x (), R_ref.x (), 1e-6f);
+  EXPECT_NEAR (R_DQ_1.y (), R_ref.y (), 1e-6f);
+  EXPECT_NEAR (R_DQ_1.z (), R_ref.z (), 1e-6f);
+  EXPECT_NEAR (R_DQ_1.w (), R_ref.w (), 1e-6f);
+
+  EXPECT_NEAR (t_DQ_1.x (), t_ref.x (), 1e-6f);
+  EXPECT_NEAR (t_DQ_1.y (), t_ref.y (), 1e-6f);
+  EXPECT_NEAR (t_DQ_1.z (), t_ref.z (), 1e-6f);
+
+  // Check if the estimation with correspondences gives the same results
+  Eigen::Matrix4f T_DQ_2;
+  pcl::Correspondences corr; corr.reserve (source->size ());
+  for (size_t i=0; i<source->size (); ++i) corr.push_back (pcl::Correspondence (i, i, 0.f));
+  trans_est_dual_quaternion.estimateRigidTransformation(*source, *target, corr, T_DQ_2);
+
+  const Eigen::Quaternionf   R_DQ_2 (T_DQ_2.topLeftCorner  <3, 3> ());
+  const Eigen::Translation3f t_DQ_2 (T_DQ_2.topRightCorner <3, 1> ());
+
+  EXPECT_FLOAT_EQ (R_DQ_1.x (), R_DQ_2.x ());
+  EXPECT_FLOAT_EQ (R_DQ_1.y (), R_DQ_2.y ());
+  EXPECT_FLOAT_EQ (R_DQ_1.z (), R_DQ_2.z ());
+  EXPECT_FLOAT_EQ (R_DQ_1.w (), R_DQ_2.w ());
+
+  EXPECT_FLOAT_EQ (t_DQ_1.x (), t_DQ_2.x ());
+  EXPECT_FLOAT_EQ (t_DQ_1.y (), t_DQ_2.y ());
+  EXPECT_FLOAT_EQ (t_DQ_1.z (), t_DQ_2.z ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -499,7 +549,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4f T_LM_2_float;
   pcl::Correspondences corr;
   corr.reserve (source->size ());
-  for (int i = 0; i < source->size (); ++i)
+  for (size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_float.estimateRigidTransformation (*source, *target, corr, T_LM_2_float);
 
@@ -537,7 +587,7 @@ TEST (PCL, TransformationEstimationLM)
   Eigen::Matrix4d T_LM_2_double;
   corr.clear ();
   corr.reserve (source->size ());
-  for (int i = 0; i < source->size (); ++i)
+  for (size_t i = 0; i < source->size (); ++i)
     corr.push_back (pcl::Correspondence (i, i, 0.f));
   trans_est_lm_double.estimateRigidTransformation (*source, *target, corr, T_LM_2_double);
 

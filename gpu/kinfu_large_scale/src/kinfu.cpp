@@ -40,7 +40,8 @@
 
 #include <pcl/common/time.h>
 #include <pcl/gpu/kinfu_large_scale/kinfu.h>
-
+#include "estimate_combined.h"
+#include "internal.h"
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
@@ -51,7 +52,6 @@
 #ifdef HAVE_OPENCV
   #include <opencv2/opencv.hpp>
   //~ #include <opencv2/gpu/gpu.hpp>
-  //~ #include <pcl/gpu/utils/timers_opencv.hpp>
 #endif
 
 using namespace std;
@@ -251,6 +251,7 @@ pcl::gpu::kinfuLS::KinfuTracker::reset ()
   
   
   lost_=false;
+  has_shifted_=false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,7 +296,9 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
   }  
   depthRawScaled_.create (rows, cols);
   // see estimate tranform for the magic numbers
-  gbuf_.create (27, 20*60);
+  int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
+  int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
+  gbuf_.create (27, r * c);
   sumbuf_.create (27);
 }
 
@@ -651,8 +654,8 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
 
   ///////////////////////////////////////////////////////////////////////////////////////////  
   // check if we need to shift
-  bool has_shifted = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
-  if(has_shifted)
+  has_shifted_ = cyclical_.checkForShift(tsdf_volume_, getCameraPose (), 0.6 * volume_size_, true, perform_last_scan_); // TODO make target distance from camera a param
+  if(has_shifted_)
     PCL_WARN ("SHIFTING\n");
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -700,7 +703,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
     pcl::device::kinfuLS::sync ();
   }
 
-  if(has_shifted && perform_last_scan_)
+  if(has_shifted_ && perform_last_scan_)
     extractAndSaveWorld ();
 
     

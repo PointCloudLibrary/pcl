@@ -251,7 +251,7 @@ template <typename PointT>
 inline void 
 pcl::kinfuLS::WorldModel<PointT>::setIndicesAsNans (PointCloudPtr cloud, IndicesConstPtr indices)
 {
-  std::vector<sensor_msgs::PointField> fields; 
+  std::vector<pcl::PCLPointField> fields;
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
   float my_nan = std::numeric_limits<float>::quiet_NaN ();
   

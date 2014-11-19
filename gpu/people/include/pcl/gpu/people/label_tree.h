@@ -54,7 +54,7 @@
 #include <stdexcept>
 
 // PCL specific includes
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/console/print.h>
@@ -196,6 +196,7 @@ namespace pcl
        * @param[in] parent    pointer to the parent blob
        * @param[in] child     pointer to the child blob
        * @param[in] child_nr  the number of the child
+       * @param person_attribs
        * @return it returns the distance error from the ideal parent child distance, it returns -1.0 if it goes over threshold
        * @todo what if child is second link in stead of first link (ea forearm in stead of elbow for arm)
        **/
@@ -221,7 +222,7 @@ namespace pcl
        * @param[in] parent_label this is the part label that indicates the row
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-       * @return zero if succesfull
+       * @return zero if successfull
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -279,7 +280,8 @@ namespace pcl
        * @param[in] parent_label this is the part label that indicates the row
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-       * @return zero if succesfull
+       * @param person_attribs
+       * @return zero if successfull
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -437,6 +439,7 @@ namespace pcl
       /**
        * @brief This function goes over the sorted matrix and fills in the optimal parent and child relations
        * @param[in] sorted a matrix with all found good blobs arranged according to label and order
+       * @param person_attribs
        * @return zero if everything went well, negative on an error
        * @todo This function also fixes the kinematic chain, we should implement this in a xml or LUT
        * @todo look if we can't get a more efficient implementation (iterator together with sortBlobs perhaps?)

@@ -457,6 +457,24 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
+  class DefaultPointRepresentation<UniqueShapeContext1960> : public PointRepresentation<UniqueShapeContext1960>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 1960;
+      }
+
+      virtual void
+      copyToFloatArray (const UniqueShapeContext1960 &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.descriptor[i];
+      }
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
   class DefaultPointRepresentation<SHOT352> : public PointRepresentation<SHOT352>
   {
     public:

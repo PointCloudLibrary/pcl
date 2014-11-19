@@ -44,7 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/vtk_lib_io.h>
@@ -74,7 +74,6 @@
 
 using namespace pcl;
 using namespace pcl::outofcore;
-using namespace sensor_msgs;
 
 using pcl::console::parse_argument;
 using pcl::console::find_switch;
@@ -82,7 +81,7 @@ using pcl::console::print_error;
 using pcl::console::print_warn;
 using pcl::console::print_info;
 
-//typedef PointCloud2 PointT;
+//typedef PCLPointCloud2 PointT;
 typedef PointXYZ PointT;
 
 typedef OutofcoreOctreeBase<OutofcoreOctreeDiskContainer<PointT>, PointT> octree_disk;
@@ -133,9 +132,6 @@ typedef Eigen::aligned_allocator<PointT> AlignedPointT;
 #include <boost/date_time.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
-
-// Definitions
-const int MAX_DEPTH (-1);
 
 // Globals
 vtkSmartPointer<vtkRenderWindow> window;
@@ -323,11 +319,8 @@ outofcoreViewer (boost::filesystem::path tree_root, int depth, bool display_octr
 }
 
 void
-print_help (int argc, char **argv)
+print_help (int, char **argv)
 {
-  //suppress unused parameter warning
-  assert(argc == argc);
-
   print_info ("This program is used to visualize outofcore data structure");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");

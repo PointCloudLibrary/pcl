@@ -107,7 +107,9 @@ class ObjectSelection
         ne.compute (normals);
 
         // Save the distance map for the plane comparator
-        plane_comparator_->setDistanceMap (ne.getDistanceMap ());
+        float *map=ne.getDistanceMap ();// This will be deallocated with the IntegralImageNormalEstimation object...
+        distance_map_.assign(map, map+input->size() ); //...so we must copy the data out
+        plane_comparator_->setDistanceMap(distance_map_.data());
       }
       else
       {
@@ -225,7 +227,7 @@ class ObjectSelection
         ec.setIndices (points_above_plane);
         ec.extract (euclidean_label_indices);
         
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", euclidean_label_indices.size ()); print_info (" clusters]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", euclidean_label_indices.size ()); print_info (" clusters]\n");
       }
 
       // For each cluster found
@@ -268,7 +270,7 @@ class ObjectSelection
         // Estimate normals
         PointCloud<Normal>::Ptr normal_cloud (new PointCloud<Normal>);
         estimateNormals (cloud_, *normal_cloud);
-        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", normal_cloud->size ()); print_info (" points]\n");
+        print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", normal_cloud->size ()); print_info (" points]\n");
 
         OrganizedMultiPlaneSegmentation<PointT, Normal, Label> mps;
         mps.setMinInliers (1000);
@@ -311,7 +313,7 @@ class ObjectSelection
           print_highlight (stderr, "Searching for the largest plane (%2.0d) ", i++);
           TicToc tt; tt.tic ();
           seg.segment (*inliers, coefficients);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", inliers->indices.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", inliers->indices.size ()); print_info (" points]\n");
  
           // No datasets could be found anymore
           if (inliers->indices.empty ())
@@ -333,7 +335,7 @@ class ObjectSelection
           cloud_segmented.swap (cloud_remaining);
         }
       }
-      print_highlight ("Number of planar regions detected: %zu for a cloud of %zu points\n", regions.size (), cloud_->size ());
+      print_highlight ("Number of planar regions detected: %lu for a cloud of %lu points\n", regions.size (), cloud_->size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region
@@ -356,7 +358,7 @@ class ObjectSelection
         if (cloud_->isOrganized ())
         {
           approximatePolygon (regions[idx], region, 0.01f, false, true);
-          print_highlight ("Planar region: %zu points initial, %zu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
+          print_highlight ("Planar region: %lu points initial, %lu points after refinement.\n", regions[idx].getContour ().size (), region.getContour ().size ());
         }
         else
         {
@@ -382,7 +384,7 @@ class ObjectSelection
           PointCloud<PointT> plane_hull;
           chull.reconstruct (plane_hull);
           region.setContour (plane_hull);
-          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%zu", plane_hull.size ()); print_info (" points]\n");
+          print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%lu", plane_hull.size ()); print_info (" points]\n");
         }
 
       }
@@ -527,13 +529,13 @@ class ObjectSelection
       if (cloud_->isOrganized ())
       {
         // If the dataset is organized, and has RGB data, create an image viewer
-        vector<sensor_msgs::PointField> fields;
+        vector<pcl::PCLPointField> fields;
         int rgba_index = -1;
         rgba_index = getFieldIndex (*cloud_, "rgba", fields);
        
         if (rgba_index >= 0)
         {
-          image_viewer_.reset (new visualization::ImageViewer ("RGB Image"));
+          image_viewer_.reset (new visualization::ImageViewer ("RGB PCLImage"));
 
           image_viewer_->registerMouseCallback (&ObjectSelection::mouse_callback, *this);
           image_viewer_->registerKeyboardCallback(&ObjectSelection::keyboard_callback, *this);
@@ -564,7 +566,7 @@ class ObjectSelection
 
       cloud_viewer_->addPointCloud (cloud_, "scene");
       cloud_viewer_->resetCameraViewpoint ("scene");
-      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0);
+      cloud_viewer_->addCoordinateSystem (0.1, 0, 0, 0, "global");
     }
 
     /////////////////////////////////////////////////////////////////////////
@@ -582,7 +584,7 @@ class ObjectSelection
         return (false);
       }
       print_info ("[done, "); print_value ("%g", tt.toc ()); 
-      print_info (" ms : "); print_value ("%zu", cloud_->size ()); print_info (" points]\n");
+      print_info (" ms : "); print_value ("%lu", cloud_->size ()); print_info (" points]\n");
       
       if (cloud_->isOrganized ())
         search_.reset (new search::OrganizedNeighbor<PointT>);
@@ -603,7 +605,7 @@ class ObjectSelection
       {
         w.writeBinaryCompressed (object_file, *object_);
         w.writeBinaryCompressed (plane_file, *plane_);
-        print_highlight ("Object succesfully segmented. Saving results in: %s, and %s.\n", object_file.c_str (), plane_file.c_str ());
+        print_highlight ("Object successfully segmented. Saving results in: %s, and %s.\n", object_file.c_str (), plane_file.c_str ());
       }
     }
 
@@ -617,6 +619,7 @@ class ObjectSelection
     typename EdgeAwarePlaneComparator<PointT, Normal>::Ptr plane_comparator_;
     PointIndices::Ptr plane_indices_;
     unsigned char* rgb_data_;
+    std::vector<float> distance_map_;
 
     // Results
     typename PointCloud<PointT>::Ptr plane_;
@@ -648,7 +651,7 @@ main (int argc, char** argv)
 
   PCDReader reader;
   // Test the header
-  sensor_msgs::PointCloud2 dummy;
+  pcl::PCLPointCloud2 dummy;
   reader.readHeader (argv[p_file_indices[0]], dummy);
   if (dummy.height != 1 && getFieldIndex (dummy, "rgba") != -1)
   {

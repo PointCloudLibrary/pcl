@@ -114,5 +114,5 @@ After you have made the executable, you can run it. Simply do::
 
 You can view the smoothed cloud for example by executing::
 
-  $ pcd_viewer bun0-mls.pcd
+  $ pcl_viewer bun0-mls.pcd
 

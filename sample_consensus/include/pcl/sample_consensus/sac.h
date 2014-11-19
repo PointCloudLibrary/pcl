@@ -200,7 +200,7 @@ namespace pcl
 
           // Select the new inliers based on the optimized coefficients and new threshold
           sac_model_->selectWithinDistance (new_model_coefficients, error_threshold, new_inliers);
-          PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found (before/after): %zu/%zu, with an error threshold of %g.\n", prev_inliers.size (), new_inliers.size (), error_threshold);
+          PCL_DEBUG ("[pcl::SampleConsensus::refineModel] Number of inliers found (before/after): %lu/%lu, with an error threshold of %g.\n", prev_inliers.size (), new_inliers.size (), error_threshold);
         
           if (new_inliers.empty ())
           {
@@ -300,7 +300,7 @@ namespace pcl
       getInliers (std::vector<int> &inliers) { inliers = inliers_; }
 
       /** \brief Return the model coefficients of the best model found so far. 
-        * \param[out] model_coefficients the resultant model coefficients
+        * \param[out] model_coefficients the resultant model coefficients, as documented in \ref sample_consensus
         */
       inline void 
       getModelCoefficients (Eigen::VectorXf &model_coefficients) { model_coefficients = model_coefficients_; }

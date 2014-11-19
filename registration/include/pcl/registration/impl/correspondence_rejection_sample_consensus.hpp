@@ -98,6 +98,9 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
     return;
   }
 
+  if (save_inliers_)
+     inlier_indices_.clear ();
+
   int nr_correspondences = static_cast<int> (original_correspondences.size ());
   std::vector<int> source_indices (nr_correspondences);
   std::vector<int> target_indices (nr_correspondences);
@@ -155,6 +158,13 @@ pcl::registration::CorrespondenceRejectorSampleConsensus<PointT>::getRemainingCo
        remaining_correspondences.resize (inliers.size ());
        for (size_t i = 0; i < inliers.size (); ++i)
          remaining_correspondences[i] = original_correspondences[index_to_correspondence[inliers[i]]];
+
+       if (save_inliers_)
+       {
+         inlier_indices_.reserve (inliers.size ());
+         for (size_t i = 0; i < inliers.size (); ++i)
+           inlier_indices_.push_back (index_to_correspondence[inliers[i]]);
+       }
 
        // get best transformation
        Eigen::VectorXf model_coefficients;

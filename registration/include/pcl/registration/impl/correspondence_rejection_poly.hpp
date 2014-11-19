@@ -39,28 +39,23 @@
 #define PCL_REGISTRATION_IMPL_CORRESPONDENCE_REJECTION_POLY_HPP_
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> void 
-pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondences (
+template <typename SourceT, typename TargetT> void 
+pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::getRemainingCorrespondences (
     const pcl::Correspondences& original_correspondences, 
     pcl::Correspondences& remaining_correspondences)
 {
   // This is reset after all the checks below
   remaining_correspondences = original_correspondences;
   
-  // Get source/target
-  boost::shared_ptr<DataContainer<PointT> > data_container_ptr = boost::static_pointer_cast<DataContainer<PointT> > (data_container_);
-  typename pcl::PointCloud<PointT>::ConstPtr source = data_container_ptr->getInputSource();
-  typename pcl::PointCloud<PointT>::ConstPtr target = data_container_ptr->getInputTarget();
-  
   // Check source/target
-  if (!source)
+  if (!input_)
   {
     PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No source was input! Returning all input correspondences.\n",
                getClassName ().c_str ());
     return;
   }
 
-  if (!target)
+  if (!target_)
   {
     PCL_ERROR ("[pcl::registration::%s::getRemainingCorrespondences] No target was input! Returning all input correspondences.\n",
                getClassName ().c_str ());
@@ -95,7 +90,7 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
   }
   
   // Similarity, squared
-  const float simsq = similarity_threshold_ * similarity_threshold_;
+  similarity_threshold_squared_ = similarity_threshold_ * similarity_threshold_;
 
   // Initialization of result
   remaining_correspondences.clear ();
@@ -112,7 +107,7 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
     const std::vector<int> idx = getUniqueRandomIndices (nr_correspondences, cardinality_);
     
     // Verify the polygon similarity
-    if (thresholdPolygon (source, target, original_correspondences, idx, simsq))
+    if (thresholdPolygon (original_correspondences, idx))
     {
       // Increment sample counter and accept counter
       for (int j = 0; j < cardinality_; ++j)
@@ -155,8 +150,8 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::getRemainingCorrespondenc
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> std::vector<int> 
-pcl::registration::CorrespondenceRejectorPoly<PointT>::computeHistogram (const std::vector<float>& data,
+template <typename SourceT, typename TargetT> std::vector<int> 
+pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::computeHistogram (const std::vector<float>& data,
                                                                          float lower, float upper, int bins)
 {
   // Result
@@ -174,8 +169,8 @@ pcl::registration::CorrespondenceRejectorPoly<PointT>::computeHistogram (const s
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> int 
-pcl::registration::CorrespondenceRejectorPoly<PointT>::findThresholdOtsu (const std::vector<int>& histogram)
+template <typename SourceT, typename TargetT> int 
+pcl::registration::CorrespondenceRejectorPoly<SourceT, TargetT>::findThresholdOtsu (const std::vector<int>& histogram)
 {
   // Precision
   const double eps = std::numeric_limits<double>::epsilon();

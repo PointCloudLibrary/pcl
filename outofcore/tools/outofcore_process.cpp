@@ -41,7 +41,7 @@
 #include <pcl/common/time.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/pcl_macros.h>
@@ -52,13 +52,12 @@
 #include <pcl/outofcore/outofcore.h>
 #include <pcl/outofcore/outofcore_impl.h>
 
-// todo: Read clouds as PointCloud2 so we don't need to define PointT explicitly.
-//       This also requires our octree to take PointCloud2 as an input.
+// todo: Read clouds as PCLPointCloud2 so we don't need to define PointT explicitly.
+//       This also requires our octree to take PCLPointCloud2 as an input.
 typedef pcl::PointXYZ PointT;
 
 using namespace pcl;
 using namespace pcl::outofcore;
-using namespace sensor_msgs;
 
 using pcl::console::parse_argument;
 using pcl::console::parse_file_extension_argument;
@@ -74,14 +73,14 @@ typedef OutofcoreOctreeBase<> octree_disk;
 const int OCTREE_DEPTH (0);
 const int OCTREE_RESOLUTION (1);
 
-PointCloud2::Ptr
+PCLPointCloud2::Ptr
 getCloudFromFile (boost::filesystem::path pcd_path)
 {
   print_info ("Reading: %s ", pcd_path.c_str ());
 
 
   // Read PCD file
-  PointCloud2::Ptr cloud(new PointCloud2);
+  PCLPointCloud2::Ptr cloud(new PCLPointCloud2);
 
   if (io::loadPCDFile (pcd_path.string (), *cloud) == -1)
   {
@@ -106,10 +105,10 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   {
 
     // Get cloud
-    PointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
     PointCloud<PointXYZ>::Ptr cloudXYZ (new PointCloud<PointXYZ>);
 
-    fromROSMsg (*cloud, *cloudXYZ);
+    fromPCLPointCloud2 (*cloud, *cloudXYZ);
 
     PointT tmp_min_pt, tmp_max_pt;
 
@@ -183,7 +182,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
   for (size_t i = 0; i < pcd_paths.size (); i++)
   {
 
-    PointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
+    PCLPointCloud2::Ptr cloud = getCloudFromFile (pcd_paths[i]);
 
     boost::uint64_t pts = 0;
     

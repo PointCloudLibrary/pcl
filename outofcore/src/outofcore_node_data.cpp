@@ -242,7 +242,7 @@ namespace pcl
 
       char* idx_txt = cJSON_Print (idx.get ());
 
-      std::ofstream f (metadata_filename_.c_str (), std::ios::out | std::ios::trunc);
+      std::ofstream f (metadata_filename_.string ().c_str (), std::ios::out | std::ios::trunc);
       f << idx_txt;
       f.close ();
 
@@ -276,7 +276,7 @@ namespace pcl
       boost::uintmax_t len = boost::filesystem::file_size (metadata_filename_);
       idx_input.resize (len + 1);
       
-      std::ifstream f (metadata_filename_.c_str (), std::ios::in);
+      std::ifstream f (metadata_filename_.string ().c_str (), std::ios::in);
       f.read (&(idx_input.front ()), len);
       idx_input.back () = '\0';
       

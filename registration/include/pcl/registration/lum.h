@@ -131,7 +131,7 @@ namespace pcl
           EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         };
 
-        typedef boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties> SLAMGraph;
+        typedef boost::adjacency_list<boost::eigen_vecS, boost::eigen_vecS, boost::bidirectionalS, VertexProperties, EdgeProperties, boost::no_property, boost::eigen_listS> SLAMGraph;
         typedef boost::shared_ptr<SLAMGraph> SLAMGraphPtr;
         typedef typename SLAMGraph::vertex_descriptor Vertex;
         typedef typename SLAMGraph::edge_descriptor Edge;

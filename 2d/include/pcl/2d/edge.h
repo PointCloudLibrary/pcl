@@ -52,8 +52,8 @@ namespace pcl
       typedef typename PointCloudIn::Ptr PointCloudInPtr;
 
       PointCloudInPtr input_;
-      pcl::Convolution<PointInT> *convolution_;
-      kernel<PointInT>  *kernel_;
+      pcl::Convolution<PointInT> convolution_;
+      kernel<PointInT>  kernel_;
 
       /** \brief This function performs edge tracing for Canny Edge detector.
         *
@@ -132,8 +132,6 @@ namespace pcl
         non_max_suppression_radius_x_ (3),
         non_max_suppression_radius_y_ (3)
       {
-        convolution_ = new pcl::Convolution<PointInT> ();
-        kernel_ = new kernel<PointXYZI>();
       }
 
       /** \brief Set the output type.
@@ -288,10 +286,9 @@ namespace pcl
       computeDerivativeYBackward (pcl::PointCloud<PointOutT> &output);
 
       /** \brief Override function to implement the pcl::Filter interface
-        * \param output Output point cloud passed by reference
         */
       void 
-      applyFilter (pcl::PointCloud<PointOutT> &output) {}
+      applyFilter (pcl::PointCloud<PointOutT>& /*output*/) {}
 
       /** \brief Set the input point cloud pointer
         * \param[in] input pointer to input point cloud

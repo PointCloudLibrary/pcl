@@ -96,7 +96,11 @@ pcl::modeler::ParameterDialog::exec()
   tableView.setItemDelegate(&parameterDelegate);
 
   tableView.horizontalHeader()->setStretchLastSection(true);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+  tableView.horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
   tableView.horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
   tableView.setShowGrid(true);
   tableView.verticalHeader()->hide();
   tableView.setSelectionBehavior(QAbstractItemView::SelectRows);

@@ -138,9 +138,9 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   int c1, c2, f1, f2;
   PointT g1, g2, g3, g4;
   float w1, w2;
-  for (unsigned int i = 0; i < height; i++)    // for every row
+  for (int i = 0; i < height; i++)    // for every row
   {
-  for (unsigned int j = 0; j < width; j++)  // for every column
+  for (int j = 0; j < width; j++)  // for every column
   {
     A = T_inv * Eigen::Vector3f(i, j, 1);
     c1 = ceil(A(0));
@@ -150,12 +150,12 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
 
     if ( (f1 < 0) ||
        (c1 < 0) ||
-       (f1 >= input_image->height) ||
-       (c1 >= input_image->height) ||
+       (f1 >= static_cast<int> (input_image->height)) ||
+       (c1 >= static_cast<int> (input_image->height)) ||
        (f2 < 0) ||
        (c2 < 0) ||
-       (f2 >= input_image->width) ||
-       (c2 >= input_image->width))
+       (f2 >= static_cast<int> (input_image->width)) ||
+       (c2 >= static_cast<int> (input_image->width)))
     { // if out of range, continue
     continue;
     }
@@ -199,16 +199,16 @@ pcl::people::PersonClassifier<PointT>::copyMakeBorder (PointCloudPtr& input_imag
   int y_end_in = std::min(int(input_image->height-1), ymin+height-1);
 
   int x_start_out = std::max(0, -xmin);
-  int x_end_out = x_start_out + (x_end_in - x_start_in);
+  //int x_end_out = x_start_out + (x_end_in - x_start_in);
   int y_start_out = std::max(0, -ymin);
-  int y_end_out = y_start_out + (y_end_in - y_start_in);
+  //int y_end_out = y_start_out + (y_end_in - y_start_in);
 
-  for (unsigned int i = 0; i < (y_end_in - y_start_in + 1); i++)
+  for (int i = 0; i < (y_end_in - y_start_in + 1); i++)
   {
-  for (unsigned int j = 0; j < (x_end_in - x_start_in + 1); j++)
-  {
-    (*output_image)(x_start_out + j, y_start_out + i) = (*input_image)(x_start_in + j, y_start_in + i);
-  }
+    for (int j = 0; j < (x_end_in - x_start_in + 1); j++)
+    {
+      (*output_image)(x_start_out + j, y_start_out + i) = (*input_image)(x_start_in + j, y_start_in + i);
+    }
   }
 }
 
@@ -232,44 +232,43 @@ pcl::people::PersonClassifier<PointT>::evaluate (float height_person,
 
   if (height > 0)
   {
-    // If near the border, fill with black
+    // If near the border, fill with black:
     PointCloudPtr box(new PointCloud);
     copyMakeBorder(image, box, xmin, ymin, width, height);
 
-    // Make the image match the correct size
+    // Make the image match the correct size (used in the training stage):
     PointCloudPtr sample(new PointCloud);
     resize(box, sample, window_width_, window_height_);
 
-    //Convert the image to Matlab format
-    double* sample_double = new double[sample->width * sample->height * 3]; 
+    // Convert the image to array of float:
+    float* sample_float = new float[sample->width * sample->height * 3]; 
     int delta = sample->height * sample->width;
-    for(int row = 0; row < sample->height; row++)
+    for (uint32_t row = 0; row < sample->height; row++)
     {
-      for(int col = 0; col < sample->width; col++)
+      for (uint32_t col = 0; col < sample->width; col++)
       {
-        sample_double[row + sample->height * col] = (double) ((*sample)(col, row).r); //ptr[col * 3 + 2];
-        sample_double[row + sample->height * col + delta] = (double) ((*sample)(col, row).g); //ptr[col * 3 + 1];
-        sample_double[row + sample->height * col + delta * 2] = (double) ((*sample)(col, row).b); //ptr[col * 3];
+        sample_float[row + sample->height * col] = ((float) ((*sample)(col, row).r))/255; //ptr[col * 3 + 2];
+        sample_float[row + sample->height * col + delta] = ((float) ((*sample)(col, row).g))/255; //ptr[col * 3 + 1];
+        sample_float[row + sample->height * col + delta * 2] = (float) (((*sample)(col, row).b))/255; //ptr[col * 3];
       }
     }
 
-    double *ris = new double[SVM_weights_.size()];
-
-    //Calculate HOG descriptor
+    // Calculate HOG descriptor:
     pcl::people::HOG hog;
-    hog.compute(sample_double, sample->height, sample->width, 3, 8, 9, 10, ris);
-
-    //Calculate confidence value by dot product
+    float *descriptor = (float*) calloc(SVM_weights_.size(), sizeof(float));
+    hog.compute(sample_float, descriptor);
+ 
+    // Calculate confidence value by dot product:
     confidence = 0.0;
     for(unsigned int i = 0; i < SVM_weights_.size(); i++)
-    {
-      confidence += SVM_weights_[i] * ris[i];
+    { 
+      confidence += SVM_weights_[i] * descriptor[i];
     }
-    //Confidence correction
+    // Confidence correction:
     confidence -= SVM_offset_;  
 
-    delete[] ris;
-    delete[] sample_double;
+    delete[] descriptor;
+    delete[] sample_float;
   }
   else
   {
@@ -284,7 +283,6 @@ pcl::people::PersonClassifier<PointT>::evaluate (PointCloudPtr& image,
               Eigen::Vector3f& bottom,
               Eigen::Vector3f& top,
               Eigen::Vector3f& centroid,
-              Eigen::Matrix3f intrinsics_matrix,
               bool vertical)
 {
   float pixel_height;

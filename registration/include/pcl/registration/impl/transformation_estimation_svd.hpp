@@ -52,7 +52,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
   size_t nr_points = cloud_src.points.size ();
   if (cloud_tgt.points.size () != nr_points)
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", nr_points, cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", nr_points, cloud_tgt.points.size ());
     return;
   }
 
@@ -71,7 +71,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 {
   if (indices_src.size () != cloud_tgt.points.size ())
   {
-    PCL_ERROR ("[pcl::TransformationSVD::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), cloud_tgt.points.size ());
+    PCL_ERROR ("[pcl::TransformationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), cloud_tgt.points.size ());
     return;
   }
 
@@ -91,7 +91,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
 {
   if (indices_src.size () != indices_tgt.size ())
   {
-    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%zu) differs than target (%zu)!\n", indices_src.size (), indices_tgt.size ());
+    PCL_ERROR ("[pcl::TransformationEstimationSVD::estimateRigidTransformation] Number or points in source (%lu) differs than target (%lu)!\n", indices_src.size (), indices_tgt.size ());
     return;
   }
 
@@ -123,24 +123,26 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
   // Convert to Eigen format
   const int npts = static_cast <int> (source_it.size ());
 
-  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
-  Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
 
-  for (int i = 0; i < npts; ++i)
-  {
-    cloud_src (0, i) = source_it->x;
-    cloud_src (1, i) = source_it->y;
-    cloud_src (2, i) = source_it->z;
-    ++source_it;
-
-    cloud_tgt (0, i) = target_it->x;
-    cloud_tgt (1, i) = target_it->y;
-    cloud_tgt (2, i) = target_it->z;
-    ++target_it;
-  }
 
   if (use_umeyama_)
   {
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_src (3, npts);
+    Eigen::Matrix<Scalar, 3, Eigen::Dynamic> cloud_tgt (3, npts);
+
+    for (int i = 0; i < npts; ++i)
+    {
+      cloud_src (0, i) = source_it->x;
+      cloud_src (1, i) = source_it->y;
+      cloud_src (2, i) = source_it->z;
+      ++source_it;
+
+      cloud_tgt (0, i) = target_it->x;
+      cloud_tgt (1, i) = target_it->y;
+      cloud_tgt (2, i) = target_it->z;
+      ++target_it;
+    }
+    
     // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
     transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
   }

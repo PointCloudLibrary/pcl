@@ -51,7 +51,7 @@ namespace pcl
     struct IntensityFieldAccessor
     {
       /** \brief get intensity field
-        * \param[in] point p
+        * \param[in] p point
         * \return p.intensity
         */
       inline float
@@ -60,7 +60,7 @@ namespace pcl
         return p.intensity;
       }
       /** \brief gets the intensity value of a point
-        * \param[in/out] p point for which intensity to be get
+        * \param p point for which intensity to be get
         * \param[in] intensity value of the intensity field
         */
       inline void
@@ -69,7 +69,7 @@ namespace pcl
         intensity = p.intensity;
       }
       /** \brief sets the intensity value of a point
-        * \param[in/out] p point for which intensity to be set
+        * \param p point for which intensity to be set
         * \param[in] intensity value of the intensity field
         */
       inline void
@@ -78,7 +78,7 @@ namespace pcl
         p.intensity = intensity;
       }
       /** \brief subtract value from intensity field
-        * \param[in/out] p point for which to modify inetnsity
+        * \param p point for which to modify inetnsity
         * \param[in] value value to be subtracted from point intensity
         */
       inline void
@@ -87,7 +87,7 @@ namespace pcl
         p.intensity -= value;
       }
       /** \brief add value to intensity field
-        * \param[in/out] p point for which to modify inetnsity
+        * \param p point for which to modify inetnsity
         * \param[in] value value to be added to point intensity
         */
       inline void

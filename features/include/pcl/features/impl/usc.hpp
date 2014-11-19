@@ -246,7 +246,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
 template <typename PointInT, typename PointOutT, typename PointRFT> void
 pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computeFeature (PointCloudOut &output)
 {
-  assert (descriptor_length_ == 1980);
+  assert (descriptor_length_ == 1960);
 
   output.is_dense = true;
 

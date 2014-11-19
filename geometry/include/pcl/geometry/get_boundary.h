@@ -62,7 +62,6 @@ namespace pcl
       typedef MeshT                                            Mesh;
       typedef typename Mesh::HalfEdgeIndex                     HalfEdgeIndex;
       typedef typename Mesh::HalfEdgeIndices                   HalfEdgeIndices;
-      typedef typename Mesh::FaceIndex                         FaceIndex;
       typedef typename Mesh::InnerHalfEdgeAroundFaceCirculator IHEAFC;
 
       boundary_he_collection.clear ();

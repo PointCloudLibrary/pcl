@@ -179,7 +179,7 @@ namespace pcl
     out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
     {
-      out.r = out.g = out.b = static_cast<uint8_t> (in.v);
+      out.r = out.g = out.b = static_cast<uint8_t> (255 * in.v);
       return;
     } 
     float a = in.h / 60;
@@ -350,24 +350,24 @@ namespace pcl
    *  \param[in] focal the focal length
    *  \param[out] out the output pointcloud
    *  **/
-  void
+  inline void
   PointCloudDepthAndRGBtoXYZRGBA (PointCloud<Intensity>&  depth,
                                   PointCloud<RGB>&        image,
                                   float&                  focal,
                                   PointCloud<PointXYZRGBA>&     out)
   {
     float bad_point = std::numeric_limits<float>::quiet_NaN();
-    int width_ = depth.width;
-    int height_ = depth.height;
+    size_t width_ = depth.width;
+    size_t height_ = depth.height;
     float constant_ = 1.0f / focal;
 
-    for(unsigned int v = 0; v < height_; v++)
+    for (size_t v = 0; v < height_; v++)
     {
-      for(unsigned int u = 0; u < width_; u++)
+      for (size_t u = 0; u < width_; u++)
       {
         PointXYZRGBA pt;
         pt.a = 0;
-        float depth_ = depth.at(u,v).intensity;
+        float depth_ = depth.at (u, v).intensity;
 
         if (depth_ == 0)
         {
@@ -379,11 +379,11 @@ namespace pcl
           pt.x = static_cast<float> (u) * pt.z * constant_;
           pt.y = static_cast<float> (v) * pt.z * constant_;
         }
-        pt.r = image.at(u,v).r;
-        pt.g = image.at(u,v).g;
-        pt.b = image.at(u,v).b;
+        pt.r = image.at (u, v).r;
+        pt.g = image.at (u, v).g;
+        pt.b = image.at (u, v).b;
 
-        out.points.push_back(pt);
+        out.points.push_back (pt);
       }
     }
     out.width = width_;

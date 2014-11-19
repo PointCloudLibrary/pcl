@@ -4,7 +4,7 @@
 #include <pcl/point_representation.h>
 
 #include <pcl/io/pcd_io.h>
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
@@ -13,7 +13,6 @@
 #include <pcl/registration/transformation_estimation_svd.h>
 
 using namespace std;
-using namespace sensor_msgs;
 using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
@@ -40,8 +39,8 @@ estimateKeypoints (const PointCloud<PointXYZ>::Ptr &src,
   uniform.compute (keypoints_tgt_idx);
   copyPointCloud<PointXYZ, PointXYZ> (*tgt, keypoints_tgt_idx.points, keypoints_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10
   savePCDFileBinary ("keypoints_src.pcd", keypoints_src);
   savePCDFileBinary ("keypoints_tgt.pcd", keypoints_tgt);
 }
@@ -61,8 +60,8 @@ estimateNormals (const PointCloud<PointXYZ>::Ptr &src,
   normal_est.setInputCloud (tgt);
   normal_est.compute (normals_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer normals_src.pcd 
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer normals_src.pcd
   PointCloud<PointNormal> s, t;
   copyPointCloud<PointXYZ, PointNormal> (*src, s);
   copyPointCloud<Normal, PointNormal> (normals_src, s);
@@ -95,12 +94,12 @@ estimateFPFH (const PointCloud<PointXYZ>::Ptr &src,
   fpfh_est.setSearchSurface (tgt);
   fpfh_est.compute (fpfhs_tgt);
 
-  // For debugging purposes only: uncomment the lines below and use pcd_viewer to view the results, i.e.:
-  // pcd_viewer fpfhs_src.pcd 
-  PointCloud2 s, t, out;
-  toROSMsg (*keypoints_src, s); toROSMsg (fpfhs_src, t); concatenateFields (s, t, out);
+  // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
+  // pcl_viewer fpfhs_src.pcd
+  PCLPointCloud2 s, t, out;
+  toPCLPointCloud2 (*keypoints_src, s); toPCLPointCloud2 (fpfhs_src, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_src.pcd", out);
-  toROSMsg (*keypoints_tgt, s); toROSMsg (fpfhs_tgt, t); concatenateFields (s, t, out);
+  toPCLPointCloud2 (*keypoints_tgt, s); toPCLPointCloud2 (fpfhs_tgt, t); concatenateFields (s, t, out);
   savePCDFile ("fpfhs_tgt.pcd", out);
 }
 
@@ -143,13 +142,13 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
                             keypoints_tgt (new PointCloud<PointXYZ>);
 
   estimateKeypoints (src, tgt, *keypoints_src, *keypoints_tgt);
-  print_info ("Found %zu and %zu keypoints for the source and target datasets.\n", keypoints_src->points.size (), keypoints_tgt->points.size ());
+  print_info ("Found %lu and %lu keypoints for the source and target datasets.\n", keypoints_src->points.size (), keypoints_tgt->points.size ());
 
   // Compute normals for all points keypoint
   PointCloud<Normal>::Ptr normals_src (new PointCloud<Normal>), 
                           normals_tgt (new PointCloud<Normal>);
   estimateNormals (src, tgt, *normals_src, *normals_tgt);
-  print_info ("Estimated %zu and %zu normals for the source and target datasets.\n", normals_src->points.size (), normals_tgt->points.size ());
+  print_info ("Estimated %lu and %lu normals for the source and target datasets.\n", normals_src->points.size (), normals_tgt->points.size ());
 
   // Compute FPFH features at each keypoint
   PointCloud<FPFHSignature33>::Ptr fpfhs_src (new PointCloud<FPFHSignature33>), 
