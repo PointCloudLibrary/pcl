@@ -130,6 +130,7 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 #endif
   slice_->SetMapper (map);
   ren_->AddViewProp (slice_);
+  ren_->GetActiveCamera ()->ParallelProjectionOn ();
   interactor_->SetInteractorStyle (interactor_style_);
 #endif
 
@@ -213,6 +214,9 @@ pcl::visualization::ImageViewer::addRGBImage (
 #else
   algo_->SetInputData (image);
   algo_->Update ();
+  slice_->GetMapper ()->SetInputConnection (algo_->GetOutputPort ());
+  ren_->ResetCamera ();
+  ren_->GetActiveCamera ()->SetParallelScale (0.5 * win_->GetSize ()[1]);
 #endif
 }
 
@@ -272,6 +276,9 @@ pcl::visualization::ImageViewer::addMonoImage (
 #else
   algo_->SetInputData (image);
   algo_->Update ();
+  slice_->GetMapper ()->SetInputConnection (algo_->GetOutputPort ());
+  ren_->ResetCamera ();
+  ren_->GetActiveCamera ()->SetParallelScale (0.5 * win_->GetSize ()[1]);
 #endif
 }
 
