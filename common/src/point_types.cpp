@@ -189,6 +189,13 @@ namespace pcl
     return (os);
   }
 
+  std::ostream&
+  operator << (std::ostream& os, const PointXYZLNormal& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
+    return (os);
+  }
+
   std::ostream& 
   operator << (std::ostream& os, const PointWithRange& p)
   {
@@ -255,6 +262,13 @@ namespace pcl
   }
 
   std::ostream& 
+  operator << (std::ostream& os, const CPPFSignature& p)
+  {
+    os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " << p.f5 << ", " << p.f6 << ", " << p.f7 << ", " << p.f8 << ", " << p.f9 << ", " << p.f10 << ", " << p.alpha_m << ")";
+    return (os);
+  }
+
+  std::ostream& 
   operator << (std::ostream& os, const PPFRGBSignature& p)
    {
      os << "(" << p.f1 << ", " << p.f2 << ", " << p.f3 << ", " << p.f4 << ", " <<
@@ -277,6 +291,16 @@ namespace pcl
     os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
     for (size_t i = 0; i < 1980; ++i)
       os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1979 ? ", " : ")");
+    return (os);
+  }
+
+  std::ostream& 
+  operator << (std::ostream& os, const UniqueShapeContext1960& p)
+  {
+    for (int i = 0; i < 9; ++i)
+    os << (i == 0 ? "(" : "") << p.rf[i] << (i < 8 ? ", " : ")");
+    for (size_t i = 0; i < 1960; ++i)
+      os << (i == 0 ? "(" : "") << p.descriptor[i] << (i < 1959 ? ", " : ")");
     return (os);
   }
 
@@ -395,4 +419,14 @@ namespace pcl
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
   }
+
+  std::ostream& 
+  operator << (std::ostream& os, const PointDEM& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
+       << p.intensity << " - " << p.intensity_variance << " - " 
+       << p.height_variance << ")";
+    return (os);
+  }
+
 }

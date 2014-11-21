@@ -52,7 +52,7 @@
 // Point Cloud message includes. Needed everywhere.
 #include <pcl/point_cloud.h>
 #include <pcl/PointIndices.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <pcl/PCLPointCloud2.h>
 
 namespace pcl
 {
@@ -96,7 +96,7 @@ namespace pcl
 
       /** \brief Get a pointer to the input point cloud dataset. */
       inline PointCloudConstPtr const 
-      getInputCloud () { return (input_); }
+      getInputCloud () const { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
         * \param[in] indices a pointer to the indices that represent the input data.
@@ -131,12 +131,16 @@ namespace pcl
       inline IndicesPtr const 
       getIndices () { return (indices_); }
 
+      /** \brief Get a pointer to the vector of indices used. */
+      inline IndicesConstPtr const 
+      getIndices () const { return (indices_); }
+
       /** \brief Override PointCloud operator[] to shorten code
         * \note this method can be called instead of (*input_)[(*indices_)[pos]]
         * or input_->points[(*indices_)[pos]]
         * \param[in] pos position in indices_ vector
         */
-      inline const PointT& operator[] (size_t pos)
+      inline const PointT& operator[] (size_t pos) const 
       {
         return ((*input_)[(*indices_)[pos]]);
       }
@@ -177,12 +181,12 @@ namespace pcl
 
   /////////////////////////////////////////////////////////////////////////////////////////
   template <>
-  class PCL_EXPORTS PCLBase<sensor_msgs::PointCloud2>
+  class PCL_EXPORTS PCLBase<pcl::PCLPointCloud2>
   {
     public:
-      typedef sensor_msgs::PointCloud2 PointCloud2;
-      typedef boost::shared_ptr<PointCloud2> PointCloud2Ptr;
-      typedef boost::shared_ptr<PointCloud2 const> PointCloud2ConstPtr;
+      typedef pcl::PCLPointCloud2 PCLPointCloud2;
+      typedef boost::shared_ptr<PCLPointCloud2> PCLPointCloud2Ptr;
+      typedef boost::shared_ptr<PCLPointCloud2 const> PCLPointCloud2ConstPtr;
 
       typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
       typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
@@ -201,10 +205,10 @@ namespace pcl
         * \param cloud the const boost shared pointer to a PointCloud message
         */
       void 
-      setInputCloud (const PointCloud2ConstPtr &cloud);
+      setInputCloud (const PCLPointCloud2ConstPtr &cloud);
 
       /** \brief Get a pointer to the input point cloud dataset. */
-      inline PointCloud2ConstPtr const 
+      inline PCLPointCloud2ConstPtr const 
       getInputCloud () { return (input_); }
 
       /** \brief Provide a pointer to the vector of indices that represents the input data.
@@ -225,7 +229,7 @@ namespace pcl
 
     protected:
       /** \brief The input point cloud dataset. */
-      PointCloud2ConstPtr input_;
+      PCLPointCloud2ConstPtr input_;
 
       /** \brief A pointer to the vector of point indices to use. */
       IndicesPtr indices_;

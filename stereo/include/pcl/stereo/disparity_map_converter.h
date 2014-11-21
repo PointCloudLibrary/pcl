@@ -39,20 +39,22 @@
 #include <cstring>
 #include <vector>
 
-#pragma warning(disable : 4996 4521)
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#pragma warning(default : 4996 4521)
 
 namespace pcl
 {
   /** \brief Compute point cloud from the disparity map.
     *
-    * Exampe of usage:
+    * Example of usage:
     * 
     * \code
-    *  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
-    *   
+    *  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new 
+    *    pcl::PointCloud<pcl::PointXYZI>);
+    *  pcl::PointCloud<pcl::RGB>::Ptr left_image (new 
+    *    pcl::PointCloud<pcl::RGB>);
+    *  // Fill left image cloud.
+    *
     *  pcl::DisparityMapConverter<pcl::PointXYZI> dmc;
     *  dmc.setBaseline (0.8387445f);
     *  dmc.setFocalLength (368.534700f);
@@ -60,12 +62,12 @@ namespace pcl
     *  dmc.setImageCenterY (224.334900f);
     *  dmc.setDisparityThresholdMin(15.0f);
     *
-    *  // Left view of the scene. Must be converted to pcd format with png2pcd.
-    *  dmc.loadImage ("left_image.pcd");
+    *  // Left view of the scene.
+    *  dmc.setImage (left_image);
     *  // Disparity map of the scene.
     *  dmc.loadDisparityMap ("disparity_map.txt", 640, 480);
     *
-    *  dmc.compute(cloud);
+    *  dmc.compute(*cloud);
     * \endcode
     *
     * \author Timur Ibadov (ibadov.timur@gmail.com)
@@ -75,7 +77,7 @@ namespace pcl
   class DisparityMapConverter
   {
     protected:
-      typedef typename PointCloud<PointT>::Ptr PointCloudPointer;
+      typedef pcl::PointCloud<PointT> PointCloud;
 
     public:
       /** \brief DisparityMapConverter constructor. */
@@ -86,96 +88,85 @@ namespace pcl
       /** \brief Set x-coordinate of the image center.
         * \param[in] center_x x-coordinate of the image center.
         */
-      void
+      inline void
       setImageCenterX (const float center_x);
 
       /** \brief Get x-coordinate of the image center.
         * \return x-coordinate of the image center.
         */
-      float
+      inline float
       getImageCenterX () const;
 
       /** \brief Set y-coordinate of the image center.
         * \param[in] center_y y-coordinate of the image center.
         */
-      void
+      inline void
       setImageCenterY (const float center_y);
 
       /** \brief Get y-coordinate of the image center.
         * \return y-coordinate of the image center.
         */
-      float
+      inline float
       getImageCenterY () const;
 
       /** \brief Set focal length.
         * \param[in] focal_length the focal length.
         */
-      void
+      inline void
       setFocalLength (const float focal_length);
 
       /** \brief Get focal length.
         * \return the focal length.
         */
-      float
+      inline float
       getFocalLength () const;
 
       /** \brief Set baseline.
         * \param[in] baseline baseline.
         */
-      void
+      inline void
       setBaseline (const float baseline);
 
       /** \brief Get baseline.
         * \return the baseline.
         */
-      float
+      inline float
       getBaseline () const;
 
       /** \brief Set min disparity threshold.
         * \param[in] disparity_threshold_min min disparity threshold.
         */
-      void
+      inline void
       setDisparityThresholdMin (const float disparity_threshold_min);
 
       /** \brief Get min disparity threshold.
         * \return min disparity threshold.
         */
-      float
+      inline float
       getDisparityThresholdMin () const;
 
       /** \brief Set max disparity threshold.
         * \param[in] disparity_threshold_max max disparity threshold.
         */
-      void
+      inline void
       setDisparityThresholdMax (const float disparity_threshold_max);
 
       /** \brief Get max disparity threshold.
         * \return max disparity threshold.
         */
-      float
+      inline float
       getDisparityThresholdMax () const;
-
-      /** \brief Load an image, that will be used for coloring of the output cloud.
-        *
-        * The image must be converted in pcd format. You may use png2pcd tool
-        * from pcl (tools/png2pcd.cpp) with parameter "-mode FORCE_COLOR".
-        *
-        * \param[in] file_name the name of the image file.
-        * \return "true" if the image was successfully loaded; "false" otherwise
-        */
-      bool
-      loadImage (const std::string &file_name);
 
       /** \brief Set an image, that will be used for coloring of the output cloud.
         * \param[in] image the image.
         */
       void
-      setImage (const PointCloud<RGB>::Ptr &image);
+      setImage (const pcl::PointCloud<pcl::RGB>::ConstPtr &image);
 
       /** \brief Get the image, that is used for coloring of the output cloud.
         * \return the image.
         */
-      PointCloud<RGB>::Ptr
+      pcl::PointCloud<RGB>::Ptr
       getImage ();
 
       /** \brief Load the disparity map.
@@ -207,7 +198,8 @@ namespace pcl
         * \return "true" if the disparity map was successfully loaded; "false" otherwise
         */
       void
-      setDisparityMap(const std::vector<float> &disparity_map, const size_t width, const size_t height);
+      setDisparityMap(const std::vector<float> &disparity_map, 
+          const size_t width, const size_t height);
 
       /** \brief Get the disparity map.
         * \return the disparity map.
@@ -219,9 +211,18 @@ namespace pcl
         * \param[out] out_cloud the variable to return the resulting cloud.
         */
       virtual void
-      compute (PointCloudPointer &out_cloud);
+      compute (PointCloud &out_cloud);
 
     protected:
+      /** \brief Translate point from image coordinates and disparity to 3D-coordinates
+        * \param[in] row
+        * \param[in] column
+        * \param[in] disparity
+        * \return the 3D point, that corresponds to the input parametres and the camera calibration.
+        */
+      PointXYZ 
+      translateCoordinates (size_t row, size_t column, float disparity) const;
+
       /** \brief X-coordinate of the image center. */
       float center_x_;
       /** \brief Y-coordinate of the image center. */
@@ -231,8 +232,10 @@ namespace pcl
       /** \brief Baseline. */
       float baseline_;
       
+      /** \brief Is color image is set. */
+      bool is_color_;
       /** \brief Color image of the scene. */
-      pcl::PointCloud<pcl::RGB>::Ptr image_;
+      pcl::PointCloud<pcl::RGB>::ConstPtr image_;
 
       /** \brief Vector for the disparity map. */
       std::vector<float> disparity_map_;
@@ -244,16 +247,10 @@ namespace pcl
       /** \brief Thresholds of the disparity. */
       float disparity_threshold_min_;
       float disparity_threshold_max_;
-
-      /** \brief Translate point from image coordinates and disparity to 3D-coordinates
-        * \param[in] row
-        * \param[in] column
-        * \param[in] disparity
-        * \return the 3D point, that corresponds to the input parametres and the camera calibration.
-        */
-      PointXYZ 
-      translateCoordinates (size_t row, size_t column, float disparity) const;
   };
 
 }
+
+#include <pcl/stereo/impl/disparity_map_converter.hpp>
+
 #endif // PCL_DISPARITY_MAP_CONVERTER_H_

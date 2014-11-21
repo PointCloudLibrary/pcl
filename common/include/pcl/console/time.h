@@ -42,7 +42,9 @@
 #pragma GCC system_header 
 #endif
 
+#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
+#endif
 #include <pcl/console/print.h>
 
 namespace pcl
