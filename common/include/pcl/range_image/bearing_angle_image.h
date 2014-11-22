@@ -51,7 +51,7 @@ namespace pcl
   /** \brief class BearingAngleImage is used as an interface to generate Bearing Angle(BA) image.
     * \author: Qinghua Li (qinghua__li@163.com)
     */
-  class BearingAngleImage : public pcl::PointCloud<PointXYZRGBA>
+  class PCL_EXPORTS BearingAngleImage : public pcl::PointCloud<PointXYZRGBA>
   {
     public:
       // ===== TYPEDEFS =====
