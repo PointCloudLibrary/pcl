@@ -220,7 +220,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       size_t color = 0;
       for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter)
       {
-        colormap[*iter] = color % getGlasbeyLUTSize ();
+        colormap[*iter] = color % GlasbeyLUT::size ();
         ++color;
       }
 
@@ -229,7 +229,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       {
         uint32_t val;
         pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
-        memcpy (&img.data[i * 3], &GLASBEY_LUT[colormap[val] * 3], 3);
+        memcpy (&img.data[i * 3], GlasbeyLUT::data () + colormap[val] * 3, 3);
       }
 
       break;
