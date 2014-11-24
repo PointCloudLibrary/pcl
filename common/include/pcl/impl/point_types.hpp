@@ -90,7 +90,8 @@
   (pcl::SHOT352)                \
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
-  (pcl::ReferenceFrame)
+  (pcl::ReferenceFrame)         \
+  (pcl::PointDEM)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -117,7 +118,8 @@
   (pcl::PointWithRange)       \
   (pcl::PointWithViewpoint)   \
   (pcl::PointWithScale)       \
-  (pcl::PointSurfel)
+  (pcl::PointSurfel)          \
+  (pcl::PointDEM)
 
 // Define all point types with XYZ and label
 #define PCL_XYZL_POINT_TYPES  \
@@ -1590,6 +1592,39 @@ namespace pcl
     }
   
     friend std::ostream& operator << (std::ostream& os, const PointSurfel& p);
+  };
+
+  struct EIGEN_ALIGN16 _PointDEM
+  {
+    PCL_ADD_POINT4D;
+    float intensity;
+    float intensity_variance;
+    float height_variance;
+    EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const PointDEM& p);
+  /** \brief A point structure representing Digital Elevation Map.
+    * \ingroup common
+    */
+  struct PointDEM : public _PointDEM
+  {
+    inline PointDEM (const _PointDEM &p)
+    {
+      x = p.x; y = p.y; x = p.z; data[3] = 1.0f;
+      intensity = p.intensity;
+      intensity_variance = p.intensity_variance;
+      height_variance = p.height_variance;
+    }
+
+    inline PointDEM ()
+    {
+      x = y = z = 0.0f; data[3] = 1.0f;
+      intensity = 0.0f;
+      intensity_variance = height_variance = 0.0f;
+    }
+
+    friend std::ostream& operator << (std::ostream& os, const PointDEM& p);
   };
 
   template <int N> std::ostream& 
