@@ -126,7 +126,13 @@ pcl::visualization::ImageViewer::ImageViewer (const std::string& window_title)
 #if VTK_MAJOR_VERSION < 6
   map->SetInput (empty_image);
 #else
+ #if ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION == 1))
+  empty_image->AllocateScalars (VTK_UNSIGNED_CHAR, 3);
+  algo_->SetInputData (empty_image);
+  map->SetInputConnection (algo_->GetOutputPort ());
+ #else
   map->SetInputData (empty_image);
+ #endif
 #endif
   slice_->SetMapper (map);
   ren_->AddViewProp (slice_);
