@@ -300,9 +300,6 @@ namespace pcl
       /** @brief Continously asks for data from the device and publishes it if available. */
       void
       processGrabbing ();
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }  // namespace pcl
 
