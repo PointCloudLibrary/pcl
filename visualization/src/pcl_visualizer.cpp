@@ -3773,7 +3773,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
     }
 
-  mat1 = mat1.inverse ();
+  mat1 = mat1.inverse ().eval ();
 
   int ptr = 0;
   for (int y = 0; y < yres; ++y)
