@@ -113,12 +113,12 @@ pcl::visualization::PCLPlotter::addPlotData (
 
   VTK_CREATE (vtkDoubleArray, varray_X);
   varray_X->SetName ("X Axis");
-  varray_X->SetArray (permanent_X, size, 1);
+  varray_X->SetArray (permanent_X, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
   table->AddColumn (varray_X);
 
   VTK_CREATE (vtkDoubleArray, varray_Y);
   varray_Y->SetName (name);
-  varray_Y->SetArray (permanent_Y, size, 1);
+  varray_Y->SetArray (permanent_Y, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
   table->AddColumn (varray_Y);
 
   //adding to chart
