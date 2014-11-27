@@ -818,7 +818,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     }
   }
 
-  data->SetArray (&pts[0], 2 * nr_normals * 3, 0);
+  data->SetArray (&pts[0], 2 * nr_normals * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -1026,7 +1026,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     lines->InsertCellPoint(2*j+1);
   }
 
-  data->SetArray (&pts[0], 2 * nr_gradients * 3, 0);
+  data->SetArray (&pts[0], 2 * nr_gradients * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
