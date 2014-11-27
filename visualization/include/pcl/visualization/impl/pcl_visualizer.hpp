@@ -45,6 +45,7 @@
 #include <vtkVectorText.h>
 #include <vtkAlgorithmOutput.h>
 #include <vtkFollower.h>
+#include <vtkMath.h>
 #include <vtkSphereSource.h>
 #include <vtkProperty2D.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -1101,7 +1102,7 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     return (false);
   }
 
-  int n_corr = int (correspondences.size () / nth + 1);
+  int n_corr = int (correspondences.size () / nth);
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
@@ -1109,11 +1110,6 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_colors->SetNumberOfComponents (3);
   line_colors->SetName ("Colors");
   line_colors->SetNumberOfTuples (n_corr);
-  unsigned char* colors = line_colors->GetPointer (0);
-  memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
-  pcl::RGB rgb;
-  // Will use random colors or RED by default
-  rgb.r = 255; rgb.g = rgb.b = 0;
 
   // Prepare coordinates
   vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
@@ -1151,10 +1147,11 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
     tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
 
-    getRandomColors (rgb);
-    colors[idx+0] = rgb.r;
-    colors[idx+1] = rgb.g;
-    colors[idx+2] = rgb.b;
+    float rgb[3];
+    rgb[0] = vtkMath::Random (32, 255); // min / max
+    rgb[1] = vtkMath::Random (32, 255);
+    rgb[2] = vtkMath::Random (32, 255);
+    line_colors->InsertTuple (i, rgb);
   }
   line_colors->SetNumberOfTuples (j);
   line_cells_id->SetNumberOfTuples (j);
@@ -1204,18 +1201,13 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
   vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
   vtkSmartPointer<vtkPolyData> line_data = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ();
 
-  int n_corr = int (correspondences.size () / nth + 1);
+  int n_corr = int (correspondences.size () / nth);
 
   // Prepare colors
   vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   line_colors->SetNumberOfComponents (3);
   line_colors->SetName ("Colors");
   line_colors->SetNumberOfTuples (n_corr);
-  unsigned char* colors = line_colors->GetPointer (0);
-  memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
-  pcl::RGB rgb;
-  // Will use random colors or RED by default
-  rgb.r = 255.0; rgb.g = rgb.b = 0.0;
 
   // Prepare coordinates
   vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
@@ -1253,10 +1245,11 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
     tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
     tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
 
-    getRandomColors (rgb);
-    colors[idx+0] = rgb.r;
-    colors[idx+1] = rgb.g;
-    colors[idx+2] = rgb.b;
+    float rgb[3];
+    rgb[0] = vtkMath::Random (32, 255); // min / max
+    rgb[1] = vtkMath::Random (32, 255);
+    rgb[2] = vtkMath::Random (32, 255);
+    line_colors->InsertTuple (i, rgb);
   }
   line_colors->SetNumberOfTuples (j);
   line_cells_id->SetNumberOfTuples (j);
