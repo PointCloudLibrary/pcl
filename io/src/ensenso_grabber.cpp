@@ -42,6 +42,7 @@
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
 #include <pcl/point_types.h>
+#include <boost/format.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Handle Ensenso SDK exceptions
@@ -66,6 +67,8 @@ pcl::EnsensoGrabber::EnsensoGrabber () :
     running_ (false)
 {
   point_cloud_signal_ = createSignal<sig_cb_ensenso_point_cloud> ();
+  images_signal_ = createSignal<sig_cb_ensenso_images> ();
+  point_cloud_images_signal_ = createSignal<sig_cb_ensenso_point_cloud_images> ();
   PCL_INFO ("Initialising nxLib\n");
 
   try
@@ -89,6 +92,9 @@ pcl::EnsensoGrabber::~EnsensoGrabber () throw ()
     root_.reset ();
 
     disconnect_all_slots<sig_cb_ensenso_point_cloud> ();
+    disconnect_all_slots<sig_cb_ensenso_images> ();
+    disconnect_all_slots<sig_cb_ensenso_point_cloud_images> ();
+
     if (tcp_open_)
       closeTcpPort ();
     nxLibFinalize ();
@@ -934,6 +940,17 @@ pcl::EnsensoGrabber::getPCLStamp (const double ensenso_stamp)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::EnsensoGrabber::getOpenCVType (const int channels,
+                                    const int bpe,
+                                    const bool isFlt)
+{
+  int bits = bpe * 8;
+  char type = isFlt ? 'F' : (bpe > 3 ? 'S' : 'U');
+  return (boost::str (boost::format ("CV_%i%cC%i") % bits % type % channels));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::EnsensoGrabber::processGrabbing ()
 {
@@ -942,48 +959,107 @@ pcl::EnsensoGrabber::processGrabbing ()
   {
     try
     {
-      // Publish cloud
-      if (num_slots<sig_cb_ensenso_point_cloud> () > 0)
+      // Publish cloud / images
+      if (num_slots<sig_cb_ensenso_point_cloud> () > 0 || num_slots<sig_cb_ensenso_images> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
       {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+        boost::shared_ptr<PairOfImages> images (new PairOfImages);
+
         fps_mutex_.lock ();
         frequency_.event ();
         fps_mutex_.unlock ();
 
-        pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> ());
-
         NxLibCommand (cmdCapture).execute ();
+        double timestamp;
+        camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);
 
-        // Stereo matching task
-        NxLibCommand (cmdComputeDisparityMap).execute ();
-
-        // Convert disparity map into XYZ data for each pixel
-        NxLibCommand (cmdComputePointMap).execute ();
-
-        // Get info about the computed point map and copy it into a std::vector
-        std::vector<float> pointMap;
-        int width, height;
-        camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
-        camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
-
-        // Copy point cloud and convert in meters
-        cloud->points.resize (height * width);
-        cloud->width = width;
-        cloud->height = height;
-        cloud->is_dense = false;
-
-        // Copy data in point cloud (and convert milimeters in meters)
-        for (size_t i = 0; i < pointMap.size (); i += 3)
+        // Gather images
+        if (num_slots<sig_cb_ensenso_images> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
         {
-          cloud->points[i / 3].x = pointMap[i] / 1000.0;
-          cloud->points[i / 3].y = pointMap[i + 1] / 1000.0;
-          cloud->points[i / 3].z = pointMap[i + 2] / 1000.0;
+          // Rectify images
+          NxLibCommand (cmdRectifyImages).execute ();
+          int width, height, channels, bpe;
+          bool isFlt, collected_pattern = false;
+
+          try  // Try to collect calibration pattern, if not possible, publish RAW images instead
+          {
+            NxLibCommand collect_pattern (cmdCollectPattern);
+            collect_pattern.parameters ()[itmBuffer].set (false);  // Do NOT store the pattern into the buffer!
+            collect_pattern.execute ();
+            collected_pattern = true;
+          }
+          catch (const NxLibException &ex)
+          {
+            // We failed to collect the pattern but the RAW images are available!
+          }
+
+          if (collected_pattern)
+          {
+            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, 0);
+            images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
+            images->first.width = images->second.width = width;
+            images->first.height = images->second.height = height;
+            images->first.data.resize (width * height * sizeof(float));
+            images->second.data.resize (width * height * sizeof(float));
+            images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+
+            camera_[itmImages][itmWithOverlay][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
+            camera_[itmImages][itmWithOverlay][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
+          }
+          else
+          {
+            camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, 0);
+            images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
+            images->first.width = images->second.width = width;
+            images->first.height = images->second.height = height;
+            images->first.data.resize (width * height * sizeof(float));
+            images->second.data.resize (width * height * sizeof(float));
+            images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+
+            camera_[itmImages][itmRaw][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
+            camera_[itmImages][itmRaw][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
+          }
         }
 
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_tmp (new pcl::PointCloud<pcl::PointXYZ> ());
-        pcl::copyPointCloud<pcl::PointXYZRGBA, pcl::PointXYZ> (*cloud, *cloud_tmp);
-        point_cloud_signal_->operator () (cloud_tmp);
-      }
+        // Gather point cloud
+        if (num_slots<sig_cb_ensenso_point_cloud> () > 0 || num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
+        {
+          // Stereo matching task
+          NxLibCommand (cmdComputeDisparityMap).execute ();
 
+          // Convert disparity map into XYZ data for each pixel
+          NxLibCommand (cmdComputePointMap).execute ();
+
+          // Get info about the computed point map and copy it into a std::vector
+          std::vector<float> pointMap;
+          int width, height;
+          camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
+          camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
+
+          // Copy point cloud and convert in meters
+          cloud->header.stamp = getPCLStamp (timestamp);
+          cloud->points.resize (height * width);
+          cloud->width = width;
+          cloud->height = height;
+          cloud->is_dense = false;
+
+          // Copy data in point cloud (and convert milimeters in meters)
+          for (size_t i = 0; i < pointMap.size (); i += 3)
+          {
+            cloud->points[i / 3].x = pointMap[i] / 1000.0;
+            cloud->points[i / 3].y = pointMap[i + 1] / 1000.0;
+            cloud->points[i / 3].z = pointMap[i + 2] / 1000.0;
+          }
+        }
+
+        // Publish signals
+        if (num_slots<sig_cb_ensenso_point_cloud_images> () > 0)
+          point_cloud_images_signal_->operator () (cloud, images);
+        else if (num_slots<sig_cb_ensenso_point_cloud> () > 0)
+          point_cloud_signal_->operator () (cloud);
+        else if (num_slots<sig_cb_ensenso_images> () > 0)
+          images_signal_->operator () (images);
+      }
       continue_grabbing = running_;
     }
     catch (NxLibException &ex)

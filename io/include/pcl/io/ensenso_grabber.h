@@ -42,6 +42,7 @@
 #define __PCL_IO_ENSENSO_GRABBER__
 
 #include <pcl/common/time.h>
+#include <pcl/common/io.h>
 #include <pcl/io/eigen.h>
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
@@ -67,13 +68,22 @@ namespace pcl
    */
   class PCL_EXPORTS EnsensoGrabber : public Grabber
   {
+      typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
+
     public:
       typedef boost::shared_ptr<EnsensoGrabber> Ptr;
       typedef boost::shared_ptr<const EnsensoGrabber> ConstPtr;
 
       // Define callback signature typedefs
       typedef void
-      (sig_cb_ensenso_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
+      (sig_cb_ensenso_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+
+      typedef void
+      (sig_cb_ensenso_images) (const boost::shared_ptr<PairOfImages> &);
+
+      typedef void
+      (sig_cb_ensenso_point_cloud_images) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &,
+                                           const boost::shared_ptr<PairOfImages> &);
 
       /** @brief Constructor */
       EnsensoGrabber ();
@@ -98,7 +108,7 @@ namespace pcl
       bool
       closeDevice ();
 
-      /** @brief Start the point cloud acquisition
+      /** @brief Start the point cloud and or image acquisition
        * @note Opens device "0" if no device is open */
       void
       start ();
@@ -428,6 +438,12 @@ namespace pcl
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;
 
+      /** @brief Boost images signal */
+      boost::signals2::signal<sig_cb_ensenso_images>* images_signal_;
+
+      /** @brief Boost images + point cloud signal */
+      boost::signals2::signal<sig_cb_ensenso_point_cloud_images>* point_cloud_images_signal_;
+
       /** @brief Whether an Ensenso device is opened or not */
       bool device_open_;
 
@@ -452,7 +468,20 @@ namespace pcl
       static
       getPCLStamp (const double ensenso_stamp);
 
-      /** @brief Continously asks for point clouds data from the device and publishes it if available. */
+      /** @brief Get OpenCV image type corresponding to the parameters given
+       * @param channels number of channels in the image
+       * @param bpe bytes per element
+       * @param isFlt is float
+       * @return the OpenCV type as a string */
+      std::string
+      static
+      getOpenCVType (const int channels,
+                     const int bpe,
+                     const bool isFlt);
+
+      /** @brief Continously asks for images and or point clouds data from the device and publishes them if available.
+       * PCL time stamps are filled for both the images and clouds grabbed (see @ref getPCLStamp)
+       * @note The cloud time stamp is the RAW image time stamp */
       void
       processGrabbing ();
   };
