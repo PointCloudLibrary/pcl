@@ -3770,7 +3770,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
     for (int j = 0; j < 4; ++j)
     {
       mat1 (i, j) = static_cast<float> (composite_projection_transform->Element[i][j]);
-      mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
+	  mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
     }
 
   mat1 = mat1.inverse ().eval ();
@@ -3788,22 +3788,24 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
         continue;
       }
 
-      Eigen::Vector4f world_coords (dwidth  * float (x) - 1.0f,
-                                    dheight * float (y) - 1.0f,
+      Eigen::Vector4f world_coords (dwidth  * float (x + 0.5) - 1.0f,
+                                    dheight * float (y + 0.5) - 1.0f,
                                     depth[ptr],
                                     1.0f);
       world_coords = mat1 * world_coords;
 
-      float w3 = 1.0f / world_coords[3];
-      world_coords[0] *= w3;
-      // vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right), thus, the fliping in y and z
-      world_coords[1] *= -w3;
-      world_coords[2] *= -w3;
-
-      world_coords = mat2 * world_coords;
-      pt.x = static_cast<float> (world_coords[0]);
-      pt.y = static_cast<float> (world_coords[1]);
-      pt.z = static_cast<float> (world_coords[2]);
+	  world_coords = mat2 * world_coords;
+		
+	  float w3 = 1.0f / world_coords[3];
+	  world_coords[0] *= w3;
+	  // vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right), thus, the fliping in y and z
+	  world_coords[1] *= -w3;
+	  world_coords[2] *= -w3;
+	  world_coords[3] = 1.0f;
+	  
+	  pt.x = static_cast<float> (world_coords[0]);
+	  pt.y = static_cast<float> (world_coords[1]);
+	  pt.z = static_cast<float> (world_coords[2]);
     }
   }
 
