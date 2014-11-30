@@ -1128,12 +1128,22 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   double tc[3] = {0.0, 0.0, 0.0};
 
+  Eigen::Affine3f source_transformation;
+  source_transformation.linear () = source_points->sensor_orientation_.matrix ();
+  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  Eigen::Affine3f target_transformation;
+  target_transformation.linear () = target_points->sensor_orientation_.matrix ();
+  target_transformation.translation () = target_points->sensor_origin_.head (3);
+
   int j = 0, idx = 0;
   // Draw lines between the best corresponding points
   for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
   {
-    const PointT &p_src = source_points->points[correspondences[i].index_query];
-    const PointT &p_tgt = target_points->points[correspondences[i].index_match];
+    PointT p_src (source_points->points[correspondences[i].index_query]);
+    PointT p_tgt (target_points->points[correspondences[i].index_match]);
+
+    p_src.getVector3fMap () = source_transformation * p_src.getVector3fMap ();
+    p_tgt.getVector3fMap () = target_transformation * p_tgt.getVector3fMap ();
 
     int id1 = j * 2 + 0, id2 = j * 2 + 1;
     // Set the points
@@ -1226,12 +1236,22 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
 
   double tc[3] = {0.0, 0.0, 0.0};
 
+  Eigen::Affine3f source_transformation;
+  source_transformation.linear () = source_points->sensor_orientation_.matrix ();
+  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  Eigen::Affine3f target_transformation;
+  target_transformation.linear () = target_points->sensor_orientation_.matrix ();
+  target_transformation.translation () = target_points->sensor_origin_.head (3);
+
   int j = 0, idx = 0;
   // Draw lines between the best corresponding points
   for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
   {
-    const PointT &p_src = source_points->points[correspondences[i].index_query];
-    const PointT &p_tgt = target_points->points[correspondences[i].index_match];
+    PointT p_src (source_points->points[correspondences[i].index_query]);
+    PointT p_tgt (target_points->points[correspondences[i].index_match]);
+
+    p_src.getVector3fMap () = source_transformation * p_src.getVector3fMap ();
+    p_tgt.getVector3fMap () = target_transformation * p_tgt.getVector3fMap ();
 
     int id1 = j * 2 + 0, id2 = j * 2 + 1;
     // Set the points
