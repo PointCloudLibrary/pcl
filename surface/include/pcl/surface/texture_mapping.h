@@ -351,7 +351,7 @@ namespace pcl
         * \param[in] p2 the second point
         * \param[in] p3 the third point
         */
-      std::vector<Eigen::Vector2f>
+      std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >
       mapTexture2Face (const Eigen::Vector3f &p1, const Eigen::Vector3f &p2, const Eigen::Vector3f &p3);
 
       /** \brief Returns the circumcenter of a triangle and the circle's radius.

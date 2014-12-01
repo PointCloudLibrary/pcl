@@ -169,11 +169,11 @@ namespace pcl
       /** \brief voxel grid data points
           packing order [x0y0z0, x1y0z0,x2y0z0,...,x0y1z0,x1y1z0,...,x0y0z1,x1y0z1,...]
       */
-      std::vector<Eigen::Vector3i> data_;
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > data_;
 
-      std::vector<Eigen::Vector3i> color_;
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > color_;
 
-      std::vector<Eigen::Vector3f> normal_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > normal_;
 
       /** \brief smoothness kernel parameters 
        * [0] = standard deviation x

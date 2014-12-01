@@ -724,7 +724,7 @@ NarfKeypoint::calculateInterestPoints ()
   typedef double RealForPolynomial;
   PolynomialCalculationsT<RealForPolynomial> polynomial_calculations;
   BivariatePolynomialT<RealForPolynomial> polynomial (2);
-  std::vector<Eigen::Matrix<RealForPolynomial, 3, 1> > sample_points;
+  std::vector<Eigen::Matrix<RealForPolynomial, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<RealForPolynomial, 3, 1> > > sample_points;
   std::vector<RealForPolynomial> x_values, y_values;
   std::vector<int> types;
   std::vector<bool> invalid_beams, old_invalid_beams;

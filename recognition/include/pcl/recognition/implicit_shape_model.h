@@ -565,7 +565,7 @@ namespace pcl
           * \param[out] center it will the contain generated center
           */
         void
-        generateRandomCenter (const std::vector<Eigen::Vector2f>& boxes, Eigen::VectorXf& center);
+        generateRandomCenter (const std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >& boxes, Eigen::VectorXf& center);
 
         /** \brief Computes the square distance beetween two vectors.
           * \param[in] vec_1 first vector

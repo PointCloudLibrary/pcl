@@ -217,7 +217,7 @@ int main (int argc, char** argv)
   tt.tic ();
 
   // estimate the occluded space
-  std::vector <Eigen::Vector3i> occluded_voxels;
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > occluded_voxels;
   vg.occlusionEstimationAll (occluded_voxels);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)occluded_voxels.size ()); print_info (" occluded voxels]\n");

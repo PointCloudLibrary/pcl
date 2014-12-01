@@ -45,8 +45,8 @@ using namespace pcl;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, VectorAverage_mean)
 {
-  std::vector<Eigen::Vector3f> points;
-  std::vector<Eigen::Vector3f::Scalar> weights;
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > points;
+  std::vector<Eigen::Vector3f::Scalar, Eigen::aligned_allocator<Eigen::Vector3f::Scalar> > weights;
   points.push_back (Eigen::Vector3f (-0.558191f, 0.180822f, -0.809769f));
   weights.push_back (0.160842f);
   points.push_back (Eigen::Vector3f (-0.510641f, 0.290673f, -0.809169f));

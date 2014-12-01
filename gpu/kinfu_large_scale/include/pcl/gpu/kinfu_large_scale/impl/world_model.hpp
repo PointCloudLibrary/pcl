@@ -130,7 +130,7 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
 
 template <typename PointT>
 void
-pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f> &transforms, double overlap)
+pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap)
 {
   
   if(world_->points.size () == 0)

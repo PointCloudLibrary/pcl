@@ -122,7 +122,7 @@ namespace pcl
             x_dim_ = width;
             y_dim_ = height;
             z_dim_ = depth;
-            v_ = std::vector<Eigen::Vector2f> (width*height*depth, Eigen::Vector2f (0.0f, 0.0f));
+            v_ = std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > (width*height*depth, Eigen::Vector2f (0.0f, 0.0f));
           }
 
           inline Eigen::Vector2f&
@@ -164,24 +164,24 @@ namespace pcl
           z_size () const
           { return z_dim_; }
 
-          inline std::vector<Eigen::Vector2f >::iterator
+          inline std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator
           begin ()
           { return v_.begin (); }
 
-          inline std::vector<Eigen::Vector2f >::iterator
+          inline std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator
           end ()
           { return v_.end (); }
 
-          inline std::vector<Eigen::Vector2f >::const_iterator
+          inline std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::const_iterator
           begin () const
           { return v_.begin (); }
 
-          inline std::vector<Eigen::Vector2f >::const_iterator
+          inline std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::const_iterator
           end () const
           { return v_.end (); }
 
         private:
-          std::vector<Eigen::Vector2f > v_;
+          std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > v_;
           size_t x_dim_, y_dim_, z_dim_;
       };
 

@@ -98,7 +98,7 @@ namespace pcl
 
 
     std::vector<std::vector<pcl::Vertices> >    tex_polygons;     // polygon which is mapped with specific texture defined in TexMaterial
-    std::vector<std::vector<Eigen::Vector2f> >  tex_coordinates;  // UV coordinates
+    std::vector<std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > > tex_coordinates;  // UV coordinates
     std::vector<pcl::TexMaterial>               tex_materials;    // define texture material
 
     public:

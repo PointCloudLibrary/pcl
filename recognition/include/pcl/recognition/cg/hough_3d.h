@@ -447,7 +447,7 @@ namespace pcl
       bool needs_training_;
 
       /** \brief The result of the training. The vector between each model point and the centroid of the model adjusted by its local reference frame.*/
-      std::vector<Eigen::Vector3f> model_votes_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > model_votes_;
 
       /** \brief The minimum number of votes in the Hough space needed to infer the presence of a model instance into the scene cloud. */
       double hough_threshold_;
