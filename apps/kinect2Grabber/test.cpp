@@ -34,6 +34,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *
  *  This is preliminary software and/or hardware and APIs are preliminary and subject to change.
+ *
+ * Author: Giacomo Dabisias (g.dabisias@gmail.com, g.dabisias@sssup.it)
  */
 #include "Kinect2Grabber.hpp"
 
