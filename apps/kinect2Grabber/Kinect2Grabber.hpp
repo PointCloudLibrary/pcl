@@ -1,19 +1,41 @@
-//Copyright 2014 Giacomo Dabisias
-//
-//Licensed under the Apache License, Version 2.0 (the "License");
-//you may not use this file except in compliance with the License.
-//You may obtain a copy of the License at
-//
-//   http://www.apache.org/licenses/LICENSE-2.0
-//
-//Unless required by applicable law or agreed to in writing, software
-//distributed under the License is distributed on an "AS IS" BASIS,
-//WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-//See the License for the specific language governing permissions and
-//limitations under the License.
-//This is preliminary software and/or hardware and APIs are preliminary and subject to change.
+/*
+ * Software License Agreement (BSD License)
+ *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2012-, Open Perception, Inc.
+ *
+ *  All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions
+ *  are met:
+ *
+ *   * Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *   * Redistributions in binary form must reproduce the above
+ *     copyright notice, this list of conditions and the following
+ *     disclaimer in the documentation and/or other materials provided
+ *     with the distribution.
+ *   * Neither the name of the copyright holder(s) nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
+ *
+ *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ *  POSSIBILITY OF SUCH DAMAGE.
+ *
+ *  This is preliminary software and/or hardware and APIs are preliminary and subject to change.
+ */
 #pragma once
-#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -32,12 +54,12 @@
 #include <pcl/point_types.h>
 #include <string>
 
-bool shutdown = false;
+bool shut_down = false;
 
 void
 sigint_handler (int s)
 {
-  shutdown = true;
+  shut_down = true;
 }
 
 namespace pcl
@@ -64,20 +86,18 @@ namespace pcl
           listener_ = new libfreenect2::SyncMultiFrameListener (libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
           if (dev_ == 0)
           {
-            std::cout << "no device connected or failure opening the default one!" << std::endl;
+            PCL_ERROR ("no device connected or failure opening the default one!\n");
             exit (1);
           }
           signal (SIGINT, sigint_handler);
-          shutdown = false;
+          shut_down = false;
           dev_->setColorFrameListener (listener_);
           dev_->setIrAndDepthFrameListener (listener_);
           dev_->start ();
-          std::cout << "starting calibration" << std::endl;
-          CalibrateCamera (rgb_image_folder_path, depth_image_folder_path, image_number, board_size, square_size);
-          std::cout << "finished calibration" << std::endl;
-          std::cout << "device initialized" << std::endl;
-          std::cout << "device serial: " << dev_->getSerialNumber () << std::endl;
-          std::cout << "device firmware: " << dev_->getFirmwareVersion () << std::endl;
+          PCL_INFO ("starting calibration\n");
+          calibrateCamera (rgb_image_folder_path, depth_image_folder_path, image_number, board_size, square_size);
+          PCL_INFO ("finished calibration\n");
+          PCL_INFO ("device initialized\n");
         }
 
         Kinect2Grabber (const std::string rgb_calibration_file,
@@ -92,31 +112,26 @@ namespace pcl
           listener_ = new libfreenect2::SyncMultiFrameListener (libfreenect2::Frame::Color | libfreenect2::Frame::Ir | libfreenect2::Frame::Depth);
           if (dev_ == 0)
           {
-            std::cout << "no device connected or failure opening the default one!" << std::endl;
+            PCL_ERROR ("no device connected or failure opening the default one!\n");
             exit (1);
           }
           signal (SIGINT, sigint_handler);
-          shutdown = false;
+          shut_down = false;
           dev_->setColorFrameListener (listener_);
           dev_->setIrAndDepthFrameListener (listener_);
           dev_->start ();
 
-          std::cout << "device initialized" << std::endl;
-          std::cout << "device serial: " << dev_->getSerialNumber () << std::endl;
-          std::cout << "device firmware: " << dev_->getFirmwareVersion () << std::endl;
-
-          LoadCalibration (rgb_calibration_file, depth_calibration_file, pose_calibration_file);
-
-          PrintCalibration ();
+          PCL_INFO ("device initialized\n");
+          loadCalibration (rgb_calibration_file, depth_calibration_file, pose_calibration_file);
         }
 
         ~Kinect2Grabber ()
         {
-          this->ShutDown ();
+          this->shutDown ();
         }
 
         void
-        LoadCalibration (const std::string rgb_calibration_file,
+        loadCalibration (const std::string rgb_calibration_file,
                          const std::string depth_calibration_file,
                          const std::string pose_calibration_file)
         {
@@ -135,7 +150,7 @@ namespace pcl
           }
           else
           {
-            std::cout << "could not find rgb calibration file " << rgb_calibration_file << std::endl;
+            PCL_ERROR ("could not find rgb calibration file\n");
             exit (-1);
           }
 
@@ -152,7 +167,7 @@ namespace pcl
           }
           else
           {
-            std::cout << "could not find ir calibration file " << depth_calibration_file << std::endl;
+            PCL_ERROR ("could not find depth calibration file\n");
             exit (-1);
           }
 
@@ -168,54 +183,10 @@ namespace pcl
           }
           else
           {
-            std::cout << "could not find pose calibration file " << pose_calibration_file << std::endl;
+            PCL_ERROR ("could not find pose calibration file\n");
             exit (-1);
           }
 
-        }
-
-        void
-        PrintCalibration () const
-        {
-
-          std::cout << std::endl;
-          std::cout << "Single Calibration" << std::endl;
-          std::cout << std::endl;
-          std::cout << "rgb :" << std::endl;
-          std::cout << std::endl;
-          std::cout << "Camera Matrix:" << std::endl;
-          std::cout << rgb_camera_matrix_ << std::endl;
-          std::cout << std::endl;
-          std::cout << "Ditortion:" << std::endl;
-          std::cout << rgb_distortion_ << std::endl;
-          std::cout << std::endl;
-
-          std::cout << "Depth :" << std::endl;
-          std::cout << std::endl;
-          std::cout << "Camera Matrix:" << std::endl;
-          std::cout << std::endl;
-          std::cout << depth_camera_matrix_ << std::endl;
-          std::cout << std::endl;
-          std::cout << "Ditortion:" << std::endl;
-          std::cout << std::endl;
-          std::cout << depth_distortion_ << std::endl;
-          std::cout << std::endl;
-
-          std::cout << std::endl;
-          std::cout << "Stereo Calibration :" << std::endl;
-          std::cout << std::endl;
-          std::cout << "rotation:" << std::endl;
-          std::cout << std::endl;
-          std::cout << rotation_ << std::endl;
-          std::cout << std::endl;
-          std::cout << "translation" << std::endl;
-          std::cout << std::endl;
-          std::cout << translation_ << std::endl;
-          std::cout << std::endl;
-          std::cout << "essential:" << essential_ << std::endl;
-          std::cout << std::endl;
-          std::cout << "fundamental" << fundamental_ << std::endl;
-          std::cout << std::endl;
         }
 
         void
@@ -230,7 +201,7 @@ namespace pcl
         }
 
         void
-        SaveCameraParams (const std::string& filename,
+        saveCameraParams (const std::string& filename,
                           const cv::Size image_size,
                           const cv::Size board_size,
                           const float square_size_,
@@ -273,7 +244,7 @@ namespace pcl
         }
 
         void
-        SavePoseParams (const std::string& filename,
+        savePoseParams (const std::string& filename,
                         const cv::Mat & rotation,
                         const cv::Mat & translation,
                         const cv::Mat & essential,
@@ -298,7 +269,7 @@ namespace pcl
         }
 
         void
-        CalibrateCamera (std::string rgb_image_folder_path,
+        calibrateCamera (std::string rgb_image_folder_path,
                          std::string depth_image_folder_path,
                          int image_number,
                          cv::Size board_size,
@@ -351,98 +322,97 @@ namespace pcl
           pointsBoard.resize (image_number, pointsBoard[0]);
 
           double error_1 = calibrateCamera (pointsBoard, rgbImagePoints, size_rgb_, rgb_camera_matrix_, rgb_distortion_, rvecs, tvecs);
-          SaveCameraParams ("rgb_calibration.yaml", size_rgb_, board_size, square_size, 0, 0, rgb_camera_matrix_, rgb_distortion_, error_1);
+          saveCameraParams ("rgb_calibration.yaml", size_rgb_, board_size, square_size, 0, 0, rgb_camera_matrix_, rgb_distortion_, error_1);
 
           double error_2 = calibrateCamera (pointsBoard, irImagePoints, size_depth_, depth_camera_matrix_, depth_distortion_, rvecs, tvecs);
-          SaveCameraParams ("depth_calibration.yaml", size_depth_, board_size, square_size, 0, 0, depth_camera_matrix_, depth_distortion_, error_2);
+          saveCameraParams ("depth_calibration.yaml", size_depth_, board_size, square_size, 0, 0, depth_camera_matrix_, depth_distortion_, error_2);
 
           double rms = cv::stereoCalibrate (pointsBoard, rgbImagePoints, irImagePoints, rgb_camera_matrix_, rgb_distortion_, depth_camera_matrix_,
                                             depth_distortion_, size_rgb_, rotation_, translation_, essential_, fundamental_, cv::CALIB_FIX_INTRINSIC,
                                             term_criteria);
 
-          PrintCalibration ();
 
-          std::cout << std::endl;
-          std::cout << "rgb error:" << error_1 << std::endl;
-          std::cout << "depth error:" << error_2 << std::endl;
-          std::cout << "stereo error " << rms << std::endl;
+          PCL_INFO ("\n");
+          PCL_INFO ("rgb error:%f\n", error_1);
+          PCL_INFO ("depth error:%f\n", error_2);
+          PCL_INFO ("stereo error:%f\n", rms);
 
-          SavePoseParams ("pose_calibration.yaml", rotation_, translation_, essential_, fundamental_, rms);
+          savePoseParams ("pose_calibration.yaml", rotation_, translation_, essential_, fundamental_, rms);
         }
 
         libfreenect2::Frame *
-        GetRgbFrame ()
+        getRgbFrame ()
         {
           listener_->waitForNewFrame (frames_);
           return frames_[libfreenect2::Frame::Color];
         }
 
         libfreenect2::Frame *
-        GetIrFrame ()
+        getIrFrame ()
         {
           listener_->waitForNewFrame (frames_);
           return frames_[libfreenect2::Frame::Ir];
         }
 
         libfreenect2::Frame *
-        GetDepthFrame ()
+        getDepthFrame ()
         {
           listener_->waitForNewFrame (frames_);
           return frames_[libfreenect2::Frame::Depth];
         }
 
         libfreenect2::FrameMap *
-        GetRawFrames ()
+        getRawFrames ()
         {
           listener_->waitForNewFrame (frames_);
           return &frames_;
         }
 
         void
-        ShutDown ()
+        shutDown ()
         {
           dev_->stop ();
           dev_->close ();
         }
 
         cv::Mat
-        GetCameraMatrixColor () const
+        getCameraMatrixColor () const
         {
           return rgb_camera_matrix_;
         }
 
         cv::Mat
-        GetCameraMatrixDepth () const
+        getCameraMatrixDepth () const
         {
           return depth_camera_matrix_;
         }
 
         cv::Mat
-        GetRgbDistortion () const
+        getRgbDistortion () const
         {
           return rgb_distortion_;
         }
 
         cv::Mat
-        GetDepthDistortion () const
+        getDepthDistortion () const
         {
           return depth_distortion_;
         }
 
         void
-        FreeFrames ()
+        freeFrames ()
         {
           listener_->release (frames_);
         }
 
         void
-        CreateCloud (const cv::Mat &depth,
+        createCloud (const cv::Mat &depth,
                      const cv::Mat &color,
                      typename pcl::PointCloud<PointT>::Ptr &cloud) const
         {
           const float badPoint = std::numeric_limits<float>::quiet_NaN ();
 
-		  #pragma omp parallel for
+#pragma omp parallel for
           for (int y = 0; y < depth.rows; ++y)
           {
             PointT *itP = &cloud->points[y * depth.cols];
@@ -455,7 +425,7 @@ namespace pcl
               // Check for invalid measurements
               if (isnan (depth_value) || depth_value <= 0.001)
               {
-                // not valid
+                // invalid point
                 itP->x = itP->y = itP->z = badPoint;
                 itP->rgba = 0;
                 continue;
@@ -488,18 +458,16 @@ namespace pcl
                 itP->g = tmp.val[1];
                 itP->r = tmp.val[2];
               }
-
             }
-
           }
         }
 
         typename pcl::PointCloud<PointT>::Ptr
-        GetCloud (int size_x = 512,
+        getCloud (int size_x = 512,
                   int size_y = 424)
         {
 
-          frames_ = *GetRawFrames ();
+          frames_ = *getRawFrames ();
           rgb_ = frames_[libfreenect2::Frame::Color];
           depth_ = frames_[libfreenect2::Frame::Depth];
           tmp_depth_ = cv::Mat (depth_->height, depth_->width, CV_32FC1, depth_->data);
@@ -534,7 +502,7 @@ namespace pcl
           }
 
           cv::resize (tmp_rgb_, rgb_scaled_, cv::Size (size_x, size_y), cv::INTER_CUBIC);
-          CreateCloud (tmp_depth_, rgb_scaled_, cloud_);
+          createCloud (tmp_depth_, rgb_scaled_, cloud_);
 
           return cloud_;
         }
