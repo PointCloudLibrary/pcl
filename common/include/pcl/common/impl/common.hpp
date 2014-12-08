@@ -43,13 +43,27 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 inline double
-pcl::getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2)
+pcl::getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2, const bool in_degree)
 {
   // Compute the actual angle
-  double rad = v1.dot (v2) / sqrt (v1.squaredNorm () * v2.squaredNorm ());
-  if (rad < -1.0) rad = -1.0;
-  if (rad >  1.0) rad = 1.0;
-  return (acos (rad));
+  double rad = v1.normalized ().dot (v2.normalized ());
+  if (rad < -1.0)
+    rad = -1.0;
+  else if (rad >  1.0)
+    rad = 1.0;
+  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
+}
+
+inline double
+pcl::getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const bool in_degree)
+{
+  // Compute the actual angle
+  double rad = v1.normalized ().dot (v2.normalized ());
+  if (rad < -1.0)
+    rad = -1.0;
+  else if (rad >  1.0)
+    rad = 1.0;
+  return (in_degree ? acos (rad) * 180.0 / M_PI : acos (rad));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

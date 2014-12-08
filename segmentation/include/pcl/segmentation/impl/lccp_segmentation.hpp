@@ -40,6 +40,7 @@
 
 #include <pcl/segmentation/lccp_segmentation.h>
 
+
 template <typename PointT>
 pcl::LCCPSegmentation<PointT>::LCCPSegmentation () :
   concavity_tolerance_threshold_ (10),
@@ -428,11 +429,11 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
   typename pcl::Supervoxel<PointT>::Ptr& sv_source = sv_label_to_supervoxel_map_[source_label_arg];
   typename pcl::Supervoxel<PointT>::Ptr& sv_target = sv_label_to_supervoxel_map_[target_label_arg];
 
-  const pcl::PointXYZRGBA& source_centroid = sv_source->centroid_;
-  const pcl::PointXYZRGBA& target_centroid = sv_target->centroid_;
+  const Eigen::Vector3f& source_centroid = sv_source->centroid_.getVector3fMap ();
+  const Eigen::Vector3f& target_centroid = sv_target->centroid_.getVector3fMap ();
 
-  const pcl::Normal& source_normal = sv_source->normal_;
-  const pcl::Normal& target_normal = sv_target->normal_;
+  const Eigen::Vector3f& source_normal = sv_source->normal_.getNormalVector3fMap (). normalized ();
+  const Eigen::Vector3f& target_normal = sv_target->normal_.getNormalVector3fMap (). normalized ();
 
   //NOTE For angles below 0 nothing will be merged
   if (concavity_tolerance_threshold_ < 0)
@@ -442,37 +443,23 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
 
   bool is_convex = true;
   bool is_smooth = true;
-  float normal_angle = std::acos (source_normal.getNormalVector3fMap ().dot (target_normal.getNormalVector3fMap ())) * 180. / M_PI;
-  //   float curvature_difference = std::fabs (SOURCE_NORMAL.curvature - TARGET_NORMAL.curvature);
 
+  float normal_angle = getAngle3D (source_normal, target_normal, true);
   //  Geometric comparisons
-  pcl::PointXYZ vec_t_to_s, vec_s_to_t;
-  pcl::PointXYZ unitvec_t_to_s, unitvec_s_to_t;
+  Eigen::Vector3f vec_t_to_s, vec_s_to_t;
   
-  vec_t_to_s.getVector3fMap () = source_centroid.getVector3fMap () - target_centroid.getVector3fMap ();
-  
-  unitvec_t_to_s = vec_t_to_s;
-  unitvec_t_to_s.getVector3fMap ().normalize ();
+  vec_t_to_s = source_centroid - target_centroid;
+  vec_s_to_t = -vec_t_to_s;
 
-  vec_s_to_t.getVector3fMap () = -vec_t_to_s.getVector3fMap ();
-
-  unitvec_s_to_t.getVector3fMap () = -unitvec_t_to_s.getVector3fMap ();
-
-  float dot_p_source, dot_p_target;
-
-  // vec_t_to_s is the reference direction for angle measurements
-  dot_p_source = unitvec_t_to_s.getVector3fMap ().dot (source_normal.getNormalVector3fMap ());
-  dot_p_target = unitvec_t_to_s.getVector3fMap ().dot (target_normal.getNormalVector3fMap ());
-
-  pcl::Normal ncross;
-  ncross.getNormalVector3fMap () = source_normal.getNormalVector3fMap ().cross (target_normal.getNormalVector3fMap ());
+  Eigen::Vector3f ncross;
+  ncross = source_normal.cross (target_normal);
 
   // Smoothness Check: Check if there is a step between adjacent patches
   if (use_smoothness_check_)
   {
-    float expected_distance = ncross.getNormalVector3fMap ().norm () * seed_resolution_;
-    float dot_p_1 = vec_t_to_s.getVector3fMap ().dot (source_normal.getNormalVector3fMap ());
-    float dot_p_2 = vec_s_to_t.getVector3fMap ().dot (target_normal.getNormalVector3fMap ());
+    float expected_distance = ncross.norm () * seed_resolution_;
+    float dot_p_1 = vec_t_to_s.dot (source_normal);
+    float dot_p_2 = vec_s_to_t.dot (target_normal);
     float point_dist = (std::fabs (dot_p_1) < std::fabs (dot_p_2)) ? std::fabs (dot_p_1) : std::fabs (dot_p_2);
     const float dist_smoothing = smoothness_threshold_ * voxel_resolution_;  // This is a slacking variable especially important for patches with very similar normals
 
@@ -484,9 +471,7 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
   // ----------------
 
   // Sanity Criterion: Check if definition convexity/concavity makes sense for connection of given patches
-  ncross.getNormalVector3fMap ().normalize ();
-
-  float intersection_angle = std::acos (ncross.getNormalVector3fMap ().dot (unitvec_t_to_s.getVector3fMap ())) * 180. / M_PI;
+  float intersection_angle =  getAngle3D (ncross, vec_t_to_s, true);
   float min_intersect_angle = (intersection_angle < 90.) ? intersection_angle : 180. - intersection_angle;
 
   float intersect_thresh = 60. * 1. / (1. + exp (-0.25 * (normal_angle - 25.)));
@@ -496,8 +481,10 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
     is_convex &= false;
   }
 
+
+  // vec_t_to_s is the reference direction for angle measurements
   // Convexity Criterion: Check if connection of patches is convex. If this is the case the two SuperVoxels should be merged.
-  if ( (std::acos (dot_p_source) - std::acos (dot_p_target)) <= 0)
+  if ((getAngle3D (vec_t_to_s, source_normal) - getAngle3D (vec_t_to_s, target_normal)) <= 0)
   {
     is_convex &= true;  // connection convex
   }

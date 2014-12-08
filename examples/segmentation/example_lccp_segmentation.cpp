@@ -375,7 +375,6 @@ LCCPSegmentation Parameters: \n\
 
     typedef LCCPSegmentation<PointT>::VertexIterator VertexIterator;
     typedef LCCPSegmentation<PointT>::AdjacencyIterator AdjacencyIterator;
-    typedef LCCPSegmentation<PointT>::VertexID VertexID;
     typedef LCCPSegmentation<PointT>::EdgeID EdgeID;
 
     std::set<EdgeID> edge_drawn;
