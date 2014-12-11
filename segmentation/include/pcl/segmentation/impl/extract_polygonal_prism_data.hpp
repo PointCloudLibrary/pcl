@@ -110,6 +110,7 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
   double x1, x2, y1, y2;
 
   int nr_poly_points = static_cast<int> (polygon.points.size ());
+  // start with the last point to make the check last point<->first point the first one
   double xold = polygon.points[nr_poly_points - 1].x;
   double yold = polygon.points[nr_poly_points - 1].y;
   for (int i = 0; i < nr_poly_points; i++)
@@ -137,29 +138,6 @@ pcl::isXYPointIn2DXYPolygon (const PointT &point, const pcl::PointCloud<PointT> 
     }
     xold = xnew;
     yold = ynew;
-  }
-
-  // And a last check for the polygon line formed by the last and the first points
-  double xnew = polygon.points[0].x;
-  double ynew = polygon.points[0].y;
-  if (xnew > xold)
-  {
-    x1 = xold;
-    x2 = xnew;
-    y1 = yold;
-    y2 = ynew;
-  }
-  else
-  {
-    x1 = xnew;
-    x2 = xold;
-    y1 = ynew;
-    y2 = yold;
-  }
-
-  if ( (xnew < point.x) == (point.x <= xold) && (point.y - y1) * (x2 - x1) < (y2 - y1) * (point.x - x1) )
-  {
-    in_poly = !in_poly;
   }
 
   return (in_poly);
