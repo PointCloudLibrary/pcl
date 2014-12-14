@@ -41,6 +41,7 @@
 #define PCL_FILTER_H_
 
 #include <pcl/pcl_base.h>
+#include <pcl/common/io.h>
 #include <pcl/conversions.h>
 #include <pcl/filters/boost.h>
 #include <cfloat>
@@ -133,17 +134,22 @@ namespace pcl
         if (!initCompute ())
           return;
 
-        // Resize the output dataset
-        //if (output.points.size () != indices_->size ())
-        //  output.points.resize (indices_->size ());
-
-        // Copy header at a minimum
-        output.header = input_->header;
-        output.sensor_origin_ = input_->sensor_origin_;
-        output.sensor_orientation_ = input_->sensor_orientation_;
-
-        // Apply the actual filter
-        applyFilter (output);
+        if (input_.get () == &output)  // cloud_in = cloud_out
+        {
+          PointCloud output_temp;
+          applyFilter (output_temp);
+          output_temp.header = input_->header;
+          output_temp.sensor_origin_ = input_->sensor_origin_;
+          output_temp.sensor_orientation_ = input_->sensor_orientation_;
+          pcl::copyPointCloud (output_temp, output);
+        }
+        else
+        {
+          output.header = input_->header;
+          output.sensor_origin_ = input_->sensor_origin_;
+          output.sensor_orientation_ = input_->sensor_orientation_;
+          applyFilter (output);
+        }
 
         deinitCompute ();
       }
