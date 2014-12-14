@@ -3792,7 +3792,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
                                     dheight * float (y) - 1.0f,
                                     depth[ptr],
                                     1.0f);
-      world_coords = mat1 * world_coords;
+      world_coords = mat2 * mat1 * world_coords;
 
       float w3 = 1.0f / world_coords[3];
       world_coords[0] *= w3;
@@ -3800,7 +3800,6 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       world_coords[1] *= -w3;
       world_coords[2] *= -w3;
 
-      world_coords = mat2 * world_coords;
       pt.x = static_cast<float> (world_coords[0]);
       pt.y = static_cast<float> (world_coords[1]);
       pt.z = static_cast<float> (world_coords[2]);
