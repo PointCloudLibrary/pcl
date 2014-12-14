@@ -216,7 +216,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   {
     // Update neighborhood, since point was projected, and computing relative
     // positions. Note updating only distances for the weights for speed
-    std::vector<Eigen::Vector3d> de_meaned (nn_indices.size ());
+    std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > de_meaned (nn_indices.size ());
     for (size_t ni = 0; ni < nn_indices.size (); ++ni)
     {
       de_meaned[ni][0] = input_->points[nn_indices[ni]].x - point[0];

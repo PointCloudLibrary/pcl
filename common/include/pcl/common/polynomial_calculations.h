@@ -93,12 +93,12 @@ namespace pcl
        *  error is set to true if the approximation did not work for any reason
        *  (not enough points, matrix not invertible, etc.) */
       inline BivariatePolynomialT<real>
-      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1> >& samplePoints,
+      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints,
                                         unsigned int polynomial_degree, bool& error) const;
       
       //! Same as above, using a reference for the return value
       inline bool
-      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1> >& samplePoints,
+      bivariatePolynomialApproximation (std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints,
                                         unsigned int polynomial_degree, BivariatePolynomialT<real>& ret) const;
 
       //! Set the minimum value under which values are considered zero

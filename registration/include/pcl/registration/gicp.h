@@ -266,13 +266,13 @@ namespace pcl
 
       
       /** \brief Input cloud points covariances. */
-      std::vector<Eigen::Matrix3d> input_covariances_;
+      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > input_covariances_;
 
       /** \brief Target cloud points covariances. */
-      std::vector<Eigen::Matrix3d> target_covariances_;
+      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > target_covariances_;
 
       /** \brief Mahalanobis matrices holder. */
-      std::vector<Eigen::Matrix3d> mahalanobis_;
+      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > mahalanobis_;
       
       /** \brief maximum number of optimizations */
       int max_inner_iterations_;
@@ -286,7 +286,7 @@ namespace pcl
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                               const typename pcl::search::KdTree<PointT>::Ptr tree,
-                              std::vector<Eigen::Matrix3d>& cloud_covariances);
+                              std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& cloud_covariances);
 
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm

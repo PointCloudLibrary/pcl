@@ -3400,7 +3400,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
 
-  std::vector<Eigen::Vector3f> cam_positions;
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices)
   {
     vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();

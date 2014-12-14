@@ -225,7 +225,7 @@ namespace pcl
 
         gllib::Program::Ptr likelihood_program_;
         GLuint quad_vbo_;
-        std::vector<Eigen::Vector3f> vertices_;
+        std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > vertices_;
         float* score_buffer_;
         Quad quad_;
         SumReduce sum_reduce_;

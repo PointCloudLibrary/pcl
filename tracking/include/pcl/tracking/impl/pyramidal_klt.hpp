@@ -482,7 +482,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
                                                                  std::vector<int>& status,
                                                                  Eigen::Affine3f& motion) const
 {
-  std::vector<Eigen::Array2f> next_pts (prev_keypoints->size ());
+  std::vector<Eigen::Array2f, Eigen::aligned_allocator<Eigen::Array2f> > next_pts (prev_keypoints->size ());
   Eigen::Array2f half_win ((track_width_-1)*0.5f, (track_height_-1)*0.5f);
   pcl::TransformationFromCorrespondences transformation_computer;
   const int nb_points = prev_keypoints->size ();

@@ -367,7 +367,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::TextureMe
 
   // Add dummy material
   mesh.tex_materials.push_back (pcl::TexMaterial ());
-  std::vector<Eigen::Vector2f> dummy;
+  std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > dummy;
   mesh.tex_coordinates.push_back (dummy);
 
   vtkIdType nr_points = poly_data->GetNumberOfPoints ();

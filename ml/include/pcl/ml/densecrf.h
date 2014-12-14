@@ -65,12 +65,12 @@ namespace pcl
        * coordinates as ijk of the voxel grid
        */
       void
-      setDataVector (const std::vector<Eigen::Vector3i> data);
+      setDataVector (const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > data);
 
       /** \brief The associated color of the data
        */
       void
-      setColorVector (const std::vector<Eigen::Vector3i> color);
+      setColorVector (const std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > color);
 
       void
       setUnaryEnergy (const std::vector<float> unary);
@@ -96,8 +96,8 @@ namespace pcl
 
 
       void
-      addPairwiseNormals (std::vector<Eigen::Vector3i> &coord,
-                          std::vector<Eigen::Vector3f> &normals,
+      addPairwiseNormals (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > &coord,
+                          std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &normals,
                           float sx, float sy, float sz, 
                           float snx, float sny, float snz,
                           float w);
@@ -139,10 +139,10 @@ namespace pcl
       int N_, M_;
 
       /** \brief Data vector */
-      std::vector<Eigen::Vector3i> data_;
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > data_;
 
       /** \brief Color vector */
-      std::vector<Eigen::Vector3i> color_;
+      std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > color_;
 
       /** TODO: double might use to much memory */
       /** \brief CRF unary potentials */
