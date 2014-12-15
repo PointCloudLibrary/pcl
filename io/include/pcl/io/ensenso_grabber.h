@@ -42,9 +42,13 @@
 #define __PCL_IO_ENSENSO_GRABBER__
 
 #include <pcl/common/time.h>
+#include <pcl/common/io.h>
 #include <pcl/io/eigen.h>
+#include <Eigen/Geometry>
+#include <Eigen/StdVector>
 #include <pcl/io/boost.h>
 #include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp> // TODO: Remove when setExtrinsicCalibration is fixed
 
 #include <pcl/io/grabber.h>
 #include <pcl/common/synchronizer.h>
@@ -56,7 +60,7 @@ namespace pcl
   struct PointXYZ;
   template <typename T> class PointCloud;
 
-  /** @brief Grabber for IDS-Imaging Enenso's devices
+  /** @brief Grabber for IDS-Imaging Ensenso's devices.\n
    * The <a href="http://www.ensenso.de/manual/">Ensenso SDK</a> allow to use multiple Ensenso devices to produce a single cloud.\n
    * This feature is not implemented here, it is up to the user to configure multiple Ensenso cameras.\n
    * @author Victor Lamoine (victor.lamoine@gmail.com)\n
@@ -64,13 +68,22 @@ namespace pcl
    */
   class PCL_EXPORTS EnsensoGrabber : public Grabber
   {
+      typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
+
     public:
       typedef boost::shared_ptr<EnsensoGrabber> Ptr;
       typedef boost::shared_ptr<const EnsensoGrabber> ConstPtr;
 
       // Define callback signature typedefs
       typedef void
-      (sig_cb_ensenso_point_cloud) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
+      (sig_cb_ensenso_point_cloud) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &);
+
+      typedef void
+      (sig_cb_ensenso_images) (const boost::shared_ptr<PairOfImages> &);
+
+      typedef void
+      (sig_cb_ensenso_point_cloud_images) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &,
+                                           const boost::shared_ptr<PairOfImages> &);
 
       /** @brief Constructor */
       EnsensoGrabber ();
@@ -80,22 +93,23 @@ namespace pcl
       ~EnsensoGrabber () throw ();
 
       /** @brief Searches for available devices
-       * @returns the number of Ensenso devices connected */
+       * @returns The number of Ensenso devices connected */
       int
-      enumDevices ();
+      enumDevices () const;
 
       /** @brief Opens an Ensenso device
-       * @param[in] device the device ID to open
-       * @return true if successful, false otherwise */
+       * @param[in] device The device ID to open
+       * @return True if successful, false otherwise */
       bool
       openDevice (const int device = 0);
 
-      /** @brief Closes the Ensenso device */
+      /** @brief Closes the Ensenso device
+       * @return True if successful, false otherwise */
       bool
       closeDevice ();
 
-      /** @brief Start the data acquisition 
-        * @note Opens device "0" if no device is open */
+      /** @brief Start the point cloud and or image acquisition
+       * @note Opens device "0" if no device is open */
       void
       start ();
 
@@ -103,19 +117,24 @@ namespace pcl
       void
       stop ();
 
-      /** @brief Check if the data acquisition is still running */
+      /** @brief Check if the data acquisition is still running
+       * @return True if running, false otherwise */
       bool
       isRunning () const;
 
+      /** @brief Check if a TCP port is opened
+       * @return True if open, false otherwise */
+      bool
+      isTcpPortOpen () const;
+
       /** @brief Get class name
-       * @returns a string containing the class name
-       */
+       * @returns A string containing the class name */
       std::string
       getName () const;
 
       /** @brief Configure Ensenso capture settings
        * @param[in] auto_exposure If set to yes, the exposure parameter will be ignored
-       * @param[in] auto_gain if set yo yes, the gain parameter will be ignored
+       * @param[in] auto_gain If set yo yes, the gain parameter will be ignored
        * @param[in] bining Pixel bining: 1, 2 or 4
        * @param[in] exposure In milliseconds, from 0.01 to 20 ms
        * @param[in] front_light Infrared front light (usefull for calibration)
@@ -123,7 +142,7 @@ namespace pcl
        * @param[in] gain_boost
        * @param[in] hardware_gamma
        * @param[in] hdr High Dynamic Range (check compatibility with other options in Ensenso manual)
-       * @param[in] pixel_clock in MegaHertz, from 5 to 85
+       * @param[in] pixel_clock In MegaHertz, from 5 to 85
        * @param[in] projector Use the central infrared projector or not
        * @param[in] target_brightness Between 40 and 210
        * @param[in] trigger_mode
@@ -147,25 +166,121 @@ namespace pcl
                         const std::string trigger_mode = "Software",
                         const bool use_disparity_map_area_of_interest = false) const;
 
+      /** @brief Capture a single point cloud and store it
+       * @param[out] cloud The cloud to be filled
+       * @return True if successful, false otherwise
+       * @warning A device must be opened and not running */
+      bool
+      grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
+
+      /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso patterns
+       * @param[in] grid_spacing
+       * @return True if successful, false otherwise
+       * Configure the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
+       * Discard all previous patterns, configure @c grid_spacing
+       * @warning A device must be opened and must not be running.
+       * @note See the <a href="http://www.ensenso.de/manual/index.html?calibratehandeyeparameters.htm">Ensenso manual</a> for more
+       * information about the extrinsic calibration process.
+       * @note <a href="http://www.ensenso.de/manual/index.html?gridsize.htm">GridSize</a> item is protected in the NxTree, you can't modify it.
+       */
+      bool
+      initExtrinsicCalibration (const int grid_spacing) const;
+
+      /** @brief Clear calibration patterns buffer */
+      bool
+      clearCalibrationPatternBuffer () const;
+
+      /** @brief Captures a calibration pattern
+       * @return the number of calibration patterns stored, -1 on error
+       * @warning A device must be opened and must not be running.
+       * @note You should use @ref initExtrinsicCalibration before */
+      int
+      captureCalibrationPattern () const;
+
+      /** @brief Estimate the calibration pattern pose
+       * @param[out] pattern_pose the calibration pattern pose
+       * @return true if successful, false otherwise
+       * @warning A device must be opened and must not be running.
+       * @note At least one calibration pattern must have been captured before, use @ref captureCalibrationPattern before */
+      bool
+      estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const;
+
+      /** @brief Computes the calibration matrices using the collected patterns and the robot poses
+       * @param[in] robot_poses A list of robot poses, 1 for each pattern aquired (in the same order)
+       * @param[out] json The calibration data in JSON format
+       * @param[in] setup Moving or Fixed, please refer to the Ensenso documentation
+       * @param[in] target Please refer to the Ensenso documentation
+       * @param[in] guess_tf Guess transformation for the calibration matrix
+       * @param[in] pretty_format JSON formatting style
+       * @return True if sucessful, false otherwise
+       * @warning This can take up to 120 seconds
+       * @note Check the result with @ref getResultAsJson.
+       * If you want to permanently store the result, use @ref storeEEPROMExtrinsicCalibration. */
+      bool
+      computeCalibrationMatrix (const std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > &robot_poses,
+                                std::string &json,
+                                const std::string setup = "Moving",  // Default values: Moving or Fixed
+                                const std::string target = "Hand",  // Default values: Hand or Workspace
+                                const Eigen::Affine3d &guess_tf = Eigen::Affine3d::Identity (),
+                                const bool pretty_format = true) const;
+
+      /** @brief Stores the calibration previously computed in the EEPROM
+       * @return True if successful, false otherwise
+       * @note The target has already been specified in @ref computeCalibrationMatrix */
+      bool
+      storeEEPROMExtrinsicCalibration () const;
+
+      /** @brief Clear the extrinsic calibration stored in the EEPROM
+       * @param[in] target The target to overwrite
+       * @return True if successful, false otherwise */
+      bool
+      clearEEPROMExtrinsicCalibration ();
+
       /** @brief Update Link node in NxLib tree
        * @param[in] target "Hand" or "Workspace" for example
        * @param[in] euler_angle
        * @param[in] rotation_axis
-       * @param[in] translation
+       * @param[in] translation Translation in meters
        * @return True if successful, false otherwise
-       * @warning Translation are in millimetres, rotation angles in radians!
+       * @warning Translation are in meters, rotation angles in radians! (stored in mm/radians in Ensenso tree)
        * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
        * This method overwrites the Link node but does not write to the EEPROM.
        *
-       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a> section of the Ensenso manual.
+       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
-       * Make sure it is the identity transformation if you want the original point cloud!*/
+       * Make sure it is the identity transformation if you want the original point cloud!
+       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
       bool
-      setExtrinsicCalibration (const std::string target = "Hand",
-                              const float euler_angle = 0.0,
-                              const Eigen::Vector3f rotation_axis = Eigen::Vector3f (0.0, 0.0, 0.0),
-                              const Eigen::Vector3f translation = Eigen::Vector3f (0.0, 0.0, 0.0));
+      setExtrinsicCalibration (const double euler_angle,
+                               Eigen::Vector3d &rotation_axis,
+                               const Eigen::Vector3d &translation,
+                               const std::string target = "Hand");
+
+      /** @brief Update Link node in NxLib tree with an identity matrix
+       * @param[in] target "Hand" or "Workspace" for example
+       * @return True if successful, false otherwise */
+      bool
+      setExtrinsicCalibration (const std::string target = "Hand");
+
+      /** @brief Update Link node in NxLib tree
+       * @param[in] transformation Transformation matrix
+       * @param[in] target "Hand" or "Workspace" for example
+       * @return True if successful, false otherwise
+       * @warning Translation are in meters, rotation angles in radians! (stored in mm/radians in Ensenso tree)
+       * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
+       * This method overwrites the Link node but does not write to the EEPROM.
+       *
+       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * section of the Ensenso manual.
+       *
+       * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
+       * Make sure it is the identity transformation if you want the original point cloud!
+       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
+      bool
+      setExtrinsicCalibration (const Eigen::Affine3d &transformation,
+                               const std::string target = "Hand");
 
       /** @brief Obtain the number of frames per second (FPS) */
       float
@@ -175,19 +290,18 @@ namespace pcl
        * @param[in] port The port number
        * @return True if successful, false otherwise */
       bool
-      openTcpPort (const int port = 24000) const;
+      openTcpPort (const int port = 24000);
 
       /** @brief Close TCP port program
        * @return True if successful, false otherwise
        * @warning If you do not close the TCP port the program might exit with the port still open, if it is the case
-       * use @code ps -ef@endcode and @code kill PID @endcode to kill the application and effectively close the port. */
+       * use @code ps -ef @endcode and @code kill PID @endcode to kill the application and effectively close the port. */
       bool
-      closeTcpPort (void) const;
+      closeTcpPort (void);
 
       /** @brief Returns the full NxLib tree as a JSON string
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the NxLib tree in JSON format
-       */
+       * @return A string containing the NxLib tree in JSON format */
       std::string
       getTreeAsJson (const bool pretty_format = true) const;
 
@@ -211,13 +325,64 @@ namespace pcl
        * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
        */
       bool
-      transformationJsonToEulerAngles (const std::string &json,
+      jsonTransformationToEulerAngles (const std::string &json,
                                        double &x,
                                        double &y,
                                        double &z,
                                        double &w,
                                        double &p,
-                                       double &r);
+                                       double &r) const;
+
+      /** @brief Get the angle axis parameters corresponding to a JSON string
+       * @param[in] json A string containing the angle axis transformation in JSON format
+       * @param[out] alpha Euler angle
+       * @param[out] axis Axis vector
+       * @param[out] translation Translation vector
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      jsonTransformationToAngleAxis (const std::string json,
+                                     double &alpha,
+                                     Eigen::Vector3d &axis,
+                                     Eigen::Vector3d &translation) const;
+
+
+      /** @brief Get the JSON string corresponding to a 4x4 matrix
+       * @param[in] transformation The input transformation
+       * @param[out] matrix A matrix containing JSON transformation
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="index.html?cmdconverttransformation.htm">ConvertTransformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      jsonTransformationToMatrix (const std::string transformation,
+                                  Eigen::Affine3d &matrix) const;
+
+
+      /** @brief Get the JSON string corresponding to the Euler angles transformation
+       * @param[in] x The X translation
+       * @param[in] y The Y translation
+       * @param[in] z The Z translation
+       * @param[in] w The yaW angle
+       * @param[in] p The Pitch angle
+       * @param[in] r The Roll angle
+       * @param[out] json A string containing the Euler angles transformation in JSON format
+       * @param[in] pretty_format JSON formatting style
+       * @return True if successful, false otherwise
+       * @warning The units are meters and radians!
+       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       */
+      bool
+      eulerAnglesTransformationToJson (const double x,
+                                       const double y,
+                                       const double z,
+                                       const double w,
+                                       const double p,
+                                       const double r,
+                                       std::string &json,
+                                       const bool pretty_format = true) const;
 
       /** @brief Get the JSON string corresponding to an angle axis transformation
        * @param[in] x The X angle
@@ -227,59 +392,63 @@ namespace pcl
        * @param[in] ry The Y component of the Euler axis
        * @param[in] rz The Z componenet of the Euler axis
        * @param[in] alpha The Euler rotation angle
+       * @param[out] json A string containing the angle axis transformation in JSON format
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the angle axis transformation in JSON format
+       * @return True if successful, false otherwise
        * @warning The units are meters and radians! (the Euler axis doesn't need to be normalized)
        * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
        */
-      std::string
-      angleAxisToTransformationJson (const double x,
+      bool
+      angleAxisTransformationToJson (const double x,
                                      const double y,
                                      const double z,
                                      const double rx,
                                      const double ry,
                                      const double rz,
                                      const double alpha,
-                                     const bool pretty_format = true);
+                                     std::string &json,
+                                     const bool pretty_format = true) const;
 
-      /** @brief Get the JSON string corresponding to the Euler angles transformation
-       * @param[in] x The X translation
-       * @param[in] y The Y translation
-       * @param[in] z The Z translation
-       * @param[in] w The yaW angle
-       * @param[in] p The Pitch angle
-       * @param[in] r The Roll angle
+      /** @brief Get the JSON string corresponding to a 4x4 matrix
+       * @param[in] matrix The input matrix
+       * @param[out] json A string containing the matrix transformation in JSON format
        * @param[in] pretty_format JSON formatting style
-       * @return A string containing the Euler angles transformation in JSON format
+       * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
-       */
-      std::string
-      eulerAnglesToTransformationJson (const double x,
-                                       const double y,
-                                       const double z,
-                                       const double w,
-                                       const double p,
-                                       const double r,
-                                       const bool pretty_format = true);
+       * @note See: <a href="http://www.ensenso.de/manual/index.html?cmdconverttransformation.htm">ConvertTransformation page</a>
+       * in the EnsensoSDK documentation */
+      bool
+      matrixTransformationToJson (const Eigen::Affine3d &matrix,
+                                  std::string &json,
+                                  const bool pretty_format = true) const;
 
       /** @brief Reference to the NxLib tree root
-       * @warning You must handle NxLib exceptions manually when playing with root!
-       * See void ensensoExceptionHandling in ensenso_grabber.cpp */
+       * @warning You must handle NxLib exceptions manually when playing with @ref root_ !
+       * See @ref ensensoExceptionHandling in ensenso_grabber.cpp */
       boost::shared_ptr<const NxLibItem> root_;
+
+      /** @brief Reference to the camera tree
+       *  @warning You must handle NxLib exceptions manually when playing with @ref camera_ ! */
+      NxLibItem camera_;
 
     protected:
       /** @brief Grabber thread */
       boost::thread grabber_thread_;
 
-      /** @brief Reference to the camera tree */
-      NxLibItem camera_;
-
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;
 
+      /** @brief Boost images signal */
+      boost::signals2::signal<sig_cb_ensenso_images>* images_signal_;
+
+      /** @brief Boost images + point cloud signal */
+      boost::signals2::signal<sig_cb_ensenso_point_cloud_images>* point_cloud_images_signal_;
+
       /** @brief Whether an Ensenso device is opened or not */
       bool device_open_;
+
+      /** @brief Whether an TCP port is opened or not */
+      bool tcp_open_;
 
       /** @brief Whether an Ensenso device is running or not */
       bool running_;
@@ -290,12 +459,31 @@ namespace pcl
       /** @brief Mutual exclusion for FPS computation */
       mutable boost::mutex fps_mutex_;
 
-      /** @brief Continously asks for data from the device and publishes it if available. */
+      /** @brief Convert an Ensenso time stamp into a PCL/ROS time stamp
+       * @param[in] ensenso_stamp
+       * @return PCL stamp
+       * The Ensenso API returns the time elapsed from January 1st, 1601 (UTC); on Linux OS the reference time is January 1st, 1970 (UTC).
+       * See <a href="http://www.ensenso.de/manual/index.html?json_types.htm">timestamp page</a> for more info about the time stamp conversion. */
+      pcl::uint64_t
+      static
+      getPCLStamp (const double ensenso_stamp);
+
+      /** @brief Get OpenCV image type corresponding to the parameters given
+       * @param channels number of channels in the image
+       * @param bpe bytes per element
+       * @param isFlt is float
+       * @return the OpenCV type as a string */
+      std::string
+      static
+      getOpenCVType (const int channels,
+                     const int bpe,
+                     const bool isFlt);
+
+      /** @brief Continously asks for images and or point clouds data from the device and publishes them if available.
+       * PCL time stamps are filled for both the images and clouds grabbed (see @ref getPCLStamp)
+       * @note The cloud time stamp is the RAW image time stamp */
       void
       processGrabbing ();
-
-    public:
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
 }  // namespace pcl
 
