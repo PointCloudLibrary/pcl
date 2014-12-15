@@ -3414,6 +3414,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       sphere->GetPoint (ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
       cam_positions[i] = Eigen::Vector3f (float (center[0]), float (center[1]), float (center[2]));
+      cam_positions[i].normalize ();
       i++;
     }
 
@@ -3426,6 +3427,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
       cam_positions[i] = Eigen::Vector3f (float (cam_pos[0]), float (cam_pos[1]), float (cam_pos[2]));
+      cam_positions[i].normalize ();
     }
   }
 
