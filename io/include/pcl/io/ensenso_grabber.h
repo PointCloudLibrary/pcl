@@ -134,10 +134,10 @@ namespace pcl
 
       /** @brief Configure Ensenso capture settings
        * @param[in] auto_exposure If set to yes, the exposure parameter will be ignored
-       * @param[in] auto_gain If set yo yes, the gain parameter will be ignored
+       * @param[in] auto_gain If set to yes, the gain parameter will be ignored
        * @param[in] bining Pixel bining: 1, 2 or 4
        * @param[in] exposure In milliseconds, from 0.01 to 20 ms
-       * @param[in] front_light Infrared front light (usefull for calibration)
+       * @param[in] front_light Infrared front light (useful for calibration)
        * @param[in] gain Float between 1 and 4
        * @param[in] gain_boost
        * @param[in] hardware_gamma
@@ -206,13 +206,13 @@ namespace pcl
       estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const;
 
       /** @brief Computes the calibration matrices using the collected patterns and the robot poses
-       * @param[in] robot_poses A list of robot poses, 1 for each pattern aquired (in the same order)
+       * @param[in] robot_poses A list of robot poses, 1 for each pattern acquired (in the same order)
        * @param[out] json The calibration data in JSON format
        * @param[in] setup Moving or Fixed, please refer to the Ensenso documentation
        * @param[in] target Please refer to the Ensenso documentation
        * @param[in] guess_tf Guess transformation for the calibration matrix
        * @param[in] pretty_format JSON formatting style
-       * @return True if sucessful, false otherwise
+       * @return True if successful, false otherwise
        * @warning This can take up to 120 seconds
        * @note Check the result with @ref getResultAsJson.
        * If you want to permanently store the result, use @ref storeEEPROMExtrinsicCalibration. */
@@ -390,7 +390,7 @@ namespace pcl
        * @param[in] z The Z angle
        * @param[in] rx The X component of the Euler axis
        * @param[in] ry The Y component of the Euler axis
-       * @param[in] rz The Z componenet of the Euler axis
+       * @param[in] rz The Z component of the Euler axis
        * @param[in] alpha The Euler rotation angle
        * @param[out] json A string containing the angle axis transformation in JSON format
        * @param[in] pretty_format JSON formatting style
@@ -479,7 +479,7 @@ namespace pcl
                      const int bpe,
                      const bool isFlt);
 
-      /** @brief Continously asks for images and or point clouds data from the device and publishes them if available.
+      /** @brief Continuously asks for images and or point clouds data from the device and publishes them if available.
        * PCL time stamps are filled for both the images and clouds grabbed (see @ref getPCLStamp)
        * @note The cloud time stamp is the RAW image time stamp */
       void
