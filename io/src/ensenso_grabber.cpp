@@ -43,6 +43,7 @@
 #include <pcl/console/print.h>
 #include <pcl/point_types.h>
 #include <boost/format.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Handle Ensenso SDK exceptions
@@ -472,7 +473,7 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
     }
 
     // Set Hand-Eye calibration parameters
-    if (setup.compare ("Fixed"))
+    if (boost::iequals (setup, "Fixed"))
       calibrate.parameters ()[itmSetup].set (valFixed);
     else
       calibrate.parameters ()[itmSetup].set (valMoving);
