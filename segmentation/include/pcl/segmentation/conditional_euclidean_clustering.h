@@ -38,6 +38,8 @@
 #ifndef PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
 #define PCL_SEGMENTATION_CONDITIONAL_EUCLIDEAN_CLUSTERING_H_
 
+#include <boost/function.hpp>
+
 #include <pcl/pcl_base.h>
 #include <pcl/search/pcl_search.h>
 
@@ -127,6 +129,14 @@ namespace pcl
         condition_function_ = condition_function;
       }
 
+      /** \brief Set the condition that needs to hold for neighboring points to be considered part of the same cluster.
+        * This is an overloaded function provided for convenience. See the documentation for setConditionFunction(). */
+      inline void
+      setConditionFunction (boost::function<bool (const PointT&, const PointT&, float)> condition_function)
+      {
+        condition_function_ = condition_function;
+      }
+
       /** \brief Set the spatial tolerance for new cluster candidates.
         * \details Any two points within this distance from one another will need to evaluate a certain condition in order to be made part of the same cluster.
         * The condition can be set using setConditionFunction().
@@ -211,7 +221,7 @@ namespace pcl
       SearcherPtr searcher_;
 
       /** \brief The condition function that needs to hold for clustering */
-      bool (*condition_function_) (const PointT&, const PointT&, float);
+      boost::function<bool (const PointT&, const PointT&, float)> condition_function_;
 
       /** \brief The distance to scan for cluster candidates (default = 0.0) */
       float cluster_tolerance_;
