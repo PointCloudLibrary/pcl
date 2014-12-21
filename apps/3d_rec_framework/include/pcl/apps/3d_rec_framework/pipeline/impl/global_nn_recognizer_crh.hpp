@@ -171,7 +171,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     PointInTPtr in (new pcl::PointCloud<PointInT>);
 
     std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
-    std::vector < Eigen::Vector3f > centroids;
+    std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
     if (indices_.size ())
       pcl::copyPointCloud (*input_, indices_, *in);
@@ -442,7 +442,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           //pro view, compute signatures and CRH
           std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
-          std::vector < Eigen::Vector3f > centroids;
+          std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
           crh_estimator_->estimate (view, processed, signatures, centroids);
 
           std::string path = source_->getModelDescriptorDir (models->at (i), training_dir_, descr_name_);

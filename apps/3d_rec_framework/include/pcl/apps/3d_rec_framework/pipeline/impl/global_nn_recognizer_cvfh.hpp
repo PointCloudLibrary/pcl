@@ -236,7 +236,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     PointInTPtr in (new pcl::PointCloud<PointInT>);
 
     std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
-    std::vector < Eigen::Vector3f > centroids;
+    std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
 
     if (indices_.size ())
       pcl::copyPointCloud (*input_, indices_, *in);
@@ -669,7 +669,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           //pro view, compute signatures
           std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > signatures;
-          std::vector < Eigen::Vector3f > centroids;
+          std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > centroids;
           micvfh_estimator_->estimate (view, processed, signatures, centroids);
 
           std::vector<bool> valid_trans;
