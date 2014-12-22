@@ -124,7 +124,7 @@ pcl::visualization::ImageViewer::addMask (
     search.projectPoint (mask[i], p_projected);
 
     xy.push_back (p_projected.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+    #if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
     xy.push_back (image_height_f - p_projected.y);
     #else
     xy.push_back (p_projected.y);
@@ -182,7 +182,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     pcl::PointXY p;
     search.projectPoint (polygon.getContour ()[i], p);
     xy.push_back (p.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
+    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
     xy.push_back (image_height_f - p.y);
     #else
     xy.push_back (p.y);
@@ -270,7 +270,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
+#if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -335,7 +335,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
+#if ((VTK_MAJOR_VERSION >= 6) ||((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
