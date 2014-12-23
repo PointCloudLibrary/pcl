@@ -120,6 +120,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
+  sphere->Update ();
 
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices_)
