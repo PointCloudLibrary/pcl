@@ -1086,7 +1086,8 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   const pcl::Correspondences &correspondences,
   int nth,
   const std::string &id,
-  int viewport)
+  int viewport,
+  bool overwrite)
 {
   if (correspondences.empty ())
   {
@@ -1096,10 +1097,13 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (am_it != shape_actor_map_->end () && overwrite == false)
   {
     PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
+  } else if (am_it == shape_actor_map_->end () && overwrite == true)
+  {
+    overwrite = false; // Correspondences doesn't exist, add them instead of updating them
   }
 
   int n_corr = int (correspondences.size () / nth);
@@ -1182,14 +1186,27 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_data->GetCellData ()->SetScalars (line_colors);
 
   // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (line_data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetOpacity (0.5);
-  addActorToRenderer (actor, viewport);
+  if (!overwrite)
+  {
+    vtkSmartPointer<vtkLODActor> actor;
+    createActorFromVTKDataSet (line_data, actor);
+    actor->GetProperty ()->SetRepresentationToWireframe ();
+    actor->GetProperty ()->SetOpacity (0.5);
+    addActorToRenderer (actor, viewport);
 
-  // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
+    // Save the pointer/ID pair to the global actor map
+    (*shape_actor_map_)[id] = actor;
+  }
+  else
+  {
+    vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
+    // Update the mapper
+#if VTK_MAJOR_VERSION < 6
+    reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
+#else
+    reinterpret_cast<vtkPolyDataMapper*> (actor->GetMapper ())->SetInputData (line_data);
+#endif
+  }
 
   return (true);
 }
@@ -1201,108 +1218,10 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
   const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
   const pcl::Correspondences &correspondences,
   int nth,
-  const std::string &id)
+  const std::string &id,
+  int viewport)
 {
-  if (correspondences.empty ())
-  {
-    PCL_DEBUG ("[updateCorrespondences] An empty set of correspondences given! Nothing to display.\n");
-    return (false);
-  }
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it == shape_actor_map_->end ())
-    return (false);
-
-  vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
-  vtkSmartPointer<vtkPolyData> line_data = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ();
-
-  int n_corr = int (correspondences.size () / nth);
-
-  // Prepare colors
-  vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  line_colors->SetNumberOfComponents (3);
-  line_colors->SetName ("Colors");
-  line_colors->SetNumberOfTuples (n_corr);
-
-  // Prepare coordinates
-  vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
-  line_points->SetNumberOfPoints (2 * n_corr);
-
-  vtkSmartPointer<vtkIdTypeArray> line_cells_id = vtkSmartPointer<vtkIdTypeArray>::New ();
-  line_cells_id->SetNumberOfComponents (3);
-  line_cells_id->SetNumberOfTuples (n_corr);
-  vtkIdType *line_cell_id = line_cells_id->GetPointer (0);
-  vtkSmartPointer<vtkCellArray> line_cells = line_data->GetLines ();
-
-  vtkSmartPointer<vtkFloatArray> line_tcoords = vtkSmartPointer<vtkFloatArray>::New ();
-  line_tcoords->SetNumberOfComponents (1);
-  line_tcoords->SetNumberOfTuples (n_corr * 2);
-  line_tcoords->SetName ("Texture Coordinates");
-
-  double tc[3] = {0.0, 0.0, 0.0};
-
-  Eigen::Affine3f source_transformation;
-  source_transformation.linear () = source_points->sensor_orientation_.matrix ();
-  source_transformation.translation () = source_points->sensor_origin_.head (3);
-  Eigen::Affine3f target_transformation;
-  target_transformation.linear () = target_points->sensor_orientation_.matrix ();
-  target_transformation.translation () = target_points->sensor_origin_.head (3);
-
-  int j = 0, idx = 0;
-  // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
-  {
-    if (correspondences[i].index_match == -1)
-    {
-      PCL_WARN ("[updateCorrespondences] No valid index_match for correspondence %d\n", i);
-      continue;
-    }
-
-    PointT p_src (source_points->points[correspondences[i].index_query]);
-    PointT p_tgt (target_points->points[correspondences[i].index_match]);
-
-    p_src.getVector3fMap () = source_transformation * p_src.getVector3fMap ();
-    p_tgt.getVector3fMap () = target_transformation * p_tgt.getVector3fMap ();
-
-    int id1 = j * 2 + 0, id2 = j * 2 + 1;
-    // Set the points
-    line_points->SetPoint (id1, p_src.x, p_src.y, p_src.z);
-    line_points->SetPoint (id2, p_tgt.x, p_tgt.y, p_tgt.z);
-    // Set the cell ID
-    *line_cell_id++ = 2;
-    *line_cell_id++ = id1;
-    *line_cell_id++ = id2;
-    // Set the texture coords
-    tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
-    tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
-
-    float rgb[3];
-    rgb[0] = vtkMath::Random (32, 255); // min / max
-    rgb[1] = vtkMath::Random (32, 255);
-    rgb[2] = vtkMath::Random (32, 255);
-    line_colors->InsertTuple (i, rgb);
-  }
-  line_colors->SetNumberOfTuples (j);
-  line_cells_id->SetNumberOfTuples (j);
-  line_cells->SetCells (n_corr, line_cells_id);
-  line_points->SetNumberOfPoints (j*2);
-  line_tcoords->SetNumberOfTuples (j*2);
- 
-  // Fill in the lines
-  line_data->SetPoints (line_points);
-  line_data->SetLines (line_cells);
-  line_data->GetPointData ()->SetTCoords (line_tcoords);
-  line_data->GetCellData ()->SetScalars (line_colors);
-
-  // Update the mapper
-#if VTK_MAJOR_VERSION < 6
-  reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
-#else
-  reinterpret_cast<vtkPolyDataMapper*> (actor->GetMapper ())->SetInputData (line_data);
-#endif
-
-  return (true);
+  return (addCorrespondences<PointT> (source_points, target_points, correspondences, nth, id, viewport, true));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
