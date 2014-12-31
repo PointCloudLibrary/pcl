@@ -419,4 +419,14 @@ namespace pcl
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
   }
+
+  std::ostream& 
+  operator << (std::ostream& os, const PointDEM& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
+       << p.intensity << " - " << p.intensity_variance << " - " 
+       << p.height_variance << ")";
+    return (os);
+  }
+
 }
