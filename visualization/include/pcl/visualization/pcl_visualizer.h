@@ -1030,6 +1030,7 @@ namespace pcl
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
           * \param[in] viewport the view port where the correspondences should be added (default: all)
+          * \param[in] overwrite allow to overwrite already existing correspondences
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -1037,7 +1038,8 @@ namespace pcl
                             const pcl::Correspondences &correspondences,
                             int nth,
                             const std::string &id = "correspondences",
-                            int viewport = 0);
+                            int viewport = 0,
+                            bool overwrite = false);
 
         /** \brief Add the specified correspondences to the display.
           * \param[in] source_points The source points
@@ -1064,6 +1066,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
           */
         template <typename PointT> bool
         updateCorrespondences (
@@ -1071,7 +1074,28 @@ namespace pcl
             const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
             const pcl::Correspondences &correspondences,
             int nth,
-            const std::string &id = "correspondences");
+            const std::string &id = "correspondences",
+            int viewport = 0);
+
+        /** \brief Update the specified correspondences to the display.
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
+          */
+        template <typename PointT> bool
+        updateCorrespondences (
+            const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+            const pcl::Correspondences &correspondences,
+            const std::string &id = "correspondences",
+            int viewport = 0)
+        {
+          // If Nth not given, display all correspondences
+          return (updateCorrespondences<PointT> (source_points, target_points,
+                                              correspondences, 1, id, viewport));
+        }
 
         /** \brief Remove the specified correspondences from the display.
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
