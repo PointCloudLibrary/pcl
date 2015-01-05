@@ -44,6 +44,7 @@
 #pragma GCC system_header 
 #endif
 
+#ifndef Q_MOC_RUN
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/begin_end.hpp>
 #include <boost/mpl/next_prior.hpp>
@@ -54,6 +55,7 @@
 #include <boost/mpl/not.hpp>
 #include <boost/mpl/aux_/unwrap.hpp>
 #include <boost/type_traits/is_same.hpp>
+#endif
 
 namespace pcl 
 {

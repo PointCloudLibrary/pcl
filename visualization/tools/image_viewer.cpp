@@ -36,8 +36,8 @@
  *	
  */
 
-#include <boost/thread/thread.hpp>
 #ifndef Q_MOC_RUN
+#include <boost/thread/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #endif
 #include <pcl/point_cloud.h>

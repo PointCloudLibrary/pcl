@@ -43,14 +43,13 @@
 #pragma GCC system_header 
 #endif
 
+#ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/fusion/sequence/intrinsic/at_key.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 #include <boost/mpl/size.hpp>
-#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 #include <boost/function.hpp>
 //#include <boost/timer.hpp>
 #include <boost/thread.hpp>
@@ -58,5 +57,6 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #include <boost/algorithm/string.hpp>
+#endif
 
 #endif    // PCL_COMMON_BOOST_H_
