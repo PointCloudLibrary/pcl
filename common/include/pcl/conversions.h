@@ -52,7 +52,9 @@
 #include <pcl/for_each_type.h>
 #include <pcl/exceptions.h>
 #include <pcl/console/print.h>
+#ifndef Q_MOC_RUN
 #include <boost/foreach.hpp>
+#endif
 
 namespace pcl
 {
