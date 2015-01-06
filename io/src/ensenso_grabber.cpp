@@ -312,7 +312,7 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
     double timestamp;
     std::vector<float> pointMap;
     int width, height;
-    camera_[itmImages][itmRaw].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);  // Get raw image timestamp
+    camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);  // Get raw image timestamp
     camera_[itmImages][itmPointMap].getBinaryDataInfo (&width, &height, 0, 0, 0, 0);
     camera_[itmImages][itmPointMap].getBinaryData (pointMap, 0);
 
