@@ -34,8 +34,8 @@ namespace pcl
       float HEAD_ST_DIAMETER_;
       float larger_radius_ratio_;
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_center_votes_;
-      std::vector<std::vector<Eigen::Vector3f>, Eigen::aligned_allocator<Eigen::Vector3f> > head_center_votes_clustered_;
-      std::vector<std::vector<Eigen::Vector3f>, Eigen::aligned_allocator<Eigen::Vector3f> > head_center_original_votes_clustered_;
+      std::vector<std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > > head_center_votes_clustered_;
+      std::vector<std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > > head_center_original_votes_clustered_;
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > angle_votes_;
       std::vector<float> uncertainties_;
       std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > head_clusters_centers_;

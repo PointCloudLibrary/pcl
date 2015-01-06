@@ -108,7 +108,7 @@ void pcl::RFFaceDetectorTrainer::faceVotesClustering()
       ind.push_back (static_cast<int>(i));
       votes_indices.push_back (ind);
 
-      std::vector < Eigen::Vector3f > votes_in_cluster;
+      std::vector < Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > votes_in_cluster;
       votes_in_cluster.push_back (center_vote);
       head_center_original_votes_clustered_.push_back (votes_in_cluster);
 
