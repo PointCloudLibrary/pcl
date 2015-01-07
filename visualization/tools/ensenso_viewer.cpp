@@ -36,50 +36,52 @@
  *  Author: Victor Lamoine (victor.lamoine@gmail.com)
  */
 
+#include <iostream>
 #include <pcl/io/ensenso_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
 
-typedef pcl::PointXYZ PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+/** @brief Convenience typedef */
 typedef pcl::visualization::CloudViewer CloudViewer;
 
+/** @brief Convenience typedef for XYZ point clouds */
+typedef pcl::PointCloud<pcl::PointXYZ> PointCloudXYZ;
+
+/** @brief CloudViewer pointer */
 boost::shared_ptr<CloudViewer> viewer;
+
+/** @brief PCL Ensenso object pointer */
 pcl::EnsensoGrabber::Ptr ensenso_grabber;
 
+/** @brief Process and/or display Ensenso grabber clouds
+ * @param[in] cloud Ensenso cloud */
 void
-grabberCallback (const PointCloudT::ConstPtr& cloud)
+grabberCallback (const PointCloudXYZ::Ptr& cloud)
 {
   if (!viewer->wasStopped ())
     viewer->showCloud (cloud);
 }
 
+/** @brief Main function
+ * @return Exit status */
 int
 main (void)
 {
-  ensenso_grabber.reset (new pcl::EnsensoGrabber ());
-
-  if (ensenso_grabber == 0)
-    return (-1);
-
-  ensenso_grabber->enumDevices ();
-  ensenso_grabber->openTcpPort (); // default port = 24000
+  viewer.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
+  ensenso_grabber.reset (new pcl::EnsensoGrabber);
+  ensenso_grabber->openTcpPort ();
   ensenso_grabber->openDevice ();
-  ensenso_grabber->configureCapture ();
-  ensenso_grabber->setExtrinsicCalibration (); // Temporary reset calibration if it has be written in EEPROM
 
-  boost::function<void (const PointCloudT::ConstPtr&)> f = boost::bind (&grabberCallback, _1);
+  boost::function<void
+  (const PointCloudXYZ::Ptr&)> f = boost::bind (&grabberCallback, _1);
   ensenso_grabber->registerCallback (f);
-
-  viewer.reset (new CloudViewer ("3D Viewer"));
   ensenso_grabber->start ();
-  std::cout << std::endl;
 
-  while (!viewer->wasStopped ()) {
+  while (!viewer->wasStopped ())
+  {
     boost::this_thread::sleep (boost::posix_time::milliseconds (1000));
     std::cout << "FPS: " << ensenso_grabber->getFramesPerSecond () << std::endl;
   }
 
-  ensenso_grabber->stop ();
   ensenso_grabber->closeDevice ();
   return (0);
 }

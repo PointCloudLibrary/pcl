@@ -46,11 +46,11 @@ If you have performed and stored an extrinsic calibration it will be temporary r
 
 .. code-block:: cpp
 
-  ensenso_grabber->enumDevices ();
-  ensenso_grabber->openTcpPort ();
-  ensenso_grabber->openDevice ();
-  ensenso_grabber->configureCapture ();
-  ensenso_grabber->setExtrinsicCalibration ();
+  ensenso_ptr->enumDevices ();
+  ensenso_ptr->openTcpPort ();
+  ensenso_ptr->openDevice ();
+  ensenso_ptr->configureCapture ();
+  ensenso_ptr->setExtrinsicCalibration ();
 
 The code is very similar to the ``pcl_openni_viewer``.
 All the Ensenso devices connected are listed and then the point cloud are fetched as fast as possible.
@@ -62,17 +62,14 @@ Here is an example of the terminal output ::
    Number of connected cameras: 1
    Serial No    Model   Status
    140242   N10-1210-18   Available
-   
+
    Opening Ensenso stereo camera id = 0
-   
-   FPS: 4.46927
-   FPS: 5.01253
-   FPS: 5.16351
-   FPS: 5.27506
-   FPS: 5.32569
-   FPS: 5.51645
-   FPS: 5.53013
-   FPS: 5.56729
+   FPS: 3.32594
+   FPS: 3.367
+   FPS: 3.79441
+   FPS: 4.01204
+   FPS: 4.07747
+   FPS: 4.20309
    Closing Ensenso stereo camera
 
 .. image:: images/ensenso/ensenso_viewer.jpg
