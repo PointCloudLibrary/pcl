@@ -205,7 +205,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the plane coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the plane model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the plane model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the model coefficients
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization

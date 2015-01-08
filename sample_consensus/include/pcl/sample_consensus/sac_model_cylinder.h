@@ -138,7 +138,7 @@ namespace pcl
       }
 
       /** \brief Set the angle epsilon (delta) threshold.
-        * \param[in] ea the maximum allowed difference between the cyilinder axis and the given axis.
+        * \param[in] ea the maximum allowed difference between the cylinder axis and the given axis.
         */
       inline void 
       setEpsAngle (const double ea) { eps_angle_ = ea; }
@@ -196,7 +196,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the cylinder coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the cylinder model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the cylinder model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization

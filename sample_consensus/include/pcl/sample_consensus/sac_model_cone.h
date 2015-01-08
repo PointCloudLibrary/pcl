@@ -163,8 +163,8 @@ namespace pcl
 
       /** \brief Set the minimum and maximum allowable opening angle for a cone model
         * given from a user.
-        * \param[in] min_angle the minimum allwoable opening angle of a cone model
-        * \param[in] max_angle the maximum allwoable opening angle of a cone model
+        * \param[in] min_angle the minimum allowable opening angle of a cone model
+        * \param[in] max_angle the maximum allowable opening angle of a cone model
         */
       inline void
       setMinMaxOpeningAngle (const double &min_angle, const double &max_angle)
@@ -173,9 +173,9 @@ namespace pcl
         max_angle_ = max_angle;
       }
 
-      /** \brief Get the opening angle which we need minumum to validate a cone model.
-        * \param[out] min_angle the minimum allwoable opening angle of a cone model
-        * \param[out] max_angle the maximum allwoable opening angle of a cone model
+      /** \brief Get the opening angle which we need minimum to validate a cone model.
+        * \param[out] min_angle the minimum allowable opening angle of a cone model
+        * \param[out] max_angle the maximum allowable opening angle of a cone model
         */
       inline void
       getMinMaxOpeningAngle (double &min_angle, double &max_angle) const
@@ -224,7 +224,7 @@ namespace pcl
 
 
       /** \brief Recompute the cone coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the cone model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the cone model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization

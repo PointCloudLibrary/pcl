@@ -136,7 +136,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the stick coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the stick model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the stick model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the model coefficients
         * \param[out] optimized_coefficients the resultant recomputed coefficients after optimization
@@ -168,7 +168,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients, 
                             const double threshold);
 
-      /** \brief Return an unique id for this model (SACMODEL_STACK). */
+      /** \brief Return an unique id for this model (SACMODEL_STICK). */
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_STICK); }
 

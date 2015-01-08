@@ -434,7 +434,7 @@ namespace pcl
         return (computeVariance (error_sqr_dists_));
       }
 
-		protected:
+    protected:
       /** \brief Fills a sample array with random samples from the indices_ vector
         * \param[out] sample the set of indices of target_ to analyze
         */
@@ -629,7 +629,7 @@ namespace pcl
     typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
     typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
-    /** \brief Empty Construtor. */
+    /** \brief Empty Constructor. */
     Functor () : m_data_points_ (ValuesAtCompileTime) {}
 
     /** \brief Constructor
