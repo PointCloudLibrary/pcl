@@ -61,6 +61,7 @@ namespace pcl
   class SampleConsensusModelCircle3D : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -79,7 +80,10 @@ namespace pcl
         */
       SampleConsensusModelCircle3D (const PointCloudConstPtr &cloud,
                                     bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random) {};
+        : SampleConsensusModel<PointT> (cloud, random)
+      {
+        model_name_ = "SampleConsensusModelCircle3D";
+      }
 
       /** \brief Constructor for base SampleConsensusModelCircle3D.
         * \param[in] cloud the input point cloud dataset
@@ -89,7 +93,10 @@ namespace pcl
       SampleConsensusModelCircle3D (const PointCloudConstPtr &cloud, 
                                     const std::vector<int> &indices,
                                     bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random) {};
+        : SampleConsensusModel<PointT> (cloud, indices, random)
+      {
+        model_name_ = "SampleConsensusModelCircle3D";
+      }
       
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelCircle3D () {}
@@ -101,6 +108,7 @@ namespace pcl
         SampleConsensusModel<PointT> (), tmp_inliers_ () 
       {
         *this = source;
+        model_name_ = "SampleConsensusModelCircle3D";
       }
 
       /** \brief Copy constructor.

@@ -348,6 +348,13 @@ namespace pcl
       virtual SacModel 
       getModelType () const = 0;
 
+      /** \brief Get a string representation of the name of this class. */
+      inline const std::string&
+      getClassName () const
+      {
+        return (model_name_);
+      }
+
       /** \brief Return the size of a sample from which a model is computed */
       inline unsigned int 
       getSampleSize () const 
@@ -504,6 +511,9 @@ namespace pcl
         */
       virtual bool
       isSampleGood (const std::vector<int> &samples) const = 0;
+
+      /** \brief The model name. */
+      std::string model_name_;
 
       /** \brief A boost shared pointer to the point cloud data array. */
       PointCloudConstPtr input_;

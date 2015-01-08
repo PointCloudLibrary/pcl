@@ -84,6 +84,7 @@ namespace pcl
   class SampleConsensusModelNormalParallelPlane : public SampleConsensusModelNormalPlane<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
@@ -112,6 +113,7 @@ namespace pcl
         , cos_angle_ (-1.0)
         , eps_dist_ (0.0)
       {
+        model_name_ = "SampleConsensusModelNormalParallelPlane";
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
@@ -129,6 +131,7 @@ namespace pcl
         , cos_angle_ (-1.0)
         , eps_dist_ (0.0)
       {
+        model_name_ = "SampleConsensusModelNormalParallelPlane";
       }
       
       /** \brief Empty destructor */

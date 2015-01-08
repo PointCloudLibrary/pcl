@@ -65,6 +65,7 @@ namespace pcl
   class SampleConsensusModelCone : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -92,6 +93,7 @@ namespace pcl
         , max_angle_ (std::numeric_limits<double>::max ())
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCone";
       }
 
       /** \brief Constructor for base SampleConsensusModelCone.
@@ -110,6 +112,7 @@ namespace pcl
         , max_angle_ (std::numeric_limits<double>::max ())
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCone";
       }
 
       /** \brief Copy constructor.
@@ -121,6 +124,7 @@ namespace pcl
         axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
       {
         *this = source;
+        model_name_ = "SampleConsensusModelCone";
       }
       
       /** \brief Empty destructor */

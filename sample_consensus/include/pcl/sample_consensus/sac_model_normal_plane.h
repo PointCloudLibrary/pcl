@@ -76,6 +76,7 @@ namespace pcl
   class SampleConsensusModelNormalPlane : public SampleConsensusModelPlane<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
@@ -101,6 +102,7 @@ namespace pcl
         : SampleConsensusModelPlane<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalPlane";
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
@@ -114,6 +116,7 @@ namespace pcl
         : SampleConsensusModelPlane<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalPlane";
       }
       
       /** \brief Empty destructor */

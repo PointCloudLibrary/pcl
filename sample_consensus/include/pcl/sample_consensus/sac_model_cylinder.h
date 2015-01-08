@@ -65,6 +65,7 @@ namespace pcl
   class SampleConsensusModelCylinder : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -90,6 +91,7 @@ namespace pcl
         , eps_angle_ (0)
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCylinder";
       }
 
       /** \brief Constructor for base SampleConsensusModelCylinder.
@@ -106,6 +108,7 @@ namespace pcl
         , eps_angle_ (0)
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCylinder";
       }
 
       /** \brief Copy constructor.
@@ -119,6 +122,7 @@ namespace pcl
         tmp_inliers_ ()
       {
         *this = source;
+        model_name_ = "SampleConsensusModelCylinder";
       }
       
       /** \brief Empty destructor */

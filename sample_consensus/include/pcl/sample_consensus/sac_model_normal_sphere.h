@@ -69,6 +69,7 @@ namespace pcl
   class SampleConsensusModelNormalSphere : public SampleConsensusModelSphere<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -95,6 +96,7 @@ namespace pcl
         : SampleConsensusModelSphere<PointT> (cloud, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalSphere";
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
@@ -108,6 +110,7 @@ namespace pcl
         : SampleConsensusModelSphere<PointT> (cloud, indices, random)
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
+        model_name_ = "SampleConsensusModelNormalSphere";
       }
       
       /** \brief Empty destructor */

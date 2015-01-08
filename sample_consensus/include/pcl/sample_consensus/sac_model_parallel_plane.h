@@ -66,6 +66,8 @@ namespace pcl
   class SampleConsensusModelParallelPlane : public SampleConsensusModelPlane<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
+
       typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr PointCloudConstPtr;
@@ -83,6 +85,7 @@ namespace pcl
         , eps_angle_ (0.0)
         , sin_angle_ (-1.0)
       {
+        model_name_ = "SampleConsensusModelParallelPlane";
       }
 
       /** \brief Constructor for base SampleConsensusModelParallelPlane.
@@ -98,6 +101,7 @@ namespace pcl
         , eps_angle_ (0.0)
         , sin_angle_ (-1.0)
       {
+        model_name_ = "SampleConsensusModelParallelPlane";
       }
       
       /** \brief Empty destructor */
