@@ -43,6 +43,7 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 
@@ -274,8 +275,9 @@ namespace pcl
                               Eigen::Vector4f &pt_proj);
 
       /** \brief Get a string representation of the name of this class. */
-      std::string 
-      getName () const { return ("SampleConsensusModelCylinder"); }
+      PCL_DEPRECATED ("[pcl::SampleConsensusModelCylinder::getName] getName is deprecated. Please use getClassName instead.")
+      std::string
+      getName () const { return (model_name_); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
