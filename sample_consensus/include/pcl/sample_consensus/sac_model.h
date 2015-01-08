@@ -365,6 +365,16 @@ namespace pcl
         return (it->second);
       }
 
+      /** \brief Return the number of coefficients in the model. */
+      inline unsigned int
+      getModelSize () const
+      {
+        std::map<pcl::SacModel, unsigned int>::const_iterator it = SAC_MODEL_SIZE.find (getModelType ());
+        if (it == SAC_MODEL_SIZE.end ())
+          throw InvalidSACModelTypeException ("No model size defined for given model type!\n");
+        return (it->second);
+      }
+
       /** \brief Set the minimum and maximum allowable radius limits for the
         * model (applicable to models that estimate a radius)
         * \param[in] min_radius the minimum radius model
