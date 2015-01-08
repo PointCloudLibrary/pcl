@@ -67,6 +67,7 @@ namespace pcl
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
@@ -164,7 +165,7 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */

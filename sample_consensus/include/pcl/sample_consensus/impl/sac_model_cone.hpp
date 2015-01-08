@@ -490,13 +490,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::pointToAxisDistance (
 template <typename PointT, typename PointNT> bool 
 pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 7)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
- 
+
   // Check against template, if given
   if (eps_angle_ > 0.0)
   {

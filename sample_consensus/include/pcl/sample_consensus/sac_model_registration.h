@@ -62,6 +62,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -214,18 +215,6 @@ namespace pcl
       getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      inline bool
-      isModelValid (const Eigen::VectorXf &model_coefficients)
-      {
-        // Needs a valid model coefficients
-        if (model_coefficients.size () != 16)
-          return (false);
-
-        return (true);
-      }
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.

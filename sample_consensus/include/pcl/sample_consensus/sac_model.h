@@ -510,10 +510,22 @@ namespace pcl
       }
 
       /** \brief Check whether a model is valid given the user constraints.
+        *
+        * Default implementation verifies that the number of coefficients in the supplied model is as expected for this
+        * SAC model type. Specific SAC models should extend this function by checking the user constraints (if any).
+        *
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual inline bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) = 0;
+      virtual bool
+      isModelValid (const Eigen::VectorXf &model_coefficients)
+      {
+        if (model_coefficients.size () != getModelSize ())
+        {
+          PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (%lu)!\n", getClassName ().c_str (), model_coefficients.size ());
+          return (false);
+        }
+        return (true);
+      }
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices. Pure virtual.
