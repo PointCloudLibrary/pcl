@@ -117,6 +117,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (tesselation_level_);
   subdivide->SetInputConnection (ico->GetOutputPort ());
+#if VTK_MAJOR_VERSION>=6
+  subdivide->Update();
+#endif
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
