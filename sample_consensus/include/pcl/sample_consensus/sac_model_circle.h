@@ -60,6 +60,7 @@ namespace pcl
   class SampleConsensusModelCircle2D : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -78,7 +79,9 @@ namespace pcl
         */
       SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud, bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ () 
-      {};
+      {
+        model_name_ = "SampleConsensusModelCircle2D";
+      }
 
       /** \brief Constructor for base SampleConsensusModelCircle2D.
         * \param[in] cloud the input point cloud dataset
@@ -89,7 +92,9 @@ namespace pcl
                                     const std::vector<int> &indices,
                                     bool random = false)
         : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
-      {};
+      {
+        model_name_ = "SampleConsensusModelCircle2D";
+      }
 
       /** \brief Copy constructor.
         * \param[in] source the model to copy into this
@@ -98,6 +103,7 @@ namespace pcl
         SampleConsensusModel<PointT> (), tmp_inliers_ () 
       {
         *this = source;
+        model_name_ = "SampleConsensusModelCircle2D";
       }
       
       /** \brief Empty destructor */
@@ -152,7 +158,7 @@ namespace pcl
                            const double threshold);
 
        /** \brief Recompute the 2d circle coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the 2d circle model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the 2d circle model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization

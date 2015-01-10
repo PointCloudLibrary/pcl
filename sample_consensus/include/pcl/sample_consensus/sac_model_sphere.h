@@ -60,6 +60,7 @@ namespace pcl
   class SampleConsensusModelSphere : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -79,7 +80,9 @@ namespace pcl
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
                                   bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ ()
-      {}
+      {
+        model_name_ = "SampleConsensusModelSphere";
+      }
 
       /** \brief Constructor for base SampleConsensusModelSphere.
         * \param[in] cloud the input point cloud dataset
@@ -90,7 +93,9 @@ namespace pcl
                                   const std::vector<int> &indices,
                                   bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
-      {}
+      {
+        model_name_ = "SampleConsensusModelSphere";
+      }
       
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelSphere () {}
@@ -102,6 +107,7 @@ namespace pcl
         SampleConsensusModel<PointT> (), tmp_inliers_ () 
       {
         *this = source;
+        model_name_ = "SampleConsensusModelSphere";
       }
 
       /** \brief Copy constructor.
@@ -154,7 +160,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the sphere coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the sphere model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the sphere model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization

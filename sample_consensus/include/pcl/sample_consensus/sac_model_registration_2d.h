@@ -51,6 +51,7 @@ namespace pcl
   class SampleConsensusModelRegistration2D : public pcl::SampleConsensusModelRegistration<PointT>
   {
     public:
+      using pcl::SampleConsensusModelRegistration<PointT>::model_name_;
       using pcl::SampleConsensusModelRegistration<PointT>::input_;
       using pcl::SampleConsensusModelRegistration<PointT>::target_;
       using pcl::SampleConsensusModelRegistration<PointT>::indices_;
@@ -78,6 +79,7 @@ namespace pcl
       {
         // Call our own setInputCloud
         setInputCloud (cloud);
+        model_name_ = "SampleConsensusModelRegistration2D";
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
@@ -93,6 +95,7 @@ namespace pcl
       {
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
+        model_name_ = "SampleConsensusModelRegistration2D";
       }
       
       /** \brief Empty destructor */

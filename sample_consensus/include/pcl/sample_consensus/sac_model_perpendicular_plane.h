@@ -71,6 +71,8 @@ namespace pcl
   class SampleConsensusModelPerpendicularPlane : public SampleConsensusModelPlane<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
+
       typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudConstPtr PointCloudConstPtr;
@@ -87,6 +89,7 @@ namespace pcl
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
       {
+        model_name_ = "SampleConsensusModelPerpendicularPlane";
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
@@ -101,6 +104,7 @@ namespace pcl
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0.0)
       {
+        model_name_ = "SampleConsensusModelPerpendicularPlane";
       }
       
       /** \brief Empty destructor */

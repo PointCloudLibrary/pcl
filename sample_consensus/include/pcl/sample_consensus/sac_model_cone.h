@@ -41,6 +41,7 @@
 
 #include <pcl/sample_consensus/sac_model.h>
 #include <pcl/sample_consensus/model_types.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <limits.h>
@@ -65,6 +66,7 @@ namespace pcl
   class SampleConsensusModelCone : public SampleConsensusModel<PointT>, public SampleConsensusModelFromNormals<PointT, PointNT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -92,6 +94,7 @@ namespace pcl
         , max_angle_ (std::numeric_limits<double>::max ())
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCone";
       }
 
       /** \brief Constructor for base SampleConsensusModelCone.
@@ -110,6 +113,7 @@ namespace pcl
         , max_angle_ (std::numeric_limits<double>::max ())
         , tmp_inliers_ ()
       {
+        model_name_ = "SampleConsensusModelCone";
       }
 
       /** \brief Copy constructor.
@@ -121,6 +125,7 @@ namespace pcl
         axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
       {
         *this = source;
+        model_name_ = "SampleConsensusModelCone";
       }
       
       /** \brief Empty destructor */
@@ -163,8 +168,8 @@ namespace pcl
 
       /** \brief Set the minimum and maximum allowable opening angle for a cone model
         * given from a user.
-        * \param[in] min_angle the minimum allwoable opening angle of a cone model
-        * \param[in] max_angle the maximum allwoable opening angle of a cone model
+        * \param[in] min_angle the minimum allowable opening angle of a cone model
+        * \param[in] max_angle the maximum allowable opening angle of a cone model
         */
       inline void
       setMinMaxOpeningAngle (const double &min_angle, const double &max_angle)
@@ -173,9 +178,9 @@ namespace pcl
         max_angle_ = max_angle;
       }
 
-      /** \brief Get the opening angle which we need minumum to validate a cone model.
-        * \param[out] min_angle the minimum allwoable opening angle of a cone model
-        * \param[out] max_angle the maximum allwoable opening angle of a cone model
+      /** \brief Get the opening angle which we need minimum to validate a cone model.
+        * \param[out] min_angle the minimum allowable opening angle of a cone model
+        * \param[out] max_angle the maximum allowable opening angle of a cone model
         */
       inline void
       getMinMaxOpeningAngle (double &min_angle, double &max_angle) const
@@ -224,7 +229,7 @@ namespace pcl
 
 
       /** \brief Recompute the cone coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the cone model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the cone model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
@@ -270,8 +275,9 @@ namespace pcl
       pointToAxisDistance (const Eigen::Vector4f &pt, const Eigen::VectorXf &model_coefficients);
 
       /** \brief Get a string representation of the name of this class. */
-      std::string 
-      getName () const { return ("SampleConsensusModelCone"); }
+      PCL_DEPRECATED ("[pcl::SampleConsensusModelCone::getName] getName is deprecated. Please use getClassName instead.")
+      std::string
+      getName () const { return (model_name_); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.
