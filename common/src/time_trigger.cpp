@@ -123,7 +123,7 @@ pcl::TimeTrigger::stop ()
 void 
 pcl::TimeTrigger::thread_function ()
 {
-  static double time = 0;
+  double time = 0;
   while (!quit_)
   {
     time = getTime ();
