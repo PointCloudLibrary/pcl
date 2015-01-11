@@ -654,7 +654,10 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
       if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
         continue;
 
-      memcpy (&colors[j], &colormap[label].rgba, 3);
+      const pcl::RGB& color = colormap[label];
+      colors[j    ] = color.r;
+      colors[j + 1] = color.g;
+      colors[j + 2] = color.b;
       j += 3;
     }
   }
@@ -666,7 +669,11 @@ pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getCo
     {
       uint32_t label;
       memcpy (&label, &cloud_->data[point_offset], field_size);
-      memcpy (&colors[j], &colormap[label].rgba, 3);
+
+      const pcl::RGB& color = colormap[label];
+      colors[j    ] = color.r;
+      colors[j + 1] = color.g;
+      colors[j + 2] = color.b;
       j += 3;
     }
   }
