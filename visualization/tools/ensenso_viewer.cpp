@@ -47,18 +47,18 @@ typedef pcl::visualization::CloudViewer CloudViewer;
 typedef pcl::PointCloud<pcl::PointXYZ> PointCloudXYZ;
 
 /** @brief CloudViewer pointer */
-boost::shared_ptr<CloudViewer> viewer;
+boost::shared_ptr<CloudViewer> viewer_ptr;
 
 /** @brief PCL Ensenso object pointer */
-pcl::EnsensoGrabber::Ptr ensenso_grabber;
+pcl::EnsensoGrabber::Ptr ensenso_ptr;
 
 /** @brief Process and/or display Ensenso grabber clouds
  * @param[in] cloud Ensenso cloud */
 void
 grabberCallback (const PointCloudXYZ::Ptr& cloud)
 {
-  if (!viewer->wasStopped ())
-    viewer->showCloud (cloud);
+  if (!viewer_ptr->wasStopped ())
+    viewer_ptr->showCloud (cloud);
 }
 
 /** @brief Main function
@@ -66,23 +66,23 @@ grabberCallback (const PointCloudXYZ::Ptr& cloud)
 int
 main (void)
 {
-  viewer.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
-  ensenso_grabber.reset (new pcl::EnsensoGrabber);
-  ensenso_grabber->openTcpPort ();
-  ensenso_grabber->openDevice ();
+  viewer_ptr.reset (new CloudViewer ("Ensenso 3D cloud viewer"));
+  ensenso_ptr.reset (new pcl::EnsensoGrabber);
+  ensenso_ptr->openTcpPort ();
+  ensenso_ptr->openDevice ();
 
   boost::function<void
   (const PointCloudXYZ::Ptr&)> f = boost::bind (&grabberCallback, _1);
-  ensenso_grabber->registerCallback (f);
-  ensenso_grabber->start ();
+  ensenso_ptr->registerCallback (f);
+  ensenso_ptr->start ();
 
-  while (!viewer->wasStopped ())
+  while (!viewer_ptr->wasStopped ())
   {
     boost::this_thread::sleep (boost::posix_time::milliseconds (1000));
-    std::cout << "FPS: " << ensenso_grabber->getFramesPerSecond () << std::endl;
+    std::cout << "FPS: " << ensenso_ptr->getFramesPerSecond () << std::endl;
   }
 
-  ensenso_grabber->closeDevice ();
+  ensenso_ptr->closeDevice ();
   return (0);
 }
 
