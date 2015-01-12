@@ -75,3 +75,6 @@ Here is an example of the terminal output ::
 .. image:: images/ensenso/ensenso_viewer.jpg
   :height: 550
 
+Another example is available in `PCL sources <https://github.com/PointCloudLibrary/pcl/blob/master/doc/tutorials/content/sources/ensenso_cameras/>`_, it uses OpenCV to display Ensenso
+images and the PCLVisualizer to display the point cloud at the same time.
+
