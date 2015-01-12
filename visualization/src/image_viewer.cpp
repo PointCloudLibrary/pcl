@@ -45,6 +45,9 @@
 #if VTK_MAJOR_VERSION >= 6
 #include <vtkImageSlice.h>
 #include <vtkImageSliceMapper.h>
+#include <vtkContext2D.h>
+#include <vtkContextDevice2D.h>
+#include <vtkTransform2D.h>
 #endif
 
 #include <pcl/visualization/image_viewer.h>
@@ -624,7 +627,11 @@ pcl::visualization::ImageViewer::createLayer (
   Layer l;
   l.layer_name = layer_id;
   // Create a new layer
+#ifdef VTK_MAJOR_VERSION >= 6
+  l.actor = vtkSmartPointer<ContextActor>::New ();
+#else
   l.actor = vtkSmartPointer<vtkContextActor>::New ();
+#endif
   l.actor->PickableOff ();
   l.actor->DragableOff ();
   if (fill_box)
@@ -1062,6 +1069,75 @@ pcl::visualization::ImageViewer::convertIntensityCloud8uToUChar (
     data[j++] = static_cast<unsigned char> (cloud.points[i].intensity);
 }
 
+#if VTK_MAJOR_VERSION >= 6
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+pcl::visualization::ContextActor::ContextActor ()
+{
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::visualization::ContextActor::RenderOverlay (vtkViewport *viewport)
+{
+  vtkDebugMacro(<< "pcl::visualization::ContextActor::RenderOverlay");
+
+  if (!this->Context.GetPointer ())
+  {
+    vtkErrorMacro(<< "pcl::visualization::ContextActor::Render - No painter set");
+    return 0;
+  }
+
+  if (!this->Initialized)
+  {
+    this->Initialize(viewport);
+  }
+
+  const int *viewport_size = viewport->GetVTKWindow()->GetSize();
+
+  // initial viewport size for scaling and positioning all later created context items
+  if (!initial_viewport_set_)
+  {
+    initial_viewport_x_size_ = viewport_size[0];
+    initial_viewport_y_size_ = viewport_size[1];
+  }
+
+  // scale factors for actual viewport size
+  double x_scale = (static_cast<double>(viewport_size[0]) / static_cast<double>(initial_viewport_x_size_));
+  double y_scale = (static_cast<double>(viewport_size[1]) / static_cast<double>(initial_viewport_y_size_));
+
+  double aspect[2];
+  viewport->GetAspect (aspect);
+
+  // initial viewport aspect ratio
+  if (!initial_viewport_set_)
+  {
+    initial_viewport_x_aspect_ = aspect[0];
+    initial_viewport_y_aspect_ = aspect[1];
+    initial_viewport_set_ = true;
+  }
+  double aspect_modification = initial_viewport_x_aspect_ * aspect[1] / (initial_viewport_y_aspect_ * aspect[0]);
+
+  // initialize the drawing device
+  this->GetContext ()->GetDevice ()->Begin (viewport);
+  vtkTransform2D *transform = this->Scene->GetTransform ();
+  transform->Identity();
+
+  // emulate the window resizing referring to 'vtkImageSlice': complex composition of scaling and translating
+  transform->Scale (x_scale * aspect_modification, y_scale);
+  transform->Translate ((1.0 - aspect_modification) * static_cast<double>(viewport_size[0])/2.0 
+    * static_cast<double>(initial_viewport_y_size_)/static_cast<double>(viewport_size[1]), 0.0);
+
+  this->Scene->SetTransform (transform);
+  this->Scene->Paint(this->Context.GetPointer());
+  this->GetContext ()->GetDevice()->End();
+
+  return 1;
+  //return Superclass::RenderOverlay (viewport);
+}
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1233,3 +1309,18 @@ namespace pcl
   }
 }
 
+#ifdef VTK_MAJOR_VERSION >= 6
+//////////////////////////////////////////////////////////////////////////////////////////
+namespace pcl
+{
+  namespace visualization
+  {
+    vtkStandardNewMacro (ContextActor);
+    bool ContextActor::initial_viewport_set_ = false;
+    int ContextActor::initial_viewport_x_size_ = 0;
+    int ContextActor::initial_viewport_y_size_ = 0;
+    double ContextActor::initial_viewport_x_aspect_ = 0.0;
+    double ContextActor::initial_viewport_y_aspect_ = 0.0;
+  }
+}
+#endif

@@ -53,6 +53,9 @@
 
 #include <vtkVersion.h>
 #include <vtkInteractorStyleImage.h>
+#if VTK_MAJOR_VERSION >= 6
+#include <vtkOpenGLContextActor.h>
+#endif
 
 class vtkImageSlice;
 class vtkContextActor;
@@ -67,6 +70,29 @@ namespace pcl
     static const Vector3ub green_color (0, 255, 0);
     static const Vector3ub red_color (255, 0, 0);
     static const Vector3ub blue_color (0, 0, 255);
+
+#if VTK_MAJOR_VERSION >= 6
+    /** \brief A special context actor for emulating the window resizing referring to 'vtkImageSlice'
+      * \author Michael Dingerkus
+      * \ingroup visualization
+      */
+    class PCL_EXPORTS ContextActor : public vtkOpenGLContextActor
+    {
+      public:
+        vtkTypeMacro(ContextActor, vtkOpenGLContextActor);
+
+        static ContextActor* New ();
+        ContextActor ();
+
+        virtual int RenderOverlay (vtkViewport *viewport);
+
+        static bool initial_viewport_set_;
+        static int initial_viewport_x_size_;
+        static int initial_viewport_y_size_;
+        static double initial_viewport_x_aspect_;
+        static double initial_viewport_y_aspect_;
+    };
+#endif
 
     /** \brief An image viewer interactor style, tailored for ImageViewer.
       * \author Radu B. Rusu
