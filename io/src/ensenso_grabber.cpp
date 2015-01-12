@@ -356,7 +356,7 @@ pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
       return (false);
     (*root_)[itmParameters][itmPattern][itmGridSpacing].set (grid_spacing);  // GridSize can't be changed, it's protected in the tree
     // With the speckle projector on it is nearly impossible to recognize the pattern
-    // (the 3D calibration is based on stero images, not on 3D depth map)
+    // (the 3D calibration is based on stereo images, not on 3D depth map)
 
     // Most important parameters are: projector=off, front_light=on
     configureCapture (true, true, 1, 0.32, true, 1, false, false, false, 10, false, 80, "Software", false);

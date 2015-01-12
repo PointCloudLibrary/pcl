@@ -176,6 +176,7 @@ namespace pcl
       /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso patterns
        * @param[in] grid_spacing
        * @return True if successful, false otherwise
+       *
        * Configure the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
        * Discard all previous patterns, configure @c grid_spacing
        * @warning A device must be opened and must not be running.
