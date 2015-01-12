@@ -539,7 +539,10 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor (vtkSmart
   {
     if (pcl::isFinite (cloud_->points[cp]))
     {
-      memcpy (&colors[j], &colormap[cloud_->points[cp].label].rgba, 3);
+      const pcl::RGB& color = colormap[cloud_->points[cp].label];
+      colors[j    ] = color.r;
+      colors[j + 1] = color.g;
+      colors[j + 2] = color.b;
       j += 3;
     }
   }
