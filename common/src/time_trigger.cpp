@@ -71,8 +71,8 @@ pcl::TimeTrigger::~TimeTrigger ()
 {
   boost::unique_lock<boost::mutex> lock (condition_mutex_);
   quit_ = true;
-  condition_.notify_all ();
   lock.unlock ();
+  condition_.notify_all ();
   
   timer_thread_.join ();
 }
