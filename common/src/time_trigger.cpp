@@ -81,7 +81,6 @@ pcl::TimeTrigger::~TimeTrigger ()
 boost::signals2::connection 
 pcl::TimeTrigger::registerCallback (const callback_type& callback)
 {
-  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   return (callbacks_.connect (callback));
 }
 
