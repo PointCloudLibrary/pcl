@@ -124,10 +124,12 @@ void
 pcl::TimeTrigger::thread_function ()
 {
   double time = 0;
-  while (!quit_)
+  while (true)
   {
     time = getTime ();
     boost::unique_lock<boost::mutex> lock (condition_mutex_);
+    if(quit_)
+      break;
     if (!running_)
       condition_.wait (lock); // wait util start is called or destructor is called
     else
