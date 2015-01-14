@@ -134,8 +134,13 @@ pcl::TimeTrigger::thread_function ()
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
+#if defined(BOOST_HAS_WINTHREADS) && (BOOST_VERSION < 105500)
+      //infinite timed_wait bug: https://svn.boost.org/trac/boost/ticket/9079
       if (rest > 0.0) // without a deadlock is possible, until notify() is called
         condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
+#else
+      condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
+#endif
     }
   }
 }
