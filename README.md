@@ -7,6 +7,6 @@ PCL is released under the terms of the BSD license, and thus free for commercial
 
 ## Building and installation
 
-Please see the [Compiling from source](http://pointclouds.org/downloads/source.html) to build and install from source. 
+Please see [Compiling from source](http://pointclouds.org/downloads/source.html) to build and install from source. 
 
 
