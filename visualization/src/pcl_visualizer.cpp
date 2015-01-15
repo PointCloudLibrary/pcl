@@ -334,26 +334,11 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Initialize and create timer, also create window
   iren->Initialize ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#else
-  timer_id_ = iren->CreateRepeatingTimer (5000L);
-#endif
 
   // Set a simple PointPicker
   vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
   pp->SetTolerance (pp->GetTolerance () * 2);
   iren->SetPicker (pp);
-
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_main_loop_timer_callback_->pcl_visualizer = this;
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  iren->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  exit_callback_->pcl_visualizer = this;
-  iren->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-
-  resetStoppedFlag ();
 }
 
 
@@ -378,26 +363,11 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Initialize and create timer, also create window
   iren->Initialize ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#else
-  timer_id_ = iren->CreateRepeatingTimer (5000L);
-#endif
 
   // Set a simple PointPicker
   // vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
   // pp->SetTolerance (pp->GetTolerance () * 2);
   // iren->SetPicker (pp);
-
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_main_loop_timer_callback_->pcl_visualizer = this;
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  iren->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  exit_callback_->pcl_visualizer = this;
-  iren->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-
-  resetStoppedFlag ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
