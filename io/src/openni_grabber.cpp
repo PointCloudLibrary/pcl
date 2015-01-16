@@ -48,22 +48,6 @@
 #include <pcl/exceptions.h>
 #include <iostream>
 
-namespace pcl
-{
-  typedef union
-  {
-    struct
-    {
-      unsigned char Blue;
-      unsigned char Green;
-      unsigned char Red;
-      unsigned char Alpha;
-    };
-    float float_value;
-    uint32_t long_value;
-  } RGBValue;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
   : rgb_sync_ ()
@@ -722,8 +706,6 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   
   value_idx = 0;
   point_idx = 0;
-  RGBValue color;
-  color.Alpha = 255;
 
   for (unsigned yIdx = 0; yIdx < image_height_; ++yIdx, point_idx += skip)
   {
@@ -731,11 +713,9 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     {
       PointT& pt = cloud->points[point_idx];
       
-      color.Red   = rgb_buffer[value_idx];
-      color.Green = rgb_buffer[value_idx + 1];
-      color.Blue  = rgb_buffer[value_idx + 2];
-      
-      pt.rgba = color.long_value;
+      pt.r = rgb_buffer[value_idx];
+      pt.g = rgb_buffer[value_idx + 1];
+      pt.b = rgb_buffer[value_idx + 2];
     }
   }
   cloud->sensor_origin_.setZero ();
