@@ -266,12 +266,12 @@ class HRCSSegmentation
       std::vector<Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> > covariances;
       std::vector<pcl::PointIndices> inlier_indices;
 
-      for (int i = 0; i < region_indices.size (); i++)
+      for (size_t i = 0; i < region_indices.size (); i++)
       {
         if (region_indices[i].indices.size () > 1000)
         {
 
-          for (int j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {  
             pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
                                      cloud->points[region_indices[i].indices[j]].y,
@@ -354,11 +354,11 @@ class HRCSSegmentation
       
       //Note the regions that have been extended
       pcl::PointCloud<PointT> extended_ground_cloud;
-      for (int i = 0; i < region_indices.size (); i++)
+      for (size_t i = 0; i < region_indices.size (); i++)
       {
         if (region_indices[i].indices.size () > 1000)
         {
-          for (int j = 0; j < region_indices[i].indices.size (); j++)
+          for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {
             // Check to see if it has already been labeled
             if (ground_image->points[region_indices[i].indices[j]].g == ground_image->points[region_indices[i].indices[j]].b)
@@ -434,7 +434,7 @@ class HRCSSegmentation
               if ((ptp_dist > 0.5) && (ptp_dist < 3.0))
               {
               
-                for (int j = 0; j < euclidean_label_indices[i].indices.size (); j++)
+                for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); j++)
                 {
                   ground_image->points[euclidean_label_indices[i].indices[j]].r = 255;
                   label_image->points[euclidean_label_indices[i].indices[j]].r = 255;
@@ -451,7 +451,7 @@ class HRCSSegmentation
       }
 
       // note the NAN points in the image as well
-      for (int i = 0; i < cloud->points.size (); i++)
+      for (size_t i = 0; i < cloud->points.size (); i++)
       {
         if (!pcl::isFinite (cloud->points[i]))
         {
