@@ -139,7 +139,7 @@ namespace pcl
 
       /// \brief \return points normals as calculated or given
       inline void
-      getNormals (const NormalsConstPtr &normals) const { return (normals_); }
+      getNormals () const { return (normals_); }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
         * \param nr_threads the number of hardware threads to use, 0 for automatic.
