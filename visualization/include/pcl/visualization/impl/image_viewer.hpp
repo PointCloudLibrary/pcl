@@ -117,7 +117,6 @@ pcl::visualization::ImageViewer::addMask (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve (mask.size () * 2);
-  const float image_height_f = static_cast<float> (image->height);
   for (size_t i = 0; i < mask.size (); ++i)
   {
     pcl::PointXY p_projected;
@@ -125,7 +124,7 @@ pcl::visualization::ImageViewer::addMask (
 
     xy.push_back (p_projected.x);
     #if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
-    xy.push_back (image_height_f - p_projected.y);
+    xy.push_back (static_cast<float> (image->height) - p_projected.y);
     #else
     xy.push_back (p_projected.y);
     #endif
@@ -174,7 +173,6 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   // Construct a search object to get the camera parameters and fill points
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  const float image_height_f = static_cast<float> (image->height);
   std::vector<float> xy;
   xy.reserve ((polygon.getContour ().size () + 1) * 2);
   for (size_t i = 0; i < polygon.getContour ().size (); ++i)
@@ -183,7 +181,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     search.projectPoint (polygon.getContour ()[i], p);
     xy.push_back (p.x);
     #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
-    xy.push_back (image_height_f - p.y);
+    xy.push_back (static_cast<float> (image->height) - p.y);
     #else
     xy.push_back (p.y);
     #endif
