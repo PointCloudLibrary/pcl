@@ -124,7 +124,7 @@ pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
       device_->unregisterImageCallback (image_callback_handle);
 
     if (device_->hasIRStream ())
-      device_->unregisterIRCallback (image_callback_handle);
+      device_->unregisterIRCallback (ir_callback_handle);
 
     // release the pointer to the device object
     device_.reset ();
