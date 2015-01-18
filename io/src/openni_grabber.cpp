@@ -613,11 +613,6 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
       pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0f;
-  cloud->sensor_orientation_.x () = 0.0f;
-  cloud->sensor_orientation_.y () = 0.0f;
-  cloud->sensor_orientation_.z () = 0.0f;  
   return (cloud);
 }
 
@@ -738,11 +733,6 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
       pt.rgba = color.long_value;
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0;
-  cloud->sensor_orientation_.x () = 0.0;
-  cloud->sensor_orientation_.y () = 0.0;
-  cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
 }
 
@@ -824,11 +814,6 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
       pt.intensity = static_cast<float> (ir_map[depth_idx]);
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0;
-  cloud->sensor_orientation_.x () = 0.0;
-  cloud->sensor_orientation_.y () = 0.0;
-  cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
 }
 
