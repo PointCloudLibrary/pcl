@@ -36,10 +36,8 @@
 #ifndef PCL_DIGITAL_ELEVATION_MAP_H_
 #define PCL_DIGITAL_ELEVATION_MAP_H_
 
-#pragma warning(disable : 4996)
 #include <pcl/point_types.h>
 #include <pcl/stereo/disparity_map_converter.h>
-#pragma warning(default : 4996)
 
 namespace pcl
 { 

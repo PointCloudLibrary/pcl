@@ -269,7 +269,7 @@ pcl::GrabCut<PointT>::initGraph ()
   graph_nodes_.clear ();
   graph_nodes_.resize (indices_->size ());
   int start = graph_.addNodes (indices_->size ());
-  for (int idx = 0; idx < indices_->size (); ++idx)
+  for (size_t idx = 0; idx < indices_->size (); ++idx)
   {
     graph_nodes_[idx] = start;
     ++start;

@@ -193,7 +193,7 @@ pcl::RobotEyeGrabber::convertPacketData (unsigned char *data_packet, size_t leng
   const size_t bytes_per_point = 8;
   const size_t total_points = (length - offset)/ bytes_per_point;
 
-  for (int i = 0; i < total_points; ++i)
+  for (size_t i = 0; i < total_points; ++i)
   {
     PointXYZI xyzi;
     computeXYZI (xyzi, data_packet + i*bytes_per_point + offset);
