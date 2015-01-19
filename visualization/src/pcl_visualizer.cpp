@@ -203,6 +203,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
   ren->AddActor (txt);
+  txt->SetInput("0 FPS");
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
