@@ -34,6 +34,7 @@
  *  Author: Anatoly Baskeheev, Itseez Ltd, (myname.mysurname@mycompany.com)
  */
 
+#include <cfloat>
 #include "internal.hpp"
 
 #include "pcl/gpu/utils/timers_cuda.hpp"
