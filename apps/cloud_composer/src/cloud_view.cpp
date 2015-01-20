@@ -109,7 +109,6 @@ pcl::cloud_composer::CloudView::rowsInserted (const QModelIndex& parent, int sta
   {
     QStandardItem* new_item = parent_item->child(row);
     CloudComposerItem* item = dynamic_cast<CloudComposerItem*> (new_item);
-      item = dynamic_cast<CloudComposerItem*> (new_item);
     if (item)
       item->paintView (vis_);
     

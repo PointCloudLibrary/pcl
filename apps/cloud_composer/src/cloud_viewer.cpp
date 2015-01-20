@@ -66,7 +66,6 @@ pcl::cloud_composer::CloudViewer::addNewProject (ProjectModel* new_model)
 void
 pcl::cloud_composer::CloudViewer::modelChanged (int index)
 {
-  CloudView* view = static_cast<CloudView*> (this->widget (index)); view = view;
   emit newModelSelected (getModel ());
 }
 
