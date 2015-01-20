@@ -421,8 +421,8 @@ openni_wrapper::OpenNIDriver::getSerialNumber (unsigned index) const throw ()
   boost::char_separator<char> sep ("#");
   boost::tokenizer<boost::char_separator<char> > tokens (info, sep);
   boost::tokenizer<boost::char_separator<char> >::iterator itr = tokens.begin ();
-  itr++;
-  itr++;
+  ++itr;
+  ++itr;
   std::string sn = *itr;
   device_context_[index].device_node.SetInstanceName(sn.c_str ());
   return (device_context_[index].device_node.GetInstanceName ());
