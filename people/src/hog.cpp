@@ -325,8 +325,8 @@ pcl::people::HOG::compute (float *I, float *descriptor) const
   float *M, *O, *G, *H;
   M = new float[h_ * w_];
   O = new float[h_ * w_];
-  H = (float*) calloc((w_ / bin_size_) * (h_ / bin_size_) * n_orients_, sizeof(float));
-  G = (float*) calloc((w_ / bin_size_) * (h_ / bin_size_) * n_orients_ *4, sizeof(float));
+  H = new float[(w_ / bin_size_) * (h_ / bin_size_) * n_orients_]();
+  G = new float[(w_ / bin_size_) * (h_ / bin_size_) * n_orients_ *4]();
 
   // Compute gradient magnitude and orientation at each location (uses sse):
   gradMag (I, h_, w_, n_channels_, M, O );
@@ -350,7 +350,7 @@ pcl::people::HOG::compute (float *I, float *descriptor) const
       }
     }
   }
-  free(M); free(O); free(H); free(G);
+  delete[] M; delete[] O; delete[] H; delete[] G;
 }
 
 void 
