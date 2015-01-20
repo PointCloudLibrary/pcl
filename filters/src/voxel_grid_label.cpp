@@ -337,7 +337,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
         int label = it->first;
         if (it != labels.end ())
         {
-          for (it = labels.begin (); it != labels.end (); it++)
+          for (it = labels.begin (); it != labels.end (); ++it)
           {
             if (n_occurrence < it->second)
             {

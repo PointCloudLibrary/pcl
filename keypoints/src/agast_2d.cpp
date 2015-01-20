@@ -224,7 +224,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
       }
     }
 
-    curr_corner++;
+    ++curr_corner;
   }
 
   // collecting maximum corners
