@@ -140,7 +140,7 @@ pcl::PCLBase<pcl::PCLPointCloud2>::initCompute ()
     {
       indices_->resize (input_->width * input_->height);
     }
-    catch (std::bad_alloc)
+    catch (const std::bad_alloc&)
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", (input_->width * input_->height));
     }

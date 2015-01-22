@@ -151,7 +151,7 @@ pcl::PCLBase<PointT>::initCompute ()
     {
       indices_->resize (input_->points.size ());
     }
-    catch (std::bad_alloc)
+    catch (const std::bad_alloc&)
     {
       PCL_ERROR ("[initCompute] Failed to allocate %lu indices.\n", input_->points.size ());
     }
