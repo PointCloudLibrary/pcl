@@ -284,7 +284,8 @@ LCCPSegmentation Parameters: \n\
 
   /// Preparation of Input: Supervoxel Oversegmentation
 
-  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution, use_single_cam_transform);
+  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution);
+  super.setUseSingleCameraTransform (use_single_cam_transform);
   super.setInputCloud (input_cloud_ptr);
   if (has_normals)
     super.setNormalCloud (input_normals_ptr);
