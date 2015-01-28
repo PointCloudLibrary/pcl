@@ -126,7 +126,7 @@ main (int argc, char **argv)
   bool VIS = true;
 
   visualization::PCLVisualizer vis;
-  vis.addModelFromPolyData (polydata1, "mesh1", 0);
+  vis.addModelFromPolyData (polydata1, 1.0f, "mesh1", 0);
   vis.setRepresentationToSurfaceForAllActors ();
 
   PointCloud<PointXYZ>::CloudVectorType views_xyz;

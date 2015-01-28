@@ -1369,23 +1369,28 @@ namespace pcl
 
          /** \brief Add a vtkPolydata as a mesh
           * \param[in] polydata vtkPolyData
+          * \param[in] width (optional) the width of the polygon lines in pixels (default: 1.0)
           * \param[in] id the model id/name (default: "PolyData")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
         bool
         addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata,
+                              float width = 1.0f,
                               const std::string & id = "PolyData",
                               int viewport = 0);
 
         /** \brief Add a vtkPolydata as a mesh
           * \param[in] polydata vtkPolyData
           * \param[in] transform transformation to apply
+          * \param[in] width (optional) the width of the polygon lines in pixels (default: 1.0)
           * \param[in] id the model id/name (default: "PolyData")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
+
           */
         bool
         addModelFromPolyData (vtkSmartPointer<vtkPolyData> polydata,
                               vtkSmartPointer<vtkTransform> transform,
+                              float width = 1.0f,
                               const std::string &id = "PolyData",
                               int viewport = 0);
 

@@ -225,10 +225,10 @@ void showModelOpps (PCLVisualizer& viz, const ModelLibrary::HashTable& hash_tabl
   vtk_hedge_hog->SetScaleFactor (0.5f*pair_width);
   vtk_hedge_hog->Update ();
   // Show the opps' normals
-  viz.addModelFromPolyData (vtk_hedge_hog->GetOutput (), "opps' normals");
+  viz.addModelFromPolyData (vtk_hedge_hog->GetOutput (), 1.0f, "opps' normals");
 #endif
 
-  viz.addModelFromPolyData (vtk_opps, "opps");
+  viz.addModelFromPolyData (vtk_opps, 1.0f, "opps");
   viz.setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 1.0, 0.0, "opps");
 
   printf ("done.\n");
