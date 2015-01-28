@@ -84,6 +84,21 @@ Basic Usage
      .. |mi_2| image:: images/pcl_logo.png
                :height: 75px
 
+  * :ref:`posix_building_pcl`
+
+     =======  ======
+     |mi_11|  Title: **Build PCL from source on POSIX compliant systems**
+
+              Author: *Victor Lamoine*
+
+              Compatibility: > PCL 1.0
+
+              In this tutorial, we will explain how to compile PCL from sources on POSIX/Unix systems.
+     =======  ======
+
+     .. |mi_11| image:: images/pcl_logo.png
+               :height: 120px
+
   * :ref:`building_pcl`
 
      ======  ======
