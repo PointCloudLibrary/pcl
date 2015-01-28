@@ -2123,7 +2123,7 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addModelFromPolyData (
-    vtkSmartPointer<vtkPolyData> polydata, const std::string & id, int viewport, float width)
+    vtkSmartPointer<vtkPolyData> polydata, const std::string & id, int viewport)
 {
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
@@ -2137,7 +2137,6 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLineWidth (width);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2148,7 +2147,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::addModelFromPolyData (
-    vtkSmartPointer<vtkPolyData> polydata, vtkSmartPointer<vtkTransform> transform, const std::string & id, int viewport, float width)
+    vtkSmartPointer<vtkPolyData> polydata, vtkSmartPointer<vtkTransform> transform, const std::string & id, int viewport)
 {
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   if (am_it != shape_actor_map_->end ())
@@ -2172,7 +2171,6 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLineWidth (width);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
