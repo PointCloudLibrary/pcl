@@ -101,8 +101,7 @@ namespace pcl
 
       /**
        * \brief Set the transformation matrix, which is used in order to transform the given point cloud, the ground plane and the intrinsics matrix to the internal coordinate frame.
-       *
-       * \param[in] cloud A pointer to the input cloud.
+       * \param[in] transformation
        */
       void
       setTransformation (const Eigen::Matrix3f& transformation);

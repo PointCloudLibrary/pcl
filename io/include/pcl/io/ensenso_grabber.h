@@ -71,6 +71,7 @@ namespace pcl
       typedef std::pair<pcl::PCLImage, pcl::PCLImage> PairOfImages;
 
     public:
+      /** @cond */
       typedef boost::shared_ptr<EnsensoGrabber> Ptr;
       typedef boost::shared_ptr<const EnsensoGrabber> ConstPtr;
 
@@ -84,6 +85,7 @@ namespace pcl
       typedef void
       (sig_cb_ensenso_point_cloud_images) (const pcl::PointCloud<pcl::PointXYZ>::Ptr &,
                                            const boost::shared_ptr<PairOfImages> &);
+     /** @endcond */
 
       /** @brief Constructor */
       EnsensoGrabber ();
@@ -232,7 +234,6 @@ namespace pcl
       storeEEPROMExtrinsicCalibration () const;
 
       /** @brief Clear the extrinsic calibration stored in the EEPROM
-       * @param[in] target The target to overwrite
        * @return True if successful, false otherwise */
       bool
       clearEEPROMExtrinsicCalibration ();
@@ -425,7 +426,7 @@ namespace pcl
 
       /** @brief Reference to the NxLib tree root
        * @warning You must handle NxLib exceptions manually when playing with @ref root_ !
-       * See @ref ensensoExceptionHandling in ensenso_grabber.cpp */
+       * See ensensoExceptionHandling in ensenso_grabber.cpp */
       boost::shared_ptr<const NxLibItem> root_;
 
       /** @brief Reference to the camera tree
