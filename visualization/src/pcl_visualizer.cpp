@@ -143,9 +143,10 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   win_->SetWindowName (name.c_str ());
 
   // Get screen size
-  int *scr_size = win_->GetScreenSize ();
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
   // Set the window size as 1/2 of the screen size
-  win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
+  win_->SetSize (scr_size_x / 2, scr_size_y / 2);
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
@@ -228,7 +229,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   style_->UseTimersOn ();
 
   // Get screen size
-  int *scr_size = win_->GetScreenSize ();
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
 
   // Set default camera parameters
   initCameraParameters ();
@@ -254,7 +256,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Set the window size as 1/2 of the screen size or the user given parameter
   if (!camera_set_ && !camera_file_loaded_)
   {
-    win_->SetSize (scr_size[0]/2, scr_size[1]/2);
+    win_->SetSize (scr_size_x/2, scr_size_y/2);
     win_->SetPosition (0, 0);
   }
 
@@ -1609,9 +1611,10 @@ pcl::visualization::PCLVisualizer::initCameraParameters ()
   // Set the camera field of view to about
   camera_temp.fovy = 0.8575;
 
-  int *scr_size = win_->GetScreenSize ();
-  camera_temp.window_size[0] = scr_size[0] / 2;
-  camera_temp.window_size[1] = scr_size[1] / 2;
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
+  camera_temp.window_size[0] = scr_size_x / 2;
+  camera_temp.window_size[1] = scr_size_y / 2;
 
   setCameraParameters (camera_temp);
 }
