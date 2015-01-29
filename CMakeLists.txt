@@ -5,6 +5,10 @@ if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
 endif()
 
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 OLD) # Silent warnings about quoted variables
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
