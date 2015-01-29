@@ -465,6 +465,7 @@ namespace pcl
           * \param[in] data data who's frequency distribution is to be found
           * \param[in] nbins number of bins for the histogram
           * \param[out] histogram vector of pairs containing the histogram. The first field of the pair represent the middle value of the corresponding bin. The second field denotes the frequency of data in that bin.
+          * \note NaN values will be ignored!
           */
         void 
         computeHistogram (std::vector<double> const & data, int const nbins, std::vector<std::pair<double, double> > &histogram);
