@@ -601,6 +601,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
 
   //finding the size of each bins
   double size = (max - min) / nbins;
+  if (size == 0) size = 1.0;
 
   //fill x values of each bins by bin center
   for (int i = 0; i < nbins; i++)
