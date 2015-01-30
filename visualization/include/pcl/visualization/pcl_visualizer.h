@@ -1166,6 +1166,7 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the shape object id
          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+         * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
          */
         bool
         setShapeRenderingProperties (int property, double value,
@@ -1178,6 +1179,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the shape object id
           * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
           */
          bool
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
