@@ -2000,7 +2000,7 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2027,7 +2027,7 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2056,7 +2056,7 @@ pcl::visualization::PCLVisualizer::addCube (
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2086,7 +2086,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   actor->GetProperty ()->SetColor (r,g,b);
   addActorToRenderer (actor, viewport);
@@ -2114,7 +2114,7 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2139,7 +2139,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
 
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2173,7 +2173,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   // Create an Actor
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2202,7 +2202,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (reader->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2236,7 +2236,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   // Create an Actor
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2261,7 +2261,7 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2292,7 +2292,6 @@ bool
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-//  actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
@@ -2318,7 +2317,7 @@ bool
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2344,7 +2343,7 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2370,7 +2369,7 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
@@ -2771,7 +2770,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     poly_grid->SetPoints (poly_points);
 
     createActorFromVTKDataSet (poly_grid, actor);
-    actor->GetProperty ()->SetRepresentationToWireframe ();
+    actor->GetProperty ()->SetRepresentationToSurface ();
   }
   else
   {
