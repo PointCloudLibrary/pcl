@@ -84,10 +84,10 @@ Basic Usage
      .. |mi_2| image:: images/pcl_logo.png
                :height: 75px
 
-  * :ref:`posix_building_pcl`
+  * :ref:`compiling_pcl_posix`
 
      =======  ======
-     |mi_11|  Title: **Build PCL from source on POSIX compliant systems**
+     |mi_11|  Title: **Compiling PCL from source on POSIX compliant systems**
 
               Author: *Victor Lamoine*
 
