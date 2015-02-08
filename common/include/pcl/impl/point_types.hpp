@@ -339,7 +339,8 @@ namespace pcl
 
     inline RGB ()
     {
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
     }
   
     friend std::ostream& operator << (std::ostream& os, const RGB& p);
