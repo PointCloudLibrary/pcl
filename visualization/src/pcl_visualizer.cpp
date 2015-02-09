@@ -1995,6 +1995,12 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
     return (false);
   }
 
+  if (coefficients.values.size () != 7)
+  {
+    PCL_WARN ("[addCylinder] Coefficients size does not match expected size (expected 7).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createCylinder (coefficients);
 
   // Create an Actor
@@ -2019,6 +2025,12 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (stderr, "[addCube] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  if (coefficients.values.size () != 10)
+  {
+    PCL_WARN ("[addCube] Coefficients size does not match expected size (expected 10).\n");
     return (false);
   }
 
@@ -2106,6 +2118,12 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (stderr, "[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addSphere] Coefficients size does not match expected size (expected 4).\n");
     return (false);
   }
 
@@ -2256,6 +2274,12 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
     return (false);
   }
 
+  if (coefficients.values.size () != 6)
+  {
+    PCL_WARN ("[addLine] Coefficients size does not match expected size (expected 6).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createLine (coefficients);
 
   // Create an Actor
@@ -2287,6 +2311,12 @@ bool
     return (false);
   }
 
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addPlane] Coefficients size does not match expected size (expected 4).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createPlane (coefficients);
 
   // Create an Actor
@@ -2310,6 +2340,12 @@ bool
   if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (stderr, "[addPlane] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addPlane] Coefficients size does not match expected size (expected 4).\n");
     return (false);
   }
 
@@ -2339,6 +2375,12 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
     return (false);
   }
 
+  if (coefficients.values.size () != 3)
+  {
+    PCL_WARN ("[addCircle] Coefficients size does not match expected size (expected 3).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = create2DCircle (coefficients);
 
   // Create an Actor
@@ -2362,6 +2404,12 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   if (am_it != shape_actor_map_->end ())
   {
     pcl::console::print_warn (stderr, "[addCone] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  if (coefficients.values.size () != 7)
+  {
+    PCL_WARN ("[addCone] Coefficients size does not match expected size (expected 7).\n");
     return (false);
   }
 
