@@ -96,6 +96,8 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   //fill spatial data vector
   kiss_fft_scalar * spatial_data = new kiss_fft_scalar[nbins];
+  //inicializate the variable
+  for (size_t i = 0; i < nbins; i++)spatial_data[i]=0;
   float sum_w = 0, w = 0;
   int bin = 0;
   for (size_t i = 0; i < grid.points.size (); ++i)
