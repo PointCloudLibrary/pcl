@@ -107,6 +107,8 @@ printHelp (int, char **argv)
   print_info ("                     -ps X                    = point size ("); print_value ("1..64"); print_info (") \n");
   print_info ("                     -opaque X                = rendered point cloud opacity ("); print_value ("0..1"); print_info (")\n");
   print_info ("                     -shading X               = rendered surface shading ("); print_value ("'flat' (default), 'gouraud', 'phong'"); print_info (")\n");
+  print_info ("                     -position x,y,z          = absolute point cloud position in metres\n");
+  print_info ("                     -orientation r,p,y       = absolute point cloud orientation (roll, pitch, yaw) in radians\n");
 
   print_info ("                     -ax "); print_value ("n"); print_info ("                    = enable on-screen display of ");
   print_color (stdout, TT_BRIGHT, TT_RED, "X"); print_color (stdout, TT_BRIGHT, TT_GREEN, "Y"); print_color (stdout, TT_BRIGHT, TT_BLUE, "Z");
@@ -138,7 +140,7 @@ printHelp (int, char **argv)
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
 
-  print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
+  print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque,position,orientation} parameters; they will be automatically assigned to the right file)\n");
 }
 
 // Global visualizer object
@@ -245,6 +247,10 @@ main (int argc, char** argv)
 
   std::vector<double> fcolor_r, fcolor_b, fcolor_g;
   bool fcolorparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
+
+  std::vector<double> pose_x, pose_y, pose_z, pose_roll, pose_pitch, pose_yaw;
+  bool poseparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-position", pose_x, pose_y, pose_z);
+  poseparam &= pcl::console::parse_multiple_3x_arguments (argc, argv, "-orientation", pose_roll, pose_pitch, pose_yaw);
 
   std::vector<int> psize;
   pcl::console::parse_multiple_arguments (argc, argv, "-ps", psize);
@@ -421,6 +427,19 @@ main (int argc, char** argv)
 
     if (pcd.read (argv[p_file_indices.at (i)], *cloud, origin, orientation, version) < 0)
       return (-1);
+
+    // Calculate transform if available.
+    if (pose_x.size () > i && pose_y.size () > i && pose_z.size () > i &&
+        pose_roll.size () > i && pose_pitch.size () > i && pose_yaw.size () > i)
+    {
+      Eigen::Affine3f pose =
+        Eigen::Translation3f (Eigen::Vector3f (pose_x[i], pose_y[i], pose_z[i])) *
+        Eigen::AngleAxisf (pose_yaw[i],   Eigen::Vector3f::UnitZ ()) *
+        Eigen::AngleAxisf (pose_pitch[i], Eigen::Vector3f::UnitY ()) *
+        Eigen::AngleAxisf (pose_roll[i],  Eigen::Vector3f::UnitX ());
+      orientation = pose.rotation () * orientation;
+      origin.block<3, 1> (0, 0) = (pose * Eigen::Translation3f (origin.block<3, 1> (0, 0))).translation ();
+    }
 
     std::stringstream cloud_name;
 
