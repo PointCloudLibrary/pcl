@@ -140,14 +140,13 @@ macro(find_qhull)
 
   # Most likely we are on windows so prefer static libraries over shared ones (Mourad's recommend)
   find_library(QHULL_LIBRARY 
-    NAMES qhullstatic qhull qhull${QHULL_MAJOR_VERSION}
+    NAMES "@QHULL_LIBRARY_NAME@"
     HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES project build bin lib)
   
   find_library(QHULL_LIBRARY_DEBUG 
-    NAMES qhullstatic_d qhull_d qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION}
-          qhull qhull${QHULL_MAJOR_VERSION}
+    NAMES "@QHULL_LIBRARY_DEBUG_NAME@"
     HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
     PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
     PATH_SUFFIXES project build bin lib)
@@ -175,7 +174,7 @@ macro(find_qhull)
   endif(QHULL_FOUND)
 endmacro(find_qhull)
 
-#remove this as soon as openni-dev is shipped with FindOpenni.cmake
+#remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
   if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
     set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
@@ -183,7 +182,7 @@ macro(find_openni)
   endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
 
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI openni-dev)
+    pkg_check_modules(PC_OPENNI libopenni)
   endif(PKG_CONFIG_FOUND)
   find_path(OPENNI_INCLUDE_DIRS XnStatus.h
     HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
@@ -211,7 +210,7 @@ macro(find_openni)
   endif(OPENNI_FOUND)
 endmacro(find_openni)
 
-#remove this as soon as openni2-dev is shipped with FindOpenni2.cmake
+#remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
   if(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
     get_filename_component(OPENNI2_LIBRARY_HINT "OPENNI_LIBRARY-NOTFOUND" PATH)
@@ -223,7 +222,7 @@ macro(find_openni2)
   endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI2 openni2-dev)
+    pkg_check_modules(PC_OPENNI2 libopenni2)
   endif(PKG_CONFIG_FOUND)
   
   find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
@@ -247,6 +246,36 @@ macro(find_openni2)
     set(OPENNI2_REDIST_DIR $ENV{OPENNI2_REDIST${OPENNI2_SUFFIX}})
   endif(OPENNI2_FOUND)
 endmacro(find_openni2)
+
+#remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
+macro(find_ensenso)
+  if(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+    get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
+  endif(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+
+  find_path(ENSENSO_INCLUDE_DIR nxLib.h
+            HINTS ${ENSENSO_ABI_HINT}
+            /opt/ensenso/development/c
+            "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
+            PATH_SUFFIXES include/)
+
+  find_library(ENSENSO_LIBRARY QUIET NAMES NxLib64 NxLib32 nxLib64 nxLib32
+               HINTS ${ENSENSO_ABI_HINT}
+               "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
+               PATH_SUFFIXES lib/)
+
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(ensenso DEFAULT_MSG
+                                    ENSENSO_LIBRARY ENSENSO_INCLUDE_DIR)
+
+  if(ENSENSO_FOUND)
+    get_filename_component(ENSENSO_LIBRARY_PATH ${ENSENSO_LIBRARY} PATH)
+    set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
+    set(ENSENSO_LIBRARY_DIRS ${ENSENSO_LIBRARY_PATH})
+    set(ENSENSO_LIBRARIES "${ENSENSO_LIBRARY}")
+    set(ENSENSO_REDIST_DIR $ENV{ENSENSO_REDIST${ENSENSO_SUFFIX}})
+  endif(ENSENSO_FOUND)
+endmacro(find_ensenso)
 
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
@@ -443,6 +472,8 @@ macro(find_external_library _component _lib _is_optional)
     find_openni()
   elseif("${_lib}" STREQUAL "openni2")
     find_openni2()
+  elseif("${_lib}" STREQUAL "ensenso")
+    find_ensenso()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -719,7 +750,8 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
+

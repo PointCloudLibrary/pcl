@@ -79,7 +79,6 @@
 #include <vtkPLYReader.h>
 #include <vtkAxes.h>
 #include <vtkTubeFilter.h>
-#include <vtkLineSource.h>
 #include <vtkOrientationMarkerWidget.h>
 #include <vtkAxesActor.h>
 #include <vtkRenderWindowInteractor.h>
@@ -137,15 +136,17 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
   ren->AddActor (txt);
+  txt->SetInput("0 FPS");
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
   win_->SetWindowName (name.c_str ());
 
   // Get screen size
-  int *scr_size = win_->GetScreenSize ();
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
   // Set the window size as 1/2 of the screen size
-  win_->SetSize (scr_size[0] / 2, scr_size[1] / 2);
+  win_->SetSize (scr_size_x / 2, scr_size_y / 2);
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
@@ -203,6 +204,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
   ren->AddActor (txt);
+  txt->SetInput("0 FPS");
 
   // Create a RendererWindow
   win_ = vtkSmartPointer<vtkRenderWindow>::New ();
@@ -227,7 +229,8 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   style_->UseTimersOn ();
 
   // Get screen size
-  int *scr_size = win_->GetScreenSize ();
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
 
   // Set default camera parameters
   initCameraParameters ();
@@ -253,7 +256,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   // Set the window size as 1/2 of the screen size or the user given parameter
   if (!camera_set_ && !camera_file_loaded_)
   {
-    win_->SetSize (scr_size[0]/2, scr_size[1]/2);
+    win_->SetSize (scr_size_x/2, scr_size_y/2);
     win_->SetPosition (0, 0);
   }
 
@@ -334,26 +337,11 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Initialize and create timer, also create window
   iren->Initialize ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#else
-  timer_id_ = iren->CreateRepeatingTimer (5000L);
-#endif
 
   // Set a simple PointPicker
   vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
   pp->SetTolerance (pp->GetTolerance () * 2);
   iren->SetPicker (pp);
-
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_main_loop_timer_callback_->pcl_visualizer = this;
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  iren->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  exit_callback_->pcl_visualizer = this;
-  iren->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-
-  resetStoppedFlag ();
 }
 
 
@@ -378,26 +366,11 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 
   // Initialize and create timer, also create window
   iren->Initialize ();
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-#else
-  timer_id_ = iren->CreateRepeatingTimer (5000L);
-#endif
 
   // Set a simple PointPicker
   // vtkSmartPointer<vtkPointPicker> pp = vtkSmartPointer<vtkPointPicker>::New ();
   // pp->SetTolerance (pp->GetTolerance () * 2);
   // iren->SetPicker (pp);
-
-  exit_main_loop_timer_callback_ = vtkSmartPointer<ExitMainLoopTimerCallback>::New ();
-  exit_main_loop_timer_callback_->pcl_visualizer = this;
-  exit_main_loop_timer_callback_->right_timer_id = -1;
-  iren->AddObserver (vtkCommand::TimerEvent, exit_main_loop_timer_callback_);
-
-  exit_callback_ = vtkSmartPointer<ExitCallback>::New ();
-  exit_callback_->pcl_visualizer = this;
-  iren->AddObserver (vtkCommand::ExitEvent, exit_callback_);
-
-  resetStoppedFlag ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -899,118 +872,17 @@ pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
-                                                                     const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
-                                                                     const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
-                                                                     int level, float scale,
-                                                                     const std::string &id, int viewport)
+pcl::visualization::PCLVisualizer::removeAllCoordinateSystems (int viewport)
 {
-  if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
+  // Check to see if the given ID entry exists
+  CoordinateActorMap::iterator am_it = coordinate_actor_map_->begin ();
+  while (am_it != coordinate_actor_map_->end () )
   {
-    pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
-    return (false);
+    if (removeCoordinateSystem (am_it->first, viewport))
+      am_it = coordinate_actor_map_->begin ();
+    else
+      ++am_it;
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
-  {
-    pcl::console::print_warn (stderr, "[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
-    return (false);
-  }
-
-  vtkSmartPointer<vtkAppendPolyData> polydata_1 = vtkSmartPointer<vtkAppendPolyData>::New ();
-  vtkSmartPointer<vtkAppendPolyData> polydata_2 = vtkSmartPointer<vtkAppendPolyData>::New ();
-
-  // Setup two colors - one for each line
-  unsigned char green[3] = {0, 255, 0};
-  unsigned char blue[3] = {0, 0, 255};
-
-  // Setup the colors array
-  vtkSmartPointer<vtkUnsignedCharArray> line_1_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  line_1_colors->SetNumberOfComponents (3);
-  line_1_colors->SetName ("Colors");
-  vtkSmartPointer<vtkUnsignedCharArray> line_2_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  line_2_colors->SetNumberOfComponents (3);
-  line_2_colors->SetName ("Colors");
-
-  // Create the first sets of lines
-  for (size_t i = 0; i < cloud->points.size (); i+=level)
-  {
-    pcl::PointXYZ p = cloud->points[i];
-    p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
-    p.y += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[1]) * scale;
-    p.z += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[2]) * scale;
-
-    vtkSmartPointer<vtkLineSource> line_1 = vtkSmartPointer<vtkLineSource>::New ();
-    line_1->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-    line_1->SetPoint2 (p.x, p.y, p.z);
-    line_1->Update ();
-#if VTK_MAJOR_VERSION < 6
-    polydata_1->AddInput (line_1->GetOutput ());
-#else
-    polydata_1->AddInputData (line_1->GetOutput ());
-#endif
-    line_1_colors->InsertNextTupleValue (green);
-  }
-  polydata_1->Update ();
-  vtkSmartPointer<vtkPolyData> line_1_data = polydata_1->GetOutput ();
-  line_1_data->GetCellData ()->SetScalars (line_1_colors);
-
-  // Create the second sets of lines
-  for (size_t i = 0; i < cloud->points.size (); i += level)
-  {
-    Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
-                        pcs->points[i].principal_curvature[1],
-                        pcs->points[i].principal_curvature[2]);
-    Eigen::Vector3f normal (normals->points[i].normal[0],
-                            normals->points[i].normal[1],
-                            normals->points[i].normal[2]);
-    Eigen::Vector3f pc_c = pc.cross (normal);
-
-    pcl::PointXYZ p = cloud->points[i];
-    p.x += (pcs->points[i].pc2 * pc_c[0]) * scale;
-    p.y += (pcs->points[i].pc2 * pc_c[1]) * scale;
-    p.z += (pcs->points[i].pc2 * pc_c[2]) * scale;
-
-    vtkSmartPointer<vtkLineSource> line_2 = vtkSmartPointer<vtkLineSource>::New ();
-    line_2->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
-    line_2->SetPoint2 (p.x, p.y, p.z);
-    line_2->Update ();
-#if VTK_MAJOR_VERSION < 6
-    polydata_2->AddInput (line_2->GetOutput ());
-#else
-    polydata_2->AddInputData (line_2->GetOutput ());
-#endif
-
-    line_2_colors->InsertNextTupleValue (blue);
-  }
-  polydata_2->Update ();
-  vtkSmartPointer<vtkPolyData> line_2_data = polydata_2->GetOutput ();
-  line_2_data->GetCellData ()->SetScalars (line_2_colors);
-
-  // Assemble the two sets of lines
-  vtkSmartPointer<vtkAppendPolyData> alldata = vtkSmartPointer<vtkAppendPolyData>::New ();
-#if VTK_MAJOR_VERSION < 6
-  alldata->AddInput (line_1_data);
-  alldata->AddInput (line_2_data);
-#else
-  alldata->AddInputData (line_1_data);
-  alldata->AddInputData (line_2_data);
-#endif
-
-  // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (alldata->GetOutput (), actor);
-  actor->GetMapper ()->SetScalarModeToUseCellData ();
-
-  // Add it to all renderers
-  addActorToRenderer (actor, viewport);
-
-  // Save the pointer/ID pair to the global actor map
-  CloudActor act;
-  act.actor = actor;
-  (*cloud_actor_map_)[id] = act;
   return (true);
 }
 
@@ -1739,9 +1611,10 @@ pcl::visualization::PCLVisualizer::initCameraParameters ()
   // Set the camera field of view to about
   camera_temp.fovy = 0.8575;
 
-  int *scr_size = win_->GetScreenSize ();
-  camera_temp.window_size[0] = scr_size[0] / 2;
-  camera_temp.window_size[1] = scr_size[1] / 2;
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
+  camera_temp.window_size[0] = scr_size_x / 2;
+  camera_temp.window_size[1] = scr_size_y / 2;
 
   setCameraParameters (camera_temp);
 }
@@ -1951,6 +1824,7 @@ pcl::visualization::PCLVisualizer::setCameraPosition (
       cam->SetPosition (pos_x, pos_y, pos_z);
       cam->SetFocalPoint (view_x, view_y, view_z);
       cam->SetViewUp (up_x, up_y, up_z);
+      renderer->ResetCameraClippingRange ();
     }
     ++i;
   }
@@ -2210,7 +2084,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkDataSet> data = createCube (x_min, x_max, y_min, y_max, z_min, z_max);
 
   // Create an Actor
-  vtkSmartPointer<vtkActor> actor;
+  vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetLighting (false);
@@ -3500,7 +3374,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
 
-  std::vector<Eigen::Vector3f> cam_positions;
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices)
   {
     vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();
@@ -3514,6 +3388,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       sphere->GetPoint (ptIds_com[2], p3_com);
       vtkTriangle::TriangleCenter (p1_com, p2_com, p3_com, center);
       cam_positions[i] = Eigen::Vector3f (float (center[0]), float (center[1]), float (center[2]));
+      cam_positions[i].normalize ();
       i++;
     }
 
@@ -3526,6 +3401,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       double cam_pos[3];
       sphere->GetPoint (i, cam_pos);
       cam_positions[i] = Eigen::Vector3f (float (cam_pos[0]), float (cam_pos[1]), float (cam_pos[2]));
+      cam_positions[i].normalize ();
     }
   }
 
@@ -3873,7 +3749,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       mat2 (i, j) = static_cast<float> (view_transform->Element[i][j]);
     }
 
-  mat1 = mat1.inverse ();
+  mat1 = mat1.inverse ().eval ();
 
   int ptr = 0;
   for (int y = 0; y < yres; ++y)
@@ -3892,7 +3768,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
                                     dheight * float (y) - 1.0f,
                                     depth[ptr],
                                     1.0f);
-      world_coords = mat1 * world_coords;
+      world_coords = mat2 * mat1 * world_coords;
 
       float w3 = 1.0f / world_coords[3];
       world_coords[0] *= w3;
@@ -3900,7 +3776,6 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
       world_coords[1] *= -w3;
       world_coords[2] *= -w3;
 
-      world_coords = mat2 * world_coords;
       pt.x = static_cast<float> (world_coords[0]);
       pt.y = static_cast<float> (world_coords[1]);
       pt.z = static_cast<float> (world_coords[2]);
@@ -4194,7 +4069,10 @@ void
 pcl::visualization::PCLVisualizer::setPosition (int x, int y)
 {
   if (win_)
+  {
     win_->SetPosition (x, y);
+    win_->Render ();
+  }
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -4202,7 +4080,10 @@ void
 pcl::visualization::PCLVisualizer::setSize (int xw, int yw)
 {
   if (win_)
+  {
     win_->SetSize (xw, yw);
+    win_->Render ();
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -4478,7 +4359,9 @@ pcl::visualization::PCLVisualizer::getUniqueCameraFile (int argc, char **argv)
       boost::filesystem::path path (argv[p_file_indices[i]]);
       if (boost::filesystem::exists (path))
       {
+#if BOOST_VERSION >= 104800
         path = boost::filesystem::canonical (path);
+#endif
         str = path.string ().c_str ();
         sha1.process_bytes (str, std::strlen (str));
         valid = true;

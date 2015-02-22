@@ -67,7 +67,7 @@ namespace pcl
 void
 pcl::device::initVolume (PtrStep<short2> volume)
 {
-  dim3 block (32, 16);
+  dim3 block (16, 16);
   dim3 grid (1, 1, 1);
   grid.x = divUp (VOLUME_X, block.x);      
   grid.y = divUp (VOLUME_Y, block.y);
@@ -153,7 +153,7 @@ namespace pcl
 
               if (sdf >= -tranc_dist_mm)
               {
-                float tsdf = fmin (1, sdf / tranc_dist_mm);
+                float tsdf = fmin (1.f, sdf / tranc_dist_mm);
 
                 int weight_prev;
                 float tsdf_prev;

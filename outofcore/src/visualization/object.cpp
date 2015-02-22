@@ -110,7 +110,7 @@ Object::removeActor (vtkActor *actor)
   {
     std::set<vtkRenderer*>::iterator renderer_it;
     for (renderer_it = associated_renderers_[actor].begin (); renderer_it != associated_renderers_[actor].end ();
-        renderer_it++)
+        ++renderer_it)
     {
       (*renderer_it)->RemoveActor (actor);
     }

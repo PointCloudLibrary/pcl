@@ -583,20 +583,26 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
       cloud_name_normals_pc << "-pc";
-      p->addPointCloudPrincipalCurvatures (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
+      p->addPointCloudPrincipalCurvatures<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
     }
 
     // Add every dimension as a possible color
     if (!fcolorparam)
     {
-      int idx = 0;
+      int rgb_idx = 0;
+      int label_idx = 0;
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
         {
-          idx = f + 1;
+          rgb_idx = f + 1;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
+        }
+        else if (cloud->fields[f].name == "label")
+        {
+          label_idx = f + 1;
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud));
         }
         else
         {
@@ -608,8 +614,8 @@ main (int argc, char** argv)
         //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
         p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
-      // Set RGB color handler as default
-      p->updateColorHandlerIndex (cloud_name.str (), idx);
+      // Set RGB color handler or label handler as default
+      p->updateColorHandlerIndex (cloud_name.str (), (rgb_idx ? rgb_idx : label_idx));
     }
 
     // Additionally, add normals as a handler

@@ -123,7 +123,9 @@ namespace pcl
       bool terminate_thread_;
       size_t signal_point_cloud_size_;
       unsigned short data_port_;
-      unsigned char receive_buffer_[500];
+      enum { MAX_LENGTH = 65535 };
+      unsigned char receive_buffer_[MAX_LENGTH];
+      unsigned int data_size_;
 
       boost::asio::ip::address sensor_address_;
       boost::asio::ip::udp::endpoint sender_endpoint_;
@@ -140,9 +142,10 @@ namespace pcl
       void socketThreadLoop ();
       void asyncSocketReceive ();
       void resetPointCloud ();
-      void socketCallback (const boost::system::error_code& error, std::size_t numberOfBytes);
-      void convertPacketData (unsigned char *dataPacket, size_t length);
-      void computeXYZI (pcl::PointXYZI& pointXYZI, unsigned char* pointData);
+      void socketCallback (const boost::system::error_code& error, std::size_t number_of_bytes);
+      void convertPacketData (unsigned char *data_packet, size_t length);
+      void computeXYZI (pcl::PointXYZI& point_XYZI, unsigned char* point_data);
+      void computeTimestamp (boost::uint32_t& timestamp, unsigned char* point_data);
   };
 }
 

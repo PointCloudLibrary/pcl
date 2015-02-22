@@ -278,6 +278,7 @@ INCLUDE_FILE_PATTERNS  = *.h
 #PREDEFINED            = protected=private \
 PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_OPENNI=1" \
+                         "HAVE_ENSENSO=1" \
                          "PCL_DEPRECATED(x)="
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES

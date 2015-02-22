@@ -62,9 +62,6 @@ endforeach(_ss)
 
 #Boost modules
 set(PCLCONFIG_AVAILABLE_BOOST_MODULES "system filesystem thread date_time iostreams")
-if(Boost_MPI_FOUND)
-  set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} mpi")
-endif(Boost_MPI_FOUND)
 if(Boost_SERIALIZATION_FOUND)
   set(PCLCONFIG_AVAILABLE_BOOST_MODULES "${PCLCONFIG_AVAILABLE_BOOST_MODULES} serialization")
 endif(Boost_SERIALIZATION_FOUND)

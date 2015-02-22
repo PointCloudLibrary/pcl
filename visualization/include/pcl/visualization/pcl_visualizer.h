@@ -282,7 +282,7 @@ namespace pcl
         "addCoordinateSystem (scale, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, int viewport = 0);
+        addCoordinateSystem (double scale, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
@@ -303,7 +303,7 @@ namespace pcl
         "addCoordinateSystem (scale, x, y, z, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, x, y, z, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, float x, float y, float z, int viewport = 0);
+        addCoordinateSystem (double scale, float x, float y, float z, int viewport);
 
         /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z
           * \param[in] scale the scale of the axes (default: 1)
@@ -326,7 +326,7 @@ namespace pcl
         "addCoordinateSystem (scale, t, viewport) is deprecated, please use function "
         "addCoordinateSystem (scale, t, id, viewport) with id a unique string identifier.")
         void
-        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport = 0);
+        addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport);
 
          /** \brief Adds 3D axes describing a coordinate system to screen at x, y, z, Roll,Pitch,Yaw
            *
@@ -373,7 +373,7 @@ namespace pcl
         "removeCoordinateSystem (viewport) is deprecated, please use function "
         "addCoordinateSystem (id, viewport) with id a unique string identifier.")
         bool
-        removeCoordinateSystem (int viewport = 0);
+        removeCoordinateSystem (int viewport);
 
         /** \brief Removes a previously added 3D axes (coordinate system)
           * \param[in] id the coordinate system object id (default: reference)
@@ -428,6 +428,12 @@ namespace pcl
           */
         bool
         removeAllShapes (int viewport = 0);
+
+        /** \brief Removes  all existing 3D axes (coordinate systems)
+          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
+          */
+        bool
+        removeAllCoordinateSystems (int viewport = 0);
 
         /** \brief Set the viewport's background color.
           * \param[in] r the red component of the RGB color
@@ -600,6 +606,21 @@ namespace pcl
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset containing the XYZ data and normals
+          * \param[in] pcs the input point cloud dataset containing the principal curvatures data
+          * \param[in] level display only every level'th point. Default: 100
+          * \param[in] scale the normal arrow scale. Default: 1.0
+          * \param[in] id the point cloud object id. Default: "cloud"
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        template <typename PointNT> bool
+        addPointCloudPrincipalCurvatures (
+            const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+            int level = 100, float scale = 1.0f,
+            const std::string &id = "cloud", int viewport = 0);
+        
+        /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing the XYZ data
           * \param[in] normals the input point cloud dataset containing the normal data
           * \param[in] pcs the input point cloud dataset containing the principal curvatures data
@@ -608,10 +629,10 @@ namespace pcl
           * \param[in] id the point cloud object id. Default: "cloud"
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
-        bool
+        template <typename PointT, typename PointNT> bool
         addPointCloudPrincipalCurvatures (
-            const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
-            const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+            const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
             const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
             int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
@@ -858,8 +879,21 @@ namespace pcl
         addPointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud,
                        const std::string &id = "cloud", int viewport = 0)
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA> color_handler (cloud);
           return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
+        }
+
+        /** \brief Add a PointXYZL Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (addPointCloud<pcl::PointXYZL> (cloud, color_handler, id, viewport));
         }
 
         /** \brief Updates the XYZ data for an existing cloud object id on screen.
@@ -896,8 +930,21 @@ namespace pcl
         updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud,
                           const std::string &id = "cloud")
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA> color_handler (cloud);
           return (updatePointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id));
+        }
+
+        /** \brief Updates the XYZL data for an existing cloud object id on screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                          const std::string &id = "cloud")
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (updatePointCloud<pcl::PointXYZL> (cloud, color_handler, id));
         }
 
         /** \brief Add a PolygonMesh object to screen
@@ -983,6 +1030,7 @@ namespace pcl
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
           * \param[in] viewport the view port where the correspondences should be added (default: all)
+          * \param[in] overwrite allow to overwrite already existing correspondences
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -990,7 +1038,8 @@ namespace pcl
                             const pcl::Correspondences &correspondences,
                             int nth,
                             const std::string &id = "correspondences",
-                            int viewport = 0);
+                            int viewport = 0,
+                            bool overwrite = false);
 
         /** \brief Add the specified correspondences to the display.
           * \param[in] source_points The source points
@@ -1017,6 +1066,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
           */
         template <typename PointT> bool
         updateCorrespondences (
@@ -1024,7 +1074,28 @@ namespace pcl
             const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
             const pcl::Correspondences &correspondences,
             int nth,
-            const std::string &id = "correspondences");
+            const std::string &id = "correspondences",
+            int viewport = 0);
+
+        /** \brief Update the specified correspondences to the display.
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
+          */
+        template <typename PointT> bool
+        updateCorrespondences (
+            const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+            const pcl::Correspondences &correspondences,
+            const std::string &id = "correspondences",
+            int viewport = 0)
+        {
+          // If Nth not given, display all correspondences
+          return (updateCorrespondences<PointT> (source_points, target_points,
+                                              correspondences, 1, id, viewport));
+        }
 
         /** \brief Remove the specified correspondences from the display.
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
@@ -1095,6 +1166,7 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the shape object id
          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+         * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
          */
         bool
         setShapeRenderingProperties (int property, double value,
@@ -1107,6 +1179,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the shape object id
           * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
           */
          bool
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
@@ -1254,11 +1327,11 @@ namespace pcl
           * \param[in] id the line id/name (default: "arrow")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
-	      template <typename P1, typename P2> bool
-	      addArrow (const P1 &pt1, const P2 &pt2,
-		              double r_line, double g_line, double b_line,
-		              double r_text, double g_text, double b_text,
-		              const std::string &id = "arrow", int viewport = 0);
+              template <typename P1, typename P2> bool
+              addArrow (const P1 &pt1, const P2 &pt2,
+                              double r_line, double g_line, double b_line,
+                              double r_text, double g_text, double b_text,
+                              const std::string &id = "arrow", int viewport = 0);
 
 
         /** \brief Add a sphere shape from a point and a radius

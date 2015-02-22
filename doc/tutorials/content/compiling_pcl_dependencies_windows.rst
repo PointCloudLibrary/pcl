@@ -56,10 +56,6 @@ compile a series of 3rd party library dependencies:
 
     used for developing applications with a graphical user interface (GUI) **optional**
 
-    - **MPI** version >= 1.4 (http://www.mcs.anl.gov/research/projects/mpich2/)
-    
-    **optional**
-    
 .. note::
   
    Though not a dependency per se, don't forget that you also need the CMake
@@ -92,9 +88,6 @@ like::
     
     Let's start with `Boost`. We will be using the `CMake-able Boost` project which provide a CMake based build system
     for Boost. 
-    As a dependency of MPI Boost module (optional), you need first to download and install MPI from the link above. Choose "Win IA32 binary"
-    if you are building 32 bit PCL libraries, or "Win X86_64 binary" if you are building 64 bit binaries.
-    If you do not need it, you can skip this, and remove "mpi" from the modules list later.
     
     To build Boost, open the CMake-gui and fill in the fields::
     
@@ -142,43 +135,27 @@ like::
     then fill the **BUILD_PROJECTS** CMake entry (which is set to `ALL` by default) with a semicolon-seperated 
     list of boost modules::
     
-      BUILD_PROJECTS : system;filesystem;date_time;thread;iostreams;tr1;serialization;mpi
+      BUILD_PROJECTS : system;filesystem;date_time;thread;iostreams;tr1;serialization
       
     Also, uncheck the **ENABLE_STATIC_RUNTIME** checkbox. Then, click "Configure" again. If you get some 
     errors related to Python, then uncheck **WITH_PYTHON** checkbox, and click "Configure" again. 
     Now, in the CMake log, you should see something like::
     
       Reading boost project directories (per BUILD_PROJECTS) 
-
+      
       + date_time
       + thread
       + serialization
       + system
       + filesystem
-      + mpi
       +-- optional python bindings disabled since PYTHON_FOUND is false. 
       + tr1
-
 
     Now, click "Generate". A Visual Studio solution file will be genrated inside the build folder 
     (e.g. C:/PCL_dependencies/boost-cmake/build). Open the `Boost.sln` file, then right click on 
     `INSTALL` project and choose `Build`. The `INSTALL`project will trigger the build of all the projects 
     in the solution file, and then will install the build libraries along with the header files to the default
     installation folder (e.g. C:/Program Files (x86)/Boost).
-    
-    .. note::
-    
-       If you are building the mpi boost module, and you are using CMake <= 2.8.7, you may run into the following error::
-       
-         LINK : fatal error LNK1104: cannot open file 'C:\Program Files\MPICH2\lib\mpi.lib C:\Program Files\MPICH2\lib\cxx.lib'
-       
-       As a workaround (until CMake 2.8.8 is out), go back to CMake gui, check the "Advanced" checkbox at the top right of 
-       CMake window, and edit these entries as follows (please adjust the paths according to your system)::
-
-         MPI_CXX_LIBRARIES : C:/Program Files/MPICH2/lib/cxx.lib;C:/Program Files/MPICH2/lib/mpi.lib       
-         MPI_LIBRARY       : C:/Program Files/MPICH2/lib/mpi.lib
-         
-       Then, click "Generate". Visual Studio will ask you to reload the solution, then re build the **INSTALL** project.
     
     .. note::
   

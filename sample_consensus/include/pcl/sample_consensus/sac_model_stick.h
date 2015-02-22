@@ -64,6 +64,7 @@ namespace pcl
   class SampleConsensusModelStick : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -82,7 +83,10 @@ namespace pcl
         */
       SampleConsensusModelStick (const PointCloudConstPtr &cloud,
                                  bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random) {};
+        : SampleConsensusModel<PointT> (cloud, random)
+      {
+        model_name_ = "SampleConsensusModelStick";
+      }
 
       /** \brief Constructor for base SampleConsensusModelStick.
         * \param[in] cloud the input point cloud dataset
@@ -92,7 +96,10 @@ namespace pcl
       SampleConsensusModelStick (const PointCloudConstPtr &cloud, 
                                  const std::vector<int> &indices,
                                  bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random) {};
+        : SampleConsensusModel<PointT> (cloud, indices, random)
+      {
+        model_name_ = "SampleConsensusModelStick";
+      }
       
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelStick () {}
@@ -136,7 +143,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the stick coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the stick model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the stick model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the model coefficients
         * \param[out] optimized_coefficients the resultant recomputed coefficients after optimization
@@ -168,7 +175,7 @@ namespace pcl
                             const Eigen::VectorXf &model_coefficients, 
                             const double threshold);
 
-      /** \brief Return an unique id for this model (SACMODEL_STACK). */
+      /** \brief Return an unique id for this model (SACMODEL_STICK). */
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_STICK); }
 

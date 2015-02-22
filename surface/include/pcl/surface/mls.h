@@ -548,6 +548,9 @@ namespace pcl
       using MovingLeastSquares<PointInT, PointOutT>::nr_coeff_;
       using MovingLeastSquares<PointInT, PointOutT>::order_;
       using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
+      using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
+      using MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION;
+      using MovingLeastSquares<PointInT, PointOutT>::DISTINCT_CLOUD;
 
       typedef pcl::PointCloud<pcl::Normal> NormalCloud;
       typedef pcl::PointCloud<pcl::Normal>::Ptr NormalCloudPtr;

@@ -5,32 +5,14 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-  set(IMAGE_INCLUDES
-    include/pcl/io/image_metadata_wrapper.h
-    include/pcl/io/image.h
-    include/pcl/io/image_rgb24.h
-    include/pcl/io/image_yuv422.h
-    include/pcl/io/image_ir.h
-    include/pcl/io/image_depth.h
-    include/pcl/io/io_exception.h
-  )
-
-  set(IMAGE_SOURCES
-    src/image_rgb24.cpp
-    src/image_yuv422.cpp
-    src/image_ir.cpp
-    src/image_depth.cpp
-    src/io_exception.cpp
-  )
-
     ## OpenNI 2.x
     OPTION(BUILD_OPENNI2 "Build the OpenNI 2 Grabber." OFF)
     MARK_AS_ADVANCED(BUILD_OPENNI2)
@@ -40,6 +22,22 @@ if(build)
       set(OPENNI2_FOUND FALSE)
     endif()
     if(OPENNI2_FOUND)
+      set(IMAGE_INCLUDES
+        include/pcl/io/image_metadata_wrapper.h
+        include/pcl/io/image.h
+        include/pcl/io/image_rgb24.h
+        include/pcl/io/image_yuv422.h
+        include/pcl/io/image_ir.h
+        include/pcl/io/image_depth.h
+      )
+
+      set(IMAGE_SOURCES
+        src/image_rgb24.cpp
+        src/image_yuv422.cpp
+        src/image_ir.cpp
+        src/image_depth.cpp
+      )
+
         set(OPENNI2_GRABBER_INCLUDES
             include/pcl/io/openni2_grabber.h
             )
@@ -139,6 +137,23 @@ if(build)
             )
     endif(FZAPI_FOUND)
 
+    ## Ensenso
+    OPTION(BUILD_ENSENSO "Build the Ensenso Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_ENSENSO)
+    if(NOT BUILD_ENSENSO)
+      # Set ENSENSO_FOUND to false locally to avoid building anything Ensenso related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_ENSENSO
+      set(ENSENSO_FOUND FALSE)
+    endif()
+    if(ENSENSO_FOUND)
+        set(ENSENSO_GRABBER_INCLUDES
+            include/pcl/io/ensenso_grabber.h
+            )
+        set(ENSENSO_GRABBER_SOURCES
+            src/ensenso_grabber.cpp
+            )
+    endif(ENSENSO_FOUND)
+
 	if(PXCAPI_FOUND)
 		set(PXC_GRABBER_INCLUDES
 			include/pcl/io/pxc_grabber.h
@@ -201,14 +216,16 @@ if(build)
         src/image_grabber.cpp
         src/hdl_grabber.cpp
         src/robot_eye_grabber.cpp
+        src/file_io.cpp
+        src/io_exception.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
         ${OPENNI2_GRABBER_SOURCES}
         ${IMAGE_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
+        ${ENSENSO_GRABBER_SOURCES}
         ${PXC_GRABBER_SOURCES}
-        src/file_io.cpp
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -244,12 +261,14 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
         "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
         "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
+        "include/pcl/${SUBSYS_NAME}/io_exception.h"
         ${VTK_IO_INCLUDES}
         ${OPENNI_GRABBER_INCLUDES}
         ${OPENNI2_GRABBER_INCLUDES}
         ${IMAGE_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
+        ${ENSENSO_GRABBER_INCLUDES}
         ${PXC_GRABBER_INCLUDES}
         )
 
@@ -295,7 +314,7 @@ if(build)
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES} )
     if(PNG_FOUND)
-      target_link_libraries("${LIB_NAME}" "${PNG_LIBRARY}")
+      target_link_libraries("${LIB_NAME}" ${PNG_LIBRARY})
     endif(PNG_FOUND)
 
     if(LIBUSB_1_FOUND)
@@ -317,6 +336,10 @@ if(build)
   	  endif(WIN32)
     endif(FZAPI_FOUND)
 
+    if(ENSENSO_FOUND)
+      target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
+    endif(ENSENSO_FOUND)
+
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})
 	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
@@ -329,11 +352,14 @@ if(build)
     set(EXT_DEPS eigen3)
 
     if(OPENNI_FOUND)
-      list(APPEND EXT_DEPS openni-dev)
+      list(APPEND EXT_DEPS libopenni)
     endif(OPENNI_FOUND)
     if(OPENNI2_FOUND)
-      list(APPEND EXT_DEPS openni2-dev)
+      list(APPEND EXT_DEPS libopenni2)
     endif(OPENNI2_FOUND)
+    if(ENSENSO_FOUND)
+      list(APPEND EXT_DEPS ensenso)
+    endif(ENSENSO_FOUND)
 
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
@@ -345,6 +371,8 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/openni2" ${OPENNI2_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
 
-    add_subdirectory(tools)
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
 
 endif(build)

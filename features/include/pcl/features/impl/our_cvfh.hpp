@@ -379,7 +379,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
 
   cluster_axes_.clear ();
   cluster_axes_.resize (centroids_dominant_orientations_.size ());
-  
+
   for (size_t i = 0; i < centroids_dominant_orientations_.size (); i++)
   {
 
@@ -496,7 +496,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
             weights[ii] *= 0.5f - wz * 0.5f;
         }
 
-        int h_index = std::ceil (size_hists * (d / distance_normalization_factor)) - 1;
+        int h_index = (d <= 0) ? 0 : std::ceil (size_hists * (d / distance_normalization_factor)) - 1;
         for (int j = 0; j < num_hists; j++)
           quadrants[j][h_index] += hist_incr * weights[j];
 
@@ -644,8 +644,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       //remove last cluster if no points found...
       if (clusters_[cluster_filtered_idx].indices.size () == 0)
       {
-        clusters_.erase (clusters_.end ());
-        clusters_filtered.erase (clusters_filtered.end ());
+        clusters_.pop_back ();
+        clusters_filtered.pop_back ();
       }
       else
         cluster_filtered_idx++;

@@ -34,11 +34,19 @@ if(CUDA_FOUND)
 	
 	# Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
 
-	if(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
-		set(CUDA_ARCH_BIN "2.0 2.1(2.0) 3.0" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
-	else()
-		set(CUDA_ARCH_BIN "2.0 2.1(2.0)" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
-	endif()
+        if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.5")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
+        elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.0")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0")
+        elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "5.0")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5")
+        elseif(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0")
+        else()
+                set(__cuda_arch_bin "2.0 2.1(2.0)")
+        endif()
+
+        set(CUDA_ARCH_BIN ${__cuda_arch_bin} CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
 
 	set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
 	#set(CUDA_ARCH_PTX "1.1 1.2" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")

@@ -536,9 +536,9 @@ pcl::MomentOfInertiaEstimation<PointT>::computeEccentricity (const Eigen::Matrix
   float minor_value = 0.0f;
   computeEigenVectors (covariance_matrix, major_axis, middle_axis, minor_axis, major_value, middle_value, minor_value);
 
-  float major = abs (major_axis.dot (normal_vector));
-  float middle = abs (middle_axis.dot (normal_vector));
-  float minor = abs (minor_axis.dot (normal_vector));
+  float major = std::abs (major_axis.dot (normal_vector));
+  float middle = std::abs (middle_axis.dot (normal_vector));
+  float minor = std::abs (minor_axis.dot (normal_vector));
 
   float eccentricity = 0.0f;
 

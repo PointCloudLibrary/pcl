@@ -219,7 +219,7 @@ class OpenNIViewer
 
       tracker_.reset (new pcl::tracking::PyramidalKLTTracker<PointType>);
 
-      bool image_init = false, cloud_init = false;
+      bool image_init = false;
 
       grabber_.start ();
 

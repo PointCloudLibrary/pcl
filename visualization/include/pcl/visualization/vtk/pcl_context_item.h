@@ -64,7 +64,6 @@ namespace pcl
       void setColors (unsigned char rgb[3]) { memcpy (colors, rgb, 3 * sizeof (unsigned char)); }
       void setOpacity (double opacity) { SetOpacity (opacity); };
       unsigned char colors[3];
-      double opacity;
       std::vector<float> params;
     };
 

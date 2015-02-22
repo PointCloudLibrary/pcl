@@ -14,7 +14,7 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso)
 
 if (ANDROID)
   set (build FALSE)
@@ -154,11 +154,14 @@ if(build)
 
     set(EXT_DEPS "")
     if(OPENNI_FOUND)
-      list(APPEND EXT_DEPS openni-dev)
+      list(APPEND EXT_DEPS libopenni)
     endif(OPENNI_FOUND)
 	if(OPENNI2_FOUND)
-      list(APPEND EXT_DEPS openni2-dev)
+      list(APPEND EXT_DEPS libopenni2)
     endif(OPENNI2_FOUND)
+	if(ENSENSO_FOUND)
+      list(APPEND EXT_DEPS ensenso)
+    endif(ENSENSO_FOUND)
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 
@@ -172,7 +175,9 @@ if(build)
     if(BUILD_TESTS)
         add_subdirectory(test)
     endif(BUILD_TESTS)
-
-    add_subdirectory(tools)
+    
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
 
 endif(build)

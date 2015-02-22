@@ -43,7 +43,7 @@
 #define PCL_2D_KEYPOINT_HPP_
 
 #include <pcl/2d/edge.h>
-#include <pcl/2d/convolution_2d.h>
+#include <pcl/2d/convolution.h>
 #include <limits>
 
 //////////////////////////////////////////////////////////////////////////////

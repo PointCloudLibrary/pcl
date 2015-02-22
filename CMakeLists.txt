@@ -5,6 +5,10 @@ if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
 endif()
 
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 OLD) # Silent warnings about quoted variables
+endif()
+
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
@@ -122,7 +126,7 @@ endif()
 
 if(MSVC)
   SET(CMAKE_COMPILER_IS_MSVC 1)
-  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX /bigobj")
+  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj")
   if("${CMAKE_CXX_FLAGS}" STREQUAL " /DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
 
@@ -166,15 +170,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
-# ---[ Project folders
-option(USE_PROJECT_FOLDERS "Use folders to organize PCL projects in an IDE." OFF)
-mark_as_advanced(USE_PROJECT_FOLDERS)
-if(USE_PROJECT_FOLDERS)
-  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-endif(USE_PROJECT_FOLDERS)
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION 1.7.2 CACHE STRING "PCL version")
+set(PCL_VERSION 1.8.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
@@ -295,6 +292,17 @@ if(WITH_FZAPI)
   endif(FZAPI_FOUND)
 endif(WITH_FZAPI)
 
+# IDS-Imaging - Ensenso
+option(WITH_ENSENSO "Build IDS-Imaging Ensenso's camera support" TRUE)
+if(WITH_ENSENSO)
+  set(ENSENSO_ABI_DIR "ENSENSO_ABI_DIR-NOTFOUND" CACHE PATH "directory of Ensenso ABI")
+  find_package(Ensenso) # FindEnsenso.cmake
+  if (ENSENSO_FOUND)
+    set(HAVE_ENSENSO ON)
+    include_directories(SYSTEM "${ENSENSO_INCLUDE_DIRS}")
+  endif(ENSENSO_FOUND)
+endif(WITH_ENSENSO)
+
 # Intel Perceptional Computing Interface (PXCAPI)
 option(WITH_PXCAPI "Build PXC Device support" TRUE)
 if(WITH_PXCAPI)
@@ -366,7 +374,9 @@ if(WITH_VTK AND NOT ANDROID)
     if (PCL_SHARED_LIBS OR
         (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       set(VTK_FOUND TRUE)
-      find_package (QVTK)
+      find_library (QVTK_LIBRARY_DEBUG NAMES "@QVTK_LIBRARY_DEBUG_NAME@")
+      find_library (QVTK_LIBRARY_RELEASE NAMES "@QVTK_LIBRARY_RELEASE_NAME@")
+      set(QVTK_LIBRARY optimized ${QVTK_LIBRARY_RELEASE} debug ${QVTK_LIBRARY_DEBUG}) 
       if (${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
          message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
          link_directories(${VTK_LIBRARY_DIRS})
@@ -391,22 +401,6 @@ else(WITH_VTK AND NOT ANDROID)
   set(HAVE_VTK OFF)
 endif(WITH_VTK AND NOT ANDROID)
 
-# Find MPI
-if (WITH_MPI) # this script searches for MPI 10 sec under windows, annoying especially if you do this often
-  find_package(MPI)
-  if(MPI_CXX_FOUND)
-    include_directories(SYSTEM "${MPI_INCLUDE_PATH}")
-  endif(MPI_CXX_FOUND)
-endif()
-
-#Find Doxygen and html help compiler if any
-option(WITH_DOCS "Build doxygen documentation" TRUE)
-if(WITH_DOCS)
-  find_package(Doxygen)
-  if(DOXYGEN_FOUND)
-    find_package(HTMLHelp)
-  endif(DOXYGEN_FOUND)
-endif(WITH_DOCS)
 
 #Find PCAP
 option(WITH_PCAP "pcap file capabilities in Velodyne HDL driver" TRUE)
@@ -415,7 +409,10 @@ if(WITH_PCAP)
 endif(WITH_PCAP)
 
 # OpenGL and GLUT
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
+option(WITH_OPENGL "Support for OpenGL" TRUE)
+if(WITH_OPENGL)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
+endif(WITH_OPENGL)
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
@@ -464,3 +461,4 @@ MAKE_DEP_GRAPH()
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
+

@@ -536,7 +536,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultIRMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedIRVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
+  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
   {
     OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -550,7 +550,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultColorMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedColorVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
+  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
   {
     OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -564,7 +564,7 @@ pcl::io::openni2::OpenNI2Device::getDefaultDepthMode () const
 {
   // Search for and return VGA@30 Hz mode
   vector<OpenNI2VideoMode> modeList = getSupportedDepthVideoModes ();
-  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); modeItr++)
+  for (vector<OpenNI2VideoMode>::iterator modeItr = modeList.begin (); modeItr != modeList.end (); ++modeItr)
   {
     OpenNI2VideoMode mode = *modeItr;
     if ( (mode.x_resolution_ == 640) && (mode.y_resolution_ == 480) && (mode.frame_rate_ == 30.0) )
@@ -773,6 +773,38 @@ pcl::io::openni2::OpenNI2Device::getAutoWhiteBalance () const
   }
 
   return (ret);
+}
+
+int pcl::io::openni2::OpenNI2Device::getDepthFrameCount ()
+{
+  if (!openni_device_->isFile () || !getDepthVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames(*getDepthVideoStream ());
+}
+
+int OpenNI2Device::getColorFrameCount ()
+{
+  if (!openni_device_->isFile () || !getColorVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames (*getColorVideoStream ());
+}
+
+int OpenNI2Device::getIRFrameCount ()
+{
+  if (!openni_device_->isFile () || !getIRVideoStream ())
+  {
+    return 0;
+  }
+  return openni_device_->getPlaybackControl ()->getNumberOfFrames (*getIRVideoStream ());
+}
+
+bool OpenNI2Device::setPlaybackSpeed (double speed)
+{
+    return openni_device_->getPlaybackControl ()->setSpeed (speed) == openni::STATUS_OK;
 }
 
 boost::shared_ptr<openni::VideoStream>

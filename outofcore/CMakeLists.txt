@@ -67,6 +67,8 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/visualization" ${visualization_incs})
 
-    add_subdirectory(tools)
+    if(BUILD_tools)
+        add_subdirectory(tools)
+    endif(BUILD_tools)
     
 endif(build)

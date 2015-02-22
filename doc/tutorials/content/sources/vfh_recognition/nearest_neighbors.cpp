@@ -38,7 +38,7 @@ loadHist (const boost::filesystem::path &path, vfh_model &vfh)
     if ((int)cloud.width * cloud.height != 1)
       return (false);
   }
-  catch (pcl::InvalidConversionException e)
+  catch (const pcl::InvalidConversionException&)
   {
     return (false);
   }

@@ -117,11 +117,17 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (tesselation_level_);
   subdivide->SetInputConnection (ico->GetOutputPort ());
+#if VTK_MAJOR_VERSION>=6
+  subdivide->Update();
+#endif
 
   // Get camera positions
   vtkPolyData *sphere = subdivide->GetOutput ();
+#if VTK_MAJOR_VERSION<6
+  sphere->Update ();
+#endif
 
-  std::vector<Eigen::Vector3f> cam_positions;
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > cam_positions;
   if (!use_vertices_)
   {
     vtkSmartPointer<vtkCellArray> cells_sphere = sphere->GetPolys ();

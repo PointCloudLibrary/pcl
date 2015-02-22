@@ -230,6 +230,37 @@ namespace pcl
           void
           setUseDeviceTimer (bool enable);
 
+          /** \brief Get absolut number of depth frames in the current stream.
+          * This function returns 0 if the current device is not a file stream or
+          * if the current mode has no depth stream.
+          */
+          int
+          getDepthFrameCount ();
+
+          /** \brief Get absolut number of color frames in the current stream.
+          * This function returns 0 if the current device is not a file stream or
+          * if the current mode has no color stream.
+          */
+          int
+          getColorFrameCount ();
+
+          /** \brief Get absolut number of ir frames in the current stream.
+          * This function returns 0 if the current device is not a file stream or
+          * if the current mode has no ir stream.
+          */
+          int
+          getIRFrameCount ();
+
+          /** \brief Set the playback speed if the device is an recorded stream.
+          * If setting the device playback speed fails, because the device is no recorded stream or
+          * any other reason this function returns false. Otherwise true is returned.
+          * \param[in] speed The playback speed factor 1.0 means the same speed as recorded,
+          * 0.5 half the speed, 2.0 double speed and so on.
+          * \return True on success, false otherwise.
+          */
+          bool
+          setPlaybackSpeed (double speed);
+
           /************************************************************************************/
           // Callbacks from openni::VideoStream to grabber. Internal interface
           void

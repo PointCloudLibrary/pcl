@@ -97,23 +97,82 @@ pcl::RadiusOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices
   removed_indices_->resize (indices_->size ());
   int oii = 0, rii = 0;  // oii = output indices iterator, rii = removed indices iterator
 
-  for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+  // If the data is dense => use nearest-k search
+  if (input_->is_dense)
   {
-    // Perform the radius search
     // Note: k includes the query point, so is always at least 1
-    int k = searcher_->radiusSearch (*it, search_radius_, nn_indices, nn_dists);
+    int mean_k = min_pts_radius_ + 1;
+    double nn_dists_max = search_radius_ * search_radius_;
 
-    // Points having too few neighbors are outliers and are passed to removed indices
-    // Unless negative was set, then it's the opposite condition
-    if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
+    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
     {
-      if (extract_removed_indices_)
-        (*removed_indices_)[rii++] = *it;
-      continue;
-    }
+      // Perform the nearest-k search
+      int k = searcher_->nearestKSearch (*it, mean_k, nn_indices, nn_dists);
 
-    // Otherwise it was a normal point for output (inlier)
-    indices[oii++] = *it;
+      // Check the number of neighbors
+      // Note: nn_dists is sorted, so check the last item
+      bool chk_neighbors = true;
+      if (k == mean_k)
+      {
+        if (negative_)
+        {
+          chk_neighbors = false;
+          if (nn_dists_max < nn_dists[k-1])
+          {
+            chk_neighbors = true;
+          }
+        }
+        else
+        {
+          chk_neighbors = true;
+          if (nn_dists_max < nn_dists[k-1])
+          {
+            chk_neighbors = false;
+          }
+        }
+      }
+      else
+      {
+        if (negative_)
+          chk_neighbors = true;
+        else
+          chk_neighbors = false;
+      }
+
+      // Points having too few neighbors are outliers and are passed to removed indices
+      // Unless negative was set, then it's the opposite condition
+      if (!chk_neighbors)
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = *it;
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = *it;
+    }
+  }
+  // NaN or Inf values could exist => use radius search
+  else
+  {
+    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    {
+      // Perform the radius search
+      // Note: k includes the query point, so is always at least 1
+      int k = searcher_->radiusSearch (*it, search_radius_, nn_indices, nn_dists);
+
+      // Points having too few neighbors are outliers and are passed to removed indices
+      // Unless negative was set, then it's the opposite condition
+      if ((!negative_ && k <= min_pts_radius_) || (negative_ && k > min_pts_radius_))
+      {
+        if (extract_removed_indices_)
+          (*removed_indices_)[rii++] = *it;
+        continue;
+      }
+
+      // Otherwise it was a normal point for output (inlier)
+      indices[oii++] = *it;
+    }
   }
 
   // Resize the output arrays

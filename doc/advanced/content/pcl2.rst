@@ -41,7 +41,6 @@ Proposals for the 2.x API:
  * make sure we can access a slice of the data as a *2D image*, thus allowing fast 2D displaying, [u, v] operations, etc
  * make sure we can access a slice of the data as a subpoint cloud: only certain points are chosen from the main point cloud
  * implement channels (of a single type!) as data holders, e.g.:
-
    * cloud["xyz"] => gets all 3D x,y,z data
    * cloud["normals"] => gets all surface normal data
    * etc
@@ -70,7 +69,6 @@ Proposals for the 2.x API:
      cloud = { "pos" => pos_space, "color" => color_space }
      pos_space = ( "float with euclidean 2-norm distance", { "x", "y", "z" }, [[(0.3,0,1.3) , ... , (1.2,3.1,2)], ... , [(1,0.3,1) , ... , (2,0,3.5)] )
      color_space = ( "uint8 with rgb distance", { "r", "g", "b" }, [[(0,255,0), ... , (128,255,32)] ... [(12,54,31) ... (255,0,192)]] )
-
 
 1.2 PointTypes 
 ^^^^^^^^^^^^^^
@@ -114,7 +112,7 @@ Anything involving a slice of data should use size_t for indices and not int. E.
 
 1.6 RANSAC
 ^^^^^^^^^^
- * Renaming the functions and internal variables: everything should be named with _src and _tgt: we have confusing names like indices_ and indices_tgt_ (and no indices_src_), setInputCloud and setInputTarget (duuh, everything is an input, it should be setTarget, setSource), in the code, a sample is named: selection, model_ and samples. getModelCoefficients is confusing with getModel (this one should be getBestSample).
+ * Renaming the functions and internal variables: everything should be named with _src and _tgt: we have confusing names like \indices_ and \indices_tgt_ (and no \indices_src_), setInputCloud and setInputTarget (duuh, everything is an input, it should be setTarget, setSource), in the code, a sample is named: selection, \model_ and samples. getModelCoefficients is confusing with getModel (this one should be getBestSample).
  * no const-correctness all over, it's pretty scary: all the get should be const, selectWithinDistance and so on too.
  * the getModel, getInliers function should not force you to fill a vector: you should just return a const reference to the internal vector: that could allow you to save a useless copy
  * some private members should be made protected in the sub sac models (like sac_model_registration) so that we can inherit from them.

@@ -330,13 +330,13 @@ editors, etc.
 """"""""""""
 
 You can use the following `PCL C/C++ style file
-<http://dev.pointclouds.org/attachments/download/748/pcl-c-style.el>`_,
+<https://raw.githubusercontent.com/PointCloudLibrary/pcl/master/doc/advanced/content/files/pcl-c-style.el>`_,
 download it to some known location and then:
 
 * open .emacs 
 * add the following before any C/C++ custom hooks
 
-.. code-block:: lisp
+::
 
    (load-file "/location/to/pcl-c-style.el")
    (add-hook 'c-mode-common-hook 'pcl-set-c-style)

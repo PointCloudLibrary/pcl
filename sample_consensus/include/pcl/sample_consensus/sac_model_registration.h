@@ -58,6 +58,7 @@ namespace pcl
   class SampleConsensusModelRegistration : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
@@ -82,6 +83,7 @@ namespace pcl
       {
         // Call our own setInputCloud
         setInputCloud (cloud);
+        model_name_ = "SampleConsensusModelRegistration";
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
@@ -100,6 +102,7 @@ namespace pcl
       {
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
+        model_name_ = "SampleConsensusModelRegistration";
       }
       
       /** \brief Empty destructor */

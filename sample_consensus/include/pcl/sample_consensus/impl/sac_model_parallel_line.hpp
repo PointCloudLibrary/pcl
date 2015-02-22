@@ -38,9 +38,10 @@
  *
  */
 
-#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
-#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
+#ifndef PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
+#define PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
 
+#include <pcl/common/common.h>
 #include <pcl/sample_consensus/sac_model_parallel_line.h>
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,9 +105,8 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
 
     Eigen::Vector4f axis (axis_[0], axis_[1], axis_[2], 0);
     double angle_diff = fabs (getAngle3D (axis, line_dir));
-    //angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
-    angle_diff = fabs (angle_diff - (M_PI/2.0));
-    // Check whether the current plane model satisfies our angle threshold criterion with respect to the given axis
+    angle_diff = (std::min) (angle_diff, M_PI - angle_diff);
+    // Check whether the current line model satisfies our angle threshold criterion with respect to the given axis
     if (angle_diff > eps_angle_)
       return (false);
   }
@@ -116,5 +116,5 @@ pcl::SampleConsensusModelParallelLine<PointT>::isModelValid (const Eigen::Vector
 
 #define PCL_INSTANTIATE_SampleConsensusModelParallelLine(T) template class PCL_EXPORTS pcl::SampleConsensusModelParallelLine<T>;
 
-#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_H_
+#endif    // PCL_SAMPLE_CONSENSUS_IMPL_SAC_MODEL_PARALLEL_LINE_HPP_
 
