@@ -292,6 +292,16 @@ if(WITH_FZAPI)
   endif(FZAPI_FOUND)
 endif(WITH_FZAPI)
 
+# JPEG
+option(WITH_JPEG "Build with JPEG support" TRUE)
+if(WITH_JPEG)
+  find_package(LibJPEG)
+  if (JPEG_FOUND)
+    set(HAVE_JPEG ON)
+    include_directories(SYSTEM "${LIBJPEG_INCLUDE_DIRS}")
+  endif(JPEG_FOUND)
+endif(WITH_JPEG)
+
 # IDS-Imaging - Ensenso
 option(WITH_ENSENSO "Build IDS-Imaging Ensenso's camera support" TRUE)
 if(WITH_ENSENSO)
