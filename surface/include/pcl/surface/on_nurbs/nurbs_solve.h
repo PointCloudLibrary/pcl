@@ -64,7 +64,18 @@ namespace pcl
       /** \brief Empty constructor */
       NurbsSolve () :
         m_quiet (true)
+#ifdef EIGENVERSION_GEQUAL_3_2
+      ,m_KeigenSparse(NULL)
+#endif
       {
+      }
+
+      ~NurbsSolve()
+      {
+#ifdef EIGENVERSION_GEQUAL_3_2
+        if(m_KeigenSparse!=NULL)
+          delete m_KeigenSparse;
+#endif
       }
 
       /** \brief Assign size and dimension (2D, 3D) of system of equations. */
@@ -148,7 +159,7 @@ namespace pcl
       Eigen::MatrixXd m_xeig;
       Eigen::MatrixXd m_feig; // Eigen version >= 3.2: The vector A^T*f is stored !!
 #ifdef EIGENVERSION_GEQUAL_3_2
-      Eigen::SparseMatrix<double> m_KeigenSparse; // May not be available in older Eigen version
+      Eigen::SparseMatrix<double>* m_KeigenSparse; // May not be available in older Eigen version
 #endif
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

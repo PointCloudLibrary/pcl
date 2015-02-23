@@ -109,7 +109,7 @@ NurbsSolve::assign (unsigned rows, unsigned cols, unsigned dims)
   m_feig = Eigen::MatrixXd::Zero (cols, dims);
 
   m_Ksparse.clear();
-  m_KeigenSparse = Eigen::SparseMatrix<double>(cols,cols);
+  m_KeigenSparse = new Eigen::SparseMatrix<double>(cols,cols);
 }
 
 void
@@ -122,7 +122,7 @@ NurbsSolve::K (unsigned i, unsigned j, double v)
 double
 NurbsSolve::K (unsigned i, unsigned j)
 {
-  return m_KeigenSparse.coeff(i,j);
+  return m_KeigenSparse->coeff(i,j);
 }
 
 //void
@@ -175,11 +175,11 @@ NurbsSolve::AddRow(const std::vector<double>& row,
     {
       jj = sparsePattern[jSparse];
       if(jj<j) continue;
-      newVal = m_KeigenSparse.coeff(j,jj) + row[iSparse]*row[jSparse];
+      newVal = m_KeigenSparse->coeff(j,jj) + row[iSparse]*row[jSparse];
       if(abs(newVal) > 1e-10)
       {
-        m_KeigenSparse.coeffRef(j,jj) = newVal;
-        m_KeigenSparse.coeffRef(jj,j) = newVal;
+        m_KeigenSparse->coeffRef(j,jj) = newVal;
+        m_KeigenSparse->coeffRef(jj,j) = newVal;
       }
     }
   }
@@ -190,11 +190,11 @@ NurbsSolve::AddRow(const std::vector<double>& row,
 void
 NurbsSolve::printK ()
 {
-  for (unsigned r = 0; r < m_KeigenSparse.rows (); r++)
+  for (unsigned r = 0; r < m_KeigenSparse->rows (); r++)
   {
-    for (unsigned c = 0; c < m_KeigenSparse.cols (); c++)
+    for (unsigned c = 0; c < m_KeigenSparse->cols (); c++)
     {
-      printf (" %f", m_KeigenSparse.coeff (r, c));
+      printf (" %f", m_KeigenSparse->coeff (r, c));
     }
     printf ("\n");
   }
@@ -204,7 +204,7 @@ NurbsSolve::printK ()
 bool
 NurbsSolve::solve ()
 {
-  Eigen::SimplicialCholesky<Eigen::SparseMatrix<double>,Eigen::Lower> chol(m_KeigenSparse);
+  Eigen::SimplicialCholesky<Eigen::SparseMatrix<double>,Eigen::Lower> chol(*m_KeigenSparse);
   if(chol.info() != Eigen::Success )
   {
     return false;
@@ -216,6 +216,6 @@ NurbsSolve::solve ()
 Eigen::MatrixXd
 NurbsSolve::diff ()
 {
-  Eigen::MatrixXd f (m_KeigenSparse * m_xeig);
+  Eigen::MatrixXd f ((*m_KeigenSparse) * m_xeig);
   return (f - m_feig);
 }
