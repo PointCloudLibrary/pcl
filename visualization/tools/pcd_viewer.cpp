@@ -137,6 +137,8 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
+  print_info ("                     -optimal_label_colors    = maps existing labels to the optimal sequential glasbey colors, label_ids will not be mapped to fixed colors (default "); print_value ("disabled"); print_info (")\n");
+  print_info ("\n");
 
   print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
 }
@@ -276,6 +278,10 @@ main (int argc, char** argv)
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
   if (use_pp) 
     print_highlight ("Point picking enabled.\n");
+
+  bool use_optimal_l_colors = pcl::console::find_switch (argc, argv, "-optimal_label_colors");
+  if (use_optimal_l_colors)
+    print_highlight ("Optimal glasbey colors are being assigned to existing labels.\nNote: No static mapping between label ids and colors\n");
 
   // If VBOs are not enabled, then try to use immediate rendering
   bool use_immediate_rendering = false;
@@ -602,7 +608,7 @@ main (int argc, char** argv)
         else if (cloud->fields[f].name == "label")
         {
           label_idx = f + 1;
-          color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud));
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud, !use_optimal_l_colors));
         }
         else
         {

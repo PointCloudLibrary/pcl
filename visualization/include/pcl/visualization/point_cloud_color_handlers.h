@@ -512,17 +512,23 @@ namespace pcl
         typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointT> > Ptr;
         typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointT> > ConstPtr;
 
-        /** \brief Constructor. */
-        PointCloudColorHandlerLabelField ()
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const bool static_mapping = true)
+          : PointCloudColorHandler<PointT> ()
         {
           capable_ = false;
+          static_mapping_ = static_mapping;
         }
 
-        /** \brief Constructor. */
-        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud)
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud,
+                                          const bool static_mapping = true)
           : PointCloudColorHandler<PointT> (cloud)
         {
           setInputCloud (cloud);
+          static_mapping_ = static_mapping;
         }
 
         /** \brief Destructor. */
@@ -557,6 +563,7 @@ namespace pcl
         using PointCloudColorHandler<PointT>::capable_;
         using PointCloudColorHandler<PointT>::field_idx_;
         using PointCloudColorHandler<PointT>::fields_;
+        bool static_mapping_;
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
@@ -906,8 +913,10 @@ namespace pcl
         typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointCloud> > Ptr;
         typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointCloud> > ConstPtr;
 
-        /** \brief Constructor. */
-        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud);
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud,
+                                          const bool static_mapping = true);
 
         /** \brief Empty destructor */
         virtual ~PointCloudColorHandlerLabelField () {}
@@ -928,6 +937,8 @@ namespace pcl
         /** \brief Get the name of the field used. */
         virtual std::string
         getFieldName () const { return ("label"); }
+    private:
+        bool static_mapping_;
     };
 
   }
