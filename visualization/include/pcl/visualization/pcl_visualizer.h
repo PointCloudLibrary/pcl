@@ -1553,7 +1553,7 @@ namespace pcl
                    int viewport = 0);
 
         /** \brief Add a cone from a set of given model coefficients
-          * \param[in] coefficients the model coefficients (point_on_axis, axis_direction, radiu)
+          * \param[in] coefficients the model coefficients (see \ref pcl::visualization::createCone)
           * \param[in] id the cone id/name (default: "cone")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
@@ -1563,7 +1563,7 @@ namespace pcl
                  int viewport = 0);
 
         /** \brief Add a cube from a set of given model coefficients
-          * \param[in] coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
+          * \param[in] coefficients the model coefficients (see \ref pcl::visualization::createCube)
           * \param[in] id the cube id/name (default: "cube")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
