@@ -146,7 +146,7 @@ if(build)
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_face_detector "${SUBSYS_NAME}" src/face_detection//openni_face_detection.cpp src/face_detection//openni_frame_source.cpp)
       target_link_libraries(pcl_openni_face_detector pcl_features pcl_recognition pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface pcl_keypoints pcl_ml pcl_search pcl_kdtree ${VTK_LIBRARIES})
 
-      if (QT4_FOUND AND VTK_USE_QVTK AND FALSE)
+      if (QT4_FOUND AND VTK_USE_QVTK)
         # OpenNI Passthrough application demo
         QT4_WRAP_UI(openni_passthrough_ui src/openni_passthrough.ui)
         QT4_WRAP_CPP(openni_passthrough_moc include/pcl/apps/openni_passthrough.h OPTIONS -DBOOST_TT_HAS_OPERATOR_HPP_INCLUDED -DBOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
