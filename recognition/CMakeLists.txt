@@ -131,21 +131,18 @@ if(build)
         src/implicit_shape_model.cpp
         )
         
-    if (HAVE_METSLIB)
-        set(metslib_incs "")
-    else(HAVE_METSLIB)
-        set(metslib_incs
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
-            "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
-            )
-    endif(HAVE_METSLIB)
+
+	set(metslib_incs
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/abstract-search.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/local-search.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/mets.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/metslib_config.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/model.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/observer.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/simulated-annealing.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/tabu-search.hh"
+	    "include/pcl/${SUBSYS_NAME}/3rdparty/metslib/termination-criteria.hh"
+	    )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
@@ -166,12 +163,6 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/linemod" ${LINEMOD_INCLUDES})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl/linemod" ${LINEMOD_IMPLS})
 
-<<<<<<< HEAD
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-=======
-    if (NOT HAVE_METSLIB)
-        PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/3rdparty/metslib" ${metslib_incs})
-    endif(NOT HAVE_METSLIB)
 
->>>>>>> upstream/master
 endif(build)
