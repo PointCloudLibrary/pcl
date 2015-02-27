@@ -160,7 +160,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 
   final_transformation_ = guess;
   bool abort = false;
-  std::vector <MatchingCandidates > all_candidates (max_iterations_);
+  std::vector <MatchingCandidates> all_candidates (max_iterations_);
   pcl::StopWatch timer;
 
   #ifdef _OPENMP
@@ -554,8 +554,8 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
 
   // set intersection ratios
-  ratio[0] = (std::abs <float> (sN) < small_error_) ? 0.f : sN / sD;
-  ratio[1] = (std::abs <float> (tN) < small_error_) ? 0.f : tN / tD;
+  ratio[0] = (std::abs (sN) < small_error_) ? 0.f : sN / sD;
+  ratio[1] = (std::abs (tN) < small_error_) ? 0.f : tN / tD;
 
   Eigen::Vector3f x = w + (ratio[0] * u) - (ratio[1] * v);
   return (x.norm ());

@@ -94,8 +94,11 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   pcl::transformPointCloudWithNormals (grid, grid, transformPC);
 
-  //fill spatial data vector
-  kiss_fft_scalar * spatial_data = new kiss_fft_scalar[nbins];
+  //fill spatial data vector and the zero-initialize or "value-initialize" an array on c++, 
+  // the initialization is made with () after the [nbins]
+  kiss_fft_scalar * spatial_data = new kiss_fft_scalar[nbins]();
+  
+
   float sum_w = 0, w = 0;
   int bin = 0;
   for (size_t i = 0; i < grid.points.size (); ++i)

@@ -1,8 +1,8 @@
-.. _posix_building_pcl:
+.. _compiling_pcl_posix:
 
-================================================
-Build PCL from source on POSIX compliant systems
-================================================
+====================================================
+Compiling PCL from source on POSIX compliant systems
+====================================================
 
 Though not a dependency per se, don’t forget that you also need the `CMake build system <http://www.cmake.org/download/>`_, at least version 2.8.3.
 Additional help on how to use the CMake build system is available `here <http://www.pointclouds.org/documentation/tutorials/building_pcl.php#building-pcl>`_.
@@ -34,7 +34,7 @@ Or change them (uses cmake-curses-gui)::
 
   ccmake ..
 
-Please note that cmake might default to a debug build. If you want to compile a release build of PCL with enhanced compiler optimizations, you can change the build target to "Release" with "-DCMAKE_BUILD_TYPE=Release".
+Please note that cmake might default to a debug build. If you want to compile a release build of PCL with enhanced compiler optimizations, you can change the build target to "Release" with "-DCMAKE_BUILD_TYPE=Release"::
 
   cmake -DCMAKE_BUILD_TYPE=Release .. 
 
@@ -46,7 +46,7 @@ And install the result::
 
   make -j2 install
 
-or alternatively, if you did not change the  variable which declares where PCL should be installed, do::
+Or alternatively, if you did not change the  variable which declares where PCL should be installed, do::
 
   sudo make -j2 install
 
@@ -86,17 +86,18 @@ The following code libraries are **required** for the compilation and usage of t
 .. note::
 pcl_* denotes all PCL libraries, meaning that the particular dependency is a strict requirement for the usage of anything in PCL.
 
-+---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| Logo                                                          | Library         | Minimum version   | Mandatory         |
-+===============================================================+=================+===================+===================+
-| .. image:: images/posix_building_pcl/boost_logo.png           | Boost           | 1.54              | pcl_*             |
-+---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| .. image:: images/posix_building_pcl/eigen_logo.png           | Eigen           | 3.0               | pcl_*             |
-+---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| .. image:: images/posix_building_pcl/flann_logo.png           | FLANN           | 1.7.1             | pcl_*             |
-+---------------------------------------------------------------+-----------------+-------------------+-------------------+
-| .. image:: images/posix_building_pcl/vtk_logo.png             | VTK             | 5.6               | pcl_visualization |
-+---------------------------------------------------------------+-----------------+-------------------+-------------------+
++---------------------------------------------------------------+-----------------+-------------------------+-------------------+
+| Logo                                                          | Library         | Minimum version         | Mandatory         |
++===============================================================+=================+=========================+===================+
+| .. image:: images/posix_building_pcl/boost_logo.png           | Boost           | | 1.40 (without OpenNI) | pcl_*             |
+|                                                               |                 | | 1.47 (with OpenNI)    |                   |
++---------------------------------------------------------------+-----------------+-------------------------+-------------------+
+| .. image:: images/posix_building_pcl/eigen_logo.png           | Eigen           | 3.0                     | pcl_*             |
++---------------------------------------------------------------+-----------------+-------------------------+-------------------+
+| .. image:: images/posix_building_pcl/flann_logo.png           | FLANN           | 1.7.1                   | pcl_*             |
++---------------------------------------------------------------+-----------------+-------------------------+-------------------+
+| .. image:: images/posix_building_pcl/vtk_logo.png             | VTK             | 5.6                     | pcl_visualization |
++---------------------------------------------------------------+-----------------+-------------------------+-------------------+
 
 Optional
 --------

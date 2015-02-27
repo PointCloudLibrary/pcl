@@ -219,13 +219,15 @@ if(build)
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
   endforeach(subdir)
 
-  set(incs
-    "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
-    "include/pcl/${SUBSYS_NAME}/timer.h"
-    ${incs}
-    )
-  set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
-  set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
+  if(QHULL_FOUND)
+      set(incs
+        "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
+        "include/pcl/${SUBSYS_NAME}/timer.h"
+        ${incs}
+        )
+      set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
+      set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
+  endif()
 
   set(LIB_NAME "pcl_${SUBSYS_NAME}")
   PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${impl_incs} ${incs})

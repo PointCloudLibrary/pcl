@@ -314,7 +314,7 @@ main (int argc, char ** argv)
     pcl::io::savePNGFile (out_label_path, *full_labeled_cloud, "label");
     pcl::io::savePNGFile (refined_out_label_path, *refined_full_labeled_cloud, "label");
     //Save RGB from labels
-    pcl::io::PointCloudImageExtractorFromLabelField<PointLT> pcie (pcie.io::PointCloudImageExtractorFromLabelField<PointLT>::COLORS_RGB_GLASBEY);
+    pcl::io::PointCloudImageExtractorFromLabelField<PointLT> pcie (pcl::io::PointCloudImageExtractorFromLabelField<PointLT>::COLORS_RGB_GLASBEY);
     //We need to set this to account for NAN points in the organized cloud
     pcie.setPaintNaNsWithBlack (true);
     pcl::PCLImage image;
