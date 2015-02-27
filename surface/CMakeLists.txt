@@ -10,7 +10,6 @@ PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
     if(QHULL_FOUND)
-        include_directories(${QHULL_INCLUDE_DIRS})
         set(HULL_INCLUDES
             "include/pcl/${SUBSYS_NAME}/concave_hull.h"
             "include/pcl/${SUBSYS_NAME}/convex_hull.h"

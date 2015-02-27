@@ -343,6 +343,9 @@ if(WITH_QHULL)
     set(QHULL_USE_STATIC ON)
   endif(NOT PCL_SHARED_LIBS OR WIN32)
   find_package(Qhull)
+  if(QHULL_FOUND)
+    include_directories(${QHULL_INCLUDE_DIRS})
+  endif(QHULL_FOUND)
 endif(WITH_QHULL)
 
 # Cuda
