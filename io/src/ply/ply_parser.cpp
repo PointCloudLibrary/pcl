@@ -65,14 +65,14 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   if (!istream)
   {
     if (error_callback_)
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "parse error: couldn't read the magic string");
     return false;
   }
 
   if ((magic[0] != 'p') || (magic[1] != 'l') || (magic[2] != 'y'))
   {
     if (error_callback_)
-      error_callback_ (line_number_, "parse error");
+      error_callback_ (line_number_, "parse error: wrong magic string");
     return false;
   }
 
@@ -108,7 +108,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             !isspace (space_format_string_version))
         {
           if (error_callback_)
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: failed to parse the format statement");
           return false;
         }
         if (format_string == "ascii")
@@ -127,7 +127,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: unknown format");
           }
           return false;
         }
@@ -143,7 +143,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: more than 1 format statement");
           }
           return false;
         }
@@ -167,7 +167,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: invalid element statement");
           }
           return false;
         }
@@ -184,7 +184,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: invalid elements");
           }
           return false;
         }
@@ -212,7 +212,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         {
           if (error_callback_)
           {
-            error_callback_ (line_number_, "parse error");
+            error_callback_ (line_number_, "parse error: invalid property statement");
           }
           return false;
         }
@@ -288,7 +288,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           {
             if (error_callback_)
             {
-              error_callback_ (line_number_, "parse error");
+              error_callback_ (line_number_, "parse error: unknown type");
             }
             return false;
           }
@@ -306,7 +306,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
               !isspace (space_scalar_type_name))
           {
             if (error_callback_)
-              error_callback_ (line_number_, "parse error");
+              error_callback_ (line_number_, "parse error: invalid list statement");
             return false;
           }
           if (number_of_element_statements == 0)
@@ -369,7 +369,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             {
               if (error_callback_)
               {
-                error_callback_ (line_number_, "parse error");
+                error_callback_ (line_number_, "parse error: unkonwn scalar type");
               }
               return false;
             }
@@ -412,7 +412,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             else
             {
               if (error_callback_)
-                error_callback_ (line_number_, "parse error");
+                error_callback_ (line_number_, "parse error: unknown scalar type");
               return false;
             }
           }
@@ -454,7 +454,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
             else
             {
               if (error_callback_)
-                error_callback_ (line_number_, "parse error");
+                error_callback_ (line_number_, "parse error: unknown scalar type");
               return false;
             }
           }
@@ -506,7 +506,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
   if (number_of_format_statements == 0)
   {
     if (error_callback_) 
-     error_callback_ (line_number_, "parse error");
+     error_callback_ (line_number_, "parse error: a format statement is required");
     return false;
   }
 
