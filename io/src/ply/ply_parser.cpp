@@ -594,13 +594,18 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         }
       }
     }
-    if (istream.fail () || (istream.rdbuf ()->sgetc () != std::char_traits<char>::eof ()) || istream.bad ())
+    if (istream.fail () || istream.bad ())
     {
       if (error_callback_)
       {
-        error_callback_ (line_number_, "parse error");
+        error_callback_ (line_number_, "parse error: failed to read from the binary stream");
       }
       return false;
+    }
+    if (istream.rdbuf ()->sgetc () != std::char_traits<char>::eof ())
+    {
+      if (warning_callback_)
+        warning_callback_ (line_number_, "ignoring extra data at the end of binary stream");
     }
     return true;
   }
