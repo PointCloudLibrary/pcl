@@ -101,7 +101,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
       {
         std::string format_string, version;
         char space_format_format_string, space_format_string_version;
-        stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version >> std::ws;
+        stringstream >> space_format_format_string >> std::ws >> format_string >> space_format_string_version >> std::ws >> version;
         if (!stringstream || 
             !stringstream.eof () || 
             !isspace (space_format_format_string) || 
@@ -159,7 +159,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
         std::string name;
         std::size_t count;
         char space_element_name, space_name_count;
-        stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count >> std::ws;
+        stringstream >> space_element_name >> std::ws >> name >> space_name_count >> std::ws >> count;
         if (!stringstream || 
             !stringstream.eof () || 
             !isspace (space_element_name) || 
@@ -220,7 +220,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           std::string name;
           std::string& type = type_or_list;
           char space_type_name;
-          stringstream >> space_type_name >> std::ws >> name >> std::ws;
+          stringstream >> space_type_name >> std::ws >> name;
           if (!stringstream || !isspace (space_type_name))
           {
             if (error_callback_)
@@ -299,7 +299,7 @@ bool pcl::io::ply::ply_parser::parse (const std::string& filename)
           std::string name;
           std::string size_type_string, scalar_type_string;
           char space_list_size_type, space_size_type_scalar_type, space_scalar_type_name;
-          stringstream >> space_list_size_type >> std::ws >> size_type_string >> space_size_type_scalar_type >> std::ws >> scalar_type_string >> space_scalar_type_name >> std::ws >> name >> std::ws;
+          stringstream >> space_list_size_type >> std::ws >> size_type_string >> space_size_type_scalar_type >> std::ws >> scalar_type_string >> space_scalar_type_name >> std::ws >> name;
           if (!stringstream || 
               !isspace (space_list_size_type) || 
               !isspace (space_size_type_scalar_type) || 
