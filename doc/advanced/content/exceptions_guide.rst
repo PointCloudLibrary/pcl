@@ -23,9 +23,9 @@ Any new exception should inherit from the :pcl:`PCLException <pcl::PCLException>
   {
     public:
       MyException (const std::string& error_description,
-                   const std::string& file_name = "",
-                   const std::string& function_name = "",
-                   unsigned line_number = 0) throw ()
+                   const char* file_name = NULL,
+                   const char* function_name = NULL,
+                   unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }  
   };
 
@@ -40,7 +40,7 @@ For ease of use we provide this macro
   {
     std::ostringstream s;
     s << message;
-    throw ExceptionName (s.str (), __FILE__, "", __LINE__);
+    throw ExceptionName (s.str (), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__);
   }
 
 Then in your code, add:
