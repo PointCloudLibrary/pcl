@@ -143,7 +143,7 @@ namespace pcl
       virtual void
       setIndices (const IndicesPtr &indices)
       {
-        Base::setIndices(indices);
+        Base::setIndices (indices);
         compute_done_ = false;
       }
 
@@ -153,7 +153,7 @@ namespace pcl
       virtual void
       setIndices (const IndicesConstPtr &indices)
       {
-        Base::setIndices(indices);
+        Base::setIndices (indices);
         compute_done_ = false;
       }
 
@@ -163,7 +163,7 @@ namespace pcl
       virtual void
       setIndices (const PointIndicesConstPtr &indices)
       {
-        Base::setIndices(indices);
+        Base::setIndices (indices);
         compute_done_ = false;
       }
 
@@ -178,7 +178,7 @@ namespace pcl
       virtual void
       setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols)
       {
-        Base::setIndices(row_start, col_start, nb_rows, nb_cols);
+        Base::setIndices (row_start, col_start, nb_rows, nb_cols);
         compute_done_ = false;
       }
 
