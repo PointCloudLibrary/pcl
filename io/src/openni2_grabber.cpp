@@ -219,7 +219,7 @@ pcl::io::OpenNI2Grabber::start ()
   try
   {
     // check if we need to start/stop any stream
-    if (image_required_ && !device_->isColorStreamStarted () )
+    if (image_required_ && !device_->isColorStreamStarted () && device_->hasColorSensor () )
     {
       block_signals ();
       device_->startColorStream ();
@@ -401,8 +401,8 @@ pcl::io::OpenNI2Grabber::startSynchronization ()
 {
   try
   {
-    if (device_->isSynchronizationSupported () && !device_->isSynchronized () && !device_->isFile () &&
-      device_->getColorVideoMode ().frame_rate_ == device_->getDepthVideoMode ().frame_rate_)
+    if (device_->hasColorSensor () && (device_->isSynchronizationSupported () && !device_->isSynchronized () && !device_->isFile () &&
+      device_->getColorVideoMode ().frame_rate_ == device_->getDepthVideoMode ().frame_rate_))
       device_->setSynchronization (true);
   }
   catch (const IOException& exception)
