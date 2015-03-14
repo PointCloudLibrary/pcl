@@ -5,11 +5,17 @@ if(OPENNI_FOUND)
   PCL_ADD_EXECUTABLE(pcl_openni_grabber_depth_example ${SUBSYS_NAME} openni_grabber_depth_example.cpp)
   target_link_libraries(pcl_openni_grabber_depth_example pcl_common pcl_io)
 
-
   PCL_ADD_EXECUTABLE(pcl_openni_pcd_recorder ${SUBSYS_NAME} openni_pcd_recorder.cpp)
   target_link_libraries(pcl_openni_pcd_recorder pcl_common pcl_io)
 
 endif(OPENNI_FOUND)
+
+if(OPENNI2_FOUND)
+  PCL_ADD_EXECUTABLE(pcl_openni2_pcd_recorder ${SUBSYS_NAME} openni2_pcd_recorder.cpp)
+  target_link_libraries(pcl_openni2_pcd_recorder pcl_common pcl_io)
+endif(OPENNI2_FOUND)
+
+
 
 PCL_ADD_EXECUTABLE(pcl_pcd_convert_NaN_nan ${SUBSYS_NAME} pcd_convert_NaN_nan.cpp)
 PCL_ADD_EXECUTABLE(pcl_pcd_introduce_nan ${SUBSYS_NAME} pcd_introduce_nan.cpp)
