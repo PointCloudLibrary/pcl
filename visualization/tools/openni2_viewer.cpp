@@ -160,10 +160,8 @@ public:
   depth_callback (const boost::shared_ptr<pcl::io::openni2::DepthImage>& depth)
   {
     FPS_CALC ("depth callback");
-
     boost::mutex::scoped_lock lock (depth_mutex_);
     depth_ = depth;
-	
   }
 
   void
@@ -271,7 +269,6 @@ public:
         image_mutex_.unlock ();
       }
 
-
       if (image)
       {
         if (!image_init && cloud && cloud->width != 0)
@@ -286,7 +283,6 @@ public:
         else
           image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
         image_viewer_->spinOnce ();
-
       }
 
       if (depth_mutex_.try_lock ())
@@ -304,17 +300,15 @@ public:
           depth_init = !depth_init;
         }
 
-            unsigned char* data = pcl::visualization::FloatImageUtils::getVisualImage (
-                reinterpret_cast<const unsigned short*> (depth->getData ()), 
+        unsigned char* data = pcl::visualization::FloatImageUtils::getVisualImage (
+                  reinterpret_cast<const unsigned short*> (depth->getData ()), 
                   depth->getWidth (), depth->getHeight (),
                   std::numeric_limits<unsigned short>::min (), 
                   std::numeric_limits<unsigned short>::max () / 10, 
                                                        true);
                   
         depth_viewer_->addRGBImage ( data, depth->getWidth (), depth->getHeight ());
-
         depth_viewer_->spinOnce ();
-
       }
     }
     grabber_.stop ();
