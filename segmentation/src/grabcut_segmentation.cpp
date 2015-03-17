@@ -45,6 +45,8 @@
 #include <map>
 #include <algorithm>
 
+const int pcl::segmentation::grabcut::BoykovKolmogorov::TERMINAL = -1;
+
 pcl::segmentation::grabcut::BoykovKolmogorov::BoykovKolmogorov (std::size_t max_nodes)
   : flow_value_(0.0)
 {
