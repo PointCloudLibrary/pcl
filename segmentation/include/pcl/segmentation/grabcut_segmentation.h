@@ -161,7 +161,7 @@ namespace pcl
 
         private:
           /// parents_ flag for terminal state
-          static const int TERMINAL = -1;
+          static const int TERMINAL; // -1
           /// search tree (also uses cut_)
           std::vector<std::pair<int, edge_pair> > parents_;
           /// doubly-linked list (prev, next)
