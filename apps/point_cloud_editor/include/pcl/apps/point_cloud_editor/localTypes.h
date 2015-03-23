@@ -62,6 +62,9 @@ typedef pcl::PointXYZRGBA Point3D;
 /// The type used as internal representation of a cloud object.
 typedef pcl::PointCloud<Point3D> Cloud3D;
 
+/// The type for the 3D point vector in the point cloud.
+typedef pcl::PointCloud<Point3D>::VectorType Point3DVector;
+
 /// The type for boost shared pointer pointing to a PCL cloud object.
 typedef Cloud3D::Ptr PclCloudPtr;
 
