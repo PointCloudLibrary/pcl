@@ -100,16 +100,15 @@ namespace pcl
       void
       relabelCloud (pcl::PointCloud<pcl::PointXYZL> &labeled_cloud_arg);
       
-      /** \brief Segments smaller than segment_size are assigned to label of largest neighbor.
-       *  \param[in] min_segment_size_arg Segments smaller than this size will be filtered
-       *  \note Currently this runs multiple times, until no segment < min_segment_size is found. Could be faster.  */
+      /** \brief Segments smaller than segment_size are merged to the label of largest neighbor.
+       *  \param[in] min_segment_size_arg Segments smaller than this size will be merged */
       void
-      removeSmallSegments (uint32_t min_segment_size_arg);
+      mergeSmallSegments (uint32_t min_segment_size_arg);
 
-      /** \brief Get map<SegmentID, std::vector<SuperVoxel IDs> >
+      /** \brief Get map<SegmentID, std::set<SuperVoxel IDs> >
        *  \param[out] segment_supervoxel_map_arg The output container. On error the map is empty. */
       inline void
-      getSegmentSupervoxelMap (std::map<uint32_t, std::vector<uint32_t> >& segment_supervoxel_map_arg) const
+      getSegmentSupervoxelMap (std::map<uint32_t, std::set<uint32_t> >& segment_supervoxel_map_arg) const
       {
         if (grouping_data_valid_)
         {
@@ -118,7 +117,7 @@ namespace pcl
         else
         {
           PCL_WARN ("[pcl::LCCPSegmentation::getSegmentMap] WARNING: Call function segment first. Nothing has been done. \n");
-          segment_supervoxel_map_arg = std::map<boost::uint32_t, std::vector<boost::uint32_t> > ();
+          segment_supervoxel_map_arg = std::map<uint32_t, std::set<uint32_t> > ();
         }
       }
       
@@ -136,7 +135,7 @@ namespace pcl
         else
         {
           PCL_WARN ("[pcl::LCCPSegmentation::getSegmentAdjacencyMap] WARNING: Call function segment first. Nothing has been done. \n");
-          segment_adjacency_map_arg = std::map<boost::uint32_t, std::set<boost::uint32_t> > ();
+          segment_adjacency_map_arg = std::map<uint32_t, std::set<uint32_t> > ();
         }
       }
       
@@ -281,10 +280,10 @@ namespace pcl
       /** \brief Storing relation between original SuperVoxel Labels and new segmantion labels. svLabel_segLabel_map_[old_labelID] = new_labelID */
       std::map<uint32_t, uint32_t> sv_label_to_seg_label_map_;
 
-      /** \brief map < Segment Label, std::vector< SuperVoxel Labels> > */
-      std::map<uint32_t, std::vector<uint32_t> > seg_label_to_sv_list_map_;
+      /** \brief map <Segment Label, std::set <SuperVoxel Labels> > */
+      std::map<uint32_t, std::set<uint32_t> > seg_label_to_sv_list_map_;
 
-      /** \brief map < SegmentID, std::vector< Neighboring segment labels> > */
+      /** \brief map <SegmentID, std::vector <Neighboring segment labels> > */
       std::map<uint32_t, std::set<uint32_t> > seg_label_to_neighbor_set_map_;
 
   };

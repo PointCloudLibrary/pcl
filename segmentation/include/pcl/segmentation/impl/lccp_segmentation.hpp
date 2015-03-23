@@ -130,7 +130,7 @@ pcl::LCCPSegmentation<PointT>::computeSegmentAdjacency ()
 }
 
 template <typename PointT> void
-pcl::LCCPSegmentation<PointT>::removeSmallSegments (uint32_t min_segment_size_arg)
+pcl::LCCPSegmentation<PointT>::mergeSmallSegments (uint32_t min_segment_size_arg)
 {
   if (min_segment_size_arg == 0)
     return;
@@ -194,11 +194,11 @@ pcl::LCCPSegmentation<PointT>::removeSmallSegments (uint32_t min_segment_size_ar
             filteredSegLabels.insert (current_seg_label);
 
             // Assign SuperVoxel labels of filtered segment to new owner
-            std::vector<uint32_t>::iterator sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].begin ();
+            std::set<uint32_t>::iterator sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].begin ();
             sv_ID_itr = seg_label_to_sv_list_map_[current_seg_label].begin ();
             for (; sv_ID_itr != seg_label_to_sv_list_map_[current_seg_label].end (); ++sv_ID_itr)
             {
-              seg_label_to_sv_list_map_[largest_neigh_seg_label].push_back (*sv_ID_itr);
+              seg_label_to_sv_list_map_[largest_neigh_seg_label].insert (*sv_ID_itr);
             }
           }
         }
@@ -211,23 +211,21 @@ pcl::LCCPSegmentation<PointT>::removeSmallSegments (uint32_t min_segment_size_ar
         seg_label_to_sv_list_map_.erase (*filtered_ID_itr);
       }
 
-      //After filtered Segments are deleted, compute completely new adjacency map
+      // After filtered Segments are deleted, compute completely new adjacency map
       // NOTE Recomputing the adjacency of every segment in every iteration is an easy but inefficient solution.
       // Because the number of segments in an average scene is usually well below 1000, the time spend for noise filtering is still neglible in most cases
       computeSegmentAdjacency ();
-
-      // std::cout << "Filtered " << nr_filtered << " segments." << std::endl;
     }  // End while (Filtering)
   }
   else
   {
-    PCL_WARN ("[pcl::LCCPSegmentation::removeNoise] WARNING: Call function segment first. Nothing has been done. \n");
+    PCL_WARN ("[pcl::LCCPSegmentation::mergeSmallSegments] WARNING: Call function segment first. Nothing has been done. \n");
   }
 }
 
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>& supervoxel_clusters_arg,
-                                                    const std::multimap<boost::uint32_t, boost::uint32_t>& label_adjaceny_arg)
+                                                    const std::multimap<uint32_t, uint32_t>& label_adjaceny_arg)
 {
   // Clear internal data
   reset ();
@@ -242,10 +240,10 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t SV_LABEL = svlabel_itr->first;
+    const uint32_t sv_label = svlabel_itr->first;
     VertexID node_id = boost::add_vertex (sv_adjacency_list_);
-    sv_adjacency_list_[node_id] = SV_LABEL;
-    label_ID_map[SV_LABEL] = node_id;
+    sv_adjacency_list_[node_id] = sv_label;
+    label_ID_map[sv_label] = node_id;
   }
 
   // Add all edges
@@ -262,6 +260,8 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   }
 
   // Initialization
+  // clear the processed_ map
+  seg_label_to_sv_list_map_.clear ();
   for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
@@ -273,7 +273,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
 
 template <typename PointT> void
 pcl::LCCPSegmentation<PointT>::segment (std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>& supervoxel_clusters_arg,
-                                        std::multimap<boost::uint32_t, boost::uint32_t>& label_adjacency_arg)
+                                        std::multimap<uint32_t, uint32_t>& label_adjacency_arg)
 {
   // Initialization
   prepareSegmentation (supervoxel_clusters_arg, label_adjacency_arg);  // after this, sv_adjacency_list_ can be used to access adjacency list
@@ -316,7 +316,7 @@ pcl::LCCPSegmentation<PointT>::recursiveGrouping (VertexID const &query_point_id
 
   // The next two lines add the supervoxel to the segment
   sv_label_to_seg_label_map_[sv_label] = segment_label;
-  seg_label_to_sv_list_map_[segment_label].push_back (sv_label);
+  seg_label_to_sv_list_map_[segment_label].insert (sv_label);
 
   // Iterate through all neighbors of this supervoxel and check wether they should be merged with the current SuperVoxel
   std::pair<OutEdgeIterator, OutEdgeIterator> out_edge_iterator_range;
