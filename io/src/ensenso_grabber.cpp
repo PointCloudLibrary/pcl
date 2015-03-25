@@ -481,12 +481,12 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
         return (false);
       tf.setJson (json);
 
-
       // Rotation
       double theta = tf[itmRotation][itmAngle].asDouble ();  // Angle of rotation
       double x = tf[itmRotation][itmAxis][0].asDouble ();   // X component of Euler vector
       double y = tf[itmRotation][itmAxis][1].asDouble ();   // Y component of Euler vector
       double z = tf[itmRotation][itmAxis][2].asDouble ();   // Z component of Euler vector
+      tf.erase(); // Delete tmpTF node
 
       (*root_)[itmLink][itmRotation][itmAngle].set (theta);
       (*root_)[itmLink][itmRotation][itmAxis][0].set (x);
@@ -494,9 +494,9 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       (*root_)[itmLink][itmRotation][itmAxis][2].set (z);
 
       // Translation
-      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0]);
-      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1]);
-      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2]);
+      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
+      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
+      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
     }
 
     // Feed all robot poses into the calibration command
