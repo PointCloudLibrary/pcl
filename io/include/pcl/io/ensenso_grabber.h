@@ -213,7 +213,7 @@ namespace pcl
        * @param[out] json The calibration data in JSON format
        * @param[in] setup Moving or Fixed, please refer to the Ensenso documentation
        * @param[in] target Please refer to the Ensenso documentation
-       * @param[in] guess_tf Guess transformation for the calibration matrix
+       * @param[in] guess_tf Guess transformation for the calibration matrix (translation in meters)
        * @param[in] pretty_format JSON formatting style
        * @return True if successful, false otherwise
        * @warning This can take up to 120 seconds
