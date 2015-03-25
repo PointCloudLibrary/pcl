@@ -462,15 +462,7 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
         return (false);
     }
 
-    // Feed all robot poses into the calibration command
     NxLibCommand calibrate (cmdCalibrateHandEye);
-    for (uint i = 0; i < robot_poses_json.size (); ++i)
-    {
-      // Very weird behaviour here:
-      // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node
-      // because for an unknown reason sometimes the old transformations are erased in the tree ("null" in the tree)
-      calibrate.parameters ()[itmTransformations][i].setJson (robot_poses_json[i], false);
-    }
 
     // Set Hand-Eye calibration parameters
     if (boost::iequals (setup, "Fixed"))
@@ -505,6 +497,16 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0]);
       (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1]);
       (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2]);
+    }
+
+    // Feed all robot poses into the calibration command
+    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    {
+      // Very weird behavior here:
+      // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node
+      // because for an unknown reason sometimes the old transformations are erased in the tree ("null" in the tree)
+      // Ensenso SDK 2.3.348: If not moved after guess calibration matrix, the vector is empty.
+      calibrate.parameters ()[itmTransformations][i].setJson (robot_poses_json[i], false);
     }
 
     calibrate.execute ();  // Might take up to 120 sec (maximum allowed by Ensenso API)
