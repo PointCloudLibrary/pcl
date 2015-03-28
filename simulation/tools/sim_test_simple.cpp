@@ -91,7 +91,7 @@ int window_height_;
 bool paused_;
 bool write_file_;
 
-void printHelp (int argc, char **argv)
+void printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s <filename>\n", argv[0]);
   print_info ("acceptable filenames include vtk, obj and ply. ply can support colour\n");
@@ -156,8 +156,7 @@ void display_depth_image (const float* depth_buffer, int width, int height)
     float b = 0.075f;
     float f = 580.0f;
     uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
-    if (kd < 0) kd = 0;
-    else if (kd > 2047) kd = 2047;
+    if (kd > 2047) kd = 2047;
 
     int pval = t_gamma[kd];
     int lb = pval & 0xff;
@@ -449,7 +448,7 @@ void display ()
 
 // Handle normal keys
 void
-on_keyboard (unsigned char key, int x, int y)
+on_keyboard (unsigned char key, int, int)
 {
   double speed = 0.1;
 
@@ -478,7 +477,7 @@ on_keyboard (unsigned char key, int x, int y)
 
 // Handle special keys, e.g. F1, F2, ...
 void
-on_special(int key, int x, int y)
+on_special(int key, int, int)
 {
   switch (key) {
   case GLUT_KEY_F1:
@@ -497,7 +496,7 @@ on_reshape(int w, int h)
 }
 
 void
-on_mouse(int button, int state, int x, int y)
+on_mouse(int, int, int, int)
 {
   // button:
   // GLUT_LEFT_BUTTON
@@ -510,7 +509,7 @@ on_mouse(int button, int state, int x, int y)
 }
 
 void
-on_motion(int x, int y)
+on_motion(int, int)
 {
 }
 
@@ -526,7 +525,7 @@ on_passive_motion(int x, int y)
   camera_->setYaw (yaw);
 }
 
-void on_entry (int state)
+void on_entry (int)
 {
   // state:
   // GLUT_LEFT
@@ -554,7 +553,7 @@ void load_PolygonMesh_model (char* polygon_file)
 }
 
 void
-initialize (int argc, char** argv)
+initialize (int, char** argv)
 {
   const GLubyte* version = glGetString (GL_VERSION);
   std::cout << "OpenGL Version: " << version << std::endl;

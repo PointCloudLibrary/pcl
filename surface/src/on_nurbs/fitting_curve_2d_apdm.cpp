@@ -116,8 +116,6 @@ FittingCurve2dAPDM::refine (double xi)
 void
 FittingCurve2dAPDM::fitting (FitParameter &param)
 {
-  double avgerr (DBL_MAX);
-  double maxerr (DBL_MAX);
   bool stop (false);
   for (unsigned j = 0; j < param.iterations && !stop; j++)
   {

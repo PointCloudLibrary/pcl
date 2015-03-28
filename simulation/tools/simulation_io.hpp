@@ -59,8 +59,8 @@ namespace pcl
         uint16_t t_gamma[2048];  
     
         // of platter, usually 640x480
-        int width_;
         int height_;
+        int width_;
     };
   }
 }
