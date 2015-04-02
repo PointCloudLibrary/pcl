@@ -69,12 +69,6 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
-# ---[ Android check
-if (ANDROID)
-  set (PCL_SHARED_LIBS OFF)
-  message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
-endif()
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
@@ -379,7 +373,7 @@ if(WITH_VTK AND NOT ANDROID)
       set(VTK_FOUND TRUE)
       find_library (QVTK_LIBRARY_DEBUG NAMES "@QVTK_LIBRARY_DEBUG_NAME@")
       find_library (QVTK_LIBRARY_RELEASE NAMES "@QVTK_LIBRARY_RELEASE_NAME@")
-      set(QVTK_LIBRARY optimized ${QVTK_LIBRARY_RELEASE} debug ${QVTK_LIBRARY_DEBUG}) 
+      set(QVTK_LIBRARY optimized ${QVTK_LIBRARY_RELEASE} debug ${QVTK_LIBRARY_DEBUG})
       if (${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
          message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
          link_directories(${VTK_LIBRARY_DIRS})
