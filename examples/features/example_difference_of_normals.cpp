@@ -229,3 +229,4 @@ int main (int argc, char *argv[])
 		writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);
 	}
 }
+

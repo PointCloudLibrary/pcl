@@ -541,7 +541,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           }
 
           pcl::IterativeClosestPoint<PointInT, PointInT> reg;
-          reg.setInputCloud (model_aligned); //model
+          reg.setInputSource (model_aligned); //model
           reg.setInputTarget (cloud_voxelized_icp); //scene
           reg.setMaximumIterations (ICP_iterations_);
           reg.setMaxCorrespondenceDistance (VOXEL_SIZE_ICP_ * 3.f);
