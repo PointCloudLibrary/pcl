@@ -175,12 +175,12 @@ namespace pcl
       bool
       grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
 
-      /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso patterns
+      /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso 2D patterns
        * @param[in] grid_spacing
        * @return True if successful, false otherwise
        *
-       * Configure the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
-       * Discard all previous patterns, configure @c grid_spacing
+       * Configures the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
+       * Discards all previous patterns, configures @c grid_spacing
        * @warning A device must be opened and must not be running.
        * @note See the <a href="http://www.ensenso.de/manual/index.html?calibratehandeyeparameters.htm">Ensenso manual</a> for more
        * information about the extrinsic calibration process.
@@ -194,7 +194,7 @@ namespace pcl
       clearCalibrationPatternBuffer () const;
 
       /** @brief Captures a calibration pattern
-       * @return the number of calibration patterns stored, -1 on error
+       * @return the number of calibration patterns stored in the nxTree, -1 on error
        * @warning A device must be opened and must not be running.
        * @note You should use @ref initExtrinsicCalibration before */
       int
@@ -208,9 +208,9 @@ namespace pcl
       bool
       estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const;
 
-      /** @brief Computes the calibration matrices using the collected patterns and the robot poses
+      /** @brief Computes the calibration matrix using the collected patterns and the robot poses vector
        * @param[in] robot_poses A list of robot poses, 1 for each pattern acquired (in the same order)
-       * @param[out] json The calibration data in JSON format
+       * @param[out] json The extrinsic calibration data in JSON format
        * @param[in] setup Moving or Fixed, please refer to the Ensenso documentation
        * @param[in] target Please refer to the Ensenso documentation
        * @param[in] guess_tf Guess transformation for the calibration matrix (translation in meters)
@@ -227,13 +227,15 @@ namespace pcl
                                 const Eigen::Affine3d &guess_tf = Eigen::Affine3d::Identity (),
                                 const bool pretty_format = true) const;
 
-      /** @brief Stores the calibration previously computed in the EEPROM
+      /** @brief Copy the link defined in the Link node of the nxTree to the EEPROM
        * @return True if successful, false otherwise
-       * @note The target has already been specified in @ref computeCalibrationMatrix */
+       * Refer to @ref setExtrinsicCalibration for more information about how the EEPROM works.\n
+       * After calling @ref computeCalibrationMatrix, this enables to permanently store the matrix.
+       * @note The target must be specified (@ref computeCalibrationMatrix specifies the target) */
       bool
       storeEEPROMExtrinsicCalibration () const;
 
-      /** @brief Clear the extrinsic calibration stored in the EEPROM
+      /** @brief Clear the extrinsic calibration stored in the EEPROM by writing an identity matrix
        * @return True if successful, false otherwise */
       bool
       clearEEPROMExtrinsicCalibration ();
@@ -252,8 +254,8 @@ namespace pcl
        * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
-       * Make sure it is the identity transformation if you want the original point cloud!
-       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
+       * Make sure it is the identity transformation if you want the original point cloud! (use @ref clearEEPROMExtrinsicCalibration)
+       * Use @ref storeEEPROMExtrinsicCalibration to permanently store this transformation */
       bool
       setExtrinsicCalibration (const double euler_angle,
                                Eigen::Vector3d &rotation_axis,
@@ -278,8 +280,8 @@ namespace pcl
        * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
-       * Make sure it is the identity transformation if you want the original point cloud!
-       * Use @ref storeEEPROMExtrinsicCalibration to store this transformation */
+       * Make sure it is the identity transformation if you want the original point cloud! (use @ref clearEEPROMExtrinsicCalibration)
+       * Use @ref storeEEPROMExtrinsicCalibration to permanently store this transformation */
       bool
       setExtrinsicCalibration (const Eigen::Affine3d &transformation,
                                const std::string target = "Hand");
