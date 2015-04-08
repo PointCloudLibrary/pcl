@@ -77,7 +77,7 @@ namespace pcl
       typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
 
       typedef pcl::search::KdTree<PointSource> KdTreeReciprocal;
-      typedef typename KdTree::Ptr KdTreeReciprocalPtr;
+      typedef typename KdTreeReciprocal::Ptr KdTreeReciprocalPtr;
      
       typedef pcl::PointCloud<PointSource> PointCloudSource;
       typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
