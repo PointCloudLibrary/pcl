@@ -277,6 +277,36 @@ macro(find_ensenso)
   endif(ENSENSO_FOUND)
 endmacro(find_ensenso)
 
+#remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
+macro(find_davidSDK)
+  if(NOT davidSDK_ROOT AND ("ON" STREQUAL "ON"))
+    get_filename_component(DAVIDSDK_ABI_HINT @DAVIDSDK_INCLUDE_DIR@ PATH)
+  endif(NOT davidSDK_ROOT AND ("ON" STREQUAL "ON"))
+
+  find_path(DAVIDSDK_INCLUDE_DIR david.h
+            HINTS ${DAVIDSDK_ABI_HINT}
+            /usr/local/include/davidSDK
+            "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
+            PATH_SUFFIXES include/)
+
+  find_library(DAVIDSDK_LIBRARY QUIET NAMES davidSDK
+               HINTS ${DAVIDSDK_ABI_HINT}
+               "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
+               PATH_SUFFIXES lib/)
+
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(DAVIDSDK DEFAULT_MSG
+                                    DAVIDSDK_LIBRARY DAVIDSDK_INCLUDE_DIR)
+
+  if(DAVIDSDK_FOUND)
+    get_filename_component(DAVIDSDK_LIBRARY_PATH ${DAVIDSDK_LIBRARY} PATH)
+    set(DAVIDSDK_INCLUDE_DIRS ${DAVIDSDK_INCLUDE_DIR})
+    set(DAVIDSDK_LIBRARY_DIRS ${DAVIDSDK_LIBRARY_PATH})
+    set(DAVIDSDK_LIBRARIES "${DAVIDSDK_LIBRARY}")
+    set(DAVIDSDK_REDIST_DIR $ENV{DAVIDSDK_REDIST${DAVIDSDK_SUFFIX}})
+  endif(DAVIDSDK_FOUND)
+endmacro(find_davidSDK)
+
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
@@ -474,6 +504,8 @@ macro(find_external_library _component _lib _is_optional)
     find_openni2()
   elseif("${_lib}" STREQUAL "ensenso")
     find_ensenso()
+  elseif("${_lib}" STREQUAL "davidSDK")
+    find_davidSDK()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -750,7 +782,7 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)

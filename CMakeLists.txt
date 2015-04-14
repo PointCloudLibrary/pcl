@@ -297,6 +297,17 @@ if(WITH_ENSENSO)
   endif(ENSENSO_FOUND)
 endif(WITH_ENSENSO)
 
+# David Vision Systems - davidSDK
+option(WITH_DAVIDSDK "Build davidSDK support" TRUE)
+if(WITH_DAVIDSDK)
+  set(DAVIDSDK_ABI_DIR "davidSDK_ABI_DIR-NOTFOUND" CACHE PATH "directory of davidSDK ABI")
+  find_package(davidSDK) # FinddavidSDK.cmake
+  if (DAVIDSDK_FOUND)
+    set(HAVE_DAVIDSDK ON)
+    include_directories(SYSTEM "${DAVIDSDK_INCLUDE_DIRS}")
+  endif(DAVIDSDK_FOUND)
+endif(WITH_DAVIDSDK)
+
 # Intel Perceptional Computing Interface (PXCAPI)
 option(WITH_PXCAPI "Build PXC Device support" TRUE)
 if(WITH_PXCAPI)
