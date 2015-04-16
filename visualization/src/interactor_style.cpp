@@ -831,6 +831,24 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
       break;
     }
+
+    // Switch representation to wireframe (override default behavior)
+    case 'w': case 'W':
+    {
+      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
+      vtkCollectionSimpleIterator ait;
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
+      {
+        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+        {
+          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
+          apart->GetProperty ()->SetRepresentationToWireframe ();
+          apart->GetProperty ()->SetLighting (false);
+        }
+      }
+      break;
+    }
+
     // Save a PNG snapshot with the current screen
     case 'j': case 'J':
     {
@@ -992,7 +1010,20 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         Interactor->Render ();
       }
       else
-        Superclass::OnKeyDown ();
+      {
+        Superclass::OnKeyDown();
+        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+        vtkCollectionSimpleIterator ait;
+        for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);)
+        {
+          for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();)
+          {
+            vtkSmartPointer<vtkActor> apart = reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+            apart->GetProperty()->SetRepresentationToSurface();
+            apart->GetProperty()->SetLighting(true);
+          }
+        }
+      }
       break;
     }
 

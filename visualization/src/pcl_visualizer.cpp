@@ -2007,7 +2007,6 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2040,7 +2039,6 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2069,7 +2067,6 @@ pcl::visualization::PCLVisualizer::addCube (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2099,7 +2096,6 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   actor->GetProperty ()->SetColor (r,g,b);
   addActorToRenderer (actor, viewport);
 
@@ -2133,7 +2129,6 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2286,7 +2281,6 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2323,7 +2317,6 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2354,7 +2347,6 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2386,7 +2378,6 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2418,7 +2409,6 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -3248,6 +3238,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToSurface ();
+      actor->GetProperty ()->SetLighting(true);
     }
   }
 }
@@ -3286,6 +3277,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToWireframe ();
+      actor->GetProperty ()->SetLighting(false);
     }
   }
 }
