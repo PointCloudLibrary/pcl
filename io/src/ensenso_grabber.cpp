@@ -490,15 +490,15 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       double z = tf[itmRotation][itmAxis][2].asDouble ();   // Z component of Euler vector
       tf.erase(); // Delete tmpTF node
 
-      (*root_)[itmLink][itmRotation][itmAngle].set (theta);
-      (*root_)[itmLink][itmRotation][itmAxis][0].set (x);
-      (*root_)[itmLink][itmRotation][itmAxis][1].set (y);
-      (*root_)[itmLink][itmRotation][itmAxis][2].set (z);
+      calibrate.parameters ()[itmLink][itmRotation][itmAngle].set (theta);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][0].set (x);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][1].set (y);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][2].set (z);
 
       // Translation
-      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
-      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
-      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
     }
 
     // Feed all robot poses into the calibration command
