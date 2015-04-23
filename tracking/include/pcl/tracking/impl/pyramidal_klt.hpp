@@ -226,11 +226,9 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample (const Floa
 
   int width = (smoothed.width +1) / 2;
   int height = (smoothed.height +1) / 2;
-
-  int *ii = new int[width];
-  int *ii_ptr = ii;
+  std::vector<int> ii (width);
   for (int i = 0; i < width; ++i)
-    *ii_ptr++ = 2*i;
+    ii[i] = 2 * i;
 
   FloatImagePtr down (new FloatImage (width, height));
 #ifdef _OPENMP
