@@ -579,18 +579,18 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     distances.resize (1);
 
     // for each point in the concave hull, search for the nearest neighbor in the original point cloud
-
-    std::vector<int> indices;
-    indices.resize (alpha_shape.points.size ());
+    hull_indices_.header = input_->header;
+    hull_indices_.indices.clear ();
+    hull_indices_.indices.reserve (alpha_shape.points.size ());
 
     for (size_t i = 0; i < alpha_shape.points.size (); i++)
     {
       tree.nearestKSearch (alpha_shape.points[i], 1, neighbor, distances);
-      indices[i] = neighbor[0];
+      hull_indices_.indices.push_back (neighbor[0]);
     }
 
     // replace point with the closest neighbor in the original point cloud
-    pcl::copyPointCloud (*input_, indices, alpha_shape);
+    pcl::copyPointCloud (*input_, hull_indices_.indices, alpha_shape);
   }
 }
 #ifdef __GNUC__
@@ -617,6 +617,12 @@ pcl::ConcaveHull<PointInT>::performReconstruction (std::vector<pcl::Vertices> &p
   performReconstruction (hull_points, polygons);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT> void
+pcl::ConcaveHull<PointInT>::getHullPointIndices (pcl::PointIndices &hull_point_indices) const
+{
+  hull_point_indices = hull_indices_;
+}
 
 #define PCL_INSTANTIATE_ConcaveHull(T) template class PCL_EXPORTS pcl::ConcaveHull<T>;
 
