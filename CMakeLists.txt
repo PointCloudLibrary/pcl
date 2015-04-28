@@ -350,16 +350,17 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt4
-  find_package(Qt4)
-  if (QT4_FOUND)
-    include("${QT_USE_FILE}")
-  endif (QT4_FOUND)
-
-  # Find QT5
-  if(NOT QT4_FOUND)
-      include(cmake/pcl_find_qt5.cmake)
-  endif(NOT QT4_FOUND)
+  set(PCL_QT_VERSION 5 CACHE STRING "Which QT version to use")
+  if("${PCL_QT_VERSION}" STREQUAL "4")
+    find_package(Qt4)
+    if (QT4_FOUND)
+      include("${QT_USE_FILE}")
+    endif (QT4_FOUND)
+  elseif("${PCL_QT_VERSION}" STREQUAL "5")
+    include(cmake/pcl_find_qt5.cmake)
+  else()
+    message(SEND_ERROR "PCL_QT_VERSION must be 4 or 5")
+  endif()
 endif(WITH_QT)
 
 # Find VTK
