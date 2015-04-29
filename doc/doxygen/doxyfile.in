@@ -279,6 +279,7 @@ INCLUDE_FILE_PATTERNS  = *.h
 PREDEFINED =           = "HAVE_QHULL=1" \
                          "HAVE_OPENNI=1" \
                          "HAVE_ENSENSO=1" \
+                         "HAVE_DAVIDSDK=1" \
                          "PCL_DEPRECATED(x)="
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
