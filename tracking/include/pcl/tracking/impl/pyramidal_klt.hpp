@@ -232,7 +232,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::downsample (const Floa
 
   FloatImagePtr down (new FloatImage (width, height));
 #ifdef _OPENMP
-#pragma omp parallel for shared (output) private (ii) num_threads (threads_)
+#pragma omp parallel for shared (output) firstprivate (ii) num_threads (threads_)
 #endif
   for (int j = 0; j < height; ++j)
   {
