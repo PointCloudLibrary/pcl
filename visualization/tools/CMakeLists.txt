@@ -43,3 +43,8 @@ if(ENSENSO_FOUND AND BUILD_ENSENSO)
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ensenso_viewer ${SUBSYS_NAME} ensenso_viewer.cpp)
     target_link_libraries(pcl_ensenso_viewer pcl_common pcl_io pcl_visualization)
 endif()
+
+if(DAVIDSDK_FOUND AND BUILD_DAVIDSDK)
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_davidsdk_viewer ${SUBSYS_NAME} davidsdk_viewer.cpp)
+    target_link_libraries(pcl_davidsdk_viewer pcl_common pcl_io pcl_visualization)
+endif()
