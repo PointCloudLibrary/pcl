@@ -61,7 +61,7 @@ namespace pcl
   template <typename T> class PointCloud;
 
   /** @brief Grabber for IDS-Imaging Ensenso's devices.\n
-   * The <a href="http://www.ensenso.de/manual/">Ensenso SDK</a> allow to use multiple Ensenso devices to produce a single cloud.\n
+   * The [Ensenso SDK](http://www.ensenso.de/manual/) allow to use multiple Ensenso devices to produce a single cloud.\n
    * This feature is not implemented here, it is up to the user to configure multiple Ensenso cameras.\n
    * @author Victor Lamoine (victor.lamoine@gmail.com)\n
    * @ingroup io
@@ -150,7 +150,7 @@ namespace pcl
        * @param[in] trigger_mode
        * @param[in] use_disparity_map_area_of_interest
        * @return True if successful, false otherwise
-       * @note See <a href="http://www.ensenso.de/manual/index.html?capture.htm">Capture tree item</a> for more
+       * @note See [Capture tree item](http://www.ensenso.de/manual/index.html?capture.htm) for more
        * details about the parameters. */
       bool
       configureCapture (const bool auto_exposure = true,
@@ -182,9 +182,9 @@ namespace pcl
        * Configures the capture parameters to default values (eg: @c projector = @c false and @c front_light = @c true)
        * Discards all previous patterns, configures @c grid_spacing
        * @warning A device must be opened and must not be running.
-       * @note See the <a href="http://www.ensenso.de/manual/index.html?calibratehandeyeparameters.htm">Ensenso manual</a> for more
+       * @note See the [Ensenso manual](http://www.ensenso.de/manual/index.html?calibratehandeyeparameters.htm) for more
        * information about the extrinsic calibration process.
-       * @note <a href="http://www.ensenso.de/manual/index.html?gridsize.htm">GridSize</a> item is protected in the NxTree, you can't modify it.
+       * @note [GridSize](http://www.ensenso.de/manual/index.html?gridsize.htm) item is protected in the NxTree, you can't modify it.
        */
       bool
       initExtrinsicCalibration (const int grid_spacing) const;
@@ -250,7 +250,7 @@ namespace pcl
        * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
        * This method overwrites the Link node but does not write to the EEPROM.
        *
-       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * More information on the parameters can be found in [Link node](http://www.ensenso.de/manual/index.html?cameralink.htm)
        * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
@@ -276,7 +276,7 @@ namespace pcl
        * @note If a calibration has been stored in the EEPROM, it is copied in the Link node at nxLib tree start.
        * This method overwrites the Link node but does not write to the EEPROM.
        *
-       * More information on the parameters can be found in <a href="http://www.ensenso.de/manual/index.html?cameralink.htm">Link node</a>
+       * More information on the parameters can be found in [Link node](http://www.ensenso.de/manual/index.html?cameralink.htm)
        * section of the Ensenso manual.
        *
        * The point cloud you get from the Ensenso is already transformed using this calibration matrix.
@@ -290,7 +290,7 @@ namespace pcl
       float
       getFramesPerSecond () const;
 
-      /** @brief Open TCP port to enable access via the <a href="http://www.ensenso.de/manual/software_components.htm">nxTreeEdit</a> program.
+      /** @brief Open TCP port to enable access via the [nxTreeEdit](http://www.ensenso.de/manual/software_components.htm) program.
        * @param[in] port The port number
        * @return True if successful, false otherwise */
       bool
@@ -326,7 +326,7 @@ namespace pcl
        * @param[out] r The Roll angle
        * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       * @note See: [transformation page](http://www.ensenso.de/manual/transformation.htm) in the EnsensoSDK documentation
        */
       bool
       jsonTransformationToEulerAngles (const std::string &json,
@@ -344,7 +344,7 @@ namespace pcl
        * @param[out] translation Translation vector
        * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       * @note See: [transformation page](http://www.ensenso.de/manual/transformation.htm) in the EnsensoSDK documentation
        */
       bool
       jsonTransformationToAngleAxis (const std::string json,
@@ -358,7 +358,7 @@ namespace pcl
        * @param[out] matrix A matrix containing JSON transformation
        * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="index.html?cmdconverttransformation.htm">ConvertTransformation page</a> in the EnsensoSDK documentation
+       * @note See: [ConvertTransformation page](http://www.ensenso.de/manual/index.html?cmdconverttransformation.htm) in the EnsensoSDK documentation
        */
       bool
       jsonTransformationToMatrix (const std::string transformation,
@@ -376,7 +376,7 @@ namespace pcl
        * @param[in] pretty_format JSON formatting style
        * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       * @note See: [transformation page](http://www.ensenso.de/manual/transformation.htm) in the EnsensoSDK documentation
        */
       bool
       eulerAnglesTransformationToJson (const double x,
@@ -400,7 +400,7 @@ namespace pcl
        * @param[in] pretty_format JSON formatting style
        * @return True if successful, false otherwise
        * @warning The units are meters and radians! (the Euler axis doesn't need to be normalized)
-       * @note See: <a href="http://www.ensenso.de/manual/transformation.htm">transformation page</a> in the EnsensoSDK documentation
+       * @note See: [transformation page](http://www.ensenso.de/manual/transformation.htm) in the EnsensoSDK documentation
        */
       bool
       angleAxisTransformationToJson (const double x,
@@ -419,7 +419,7 @@ namespace pcl
        * @param[in] pretty_format JSON formatting style
        * @return True if successful, false otherwise
        * @warning The units are meters and radians!
-       * @note See: <a href="http://www.ensenso.de/manual/index.html?cmdconverttransformation.htm">ConvertTransformation page</a>
+       * @note See: [ConvertTransformation page](http://www.ensenso.de/manual/index.html?cmdconverttransformation.htm)
        * in the EnsensoSDK documentation */
       bool
       matrixTransformationToJson (const Eigen::Affine3d &matrix,
@@ -467,7 +467,7 @@ namespace pcl
        * @param[in] ensenso_stamp
        * @return PCL stamp
        * The Ensenso API returns the time elapsed from January 1st, 1601 (UTC); on Linux OS the reference time is January 1st, 1970 (UTC).
-       * See <a href="http://www.ensenso.de/manual/index.html?json_types.htm">timestamp page</a> for more info about the time stamp conversion. */
+       * See [time-stamp page](http://www.ensenso.de/manual/index.html?json_types.htm) for more info about the time stamp conversion. */
       pcl::uint64_t
       static
       getPCLStamp (const double ensenso_stamp);
