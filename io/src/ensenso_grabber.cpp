@@ -585,32 +585,13 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
     calibParams[itmTarget].set (target);
     calibParams[itmRotation][itmAngle].set (euler_angle);
 
-    /* FIXME: Bug in Ensenso API: http://ensenso.de/manual/index.html?about.htm see version 1.2.125
-     The re-normalisation is still not working proprely, when it does, use this code rather than the workaround
-     calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
-     calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
-     calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
-     */
+    calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
+    calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
+    calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
 
-    // Workaround
-    std::string axis_x, axis_y, axis_z;
-    axis_x = boost::lexical_cast<std::string> (rotation_axis[0]);
-    axis_y = boost::lexical_cast<std::string> (rotation_axis[1]);
-    axis_z = boost::lexical_cast<std::string> (rotation_axis[2]);
-    calibParams[itmRotation][itmAxis][0].setJson (axis_x);
-    calibParams[itmRotation][itmAxis][1].setJson (axis_y);
-    calibParams[itmRotation][itmAxis][2].setJson (axis_z);
-    // End of workaround
-
-    //calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
-    //calibParams[itmTranslation][1].set (translation[1] * 1000.0);
-    //calibParams[itmTranslation][2].set (translation[2] * 1000.0);
-    axis_x = boost::lexical_cast<std::string> (translation[0] * 1000.0);  // Convert in millimeters
-    axis_y = boost::lexical_cast<std::string> (translation[1] * 1000.0);
-    axis_z = boost::lexical_cast<std::string> (translation[2] * 1000.0);
-    calibParams[itmTranslation][0].setJson (axis_x);
-    calibParams[itmTranslation][1].setJson (axis_y);
-    calibParams[itmTranslation][2].setJson (axis_z);
+    calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
+    calibParams[itmTranslation][1].set (translation[1] * 1000.0);
+    calibParams[itmTranslation][2].set (translation[2] * 1000.0);
   }
   catch (NxLibException &ex)
   {
