@@ -118,7 +118,6 @@ namespace pcl
 }
 
 Q_DECLARE_METATYPE (pcl::cloud_composer::ToolBoxModel);
-Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
 Q_DECLARE_METATYPE (QStandardItemModel*);
 
 #endif //TOOLBOX_MODEL_H_

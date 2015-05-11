@@ -361,16 +361,17 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt4
-  find_package(Qt4)
-  if (QT4_FOUND)
-    include("${QT_USE_FILE}")
-  endif (QT4_FOUND)
-
-  # Find QT5
-  if(NOT QT4_FOUND)
-      include(cmake/pcl_find_qt5.cmake)
-  endif(NOT QT4_FOUND)
+  set(PCL_QT_VERSION 5 CACHE STRING "Which QT version to use")
+  if("${PCL_QT_VERSION}" STREQUAL "4")
+    find_package(Qt4)
+    if (QT4_FOUND)
+      include("${QT_USE_FILE}")
+    endif (QT4_FOUND)
+  elseif("${PCL_QT_VERSION}" STREQUAL "5")
+    include(cmake/pcl_find_qt5.cmake)
+  else()
+    message(SEND_ERROR "PCL_QT_VERSION must be 4 or 5")
+  endif()
 endif(WITH_QT)
 
 # Find VTK
@@ -382,9 +383,7 @@ if(WITH_VTK AND NOT ANDROID)
     if (PCL_SHARED_LIBS OR
         (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       set(VTK_FOUND TRUE)
-      find_library (QVTK_LIBRARY_DEBUG NAMES "@QVTK_LIBRARY_DEBUG_NAME@")
-      find_library (QVTK_LIBRARY_RELEASE NAMES "@QVTK_LIBRARY_RELEASE_NAME@")
-      set(QVTK_LIBRARY optimized ${QVTK_LIBRARY_RELEASE} debug ${QVTK_LIBRARY_DEBUG})
+      find_package (QVTK)
       if (${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
          message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
          link_directories(${VTK_LIBRARY_DIRS})
