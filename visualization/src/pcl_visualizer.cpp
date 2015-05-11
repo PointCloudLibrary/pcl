@@ -1995,13 +1995,18 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
     return (false);
   }
 
+  if (coefficients.values.size () != 7)
+  {
+    PCL_WARN ("[addCylinder] Coefficients size does not match expected size (expected 7).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createCylinder (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2022,13 +2027,18 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
     return (false);
   }
 
+  if (coefficients.values.size () != 10)
+  {
+    PCL_WARN ("[addCube] Coefficients size does not match expected size (expected 10).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createCube (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2056,8 +2066,7 @@ pcl::visualization::PCLVisualizer::addCube (
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2086,8 +2095,7 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetColor (r,g,b);
   addActorToRenderer (actor, viewport);
 
@@ -2109,13 +2117,18 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
     return (false);
   }
 
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addSphere] Coefficients size does not match expected size (expected 4).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createSphere (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2139,7 +2152,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
 
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (polydata, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2173,7 +2186,7 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   // Create an Actor
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2202,7 +2215,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (reader->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2236,7 +2249,7 @@ pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filen
   // Create an Actor
   vtkSmartPointer <vtkLODActor> actor;
   createActorFromVTKDataSet (trans_filter->GetOutput (), actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2256,13 +2269,18 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
     return (false);
   }
 
+  if (coefficients.values.size () != 6)
+  {
+    PCL_WARN ("[addLine] Coefficients size does not match expected size (expected 6).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createLine (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2287,14 +2305,18 @@ bool
     return (false);
   }
 
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addPlane] Coefficients size does not match expected size (expected 4).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createPlane (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-//  actor->GetProperty ()->SetRepresentationToWireframe ();
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2313,13 +2335,18 @@ bool
     return (false);
   }
 
+  if (coefficients.values.size () != 4)
+  {
+    PCL_WARN ("[addPlane] Coefficients size does not match expected size (expected 4).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createPlane (coefficients, x, y, z);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2339,13 +2366,18 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
     return (false);
   }
 
+  if (coefficients.values.size () != 3)
+  {
+    PCL_WARN ("[addCircle] Coefficients size does not match expected size (expected 3).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = create2DCircle (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2365,13 +2397,18 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
     return (false);
   }
 
+  if (coefficients.values.size () != 7)
+  {
+    PCL_WARN ("[addCone] Coefficients size does not match expected size (expected 7).\n");
+    return (false);
+  }
+
   vtkSmartPointer<vtkDataSet> data = createCone (coefficients);
 
   // Create an Actor
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetLighting (false);
+  actor->GetProperty ()->SetRepresentationToSurface ();
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2771,7 +2808,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     poly_grid->SetPoints (poly_points);
 
     createActorFromVTKDataSet (poly_grid, actor);
-    actor->GetProperty ()->SetRepresentationToWireframe ();
+    actor->GetProperty ()->SetRepresentationToSurface ();
   }
   else
   {
@@ -3201,6 +3238,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToSurface ();
+      actor->GetProperty ()->SetLighting(true);
     }
   }
 }
@@ -3239,6 +3277,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToWireframe ();
+      actor->GetProperty ()->SetLighting(false);
     }
   }
 }

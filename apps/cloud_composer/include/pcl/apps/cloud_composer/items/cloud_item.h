@@ -129,15 +129,14 @@ namespace pcl
         ColorHandler::ConstPtr color_handler_;
         GeometryHandler::ConstPtr geometry_handler_;
 
-       
-
         //We keep actual local copies of these.
         Eigen::Vector4f origin_;
         Eigen::Quaternionf orientation_;
         
+        bool template_cloud_set_;
+
         //Internal Storage of the templated type of this cloud
         int point_type_;
-        bool template_cloud_set_;
         
         bool
         checkIfFinite ();
@@ -151,7 +150,6 @@ namespace pcl
           qCritical () << "CloudItem::setPointType for type with no specialization";
           point_type_ = PointTypeFlags::NONE;
         }
-        
         
     };
     

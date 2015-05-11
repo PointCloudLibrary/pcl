@@ -30,7 +30,7 @@ using namespace std;
 
 SimExample::Ptr simexample;
 
-void printHelp (int argc, char **argv)
+void printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s <mode 1,2 or 3> <filename>\n", argv[0]);
   print_info ("acceptable filenames include vtk, obj and ply. ply can support colour\n");

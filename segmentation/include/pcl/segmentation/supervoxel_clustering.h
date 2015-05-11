@@ -187,9 +187,11 @@ namespace pcl
       /** \brief Constructor that sets default values for member variables. 
        *  \param[in] voxel_resolution The resolution (in meters) of voxels used
        *  \param[in] seed_resolution The average size (in meters) of resulting supervoxels
-       *  \param[in] use_single_camera_transform Set to true if point density in cloud falls off with distance from origin (such as with a cloud coming from one stationary camera), set false if input cloud is from multiple captures from multiple locations.
        */
-      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool use_single_camera_transform = true);
+      SupervoxelClustering (float voxel_resolution, float seed_resolution);
+
+      PCL_DEPRECATED ("SupervoxelClustering constructor with flag for using the single camera transform is deprecated. Default behavior is now to use the transform for organized clouds, and not use it for unorganized. To force use/disuse of the transform, use the setUseSingleCameraTransform(bool) function.")
+      SupervoxelClustering (float voxel_resolution, float seed_resolution, bool);
 
       /** \brief This destructor destroys the cloud, normals and search method used for
         * finding neighbors. In other words it frees memory.
@@ -225,6 +227,19 @@ namespace pcl
       void
       setNormalImportance (float val);
 
+      /** \brief Set whether or not to use the single camera transform 
+       *  \note By default it will be used for organized clouds, but not for unorganized - this parameter will override that behavior
+       *  The single camera transform scales bin size so that it increases exponentially with depth (z dimension).
+       *  This is done to account for the decreasing point density found with depth when using an RGB-D camera.
+       *  Without the transform, beyond a certain depth adjacency of voxels breaks down unless the voxel size is set to a large value.
+       *  Using the transform allows preserving detail up close, while allowing adjacency at distance.
+       *  The specific transform used here is:
+       *  x /= z; y /= z; z = ln(z);
+       *  This transform is applied when calculating the octree bins in OctreePointCloudAdjacency
+       */
+      void
+      setUseSingleCameraTransform (bool val);
+      
       /** \brief This method launches the segmentation algorithm and returns the supervoxels that were
        * obtained during the segmentation.
        * \param[out] supervoxel_clusters A map of labels to pointers to supervoxel structures
@@ -389,7 +404,15 @@ namespace pcl
       float spatial_importance_;
       /** \brief Importance of similarity in normals for clustering */
       float normal_importance_;
-
+      
+      /** \brief Whether or not to use the transform compressing depth in Z 
+       *  This is only checked if it has been manually set by the user.
+       *  The default behavior is to use the transform for organized, and not for unorganized.
+       */
+      bool use_single_camera_transform_;
+      /** \brief Whether to use default transform behavior or not */
+      bool use_default_transform_behaviour_;
+      
       /** \brief Internal storage class for supervoxels 
        * \note Stores pointers to leaves of clustering internal octree, 
        * \note so should not be used outside of clustering class 

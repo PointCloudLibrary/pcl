@@ -160,57 +160,63 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
 
   final_transformation_ = guess;
   bool abort = false;
-  std::vector <MatchingCandidates > all_candidates (max_iterations_);
+  std::vector <MatchingCandidates> all_candidates (max_iterations_);
   pcl::StopWatch timer;
 
   #ifdef _OPENMP
-  #pragma omp parallel for schedule (dynamic) num_threads (nr_threads_)
+  #pragma omp parallel num_threads (nr_threads_)
   #endif
-
-  for (int i = 0; i < max_iterations_; i++)
   {
-
     #ifdef _OPENMP
-    #pragma omp flush (abort)
+    std::srand (static_cast <unsigned int> (std::time (NULL)) ^ omp_get_thread_num ());    
+    #pragma omp for schedule (dynamic)
     #endif
-
-    MatchingCandidates candidates (1);
-    std::vector <int> base_indices (4);
-    float ratio[2];
-    all_candidates [i] = candidates;
-
-    if (!abort)
+    for (int i = 0; i < max_iterations_; i++)
     {
-      // select four coplanar point base
-      if (selectBase (base_indices, ratio) == 0)
-      {
-        // calculate candidate pair correspondences using diagonal lenghts of base
-        pcl::Correspondences pairs_a, pairs_b;
-        if (bruteForceCorrespondences (base_indices[0], base_indices[1], pairs_a) == 0 &&
-            bruteForceCorrespondences (base_indices[2], base_indices[3], pairs_b) == 0)
-        {
-          // determine candidate matches by combining pair correspondences based on segment distances
-          std::vector <std::vector <int> > matches;
-          if (determineBaseMatches (base_indices, matches, pairs_a, pairs_b, ratio) == 0)
-          {
-            // check and evaluate candidate matches and store them
-            handleMatches (base_indices, matches, candidates);
-            if (candidates.size () != 0)
-              all_candidates [i] = candidates;
-          }
-        }
-      }
-
-      // check terminate early (time or fitness_score threshold reached)
-      abort = (candidates.size () > 0 ? candidates[0].fitness_score < score_threshold_ : abort);
-      abort = (abort ? abort : timer.getTimeSeconds () > max_runtime_);
-
 
       #ifdef _OPENMP
       #pragma omp flush (abort)
       #endif
+
+      MatchingCandidates candidates (1);
+      std::vector <int> base_indices (4);
+      float ratio[2];
+      all_candidates[i] = candidates;
+
+      if (!abort)
+      {
+        // select four coplanar point base
+        if (selectBase (base_indices, ratio) == 0)
+        {
+          // calculate candidate pair correspondences using diagonal lenghts of base
+          pcl::Correspondences pairs_a, pairs_b;
+          if (bruteForceCorrespondences (base_indices[0], base_indices[1], pairs_a) == 0 &&
+            bruteForceCorrespondences (base_indices[2], base_indices[3], pairs_b) == 0)
+          {
+            // determine candidate matches by combining pair correspondences based on segment distances
+            std::vector <std::vector <int> > matches;
+            if (determineBaseMatches (base_indices, matches, pairs_a, pairs_b, ratio) == 0)
+            {
+              // check and evaluate candidate matches and store them
+              handleMatches (base_indices, matches, candidates);
+              if (candidates.size () != 0)
+                all_candidates[i] = candidates;
+            }
+          }
+        }
+
+        // check terminate early (time or fitness_score threshold reached)
+        abort = (candidates.size () > 0 ? candidates[0].fitness_score < score_threshold_ : abort);
+        abort = (abort ? abort : timer.getTimeSeconds () > max_runtime_);
+
+
+        #ifdef _OPENMP
+        #pragma omp flush (abort)
+        #endif
+      }
     }
   }
+  
 
   // determine best match over all trys
   finalCompute (all_candidates);
@@ -301,7 +307,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
 
   // set further parameter
-  if (score_threshold_ < FLT_MAX)
+  if (score_threshold_ == FLT_MAX)
     score_threshold_ = 1.f - approx_overlap_;
 
   if (max_iterations_ < 4)
@@ -554,8 +560,8 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
 
   // set intersection ratios
-  ratio[0] = (std::abs <float> (sN) < small_error_) ? 0.f : sN / sD;
-  ratio[1] = (std::abs <float> (tN) < small_error_) ? 0.f : tN / tD;
+  ratio[0] = (std::abs (sN) < small_error_) ? 0.f : sN / sD;
+  ratio[1] = (std::abs (tN) < small_error_) ? 0.f : tN / tD;
 
   Eigen::Vector3f x = w + (ratio[0] * u) - (ratio[1] * v);
   return (x.norm ());

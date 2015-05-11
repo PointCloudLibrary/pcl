@@ -454,23 +454,17 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
 {
   try
   {
+    std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > robot_poses_mm (robot_poses);
     std::vector<std::string> robot_poses_json;
     robot_poses_json.resize (robot_poses.size ());
     for (uint i = 0; i < robot_poses_json.size (); ++i)
     {
-      if (!matrixTransformationToJson (robot_poses[i], robot_poses_json[i]))
+      robot_poses_mm[i].translation () *= 1000.0; // Convert meters in millimeters
+      if (!matrixTransformationToJson (robot_poses_mm[i], robot_poses_json[i]))
         return (false);
     }
 
-    // Feed all robot poses into the calibration command
     NxLibCommand calibrate (cmdCalibrateHandEye);
-    for (uint i = 0; i < robot_poses_json.size (); ++i)
-    {
-      // Very weird behaviour here:
-      // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node
-      // because for an unknown reason sometimes the old transformations are erased in the tree ("null" in the tree)
-      calibrate.parameters ()[itmTransformations][i].setJson (robot_poses_json[i], false);
-    }
 
     // Set Hand-Eye calibration parameters
     if (boost::iequals (setup, "Fixed"))
@@ -489,12 +483,12 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
         return (false);
       tf.setJson (json);
 
-
       // Rotation
       double theta = tf[itmRotation][itmAngle].asDouble ();  // Angle of rotation
       double x = tf[itmRotation][itmAxis][0].asDouble ();   // X component of Euler vector
       double y = tf[itmRotation][itmAxis][1].asDouble ();   // Y component of Euler vector
       double z = tf[itmRotation][itmAxis][2].asDouble ();   // Z component of Euler vector
+      tf.erase(); // Delete tmpTF node
 
       (*root_)[itmLink][itmRotation][itmAngle].set (theta);
       (*root_)[itmLink][itmRotation][itmAxis][0].set (x);
@@ -502,9 +496,19 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       (*root_)[itmLink][itmRotation][itmAxis][2].set (z);
 
       // Translation
-      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0]);
-      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1]);
-      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2]);
+      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
+      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
+      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
+    }
+
+    // Feed all robot poses into the calibration command
+    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    {
+      // Very weird behavior here:
+      // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node
+      // because for an unknown reason sometimes the old transformations are erased in the tree ("null" in the tree)
+      // Ensenso SDK 2.3.348: If not moved after guess calibration matrix, the vector is empty.
+      calibrate.parameters ()[itmTransformations][i].setJson (robot_poses_json[i], false);
     }
 
     calibrate.execute ();  // Might take up to 120 sec (maximum allowed by Ensenso API)
@@ -515,7 +519,10 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       return (true);
     }
     else
+    {
+      json.clear ();
       return (false);
+    }
   }
   catch (NxLibException &ex)
   {
@@ -595,9 +602,15 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
     calibParams[itmRotation][itmAxis][2].setJson (axis_z);
     // End of workaround
 
-    calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
-    calibParams[itmTranslation][1].set (translation[1] * 1000.0);
-    calibParams[itmTranslation][2].set (translation[2] * 1000.0);
+    //calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
+    //calibParams[itmTranslation][1].set (translation[1] * 1000.0);
+    //calibParams[itmTranslation][2].set (translation[2] * 1000.0);
+    axis_x = boost::lexical_cast<std::string> (translation[0] * 1000.0);  // Convert in millimeters
+    axis_y = boost::lexical_cast<std::string> (translation[1] * 1000.0);
+    axis_z = boost::lexical_cast<std::string> (translation[2] * 1000.0);
+    calibParams[itmTranslation][0].setJson (axis_x);
+    calibParams[itmTranslation][1].setJson (axis_y);
+    calibParams[itmTranslation][2].setJson (axis_z);
   }
   catch (NxLibException &ex)
   {
@@ -764,6 +777,7 @@ pcl::EnsensoGrabber::jsonTransformationToAngleAxis (const std::string json,
     axis[0] = tf[itmRotation][itmAxis][0].asDouble ();  // X component of Euler vector
     axis[1] = tf[itmRotation][itmAxis][1].asDouble ();  // Y component of Euler vector
     axis[2] = tf[itmRotation][itmAxis][2].asDouble ();  // Z component of Euler vector
+    tf.erase(); // Delete tmpTF node
     return (true);
   }
   catch (NxLibException &ex)
@@ -915,7 +929,7 @@ pcl::EnsensoGrabber::matrixTransformationToJson (const Eigen::Affine3d &matrix,
     // Translation
     convert_transformation.parameters ()[itmTransformation][3][0].set (matrix.translation ()[0]);
     convert_transformation.parameters ()[itmTransformation][3][1].set (matrix.translation ()[1]);
-    convert_transformation.parameters ()[itmTransformation][3][2].set (matrix.translation ()[1]);
+    convert_transformation.parameters ()[itmTransformation][3][2].set (matrix.translation ()[2]);
     convert_transformation.parameters ()[itmTransformation][3][3].set (1.0);
 
     convert_transformation.execute ();
@@ -1069,3 +1083,4 @@ pcl::EnsensoGrabber::processGrabbing ()
     }
   }
 }
+

@@ -42,6 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
+#include <pcl/registration/incremental_icp.h>
 
 #include <string>
 #include <iostream>
@@ -71,22 +72,25 @@ main (int argc, char **argv)
   std::vector<int> pcd_indices;
   pcd_indices = pcl::console::parse_file_extension_argument (argc, argv, ".pcd");
 
-  CloudPtr model (new Cloud);
-  if (pcl::io::loadPCDFile (argv[pcd_indices[0]], *model) == -1)
+  pcl::IterativeClosestPoint<PointType, PointType>::Ptr icp;
+  if (nonLinear)
   {
-    std::cout << "Could not read file" << std::endl;
-    return -1;
+    std::cout << "Using IterativeClosestPointNonLinear" << std::endl;
+    icp.reset (new pcl::IterativeClosestPointNonLinear<PointType, PointType> ());
   }
-  std::cout << argv[pcd_indices[0]] << " width: " << model->width << " height: " << model->height << std::endl;
+  else
+  {
+    std::cout << "Using IterativeClosestPoint" << std::endl;
+    icp.reset (new pcl::IterativeClosestPoint<PointType, PointType> ());
+  }
+  icp->setMaximumIterations (iter);
+  icp->setMaxCorrespondenceDistance (dist);
+  icp->setRANSACOutlierRejectionThreshold (rans);
 
-  std::string result_filename (argv[pcd_indices[0]]);
-  result_filename = result_filename.substr (result_filename.rfind ("/") + 1);
-  pcl::io::savePCDFile (result_filename.c_str (), *model);
-  std::cout << "saving first model to " << result_filename << std::endl;
+  pcl::registration::IncrementalICP<PointType> iicp;
+  iicp.setICP (icp);
 
-  Eigen::Matrix4f t (Eigen::Matrix4f::Identity ());
-
-  for (size_t i = 1; i < pcd_indices.size (); i++)
+  for (size_t i = 0; i < pcd_indices.size (); i++)
   {
     CloudPtr data (new Cloud);
     if (pcl::io::loadPCDFile (argv[pcd_indices[i]], *data) == -1)
@@ -94,39 +98,18 @@ main (int argc, char **argv)
       std::cout << "Could not read file" << std::endl;
       return -1;
     }
-    std::cout << argv[pcd_indices[i]] << " width: " << data->width << " height: " << data->height << std::endl;
 
-    pcl::IterativeClosestPoint<PointType, PointType> *icp;
-
-    if (nonLinear)
+    if (!iicp.registerCloud (data))
     {
-      std::cout << "Using IterativeClosestPointNonLinear" << std::endl;
-      icp = new pcl::IterativeClosestPointNonLinear<PointType, PointType>();
-    }
-    else
-    {
-      std::cout << "Using IterativeClosestPoint" << std::endl;
-      icp = new pcl::IterativeClosestPoint<PointType, PointType>();
-    }
-
-    icp->setMaximumIterations (iter);
-    icp->setMaxCorrespondenceDistance (dist);
-    icp->setRANSACOutlierRejectionThreshold (rans);
-
-    icp->setInputTarget (model);
-
-    icp->setInputSource (data);
+      std::cout << "Registration failed. Resetting transform" << std::endl;
+      iicp.reset ();
+      iicp.registerCloud (data);
+    };
 
     CloudPtr tmp (new Cloud);
-    icp->align (*tmp);
+    pcl::transformPointCloud (*data, *tmp, iicp.getAbsoluteTransform ());
 
-    t = t * icp->getFinalTransformation ();
-
-    pcl::transformPointCloud (*data, *tmp, t);
-
-    std::cout << icp->getFinalTransformation () << std::endl;
-
-    *model = *data;
+    std::cout << iicp.getAbsoluteTransform () << std::endl;
 
     std::string result_filename (argv[pcd_indices[i]]);
     result_filename = result_filename.substr (result_filename.rfind ("/") + 1);

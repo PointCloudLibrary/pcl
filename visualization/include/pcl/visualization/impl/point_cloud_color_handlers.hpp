@@ -522,24 +522,27 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor (vtkSmart
   reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->GetPointer (0);
 
-  std::set<uint32_t> labels;
+
   std::map<uint32_t, pcl::RGB> colormap;
+  if (!static_mapping_)
+  {
+    std::set<uint32_t> labels;
+    // First pass: find unique labels
+    for (vtkIdType i = 0; i < nr_points; ++i)
+      labels.insert (cloud_->points[i].label);
 
-  // First pass: find unique labels
-  for (vtkIdType i = 0; i < nr_points; ++i)
-    labels.insert (cloud_->points[i].label);
-
-  // Assign Glasbey colors in ascending order of labels
-  size_t color = 0;
-  for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
-    colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
+    // Assign Glasbey colors in ascending order of labels
+    size_t color = 0;
+    for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
+      colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
+  }
 
   int j = 0;
   for (vtkIdType cp = 0; cp < nr_points; ++cp)
   {
     if (pcl::isFinite (cloud_->points[cp]))
     {
-      const pcl::RGB& color = colormap[cloud_->points[cp].label];
+      const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (cloud_->points[cp].label % GlasbeyLUT::size ()) : colormap[cloud_->points[cp].label];
       colors[j    ] = color.r;
       colors[j + 1] = color.g;
       colors[j + 2] = color.b;

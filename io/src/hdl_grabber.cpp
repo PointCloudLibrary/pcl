@@ -425,11 +425,11 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth,
 
   distanceM += correction.distanceCorrection;
 
-  double xyDistance = distanceM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
+  double xyDistance = distanceM * correction.cosVertCorrection;
 
   point.x = static_cast<float> (xyDistance * sinAzimuth - correction.horizontalOffsetCorrection * cosAzimuth);
   point.y = static_cast<float> (xyDistance * cosAzimuth + correction.horizontalOffsetCorrection * sinAzimuth);
-  point.z = static_cast<float> (distanceM * correction.sinVertCorrection + correction.cosVertOffsetCorrection);
+  point.z = static_cast<float> (distanceM * correction.sinVertCorrection + correction.verticalOffsetCorrection);
   point.intensity = static_cast<float> (laserReturn.intensity);
 }
 

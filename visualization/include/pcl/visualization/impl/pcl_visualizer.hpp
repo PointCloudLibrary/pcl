@@ -1139,9 +1139,9 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
   target_transformation.translation () = target_points->sensor_origin_.head (3);
 
-  int j = 0, idx = 0;
+  int j = 0;
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
+  for (size_t i = 0; i < correspondences.size (); i += nth, ++j)
   {
     if (correspondences[i].index_match == -1)
     {

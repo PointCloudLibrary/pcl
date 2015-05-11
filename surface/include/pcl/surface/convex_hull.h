@@ -166,6 +166,14 @@ namespace pcl
         return (dimension_);
       }
 
+      /** \brief Retrieve the indices of the input point cloud that for the convex hull.
+        *
+        * \note Should only be called after reconstruction was performed.
+        * \param[out] hull_point_indices The indices of the points forming the point cloud
+        */
+      void
+      getHullPointIndices (pcl::PointIndices &hull_point_indices) const;
+
     protected:
       /** \brief The actual reconstruction method. 
         * 
@@ -254,6 +262,9 @@ namespace pcl
 
       /* \brief z-axis - for checking valid projections. */
       const Eigen::Vector3d z_axis_;
+
+      /* \brief vector containing the point cloud indices of the convex hull points. */
+      pcl::PointIndices hull_indices_;
 
       public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW

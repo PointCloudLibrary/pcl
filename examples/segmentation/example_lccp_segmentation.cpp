@@ -284,7 +284,8 @@ LCCPSegmentation Parameters: \n\
 
   /// Preparation of Input: Supervoxel Oversegmentation
 
-  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution, use_single_cam_transform);
+  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution);
+  super.setUseSingleCameraTransform (use_single_cam_transform);
   super.setInputCloud (input_cloud_ptr);
   if (has_normals)
     super.setNormalCloud (input_normals_ptr);
@@ -324,8 +325,8 @@ LCCPSegmentation Parameters: \n\
 
   if (min_segment_size > 0)
   {
-    PCL_INFO ("Removing small segments\n");
-    lccp.removeSmallSegments (min_segment_size);
+    PCL_INFO ("Merging small segments\n");
+    lccp.mergeSmallSegments (min_segment_size);
   }
 
   PCL_INFO ("Interpolation voxel cloud -> input cloud and relabeling\n");

@@ -25,7 +25,7 @@ pcl::cloud_composer::FPFHEstimationTool::~FPFHEstimationTool ()
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
+pcl::cloud_composer::FPFHEstimationTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;

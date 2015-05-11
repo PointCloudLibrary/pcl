@@ -41,6 +41,8 @@
 #include <vtkCocoaRenderWindowInteractor.h>
 #include <vtkObjectFactory.h>
 
+#if ((VTK_MAJOR_VERSION < 6) || ((VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION < 2)))
+
 //----------------------------------------------------------------------------
 @interface vtkCocoaServerFix : NSObject
 {
@@ -213,4 +215,10 @@ vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
 {
   return (vtkCocoaRenderWindowInteractorFix::New ());
 }
-
+#else
+//----------------------------------------------------------------------------
+vtkRenderWindowInteractor* vtkRenderWindowInteractorFixNew ()
+{
+  return (vtkCocoaRenderWindowInteractor::New ());
+}
+#endif

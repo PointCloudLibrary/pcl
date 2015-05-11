@@ -37,6 +37,7 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/common/transforms.h>
 #include <vtkVersion.h>
 #include <vtkPLYReader.h>
@@ -187,11 +188,12 @@ main (int argc, char **argv)
     return (-1);
   }
 
-  vtkSmartPointer<vtkPolyData> polydata1;
+  vtkSmartPointer<vtkPolyData> polydata1 = vtkSmartPointer<vtkPolyData>::New ();;
   if (ply_file_indices.size () == 1)
   {
-    vtkSmartPointer<vtkPLYReader> readerQuery = vtkSmartPointer<vtkPLYReader>::New ();
-    readerQuery->SetFileName (argv[ply_file_indices[0]]);
+    pcl::PolygonMesh mesh;
+    pcl::io::loadPolygonFilePLY (argv[ply_file_indices[0]], mesh);
+    pcl::io::mesh2vtk (mesh, polydata1);
   }
   else if (obj_file_indices.size () == 1)
   {
