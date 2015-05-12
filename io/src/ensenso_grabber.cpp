@@ -452,6 +452,10 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
                                                const Eigen::Affine3d &guess_tf,
                                                const bool pretty_format) const
 {
+  if ( (*ensenso_ptr->root_)[itmVersion][itmMajor] < 2 && (*ensenso_ptr->root_)[itmVersion][itmMinor] < 3)
+    PCL_WARN ("EnsensoSDK 1.3.x fixes bugs into extrinsic calibration matrix optimization, please update your SDK!\n"
+              "http://www.ensenso.de/support/sdk-download/\n");
+
   try
   {
     std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > robot_poses_mm (robot_poses);
@@ -490,15 +494,15 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
       double z = tf[itmRotation][itmAxis][2].asDouble ();   // Z component of Euler vector
       tf.erase(); // Delete tmpTF node
 
-      (*root_)[itmLink][itmRotation][itmAngle].set (theta);
-      (*root_)[itmLink][itmRotation][itmAxis][0].set (x);
-      (*root_)[itmLink][itmRotation][itmAxis][1].set (y);
-      (*root_)[itmLink][itmRotation][itmAxis][2].set (z);
+      calibrate.parameters ()[itmLink][itmRotation][itmAngle].set (theta);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][0].set (x);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][1].set (y);
+      calibrate.parameters ()[itmLink][itmRotation][itmAxis][2].set (z);
 
       // Translation
-      (*root_)[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
-      (*root_)[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
-      (*root_)[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][0].set (guess_tf.translation ()[0] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][1].set (guess_tf.translation ()[1] * 1000.0);
+      calibrate.parameters ()[itmLink][itmTranslation][2].set (guess_tf.translation ()[2] * 1000.0);
     }
 
     // Feed all robot poses into the calibration command
@@ -585,32 +589,13 @@ pcl::EnsensoGrabber::setExtrinsicCalibration (const double euler_angle,
     calibParams[itmTarget].set (target);
     calibParams[itmRotation][itmAngle].set (euler_angle);
 
-    /* FIXME: Bug in Ensenso API: http://ensenso.de/manual/index.html?about.htm see version 1.2.125
-     The re-normalisation is still not working proprely, when it does, use this code rather than the workaround
-     calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
-     calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
-     calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
-     */
+    calibParams[itmRotation][itmAxis][0].set (rotation_axis[0]);
+    calibParams[itmRotation][itmAxis][1].set (rotation_axis[1]);
+    calibParams[itmRotation][itmAxis][2].set (rotation_axis[2]);
 
-    // Workaround
-    std::string axis_x, axis_y, axis_z;
-    axis_x = boost::lexical_cast<std::string> (rotation_axis[0]);
-    axis_y = boost::lexical_cast<std::string> (rotation_axis[1]);
-    axis_z = boost::lexical_cast<std::string> (rotation_axis[2]);
-    calibParams[itmRotation][itmAxis][0].setJson (axis_x);
-    calibParams[itmRotation][itmAxis][1].setJson (axis_y);
-    calibParams[itmRotation][itmAxis][2].setJson (axis_z);
-    // End of workaround
-
-    //calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
-    //calibParams[itmTranslation][1].set (translation[1] * 1000.0);
-    //calibParams[itmTranslation][2].set (translation[2] * 1000.0);
-    axis_x = boost::lexical_cast<std::string> (translation[0] * 1000.0);  // Convert in millimeters
-    axis_y = boost::lexical_cast<std::string> (translation[1] * 1000.0);
-    axis_z = boost::lexical_cast<std::string> (translation[2] * 1000.0);
-    calibParams[itmTranslation][0].setJson (axis_x);
-    calibParams[itmTranslation][1].setJson (axis_y);
-    calibParams[itmTranslation][2].setJson (axis_z);
+    calibParams[itmTranslation][0].set (translation[0] * 1000.0);  // Convert in millimeters
+    calibParams[itmTranslation][1].set (translation[1] * 1000.0);
+    calibParams[itmTranslation][2].set (translation[2] * 1000.0);
   }
   catch (NxLibException &ex)
   {
