@@ -452,6 +452,10 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
                                                const Eigen::Affine3d &guess_tf,
                                                const bool pretty_format) const
 {
+  if ( (*ensenso_ptr->root_)[itmVersion][itmMajor] < 2 && (*ensenso_ptr->root_)[itmVersion][itmMinor] < 3)
+    PCL_WARN ("EnsensoSDK 1.3.x fixes bugs into extrinsic calibration matrix optimization, please update your SDK!\n"
+              "http://www.ensenso.de/support/sdk-download/\n");
+
   try
   {
     std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > robot_poses_mm (robot_poses);
