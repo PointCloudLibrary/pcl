@@ -625,7 +625,7 @@ I/O
 
              Compatibility: >= PCL 1.8.0
 
-             In this tutorial, we will learn how to acquire point cloud or mesh data from an davidSDK scanner.
+             In this tutorial, we will learn how to acquire point cloud or mesh data from a davidSDK scanner.
      ======  ======
 
      .. |i_o8| image:: images/davidsdk/david.png

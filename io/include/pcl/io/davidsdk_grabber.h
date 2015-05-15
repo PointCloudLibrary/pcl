@@ -55,11 +55,11 @@ namespace pcl
   template <typename T> class PointCloud;
 
   /** @brief Grabber for davidSDK structured light compliant devices.\n
-   * The <a href="http://www.david-3d.com/en/products/david-sdk">davidSDK SDK</a> allows to use a structured light scanner to
+   * The [davidSDK SDK](http://www.david-3d.com/en/products/david-sdk) allows to use a structured light scanner to
    * fetch clouds/meshes.\n
    * The purpose of this grabber is NOT to provide all davidSDK functionalities but rather provide a PCL-unified interface to the sensor for
    * basic operations.\n
-   * Please consult the <a href="http://wiki.david-3d.com/david-wiki">David-3d wiki</a> for more information.
+   * Please consult the [David-3d wiki](http://wiki.david-3d.com/david-wiki) for more information.
    * @author Victor Lamoine (victor.lamoine@gmail.com)\n
    * @ingroup io
    */
@@ -96,7 +96,7 @@ namespace pcl
       virtual
       ~DavidSDKGrabber () throw ();
 
-      /** @brief <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a4b948e57a2e5e7f9cdcf1171c500aa24">Connect</a> client
+      /** @brief [Connect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a4b948e57a2e5e7f9cdcf1171c500aa24) client
        * @param[in] address
        * @param[in] port
        * @return Server info*/
@@ -104,7 +104,7 @@ namespace pcl
       connect (const std::string & address = "127.0.0.1",
                uint16_t port = david::DAVID_SDK_DefaultPort);
 
-      /** @brief <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a2770728a6de2c708df767bedf8be0814">Disconnect</a> client
+      /** @brief [Disconnect](http://docs.david-3d.com/sdk/en/classdavid_1_1_client_json_rpc.html#a2770728a6de2c708df767bedf8be0814) client
        * @param[in] stop_server */
       void
       disconnect (const bool stop_server);
@@ -147,7 +147,7 @@ namespace pcl
       setFileFormatToOBJ ();
 
       /** @brief Set @ref file_format_ to "ply"
-       * @warning This format is NOT available with trial versions of davidSDK server! */
+       * @warning This format is NOT available with trial versions of the davidSDK server! */
       void
       setFileFormatToPLY ();
 
@@ -187,9 +187,9 @@ namespace pcl
        * @param[in] grid_size Size of the calibration grid in millimeters
        * @return True if successful, false otherwise
        *
-       * More information <a href="http://wiki.david-3d.com/david3_user_manual/structured_light">here</a>.\n
-       * Also see <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_i_structured_light_scanner.html#a68e888636883d90aac7891d2ef9e6b27">ImportCalibration</a>.\n
-       * and <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_i_structured_light_scanner.html#a66817b07227f9a8852663d9141ae48db">ExportCalibration</a>.
+       * More information [here](http://wiki.david-3d.com/david3_user_manual/structured_light).\n
+       * Also see [ImportCalibration](http://docs.david-3d.com/sdk/en/classdavid_1_1_i_structured_light_scanner.html#a68e888636883d90aac7891d2ef9e6b27).\n
+       * and [ExportCalibration](http://docs.david-3d.com/sdk/en/classdavid_1_1_i_structured_light_scanner.html#a66817b07227f9a8852663d9141ae48db).
        *
        * @warning You MUST perform calibration each time you modify the camera/projector focus or move the camera relatively to the projector.\n
        */
@@ -199,14 +199,14 @@ namespace pcl
       /** @brief Capture a single point cloud and store it
        * @param[out] cloud The cloud to be filled
        * @return True if successful, false otherwise
-       * @warning Calls <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_i_shape_fusion.html#aed22e458b51f1361803360c02c2d1403">DeleteAllMeshes()</a> */
+       * @warning Calls [DeleteAllMeshes()](http://docs.david-3d.com/sdk/en/classdavid_1_1_i_shape_fusion.html#aed22e458b51f1361803360c02c2d1403) */
       bool
       grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
 
       /** @brief Capture a single mesh and store it
        * @param[out] mesh The mesh to be filled
        * @return True if successful, false otherwise
-       * @warning Calls <a href="http://docs.david-3d.com/sdk/en/classdavid_1_1_i_shape_fusion.html#aed22e458b51f1361803360c02c2d1403">DeleteAllMeshes()</a> */
+       * @warning Calls [DeleteAllMeshes()](http://docs.david-3d.com/sdk/en/classdavid_1_1_i_shape_fusion.html#aed22e458b51f1361803360c02c2d1403) */
       bool
       grabSingleMesh (pcl::PolygonMesh &mesh);
 
@@ -242,16 +242,16 @@ namespace pcl
       /** @brief Whether an davidSDK device is running or not */
       bool running_;
 
-      /** @brief Local path of directory where the scanning file will be located.\n
-       * Default value is @c C:/temp */
+      /** @brief Local path of directory where the scanning file will be located.
+       * @note Default value is @c C:/temp */
       std::string local_path_;
 
-      /** @brief Remote path of directory where the scanning file will be located.\n
-       * If this is empty, the @ref local_path_ will be used instead
+      /** @brief Remote path of directory where the scanning file will be located.
+       * @note If this is empty, the @ref local_path_ will be used instead
        * Default value is @c C:/temp */
       std::string remote_path_;
 
-      /** @brief Export file extension, available formats for PCL are OBJ, PLY */
+      /** @brief Export file extension, available formats are STL, OBJ, PLY */
       std::string file_format_;
 
       /** @brief processGrabbing capture/processing frequency */
