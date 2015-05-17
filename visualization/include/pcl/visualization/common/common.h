@@ -100,7 +100,8 @@ namespace pcl
       PCL_VISUALIZER_COLOR,
       PCL_VISUALIZER_REPRESENTATION,
       PCL_VISUALIZER_IMMEDIATE_RENDERING,
-      PCL_VISUALIZER_SHADING
+      PCL_VISUALIZER_SHADING,
+      PCL_VISUALIZER_LUT
     };
 
     enum RenderingRepresentationProperties
@@ -115,6 +116,17 @@ namespace pcl
       PCL_VISUALIZER_SHADING_FLAT,
       PCL_VISUALIZER_SHADING_GOURAUD,
       PCL_VISUALIZER_SHADING_PHONG
+    };
+
+    /*! Look up table for color representation of vtkPolyDataMapper.\n
+     * See [mathworks colormap page](http://www.mathworks.com/help/matlab/ref/colormap.html#input_argument_name) for images representations of the LUTs */
+    enum LookUpTableRepresentationProperties
+    { //
+      PCL_VISUALIZER_LUT_JET,
+      PCL_VISUALIZER_LUT_JET_INVERSE,
+      PCL_VISUALIZER_LUT_HSV,
+      PCL_VISUALIZER_LUT_HSV_INVERSE,
+      PCL_VISUALIZER_LUT_GREY
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////
