@@ -165,6 +165,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   style_->Initialize ();
   style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
+  style_->setShapeActorMap (shape_actor_map_);
   style_->UseTimersOn ();
   style_->setUseVbos(use_vbos_);
 
@@ -227,6 +228,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   style_->Initialize ();
   style_->setRendererCollection (rens_);
   style_->setCloudActorMap (cloud_actor_map_);
+  style_->setShapeActorMap (shape_actor_map_);
   style_->UseTimersOn ();
 
   // Get screen size
@@ -802,6 +804,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
     if (removeActorFromRenderer (am_it->second, viewport))
     {
       shape_actor_map_->erase (am_it);
+      style_->updateLookUpTableDisplay (false);
       return (true);
     }
   }
@@ -810,6 +813,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
     if (removeActorFromRenderer (ca_it->second.actor, viewport))
     {
       cloud_actor_map_->erase (ca_it);
+      style_->updateLookUpTableDisplay (false);
       return (true);
     }
   }
@@ -1634,6 +1638,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       }
       table->Build ();
       actor->GetMapper ()->SetLookupTable (table);
+      style_->updateLookUpTableDisplay (false);
       break;
     }
     default:
@@ -4278,6 +4283,14 @@ pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
 {
   use_vbos_ = use_vbos;
   style_->setUseVbos (use_vbos_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::visualization::PCLVisualizer::setLookUpTableID (const std::string id)
+{
+  style_->lut_actor_id_ = id;
+  style_->updateLookUpTableDisplay (false);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

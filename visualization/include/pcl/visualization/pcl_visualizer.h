@@ -1860,6 +1860,12 @@ namespace pcl
         void
         setUseVbos (bool use_vbos);
 
+        /** \brief Set the ID of a cloud or shape to be used for LUT display
+          * \param[in] id The id of the cloud/shape look up table to be displayed
+          * The look up table is displayed by pressing 'u' in the PCLVisualizer */
+        void
+        setLookUpTableID (const std::string id);
+
         /** \brief Create the internal Interactor object. */
         void
         createInteractor ();
