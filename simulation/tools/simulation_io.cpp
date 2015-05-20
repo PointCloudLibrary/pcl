@@ -111,7 +111,6 @@ pcl::simulation::SimExample::doSim (Eigen::Isometry3d pose_in)
 
   std::vector<Eigen::Isometry3d, Eigen::aligned_allocator<Eigen::Isometry3d> > poses;
   std::vector<float> scores;
-  int n = 1;
   poses.push_back (pose_in);
   rl_->computeLikelihoods (reference, poses, scores);
   std::cout << "camera: " << camera_->getX ()
@@ -182,7 +181,6 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer, std::s
       int i= y*width_ + x ;
       int i_in= (height_-1 -y) *width_ + x ; // flip up down
     
-    
       float zn = 0.7;
       float zf = 20.0;
       float d = depth_buffer[i_in];
@@ -190,8 +188,7 @@ pcl::simulation::SimExample::write_depth_image(const float* depth_buffer, std::s
       float b = 0.075;
       float f = 580.0;
       uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
-      if (kd < 0) kd = 0;
-      else if (kd>2047) kd = 2047;
+      if (kd>2047) kd = 2047;
 
       int pval = t_gamma[kd];
       int lb = pval & 0xff;
@@ -268,8 +265,7 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer, s
       float d = depth_buffer[i_in];
       
       unsigned short z_new = (unsigned short)  floor( 1000*( -zf*zn/((zf-zn)*(d - zf/(zf-zn)))));
-      if (z_new < 0) z_new = 0;
-      else if (z_new>65535) z_new = 65535;
+      if (z_new>65535) z_new = 65535;
       
       if ( z_new < 18000){
 	  cout << z_new << " " << d << " " << x << "\n";  
@@ -279,11 +275,8 @@ pcl::simulation::SimExample::write_depth_image_uint(const float* depth_buffer, s
       float b = 0.075;
       float f = 580.0;
       uint16_t kd = static_cast<uint16_t>(1090 - b*f/z*8);
-      if (kd < 0) kd = 0;
-      else if (kd>2047) kd = 2047;
+      if (kd>2047) kd = 2047;
 
-      int pval = t_gamma[kd];
-      int lb = pval & 0xff;
       depth_img[i] = z_new;
     }
   }

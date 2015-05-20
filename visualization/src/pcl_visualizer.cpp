@@ -91,6 +91,7 @@
 #include <vtkPNMReader.h>
 #include <vtkPNGReader.h>
 #include <vtkTIFFReader.h>
+#include <vtkLookupTable.h>
 
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -1575,6 +1576,52 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->Modified ();
       break;
     }
+    case PCL_VISUALIZER_LUT:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+
+      double range[2];
+      actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+      actor->GetMapper ()->ScalarVisibilityOn ();
+      actor->GetMapper ()->SetScalarRange (range[0], range[1]);
+      vtkSmartPointer<vtkLookupTable> table = vtkSmartPointer<vtkLookupTable>::New ();
+      table->SetRange (range[0], range[1]);
+
+      switch (int (value))
+      {
+        case PCL_VISUALIZER_LUT_JET:
+          table->SetHueRange (0, 0.667);
+          table->SetSaturationRange (1, 1);
+          table->SetAlphaRange (1, 1);
+          break;
+        case PCL_VISUALIZER_LUT_JET_INVERSE:
+          table->SetHueRange (0.667, 0);
+          table->SetSaturationRange (1, 1);
+          table->SetAlphaRange (1, 1);
+          break;
+        case PCL_VISUALIZER_LUT_HSV:
+          table->SetHueRange (0, 1);
+          table->SetSaturationRange (1, 1);
+          table->SetAlphaRange (1, 1);
+          break;
+        case PCL_VISUALIZER_LUT_HSV_INVERSE:
+          table->SetHueRange (1, 0);
+          table->SetSaturationRange (1, 1);
+          table->SetAlphaRange (1, 1);
+          break;
+        case PCL_VISUALIZER_LUT_GREY:
+          table->SetValueRange (0, 1);
+          table->SetHueRange (0, 0);
+          table->SetSaturationRange (0, 0);
+          table->SetAlphaRange (1, 1);
+          break;
+      }
+      table->Build ();
+      actor->GetMapper ()->SetLookupTable (table);
+      break;
+    }
     default:
     {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
@@ -2007,7 +2054,6 @@ pcl::visualization::PCLVisualizer::addCylinder (const pcl::ModelCoefficients &co
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2040,7 +2086,6 @@ pcl::visualization::PCLVisualizer::addCube (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2069,7 +2114,6 @@ pcl::visualization::PCLVisualizer::addCube (
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2099,7 +2143,6 @@ pcl::visualization::PCLVisualizer::addCube (float x_min, float x_max,
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   actor->GetProperty ()->SetColor (r,g,b);
   addActorToRenderer (actor, viewport);
 
@@ -2133,7 +2176,6 @@ pcl::visualization::PCLVisualizer::addSphere (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2199,6 +2241,37 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
   return (true);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::addModelFromPolyData (vtkSmartPointer<vtkPolyDataMapper> polydatamapper,
+                                                         const std::string & id,
+                                                         int viewport)
+{
+  if (contains (id))
+  {
+    pcl::console::print_warn (stderr,
+                              "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
+                              id.c_str ());
+    return (false);
+  }
+
+  // Check if mesh has color information
+  if (polydatamapper->GetInput ()->GetPointData ()->GetScalars ())
+  {
+    double range[2];
+    polydatamapper->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+    polydatamapper->ScalarVisibilityOn ();
+    polydatamapper->SetScalarRange (range[0], range[1]);
+  }
+
+  vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New ();
+  actor->SetMapper (polydatamapper);
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  (*shape_actor_map_)[id] = actor;
+  return (true);
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
@@ -2286,7 +2359,6 @@ pcl::visualization::PCLVisualizer::addLine (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2323,7 +2395,6 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2354,7 +2425,6 @@ bool
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2386,7 +2456,6 @@ pcl::visualization::PCLVisualizer::addCircle (const pcl::ModelCoefficients &coef
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -2418,7 +2487,6 @@ pcl::visualization::PCLVisualizer::addCone (const pcl::ModelCoefficients &coeffi
   vtkSmartPointer<vtkLODActor> actor;
   createActorFromVTKDataSet (data, actor);
   actor->GetProperty ()->SetRepresentationToSurface ();
-  actor->GetProperty ()->SetLighting (false);
   addActorToRenderer (actor, viewport);
 
   // Save the pointer/ID pair to the global actor map
@@ -3248,6 +3316,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToSurfaceForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToSurface ();
+      actor->GetProperty ()->SetLighting(true);
     }
   }
 }
@@ -3286,6 +3355,7 @@ pcl::visualization::PCLVisualizer::setRepresentationToWireframeForAllActors ()
     while ((actor = actors->GetNextActor ()) != NULL)
     {
       actor->GetProperty ()->SetRepresentationToWireframe ();
+      actor->GetProperty ()->SetLighting(false);
     }
   }
 }

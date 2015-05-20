@@ -579,6 +579,18 @@ namespace pcl
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
 
+        /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this vizualizer.
+          * \param[in] id the id of the cloud, shape, or coordinate to check
+          * \return true if a cloud, shape, or coordinate with the specified id was found
+          */
+        inline bool
+        contains(const std::string &id) const
+        {
+          return (cloud_actor_map_->find (id) != cloud_actor_map_->end () ||
+                  shape_actor_map_->find (id) != shape_actor_map_->end () ||
+                  coordinate_actor_map_->find (id) != coordinate_actor_map_-> end());
+        }
+
         /** \brief Add the estimated surface normals of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing XYZ data and normals
           * \param[in] level display only every level'th point (default: 100)
@@ -1390,6 +1402,18 @@ namespace pcl
                               vtkSmartPointer<vtkTransform> transform,
                               const std::string &id = "PolyData",
                               int viewport = 0);
+
+        /** \brief Add a vtkPolyDataMapper as a mesh
+         * \param[in] polydatamapper vtkPolyDataMapper
+         * \param[in] id the model id/name (default: "PolyDataMapper")
+         * \param[in] viewport (optional) the id of the new viewport (default: 0)
+         * \return True if successful, false otherwise
+         * \note This allows to display a colored mesh, also see \ref PCL_VISUALIZER_LUT.
+         */
+       bool
+       addModelFromPolyData (vtkSmartPointer<vtkPolyDataMapper> polydatamapper,
+                             const std::string & id = "PolyDataMapper",
+                             int viewport = 0);
 
         /** \brief Add a PLYmodel as a mesh
           * \param[in] filename of the ply file

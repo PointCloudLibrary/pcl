@@ -65,6 +65,11 @@
 #include <QThread>
 #include <QMessageBox>
 #include <QPair>
+#include <QStyledItemDelegate>
+#include <QUndoGroup>
+#include <QFileDialog>
+#include <QAction>
+#include <QGridLayout>
 
 
 #endif // CLOUD_COMPOSER_QT_H_
