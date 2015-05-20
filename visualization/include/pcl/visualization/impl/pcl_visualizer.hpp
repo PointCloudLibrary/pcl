@@ -82,12 +82,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudGeometryHandler<PointT> &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -103,13 +100,11 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const GeometryHandlerConstPtr &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
+    CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
     am_it->second.geometry_handlers.push_back (geometry_handler);
     return (true);
   }
@@ -126,12 +121,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudColorHandler<PointT> &color_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
 
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
@@ -194,12 +186,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudGeometryHandler<PointT> &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
     //cloud_actor_map_[id].geometry_handlers.push_back (geometry_handler);
@@ -454,11 +443,9 @@ pcl::visualization::PCLVisualizer::addPolygon (
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addLine] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -481,11 +468,9 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -510,11 +495,9 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, bool display_length, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -545,11 +528,9 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
                                             double r_text, double g_text, double b_text,
                                             const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -583,11 +564,9 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addSphere] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -632,13 +611,14 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 template<typename PointT> bool
 pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it == shape_actor_map_->end ())
+  if (contains (id))
+  {
     return (false);
+  }
 
   //////////////////////////////////////////////////////////////////////////
   // Get the actor pointer
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
 #if VTK_MAJOR_VERSION < 6
   vtkAlgorithm *algo = actor->GetMapper ()->GetInput ()->GetProducerPort ()->GetProducer ();
@@ -674,11 +654,9 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (tid))
   {
-    pcl::console::print_warn (stderr, "[addText3d] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -744,12 +722,9 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloudNormals] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloudNormals] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -872,12 +847,10 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
     pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
     return (false);
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
 
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    pcl::console::print_warn (stderr, "[addPointCloudPrincipalCurvatures] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloudPrincipalCurvatures] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -989,12 +962,9 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     PCL_ERROR ("[addPointCloudGradients] The number of points differs from the number of gradients!\n");
     return (false);
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloudGradients] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloudGradients] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1139,9 +1109,9 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   target_transformation.linear () = target_points->sensor_orientation_.matrix ();
   target_transformation.translation () = target_points->sensor_origin_.head (3);
 
-  int j = 0, idx = 0;
+  int j = 0;
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
+  for (size_t i = 0; i < correspondences.size (); i += nth, ++j)
   {
     if (correspondences[i].index_match == -1)
     {
@@ -1571,12 +1541,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   if (vertices.empty () || cloud->points.empty ())
     return (false);
 
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    pcl::console::print_warn (stderr, 
-                                "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
-                                id.c_str ());
+    PCL_WARN ("[addPolygonMesh] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 

@@ -9,7 +9,11 @@
 
 #include <pcl/apps/cloud_composer/tools/impl/organized_segmentation.hpp>
 
-Q_EXPORT_PLUGIN2(cloud_composer_organized_segmentation_tool, pcl::cloud_composer::OrganizedSegmentationToolFactory)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  Q_EXPORT_PLUGIN2(cloud_composer_organized_segmentation_tool, pcl::cloud_composer::OrganizedSegmentationToolFactory)
+#else
+  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+#endif
 
 pcl::cloud_composer::OrganizedSegmentationTool::OrganizedSegmentationTool (PropertiesModel* parameter_model, QObject* parent)
 : SplitItemTool (parameter_model, parent)

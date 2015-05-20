@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -154,6 +154,23 @@ if(build)
             )
     endif(ENSENSO_FOUND)
 
+    ## davidSDK
+    OPTION(BUILD_DAVIDSDK "Build the davidSDK Grabber." ON)
+    MARK_AS_ADVANCED(BUILD_DAVIDSDK)
+    if(NOT BUILD_DAVIDSDK)
+      # Set DAVIDSDK_FOUND to false locally to avoid building anything davidSDK related
+      # Remember that other modules (libraries) need to check explicitly for BUILD_DAVIDSDK
+      set(DAVIDSDK_FOUND FALSE)
+    endif()
+    if(DAVIDSDK_FOUND)
+        set(DAVIDSDK_GRABBER_INCLUDES
+            include/pcl/io/davidsdk_grabber.h
+            )
+        set(DAVIDSDK_GRABBER_SOURCES
+            src/davidsdk_grabber.cpp
+            )
+    endif(DAVIDSDK_FOUND)
+
 	if(PXCAPI_FOUND)
 		set(PXC_GRABBER_INCLUDES
 			include/pcl/io/pxc_grabber.h
@@ -225,6 +242,7 @@ if(build)
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
         ${ENSENSO_GRABBER_SOURCES}
+        ${DAVIDSDK_GRABBER_SOURCES}
         ${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
@@ -269,6 +287,7 @@ if(build)
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
         ${ENSENSO_GRABBER_INCLUDES}
+        ${DAVIDSDK_GRABBER_INCLUDES}
         ${PXC_GRABBER_INCLUDES}
         )
 
@@ -339,6 +358,10 @@ if(build)
     if(ENSENSO_FOUND)
       target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
     endif(ENSENSO_FOUND)
+
+    if(DAVIDSDK_FOUND)
+      target_link_libraries(${LIB_NAME} ${DAVIDSDK_LIBRARIES})
+    endif(DAVIDSDK_FOUND)
 
 	if(PXCAPI_FOUND)
 	  link_directories(${PXCAPI_LIB_DIRS})

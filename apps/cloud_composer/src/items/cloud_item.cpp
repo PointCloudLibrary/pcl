@@ -113,7 +113,6 @@ pcl::cloud_composer::CloudItem::setTemplateCloudFromBlob ()
 {
   if (! template_cloud_set_ )
   {
-    int num_fields = cloud_blob_ptr_->fields.size ();
     std::vector<pcl::PCLPointField>::iterator end = cloud_blob_ptr_->fields.end ();
     std::vector<pcl::PCLPointField>::iterator itr = cloud_blob_ptr_->fields.begin ();
     QStringList field_names;

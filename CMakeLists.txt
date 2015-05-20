@@ -69,12 +69,6 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
-# ---[ Android check
-if (ANDROID)
-  set (PCL_SHARED_LIBS OFF)
-  message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
-endif()
-
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
@@ -303,6 +297,17 @@ if(WITH_ENSENSO)
   endif(ENSENSO_FOUND)
 endif(WITH_ENSENSO)
 
+# David Vision Systems - davidSDK
+option(WITH_DAVIDSDK "Build davidSDK support" TRUE)
+if(WITH_DAVIDSDK)
+  set(DAVIDSDK_ABI_DIR "davidSDK_ABI_DIR-NOTFOUND" CACHE PATH "directory of davidSDK ABI")
+  find_package(davidSDK) # FinddavidSDK.cmake
+  if (DAVIDSDK_FOUND)
+    set(HAVE_DAVIDSDK ON)
+    include_directories(SYSTEM "${DAVIDSDK_INCLUDE_DIRS}")
+  endif(DAVIDSDK_FOUND)
+endif(WITH_DAVIDSDK)
+
 # Intel Perceptional Computing Interface (PXCAPI)
 option(WITH_PXCAPI "Build PXC Device support" TRUE)
 if(WITH_PXCAPI)
@@ -356,16 +361,17 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt4
-  find_package(Qt4)
-  if (QT4_FOUND)
-    include("${QT_USE_FILE}")
-  endif (QT4_FOUND)
-
-  # Find QT5
-  if(NOT QT4_FOUND)
-      include(cmake/pcl_find_qt5.cmake)
-  endif(NOT QT4_FOUND)
+  set(PCL_QT_VERSION 5 CACHE STRING "Which QT version to use")
+  if("${PCL_QT_VERSION}" STREQUAL "4")
+    find_package(Qt4)
+    if (QT4_FOUND)
+      include("${QT_USE_FILE}")
+    endif (QT4_FOUND)
+  elseif("${PCL_QT_VERSION}" STREQUAL "5")
+    include(cmake/pcl_find_qt5.cmake)
+  else()
+    message(SEND_ERROR "PCL_QT_VERSION must be 4 or 5")
+  endif()
 endif(WITH_QT)
 
 # Find VTK
@@ -377,9 +383,7 @@ if(WITH_VTK AND NOT ANDROID)
     if (PCL_SHARED_LIBS OR
         (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       set(VTK_FOUND TRUE)
-      find_library (QVTK_LIBRARY_DEBUG NAMES "@QVTK_LIBRARY_DEBUG_NAME@")
-      find_library (QVTK_LIBRARY_RELEASE NAMES "@QVTK_LIBRARY_RELEASE_NAME@")
-      set(QVTK_LIBRARY optimized ${QVTK_LIBRARY_RELEASE} debug ${QVTK_LIBRARY_DEBUG}) 
+      find_package (QVTK)
       if (${VTK_MAJOR_VERSION} VERSION_LESS "6.0")
          message(STATUS "VTK found (include: ${VTK_INCLUDE_DIRS}, lib: ${VTK_LIBRARY_DIRS})")
          link_directories(${VTK_LIBRARY_DIRS})

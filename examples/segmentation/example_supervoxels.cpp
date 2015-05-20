@@ -331,8 +331,6 @@ main (int argc, char ** argv)
   
   std::cout << "Constructing Boost Graph Library Adjacency List...\n";
   typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, uint32_t, float> VoxelAdjacencyList;
-  typedef VoxelAdjacencyList::vertex_descriptor VoxelID;
-  typedef VoxelAdjacencyList::edge_descriptor EdgeID;
   VoxelAdjacencyList supervoxel_adjacency_list;
   super.getSupervoxelAdjacencyList (supervoxel_adjacency_list);
 

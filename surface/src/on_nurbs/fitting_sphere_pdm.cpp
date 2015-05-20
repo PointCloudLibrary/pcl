@@ -161,7 +161,7 @@ FittingSphere::setInvMapParams (int in_max_steps, double in_accuracy)
 }
 
 ON_NurbsSurface
-FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector3d pole_axis)
+FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector3d)
 {
   Eigen::Vector3d mean = NurbsTools::computeMean (data->interior);
 

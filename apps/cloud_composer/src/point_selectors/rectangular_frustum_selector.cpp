@@ -90,8 +90,6 @@ pcl::cloud_composer::RectangularFrustumSelector::OnLeftButtonUp ()
   selected_mapper->SetInputData (all_points);
 #endif
   selected_mapper->ScalarVisibilityOff ();
-
-  vtkIdTypeArray* ids = vtkIdTypeArray::SafeDownCast (all_points->GetPointData ()->GetArray ("OriginalIds"));
   
   selected_actor->GetProperty ()->SetColor (0.0, 1.0, 0.0); //(R,G,B)
   selected_actor->GetProperty ()->SetPointSize (3);

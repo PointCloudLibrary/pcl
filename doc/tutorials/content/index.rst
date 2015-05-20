@@ -616,6 +616,20 @@ I/O
      .. |i_o7| image:: images/ensenso/ids.png
                :height: 165px
 
+  * :ref:`david_sdk`
+
+     ======  ======
+     |i_o8|  Title: **Grabbing point clouds / meshes from davidSDK scanners**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: >= PCL 1.8.0
+
+             In this tutorial, we will learn how to acquire point cloud or mesh data from a davidSDK scanner.
+     ======  ======
+
+     .. |i_o8| image:: images/davidsdk/david.png
+               :height: 70px
 
 .. _keypoints_tutorial:
 

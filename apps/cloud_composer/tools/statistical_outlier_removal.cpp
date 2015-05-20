@@ -4,9 +4,11 @@
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/point_types.h>
 
-
-Q_EXPORT_PLUGIN2(cloud_composer_statistical_outlier_removal_tool, pcl::cloud_composer::StatisticalOutlierRemovalToolFactory)
-
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  Q_EXPORT_PLUGIN2(cloud_composer_statistical_outlier_removal_tool, pcl::cloud_composer::StatisticalOutlierRemovalToolFactory)
+#else
+  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+#endif
 
 pcl::cloud_composer::StatisticalOutlierRemovalTool::StatisticalOutlierRemovalTool (PropertiesModel* parameter_model, QObject* parent)
   : ModifyItemTool (parameter_model, parent)
@@ -21,7 +23,7 @@ pcl::cloud_composer::StatisticalOutlierRemovalTool::~StatisticalOutlierRemovalTo
 }
 
 QList <pcl::cloud_composer::CloudComposerItem*>
-pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList input_data, PointTypeFlags::PointType type)
+pcl::cloud_composer::StatisticalOutlierRemovalTool::performAction (ConstItemList input_data, PointTypeFlags::PointType)
 {
   QList <CloudComposerItem*> output;
   const CloudComposerItem* input_item;
