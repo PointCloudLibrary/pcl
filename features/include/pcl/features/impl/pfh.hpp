@@ -153,7 +153,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         if (key_list_.size () > max_cache_size_)
         {
           // Remove the last element.
-          feature_map_.erase (key_list_.front() );
+          feature_map_.erase (key_list_.back ());
           key_list_.pop ();
         }
       }
