@@ -125,7 +125,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       return;
     }
 
-    float badpt = std::numeric_limits<float>::quiet_NaN ();
+    float badpt = user_filter_value_;
     // Check whether we need to store filtered valued in place
     if (keep_organized_)
     {
