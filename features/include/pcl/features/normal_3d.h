@@ -56,7 +56,7 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void
+  template <typename PointT> inline bool
   computePointNormal (const pcl::PointCloud<PointT> &cloud,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
@@ -70,11 +70,12 @@ namespace pcl
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
-      return;
+      return false;
     }
 
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
+    return true;
   }
 
   /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
@@ -88,7 +89,7 @@ namespace pcl
     * \f]
     * \ingroup features
     */
-  template <typename PointT> inline void
+  template <typename PointT> inline bool
   computePointNormal (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
                       Eigen::Vector4f &plane_parameters, float &curvature)
   {
@@ -101,10 +102,11 @@ namespace pcl
     {
       plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
       curvature = std::numeric_limits<float>::quiet_NaN ();
-      return;
+      return false;
     }
     // Get the plane normal and surface curvature
     solvePlaneParameters (covariance_matrix, xyz_centroid, plane_parameters, curvature);
+    return true;
   }
 
   /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
@@ -236,7 +238,7 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void
+      inline bool
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
                           Eigen::Vector4f &plane_parameters, float &curvature)
       {
@@ -245,11 +247,12 @@ namespace pcl
         {
           plane_parameters.setConstant (std::numeric_limits<float>::quiet_NaN ());
           curvature = std::numeric_limits<float>::quiet_NaN ();
-          return;
+          return false;
         }
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, xyz_centroid_, plane_parameters, curvature);
+        return true;
       }
 
       /** \brief Compute the Least-Squares plane fit for a given set of points, using their indices,
@@ -264,7 +267,7 @@ namespace pcl
         * \lambda_0 / (\lambda_0 + \lambda_1 + \lambda_2)
         * \f]
         */
-      inline void
+      inline bool
       computePointNormal (const pcl::PointCloud<PointInT> &cloud, const std::vector<int> &indices,
                           float &nx, float &ny, float &nz, float &curvature)
       {
@@ -272,11 +275,12 @@ namespace pcl
             computeMeanAndCovarianceMatrix (cloud, indices, covariance_matrix_, xyz_centroid_) == 0)
         {
           nx = ny = nz = curvature = std::numeric_limits<float>::quiet_NaN ();
-          return;
+          return false;
         }
 
         // Get the plane normal and surface curvature
         solvePlaneParameters (covariance_matrix_, nx, ny, nz, curvature);
+        return true;
       }
 
       /** \brief Provide a pointer to the input dataset
