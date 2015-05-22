@@ -2263,38 +2263,6 @@ pcl::visualization::PCLVisualizer::addModelFromPolyData (
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::addModelFromPolyData (vtkSmartPointer<vtkPolyDataMapper> polydatamapper,
-                                                         const std::string & id,
-                                                         int viewport)
-{
-  if (contains (id))
-  {
-    pcl::console::print_warn (stderr,
-                              "[addModelFromPolyData] A shape with id <%s> already exists! Please choose a different id and retry.\n",
-                              id.c_str ());
-    return (false);
-  }
-
-  // Check if mesh has color information
-  if (polydatamapper->GetInput ()->GetPointData ()->GetScalars ())
-  {
-    double range[2];
-    polydatamapper->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
-    polydatamapper->ScalarVisibilityOn ();
-    polydatamapper->SetScalarRange (range[0], range[1]);
-  }
-
-  vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New ();
-  actor->SetMapper (polydatamapper);
-  addActorToRenderer (actor, viewport);
-
-  // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
-  return (true);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////
-bool
 pcl::visualization::PCLVisualizer::addModelFromPLYFile (const std::string &filename,
                                                        const std::string &id, int viewport)
 {

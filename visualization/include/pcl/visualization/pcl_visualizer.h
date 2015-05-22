@@ -1403,18 +1403,6 @@ namespace pcl
                               const std::string &id = "PolyData",
                               int viewport = 0);
 
-        /** \brief Add a vtkPolyDataMapper as a mesh
-         * \param[in] polydatamapper vtkPolyDataMapper
-         * \param[in] id the model id/name (default: "PolyDataMapper")
-         * \param[in] viewport (optional) the id of the new viewport (default: 0)
-         * \return True if successful, false otherwise
-         * \note This allows to display a colored mesh, also see \ref PCL_VISUALIZER_LUT.
-         */
-       bool
-       addModelFromPolyData (vtkSmartPointer<vtkPolyDataMapper> polydatamapper,
-                             const std::string & id = "PolyDataMapper",
-                             int viewport = 0);
-
         /** \brief Add a PLYmodel as a mesh
           * \param[in] filename of the ply file
           * \param[in] id the model id/name (default: "PLYModel")
