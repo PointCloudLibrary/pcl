@@ -695,7 +695,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   value_idx = 0;
   point_idx = 0;
   RGBValue color;
-  color.Alpha = 0;
+  color.Alpha = 0xff;
 
   for (unsigned yIdx = 0; yIdx < image_height_; ++yIdx, point_idx += skip)
   {
