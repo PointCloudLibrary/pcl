@@ -226,13 +226,13 @@ macro(find_openni2)
   endif(PKG_CONFIG_FOUND)
   
   find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
-          HINTS /usr/include/openni2 /usr/include/ni2
+          HINTS /usr/include/openni2 /usr/include/ni2 /usr/local/include/openni2 /usr/local/include/ni2
           PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"
           PATH_SUFFIXES openni openni2 include Include)
   
   find_library(OPENNI2_LIBRARY 
              NAMES OpenNI2	# No suffix needed on Win64
-             HINTS /usr/lib
+             HINTS /usr/lib /usr/local/lib/ni2
              PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}"
              PATH_SUFFIXES lib Lib Lib64)	
   
