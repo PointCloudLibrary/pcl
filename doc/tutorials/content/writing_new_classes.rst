@@ -676,7 +676,7 @@ execution of the code, its value is still 0, we will print an error using the
 In the case of the search method, we can either do the same, or be clever and
 provide a default option for the user. The best default options are:
 
- * use an organized search method via :pcl:`pcl::OrganizedDataIndex<pcl::OrganizedDataIndex>` if the point cloud is organized;
+ * use an organized search method via :pcl:`pcl::OrganizedNeighbor<pcl::OrganizedNeighbor>` if the point cloud is organized;
  * use a general purpose kdtree via :pcl:`pcl::KdTreeFLANN<pcl::KdTreeFLANN>` if the point cloud is unorganized.
 
 .. code-block:: cpp
@@ -697,7 +697,7 @@ provide a default option for the user. The best default options are:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -749,7 +749,7 @@ The implementation file header thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -812,7 +812,7 @@ The new *bilateral.hpp* class thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -864,7 +864,7 @@ The implementation file header thus becomes:
       if (!tree_)
       {
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
       }
@@ -1221,9 +1221,9 @@ And the *bilateral.hpp* like:
       // In case a search method has not been given, initialize it using some defaults
       if (!tree_)
       {
-        // For organized datasets, use an OrganizedDataIndex
+        // For organized datasets, use an OrganizedNeighbor
         if (input_->isOrganized ())
-          tree_.reset (new pcl::OrganizedDataIndex<PointT> ());
+          tree_.reset (new pcl::OrganizedNeighbor<PointT> ());
         // For unorganized data, use a FLANN kdtree
         else
           tree_.reset (new pcl::KdTreeFLANN<PointT> (false));
