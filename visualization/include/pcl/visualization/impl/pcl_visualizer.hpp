@@ -611,7 +611,7 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 template<typename PointT> bool
 pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id)
 {
-  if (contains (id))
+  if (!contains (id))
   {
     return (false);
   }
