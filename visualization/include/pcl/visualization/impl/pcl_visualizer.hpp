@@ -620,12 +620,16 @@ pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double ra
   // Get the actor pointer
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+  if (!actor)
+    return (false);
 #if VTK_MAJOR_VERSION < 6
   vtkAlgorithm *algo = actor->GetMapper ()->GetInput ()->GetProducerPort ()->GetProducer ();
 #else
   vtkAlgorithm *algo = actor->GetMapper ()->GetInputAlgorithm ();
 #endif
   vtkSphereSource *src = vtkSphereSource::SafeDownCast (algo);
+  if (!src)
+    return (false);
 
   src->SetCenter (double (center.x), double (center.y), double (center.z));
   src->SetRadius (radius);
@@ -1170,6 +1174,8 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   else
   {
     vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
+    if (!actor)
+      return (false);
     // Update the mapper
 #if VTK_MAJOR_VERSION < 6
     reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
@@ -1764,6 +1770,8 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Update colors
   vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
+  if (!colors)
+    return (false);
   int rgb_idx = -1;
   std::vector<pcl::PCLPointField> fields;
   rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);
