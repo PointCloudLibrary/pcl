@@ -333,7 +333,7 @@ if(build)
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES} )
     if(PNG_FOUND)
-      target_link_libraries("${LIB_NAME}" ${PNG_LIBRARY})
+      target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
     endif(PNG_FOUND)
 
     if(LIBUSB_1_FOUND)
