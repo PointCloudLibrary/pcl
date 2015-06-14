@@ -80,8 +80,7 @@ TEST (PCL, SpinImageEstimation)
   EXPECT_NEAR (normals->points[140].normal_y, -0.19499126, 1e-4);
   EXPECT_NEAR (normals->points[140].normal_z, -0.87091631, 1e-4);
 
-  typedef Histogram<153> SpinImage;
-  SpinImageEstimation<PointXYZ, Normal, SpinImage> spin_est(8, 0.5, 16);
+  SpinImageEstimation<PointXYZ, Normal, SISignature153> spin_est(8, 0.5, 16);
   // set parameters
   //spin_est.setInputWithNormals (cloud.makeShared (), normals);
   spin_est.setInputCloud (cloud.makeShared ());
@@ -91,7 +90,7 @@ TEST (PCL, SpinImageEstimation)
   spin_est.setRadiusSearch (40*mr);
 
   // Object
-  PointCloud<SpinImage>::Ptr spin_images (new PointCloud<SpinImage> ());
+  PointCloud<SISignature153>::Ptr spin_images (new PointCloud<SISignature153> ());
 
 
   // radial SI

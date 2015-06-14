@@ -66,10 +66,10 @@ TEST (ISM, TrainRecognize)
   normals.push_back (training_normals);
   classes.push_back (0);
 
-  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> >::Ptr fpfh
-    (new pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> >);
+  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::SISignature153 >::Ptr fpfh
+    (new pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::SISignature153 >);
   fpfh->setRadiusSearch (30.0);
-  pcl::Feature< pcl::PointXYZ, pcl::Histogram<153> >::Ptr feature_estimator(fpfh);
+  pcl::Feature< pcl::PointXYZ, pcl::SISignature153 >::Ptr feature_estimator(fpfh);
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal>::ISMModelPtr model = boost::shared_ptr<pcl::features::ISMModel> (new pcl::features::ISMModel);
 
