@@ -24,6 +24,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/feature.h"
         "include/pcl/${SUBSYS_NAME}/fpfh.h"
         "include/pcl/${SUBSYS_NAME}/fpfh_omp.h"
+        "include/pcl/${SUBSYS_NAME}/from_meshes.h"
         "include/pcl/${SUBSYS_NAME}/gfpfh.h"
         "include/pcl/${SUBSYS_NAME}/integral_image2D.h"
         "include/pcl/${SUBSYS_NAME}/integral_image_normal.h"
