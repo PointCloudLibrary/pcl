@@ -260,7 +260,7 @@ pcl::PPFRegistration<PointSource, PointTarget>::posesWithinErrorBounds (Eigen::A
                                                                         Eigen::Affine3f &pose2)
 {
   float position_diff = (pose1.translation () - pose2.translation ()).norm ();
-  Eigen::AngleAxisf rotation_diff_mat (pose1.rotation ().inverse () * pose2.rotation ());
+  Eigen::AngleAxisf rotation_diff_mat ((pose1.rotation ().inverse () * pose2.rotation ()).eval());
 
   float rotation_diff_angle = fabsf (rotation_diff_mat.angle ());
 
