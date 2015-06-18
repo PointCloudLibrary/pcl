@@ -3290,7 +3290,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   } // end of multi texturing
   else
   {
-    if (!supported || texture_units < 2)
+    if ((mesh.tex_materials.size () > 1) && (!supported || texture_units < 2))
       PCL_WARN ("[PCLVisualizer::addTextureMesh] Your GPU doesn't support multi texturing. "
                 "Will use first one only!\n");
 
