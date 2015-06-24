@@ -56,7 +56,7 @@ template <typename PointSource, typename PointTarget>
 template<typename PointT> void
 pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                                                                                     const typename pcl::search::KdTree<PointT>::Ptr kdtree,
-                                                                                    std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& cloud_covariances)
+                                                                                    MatricesVector& cloud_covariances)
 {
   if (k_correspondences_ > int (cloud->size ()))
   {
@@ -73,7 +73,7 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeCovarian
     cloud_covariances.resize (cloud->size ());
 
   typename pcl::PointCloud<PointT>::const_iterator points_iterator = cloud->begin ();
-  std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >::iterator matrices_iterator = cloud_covariances.begin ();
+  MatricesVector::iterator matrices_iterator = cloud_covariances.begin ();
   for(;
       points_iterator != cloud->end ();
       ++points_iterator, ++matrices_iterator)
@@ -361,11 +361,17 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
   // Set the mahalanobis matrices to identity
   mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
   // Compute target cloud covariance matrices
-  if (target_covariances_.empty ())
-    computeCovariances<PointTarget> (target_, tree_, target_covariances_);
+  if ((!target_covariances_) || (target_covariances_->empty ()))
+  {
+    target_covariances_.reset (new MatricesVector);  
+    computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
+  }
   // Compute input cloud covariance matrices
-  if (input_covariances_.empty ())
-    computeCovariances<PointSource> (input_, tree_reciprocal_, input_covariances_);
+  if ((!input_covariances_) || (input_covariances_->empty ()))
+  {
+    input_covariances_.reset (new MatricesVector);
+    computeCovariances<PointSource> (input_, tree_reciprocal_, *input_covariances_);
+  }
 
   base_transformation_ = guess;
   nr_iterations_ = 0;
@@ -404,8 +410,8 @@ pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::computeTransfor
       // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
       if (nn_dists[0] < dist_threshold)
       {
-        Eigen::Matrix3d &C1 = input_covariances_[i];
-        Eigen::Matrix3d &C2 = target_covariances_[nn_indices[0]];
+        Eigen::Matrix3d &C1 = (*input_covariances_)[i];
+        Eigen::Matrix3d &C2 = (*target_covariances_)[nn_indices[0]];
         Eigen::Matrix3d &M = mahalanobis_[i];
         // M = R*C1
         M = R * C1;

@@ -191,10 +191,10 @@ namespace pcl
     mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
 
     // Compute target cloud covariance matrices
-    computeCovariances<PointTarget> (target_, tree_, target_covariances_);
+    computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
     // Compute input cloud covariance matrices
     computeCovariances<PointSource> (input_, tree_reciprocal_,
-        input_covariances_);
+        *input_covariances_);
 
     base_transformation_ = guess;
     nr_iterations_ = 0;
@@ -237,8 +237,8 @@ namespace pcl
         // Check if the distance to the nearest neighbor is smaller than the user imposed threshold
         if (nn_dists[0] < dist_threshold)
         {
-          Eigen::Matrix3d &C1 = input_covariances_[i];
-          Eigen::Matrix3d &C2 = target_covariances_[nn_indices[0]];
+          Eigen::Matrix3d &C1 = (*input_covariances_)[i];
+          Eigen::Matrix3d &C2 = (*target_covariances_)[nn_indices[0]];
           Eigen::Matrix3d &M = mahalanobis_[i];
           // M = R*C1
           M = R * C1;
