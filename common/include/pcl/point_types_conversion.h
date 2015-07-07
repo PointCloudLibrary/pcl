@@ -106,6 +106,7 @@ namespace pcl
     const unsigned char max = std::max (in.r, std::max (in.g, in.b));
     const unsigned char min = std::min (in.r, std::min (in.g, in.b));
 
+    out.x = in.x; out.y = in.y; out.z = in.z;
     out.v = static_cast <float> (max) / 255.f;
 
     if (max == 0) // division by zero
@@ -143,6 +144,7 @@ namespace pcl
     const unsigned char max = std::max (in.r, std::max (in.g, in.b));
     const unsigned char min = std::min (in.r, std::min (in.g, in.b));
 
+    out.x = in.x; out.y = in.y; out.z = in.z;
     out.v = static_cast <float> (max) / 255.f;
 
     if (max == 0) // division by zero
