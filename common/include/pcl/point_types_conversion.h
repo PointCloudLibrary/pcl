@@ -53,8 +53,8 @@ namespace pcl
     * \param[out] out the output XYZI point
     */
   inline void 
-  PointXYZRGBtoXYZI (PointXYZRGB&  in,
-                     PointXYZI&    out)
+  PointXYZRGBtoXYZI (const PointXYZRGB& in,
+                     PointXYZI&         out)
   {
     out.x = in.x; out.y = in.y; out.z = in.z;
     out.intensity = 0.299f * static_cast <float> (in.r) + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b);
@@ -65,7 +65,7 @@ namespace pcl
     * \param[out] out the output Intensity point
     */
   inline void
-  PointRGBtoI (RGB&          in,
+  PointRGBtoI (const RGB&    in,
                Intensity&    out)
   {
     out.intensity = 0.299f * static_cast <float> (in.r) + 0.587f * static_cast <float> (in.g) + 0.114f * static_cast <float> (in.b);
@@ -76,7 +76,7 @@ namespace pcl
     * \param[out] out the output Intensity point
     */
   inline void
-  PointRGBtoI (RGB&          in,
+  PointRGBtoI (const RGB&    in,
                Intensity8u&  out)
   {
     out.intensity = static_cast<uint8_t>(std::numeric_limits<uint8_t>::max() * 0.299f * static_cast <float> (in.r)
@@ -88,7 +88,7 @@ namespace pcl
     * \param[out] out the output Intensity point
     */
   inline void
-  PointRGBtoI (RGB&          in,
+  PointRGBtoI (const RGB&    in,
                Intensity32u& out)
   {
     out.intensity = static_cast<uint32_t>(static_cast<float>(std::numeric_limits<uint32_t>::max()) * 0.299f * static_cast <float> (in.r)
@@ -100,8 +100,8 @@ namespace pcl
     * \param[out] out the output XYZHSV point
     */
   inline void 
-  PointXYZRGBtoXYZHSV (PointXYZRGB& in,
-                       PointXYZHSV& out)
+  PointXYZRGBtoXYZHSV (const PointXYZRGB& in,
+                       PointXYZHSV&       out)
   {
     const unsigned char max = std::max (in.r, std::max (in.g, in.b));
     const unsigned char min = std::min (in.r, std::min (in.g, in.b));
@@ -137,8 +137,8 @@ namespace pcl
     * \todo include the A parameter but how?
     */
   inline void
-  PointXYZRGBAtoXYZHSV (PointXYZRGBA& in,
-                        PointXYZHSV& out)
+  PointXYZRGBAtoXYZHSV (const PointXYZRGBA& in,
+                        PointXYZHSV&        out)
   {
     const unsigned char max = std::max (in.r, std::max (in.g, in.b));
     const unsigned char min = std::min (in.r, std::min (in.g, in.b));
@@ -173,8 +173,8 @@ namespace pcl
     * \param[out] out the output XYZRGB point
     */
   inline void 
-  PointXYZHSVtoXYZRGB (PointXYZHSV&  in,
-                       PointXYZRGB&  out)
+  PointXYZHSVtoXYZRGB (const PointXYZHSV&  in,
+                       PointXYZRGB&        out)
   {
     out.x = in.x; out.y = in.y; out.z = in.z;
     if (in.s == 0)
@@ -241,7 +241,7 @@ namespace pcl
     * \param[out] out the output Intensity point cloud
     */
   inline void
-  PointCloudRGBtoI (PointCloud<RGB>&        in,
+  PointCloudRGBtoI (const PointCloud<RGB>&  in,
                     PointCloud<Intensity>&  out)
   {
     out.width   = in.width;
@@ -259,7 +259,7 @@ namespace pcl
     * \param[out] out the output Intensity point cloud
     */
   inline void
-  PointCloudRGBtoI (PointCloud<RGB>&          in,
+  PointCloudRGBtoI (const PointCloud<RGB>&    in,
                     PointCloud<Intensity8u>&  out)
   {
     out.width   = in.width;
@@ -277,7 +277,7 @@ namespace pcl
     * \param[out] out the output Intensity point cloud
     */
   inline void
-  PointCloudRGBtoI (PointCloud<RGB>&        in,
+  PointCloudRGBtoI (const PointCloud<RGB>&     in,
                     PointCloud<Intensity32u>&  out)
   {
     out.width   = in.width;
@@ -295,8 +295,8 @@ namespace pcl
     * \param[out] out the output XYZHSV point cloud
     */
   inline void 
-  PointCloudXYZRGBtoXYZHSV (PointCloud<PointXYZRGB>& in,
-                            PointCloud<PointXYZHSV>& out)
+  PointCloudXYZRGBtoXYZHSV (const PointCloud<PointXYZRGB>& in,
+                            PointCloud<PointXYZHSV>&       out)
   {
     out.width   = in.width;
     out.height  = in.height;
@@ -313,8 +313,8 @@ namespace pcl
     * \param[out] out the output XYZHSV point cloud
     */
   inline void
-  PointCloudXYZRGBAtoXYZHSV (PointCloud<PointXYZRGBA>& in,
-                             PointCloud<PointXYZHSV>& out)
+  PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
+                             PointCloud<PointXYZHSV>&        out)
   {
     out.width   = in.width;
     out.height  = in.height;
@@ -331,8 +331,8 @@ namespace pcl
     * \param[out] out the output XYZI point cloud
     */
   inline void 
-  PointCloudXYZRGBtoXYZI (PointCloud<PointXYZRGB>& in,
-                          PointCloud<PointXYZI>& out)
+  PointCloudXYZRGBtoXYZI (const PointCloud<PointXYZRGB>& in,
+                          PointCloud<PointXYZI>&         out)
   {
     out.width   = in.width;
     out.height  = in.height;
@@ -351,9 +351,9 @@ namespace pcl
    *  \param[out] out the output pointcloud
    *  **/
   inline void
-  PointCloudDepthAndRGBtoXYZRGBA (PointCloud<Intensity>&  depth,
-                                  PointCloud<RGB>&        image,
-                                  float&                  focal,
+  PointCloudDepthAndRGBtoXYZRGBA (const PointCloud<Intensity>&  depth,
+                                  const PointCloud<RGB>&        image,
+                                  const float&                  focal,
                                   PointCloud<PointXYZRGBA>&     out)
   {
     float bad_point = std::numeric_limits<float>::quiet_NaN();
