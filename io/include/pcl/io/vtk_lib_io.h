@@ -119,9 +119,10 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object given an input file name, based on the file extension
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFile (const std::string &file_name, 
                      const pcl::PolygonMesh& mesh);
 
@@ -177,27 +178,30 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object into a VTK file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFileVTK (const std::string &file_name, 
                         const pcl::PolygonMesh& mesh);
 
     /** \brief Save a \ref PolygonMesh object into a PLY file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFilePLY (const std::string &file_name, 
                         const pcl::PolygonMesh& mesh);
 
     /** \brief Save a \ref PolygonMesh object into an STL file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFileSTL (const std::string &file_name, 
                         const pcl::PolygonMesh& mesh);
 

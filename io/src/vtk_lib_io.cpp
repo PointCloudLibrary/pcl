@@ -74,19 +74,18 @@ pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+bool
 pcl::io::savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& mesh)
 {
   // TODO: what about binary/ASCII modes?!?!?!
   // TODO: what about sensor position and orientation?!?!?!?
-  // TODO: how to adequately catch exceptions thrown by the vtk writers?!
   std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
   if (extension == "pcd") // no Polygon, but only a point cloud
   {
     int error_code = pcl::io::savePCDFile (file_name, mesh.cloud);
     if (error_code != 0)
-      return (0);
-    return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
+      return (false);
+    return (true);
   }
   else if (extension == "vtk")
    return (pcl::io::savePolygonFileVTK (file_name, mesh));
@@ -171,7 +170,7 @@ pcl::io::loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mes
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+bool
 pcl::io::savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMesh& mesh)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
@@ -185,13 +184,11 @@ pcl::io::savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMes
   poly_writer->SetInputData (poly_data);
 #endif
   poly_writer->SetFileName (file_name.c_str ());
-  poly_writer->Write ();
-
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
+  return (poly_writer->Write ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+bool
 pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMesh& mesh)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
@@ -206,13 +203,11 @@ pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMes
 #endif
   poly_writer->SetFileName (file_name.c_str ());
 	poly_writer->SetArrayName ("Colors");
-  poly_writer->Write ();
-
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
+  return (poly_writer->Write ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int
+bool
 pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
@@ -225,9 +220,7 @@ pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMes
   poly_writer->SetInputData (poly_data);
 #endif
   poly_writer->SetFileName (file_name.c_str ());
-  poly_writer->Write ();
-
-  return (static_cast<int> (mesh.cloud.width * mesh.cloud.height));
+  return (poly_writer->Write ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
