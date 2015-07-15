@@ -75,24 +75,20 @@ pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::io::savePolygonFile (const std::string &file_name, const pcl::PolygonMesh& mesh)
+pcl::io::savePolygonFile (const std::string &file_name,
+                          const pcl::PolygonMesh& mesh,
+                          const bool binary_format)
 {
-  // TODO: what about binary/ASCII modes?!?!?!
   // TODO: what about sensor position and orientation?!?!?!?
   std::string extension = file_name.substr (file_name.find_last_of (".") + 1);
-  if (extension == "pcd") // no Polygon, but only a point cloud
-  {
-    int error_code = pcl::io::savePCDFile (file_name, mesh.cloud);
-    if (error_code != 0)
-      return (false);
-    return (true);
-  }
+  if (extension == "pcd")  // no Polygon, but only a point cloud
+    return (pcl::io::savePCDFile (file_name, mesh.cloud, Eigen::Vector4f::Zero (), Eigen::Quaternionf::Identity (), binary_format) == 0);
   else if (extension == "vtk")
-   return (pcl::io::savePolygonFileVTK (file_name, mesh));
+    return (pcl::io::savePolygonFileVTK (file_name, mesh, binary_format));
   else if (extension == "ply")
-   return (pcl::io::savePolygonFilePLY (file_name, mesh));
-  else if (extension == "stl" )
-    return (pcl::io::savePolygonFileSTL (file_name, mesh));
+    return (pcl::io::savePolygonFilePLY (file_name, mesh, binary_format));
+  else if (extension == "stl")
+    return (pcl::io::savePolygonFileSTL (file_name, mesh, binary_format));
   else
   {
     PCL_ERROR ("[pcl::io::savePolygonFile]: Unsupported file type (%s)\n", extension.c_str ());
@@ -171,7 +167,9 @@ pcl::io::loadPolygonFileSTL (const std::string &file_name, pcl::PolygonMesh& mes
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::io::savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMesh& mesh)
+pcl::io::savePolygonFileVTK (const std::string &file_name,
+                             const pcl::PolygonMesh& mesh,
+                             const bool binary_format)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
 
@@ -183,13 +181,19 @@ pcl::io::savePolygonFileVTK (const std::string &file_name, const pcl::PolygonMes
 #else
   poly_writer->SetInputData (poly_data);
 #endif
+
+  if (!binary_format)
+    poly_writer->SetFileTypeToASCII ();
+
   poly_writer->SetFileName (file_name.c_str ());
   return (poly_writer->Write ());
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMesh& mesh)
+pcl::io::savePolygonFilePLY (const std::string &file_name,
+                             const pcl::PolygonMesh& mesh,
+                             const bool binary_format)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
 
@@ -201,6 +205,10 @@ pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMes
 #else
   poly_writer->SetInputData (poly_data);
 #endif
+
+  if (!binary_format)
+    poly_writer->SetFileTypeToASCII ();
+
   poly_writer->SetFileName (file_name.c_str ());
 	poly_writer->SetArrayName ("Colors");
   return (poly_writer->Write ());
@@ -208,7 +216,9 @@ pcl::io::savePolygonFilePLY (const std::string &file_name, const pcl::PolygonMes
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMesh& mesh)
+pcl::io::savePolygonFileSTL (const std::string &file_name,
+                             const pcl::PolygonMesh& mesh,
+                             const bool binary_format)
 {
   vtkSmartPointer<vtkPolyData> poly_data = vtkSmartPointer<vtkPolyData>::New ();
 
@@ -219,6 +229,10 @@ pcl::io::savePolygonFileSTL (const std::string &file_name, const pcl::PolygonMes
 #else
   poly_writer->SetInputData (poly_data);
 #endif
+
+  if (!binary_format)
+    poly_writer->SetFileTypeToASCII ();
+
   poly_writer->SetFileName (file_name.c_str ());
   return (poly_writer->Write ());
 }
