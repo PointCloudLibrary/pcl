@@ -128,8 +128,8 @@ namespace pcl
 
   /** \brief determines the eigenvalues and corresponding eigenvectors of the symmetric positive semi definite input matrix
     * \param[in] mat symmetric positive semi definite input matrix
-    * \param[out] evecs resulting eigenvalues in ascending order
-    * \param[out] evals corresponding eigenvectors in correct order according to eigenvalues
+    * \param[out] evecs corresponding eigenvectors in correct order according to eigenvalues
+    * \param[out] evals resulting eigenvalues in ascending order
     * \ingroup common
     */
   template <typename Matrix, typename Vector> void
