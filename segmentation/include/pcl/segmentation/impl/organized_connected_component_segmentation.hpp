@@ -120,7 +120,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   std::vector<unsigned> run_ids;
 
   unsigned invalid_label = std::numeric_limits<unsigned>::max ();
-  pcl::Label invalid_pt;
+  PointLT invalid_pt;
   invalid_pt.label = std::numeric_limits<unsigned>::max ();
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;
