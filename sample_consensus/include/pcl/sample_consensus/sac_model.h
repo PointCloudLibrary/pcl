@@ -421,8 +421,9 @@ namespace pcl
       computeVariance (const std::vector<double> &error_sqr_dists)
       {
         std::vector<double> dists (error_sqr_dists);
-        std::sort (dists.begin (), dists.end ());
-        double median_error_sqr = dists[dists.size () >> 1];
+        const size_t medIdx = dists.size () >> 1;
+        std::nth_element (dists.begin (), dists.begin () + medIdx, dists.end ());
+        double median_error_sqr = dists[medIdx];
         return (2.1981 * median_error_sqr);
       }
 
