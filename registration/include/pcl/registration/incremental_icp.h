@@ -61,7 +61,7 @@ namespace pcl {
       *   read_cloud (*cloud);
       *   iicp.registerCloud (cloud);
       *
-      *   PointCloud<PointXYZ>::Ptr tmp (new PointCloud<PointCloudXY>);
+      *   PointCloud<PointXYZ>::Ptr tmp (new PointCloud<PointXYZ>);
       *   transformPointCloud (*cloud, *tmp, iicp.getAbsoluteTransform ());
       *   write_cloud (*tmp);
       * }
