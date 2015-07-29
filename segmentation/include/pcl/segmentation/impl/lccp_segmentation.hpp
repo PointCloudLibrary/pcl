@@ -106,14 +106,14 @@ pcl::LCCPSegmentation<PointT>::computeSegmentAdjacency ()
     // For every Supervoxel..
     for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all SuperVoxels
     {
-      const uint32_t sv_label = sv_adjacency_list_[*sv_itr];
+      const uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
       current_segLabel = sv_label_to_seg_label_map_[sv_label];
 
       // ..look at all neighbors and insert their labels into the neighbor set
       std::pair<AdjacencyIterator, AdjacencyIterator> neighbors = boost::adjacent_vertices (*sv_itr, sv_adjacency_list_);
       for (AdjacencyIterator itr_neighbor = neighbors.first; itr_neighbor != neighbors.second; ++itr_neighbor)
       {
-        const uint32_t neigh_label = sv_adjacency_list_[*itr_neighbor];
+        const uint32_t& neigh_label = sv_adjacency_list_[*itr_neighbor];
         neigh_segLabel = sv_label_to_seg_label_map_[neigh_label];
 
         if (current_segLabel != neigh_segLabel)
@@ -159,12 +159,12 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments (uint32_t min_segment_size_arg
       // Iterate through all supervoxels, check if they are in a "small" segment -> change label to largest neighborID
       for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all SuperVoxels
       {
-        const uint32_t sv_label = sv_adjacency_list_[*sv_itr];
+        const uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
         current_seg_label = sv_label_to_seg_label_map_[sv_label];
         largest_neigh_seg_label = current_seg_label;
         largest_neigh_size = seg_label_to_sv_list_map_[current_seg_label].size ();
 
-        const uint32_t nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
+        const uint32_t& nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
         if (nr_neighbors == 0)
           continue;
 
@@ -240,7 +240,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t sv_label = svlabel_itr->first;
+    const uint32_t& sv_label = svlabel_itr->first;
     VertexID node_id = boost::add_vertex (sv_adjacency_list_);
     sv_adjacency_list_[node_id] = sv_label;
     label_ID_map[sv_label] = node_id;
@@ -250,8 +250,8 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   for (std::multimap<uint32_t, uint32_t>::const_iterator sv_neighbors_itr = label_adjaceny_arg.begin (); sv_neighbors_itr != label_adjaceny_arg.end ();
       ++sv_neighbors_itr)
   {
-    const uint32_t sv_label = sv_neighbors_itr->first;
-    const uint32_t neighbor_label = sv_neighbors_itr->second;
+    const uint32_t& sv_label = sv_neighbors_itr->first;
+    const uint32_t& neighbor_label = sv_neighbors_itr->second;
 
     VertexID u = label_ID_map[sv_label];
     VertexID v = label_ID_map[neighbor_label];
@@ -265,7 +265,7 @@ pcl::LCCPSegmentation<PointT>::prepareSegmentation (const std::map<uint32_t, typ
   for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
       svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
   {
-    const uint32_t sv_label = svlabel_itr->first;
+    const uint32_t& sv_label = svlabel_itr->first;
     processed_[sv_label] = false;
     sv_label_to_seg_label_map_[sv_label] = 0;
   }
@@ -285,6 +285,24 @@ pcl::LCCPSegmentation<PointT>::segment (std::map<uint32_t, typename pcl::Supervo
   // Correct edge relations using extended convexity definition if k>0
   applyKconvexity (k_factor_);
 
+  // Determine wether to use cutting planes
+  doGrouping ();
+  grouping_data_valid_ = true;
+}
+
+template <typename PointT> void
+pcl::LCCPSegmentation<PointT>::doGrouping ()
+{
+  // clear the processed_ map
+  seg_label_to_sv_list_map_.clear ();
+  for (typename std::map<uint32_t, typename pcl::Supervoxel<PointT>::Ptr>::iterator svlabel_itr = sv_label_to_supervoxel_map_.begin ();
+      svlabel_itr != sv_label_to_supervoxel_map_.end (); ++svlabel_itr)
+  {
+    const uint32_t& sv_label = svlabel_itr->first;
+    processed_[sv_label] = false;
+    sv_label_to_seg_label_map_[sv_label] = 0;
+  }
+  
   // Perform depth search on the graph and recursively group all supervoxels with convex connections
   //The vertices in the supervoxel adjacency list are the supervoxel centroids
   std::pair< VertexIterator, VertexIterator> vertex_iterator_range;
@@ -295,22 +313,21 @@ pcl::LCCPSegmentation<PointT>::segment (std::map<uint32_t, typename pcl::Supervo
   for (VertexIterator sv_itr = vertex_iterator_range.first; sv_itr != vertex_iterator_range.second; ++sv_itr)  // For all SuperVoxels
   {
     const VertexID sv_vertex_id = *sv_itr;
-    const uint32_t sv_label = sv_adjacency_list_[sv_vertex_id];
+    const uint32_t& sv_label = sv_adjacency_list_[sv_vertex_id];
     if (!processed_[sv_label])
     {
       // Add neighbors (and their neighbors etc.) to group if similarity constraint is met
-      recursiveGrouping (sv_vertex_id, segment_label);
+      recursiveSegmentGrowing (sv_vertex_id, segment_label);
       ++segment_label;  // After recursive grouping ended (no more neighbors to consider) -> go to next group
     }
   }
-  grouping_data_valid_ = true;
 }
 
 template <typename PointT> void
-pcl::LCCPSegmentation<PointT>::recursiveGrouping (VertexID const &query_point_id,
-                                                  unsigned int const segment_label)
+pcl::LCCPSegmentation<PointT>::recursiveSegmentGrowing (VertexID const &query_point_id,
+                                                        unsigned int const segment_label)
 {
-  const uint32_t sv_label = sv_adjacency_list_[query_point_id];
+  const uint32_t& sv_label = sv_adjacency_list_[query_point_id];
 
   processed_[sv_label] = true;
 
@@ -324,13 +341,13 @@ pcl::LCCPSegmentation<PointT>::recursiveGrouping (VertexID const &query_point_id
   for (OutEdgeIterator out_Edge_itr = out_edge_iterator_range.first; out_Edge_itr != out_edge_iterator_range.second; ++out_Edge_itr)
   {
     const VertexID neighbor_ID = boost::target (*out_Edge_itr, sv_adjacency_list_);
-    const uint32_t neighbor_label = sv_adjacency_list_[neighbor_ID];
+    const uint32_t& neighbor_label = sv_adjacency_list_[neighbor_ID];
 
     if (!processed_[neighbor_label])  // If neighbor was not already processed
     {
-      if (sv_adjacency_list_[*out_Edge_itr].is_convex)
+      if (sv_adjacency_list_[*out_Edge_itr].is_valid)
       {
-        recursiveGrouping (neighbor_ID, segment_label);
+        recursiveSegmentGrowing (neighbor_ID, segment_label);
       }
     }
   }  // End neighbor loop
@@ -397,7 +414,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (unsigned int k_arg)
 
       // Check k convexity
       if (kcount < k_arg)
-        (sv_adjacency_list_)[*edge_itr].is_convex = false;
+        (sv_adjacency_list_)[*edge_itr].is_valid = false;
     }
   }
 }
@@ -417,14 +434,18 @@ pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyLi
     uint32_t source_sv_label = adjacency_list_arg[boost::source (*edge_itr, adjacency_list_arg)];
     uint32_t target_sv_label = adjacency_list_arg[boost::target (*edge_itr, adjacency_list_arg)];
 
-    is_convex = connIsConvex (source_sv_label, target_sv_label);
+    float normal_difference;
+    is_convex = connIsConvex (source_sv_label, target_sv_label, normal_difference);
     adjacency_list_arg[*edge_itr].is_convex = is_convex;
+    adjacency_list_arg[*edge_itr].is_valid = is_convex;
+    adjacency_list_arg[*edge_itr].normal_difference = normal_difference;
   }
 }
 
 template <typename PointT> bool
 pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
-                                             uint32_t target_label_arg)
+                                             uint32_t target_label_arg,
+                                             float &normal_angle)
 {
   typename pcl::Supervoxel<PointT>::Ptr& sv_source = sv_label_to_supervoxel_map_[source_label_arg];
   typename pcl::Supervoxel<PointT>::Ptr& sv_target = sv_label_to_supervoxel_map_[target_label_arg];
@@ -444,7 +465,7 @@ pcl::LCCPSegmentation<PointT>::connIsConvex (uint32_t source_label_arg,
   bool is_convex = true;
   bool is_smooth = true;
 
-  float normal_angle = getAngle3D (source_normal, target_normal, true);
+  normal_angle = getAngle3D (source_normal, target_normal, true);
   //  Geometric comparisons
   Eigen::Vector3f vec_t_to_s, vec_s_to_t;
   
