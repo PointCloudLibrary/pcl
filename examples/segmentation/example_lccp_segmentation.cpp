@@ -167,7 +167,7 @@ LCCPSegmentation Parameters: \n\
   -st <smoothness threshold> - Invalidate steps. Value from the interval [0,1], where 0 is the strictest and 1 equals 'no smoothness check' \n\
   -ec - Use extended (less local) convexity check\n\
   -sc - Use sanity criterion to invalidate singular connected patches\n\
-  -smooth <mininmal segment size>  - Remove small segments which have fewer points than minimal segment size\n\
+  -smooth <mininmal segment size>  - Merge small segments which have fewer points than minimal segment size\n\
     \n",
         argv[0]);
     return (1);
@@ -391,14 +391,14 @@ LCCPSegmentation Parameters: \n\
 
     /// Create a cloud of the voxelcenters and map: VertexID in adjacency graph -> Point index in cloud
 
-    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New (); 
-    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();     
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
+    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
     vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     
     // Create a polydata to store everything in
-    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();    
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
     for (VertexIterator itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
     {
       const uint32_t sv_label = sv_adjacency_list[*itr];
@@ -417,7 +417,7 @@ LCCPSegmentation Parameters: \n\
         colors->InsertNextTupleValue (color);
         
         pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (sv_label);
-        pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;    
+        pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;
         
         
         const uint32_t sv_neighbor_label = sv_adjacency_list[*itr_neighbor];
@@ -434,10 +434,10 @@ LCCPSegmentation Parameters: \n\
         polyLine->GetPointIds ()->SetId (1, points->GetNumberOfPoints ()-1);
         cells->InsertNextCell (polyLine);
       }
-    }    
+    }
     polyData->SetPoints (points);
     // Add the lines to the dataset
-    polyData->SetLines (cells);    
+    polyData->SetLines (cells);
     
     polyData->GetPointData ()->SetScalars (colors);
         
