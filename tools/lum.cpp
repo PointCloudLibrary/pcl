@@ -68,6 +68,12 @@ main (int argc, char **argv)
   int lumIter = 1;
   pcl::console::parse_argument (argc, argv, "-l", lumIter);
 
+  double loopDist = 5.0;
+  pcl::console::parse_argument (argc, argv, "-D", loopDist);
+
+  int loopCount = 20;
+  pcl::console::parse_argument (argc, argv, "-c", loopCount);
+
   pcl::registration::LUM<PointType> lum;
   lum.setMaxIterations (lumIter);
   lum.setConvergenceThreshold (0.001f);
@@ -97,9 +103,9 @@ main (int argc, char **argv)
 
         //std::cout << i << " " << j << " " << diff.norm () << std::endl;
 
-        if(diff.norm () < 5.0 && (i - j == 1 || i - j > 20))
+        if(diff.norm () < loopDist && (i - j == 1 || i - j > loopCount))
         {
-          if(i - j > 20)
+          if(i - j > loopCount)
             std::cout << "add connection between " << i << " (" << clouds[i].first << ") and " << j << " (" << clouds[j].first << ")" << std::endl;
           pcl::registration::CorrespondenceEstimation<PointType, PointType> ce;
           ce.setInputTarget (clouds[i].second);
