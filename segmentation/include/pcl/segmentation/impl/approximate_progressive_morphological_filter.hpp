@@ -140,8 +140,8 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   {
     // ...then test for lower points within the cell
     PointT p = input_->points[i];
-    int row = std::floor(p.y - global_min.y ());
-    int col = std::floor(p.x - global_min.x ());
+    int row = std::floor((p.y - global_min.y ()) / cell_size_);
+    int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
     if (p.z < A (row, col) || pcl_isnan (A (row, col)))
     {
