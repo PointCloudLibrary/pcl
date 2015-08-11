@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2013-, Open Perception, Inc.
+ *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *
  *  All rights reserved.
  *
@@ -16,7 +16,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
+ *   * Neither the name of Willow Garage, Inc. nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -33,15 +33,19 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
-#include <pcl/io/file_io.h>
-#include <pcl/io/boost.h>
+#ifndef PCL_IO_AUTO_IO_IMPL_H_
+#define PCL_IO_AUTO_IO_IMPL_H_
+
+// #include <pcl/io/file_io.h>
+// #include <pcl/io/boost.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ifs_io.h>
-#include <pcl/io/obj_io.h>
-#include <pcl/io/vtk_io.h>
+// #include <pcl/io/vtk_io.h>
 
 namespace pcl
 {
@@ -88,3 +92,5 @@ namespace pcl
     }
   }
 }
+
+#endif //PCL_IO_AUTO_IO_IMPL_H_

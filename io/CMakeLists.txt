@@ -234,6 +234,7 @@ if(build)
         src/hdl_grabber.cpp
         src/robot_eye_grabber.cpp
         src/file_io.cpp
+        src/auto_io.cpp
         src/io_exception.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
@@ -262,6 +263,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/debayer.h"
         "include/pcl/${SUBSYS_NAME}/file_io.h"
+        "include/pcl/${SUBSYS_NAME}/auto_io.h"
         "include/pcl/${SUBSYS_NAME}/lzf.h"
         "include/pcl/${SUBSYS_NAME}/lzf_image_io.h"
         "include/pcl/${SUBSYS_NAME}/io.h"
@@ -312,7 +314,7 @@ if(build)
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
-        "include/pcl/${SUBSYS_NAME}/impl/file_io.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/auto_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp"
