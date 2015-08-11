@@ -312,6 +312,7 @@ if(build)
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/file_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp"
