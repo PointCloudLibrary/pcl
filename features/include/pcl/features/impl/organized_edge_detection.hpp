@@ -39,6 +39,8 @@
 #define PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
 
 #include <pcl/2d/edge.h>
+#include <pcl/2d/kernel.h>
+#include <pcl/2d/convolution.h>
 #include <pcl/features/organized_edge_detection.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
@@ -346,9 +348,242 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
   this->assignLabelIndices (labels, label_indices);
 }
 
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels,
+                                                                 std::vector<pcl::PointIndices>& label_indices,
+                                                                 PointCloudNPtr& normals)
+{
+  pcl::Label invalid_pt;
+  invalid_pt.label = unsigned(0);
+  labels.points.resize(input_->points.size(), invalid_pt);
+  labels.width = input_->width;
+  labels.height = input_->height;
+
+  // if slow mode is selected for depth discontinuities use the standard procedure with all edge label information (occluded, occluding, etc.)
+  if (use_fast_depth_discontinuity_mode_ == false)
+    OrganizedEdgeBase<PointT, PointLT>::extractEdges(labels);
+  extractEdges(labels, normals);
+
+  if (return_label_indices_ == true)
+    this->assignLabelIndices(labels, label_indices);
+}
+
+//////////////////////////////////////////////////////////////////////////////
+#include <pcl/point_types.h>
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels,
+                                                                      PointCloudNPtr& normals)
+{
+  // setup coordinate images
+  pcl::Intensity zero_intensity;
+  zero_intensity.intensity = 0.f;
+  pcl::PointCloud<pcl::Intensity>::Ptr x_image(new pcl::PointCloud<pcl::Intensity>(input_->width, input_->height, zero_intensity));  // pcl::Intensity = type with one member (float) intensity
+  pcl::PointCloud<pcl::Intensity>::Ptr y_image(new pcl::PointCloud<pcl::Intensity>(input_->width, input_->height, zero_intensity));
+  pcl::PointCloud<pcl::Intensity>::Ptr z_image(new pcl::PointCloud<pcl::Intensity>(input_->width, input_->height, zero_intensity));
+  pcl::PointCloud<pcl::Intensity>::Ptr x_dx(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr y_dy(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr z_dx(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr z_dy(new pcl::PointCloud<pcl::Intensity>);
+  prepareImages(x_image, y_image, z_image, x_dx, y_dy, z_dx, z_dy);
+
+  // depth discontinuities
+  pcl::Intensity8u zero_intensity_8u;
+  zero_intensity_8u.intensity = (uint8_t)0;
+  pcl::PointCloud<pcl::Intensity8u>::Ptr edge(new pcl::PointCloud<pcl::Intensity8u>(labels.width, labels.height, zero_intensity_8u));
+  computeDepthDiscontinuities(edge, z_image, z_dx, z_dy, labels);
+
+  // surface discontinuities
+  if ( (detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
+  {
+//    cv::Mat edge_integral;
+//    if (config.use_adaptive_scan_line == false)
+//      cv::integral(edge, edge_integral, CV_32S);
+  }
+
+  // optionally: compute normals
+  if (normals != 0)
+  {
+
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::updateKernels ()
+{
+  pcl::kernel<pcl::Intensity> kernel;
+
+  gaussian_kernel_ = pcl::PointCloud<pcl::Intensity>::Ptr(new pcl::PointCloud<pcl::Intensity>);
+  kernel.kernel_size_ = edge_detection_config_.noise_reduction_kernel_size;
+  kernel.sigma_ = 0.3 * ( (kernel.kernel_size_ - 1) / 2 - 1) + 0.8;
+  kernel.gaussianKernel(*gaussian_kernel_);
+
+  const float kernel_scale = 1. / 8.;      // 1./8. (@ 3x3)   or   1./(6.*16.) (@ 5x5)
+  sobel_kernel_x_3x3_ = pcl::PointCloud<pcl::Intensity>::Ptr(new pcl::PointCloud<pcl::Intensity>);
+  kernel.sobelKernelX(*sobel_kernel_x_3x3_);
+  for (uint32_t v = 0; v < sobel_kernel_x_3x3_->height; ++v)
+    for (uint32_t u = 0; u < sobel_kernel_x_3x3_->width; ++u)
+      sobel_kernel_x_3x3_->at(u, v).intensity *= kernel_scale;
+
+  sobel_kernel_y_3x3_ = pcl::PointCloud<pcl::Intensity>::Ptr(new pcl::PointCloud<pcl::Intensity>);
+  kernel.sobelKernelY(*sobel_kernel_y_3x3_);
+  for (uint32_t v = 0; v < sobel_kernel_y_3x3_->height; ++v)
+    for (uint32_t u = 0; u < sobel_kernel_y_3x3_->width; ++u)
+      sobel_kernel_y_3x3_->at(u, v).intensity *= kernel_scale;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages (pcl::PointCloud<pcl::Intensity>::Ptr& x_image,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& y_image,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& x_dx,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& y_dy,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dy)
+{
+  for (unsigned int v = 0; v < input_->height; ++v)
+  {
+    const size_t point_index = v * input_->width;
+    pcl::Intensity* x_ptr = & (x_image->points[point_index]);
+    pcl::Intensity* y_ptr = & (y_image->points[point_index]);
+    pcl::Intensity* z_ptr = & (z_image->points[point_index]);
+    const PointT* point = & (input_->points[point_index]);
+    for (unsigned int u = 0; u < input_->width; u++)
+    {
+      // point cloud matrix indices: row y, column x!
+      if (point->z == point->z)  // test for NaN
+      {
+        x_ptr->intensity = point->x;
+        y_ptr->intensity = point->y;
+        z_ptr->intensity = point->z;
+      }
+      else
+      {
+        x_ptr->intensity = 0.f;
+        y_ptr->intensity = 0.f;
+        z_ptr->intensity = 0.f;
+      }
+      ++x_ptr;
+      ++y_ptr;
+      ++z_ptr;
+      ++point;
+    }
+  }
+
+  // Sobel and smoothing
+  pcl::Convolution<pcl::Intensity> convolution;
+
+  convolution.setKernel(*sobel_kernel_x_3x3_);
+  convolution.setInputCloud(x_image);
+  convolution.filter(*x_dx);
+  convolution.setInputCloud(z_image);
+  convolution.filter(*z_dx);
+  convolution.setKernel(*sobel_kernel_y_3x3_);
+  convolution.setInputCloud(y_image);
+  convolution.filter(*y_dy);
+  convolution.setInputCloud(z_image);
+  convolution.filter(*z_dy);
+
+  if (edge_detection_config_.noise_reduction_mode == EdgeDetectionConfig::GAUSSIAN)
+  {
+    pcl::PointCloud<pcl::Intensity>::Ptr temp(new pcl::PointCloud<pcl::Intensity>);
+    convolution.setKernel(*gaussian_kernel_);
+    pcl::copyPointCloud(*z_dx, *temp);
+    convolution.setInputCloud(temp);
+    convolution.filter(*z_dx);
+    pcl::copyPointCloud(*z_dy, *temp);
+    convolution.setInputCloud(temp);
+    convolution.filter(*z_dy);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuities (pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
+                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
+                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
+                                                                                     const pcl::PointCloud<PointLT>& labels)
+{
+  if (use_fast_depth_discontinuity_mode_ == true && (detecting_edge_types_ & EDGELABEL_OCCLUDING))
+  {
+    // if not computed in the standard way, compute depth edges in a fast way, without distinguishing between occluding, occluded, NaN, etc.
+    const float depth_factor = edge_detection_config_.depth_step_factor;
+    for (int v = 0; v < z_dx->height; ++v)
+    {
+      for (int u = 0; u < z_dx->width; ++u)
+      {
+        float depth = z_image->at(u, v).intensity;
+        if (depth == 0.f)
+          continue;
+        const float edge_threshold = std::max(0.0f, depth_factor * depth * depth);
+        const float z_dx_val = z_dx->at(u, v).intensity;
+        const float z_dy_val = z_dy->at(u, v).intensity;
+        if (z_dx_val <= -edge_threshold || z_dx_val >= edge_threshold || z_dy_val <= -edge_threshold || z_dy_val >= edge_threshold)
+          edge->at(u, v).intensity = (uint8_t) std::min<float>(253.f, 50.f * (1. + sqrt(z_dx_val * z_dx_val + z_dy_val * z_dy_val)));  // store a proportional measure for the edge strength
+      }
+    }
+    nonMaximumSuppression(edge, z_dx, z_dy);
+  }
+  else
+  {
+    // copy pre-computed depth edges into edge image
+    const unsigned invalid_label = unsigned(0);
+    for (unsigned int v = 0; v < labels.height; ++v)
+    {
+      const size_t point_index = v * input_->width;
+      pcl::Intensity8u* dst = & (edge->points[point_index]);
+
+      const PointLT* src = & (labels.points[point_index]);
+      for (unsigned int u = 0; u < labels.width; u++)
+      {
+        if (src->label != invalid_label)
+          dst->intensity = (uint8_t)254;
+        ++src;
+        ++dst;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::nonMaximumSuppression (pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
+                                                                               const pcl::PointCloud<pcl::Intensity>::Ptr& dx,
+                                                                               const pcl::PointCloud<pcl::Intensity>::Ptr& dy)
+{
+  std::vector<std::pair<uint32_t, uint32_t> > setToZerosSet;
+  for (uint32_t v = 1; v < edge->height - 1; ++v)
+  {
+    for (uint32_t u = 1; u < edge->width - 1; ++u)
+    {
+      if (edge->at(u, v).intensity == 0)
+        continue;
+      double x = dx->at(u, v).intensity;
+      double y = dy->at(u, v).intensity;
+      if (x == 0 && y == 0)
+        continue;
+      const double mag = sqrt(x * x + y * y);
+      x = floor(x / mag + 0.5);
+      y = floor(y / mag + 0.5);
+      uint8_t& edge_val = edge->at(u, v).intensity;
+      if (edge_val >= edge->at(u + x, v + y).intensity && edge_val >= edge->at(u - x, v - y).intensity)
+        edge_val = (uint8_t) 254;   // local maximum
+      else
+        setToZerosSet.push_back(std::pair<uint32_t, uint32_t>(u, v));    // later set to zero -> no (maximal) edge
+    }
+  }
+  for (size_t i = 0; i < setToZerosSet.size(); ++i)
+    edge->at(setToZerosSet[i].first, setToZerosSet[i].second).intensity = (uint8_t)0;
+}
+
+
 #define PCL_INSTANTIATE_OrganizedEdgeBase(T,LT)               template class PCL_EXPORTS pcl::OrganizedEdgeBase<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGB(T,LT)            template class PCL_EXPORTS pcl::OrganizedEdgeFromRGB<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromNormals(T,NT,LT)     template class PCL_EXPORTS pcl::OrganizedEdgeFromNormals<T,NT,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGBNormals(T,NT,LT)  template class PCL_EXPORTS pcl::OrganizedEdgeFromRGBNormals<T,NT,LT>;
+#define PCL_INSTANTIATE_OrganizedEdgeFromPoints(T,NT,LT)      template class PCL_EXPORTS pcl::OrganizedEdgeFromPoints<T,NT,LT>;
 
 #endif //#ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_

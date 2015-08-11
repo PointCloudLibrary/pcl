@@ -423,6 +423,219 @@ namespace pcl
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
   };
+
+
+  // new stuff
+  template <typename PointT, typename PointNT, typename PointLT>
+  class OrganizedEdgeFromPoints : virtual public OrganizedEdgeBase<PointT, PointLT>
+  {
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+    typedef typename pcl::PointCloud<PointNT> PointCloudN;
+    typedef typename PointCloudN::Ptr PointCloudNPtr;
+    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    public:
+      using OrganizedEdgeBase<PointT, PointLT>::input_;
+      using OrganizedEdgeBase<PointT, PointLT>::indices_;
+      using OrganizedEdgeBase<PointT, PointLT>::initCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
+
+      /** \brief Compilation of all relevant algorithm parameters */
+      struct EdgeDetectionConfig
+      {
+        /** \brief Noise suppression mode on differentiated images */
+        enum NoiseReductionMode { NONE, GAUSSIAN };   //, BILATERAL }; bilateral not yet implemented
+
+        /** \brief Noise suppression mode on differentiated images */
+        NoiseReductionMode noise_reduction_mode;
+
+        /** \brief Kernel size of noise reduction filter, usually 3, 5 or 7 */
+        int noise_reduction_kernel_size;
+
+        /** \brief Threshold for depth dependent depth edge (step) verification, corresponds to minimum depth step in [m] at 1m distance (default ~ 0.01 - 0.02) */
+        float depth_step_factor;
+
+        /** \brief Minimum angle of surrounding surfaces around a surface discontinuity (edge), in [deg] */
+        double min_detectable_edge_angle;
+
+        /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default) */
+        bool use_adaptive_scan_line;
+
+        /** \brief Minimum scan line width used for surface slope approximation, in [pixels] (typically around 5pix) */
+        int min_scan_line_width;
+
+        /** \brief Maximum scan line width used for surface slope approximation, in [pixels] (typically between 20 and 40pix) */
+        int max_scan_line_width;
+
+        /** \brief Scan_line_width is the length of the scan line left and right of the query pixel at 2m distance (using linear model with scan line width at 0.5m of 5 pixels) */
+        int scan_line_width_at_2m;
+
+        /** \brief Computed value from scan_line_width_at_2m (slope in linear model) */
+        double scan_line_model_m;
+
+        /** \brief Computed value from scan_line_width_at_2m (offset in linear model) */
+        double scan_line_model_n;
+
+        /** \brief Standard constructor with default parameters */
+        EdgeDetectionConfig()
+        {
+          noise_reduction_mode = GAUSSIAN;
+          noise_reduction_kernel_size = 3;
+          depth_step_factor = 0.01f;
+          min_detectable_edge_angle = 45;
+          use_adaptive_scan_line = true;
+          min_scan_line_width = 5;
+          max_scan_line_width = 20;
+          scan_line_width_at_2m = 15;
+          scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
+          scan_line_model_m = 10 - 2*scan_line_model_n;
+        }
+
+        /** \brief Constructor with user defined parameters */
+        EdgeDetectionConfig(const NoiseReductionMode noise_reduction_mode_, const int noise_reduction_kernel_size_, const float depth_step_factor_, const double min_detectable_edge_angle_, const bool use_adaptive_scan_line_, const int min_scan_line_width_, const int max_scan_line_width_, const int scan_line_width_at_2m_)
+        {
+          noise_reduction_mode = noise_reduction_mode_;
+          noise_reduction_kernel_size = noise_reduction_kernel_size_;
+          depth_step_factor = depth_step_factor_;
+          min_detectable_edge_angle = min_detectable_edge_angle_;
+          use_adaptive_scan_line = use_adaptive_scan_line_;
+          min_scan_line_width = min_scan_line_width_;
+          max_scan_line_width = max_scan_line_width_;
+          scan_line_width_at_2m = scan_line_width_at_2m_;
+          scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
+          scan_line_model_m = 10 - 2*scan_line_model_n;
+        }
+      };
+
+      /** \brief Constructor for OrganizedEdgeFromNormals */
+      OrganizedEdgeFromPoints ()
+        : OrganizedEdgeBase<PointT, PointLT> (),
+          return_label_indices_ (true),
+          use_fast_depth_discontinuity_mode_ (false),
+          edge_detection_config_ ()
+      {
+        updateKernels();
+        this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+      }
+
+      /** \brief Destructor for OrganizedEdgeFromNormals */
+      virtual
+      ~OrganizedEdgeFromPoints ()
+      {
+      }
+
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        * \param[out] point cloud of normals to each point (optional output, if a NULL pointer is provided, no normal computations and any overhead will occur)
+        */
+      void
+      compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices, PointCloudNPtr& normals = 0);
+
+      /** \brief Set the flag whether a label_indices vector shall be computed in compute() */
+      inline void
+      setReturnLabelIndices (const bool return_label_indices)
+      {
+        return_label_indices_ = return_label_indices;
+      }
+
+      /** \brief Get the flag whether a label_indices vector shall be computed in compute() */
+      inline bool
+      getReturnLabelIndices () const
+      {
+        return (return_label_indices_);
+      }
+
+      /** \brief Set the flag for computing depth discontinuities in a faster way which does not distinguish between EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, or EDGELABEL_OCCLUDED but just sets depth edges to EDGELABEL_OCCLUDING */
+      inline void
+      setUseFastDepthDiscontinuityMode (const bool use_fast_depth_discontinuity_mode)
+      {
+        use_fast_depth_discontinuity_mode_ = use_fast_depth_discontinuity_mode;
+        if (use_fast_depth_discontinuity_mode == false)
+          this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+        else
+          this->setEdgeType (EDGELABEL_OCCLUDING | EDGELABEL_HIGH_CURVATURE);
+      }
+
+      /** \brief Get the flag for computing depth discontinuities in a faster way which does not distinguish between EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, or EDGELABEL_OCCLUDED but just sets depth edges to EDGELABEL_OCCLUDING */
+      inline bool
+      getUseFastDepthDiscontinuityMode () const
+      {
+        return (use_fast_depth_discontinuity_mode_);
+      }
+
+      /** \brief Set the structure comprising all edge detection parameters */
+      inline void
+      setEdgeDetectionConfig (const EdgeDetectionConfig edge_detection_config)
+      {
+        edge_detection_config_ = edge_detection_config;
+        updateKernels();
+      }
+
+      /** \brief Get the structure comprising all edge detection parameters */
+      inline EdgeDetectionConfig
+      getEdgeDetectionConfig () const
+      {
+        return (edge_detection_config_);
+      }
+
+    protected:
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities and surface discontinuities (high curvature regions))
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] point cloud of normals to each point (optional output, if a NULL pointer is provided, no normal computations and any overhead will occur)
+        */
+      void
+      extractEdges (pcl::PointCloud<PointLT>& labels, PointCloudNPtr& normals = 0);
+
+      /** \brief Computes the filter kernels needed by the algorithm according to the chosen parameters */
+      void
+      updateKernels ();
+
+      /** \brief Prepares image-like data structures on the depth data */
+      void
+      prepareImages(pcl::PointCloud<pcl::Intensity>::Ptr& x_image, pcl::PointCloud<pcl::Intensity>::Ptr& y_image, pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                    pcl::PointCloud<pcl::Intensity>::Ptr& x_dx, pcl::PointCloud<pcl::Intensity>::Ptr& y_dy, pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
+                    pcl::PointCloud<pcl::Intensity>::Ptr& z_dy);
+
+      /** \brief Computes depth discontinuities in a fast way or copies edge detections from labels into edge (depending on use_fast_depth_discontinuity_mode_ setting) */
+      void
+      computeDepthDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                  const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy, const pcl::PointCloud<PointLT>& labels);
+
+      /** \brief Suppresses non-maximal depth step responses (on depth discontinuities) */
+      void
+      nonMaximumSuppression(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& dx, const pcl::PointCloud<pcl::Intensity>::Ptr& dy);
+
+      /** \brief Gaussian kernel for smoothing operations */
+      pcl::PointCloud<pcl::Intensity>::Ptr gaussian_kernel_;
+
+      /** \brief Sobel x kernel for derivatives on depth */
+      pcl::PointCloud<pcl::Intensity>::Ptr sobel_kernel_x_3x3_;
+
+      /** \brief Sobel y kernel for derivatives on depth */
+      pcl::PointCloud<pcl::Intensity>::Ptr sobel_kernel_y_3x3_;
+
+      /** \brief The computation of the label_indices vector may be turned off for speed reasons by setting this variable to false (default: true) */
+      bool return_label_indices_;
+
+      /** \brief Computes depth discontinuities in a faster way which does not distinguish between EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, or EDGELABEL_OCCLUDED but just sets depth edges to EDGELABEL_OCCLUDING (default: false) */
+      bool use_fast_depth_discontinuity_mode_;
+
+      /** \brief Structure comprising all edge detection parameters */
+      EdgeDetectionConfig edge_detection_config_;
+  };
 }
 
 #ifdef PCL_NO_PRECOMPILE
