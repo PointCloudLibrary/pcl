@@ -470,7 +470,7 @@ namespace pcl
         /** \brief Minimum angle of surrounding surfaces around a surface discontinuity (edge), in [deg] */
         double min_detectable_edge_angle;
 
-        /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default) */
+        /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default). If set to false no surface edge will be computed when the scan line crosses depth edges. If true, the scan line is adapted close to depth edges which yields more accurate results (though at little lower speed). */
         bool use_adaptive_scan_line;
 
         /** \brief Minimum scan line width used for surface slope approximation, in [pixels] (typically around 5pix) */
@@ -614,9 +614,89 @@ namespace pcl
       computeDepthDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
                                   const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy, const pcl::PointCloud<PointLT>& labels);
 
+      /** \brief Computes surface discontinuities */
+      void
+      computeSurfaceDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& x_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& y_dy,
+                                    const pcl::PointCloud<pcl::Intensity>::Ptr& z_image, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
+                                    PointCloudNPtr& normals = 0);
+
       /** \brief Suppresses non-maximal depth step responses (on depth discontinuities) */
       void
       nonMaximumSuppression(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& dx, const pcl::PointCloud<pcl::Intensity>::Ptr& dy);
+
+      /** \brief Creates an integral image within x-direction (i.e. line-wise, horizontally) for two source images */
+      void
+      computeIntegralImageX(const pcl::PointCloud<pcl::Intensity>::Ptr& srcX, pcl::PointCloud<pcl::Intensity>::Ptr& dstX,
+                            const pcl::PointCloud<pcl::Intensity>::Ptr& srcZ, pcl::PointCloud<pcl::Intensity>::Ptr& dstZ);
+
+      /** \brief Computes the horizontal distance to the next edge pixel left (.x) and right (.y) of the query point */
+      void
+      computeEdgeDistanceMapHorizontal(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map);
+
+      /** \brief Computes the vertical distance to the next edge pixel above (.x) and below (.y) of the query point */
+      void
+      computeEdgeDistanceMapVertical(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map);
+
+      /** \brief Adapts the scan line around the query pixel (u,v) to edges closer than scan_line_length1 (left or above) or scan_line_length2 (right or below).
+       * \param[in/out] scan_line_length1 Scan line length left or above query pixel (u,v).
+       * \param[in/out] scan_line_length2 Scan line length right or below query pixel (u,v).
+       * \param[in] distance_map Distances to the closest edges around query pixel (u,v) are stored in distance_map.
+       * \param[in] u Query pixel coordinate u (x).
+       * \param[in] v Query pixel coordinate v (y).
+       * \param[in] min_scan_line_length Minimum acceptable length for scan_line_length1 or scan_line_length2.
+       * \return Returns whether the total scan line length exceeds min_line_width.
+       */
+      bool
+      adaptScanLine(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map, const int u, const int v, const int min_scan_line_length);
+
+      /** \brief Adapts the scan line around the query pixel (u,v) to edges closer than scan_line_length1 (left or above) or scan_line_length2 (right or below). This is a
+       * special implementation for normal computation.
+       * \param[in/out] scan_line_length1 Scan line length left or above query pixel (u,v).
+       * \param[in/out] scan_line_length2 Scan line length right or below query pixel (u,v).
+       * \param[in] distance_map Distances to the closest edges around query pixel (u,v) are stored in distance_map.
+       * \param[in] u Query pixel coordinate u (x).
+       * \param[in] v Query pixel coordinate v (y).
+       * \param[in] min_scan_line_length Minimum acceptable total scan line width.
+       * \return Returns whether the total scan line length exceeds min_line_width.
+       */
+      bool
+      adaptScanLineNormal(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map, const int u, const int v, const int min_scan_line_length);
+
+      /** \brief Transposes a point cloud image */
+      void
+      transposeImage(const pcl::PointCloud<pcl::Intensity>::Ptr& src, pcl::PointCloud<pcl::Intensity>::Ptr& dst);
+
+      /** \brief Fast implementation of computing atan2 [in rad], |error| < 0.005 rad (from https://gist.github.com/volkansalma/2972237 or http://lists.apple.com/archives/perfoptimization-dev/2005/Jan/msg00051.html) */
+      float fast_atan2f_1(float y, float x)
+      {
+        if (x == 0.0f)
+        {
+          if (y > 0.0f) return pi_by_2_float_;
+          if (y == 0.0f) return 0.0f;
+          return -pi_by_2_float_;
+        }
+        float atan;
+        float z = y/x;
+        if (fabsf(z) < 1.0f)
+        {
+          atan = z/(1.0f + 0.28f*z*z);
+          if (x < 0.0f)
+          {
+            if (y < 0.0f) return atan - pi_float_;
+            return atan + pi_float_;
+          }
+        }
+        else
+        {
+          atan = pi_by_2_float_ - z/(z*z + 0.28f);
+          if ( y < 0.0f ) return atan - pi_float_;
+        }
+        return atan;
+      }
+
+      static const float pi_float_ = 3.14159265f;
+      static const float pi_by_2_float_ = 1.5707963f;
+      static const double pi_double_ = 3.1415926535897932384626433832795;
 
       /** \brief Gaussian kernel for smoothing operations */
       pcl::PointCloud<pcl::Intensity>::Ptr gaussian_kernel_;

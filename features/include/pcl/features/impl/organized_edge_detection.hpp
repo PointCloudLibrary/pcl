@@ -42,6 +42,7 @@
 #include <pcl/2d/kernel.h>
 #include <pcl/2d/convolution.h>
 #include <pcl/features/organized_edge_detection.h>
+#include <pcl/features/normal_3d.h>
 #include <pcl/console/print.h>
 #include <pcl/console/time.h>
 
@@ -370,10 +371,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#include <pcl/point_types.h>
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels,
-                                                                      PointCloudNPtr& normals)
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels, PointCloudNPtr& normals)
 {
   // setup coordinate images
   pcl::Intensity zero_intensity;
@@ -396,21 +395,15 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::Point
   // surface discontinuities
   if ( (detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
   {
-//    cv::Mat edge_integral;
-//    if (config.use_adaptive_scan_line == false)
-//      cv::integral(edge, edge_integral, CV_32S);
+    computeSurfaceDiscontinuities(edge, x_dx, y_dy, z_image, z_dx, z_dy, normals);
   }
 
-  // optionally: compute normals
-  if (normals != 0)
-  {
-
-  }
+  // todo: set label vector
 }
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::updateKernels ()
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::updateKernels()
 {
   pcl::kernel<pcl::Intensity> kernel;
 
@@ -435,13 +428,13 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::updateKernels ()
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages (pcl::PointCloud<pcl::Intensity>::Ptr& x_image,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& y_image,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& x_dx,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& y_dy,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
-                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dy)
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages(pcl::PointCloud<pcl::Intensity>::Ptr& x_image,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& y_image,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& x_dx,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& y_dy,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
+                                                                      pcl::PointCloud<pcl::Intensity>::Ptr& z_dy)
 {
   for (unsigned int v = 0; v < input_->height; ++v)
   {
@@ -501,11 +494,11 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages (pcl::Poin
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuities (pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
-                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
-                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
-                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
-                                                                                     const pcl::PointCloud<PointLT>& labels)
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
+                                                                                    const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                                                                    const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
+                                                                                    const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
+                                                                                    const pcl::PointCloud<PointLT>& labels)
 {
   if (use_fast_depth_discontinuity_mode_ == true && (detecting_edge_types_ & EDGELABEL_OCCLUDING))
   {
@@ -522,7 +515,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuit
         const float z_dx_val = z_dx->at(u, v).intensity;
         const float z_dy_val = z_dy->at(u, v).intensity;
         if (z_dx_val <= -edge_threshold || z_dx_val >= edge_threshold || z_dy_val <= -edge_threshold || z_dy_val >= edge_threshold)
-          edge->at(u, v).intensity = (uint8_t) std::min<float>(253.f, 50.f * (1. + sqrt(z_dx_val * z_dx_val + z_dy_val * z_dy_val)));  // store a proportional measure for the edge strength
+          edge->at(u, v).intensity = (uint8_t) std::min<float>(255.f, 50.f * (1. + sqrt(z_dx_val * z_dx_val + z_dy_val * z_dy_val)));  // store a proportional measure for the edge strength
       }
     }
     nonMaximumSuppression(edge, z_dx, z_dy);
@@ -550,9 +543,271 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuit
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::nonMaximumSuppression (pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
-                                                                               const pcl::PointCloud<pcl::Intensity>::Ptr& dx,
-                                                                               const pcl::PointCloud<pcl::Intensity>::Ptr& dy)
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& x_dx,
+                                                                                      const pcl::PointCloud<pcl::Intensity>::Ptr& y_dy, const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
+                                                                                      const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
+                                                                                      PointCloudNPtr& normals)
+{
+  // surface discontinuities
+  const int min_line_width = edge_detection_config_.min_scan_line_width;
+  const int max_line_width = edge_detection_config_.max_scan_line_width;
+  const int max_v = z_dx->height - max_line_width - 2;
+  const int max_u = z_dx->width - max_line_width - 2;
+  const float min_detectable_edge_angle = edge_detection_config_.min_detectable_edge_angle;  // minimum angle between two planes to consider their intersection an edge, measured in [° degree]
+  const float scan_line_model_m = edge_detection_config_.scan_line_model_m;
+  const float scan_line_model_n = edge_detection_config_.scan_line_model_n;
+  // x direction scan lines
+  pcl::PointCloud<pcl::Intensity>::Ptr x_dx_integral_x(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr z_dx_integral_x(new pcl::PointCloud<pcl::Intensity>);
+  computeIntegralImageX(x_dx, x_dx_integral_x, z_dx, z_dx_integral_x);
+  pcl::PointCloud<pcl::PointXY>::Ptr distance_map_horizontal(new pcl::PointCloud<pcl::PointXY>);
+  computeEdgeDistanceMapHorizontal(edge, distance_map_horizontal);
+#ifdef USE_OMP
+#pragma omp parallel for //num_threads(2)
+#endif
+  for (int v = max_line_width+1; v < max_v; ++v)
+  {
+    int scan_line_width = 10; // width of scan line left or right of a query pixel, measured in [px]
+    int last_line_width = scan_line_width;
+    int edge_start_index = -1;
+    float max_edge_strength = 0;
+    for (int u = max_line_width+1; u < max_u; ++u)
+    {
+      const float depth = z_image->at(u,v).intensity;
+      if (depth == 0.f)
+        continue;
+
+      // depth dependent scan line width for slope computation (e.g. 1px width per 0.10m depth)
+      scan_line_width = std::min(int(scan_line_model_m*depth+scan_line_model_n), max_line_width);
+      if (scan_line_width <= min_line_width)
+        scan_line_width = last_line_width;
+      else
+        last_line_width = scan_line_width;
+      int scan_line_width_left = scan_line_width;
+      int scan_line_width_right = scan_line_width;
+      bool edge_hit = false;
+      if (edge_detection_config_.use_adaptive_scan_line == true)
+        edge_hit = !adaptScanLine(scan_line_width_left, scan_line_width_right, distance_map_horizontal, u, v, min_line_width);
+      else
+        edge_hit = (distance_map_horizontal->at(u,v).x < scan_line_width_left || distance_map_horizontal->at(u,v).y < scan_line_width_right); // do not compute surface edges if a depth discontinuity is on the scan line
+      if (edge_hit == true)
+      {
+        // not enough support for solid slope estimation
+        edge_start_index = -1;
+        max_edge_strength = 0.f;
+        continue;
+      }
+
+      // get average differences in x and z direction (ATTENTION: the integral images provide just the sum, not divided by number of elements, however, further processing only needs the sum, not the real average)
+      // remark: the indexing of the integral image here differs from the OpenCV definition (here: the value of a cell is included in the sum of the integral image's cell)
+      const float avg_dx_l = x_dx_integral_x->at(u-1, v).intensity                     - x_dx_integral_x->at(u-scan_line_width_left, v).intensity;
+      const float avg_dx_r = x_dx_integral_x->at(u+scan_line_width_right, v).intensity - x_dx_integral_x->at(u+1, v).intensity;
+      const float avg_dz_l = z_dx_integral_x->at(u-1, v).intensity                     - z_dx_integral_x->at(u-scan_line_width_left, v).intensity;
+      const float avg_dz_r = z_dx_integral_x->at(u+scan_line_width_right, v).intensity - z_dx_integral_x->at(u+1, v).intensity;
+
+      // estimate angle difference
+      const float alpha_left = fast_atan2f_1(-avg_dz_l, -avg_dx_l);
+      const float alpha_right = fast_atan2f_1(avg_dz_r, avg_dx_r);
+      const float diff = fabs(alpha_left - alpha_right);
+      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * pi_double_ || diff > (180.+min_detectable_edge_angle) * 1./180. * pi_double_))
+      {
+        // found an edge, i.e. the directions of left and right surface lines differ enough
+        if (edge_start_index == -1)
+          edge_start_index = u;
+        const float dist = fabs(pi_double_ - diff);
+        if (dist > max_edge_strength)
+        {
+          max_edge_strength = dist;
+          edge_start_index = u;
+        }
+      }
+      else
+      {
+        if (edge_start_index != -1)
+        {
+          // just after having found an edge before -> label edge in edge image
+          edge->at(edge_start_index, v).intensity = (uint8_t)255;
+          edge_start_index = -1;
+          max_edge_strength = 0;
+        }
+      }
+    }
+  }
+  // y direction scan lines
+  pcl::PointCloud<pcl::Intensity>::Ptr y_dy_t(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr z_dy_t(new pcl::PointCloud<pcl::Intensity>);
+  transposeImage(y_dy, y_dy_t);
+  transposeImage(z_dy, z_dy_t);
+  pcl::PointCloud<pcl::Intensity>::Ptr y_dy_integral_y(new pcl::PointCloud<pcl::Intensity>);
+  pcl::PointCloud<pcl::Intensity>::Ptr z_dy_integral_y(new pcl::PointCloud<pcl::Intensity>);
+  computeIntegralImageX(y_dy_t, y_dy_integral_y, z_dy_t, z_dy_integral_y);
+  pcl::PointCloud<pcl::PointXY>::Ptr distance_map_vertical(new pcl::PointCloud<pcl::PointXY>);
+  computeEdgeDistanceMapVertical(edge, distance_map_vertical);
+  const int max_uy = z_dy_t->width - max_line_width - 2;
+  const int max_vy = z_dy_t->height - max_line_width - 2;
+#ifdef USE_OMP
+#pragma omp parallel for //num_threads(2)
+#endif
+  for (int v = max_line_width+1; v < max_vy; ++v)
+  {
+    int scan_line_width = 10; // width of scan line left or right of a query pixel, measured in [px]
+    int last_line_width = scan_line_width;
+    int edge_start_index = -1;
+    float max_edge_strength = 0;
+    for (int u = max_line_width+1; u < max_uy; ++u)
+    {
+      const float depth = z_image->at(v, u).intensity;
+      if (depth==0.f)
+        continue;
+
+      // depth dependent scan line width for slope computation (e.g. 1px width per 0.10m depth)
+      scan_line_width = std::min(int(scan_line_model_m*depth+scan_line_model_n), max_line_width);
+      if (scan_line_width <= min_line_width)
+        scan_line_width = last_line_width;
+      else
+        last_line_width = scan_line_width;
+      int scan_line_height_upper = scan_line_width;
+      int scan_line_height_lower = scan_line_width;
+      bool edge_hit = false;
+      if (edge_detection_config_.use_adaptive_scan_line == true)
+        edge_hit = !adaptScanLine(scan_line_height_upper, scan_line_height_lower, distance_map_vertical, v, u, min_line_width);
+      else
+        edge_hit = (distance_map_vertical->at(v,u).x < scan_line_height_upper || distance_map_vertical->at(v,u).y < scan_line_height_lower); // do not compute surface edges if a depth discontinuity is on the scan line
+      if (edge_hit == true)
+      {
+        // not enough support for solid slope estimation
+        edge_start_index = -1;
+        max_edge_strength = 0.f;
+        continue;
+      }
+
+      // get average differences in y and z direction (ATTENTION: the integral images provide just the sum, not divided by number of elements, however, further processing only needs the sum, not the real average)
+      // remark: the indexing of the integral image here differs from the OpenCV definition (here: the value of a cell is included in the sum of the integral image's cell)
+      const float avg_dy_u = y_dy_integral_y->at(u-1, v).intensity                      - y_dy_integral_y->at(u-scan_line_height_upper, v).intensity;
+      const float avg_dy_b = y_dy_integral_y->at(u+scan_line_height_lower, v).intensity - y_dy_integral_y->at(u+1, v).intensity;
+      const float avg_dz_u = z_dy_integral_y->at(u-1, v).intensity                      - z_dy_integral_y->at(u-scan_line_height_upper, v).intensity;
+      const float avg_dz_b = z_dy_integral_y->at(u+scan_line_height_lower, v).intensity - z_dy_integral_y->at(u+1, v).intensity;
+
+      // estimate angle difference
+      const float alpha_above = fast_atan2f_1(-avg_dz_u, -avg_dy_u);
+      const float alpha_below = fast_atan2f_1(avg_dz_b, avg_dy_b);
+      const float diff = fabs(alpha_above - alpha_below);
+      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * pi_double_ || diff > (180.+min_detectable_edge_angle) * 1./180. * pi_double_))
+      {
+        // found an edge, i.e. the directions of upper and lower surface lines differ enough
+        if (edge_start_index == -1)
+          edge_start_index = u;
+        const float dist = fabs(pi_double_ - diff);
+        if (dist > max_edge_strength)
+        {
+          max_edge_strength = dist;
+          edge_start_index = u;
+        }
+      }
+      else
+      {
+        if (edge_start_index != -1)
+        {
+          // just after having found an edge before -> label edge in edge image
+          edge->at(v, edge_start_index).intensity = (uint8_t)255;
+          edge_start_index = -1;
+          max_edge_strength = 0;
+        }
+      }
+    }
+  }
+
+  // close 45 degree edges with an additional edge pixel for better neighborhood selection during normal estimation
+  for (int v = max_line_width; v < edge->height - max_line_width; ++v)
+  {
+    for (int u = max_line_width; u < edge->width - max_line_width; ++u)
+    {
+      if (edge->at(u, v).intensity == 0)
+      {
+        if (edge->at(u + 1, v).intensity != 0 && edge->at(u, v + 1).intensity != 0 && edge->at(u + 1, v + 1).intensity == 0)
+          edge->at(u, v).intensity = edge->at(u + 1, v).intensity;
+      }
+      else
+      {
+        if (edge->at(u + 1, v).intensity == 0 && edge->at(u, v + 1).intensity == 0 && edge->at(u + 1, v + 1).intensity != 0)
+          edge->at(u + 1, v).intensity = edge->at(u + 1, v + 1).intensity;
+      }
+    }
+  }
+
+  // optionally: compute edge-aware normals exploiting the already computed structures
+  if (normals != 0)
+  {
+    normals->resize(input_->size());
+    normals->header = input_->header;
+    normals->is_dense = input_->is_dense;
+    normals->height = input_->height;
+    normals->width = input_->width;
+    const int width = normals->width;
+    const float bad_point = std::numeric_limits<float>::quiet_NaN();
+#ifdef USE_OMP
+#pragma omp parallel for //num_threads(2)
+#endif
+    for (int v = max_line_width+1; v < max_v; ++v)
+    {
+      int scan_line_width = 10; // width of scan line left or right of a query pixel, measured in [px]
+      int last_line_width = scan_line_width;
+      for (int u = max_line_width+1; u < max_u; ++u)
+      {
+        const int idx = v*width + u;
+        const float depth = z_image->at(u, v).intensity;
+        if (depth == 0.f || edge->at(u, v).intensity != 0)
+        {
+          normals->points[idx].getNormalVector3fMap().setConstant(bad_point);
+          continue;
+        }
+
+        // depth dependent scan line width for slope computation (e.g. 1px width per 0.10m depth)
+        scan_line_width = std::min(int(scan_line_model_m*depth+scan_line_model_n), max_line_width);
+        if (scan_line_width <= min_line_width)
+          scan_line_width = last_line_width;
+        else
+          last_line_width = scan_line_width;
+        int scan_line_width_left = scan_line_width;
+        int scan_line_width_right = scan_line_width;
+        int scan_line_height_upper = scan_line_width;
+        int scan_line_height_lower = scan_line_width;
+        bool edge_hit = false;
+        if (edge_detection_config_.use_adaptive_scan_line == true)
+          edge_hit = !adaptScanLineNormal(scan_line_width_left, scan_line_width_right, distance_map_horizontal, u, v, min_line_width) ||
+                     !adaptScanLineNormal(scan_line_height_upper, scan_line_height_lower, distance_map_vertical, u, v, min_line_width);
+        else
+          edge_hit = distance_map_horizontal->at(u,v).x < scan_line_width_left || distance_map_horizontal->at(u,v).y < scan_line_width_right ||
+                     distance_map_vertical->at(v,u).x < scan_line_height_upper || distance_map_vertical->at(v,u).y < scan_line_height_lower; // do not compute surface edges if a depth discontinuity is on the scan line
+        if (edge_hit == true)
+        {
+          // not enough support for solid normal estimation
+          normals->points[idx].getNormalVector3fMap().setConstant(bad_point);
+          continue;
+        }
+
+        // get average differences in x, y and z direction (ATTENTION: the integral images provide just the sum, not divided by number of elements, however, further processing only needs the sum, not the real average)
+        // remark: the indexing of the integral image here differs from the OpenCV definition (here: the value of a cell is included in the sum of the integral image's cell)
+        const float avg_dx1 = x_dx_integral_x->at(u+scan_line_width_right, v).intensity  - x_dx_integral_x->at(u-scan_line_width_left, v).intensity;
+        const float avg_dz1 = z_dx_integral_x->at(u+scan_line_width_right, v).intensity  - z_dx_integral_x->at(u-scan_line_width_left, v).intensity;
+        const float avg_dy2 = y_dy_integral_y->at(v+scan_line_height_lower, u).intensity - y_dy_integral_y->at(v-scan_line_height_upper, u).intensity;
+        const float avg_dz2 = z_dy_integral_y->at(v+scan_line_height_lower, u).intensity - z_dy_integral_y->at(v-scan_line_height_upper, u).intensity;
+
+        const Eigen::Vector3f v1(avg_dx1, 0, avg_dz1);
+        const Eigen::Vector3f v2(0, avg_dy2, avg_dz2);
+        Eigen::Vector3f n = (v2.cross(v1)).normalized();
+        pcl::flipNormalTowardsViewpoint<PointT>(input_->points[idx], input_->sensor_origin_(0), input_->sensor_origin_(1), input_->sensor_origin_(2), n(0), n(1), n(2));
+        normals->points[idx].getNormalVector3fMap() = n;
+      }
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::nonMaximumSuppression(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
+                                                                              const pcl::PointCloud<pcl::Intensity>::Ptr& dx,
+                                                                              const pcl::PointCloud<pcl::Intensity>::Ptr& dy)
 {
   std::vector<std::pair<uint32_t, uint32_t> > setToZerosSet;
   for (uint32_t v = 1; v < edge->height - 1; ++v)
@@ -579,6 +834,159 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::nonMaximumSuppression (p
     edge->at(setToZerosSet[i].first, setToZerosSet[i].second).intensity = (uint8_t)0;
 }
 
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeIntegralImageX(const pcl::PointCloud<pcl::Intensity>::Ptr& src_x, pcl::PointCloud<pcl::Intensity>::Ptr& dst_x,
+                                                                              const pcl::PointCloud<pcl::Intensity>::Ptr& src_z, pcl::PointCloud<pcl::Intensity>::Ptr& dst_z)
+{
+  dst_x->resize(src_x->height*src_x->width);
+  dst_x->width = src_x->width;
+  dst_x->height = src_x->height;
+  dst_z->resize(src_x->height*src_x->width);
+  dst_z->width = src_x->width;
+  dst_z->height = src_x->height;
+  for (int v=0; v<src_x->height; ++v)
+  {
+    const size_t point_index = v * src_x->width;
+    const pcl::Intensity* src_x_ptr = & (src_x->points[point_index]);
+    pcl::Intensity* dst_x_ptr = & (dst_x->points[point_index]);
+    const pcl::Intensity* src_z_ptr = & (src_z->points[point_index]);
+    pcl::Intensity* dst_z_ptr = & (dst_z->points[point_index]);
+    float sum_x = 0.f;
+    float sum_z = 0.f;
+    for (int u=0; u<src_x->width; ++u)
+    {
+      sum_x += src_x_ptr->intensity;
+      dst_x_ptr->intensity = sum_x;
+      src_x_ptr++;
+      dst_x_ptr++;
+      sum_z += src_z_ptr->intensity;
+      dst_z_ptr->intensity = sum_z;
+      src_z_ptr++;
+      dst_z_ptr++;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapHorizontal(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map)
+{
+  distance_map->resize(edge->height*edge->width);
+  distance_map->width = edge->width;
+  distance_map->height = edge->height;
+  for (int v=0; v<edge->height; ++v)
+  {
+    // distance to next edge left of query pixel
+    distance_map->at(0,v).x = 0;
+    for (int u=1; u<edge->width; ++u)
+    {
+      if (edge->at(u,v).intensity != 0)
+        distance_map->at(u,v).x = 0;
+      else
+        distance_map->at(u,v).x = distance_map->at(u-1,v).x + 1;
+    }
+    // distance to next edge right of query pixel
+    distance_map->at(edge->width-1,v).y = 0;
+    for (int u=edge->width-2; u>=0; --u)
+    {
+      if (edge->at(u,v).intensity != 0)
+        distance_map->at(u,v).y = 0;
+      else
+        distance_map->at(u,v).y = distance_map->at(u+1,v).y + 1;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapVertical(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map)
+{
+  distance_map->resize(edge->height * edge->width);
+  distance_map->width = edge->width;
+  distance_map->height = edge->height;
+  // distance to next edge above query pixel
+  for (int u = 0; u < edge->width; ++u)
+    distance_map->at(u, 0).x = 0;
+  for (int v = 1; v < edge->height; ++v)
+  {
+    for (int u = 0; u < edge->width; ++u)
+    {
+      if (edge->at(u, v).intensity != 0)
+        distance_map->at(u, v).x = 0;
+      else
+        distance_map->at(u, v).x = distance_map->at(u, v - 1).x + 1;
+    }
+  }
+  // distance to next edge below query pixel
+  for (int u = 0; u < edge->width; ++u)
+    distance_map->at(u, edge->height - 1).y = 0;
+  for (int v = edge->height - 2; v >= 0; --v)
+  {
+    for (int u = 0; u < edge->width; ++u)
+    {
+      if (edge->at(u, v).intensity != 0)
+        distance_map->at(u, v).y = 0;
+      else
+        distance_map->at(u, v).y = distance_map->at(u, v + 1).y + 1;
+    }
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> bool
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::adaptScanLine(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map,
+                                                                            const int u, const int v, const int min_scan_line_length)
+{
+  const int min_scan_line_width_fraction_from_max = 3;
+  const int min_distance_to_depth_edge = 2;
+  const int max_1 = scan_line_length_1;
+  const int max_2 = scan_line_length_2;
+  const pcl::PointXY& distance_to_edge = distance_map->at(u,v);
+  scan_line_length_1 = std::min(scan_line_length_1, (int)distance_to_edge.x-1-min_distance_to_depth_edge);
+  scan_line_length_2 = std::min(scan_line_length_2, (int)distance_to_edge.y-1-min_distance_to_depth_edge);
+
+  if ( (scan_line_length_1 < min_scan_line_length || min_scan_line_width_fraction_from_max * scan_line_length_1 < max_1)
+      || (scan_line_length_2 < min_scan_line_length || min_scan_line_width_fraction_from_max * scan_line_length_2 < max_2))
+    return false;
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> bool
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::adaptScanLineNormal(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map,
+                                                                            const int u, const int v, const int min_scan_line_length)
+{
+  const int min_distance_to_depth_edge = 2;
+  const pcl::PointXY& distance_to_edge = distance_map->at(u,v);
+  scan_line_length_1 = std::min(scan_line_length_1, (int)distance_to_edge.x-1-min_distance_to_depth_edge);
+  scan_line_length_2 = std::min(scan_line_length_2, (int)distance_to_edge.y-1-min_distance_to_depth_edge);
+
+  if ((scan_line_length_1+scan_line_length_2)<min_scan_line_length)
+    return false;
+  return true;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::transposeImage(const pcl::PointCloud<pcl::Intensity>::Ptr& src,
+                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& dst)
+{
+  dst->resize(src->height * src->width);
+  dst->height = src->width;
+  dst->width = src->height;
+  for (unsigned int v = 0; v < dst->height; ++v)
+  {
+    pcl::Intensity* src_ptr = & (src->points[v]);
+    pcl::Intensity* dst_ptr = & (dst->points[v * input_->width]);
+    for (unsigned int u = 0; u < dst->width; u++)
+    {
+      *dst_ptr = *src_ptr;
+      src_ptr += src->width;
+      ++dst_ptr;
+    }
+  }
+}
 
 #define PCL_INSTANTIATE_OrganizedEdgeBase(T,LT)               template class PCL_EXPORTS pcl::OrganizedEdgeBase<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGB(T,LT)            template class PCL_EXPORTS pcl::OrganizedEdgeFromRGB<T,LT>;
