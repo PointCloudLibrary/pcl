@@ -425,7 +425,19 @@ namespace pcl
   };
 
 
-  // new stuff
+  /** \brief OrganizedEdgeFromPoints and OrganizedEdgeFromRGBPoints efficiently find 3D depth edges and surface discontinuities (EDGELABEL_HIGH_CURVATURE)
+    * directly from organized point cloud data without needing any input on pre-computed normals. Given an organized point cloud, they will output a PointCloud
+    * of edge labels, a vector of PointIndices, and optionally a point cloud of efficiently computed surface normals.
+    * OrganizedEdgeFromPoints accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_HIGH_CURVATURE.
+    * OrganizedEdgeFromRGBPoints accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, EDGELABEL_HIGH_CURVATURE, and EDGELABEL_RGB_CANNY.
+    *
+    * If your are using this method for surface edge computation, please cite:
+    * Richard Bormann, Joshua Hampp, Martin Haegele, Markus Vincze. Fast and Accurate Normal Estimation by Efficient 3d Edge Detection.
+    * In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
+    *
+    * \author Richard Bormann
+    * \ingroup features
+    */
   template <typename PointT, typename PointNT, typename PointLT>
   class OrganizedEdgeFromPoints : virtual public OrganizedEdgeBase<PointT, PointLT>
   {
@@ -519,7 +531,7 @@ namespace pcl
         }
       };
 
-      /** \brief Constructor for OrganizedEdgeFromNormals */
+      /** \brief Constructor for OrganizedEdgeFromPoints */
       OrganizedEdgeFromPoints ()
         : OrganizedEdgeBase<PointT, PointLT> (),
           return_label_indices_ (true),
@@ -530,7 +542,7 @@ namespace pcl
         this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
       }
 
-      /** \brief Destructor for OrganizedEdgeFromNormals */
+      /** \brief Destructor for OrganizedEdgeFromPoints */
       virtual
       ~OrganizedEdgeFromPoints ()
       {
@@ -539,7 +551,7 @@ namespace pcl
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions) and assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
         * \param[out] label_indices a vector of PointIndices corresponding to each edge label
-        * \param[out] point cloud of normals to each point (optional output, if a NULL pointer is provided, no normal computations and any overhead will occur)
+        * \param[out] normals point cloud of efficiently computed normals to each point (optional output, if a NULL pointer is provided, no normal computations and no overhead will occur)
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices, PointCloudNPtr& normals = 0);
@@ -666,33 +678,14 @@ namespace pcl
       void
       transposeImage(const pcl::PointCloud<pcl::Intensity>::Ptr& src, pcl::PointCloud<pcl::Intensity>::Ptr& dst);
 
-      /** \brief Fast implementation of computing atan2 [in rad], |error| < 0.005 rad (from https://gist.github.com/volkansalma/2972237 or http://lists.apple.com/archives/perfoptimization-dev/2005/Jan/msg00051.html) */
-      float fast_atan2f_1(float y, float x)
-      {
-        if (x == 0.0f)
-        {
-          if (y > 0.0f) return pi_by_2_float_;
-          if (y == 0.0f) return 0.0f;
-          return -pi_by_2_float_;
-        }
-        float atan;
-        float z = y/x;
-        if (fabsf(z) < 1.0f)
-        {
-          atan = z/(1.0f + 0.28f*z*z);
-          if (x < 0.0f)
-          {
-            if (y < 0.0f) return atan - pi_float_;
-            return atan + pi_float_;
-          }
-        }
-        else
-        {
-          atan = pi_by_2_float_ - z/(z*z + 0.28f);
-          if ( y < 0.0f ) return atan - pi_float_;
-        }
-        return atan;
-      }
+      /** \brief Fast implementation of computing atan2 [in rad], |error| < 0.005 rad
+       * (from https://gist.github.com/volkansalma/2972237 or http://lists.apple.com/archives/perfoptimization-dev/2005/Jan/msg00051.html) */
+      float
+      fast_atan2f_1(float y, float x);
+
+      /** \brief Sets the labels point cloud accordingly */
+      void
+      setLabels(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<PointLT>& labels);
 
       static const float pi_float_ = 3.14159265f;
       static const float pi_by_2_float_ = 1.5707963f;
@@ -715,6 +708,62 @@ namespace pcl
 
       /** \brief Structure comprising all edge detection parameters */
       EdgeDetectionConfig edge_detection_config_;
+  };
+
+  template <typename PointT, typename PointNT, typename PointLT>
+  class OrganizedEdgeFromRGBPoints : public OrganizedEdgeFromRGB<PointT, PointLT>, public OrganizedEdgeFromPoints<PointT, PointNT, PointLT>
+  {
+    typedef typename pcl::PointCloud<PointT> PointCloud;
+    typedef typename PointCloud::Ptr PointCloudPtr;
+    typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+    typedef typename pcl::PointCloud<PointNT> PointCloudN;
+    typedef typename PointCloudN::Ptr PointCloudNPtr;
+    typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
+    typedef typename pcl::PointCloud<PointLT> PointCloudL;
+    typedef typename PointCloudL::Ptr PointCloudLPtr;
+    typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
+
+    public:
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::input_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::indices_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::initCompute;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::deinitCompute;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::detecting_edge_types_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::gaussian_kernel_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::sobel_kernel_x_3x3_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::sobel_kernel_y_3x3_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::return_label_indices_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::use_fast_depth_discontinuity_mode_;
+      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::edge_detection_config_;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
+      using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_RGB_CANNY;
+
+      /** \brief Constructor for OrganizedEdgeFromRGBPoints */
+      OrganizedEdgeFromRGBPoints ()
+        : OrganizedEdgeFromRGB<PointT, PointLT> ()
+        , OrganizedEdgeFromPoints<PointT, PointNT, PointLT> ()
+      {
+        this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY | EDGELABEL_HIGH_CURVATURE);
+      }
+
+      /** \brief Destructor for OrganizedEdgeFromRGBPoints */
+      virtual
+      ~OrganizedEdgeFromRGBPoints ()
+      {
+      }
+
+      /** \brief Perform the 3D edge detection (edges from depth discontinuities, RGB Canny edge, and high curvature regions) and assign point indices for each edge label
+        * \param[out] labels a PointCloud of edge labels
+        * \param[out] label_indices a vector of PointIndices corresponding to each edge label
+        * \param[out] normals point cloud of efficiently computed normals to each point (optional output, if a NULL pointer is provided, no normal computations and no overhead will occur)
+        */
+      void
+      compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices, PointCloudNPtr& normals = 0);
   };
 }
 

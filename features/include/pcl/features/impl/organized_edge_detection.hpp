@@ -351,9 +351,7 @@ pcl::OrganizedEdgeFromRGBNormals<PointT, PointNT, PointLT>::compute (pcl::PointC
 
 //////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT, typename PointLT> void
-pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels,
-                                                                 std::vector<pcl::PointIndices>& label_indices,
-                                                                 PointCloudNPtr& normals)
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices, PointCloudNPtr& normals)
 {
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned(0);
@@ -364,6 +362,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud
   // if slow mode is selected for depth discontinuities use the standard procedure with all edge label information (occluded, occluding, etc.)
   if (use_fast_depth_discontinuity_mode_ == false)
     OrganizedEdgeBase<PointT, PointLT>::extractEdges(labels);
+  // compute depth edges (if fast mode is selected) and surface discontinuities
   extractEdges(labels, normals);
 
   if (return_label_indices_ == true)
@@ -386,19 +385,21 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::Point
   pcl::PointCloud<pcl::Intensity>::Ptr z_dy(new pcl::PointCloud<pcl::Intensity>);
   prepareImages(x_image, y_image, z_image, x_dx, y_dy, z_dx, z_dy);
 
-  // depth discontinuities
+  // intermediate edge data structure for computing depth and surface discontinuities
   pcl::Intensity8u zero_intensity_8u;
   zero_intensity_8u.intensity = (uint8_t)0;
   pcl::PointCloud<pcl::Intensity8u>::Ptr edge(new pcl::PointCloud<pcl::Intensity8u>(labels.width, labels.height, zero_intensity_8u));
-  computeDepthDiscontinuities(edge, z_image, z_dx, z_dy, labels);
+
+  // depth discontinuities
+  if (detecting_edge_types_ & EDGELABEL_OCCLUDING)
+    computeDepthDiscontinuities(edge, z_image, z_dx, z_dy, labels);
 
   // surface discontinuities
-  if ( (detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE))
-  {
+  if (detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE)
     computeSurfaceDiscontinuities(edge, x_dx, y_dy, z_image, z_dx, z_dy, normals);
-  }
 
-  // todo: set label vector
+  // copy edge data into point cloud labels
+  setLabels(edge, labels);
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -500,7 +501,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuit
                                                                                     const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
                                                                                     const pcl::PointCloud<PointLT>& labels)
 {
-  if (use_fast_depth_discontinuity_mode_ == true && (detecting_edge_types_ & EDGELABEL_OCCLUDING))
+  if (use_fast_depth_discontinuity_mode_ == true)
   {
     // if not computed in the standard way, compute depth edges in a fast way, without distinguishing between occluding, occluded, NaN, etc.
     const float depth_factor = edge_detection_config_.depth_step_factor;
@@ -988,10 +989,88 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::transposeImage(const pcl
   }
 }
 
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> float
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::fast_atan2f_1(float y, float x)
+{
+  if (x == 0.0f)
+  {
+    if (y > 0.0f) return pi_by_2_float_;
+    if (y == 0.0f) return 0.0f;
+    return -pi_by_2_float_;
+  }
+  float atan;
+  float z = y/x;
+  if (fabsf(z) < 1.0f)
+  {
+    atan = z/(1.0f + 0.28f*z*z);
+    if (x < 0.0f)
+    {
+      if (y < 0.0f) return atan - pi_float_;
+      return atan + pi_float_;
+    }
+  }
+  else
+  {
+    atan = pi_by_2_float_ - z/(z*z + 0.28f);
+    if ( y < 0.0f ) return atan - pi_float_;
+  }
+  return atan;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::setLabels(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<PointLT>& labels)
+{
+  if (use_fast_depth_discontinuity_mode_ == true)
+  {
+    for (uint32_t v = 0; v < edge->height; ++v)
+    {
+      for (uint32_t u = 0; u < edge->width; ++u)
+      {
+        const uint8_t val = edge->at(u,v).intensity;
+        if (val == 254)
+          labels[v * labels.width + u].label |= EDGELABEL_OCCLUDING;
+        else if (val == 255)
+          labels[v * labels.width + u].label |= EDGELABEL_HIGH_CURVATURE;
+      }
+    }
+  }
+  else
+    for (uint32_t v = 0; v < edge->height; ++v)
+      for (uint32_t u = 0; u < edge->width; ++u)
+        if (edge->at(u,v).intensity == 255)
+          labels[v * labels.width + u].label |= EDGELABEL_HIGH_CURVATURE;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+template<typename PointT, typename PointNT, typename PointLT> void
+pcl::OrganizedEdgeFromRGBPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices,
+                                                                    PointCloudNPtr& normals)
+{
+  pcl::Label invalid_pt;
+  invalid_pt.label = unsigned (0);
+  labels.points.resize (input_->points.size (), invalid_pt);
+  labels.width = input_->width;
+  labels.height = input_->height;
+
+  // if slow mode is selected for depth discontinuities use the standard procedure with all edge label information (occluded, occluding, etc.)
+  if (use_fast_depth_discontinuity_mode_ == false)
+    OrganizedEdgeBase<PointT, PointLT>::extractEdges(labels);
+  // compute depth edges (if fast mode is selected) and surface discontinuities
+  OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges(labels, normals);
+  // compute RGB edges with Canny edge
+  OrganizedEdgeFromRGB<PointT, PointLT>::extractEdges (labels);
+
+  if (return_label_indices_ == true)
+    this->assignLabelIndices(labels, label_indices);
+}
+
 #define PCL_INSTANTIATE_OrganizedEdgeBase(T,LT)               template class PCL_EXPORTS pcl::OrganizedEdgeBase<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGB(T,LT)            template class PCL_EXPORTS pcl::OrganizedEdgeFromRGB<T,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromNormals(T,NT,LT)     template class PCL_EXPORTS pcl::OrganizedEdgeFromNormals<T,NT,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromRGBNormals(T,NT,LT)  template class PCL_EXPORTS pcl::OrganizedEdgeFromRGBNormals<T,NT,LT>;
 #define PCL_INSTANTIATE_OrganizedEdgeFromPoints(T,NT,LT)      template class PCL_EXPORTS pcl::OrganizedEdgeFromPoints<T,NT,LT>;
+#define PCL_INSTANTIATE_OrganizedEdgeFromRGBPoints(T,NT,LT)   template class PCL_EXPORTS pcl::OrganizedEdgeFromRGBPoints<T,NT,LT>;
 
 #endif //#ifndef PCL_FEATURES_IMPL_ORGANIZED_EDGE_DETECTION_H_
