@@ -138,6 +138,7 @@ namespace pcl
       operator = (const SampleConsensusModelCone &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
+        SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
         axis_ = source.axis_;
         eps_angle_ = source.eps_angle_;
         min_angle_ = source.min_angle_;

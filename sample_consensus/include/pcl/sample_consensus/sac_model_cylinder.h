@@ -136,6 +136,7 @@ namespace pcl
       operator = (const SampleConsensusModelCylinder &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
+        SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
         axis_ = source.axis_;
         eps_angle_ = source.eps_angle_;
         tmp_inliers_ = source.tmp_inliers_;
