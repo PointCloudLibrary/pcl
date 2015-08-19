@@ -153,6 +153,16 @@ if (BUILD_tools)
   PCL_ADD_EXECUTABLE(pcl_grid_min "${SUBSYS_NAME}" grid_min.cpp)
   target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
+  if(BUILD_simulation)
+    PCL_SUBSYS_DEPEND(BUILD_tools "${SUBSYS_NAME}" DEPS simulation)
+    
+    PCL_ADD_EXECUTABLE(pcl_generate_shape "${SUBSYS_NAME}" generate_shape.cpp)
+    target_link_libraries(pcl_generate_shape pcl_common pcl_io pcl_simulation)
+
+    PCL_ADD_EXECUTABLE(pcl_convert2pcd "${SUBSYS_NAME}" convert2pcd.cpp)
+    target_link_libraries(pcl_convert2pcd pcl_common pcl_io pcl_simulation)
+  endif(BUILD_simulation)
+  
   if(BUILD_OPENNI AND OPENNI_FOUND)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)

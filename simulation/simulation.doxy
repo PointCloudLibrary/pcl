@@ -1,0 +1,21 @@
+/**
+  \addtogroup simulation Module simulation
+
+  \section  secSimulationPresentation Overview
+  The <b>pcl_simulation</b> library provides algorithms for generating and simulating data.
+  
+  \section  secShapeGenerator Shape generator overview
+  The shape generator can create and combine shapes to labeled artificial scenes. Its main purpose is to provide an easy way to benchmark or test algorithms. 
+	
+  \section secSimulationRequirements Requirements
+  - \ref common "common"
+  - \ref io "io"
+  - \ref surface "surface"
+  - \ref kdtree "kdtree"
+  - \ref octree "octree"
+  - \ref features "features"
+  - \ref search "search"
+  - \ref visualization "visualization"
+  - \ref filters "filters"
+  - \ref geometry "geometry"
+*/
