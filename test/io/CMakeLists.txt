@@ -1,8 +1,8 @@
-if(OPENNI_FOUND)
+if(WITH_OPENNI)
     PCL_ADD_TEST(io_io test_io
                   FILES test_io.cpp
                   LINK_WITH pcl_gtest pcl_io)
-endif(OPENNI_FOUND)
+endif()
 PCL_ADD_TEST(io_iterators test_iterators
               FILES test_iterators.cpp
               LINK_WITH pcl_gtest pcl_io)

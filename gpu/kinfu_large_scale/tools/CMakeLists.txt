@@ -1,4 +1,4 @@
-if(OPENNI_FOUND)
+if(WITH_OPENNI)
   if(NOT VTK_FOUND)
     set(DEFAULT FALSE)
     set(REASON "VTK was not found.")
@@ -47,4 +47,4 @@ if(OPENNI_FOUND)
   target_link_libraries("${the_target}" pcl_common pcl_io ${OPENNI_LIBRARIES} pcl_visualization pcl_gpu_kinfu_large_scale pcl_filters)
         
 
-endif(OPENNI_FOUND)
+endif()

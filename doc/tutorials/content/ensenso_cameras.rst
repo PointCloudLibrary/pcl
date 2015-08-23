@@ -31,7 +31,7 @@ The default following values can be tweaked into cmake if you don't have a stand
 
   ENSENSO_ABI_DIR     /opt/ensenso_test/development/c
 
-You can deactivate building the Ensenso support by setting ``BUILD_ENSENSO`` to false.
+You can deactivate building the Ensenso support by setting ``WITH_ENSENSO`` to false.
 Compile and install PCL.
 
 Using the example
