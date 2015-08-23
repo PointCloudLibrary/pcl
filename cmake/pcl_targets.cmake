@@ -905,3 +905,27 @@ macro (PCL_ADD_DOC _subsys)
     endif(USE_PROJECT_FOLDERS)
   endif(DOXYGEN_FOUND)
 endmacro(PCL_ADD_DOC)
+
+###############################################################################
+# Add a dependency for a grabber
+# _name The dependency name.
+# _description The description text to display when dependency is not found.
+# This macro adds on option named "WITH_NAME", where NAME is the capitalized
+# dependency name. The user may use this option to control whether the
+# corresponding grabber should be built or not. Also an attempt to find a
+# package with the given name is made. If it is not successfull, then the
+# "WITH_NAME" option is coerced to FALSE.
+macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
+    string(TOUPPER ${_name} _name_capitalized)
+    option(WITH_${_name_capitalized} "${_description}" TRUE)
+    if(WITH_${_name_capitalized})
+      find_package(${_name})
+      if (NOT ${_name_capitalized}_FOUND)
+        set(WITH_${_name_capitalized} FALSE CACHE BOOL "${_description}" FORCE)
+        message(WARNING "${_description}: not building because ${_name} not found")
+      else()
+        set(HAVE_${_name_capitalized} TRUE)
+        include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
+      endif()
+    endif()
+endmacro(PCL_ADD_GRABBER_DEPENDENCY)
