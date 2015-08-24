@@ -22,5 +22,5 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(FZAPI DEFAULT_MSG
-                                  FZAPI_LIBS FZAPI_INCLUDE_DIR)
+                                  FZAPI_LIBS FZAPI_INCLUDE_DIRS)
 								  

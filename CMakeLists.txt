@@ -233,8 +233,7 @@ if(OPENMP_FOUND)
 else(OPENMP_FOUND)
   message (STATUS "Not found OpenMP")
 endif()
-# Boost (required)
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+
 # Eigen (required)
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
@@ -256,67 +255,13 @@ if(WITH_LIBUSB)
   endif(LIBUSB_1_FOUND)
 endif(WITH_LIBUSB)
 
-# OpenNI
-option(WITH_OPENNI "OpenNI driver support" TRUE)
-if(WITH_OPENNI)
-  find_package(OpenNI)
-  if (OPENNI_FOUND)
-    set(HAVE_OPENNI ON)
-    include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
-  endif(OPENNI_FOUND)
-endif(WITH_OPENNI)
-
-# OpenNI 2
-option(WITH_OPENNI2 "OpenNI 2 driver support" TRUE)
-if(WITH_OPENNI2)
-  find_package(OpenNI2)
-  if (OPENNI2_FOUND)
-    set(HAVE_OPENNI2 ON)
-    include_directories(SYSTEM ${OPENNI2_INCLUDE_DIRS})
-  endif(OPENNI2_FOUND)
-endif(WITH_OPENNI2)
-
-# Fotonic (FZ_API)
-option(WITH_FZAPI "Build Fotonic Camera support" TRUE)
-if(WITH_FZAPI)
-  find_package(FZAPI)
-  if (FZAPI_FOUND)
-    set(HAVE_FZAPI ON)
-    include_directories(SYSTEM "${FZAPI_INCLUDE_DIR}")
-  endif(FZAPI_FOUND)
-endif(WITH_FZAPI)
-
-# IDS-Imaging - Ensenso
-option(WITH_ENSENSO "Build IDS-Imaging Ensenso's camera support" TRUE)
-if(WITH_ENSENSO)
-  set(ENSENSO_ABI_DIR "ENSENSO_ABI_DIR-NOTFOUND" CACHE PATH "directory of Ensenso ABI")
-  find_package(Ensenso) # FindEnsenso.cmake
-  if (ENSENSO_FOUND)
-    set(HAVE_ENSENSO ON)
-    include_directories(SYSTEM "${ENSENSO_INCLUDE_DIRS}")
-  endif(ENSENSO_FOUND)
-endif(WITH_ENSENSO)
-
-# David Vision Systems - davidSDK
-option(WITH_DAVIDSDK "Build davidSDK support" TRUE)
-if(WITH_DAVIDSDK)
-  set(DAVIDSDK_ABI_DIR "davidSDK_ABI_DIR-NOTFOUND" CACHE PATH "directory of davidSDK ABI")
-  find_package(davidSDK) # FinddavidSDK.cmake
-  if (DAVIDSDK_FOUND)
-    set(HAVE_DAVIDSDK ON)
-    include_directories(SYSTEM "${DAVIDSDK_INCLUDE_DIRS}")
-  endif(DAVIDSDK_FOUND)
-endif(WITH_DAVIDSDK)
-
-# Intel Perceptional Computing Interface (PXCAPI)
-option(WITH_PXCAPI "Build PXC Device support" TRUE)
-if(WITH_PXCAPI)
-  find_package(PXCAPI)
-  if (PXCAPI_FOUND)
-    set(HAVE_PXCAPI ON)
-    include_directories(SYSTEM ${PXCAPI_INCLUDE_DIRS})
-  endif(PXCAPI_FOUND)
-endif(WITH_PXCAPI)
+# Dependencies for different grabbers
+PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
+PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
+PCL_ADD_GRABBER_DEPENDENCY("FZAPI" "Fotonic camera support")
+PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
+PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
+PCL_ADD_GRABBER_DEPENDENCY("PXCAPI" "Intel PXC device support")
 
 # metslib
 if (PKG_CONFIG_FOUND)
@@ -420,6 +365,9 @@ option(WITH_OPENGL "Support for OpenGL" TRUE)
 if(WITH_OPENGL)
   include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
 endif(WITH_OPENGL)
+
+# Boost (required)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
