@@ -10,9 +10,12 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
+DOWNLOAD_DIR=$HOME/download
+
 export FLANN_ROOT=$HOME/flann
 export VTK_DIR=$HOME/vtk
 export QHULL_ROOT=$HOME/qhull
+export DOXYGEN_DIR=$HOME/doxygen
 
 function build ()
 {
@@ -88,7 +91,7 @@ function doc ()
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Add installed doxygen to path and install sphinx
-  export PATH=$HOME/doxygen/bin:$PATH
+  export PATH=$DOXYGEN_DIR/bin:$PATH
   pip install --user sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -125,7 +128,7 @@ function doc ()
     # Commit and push
     cd $DOC_DIR
     git add --all
-    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
+    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT" -q
     git push --force
   else
     exit 2
@@ -156,7 +159,7 @@ function install_flann()
   if [[ $? -ne 0 ]]; then
     return $?
   fi
-  unzip pkg
+  unzip -qq pkg
   cd ${pkg_file}
   mkdir build && cd build
   cmake .. \
@@ -195,7 +198,7 @@ function install_vtk()
   if [[ $? -ne 0 ]]; then
     return $?
   fi
-  tar xvzf pkg
+  tar xzf pkg
   cd "VTK${pkg_ver}"
   mkdir build && cd build
   cmake .. \
@@ -254,7 +257,7 @@ function install_qhull()
   if [[ $? -ne 0 ]]; then
     return $?
   fi
-  tar xvzf pkg
+  tar xzf pkg
   cd ${pkg_file}
   mkdir -p build && cd build
   cmake .. \
@@ -272,7 +275,6 @@ function install_doxygen()
   local pkg_file="doxygen-${pkg_ver}"
   local pkg_url="http://ftp.stack.nl/pub/users/dimitri/${pkg_file}.src.tar.gz"
   local pkg_md5sum="3d1a5c26bef358c10a3894f356a69fbc"
-  local DOXYGEN_DIR=$HOME/doxygen
   local DOXYGEN_EXE=$DOXYGEN_DIR/bin/doxygen
   echo "Installing Doxygen ${pkg_ver}"
   if [[ -d $DOXYGEN_DIR ]]; then
@@ -290,7 +292,7 @@ function install_doxygen()
   if [[ $? -ne 0 ]]; then
     return $?
   fi
-  tar xvzf pkg
+  tar xzf pkg
   cd ${pkg_file}
   ./configure --prefix $DOXYGEN_DIR
   make -j2 && make install
@@ -307,6 +309,7 @@ function install_dependencies()
 
 function download()
 {
+  mkdir -p $DOWNLOAD_DIR && cd $DOWNLOAD_DIR && rm -rf *
   wget --output-document=pkg $1
   if [[ $? -ne 0 ]]; then
     return $?
