@@ -191,10 +191,18 @@ namespace pcl
     mahalanobis_.resize (N, Eigen::Matrix3d::Identity ());
 
     // Compute target cloud covariance matrices
-    computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
+    if ((!target_covariances_) || (target_covariances_->empty ()))
+    {
+      target_covariances_.reset (new MatricesVector);
+      computeCovariances<PointTarget> (target_, tree_, *target_covariances_);
+    }
     // Compute input cloud covariance matrices
-    computeCovariances<PointSource> (input_, tree_reciprocal_,
-        *input_covariances_);
+    if ((!input_covariances_) || (input_covariances_->empty ()))
+    {
+      input_covariances_.reset (new MatricesVector);
+      computeCovariances<PointSource> (input_, tree_reciprocal_,
+          *input_covariances_);
+    }
 
     base_transformation_ = guess;
     nr_iterations_ = 0;
@@ -312,6 +320,9 @@ namespace pcl
     final_transformation_ (0, 3) = previous_transformation_ (0, 3) + guess (0, 3);
     final_transformation_ (1, 3) = previous_transformation_ (1, 3) + guess (1, 3);
     final_transformation_ (2, 3) = previous_transformation_ (2, 3) + guess (2, 3);
+
+    // Transform the point cloud
+    pcl::transformPointCloud (*input_, output, final_transformation_);
   }
 
 }
