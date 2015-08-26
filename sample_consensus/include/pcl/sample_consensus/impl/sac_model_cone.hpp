@@ -336,12 +336,11 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
              info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5], optimized_coefficients[6]);
 
-    Eigen::Vector3f line_dir (optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5]);
+  Eigen::Vector3f line_dir (optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5]);
   line_dir.normalize ();
   optimized_coefficients[3] = line_dir[0];
   optimized_coefficients[4] = line_dir[1];
   optimized_coefficients[5] = line_dir[2];
-
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
