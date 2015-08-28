@@ -135,6 +135,13 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
 {
   if (!capable_ || !cloud_)
     return (false);
+  
+   // Get the RGB field index
+  std::vector<pcl::PCLPointField> fields;
+  int rgba_index = -1;
+  rgba_index = pcl::getFieldIndex (*cloud_, "rgb", fields);
+  if (rgba_index == -1)
+    rgba_index = pcl::getFieldIndex (*cloud_, "rgba", fields);
 
   if (!scalars)
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -151,6 +158,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     if (fields_[d].name == "x")
       x_idx = static_cast<int> (d);
 
+  pcl::RGB rgb;
   if (x_idx != -1)
   {
     // Color every point
@@ -162,9 +170,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
           !pcl_isfinite (cloud_->points[cp].z))
         continue;
 
-      colors[j    ] = cloud_->points[cp].r;
-      colors[j + 1] = cloud_->points[cp].g;
-      colors[j + 2] = cloud_->points[cp].b;
+      memcpy (&rgb, (reinterpret_cast<const char *> (&cloud_->points[cp])) + rgba_index, sizeof (pcl::RGB));
+      colors[j    ] = rgb.r;
+      colors[j + 1] = rgb.g;
+      colors[j + 2] = rgb.b;
       j += 3;
     }
   }
@@ -174,9 +183,10 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     for (vtkIdType cp = 0; cp < nr_points; ++cp)
     {
       int idx = static_cast<int> (cp) * 3;
-      colors[idx    ] = cloud_->points[cp].r;
-      colors[idx + 1] = cloud_->points[cp].g;
-      colors[idx + 2] = cloud_->points[cp].b;
+      memcpy (&rgb, (reinterpret_cast<const char *> (&cloud_->points[cp])) + rgba_index, sizeof (pcl::RGB));
+      colors[j    ] = rgb.r;
+      colors[j + 1] = rgb.g;
+      colors[j + 2] = rgb.b;
     }
   }
   return (true);
