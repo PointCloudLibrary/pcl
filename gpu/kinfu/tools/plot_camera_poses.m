@@ -65,6 +65,7 @@ for n=1:3
   a=r*p(n,:)';
   plot3([t(1),t(1)+a(1)], [t(2),t(2)+a(2)], [t(3),t(3)+a(3)], 'color', c{n});
 end
+end
 
 function R=q2rot(q)
 % conversion code from http://en.wikipedia.org/wiki/Rotation_matrix%Quaternion	
