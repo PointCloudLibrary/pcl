@@ -84,9 +84,9 @@ function octave_axis_equal(h)
 % workaround for axis auto not working in 3d
 % tanks http://octave.1599824.n4.nabble.com/axis-equal-help-tp1636701p1636702.html
 figure(h);
-xl = get (gca, "xlim");
-yl = get (gca, "ylim");
-zl = get (gca, "zlim");
+xl = get (gca, 'xlim');
+yl = get (gca, 'ylim');
+zl = get (gca, 'zlim');
 span = max ([diff(xl), diff(yl), diff(zl)]);
 xlim (mean (xl) + span*[-0.5, 0.5])
 ylim (mean (yl) + span*[-0.5, 0.5])
