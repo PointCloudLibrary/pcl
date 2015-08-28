@@ -47,6 +47,7 @@ addons:
       - libeigen3-dev
       - libgtest-dev
       - doxygen-latex
+      - dvipng
       - libusb-1.0-0-dev
 cache:
   directories:
