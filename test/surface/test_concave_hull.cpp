@@ -236,7 +236,7 @@ TEST (PCL, ConcaveHull_LTable)
     }
   }
 
-  cloud_out_ltable.points.resize (npoints);
+  cloud_out_ltable.resize (npoints);
 
   pcl::PointCloud<pcl::PointXYZ>::ConstPtr cloudptr (new pcl::PointCloud<pcl::PointXYZ> (cloud_out_ltable));
 

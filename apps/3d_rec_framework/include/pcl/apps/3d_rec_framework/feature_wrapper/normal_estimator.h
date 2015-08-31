@@ -219,9 +219,7 @@ namespace pcl
                 PCL_ERROR("Contain nans...");
               }
 
-              out->points.resize (j);
-              out->width = j;
-              out->height = 1;
+              out->resize (j);
             }
 
             typedef typename pcl::NormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
@@ -253,13 +251,8 @@ namespace pcl
               j++;
             }
 
-            normals->points.resize (j);
-            normals->width = j;
-            normals->height = 1;
-
-            out->points.resize (j);
-            out->width = j;
-            out->height = 1;
+            normals->resize (j);
+            out->resize (j);
           }
           else
           {

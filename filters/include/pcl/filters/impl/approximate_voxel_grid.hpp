@@ -87,7 +87,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
   Eigen::VectorXf scratch = Eigen::VectorXf::Zero (centroid_size);
 
-  output.points.resize (input_->size ());   // size output for worst case
+  output.resize (input_->size ());   // size output for worst case
   size_t op = 0;    // output pointer
   for (size_t cp = 0; cp < input_->size (); ++cp)
   {
@@ -127,9 +127,7 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     if (hhe->count)
       flush (output, op++, hhe, rgba_index, centroid_size);
   }
-  output.points.resize (op);
-  output.width = static_cast<uint32_t> (output.size ());
-  output.height       = 1;                    // downsampling breaks the organized structure
+  output.resize (op);
   output.is_dense     = false;                 // we filter out invalid points
 }
 

@@ -355,8 +355,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
       delete[] depth;
 
-      cloud->points.resize (count_valid_depth_pixels);
-      cloud->width = count_valid_depth_pixels;
+      cloud->resize (count_valid_depth_pixels);
     }
 
     if(compute_entropy_) {

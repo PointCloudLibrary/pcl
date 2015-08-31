@@ -119,9 +119,7 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, pcl::
     cumulativeAreas[i] = totalArea;
   }
 
-  cloud_out.points.resize (n_samples);
-  cloud_out.width = static_cast<pcl::uint32_t> (n_samples);
-  cloud_out.height = 1;
+  cloud_out.resize (n_samples);
 
   for (i = 0; i < n_samples; i++)
   {

@@ -757,7 +757,7 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
   const int width = cloud->width;
   const int height = cloud->height;
 
-  color_gradients_.points.resize (width*height);
+  color_gradients_.resize (width*height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 
@@ -844,7 +844,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   const int width = cloud->width;
   const int height = cloud->height;
 
-  color_gradients_.points.resize (width*height);
+  color_gradients_.resize (width*height);
   color_gradients_.width = width;
   color_gradients_.height = height;
 

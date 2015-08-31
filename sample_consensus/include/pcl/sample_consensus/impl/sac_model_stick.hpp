@@ -279,7 +279,7 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
   if (copy_data_fields)
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (input_->size ());
+    projected_points.resize (input_->size ());
     projected_points.width    = input_->width;
     projected_points.height   = input_->height;
 
@@ -306,7 +306,7 @@ pcl::SampleConsensusModelStick<PointT>::projectPoints (
   else
   {
     // Allocate enough space and copy the basics
-    projected_points.points.resize (inliers.size ());
+    projected_points.resize (inliers.size ());
     projected_points.width    = static_cast<uint32_t> (inliers.size ());
     projected_points.height   = 1;
 

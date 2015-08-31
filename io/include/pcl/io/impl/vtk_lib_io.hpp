@@ -70,7 +70,7 @@ pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<P
   cloud.width = polydata->GetNumberOfPoints ();
   cloud.height = 1; // This indicates that the point cloud is unorganized
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
   std::vector<pcl::PCLPointField> fields;
@@ -159,7 +159,7 @@ pcl::io::vtkStructuredGridToPointCloud (vtkStructuredGrid* const structured_grid
   cloud.width = dimensions[0];
   cloud.height = dimensions[1]; // This indicates that the point cloud is organized
   cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
 
   // Get a list of all the fields available
   std::vector<pcl::PCLPointField> fields;

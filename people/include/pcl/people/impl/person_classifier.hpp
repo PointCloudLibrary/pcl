@@ -121,7 +121,7 @@ pcl::people::PersonClassifier<PointT>::resize (PointCloudPtr& input_image,
   new_point.b = 0;
 
   // Allocate the vector of points:
-  output_image->points.resize(width*height, new_point);
+  output_image->resize(width*height, new_point);
   output_image->height = height;
   output_image->width = width;
 
@@ -189,7 +189,7 @@ pcl::people::PersonClassifier<PointT>::copyMakeBorder (PointCloudPtr& input_imag
   black_point.r = 0;
   black_point.g = 0;
   black_point.b = 0;
-  output_image->points.resize(height*width, black_point);
+  output_image->resize(height*width, black_point);
   output_image->width = width;
   output_image->height = height;
 

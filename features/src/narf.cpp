@@ -677,7 +677,7 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   
   // Copy to NARF36 struct
-  output.points.resize(feature_list.size());
+  output.resize(feature_list.size());
   for (unsigned int i=0; i<feature_list.size(); ++i)
   {
     feature_list[i]->copyToNarf36(output.points[i]);

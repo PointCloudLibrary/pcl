@@ -143,7 +143,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
   //feature size = number_of_rotations * number_of_axis_to_rotate_around * number_of_projections * number_of_central_moments
   unsigned int feature_size = number_of_rotations_ * 3 * 3 * 5;
   unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
-  output.points.resize (number_of_points, PointOutT ());
+  output.resize (number_of_points, PointOutT ());
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
@@ -381,7 +381,7 @@ template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const
 {
   const unsigned int number_of_points = static_cast <unsigned int> (local_points.size ());
-  transformed_cloud.points.resize (number_of_points, PointInT ());
+  transformed_cloud.resize (number_of_points, PointInT ());
 
   for (unsigned int i = 0; i < number_of_points; i++)
   {
@@ -420,7 +420,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
   rotated_cloud.header = cloud.header;
   rotated_cloud.width = number_of_points;
   rotated_cloud.height = 1;
-  rotated_cloud.points.resize (number_of_points, PointInT ());
+  rotated_cloud.resize (number_of_points, PointInT ());
 
   min (0) = std::numeric_limits <float>::max ();
   min (1) = std::numeric_limits <float>::max ();

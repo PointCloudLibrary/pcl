@@ -73,7 +73,7 @@ pcl::getPointCloudDifference (
   }
  
   // Allocate enough space and copy the basics
-  output.points.resize (src_indices.size ());
+  output.resize (src_indices.size ());
   output.header   = src.header;
   output.width    = static_cast<uint32_t> (src_indices.size ());
   output.height   = 1;

@@ -116,8 +116,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   }
 
   // Save feature values
-  output.points.resize (1);
-  output.height = output.width = 1;
+  output.resize (1);
   int nrf = 0;
   for (int i = 0; i < NR_CLASS + 1; i++)
     for (int j = i; j < NR_CLASS + 1; j++)

@@ -507,7 +507,7 @@ pcl::MomentOfInertiaEstimation<PointT>::getProjectedCloud (const Eigen::Vector3f
   const float D = - normal_vector.dot (point);
 
   unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
-  projected_cloud->points.resize (number_of_points, PointT ());
+  projected_cloud->resize (number_of_points);
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {

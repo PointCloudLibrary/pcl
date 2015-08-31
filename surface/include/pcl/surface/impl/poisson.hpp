@@ -189,8 +189,7 @@ pcl::Poisson<PointNT>::performReconstruction (PolygonMesh &output)
   }
 
   // Write output PolygonMesh
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.points.resize (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
+  pcl::PointCloud<pcl::PointXYZ> cloud (int (mesh.outOfCorePointCount () + mesh.inCorePoints.size ()));
   poisson::Point3D<float> p;
   for (int i = 0; i < int (mesh.inCorePoints.size ()); i++)
   {

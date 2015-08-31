@@ -219,7 +219,7 @@ template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (PointCloudPtr input_cloud, pcl::PointCloud<pcl::RGB>::Ptr& output_cloud)
 {
   // Extract RGB information from a point cloud and output the corresponding RGB point cloud  
-  output_cloud->points.resize(input_cloud->height*input_cloud->width);
+  output_cloud->resize(input_cloud->height*input_cloud->width);
   output_cloud->width = input_cloud->width;
   output_cloud->height = input_cloud->height;
 
@@ -239,10 +239,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::extractRGBFromPointCloud (Po
 template <typename PointT> void
 pcl::people::GroundBasedPeopleDetectionApp<PointT>::swapDimensions (pcl::PointCloud<pcl::RGB>::Ptr& cloud)
 {
-  pcl::PointCloud<pcl::RGB>::Ptr output_cloud(new pcl::PointCloud<pcl::RGB>);
-  output_cloud->points.resize(cloud->height*cloud->width);
-  output_cloud->width = cloud->height;
-  output_cloud->height = cloud->width;
+  pcl::PointCloud<pcl::RGB>::Ptr output_cloud(new pcl::PointCloud<pcl::RGB> (cloud->width, cloud->height));
   for (uint32_t i = 0; i < cloud->width; i++)
   {
     for (uint32_t j = 0; j < cloud->height; j++)
@@ -336,10 +333,7 @@ pcl::people::GroundBasedPeopleDetectionApp<PointT>::compute (std::vector<pcl::pe
   // Downsample of sampling_factor in every dimension:
   if (sampling_factor_ != 1)
   {
-    PointCloudPtr cloud_downsampled(new PointCloud);
-    cloud_downsampled->width = (cloud_->width)/sampling_factor_;
-    cloud_downsampled->height = (cloud_->height)/sampling_factor_;
-    cloud_downsampled->points.resize(cloud_downsampled->height*cloud_downsampled->width);
+    PointCloudPtr cloud_downsampled(new PointCloud ((cloud_->width)/sampling_factor_, (cloud_->height)/sampling_factor_));
     cloud_downsampled->is_dense = cloud_->is_dense;
     for (uint32_t j = 0; j < cloud_downsampled->width; j++)
     {

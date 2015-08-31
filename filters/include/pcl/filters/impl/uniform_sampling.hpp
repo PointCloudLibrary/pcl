@@ -113,7 +113,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   }
 
   // Second pass: go over all leaves and copy data
-  output.points.resize (leaves_.size ());
+  output.resize (leaves_.size ());
   int cp = 0;
 
   for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)

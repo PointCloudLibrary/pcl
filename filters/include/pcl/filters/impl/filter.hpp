@@ -51,7 +51,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.size ());
+    cloud_out.resize (cloud_in.size ());
   }
   // Reserve enough space for the indices
   index.resize (cloud_in.size ());
@@ -80,7 +80,7 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     if (j != cloud_in.size ())
     {
       // Resize to the correct size
-      cloud_out.points.resize (j);
+      cloud_out.resize (j);
       index.resize (j);
     }
 
@@ -102,7 +102,7 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.size ());
+    cloud_out.resize (cloud_in.size ());
   }
   // Reserve enough space for the indices
   index.resize (cloud_in.size ());
@@ -121,7 +121,7 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (j != cloud_in.size ())
   {
     // Resize to the correct size
-    cloud_out.points.resize (j);
+    cloud_out.resize (j);
     index.resize (j);
   }
 

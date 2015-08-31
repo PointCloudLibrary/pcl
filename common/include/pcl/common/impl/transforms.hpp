@@ -108,7 +108,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
-  cloud_out.points.resize (npts);
+  cloud_out.resize (npts);
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 
@@ -233,7 +233,7 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   cloud_out.header   = cloud_in.header;
   cloud_out.width    = static_cast<int> (npts);
   cloud_out.height   = 1;
-  cloud_out.points.resize (npts);
+  cloud_out.resize (npts);
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
 

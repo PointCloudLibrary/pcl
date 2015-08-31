@@ -161,10 +161,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
   // debug stuff
 //  for (size_t scale_i = 0; scale_i < scales_.size (); ++scale_i)
 //  {
-//    PointCloud<PointXYZI>::Ptr debug_cloud (new PointCloud<PointXYZI> ());
-//    debug_cloud->points.resize (input_->size ());
-//    debug_cloud->width = input_->width;
-//    debug_cloud->height = input_->height;
+//    PointCloud<PointXYZI>::Ptr debug_cloud (new PointCloud<PointXYZI> (input_->width, input_->height));
 //    for (size_t point_i = 0; point_i < input_->size (); ++point_i)
 //    {
 //      debug_cloud->points[point_i].intensity = diffs[scales_[scale_i].second][point_i];

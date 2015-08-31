@@ -225,11 +225,11 @@ void pcl::GlobalHypothesesVerification<ModelT, SceneT>::initialize()
     j++;
   }
 
-  scene_normals_->points.resize (j);
+  scene_normals_->resize (j);
   scene_normals_->width = j;
   scene_normals_->height = 1;
 
-  scene_cloud_downsampled_->points.resize (j);
+  scene_cloud_downsampled_->resize (j);
   scene_cloud_downsampled_->width = j;
   scene_cloud_downsampled_->height = 1;
 
@@ -517,7 +517,7 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
       j++;
     }
 
-    recog_model->cloud_->points.resize (j);
+    recog_model->cloud_->resize (j);
     recog_model->cloud_->width = j;
     recog_model->cloud_->height = 1;
   }
@@ -552,11 +552,11 @@ bool pcl::GlobalHypothesesVerification<ModelT, SceneT>::addModel(typename pcl::P
     j++;
   }
 
-  recog_model->normals_->points.resize (j);
+  recog_model->normals_->resize (j);
   recog_model->normals_->width = j;
   recog_model->normals_->height = 1;
 
-  recog_model->cloud_->points.resize (j);
+  recog_model->cloud_->resize (j);
   recog_model->cloud_->width = j;
   recog_model->cloud_->height = 1;
 

@@ -113,8 +113,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, NULL, NULL);
   kiss_fftr (mycfg, spatial_data, freq_data);
 
-  output.points.resize (1);
-  output.width = output.height = 1;
+  output.resize (1);
 
   output.points[0].histogram[0] = freq_data[0].r / freq_data[0].r; //dc
   int k = 1;

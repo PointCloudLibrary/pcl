@@ -495,7 +495,7 @@ TEST (PCL, IINormalEstimationSimple3DGradientUnorganized)
 {
   PointCloud<Normal> output;
   cloud.height = 1;
-  cloud.points.resize (cloud.height * cloud.width);
+  cloud.resize (cloud.height * cloud.width);
   ne.setInputCloud (cloud.makeShared ());
   ne.setRectSize (3, 3);
   ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
@@ -512,7 +512,7 @@ main (int argc, char** argv)
 {
   cloud.width = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
   for (size_t v = 0; v < cloud.height; ++v)
   {

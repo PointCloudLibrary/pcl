@@ -124,11 +124,11 @@ pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers(int rows, int cols)
   PCL_DEBUG("[pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers] : (D) : Called\n");
 
   // Create histogram on host
-  P_l_host_.points.resize(rows*cols);
+  P_l_host_.resize(rows*cols);
   P_l_host_.width = cols;
   P_l_host_.height = rows;
 
-  P_l_host_prev_.points.resize(rows*cols);
+  P_l_host_prev_.resize(rows*cols);
   P_l_host_prev_.width = cols;
   P_l_host_prev_.height = rows;
 

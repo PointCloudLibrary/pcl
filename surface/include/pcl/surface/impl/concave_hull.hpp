@@ -230,7 +230,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         PCL_ERROR ("[pcl::%s::performReconstruction] ERROR: point cloud contains NaN values, consider running pcl::PassThrough filter first to remove NaNs!\n", getClassName ().c_str ());
     }
 
-    alpha_shape.points.resize (0);
+    alpha_shape.resize (0);
     alpha_shape.width = alpha_shape.height = 0;
     polygons.resize (0);
 
@@ -244,7 +244,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   qh_setvoronoi_all ();
 
   int num_vertices = qh num_vertices;
-  alpha_shape.points.resize (num_vertices);
+  alpha_shape.resize (num_vertices);
 
   vertexT *vertex;
   // Max vertex id
@@ -267,7 +267,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   {
     setT *triangles_set = qh_settemp (4 * num_facets);
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (num_facets);
+      voronoi_centers_->resize (num_facets);
 
     int non_upper = 0;
     FORALLfacets
@@ -339,7 +339,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (non_upper);
+      voronoi_centers_->resize (non_upper);
 
     // filter, add points to alpha_shape and create polygon structure
 
@@ -384,7 +384,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       }
     }
 
-    alpha_shape.points.resize (vertices);
+    alpha_shape.resize (vertices);
     alpha_shape.width = static_cast<uint32_t> (alpha_shape.size ());
     alpha_shape.height = 1;
   }
@@ -394,7 +394,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     // Filters the delaunay triangles
     setT *edges_set = qh_settemp (3 * num_facets);
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (num_facets);
+      voronoi_centers_->resize (num_facets);
 
     FORALLfacets
     {
@@ -477,11 +477,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       }
     }
 
-    alpha_shape.points.resize (vertices);
+    alpha_shape.resize (vertices);
 
     std::vector<std::vector<int> > connected;
     PointCloud alpha_shape_sorted;
-    alpha_shape_sorted.points.resize (vertices);
+    alpha_shape_sorted.resize (vertices);
 
     // iterate over edges until they are empty!
     std::map<int, std::vector<int> >::iterator curr = edges.begin ();
@@ -546,7 +546,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     }
 
     if (voronoi_centers_)
-      voronoi_centers_->points.resize (dd);
+      voronoi_centers_->resize (dd);
   }
 
   qh_freeqhull (!qh_ALL);

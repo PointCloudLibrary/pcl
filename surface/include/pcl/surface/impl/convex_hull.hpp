@@ -93,8 +93,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
     dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
     
-  pcl::PointCloud<PointInT> normal_calc_cloud;
-  normal_calc_cloud.points.resize (3);
+  pcl::PointCloud<PointInT> normal_calc_cloud (3);
   normal_calc_cloud.points[0] = p0;
   normal_calc_cloud.points[1] = p1;
   normal_calc_cloud.points[2] = p2;
@@ -192,7 +191,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     PCL_ERROR ("[pcl::%s::performReconstrution2D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), indices_->size ());
 
-    hull.points.resize (0);
+    hull.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
 
@@ -211,7 +210,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   }
 
   int num_vertices = qh num_vertices;
-  hull.points.resize (num_vertices);
+  hull.resize (num_vertices);
   memset (&hull.points[0], static_cast<int> (hull.size ()), sizeof (PointInT));
 
   vertexT * vertex;
@@ -331,7 +330,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   {
     PCL_ERROR ("[pcl::%s::performReconstrution3D] ERROR: qhull was unable to compute a convex hull for the given point cloud (%lu)!\n", getClassName ().c_str (), input_->size ());
 
-    hull.points.resize (0);
+    hull.resize (0);
     hull.width = hull.height = 0;
     polygons.resize (0);
 
@@ -347,7 +346,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   int num_facets = qh num_facets;
 
   int num_vertices = qh num_vertices;
-  hull.points.resize (num_vertices);
+  hull.resize (num_vertices);
 
   vertexT * vertex;
   int i = 0;

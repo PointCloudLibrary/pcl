@@ -177,7 +177,7 @@ namespace pcl
 
     // Copy point data
     uint32_t num_points = msg.width * msg.height;
-    cloud.points.resize (num_points);
+    cloud.resize (num_points);
     uint8_t* cloud_data = reinterpret_cast<uint8_t*>(&cloud.points[0]);
 
     // Check if we can copy adjacent points in a single memcpy

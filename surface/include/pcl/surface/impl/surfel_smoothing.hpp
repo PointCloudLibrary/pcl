@@ -84,10 +84,8 @@ pcl::SurfelSmoothing<PointT, PointNT>::smoothCloudIteration (PointCloudInPtr &ou
 {
 //  PCL_INFO ("SurfelSmoothing: cloud smoothing iteration starting ...\n");
 
-  output_positions = PointCloudInPtr (new PointCloudIn);
-  output_positions->points.resize (interm_cloud_->size ());
-  output_normals = NormalCloudPtr (new NormalCloud);
-  output_normals->points.resize (interm_cloud_->size ());
+  output_positions = PointCloudInPtr (new PointCloudIn (interm_cloud_->size ()));
+  output_normals = NormalCloudPtr (new NormalCloud (interm_cloud_->size ()));
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
@@ -260,8 +258,8 @@ pcl::SurfelSmoothing<PointT, PointNT>::computeSmoothedCloud (PointCloudInPtr &ou
   output_normals->height = input_->height;
   output_normals->width = input_->width;
 
-  output_positions->points.resize (input_->size ());
-  output_normals->points.resize (input_->size ());
+  output_positions->resize (input_->size ());
+  output_normals->resize (input_->size ());
   for (size_t i = 0; i < input_->size (); ++i)
   {
     smoothPoint (i, output_positions->points[i], output_normals->points[i]);

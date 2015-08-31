@@ -361,7 +361,7 @@ RangeImage::getHalfImage (RangeImage& half_image) const
   half_image.width  = width/2;
   half_image.height = height/2;
   half_image.is_dense = is_dense;
-  half_image.points.resize (half_image.width*half_image.height);
+  half_image.resize (half_image.width*half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -405,7 +405,7 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.width = sub_image_width;
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
-  sub_image.points.resize (sub_image.width*sub_image.height);
+  sub_image.resize (sub_image.width*sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;

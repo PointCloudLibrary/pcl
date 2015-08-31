@@ -59,8 +59,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outpu
   // Important! We should only allocate precisely how many elements we will need, otherwise
   // we risk at pre-allocating too much memory which could lead to bad_alloc 
   // (see http://dev.pointclouds.org/issues/657)
-  output.width = output.height = 1;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -294,8 +293,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     }
 
     //compute modified VFH for all dominant clusters and add them to the list!
-    output.points.resize (dominant_normals_.size ());
-    output.width = static_cast<uint32_t> (dominant_normals_.size ());
+    output.resize (dominant_normals_.size ());
 
     for (size_t i = 0; i < dominant_normals_.size (); ++i)
     {
@@ -321,8 +319,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
     pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
     vfh.compute (vfh_signature);
 
-    output.points.resize (1);
-    output.width = 1;
+    output.resize (1);
 
     output.points[0] = vfh_signature.points[0];
   }

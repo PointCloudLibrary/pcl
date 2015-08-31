@@ -55,9 +55,7 @@ namespace pcl
   template <int N> void
   getFeaturePointCloud (const std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
   {
-    histogramsPC.points.resize (histograms2D.size ());
-    histogramsPC.width    = histograms2D.size ();
-    histogramsPC.height   = 1;
+    histogramsPC.resize (histograms2D.size ());
     histogramsPC.is_dense = true;
 
     const int rows  = histograms2D.at(0).rows();

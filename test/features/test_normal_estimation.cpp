@@ -168,7 +168,7 @@ TEST (PCL, NormalEstimation)
   // Additional test for searchForNeigbhors
   surfaceptr.reset (new PointCloud<PointXYZ>);
   *surfaceptr = *cloudptr;
-  surfaceptr->points.resize (640 * 480);
+  surfaceptr->resize (640 * 480);
   surfaceptr->width = 640;
   surfaceptr->height = 480;
   EXPECT_EQ (surfaceptr->size (), surfaceptr->width * surfaceptr->height);

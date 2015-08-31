@@ -65,9 +65,8 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   // Important! We should only allocate precisely how many elements we will need, otherwise
   // we risk at pre-allocating too much memory which could lead to bad_alloc 
   // (see http://dev.pointclouds.org/issues/657)
-  output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -127,9 +126,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   computeDistanceHistogram (distances, gfpfh_histogram);
 
   output.clear ();
-  output.width = 1;
-  output.height = 1;
-  output.points.resize (1);
+  output.resize (1);
   std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
 }
 

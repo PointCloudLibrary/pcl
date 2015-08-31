@@ -87,7 +87,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
                                             pcl::PointCloud<pcl::PointXYZ>::Ptr out)
 {
   // resize points of output cloud
-  out->points.resize (in->size ());
+  out->resize (in->size ());
   out->width = static_cast<int> (out->size ());
   out->height = 1;
   out->is_dense = false;
@@ -110,7 +110,7 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
   // TODO:: check if input cloud has RGBA information and insert into the cloud
 
   // resize points of output cloud
-  out->points.resize (in->size ());
+  out->resize (in->size ());
   out->width = static_cast<int> (out->size ());
   out->height = 1;
   out->is_dense = false;
@@ -257,7 +257,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
   out->width = static_cast<int> (centroids.size ());
   out->height = 1;
   out->is_dense = false;
-  out->points.resize (static_cast<int> (centroids.size ()));
+  out->resize (static_cast<int> (centroids.size ()));
   // copy cluster centroids into feature cloud 
   for (size_t i = 0; i < centroids.size (); i++)
   {

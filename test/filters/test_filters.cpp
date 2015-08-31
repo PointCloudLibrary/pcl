@@ -240,8 +240,7 @@ TEST (ExtractIndices, Filters)
   eie.filter (result);
   EXPECT_EQ (int (result.size ()), 0);
 
-  empty.points.resize (10);
-  empty.width = 10; empty.height = 1;
+  empty.resize (10);
   eie.setInputCloud (empty.makeShared ());
   for (int i = 0; i < 10; ++i)
     (*idx)[i] = i;
@@ -254,8 +253,7 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (int (result.size ()), 0);
 
   /*
-  PointCloud<PointXYZ> sc, scf;
-  sc.points.resize (5); sc.width = 5; sc.height = 1; sc.is_dense = true;
+  PointCloud<PointXYZ> sc (5), scf;
   for (int i = 0; i < 5; i++)
   {
     sc.points[i].x = sc.points[i].z = 0;

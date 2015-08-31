@@ -199,7 +199,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 
   // Resize the output dataset
   if (output.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+    output.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size

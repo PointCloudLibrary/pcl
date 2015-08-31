@@ -97,7 +97,7 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 
   cloud_host_.width  = cols;
   cloud_host_.height = rows;
-  cloud_host_.points.resize(cols * rows);
+  cloud_host_.resize(cols * rows);
   cloud_host_.is_dense = false;
 
   cloud_host_color_.width = cols;
@@ -107,17 +107,17 @@ pcl::gpu::people::PeopleDetector::allocate_buffers(int rows, int cols)
 
   hue_host_.width  = cols;
   hue_host_.height = rows;
-  hue_host_.points.resize(cols * rows);
+  hue_host_.resize(cols * rows);
   hue_host_.is_dense = false;
 
   depth_host_.width  = cols;
   depth_host_.height = rows;
-  depth_host_.points.resize(cols * rows);
+  depth_host_.resize(cols * rows);
   depth_host_.is_dense = false;
 
   flowermat_host_.width  = cols;
   flowermat_host_.height = rows;
-  flowermat_host_.points.resize(cols * rows);
+  flowermat_host_.resize(cols * rows);
   flowermat_host_.is_dense = false;
   
   cloud_device_.create(rows, cols);

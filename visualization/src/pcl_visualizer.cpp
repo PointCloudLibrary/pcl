@@ -3794,8 +3794,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     enthropies.push_back (static_cast<float> (visible_area / totalArea));
 
-    cloud->points.resize (count_valid_depth_pixels);
-    cloud->width = count_valid_depth_pixels;
+    cloud->resize (count_valid_depth_pixels);
 
     //transform cloud to give camera coordinates instead of world coordinates!
     vtkSmartPointer<vtkMatrix4x4> view_transform = cam_tmp->GetViewTransformMatrix ();
@@ -3867,7 +3866,7 @@ pcl::visualization::PCLVisualizer::renderView (int xres, int yres, pcl::PointClo
   float dwidth = 2.0f / float (xres),
         dheight = 2.0f / float (yres);
 
-  cloud->points.resize (xres * yres);
+  cloud->resize (xres * yres);
   cloud->width = xres;
   cloud->height = yres;
 

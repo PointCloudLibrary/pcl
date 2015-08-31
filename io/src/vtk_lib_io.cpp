@@ -261,11 +261,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
 
 
   // First get the xyz information
-  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  xyz_cloud->points.resize (nr_points);
-  xyz_cloud->width = static_cast<uint32_t> (xyz_cloud->size ());
-  xyz_cloud->height = 1;
-  xyz_cloud->is_dense = true;
+  pcl::PointCloud<pcl::PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<pcl::PointXYZ> (nr_points));
   double point_xyz[3];
   for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
   {
@@ -293,11 +289,7 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   // TODO: currently only handles rgb values with 3 components
   if (poly_colors && (poly_colors->GetNumberOfComponents () == 3))
   {
-    pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> ());
-    rgb_cloud->points.resize (nr_points);
-    rgb_cloud->width = static_cast<uint32_t> (rgb_cloud->size ());
-    rgb_cloud->height = 1;
-    rgb_cloud->is_dense = true;
+    pcl::PointCloud<pcl::RGB>::Ptr rgb_cloud (new pcl::PointCloud<pcl::RGB> (nr_points));
 
     unsigned char point_color[3];
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)

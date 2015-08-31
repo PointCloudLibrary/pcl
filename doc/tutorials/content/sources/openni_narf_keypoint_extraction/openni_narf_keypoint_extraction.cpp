@@ -196,7 +196,7 @@ int main (int argc, char** argv)
     if (!viewer.updatePointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image"))
       viewer.addPointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image");
     
-    keypoints_cloud.points.resize (keypoint_indices.size ());
+    keypoints_cloud.resize (keypoint_indices.size ());
     for (size_t i=0; i<keypoint_indices.size (); ++i)
       keypoints_cloud.points[i].getVector3fMap () =
         range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();

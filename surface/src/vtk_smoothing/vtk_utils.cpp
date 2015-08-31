@@ -110,8 +110,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   // TODO: currently only handles rgb values with 3 components
   if (poly_colors && (poly_colors->GetNumberOfComponents () == 3))
   {
-    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZRGB>());
-    cloud_temp->points.resize (nr_points);
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZRGB> (nr_points));
     double point_xyz[3];
     unsigned char point_color[3];
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
@@ -134,8 +133,7 @@ pcl::VTKUtils::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::Pol
   }
   else // in case points do not have color information:
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ> ());
-    cloud_temp->points.resize (nr_points);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_temp (new pcl::PointCloud<pcl::PointXYZ> (nr_points));
     double point_xyz[3];
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); ++i)
     {

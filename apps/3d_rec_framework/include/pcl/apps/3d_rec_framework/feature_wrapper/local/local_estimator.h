@@ -134,7 +134,7 @@ namespace pcl
 
           neighborhood_indices_->resize (good);
           neighborhood_dist_->resize (good);
-          keypoints_cloud->points.resize (good);
+          keypoints_cloud->resize (good);
 
           neighborhood_indices_->clear ();
           neighborhood_dist_->clear ();
@@ -509,7 +509,7 @@ namespace pcl
 
          neighborhood_indices_->resize (good);
          neighborhood_dist_->resize (good);
-         keypoints_cloud.points.resize (good);
+         keypoints_cloud.resize (good);
          }*/
 
       };

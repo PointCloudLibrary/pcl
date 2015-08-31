@@ -516,9 +516,8 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
   // Important! We should only allocate precisely how many elements we will need, otherwise
   // we risk at pre-allocating too much memory which could lead to bad_alloc 
   // (see http://dev.pointclouds.org/issues/657)
-  output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -539,9 +538,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   this->cleanup9 (local_cloud_);
 
   // We only output _1_ signature
-  output.points.resize (1);
-  output.width = 1;
-  output.height = 1;
+  output.resize (1);
 
   for (size_t d = 0; d < hist.size (); ++d)
     output.points[0].histogram[d] = hist[d];

@@ -203,7 +203,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   {
     boundary_cloud.resize (0);
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[0], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
     
@@ -242,7 +242,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
     
@@ -286,7 +286,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
       boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
 

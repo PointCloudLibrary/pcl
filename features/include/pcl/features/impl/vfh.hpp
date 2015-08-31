@@ -76,9 +76,8 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &output
   // Important! We should only allocate precisely how many elements we will need, otherwise
   // we risk at pre-allocating too much memory which could lead to bad_alloc 
   // (see http://dev.pointclouds.org/issues/657)
-  output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -232,9 +231,7 @@ pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   computePointSPFHSignature (xyz_centroid, normal_centroid, *surface_, *normals_, *indices_);
 
   // We only output _1_ signature
-  output.points.resize (1);
-  output.width = 1;
-  output.height = 1;
+  output.resize (1);
 
   // Estimate the FPFH at nn_indices[0] using the entire cloud and copy the resultant signature
   for (int d = 0; d < hist_f1_.size (); ++d)

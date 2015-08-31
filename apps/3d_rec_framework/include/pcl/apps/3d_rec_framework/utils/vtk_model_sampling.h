@@ -95,9 +95,7 @@ namespace pcl
           cumulativeAreas[i] = totalArea;
         }
 
-        cloud_out.points.resize (n_samples);
-        cloud_out.width = static_cast<int> (n_samples);
-        cloud_out.height = 1;
+        cloud_out.resize (n_samples);
 
         for (i = 0; i < n_samples; i++)
         {
@@ -146,9 +144,7 @@ namespace pcl
     getVerticesAsPointCloud (vtkSmartPointer<vtkPolyData> polydata, pcl::PointCloud<pcl::PointXYZ> & cloud_out)
     {
       vtkPoints *points = polydata->GetPoints ();
-      cloud_out.points.resize (points->GetNumberOfPoints ());
-      cloud_out.width = static_cast<int> (cloud_out.size ());
-      cloud_out.height = 1;
+      cloud_out.resize (points->GetNumberOfPoints ());
       cloud_out.is_dense = false;
 
       for (int i = 0; i < points->GetNumberOfPoints (); i++)
