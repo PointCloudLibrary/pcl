@@ -55,7 +55,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
   const int binsize = 64;
   unsigned int sample_size = 20000;
   srand (static_cast<unsigned int> (time (0)));
-  int maxindex = static_cast<int> (pc.points.size ());
+  int maxindex = static_cast<int> (pc.size ());
 
   int index1, index2, index3;
   std::vector<float> d2v, d1v, d3v, wt_d3;
@@ -422,7 +422,7 @@ template <typename PointInT, typename PointOutT> void
 pcl::ESFEstimation<PointInT, PointOutT>::voxelize9 (PointCloudIn &cluster)
 {
   int xi,yi,zi,xx,yy,zz;
-  for (size_t i = 0; i < cluster.points.size (); ++i)
+  for (size_t i = 0; i < cluster.size (); ++i)
   {
     xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
     yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
@@ -451,7 +451,7 @@ template <typename PointInT, typename PointOutT> void
 pcl::ESFEstimation<PointInT, PointOutT>::cleanup9 (PointCloudIn &cluster)
 {
   int xi,yi,zi,xx,yy,zz;
-  for (size_t i = 0; i < cluster.points.size (); ++i)
+  for (size_t i = 0; i < cluster.size (); ++i)
   {
     xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
     yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
@@ -486,7 +486,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::scale_points_unit_sphere (
   float max_distance = 0, d;
   pcl::PointXYZ cog (0, 0, 0);
 
-  for (size_t i = 0; i < local_cloud_.points.size (); ++i)
+  for (size_t i = 0; i < local_cloud_.size (); ++i)
   {
     d = pcl::euclideanDistance(cog,local_cloud_.points[i]);
     if (d > max_distance)

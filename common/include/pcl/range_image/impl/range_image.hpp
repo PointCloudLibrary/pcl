@@ -158,7 +158,7 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
 {
   //MEASURE_FUNCTION_TIME;
   
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
+  //std::cout << "Starting to create range image from "<<point_cloud.size ()<<" points.\n";
   
   // If the sensor pose is inside of the sphere we have to calculate the image the normal way
   if ((point_cloud_center-sensor_pose.translation()).norm() <= point_cloud_radius) {
@@ -1126,7 +1126,7 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
 {
   Eigen::Vector3f average_viewpoint (0,0,0);
   int point_counter = 0;
-  for (unsigned int point_idx=0; point_idx<point_cloud.points.size (); ++point_idx)
+  for (unsigned int point_idx=0; point_idx<point_cloud.size (); ++point_idx)
   {
     const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud.points[point_idx];
     if (!pcl_isfinite (point.vp_x) || !pcl_isfinite (point.vp_y) || !pcl_isfinite (point.vp_z))

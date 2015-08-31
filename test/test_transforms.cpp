@@ -88,17 +88,17 @@ TEST (PCL, DeMean)
   EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud_demean.width, cloud.width);
   EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.points.size (), cloud.points.size ());
+  EXPECT_EQ (cloud_demean.size (), cloud.size ());
 
   EXPECT_NEAR (cloud_demean.points[0].x, 0.034503, 1e-4);
   EXPECT_NEAR (cloud_demean.points[0].y, 0.010837, 1e-4);
   EXPECT_NEAR (cloud_demean.points[0].z, 0.013447, 1e-4);
 
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].z, -0.071702, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].x, -0.048849, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].y,  0.072507, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].z, -0.071702, 1e-4);
 
-  vector<int> indices (cloud.points.size ());
+  vector<int> indices (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
 
   // Check standard demean w/ indices
@@ -106,42 +106,42 @@ TEST (PCL, DeMean)
   EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
   EXPECT_EQ (cloud_demean.width, cloud.width);
   EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.points.size (), cloud.points.size ());
+  EXPECT_EQ (cloud_demean.size (), cloud.size ());
 
   EXPECT_NEAR (cloud_demean.points[0].x, 0.034503, 1e-4);
   EXPECT_NEAR (cloud_demean.points[0].y, 0.010837, 1e-4);
   EXPECT_NEAR (cloud_demean.points[0].z, 0.013447, 1e-4);
 
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].z, -0.071702, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].x, -0.048849, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].y,  0.072507, 1e-4);
+  EXPECT_NEAR (cloud_demean.points[cloud_demean.size () - 1].z, -0.071702, 1e-4);
 
   // Check eigen demean
   Eigen::MatrixXf mat_demean;
   demeanPointCloud (cloud, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
+  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
   EXPECT_EQ (mat_demean.rows (), 4);
 
   EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
   EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
   EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
 
-  EXPECT_NEAR (mat_demean (0, cloud_demean.points.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.points.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.points.size () - 1), -0.071702, 1e-4);
+  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
+  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
+  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
 
   // Check eigen demean + indices
   demeanPointCloud (cloud, indices, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
+  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
   EXPECT_EQ (mat_demean.rows (), 4);
 
   EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
   EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
   EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
 
-  EXPECT_NEAR (mat_demean (0, cloud_demean.points.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.points.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.points.size () - 1), -0.071702, 1e-4);
+  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
+  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
+  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ TEST (PCL, Transform)
   const vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > &points (cloud_out.points);
   transformPointCloud (cloud, cloud_out, offset, rotation);
 
-  EXPECT_EQ (cloud.points.size (), cloud_out.points.size ());
+  EXPECT_EQ (cloud.size (), cloud_out.size ());
   EXPECT_EQ (100, points[0].x);
   EXPECT_EQ (0, points[0].y);
   EXPECT_EQ (0, points[0].z);
@@ -176,7 +176,7 @@ TEST (PCL, Transform)
   transform = translation * rotation;
   transformPointCloud (cloud, cloud_out2, transform);
 
-  EXPECT_EQ (cloud.points.size (), cloud_out2.points.size ());
+  EXPECT_EQ (cloud.size (), cloud_out2.size ());
   EXPECT_EQ (100, points2[0].x);
   EXPECT_EQ (0, points2[0].y);
   EXPECT_EQ (0, points2[0].z);

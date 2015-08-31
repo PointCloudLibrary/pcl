@@ -59,7 +59,7 @@ struct PointCloudBuffers
 void
 CopyPointCloudToBuffers (pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud, PointCloudBuffers& cloud_buffers)
 {
-  const size_t nr_points = cloud->points.size ();
+  const size_t nr_points = cloud->size ();
 
   cloud_buffers.points.resize (nr_points*3);
   cloud_buffers.rgb.resize (nr_points*3);

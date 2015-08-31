@@ -117,11 +117,11 @@ TEST (SampleConsensusModelPlane, Base)
 
   // Basic tests
   PointCloud<PointXYZ>::ConstPtr cloud = model->getInputCloud ();
-  ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
+  ASSERT_EQ (cloud_->size (), cloud->size ());
 
   model->setInputCloud (cloud);
   cloud = model->getInputCloud ();
-  ASSERT_EQ (cloud_->points.size (), cloud->points.size ());
+  ASSERT_EQ (cloud_->size (), cloud->size ());
 
   boost::shared_ptr<std::vector<int> > indices = model->getIndices ();
   ASSERT_EQ (indices_.size (), indices->size ());
@@ -323,7 +323,7 @@ main (int argc, char** argv)
   fromPCLPointCloud2 (cloud_blob, *cloud_);
   fromPCLPointCloud2 (cloud_blob, *normals_);
 
-  indices_.resize (cloud_->points.size ());
+  indices_.resize (cloud_->size ());
   for (size_t i = 0; i < indices_.size (); ++i) { indices_[i] = int (i); }
 
   testing::InitGoogleTest (&argc, argv);

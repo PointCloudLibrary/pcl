@@ -65,7 +65,7 @@ TEST(PCL_FeaturesGPU, ppf)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -124,7 +124,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -154,7 +154,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for(size_t i = 0; i < source.cloud->size(); ++i)
     {
         const PointXYZ& p = (*source.cloud)[i];
         PointXYZRGB& o = (*cloud_XYZRGB)[i];
@@ -209,7 +209,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
     std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
@@ -241,7 +241,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
     PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    for(size_t i = 0; i < source.cloud->size(); ++i)
     {
         const PointXYZ& p = (*source.cloud)[i];
         PointXYZRGB& o = (*cloud_XYZRGB)[i];

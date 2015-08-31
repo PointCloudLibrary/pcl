@@ -217,9 +217,9 @@ TEST (PCL, PFHEstimation)
 
   // estimate
   pfh.compute (*pfhs);
-  EXPECT_EQ (pfhs->points.size (), indices.size ());
+  EXPECT_EQ (pfhs->size (), indices.size ());
 
-  for (size_t i = 0; i < pfhs->points.size (); ++i)
+  for (size_t i = 0; i < pfhs->size (); ++i)
   {
     EXPECT_NEAR (pfhs->points[i].histogram[0],  0.156477  , 1e-4);
     EXPECT_NEAR (pfhs->points[i].histogram[1],  0.539396  , 1e-4);
@@ -377,7 +377,7 @@ TEST (PCL, FPFHEstimation)
 
   // estimate
   fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
+  EXPECT_EQ (fpfhs->size (), indices.size ());
 
   EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
@@ -453,7 +453,7 @@ TEST (PCL, FPFHEstimationOpenMP)
 
   // estimate
   fpfh.compute (*fpfhs);
-  EXPECT_EQ (fpfhs->points.size (), indices.size ());
+  EXPECT_EQ (fpfhs->size (), indices.size ());
 
   EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
@@ -530,7 +530,7 @@ TEST (PCL, VFHEstimation)
 
   // estimate
   vfh.compute (*vfhs);
-  EXPECT_EQ (int (vfhs->points.size ()), 1);
+  EXPECT_EQ (int (vfhs->size ()), 1);
 
   //for (size_t d = 0; d < 308; ++d)
   //  std::cerr << vfhs.points[0].histogram[d] << std::endl;
@@ -558,7 +558,7 @@ TEST (PCL, GFPFH)
         p.z = static_cast<float> (z);
         cloud->points.push_back (p);
       }
-  cloud->width = static_cast<uint32_t> (cloud->points.size ());
+  cloud->width = static_cast<uint32_t> (cloud->size ());
   cloud->height = 1;
 
   GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
@@ -571,7 +571,7 @@ TEST (PCL, GFPFH)
 
   const float ref_values[] = { 3216, 7760, 8740, 26584, 4645, 2995, 3029, 4349, 6192, 5440, 9514, 47563, 21814, 22073, 5734, 1253 };
 
-  EXPECT_EQ (descriptor.points.size (), 1);
+  EXPECT_EQ (descriptor.size (), 1);
   for (size_t i = 0; i < size_t (descriptor.points[0].descriptorSize ()); ++i)
   {
     EXPECT_EQ (descriptor.points[0].histogram[i], ref_values[i]);
@@ -594,7 +594,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (size_t i = 0; i < indices.size (); ++i)
     indices[i] = static_cast<int> (i);
 

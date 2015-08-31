@@ -531,13 +531,13 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
                  static_cast<float> (i % 1024));
   }
 
-  EXPECT_EQ (numPts, test_cloud->points.size ());
+  EXPECT_EQ (numPts, test_cloud->size ());
   
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
-  EXPECT_EQ (test_cloud->points.size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+  EXPECT_EQ (test_cloud->size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
   
   cleanUpFilesystem ();
 }
@@ -611,7 +611,7 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
-  ASSERT_EQ (test_cloud->points.size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
+  ASSERT_EQ (test_cloud->size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
 
   ASSERT_EQ (numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Book keeping of number of points at query depth does not match number of points inserted to the leaves\n";
 

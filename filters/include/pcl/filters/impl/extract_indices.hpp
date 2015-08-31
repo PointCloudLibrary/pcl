@@ -101,7 +101,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
 template <typename PointT> void
 pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
 {
-  if (indices_->size () > input_->points.size ())
+  if (indices_->size () > input_->size ())
   {
     PCL_ERROR ("[pcl::%s::applyFilter] The indices size exceeds the size of the input.\n", getClassName ().c_str ());
     indices.clear ();
@@ -116,7 +116,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
     if (extract_removed_indices_)
     {
       // Set up the full indices set
-      std::vector<int> full_indices (input_->points.size ());
+      std::vector<int> full_indices (input_->size ());
       for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
         full_indices[fii] = fii;
 
@@ -132,7 +132,7 @@ pcl::ExtractIndices<PointT>::applyFilterIndices (std::vector<int> &indices)
   else  // Inverted functionality
   {
     // Set up the full indices set
-    std::vector<int> full_indices (input_->points.size ());
+    std::vector<int> full_indices (input_->size ());
     for (int fii = 0; fii < static_cast<int> (full_indices.size ()); ++fii)  // fii = full indices iterator
       full_indices[fii] = fii;
 

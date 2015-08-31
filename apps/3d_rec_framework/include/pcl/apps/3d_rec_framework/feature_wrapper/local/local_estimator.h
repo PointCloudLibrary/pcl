@@ -96,13 +96,13 @@ namespace pcl
           tree->setInputCloud (input);
 
           neighborhood_indices_.reset (new std::vector<std::vector<int> >);
-          neighborhood_indices_->resize (keypoints_cloud->points.size ());
+          neighborhood_indices_->resize (keypoints_cloud->size ());
           neighborhood_dist_.reset (new std::vector<std::vector<float> >);
-          neighborhood_dist_->resize (keypoints_cloud->points.size ());
+          neighborhood_dist_->resize (keypoints_cloud->size ());
 
           int good = 0;
 
-          for (size_t i = 0; i < keypoints_cloud->points.size (); i++)
+          for (size_t i = 0; i < keypoints_cloud->size (); i++)
           {
 
             if (tree->radiusSearch (keypoints_cloud->points[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
@@ -219,13 +219,13 @@ namespace pcl
         void
         compute (PointInTPtr & keypoints)
         {
-          if (normals_ == 0 || (normals_->points.size () != input_->points.size ()))
+          if (normals_ == 0 || (normals_->size () != input_->size ()))
             PCL_WARN("SIFTSurfaceKeypointExtractor -- Normals are not valid\n");
 
           keypoints.reset (new pcl::PointCloud<PointInT>);
 
           typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud (new pcl::PointCloud<pcl::PointNormal> (input_->width, input_->height));
-          for (size_t i = 0; i < input_->points.size (); i++)
+          for (size_t i = 0; i < input_->size (); i++)
           {
             input_cloud->points[i].getVector3fMap () = input_->points[i].getVector3fMap ();
             input_cloud->points[i].getNormalVector3fMap () = normals_->points[i].getNormalVector3fMap ();
@@ -296,7 +296,7 @@ namespace pcl
         {
           keypoints.reset (new pcl::PointCloud<PointInT>);
 
-          if (normals_ == 0 || (normals_->points.size () != input_->points.size ()))
+          if (normals_ == 0 || (normals_->size () != input_->size ()))
             PCL_WARN("HarrisKeypointExtractor -- Normals are not valid\n");
 
           typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (new pcl::PointCloud<pcl::PointXYZI>);
@@ -349,7 +349,7 @@ namespace pcl
         {
           keypoints.reset (new pcl::PointCloud<PointInT>);
 
-          if (normals_ == 0 || (normals_->points.size () != input_->points.size ()))
+          if (normals_ == 0 || (normals_->size () != input_->size ()))
             PCL_WARN("SUSANKeypointExtractor -- Normals are not valid\n");
 
           typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (new pcl::PointCloud<pcl::PointXYZI>);
@@ -470,14 +470,14 @@ namespace pcl
          //std::vector<float> nn_distances;
 
          neighborhood_indices_.reset (new std::vector<std::vector<int> >);
-         neighborhood_indices_->resize (keypoints_cloud.points.size ());
+         neighborhood_indices_->resize (keypoints_cloud.size ());
          neighborhood_dist_.reset (new std::vector<std::vector<float> >);
-         neighborhood_dist_->resize (keypoints_cloud.points.size ());
+         neighborhood_dist_->resize (keypoints_cloud.size ());
 
          int good = 0;
 
          //#pragma omp parallel for num_threads(8)
-         for (size_t i = 0; i < keypoints_cloud.points.size (); i++)
+         for (size_t i = 0; i < keypoints_cloud.size (); i++)
          {
 
          if (tree->radiusSearch (keypoints_cloud[i], support_radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))

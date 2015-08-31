@@ -50,7 +50,7 @@
 template<typename PointInT, typename PointNT, typename PointOutT> bool
 pcl::VFHEstimation<PointInT, PointNT, PointOutT>::initCompute ()
 {
-  if (input_->points.size () < 2 || (surface_ && surface_->points.size () < 2))
+  if (input_->size () < 2 || (surface_ && surface_->size () < 2))
   {
     PCL_ERROR ("[pcl::VFHEstimation::initCompute] Input dataset must have at least 2 points!\n");
     return (false);

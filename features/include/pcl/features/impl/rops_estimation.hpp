@@ -212,7 +212,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::buildListOfPointsTriangles ()
 
   std::vector <unsigned int> dummy;
   dummy.reserve (100);
-  triangles_of_the_point_.resize (surface_->points. size (), dummy);
+  triangles_of_the_point_.resize (surface_->size (), dummy);
 
   for (unsigned int i_triangle = 0; i_triangle < number_of_triangles; i_triangle++)
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
@@ -415,7 +415,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
                      (1 - cosine) * y * x + sine * z,    cosine + (1 - cosine) * y * y,      (1 - cosine) * y * z - sine * x,
                      (1 - cosine) * z * x - sine * y,    (1 - cosine) * z * y + sine * x,    cosine + (1 - cosine) * z * z;
 
-  const unsigned int number_of_points = static_cast <unsigned int> (cloud.points.size ());
+  const unsigned int number_of_points = static_cast <unsigned int> (cloud.size ());
 
   rotated_cloud.header = cloud.header;
   rotated_cloud.width = number_of_points;
@@ -459,7 +459,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
 {
   matrix.setZero ();
 
-  const unsigned int number_of_points = static_cast <unsigned int> (cloud.points.size ());
+  const unsigned int number_of_points = static_cast <unsigned int> (cloud.size ());
 
   const unsigned int coord[3][2] = {
     {0, 1},

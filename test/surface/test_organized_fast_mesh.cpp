@@ -74,7 +74,7 @@ TEST (PCL, Organized)
     {
       cloud_organized->points[npoints].x = static_cast<float> (i);
       cloud_organized->points[npoints].y = static_cast<float> (j);
-      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->points.size ()); // to avoid shadowing
+      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->size ()); // to avoid shadowing
       npoints++;
     }
   }

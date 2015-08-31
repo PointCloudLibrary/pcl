@@ -83,7 +83,7 @@ main (int argc, char** argv)
 
   pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGB> (testing_cloud->size () + strongest_peaks.size ()));
 
-  for (size_t i_point = 0; i_point < testing_cloud->points.size (); i_point++)
+  for (size_t i_point = 0; i_point < testing_cloud->size (); i_point++)
   {
     pcl::PointXYZRGB &point = (*colored_cloud) [i_point];
     point.r = 255;

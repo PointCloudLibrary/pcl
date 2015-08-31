@@ -185,7 +185,7 @@ private:
     //remove NaN Points
     std::vector<int> nanIndexes;
     pcl::removeNaNFromPointCloud(*cloud, *cloud, nanIndexes);
-    std::cout << "Loaded " << cloud->points.size() << " points" << std::endl;
+    std::cout << "Loaded " << cloud->size() << " points" << std::endl;
 
     //create octree structure
     octree.setInputCloud(cloud);
@@ -213,7 +213,7 @@ private:
 
     viz.removeShape("level_t2");
     sprintf(level, "Voxel size: %.4fm [%lu voxels]", sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
-            displayCloud->points.size());
+            displayCloud->size());
     viz.addText(level, 0, 30, 1.0, 0.0, 0.0, "level_t2");
 
     viz.removeShape("org_t");
@@ -230,7 +230,7 @@ private:
     clearView();
 
     //prevent the display of too many cubes
-    bool displayCubeLegend = displayCubes && static_cast<int> (displayCloud->points.size ()) <= MAX_DISPLAYED_CUBES;
+    bool displayCubeLegend = displayCubes && static_cast<int> (displayCloud->size ()) <= MAX_DISPLAYED_CUBES;
 
     showLegend(displayCubeLegend);
 
@@ -287,7 +287,7 @@ private:
     vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New();
     size_t i;
     double s = voxelSideLen / 2.0;
-    for (i = 0; i < displayCloud->points.size(); i++)
+    for (i = 0; i < displayCloud->size(); i++)
     {
 
       double x = displayCloud->points[i].x;
@@ -350,8 +350,8 @@ private:
     }
 
     double end = pcl::getTime ();
-    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->points.size (), end - start,
-           (end - start) / static_cast<double> (displayCloud->points.size ()));
+    printf("%lu pts, %.4gs. %.4gs./pt. =====\n", displayCloud->size (), end - start,
+           (end - start) / static_cast<double> (displayCloud->size ()));
 
     update();
   }

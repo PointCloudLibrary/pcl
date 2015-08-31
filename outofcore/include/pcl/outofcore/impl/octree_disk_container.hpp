@@ -256,7 +256,7 @@ namespace pcl
       (void)res;
       assert (res == 0);
       
-      for (size_t i=0; i < cloud->points.size (); i++)
+      for (size_t i=0; i < cloud->size (); i++)
         dst.push_back (cloud->points[i]);
       
     }
@@ -496,7 +496,7 @@ namespace pcl
       }
 
       //assume unorganized point cloud
-      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->size ());
             
       //save and close
       PCDWriter writer;
@@ -657,7 +657,7 @@ namespace pcl
         tmp_cloud->points.push_back (*(start + i));
       }
 
-      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
+      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->size ());
       tmp_cloud->height = 1;
             
       //save and close

@@ -51,7 +51,7 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
 {
   typedef PointNormal PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
   {
     cloud.points[i].normal_x = -1.0;
     cloud.points[i].normal_y =  0.0;
@@ -85,7 +85,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
 {
   typedef PointXYZRGB PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
   {
     cloud.points[i].r =   0;
     cloud.points[i].g = 127;
@@ -119,7 +119,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
 {
   typedef PointXYZRGBA PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
   {
     cloud.points[i].r =   0;
     cloud.points[i].g = 127;
@@ -154,7 +154,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 {
   typedef PointXYZL PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     cloud.points[i].label = i;
 
   pcl::PCLImage image;
@@ -168,7 +168,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
   EXPECT_EQ (cloud.width, image.width);
   EXPECT_EQ (cloud.height, image.height);
 
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (i, data[i]);
 }
 
@@ -177,7 +177,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 {
   typedef PointXYZL PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     cloud.points[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -211,7 +211,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
 {
   typedef PointXYZL PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     cloud.points[i].label = i % 2;
 
   pcl::PCLImage image;
@@ -225,7 +225,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
   EXPECT_EQ (cloud.height, image.height);
 
   // Fill in different labels and extract another image
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     cloud.points[i].label = i % 2 + 10;
   pcl::PCLImage image2;
   ASSERT_TRUE (pcie.extract (cloud, image2));
@@ -244,7 +244,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
 {
   typedef PointXYZL PointT;
   PointCloud<PointT> cloud (2, 2);
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     cloud.points[i].z = 1.0 + i;
 
   pcl::PCLImage image;
@@ -258,7 +258,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Z field extractor scales with factor 10000
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (10000 * (i + 1), data[i]);
 }
 
@@ -312,7 +312,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
   EXPECT_EQ (cloud.height, image.height);
 
   // by default Intensity field extractor does not apply scaling
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  for (size_t i = 0; i < cloud.size (); i++)
     EXPECT_EQ (static_cast<unsigned short> (cloud.points[i].intensity), data[i]);
 }
 

@@ -196,7 +196,7 @@ pcl::SupervoxelClustering<PointT>::prepareForSegmentation ()
 {
   
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->size () == 0 )
     return (false);
   
   //Add the new cloud of data to the octree

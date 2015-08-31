@@ -146,7 +146,7 @@ namespace pcl
         while (getline (f, label))
           if (label.size () > 0)
             labels.push_back(label);
-        if (labels.size () != cloud->points.size ())
+        if (labels.size () != cloud->size ())
           return (false);
         setTrainingFeatures (cloud);
         setTrainingLabels (labels);
@@ -162,7 +162,7 @@ namespace pcl
       saveTrainingFeatures (std::string file_name, std::string labels_file_name)
       {
         typename pcl::PointCloud<PointT>::ConstPtr training_features = tree_->getInputCloud ();
-        if (labels_idx_.size () == training_features->points.size ())
+        if (labels_idx_.size () == training_features->size ())
         {
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features) != 0)
             return (false);

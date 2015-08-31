@@ -2835,10 +2835,10 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
   pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
-  poly_points->SetNumberOfPoints (point_cloud->points.size ());
+  poly_points->SetNumberOfPoints (point_cloud->size ());
 
   size_t i;
-  for (i = 0; i < point_cloud->points.size (); ++i)
+  for (i = 0; i < point_cloud->size (); ++i)
     poly_points->InsertPoint (i, point_cloud->points[i].x, point_cloud->points[i].y, point_cloud->points[i].z);
 
   bool has_color = false;
@@ -2850,7 +2850,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
-    for (i = 0; i < cloud.points.size (); ++i)
+    for (i = 0; i < cloud.size (); ++i)
     {
       const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
       colors->InsertNextTupleValue(color);
@@ -2863,7 +2863,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     colors->SetName ("Colors");
     pcl::PointCloud<pcl::PointXYZRGBA> cloud;
     pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
-    for (i = 0; i < cloud.points.size (); ++i)
+    for (i = 0; i < cloud.size (); ++i)
     {
       const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
       colors->InsertNextTupleValue(color);
@@ -2964,7 +2964,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
   vtkSmartPointer<vtkPoints> points   = polydata->GetPoints ();
   // Copy the new point array in
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
@@ -3054,10 +3054,10 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   pcl::PointCloud<pcl::PointXYZ> point_cloud;
   pcl::fromPCLPointCloud2 (polymesh.cloud, point_cloud);
-  poly_points->SetNumberOfPoints (point_cloud.points.size ());
+  poly_points->SetNumberOfPoints (point_cloud.size ());
 
   size_t i;
-  for (i = 0; i < point_cloud.points.size (); ++i)
+  for (i = 0; i < point_cloud.size (); ++i)
     poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
@@ -3168,7 +3168,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   {
     pcl::PointCloud<pcl::PointXYZRGB> cloud;
     pcl::fromPCLPointCloud2(mesh.cloud, cloud);
-    if (cloud.points.size () == 0)
+    if (cloud.size () == 0)
     {
       PCL_ERROR("[PCLVisualizer::addTextureMesh] Cloud is empty!\n");
       return (false);
@@ -3178,7 +3178,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     poly_points->SetNumberOfPoints (cloud.size ());
-    for (std::size_t i = 0; i < cloud.points.size (); ++i)
+    for (std::size_t i = 0; i < cloud.size (); ++i)
     {
       const pcl::PointXYZRGB &p = cloud.points[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3191,14 +3191,14 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
     pcl::fromPCLPointCloud2 (mesh.cloud, *cloud);
     // no points --> exit
-    if (cloud->points.size () == 0)
+    if (cloud->size () == 0)
     {
       PCL_ERROR("[PCLVisualizer::addTextureMesh] Cloud is empty!\n");
       return (false);
     }
     convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
-    poly_points->SetNumberOfPoints (cloud->points.size ());
-    for (std::size_t i = 0; i < cloud->points.size (); ++i)
+    poly_points->SetNumberOfPoints (cloud->size ());
+    for (std::size_t i = 0; i < cloud->size (); ++i)
     {
       const pcl::PointXYZ &p = cloud->points[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
@@ -3808,7 +3808,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (size_t i = 0; i < cloud->size (); i++)
     {
       cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
       cloud->points[i].y *= -1.0f;

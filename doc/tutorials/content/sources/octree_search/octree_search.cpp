@@ -14,7 +14,7 @@ main (int argc, char** argv)
 
   // Generate pointcloud data
 
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
     cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);

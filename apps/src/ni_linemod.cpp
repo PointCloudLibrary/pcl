@@ -227,9 +227,9 @@ class NILinemod
 
       // Remove the plane indices from the data
       PointIndices::Ptr everything_but_the_plane (new PointIndices);
-      if (indices_fullset_.size () != cloud->points.size ())
+      if (indices_fullset_.size () != cloud->size ())
       {
-        indices_fullset_.resize (cloud->points.size ());
+        indices_fullset_.resize (cloud->size ());
         for (int p_it = 0; p_it < static_cast<int> (indices_fullset_.size ()); ++p_it)
           indices_fullset_[p_it] = p_it;
       }
@@ -323,7 +323,7 @@ class NILinemod
       vector<PointIndices> label_indices;
       vector<PointIndices> boundary_indices;
       mps_.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
-      PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->points.size (), normal_cloud->points.size ());
+      PCL_DEBUG ("Number of planar regions detected: %lu for a cloud of %lu points and %lu normals.\n", regions.size (), search_.getInputCloud ()->size (), normal_cloud->size ());
 
       double max_dist = numeric_limits<double>::max ();
       // Compute the distances from all the planar regions to the picked point, and select the closest region

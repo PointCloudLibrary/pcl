@@ -71,7 +71,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   {
     for (std::vector<int>::const_iterator current = indices_->begin (); current != indices_->end (); ++current)
     {
-      assert( (*current>=0) && (*current < static_cast<int> (input_->points.size ())));
+      assert( (*current>=0) && (*current < static_cast<int> (input_->size ())));
       
       if (isFinite (input_->points[*current]))
       {
@@ -82,7 +82,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   }
   else
   {
-    for (i = 0; i < input_->points.size (); i++)
+    for (i = 0; i < input_->size (); i++)
     {
       if (isFinite (input_->points[i]))
       {
@@ -110,7 +110,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back (point_arg);
 
-  this->addPointIdx (static_cast<const int> (cloud_arg->points.size ()) - 1);
+  this->addPointIdx (static_cast<const int> (cloud_arg->size ()) - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 
   cloud_arg->push_back (point_arg);
 
-  this->addPointFromCloud (static_cast<const int> (cloud_arg->points.size ()) - 1, indices_arg);
+  this->addPointFromCloud (static_cast<const int> (cloud_arg->size ()) - 1, indices_arg);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -558,7 +558,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 {
   OctreeKey key;
 
-  assert (point_idx_arg < static_cast<int> (input_->points.size ()));
+  assert (point_idx_arg < static_cast<int> (input_->size ()));
 
   const PointT& point = input_->points[point_idx_arg];
 
@@ -601,7 +601,7 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT, ty
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::getPointByIndex (const unsigned int index_arg) const
 {
   // retrieve point from input cloud
-  assert (index_arg < static_cast<unsigned int> (input_->points.size ()));
+  assert (index_arg < static_cast<unsigned int> (input_->size ()));
   return (this->input_->points[index_arg]);
 }
 

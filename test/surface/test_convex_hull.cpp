@@ -124,8 +124,8 @@ TEST (PCL, ConvexHull_bunny)
   pcl::fromPCLPointCloud2 (mesh.cloud, hull2);
 
   // compare the PointCloud (hull2) to the output from the original test --- they should be identical
-  ASSERT_EQ (hull.points.size (), hull2.points.size ());
-  for (size_t i = 0; i < hull.points.size (); ++i)
+  ASSERT_EQ (hull.size (), hull2.size ());
+  for (size_t i = 0; i < hull.size (); ++i)
   {
     const PointXYZ & p1 = hull.points[i];
     const PointXYZ & p2 = hull2.points[i];
@@ -247,7 +247,7 @@ TEST (PCL, ConvexHull_LTable)
   chull.reconstruct (hull, polygons);
 
   EXPECT_EQ (polygons.size (), 1);
-  EXPECT_EQ (hull.points.size (), 5);
+  EXPECT_EQ (hull.size (), 5);
 
 
   //
@@ -285,8 +285,8 @@ TEST (PCL, ConvexHull_LTable)
   pcl::fromPCLPointCloud2 (mesh.cloud, hull2);
 
   // compare the PointCloud (hull2) to the output from the original test --- they should be identical
-  ASSERT_EQ (hull.points.size (), hull2.points.size ());
-  for (size_t i = 0; i < hull.points.size (); ++i)
+  ASSERT_EQ (hull.size (), hull2.size ());
+  for (size_t i = 0; i < hull.size (); ++i)
   {
     const PointXYZ & p1 = hull.points[i];
     const PointXYZ & p2 = hull2.points[i];
@@ -321,7 +321,7 @@ TEST (PCL, ConvexHull_2dsquare)
   boost::uniform_01<boost::mt19937> rng (rng_alg);
   rng.base ().seed (12345u);
 
-  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  for (size_t i = 0; i < input_cloud->size (); i++)
   {
     input_cloud->points[i].x = (2.0f * float (rng ()))-1.0f;
     input_cloud->points[i].y = (2.0f * float (rng ()))-1.0f;
@@ -350,7 +350,7 @@ TEST (PCL, ConvexHull_2dsquare)
   facets.push_back (Eigen::Vector4f (0.0, -1.0, 0.0, -1.0));
 
   //Make sure they're in the plane
-  for (size_t i = 0; i < hull.points.size (); i++)
+  for (size_t i = 0; i < hull.size (); i++)
   {
     float dist = fabs (hull.points[i].getVector4fMap ().dot (plane_normal));
     EXPECT_NEAR (dist, 0.0, 1e-2);
@@ -378,7 +378,7 @@ TEST (PCL, ConvexHull_3dcube)
   boost::uniform_01<boost::mt19937> rng (rng_alg);
   rng.base ().seed (12345u);
 
-  for (size_t i = 0; i < input_cloud->points.size (); i++)
+  for (size_t i = 0; i < input_cloud->size (); i++)
   {
     input_cloud->points[i].x =  (2.0f * float (rng ()))-1.0f;
     input_cloud->points[i].y =  (2.0f * float (rng ()))-1.0f;
@@ -405,7 +405,7 @@ TEST (PCL, ConvexHull_3dcube)
   facets.push_back (Eigen::Vector4f (0.0f, 0.0f, -1.0f, -1.0f));
 
   //Make sure they're near a facet
-  for (size_t i = 0; i < hull.points.size (); i++)
+  for (size_t i = 0; i < hull.size (); i++)
   {
     float min_dist = std::numeric_limits<float>::infinity ();
     for (size_t j = 0; j < facets.size (); j++)

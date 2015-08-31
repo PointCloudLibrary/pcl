@@ -124,7 +124,7 @@ main (int argc, char** argv)
         point_cloud.points.push_back (point);
       }
     }
-    point_cloud.width = (int) point_cloud.points.size ();  point_cloud.height = 1;
+    point_cloud.width = (int) point_cloud.size ();  point_cloud.height = 1;
   }
   
   // -----------------------------------------------
@@ -172,12 +172,12 @@ main (int argc, char** argv)
   
   pcl::PointCloud<int> keypoint_indices;
   narf_keypoint_detector.compute (keypoint_indices);
-  std::cout << "Found "<<keypoint_indices.points.size ()<<" key points.\n";
+  std::cout << "Found "<<keypoint_indices.size ()<<" key points.\n";
 
   // ----------------------------------------------
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
-  //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+  //for (size_t i=0; i<keypoint_indices.size (); ++i)
     //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
                                   //keypoint_indices.points[i]/range_image.width);
   
@@ -186,7 +186,7 @@ main (int argc, char** argv)
   // -------------------------------------
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ> (keypoint_indices.size ()));
   pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
-  for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+  for (size_t i=0; i<keypoint_indices.size (); ++i)
     keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);
   viewer.addPointCloud<pcl::PointXYZ> (keypoints_ptr, keypoints_color_handler, "keypoints");
@@ -196,7 +196,7 @@ main (int argc, char** argv)
   // -----Extract NARF descriptors for interest points-----
   // ------------------------------------------------------
   std::vector<int> keypoint_indices2;
-  keypoint_indices2.resize (keypoint_indices.points.size ());
+  keypoint_indices2.resize (keypoint_indices.size ());
   for (unsigned int i=0; i<keypoint_indices.size (); ++i) // This step is necessary to get the right vector type
     keypoint_indices2[i]=keypoint_indices.points[i];
   pcl::NarfDescriptor narf_descriptor (&range_image, &keypoint_indices2);
@@ -205,7 +205,7 @@ main (int argc, char** argv)
   pcl::PointCloud<pcl::Narf36> narf_descriptors;
   narf_descriptor.compute (narf_descriptors);
   cout << "Extracted "<<narf_descriptors.size ()<<" descriptors for "
-                      <<keypoint_indices.points.size ()<< " keypoints.\n";
+                      <<keypoint_indices.size ()<< " keypoints.\n";
   
   //--------------------
   // -----Main loop-----

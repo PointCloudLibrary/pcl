@@ -93,7 +93,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   boost::normal_distribution<> nd (0, standard_deviation);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 
-  for (size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
+  for (size_t point_i = 0; point_i < xyz_cloud->size (); ++point_i)
   {
     xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + static_cast<float> (var_nor ());
     xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + static_cast<float> (var_nor ());

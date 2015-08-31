@@ -147,7 +147,7 @@ main (int argc, char *argv[])
   doncloud = doncloud_filtered;
 
   // Save filtered output
-  std::cout << "Filtered Pointcloud: " << doncloud->points.size () << " data points." << std::endl;
+  std::cout << "Filtered Pointcloud: " << doncloud->size () << " data points." << std::endl;
 
   writer.write<pcl::PointNormal> ("don_filtered.pcd", *doncloud, false); 
 
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
       (*cloud_cluster_don) [i++] = (*doncloud)[*pit];
 
     //Save cluster
-    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;
+    cout << "PointCloud representing the Cluster: " << cloud_cluster_don->size () << " data points." << std::endl;
     stringstream ss;
     ss << "don_cluster_" << j << ".pcd";
     writer.write<pcl::PointNormal> (ss.str (), *cloud_cluster_don, false);

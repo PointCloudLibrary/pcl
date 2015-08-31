@@ -11,7 +11,7 @@ main (int , char **)
 
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> (5));
 
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
     cloud->points[i].x = float (i); 
     cloud->points[i].y = float (i / 2);

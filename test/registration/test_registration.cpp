@@ -122,10 +122,10 @@ TEST (PCL, findFeatureCorrespondences)
       feature3.points.push_back (f);
     }
   }
-  feature0.width = static_cast<uint32_t> (feature0.points.size ());
-  feature1.width = static_cast<uint32_t> (feature1.points.size ());
-  feature2.width = static_cast<uint32_t> (feature2.points.size ());
-  feature3.width = static_cast<uint32_t> (feature3.points.size ());
+  feature0.width = static_cast<uint32_t> (feature0.size ());
+  feature1.width = static_cast<uint32_t> (feature1.size ());
+  feature2.width = static_cast<uint32_t> (feature2.size ());
+  feature3.width = static_cast<uint32_t> (feature3.size ());
 
   KdTreeFLANN<FeatureT> tree;
 
@@ -175,7 +175,7 @@ TEST (PCL, IterativeClosestPoint)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (cloud_reg.size ()), int (cloud_source.size ()));
 
   //Eigen::Matrix4f transformation = reg.getFinalTransformation ();
 //  EXPECT_NEAR (transformation (0, 0), 0.8806,  1e-3);
@@ -338,7 +338,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
   // We get different results on 32 vs 64-bit systems.  To address this, we've removed the explicit output test
   // on the transformation matrix.  Instead, we're testing to make sure the algorithm converges to a sufficiently
   // low error by checking the fitness score.
@@ -385,7 +385,7 @@ TEST (PCL, IterativeClosestPointNonLinear)
     
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 
@@ -425,7 +425,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.005);
 
   // Check again, for all possible caching schemes
@@ -446,7 +446,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
     
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.005);
   }
   
@@ -499,7 +499,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.001);
 
   // Check again, for all possible caching schemes
@@ -520,7 +520,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
     
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 }
@@ -555,7 +555,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+  EXPECT_EQ (int (output.size ()), int (src->size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.003);
 
   // Check again, for all possible caching schemes
@@ -576,7 +576,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint6D)
 
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (src->points.size ()));
+    EXPECT_EQ (int (output.size ()), int (src->size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.003);
   }
 }
@@ -600,7 +600,7 @@ TEST (PCL, NormalDistributionsTransform)
   reg.setTransformationEpsilon (1e-8);
   // Register
   reg.align (output);
-  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.001);
   
   // Check again, for all possible caching schemes
@@ -621,7 +621,7 @@ TEST (PCL, NormalDistributionsTransform)
     
     // Register
     reg.align (output);
-    EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (int (output.size ()), int (cloud_source.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
 }
@@ -682,7 +682,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
 
   // Register
   reg.align (cloud_reg);
-  EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_EQ (int (cloud_reg.size ()), int (cloud_source.size ()));
   EXPECT_LT (reg.getFitnessScore (), 0.0005);
   
   // Check again, for all possible caching schemes
@@ -704,7 +704,7 @@ TEST (PCL, SampleConsensusInitialAlignment)
     
     // Register
     reg.align (cloud_reg);
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
+    EXPECT_EQ (int (cloud_reg.size ()), int (cloud_source.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.0005);
   }
 }
@@ -778,8 +778,8 @@ TEST (PCL, SampleConsensusPrerejective)
   reg.align (cloud_reg);
   
   // Check output consistency and quality of alignment
-  EXPECT_EQ (static_cast<int> (cloud_reg.points.size ()), static_cast<int> (cloud_source.points.size ()));
-  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+  EXPECT_EQ (static_cast<int> (cloud_reg.size ()), static_cast<int> (cloud_source.size ()));
+  float inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
   EXPECT_GT (inlier_fraction, 0.95f);
   
   // Check again, for all possible caching schemes
@@ -803,8 +803,8 @@ TEST (PCL, SampleConsensusPrerejective)
     reg.align (cloud_reg);
 
     // Check output consistency and quality of alignment
-    EXPECT_EQ (int (cloud_reg.points.size ()), int (cloud_source.points.size ()));
-    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.points.size ());
+    EXPECT_EQ (int (cloud_reg.size ()), int (cloud_source.size ()));
+    inlier_fraction = static_cast<float> (reg.getInliers ().size ()) / static_cast<float> (cloud_source.size ());
     EXPECT_GT (inlier_fraction, 0.95f);
   }
 }
@@ -1004,7 +1004,7 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (size_t i = 0; i < cloud_model.size (); ++i)
   {
   //  cloud_model.points[i].z += 1;
   }*/

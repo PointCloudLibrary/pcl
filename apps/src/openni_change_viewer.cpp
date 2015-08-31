@@ -65,7 +65,7 @@ class OpenNIChangeViewer
     void 
     cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
-      std::cerr << cloud->points.size() << " -- ";
+      std::cerr << cloud->size() << " -- ";
 
       // assign point cloud to octree
       octree->setInputCloud (cloud);

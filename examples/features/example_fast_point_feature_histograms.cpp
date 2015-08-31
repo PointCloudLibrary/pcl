@@ -65,7 +65,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  std::cout << "Loaded " << cloud->points.size () << " points." << std::endl;
+  std::cout << "Loaded " << cloud->size () << " points." << std::endl;
 
   // Compute the normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimation;
@@ -99,7 +99,7 @@ main (int argc, char** argv)
   // Actually compute the spin images
   fpfh_estimation.compute (*pfh_features);
 
-  std::cout << "output points.size (): " << pfh_features->points.size () << std::endl;
+  std::cout << "output points.size (): " << pfh_features->size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
   pcl::FPFHSignature33 descriptor = pfh_features->points[0];

@@ -55,7 +55,7 @@ pcl::visualization::PointCloudColorHandlerCustom<PointT>::getColor (vtkSmartPoin
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
   
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
 
   // Get a random color
@@ -83,7 +83,7 @@ pcl::visualization::PointCloudColorHandlerRandom<PointT>::getColor (vtkSmartPoin
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
   
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
 
   // Get a random color
@@ -149,7 +149,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<PointT>::getColor (vtkSmartPo
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
 
@@ -236,7 +236,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<PointT>::getColor (vtkSmartPo
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
 
@@ -387,7 +387,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
     scalars = vtkSmartPointer<vtkFloatArray>::New ();
   scalars->SetNumberOfComponents (1);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
 
   typedef typename pcl::traits::fieldList<PointT>::type FieldList;
@@ -462,7 +462,7 @@ pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::getColor (vtkSmartP
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (4);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->GetPointer (0);
 
@@ -530,7 +530,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor (vtkSmart
     scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
   scalars->SetNumberOfComponents (3);
 
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
   reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->SetNumberOfTuples (nr_points);
   unsigned char* colors = reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->GetPointer (0);
 

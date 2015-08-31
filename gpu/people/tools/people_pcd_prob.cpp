@@ -190,7 +190,7 @@ class PeoplePCDApp
       rgb.resize (histograms.size ());
       rgb.width = histograms.width;
       rgb.height = histograms.height;
-      for(size_t t = 0; t < histograms.points.size(); t++)
+      for(size_t t = 0; t < histograms.size(); t++)
       {
         float value = histograms[t].probs[label];
         float value8 = value * 255;

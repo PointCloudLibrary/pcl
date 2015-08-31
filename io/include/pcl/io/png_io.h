@@ -124,7 +124,7 @@ namespace pcl
     {
       std::vector<unsigned char> data(cloud.width * cloud.height * 3);
 
-      for (size_t i = 0; i < cloud.points.size (); ++i)
+      for (size_t i = 0; i < cloud.size (); ++i)
       {
         data[i*3 + 0] = cloud.points[i].r;
         data[i*3 + 1] = cloud.points[i].g;

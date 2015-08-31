@@ -17,7 +17,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   blue  = 128;
 
   // Fill the cloud with some points
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
     cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);

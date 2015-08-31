@@ -143,7 +143,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
 
   // For each point in the source dataset
   int nr = 0;
-  for (size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (size_t i = 0; i < input_transformed.size (); ++i)
   {
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
@@ -179,12 +179,12 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
     return;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
+  if (output.size () != indices_->size ())
     output.points.resize (indices_->size ());
   // Copy the header
   output.header   = input_->header;
   // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
+  if (indices_->size () != input_->size ())
   {
     output.width    = static_cast<uint32_t> (indices_->size ());
     output.height   = 1;

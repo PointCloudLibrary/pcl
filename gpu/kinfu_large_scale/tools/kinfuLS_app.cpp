@@ -559,7 +559,7 @@ struct SceneCloudView
         kinfu.volume().fetchNormals (extracted, normals_device_);
         pcl::gpu::kinfuLS::mergePointNormal (extracted, normals_device_, combined_device_);
         combined_device_.download (combined_ptr_->points);
-        combined_ptr_->width = (int)combined_ptr_->points.size ();
+        combined_ptr_->width = (int)combined_ptr_->size ();
         combined_ptr_->height = 1;
 
         valid_combined_ = true;
@@ -567,7 +567,7 @@ struct SceneCloudView
       else
       {
         extracted.download (cloud_ptr_->points);
-        cloud_ptr_->width = (int)cloud_ptr_->points.size ();
+        cloud_ptr_->width = (int)cloud_ptr_->size ();
         cloud_ptr_->height = 1;
       }
 
@@ -575,13 +575,13 @@ struct SceneCloudView
       {
         kinfu.colorVolume().fetchColors(extracted, point_colors_device_);
         point_colors_device_.download(point_colors_ptr_->points);
-        point_colors_ptr_->width = (int)point_colors_ptr_->points.size ();
+        point_colors_ptr_->width = (int)point_colors_ptr_->size ();
         point_colors_ptr_->height = 1;
       }
       else
         point_colors_ptr_->points.clear();
     }
-    size_t points_size = valid_combined_ ? combined_ptr_->points.size () : cloud_ptr_->points.size ();
+    size_t points_size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
     cout << "Done.  Cloud size: " << points_size / 1000 << "K" << endl;
 
     cloud_viewer_.removeAllPointClouds ();    

@@ -71,7 +71,7 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
 
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
-  vtkIdType nr_points = cloud_->points.size ();
+  vtkIdType nr_points = cloud_->size ();
 
   // Add all points
   vtkIdType j = 0;    // true point index
@@ -136,11 +136,11 @@ pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<PointT>::getGeometry 
   if (!points)
     points = vtkSmartPointer<vtkPoints>::New ();
   points->SetDataTypeToFloat ();
-  points->SetNumberOfPoints (cloud_->points.size ());
+  points->SetNumberOfPoints (cloud_->size ());
 
   // Add all points
   double p[3];
-  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
+  for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->size ()); ++i)
   {
     p[0] = cloud_->points[i].normal[0];
     p[1] = cloud_->points[i].normal[1];

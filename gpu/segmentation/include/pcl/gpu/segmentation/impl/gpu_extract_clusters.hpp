@@ -52,12 +52,12 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
 
   // Create a bool vector of processed point indices, and initialize it to false
   // cloud is a DeviceArray<PointType>
-  std::vector<bool> processed (host_cloud_->points.size (), false);
+  std::vector<bool> processed (host_cloud_->size (), false);
 
   int max_answers;
 
-  if(max_pts_per_cluster > host_cloud_->points.size())
-    max_answers = host_cloud_->points.size();
+  if(max_pts_per_cluster > host_cloud_->size())
+    max_answers = host_cloud_->size();
   else
     max_answers = max_pts_per_cluster;
   std::cout << "Max_answers: " << max_answers << std::endl;
@@ -69,7 +69,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
   queries_device_buffer.create(max_answers);
 
   // Process all points in the cloud
-  for (size_t i = 0; i < host_cloud_->points.size (); ++i)
+  for (size_t i = 0; i < host_cloud_->size (); ++i)
   {
     // if we already processed this point continue with the next one
     if (processed[i])

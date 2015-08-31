@@ -85,14 +85,14 @@ TEST (ExtractIndicesSelf, Filters)
   ExtractIndices<PointXYZ> ei;
   boost::shared_ptr<vector<int> > indices (new vector<int> (2));
   (*indices)[0] = 0;
-  (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
+  (*indices)[1] = static_cast<int> (cloud->size ()) - 1;
 
   PointCloud<PointXYZ>::Ptr output (new PointCloud<PointXYZ>);
   ei.setInputCloud (cloud);
   ei.setIndices (indices);
   ei.filter (*output);
 
-  EXPECT_EQ (int (output->points.size ()), 2);
+  EXPECT_EQ (int (output->size ()), 2);
   EXPECT_EQ (int (output->width), 2);
   EXPECT_EQ (int (output->height), 1);
 
@@ -100,9 +100,9 @@ TEST (ExtractIndicesSelf, Filters)
   EXPECT_EQ (cloud->points[0].y, output->points[0].y);
   EXPECT_EQ (cloud->points[0].z, output->points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output->points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output->points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output->points[1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output->points[1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output->points[1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output->points[1].z);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,14 +112,14 @@ TEST (ExtractIndices, Filters)
   ExtractIndices<PointXYZ> ei;
   boost::shared_ptr<vector<int> > indices (new vector<int> (2));
   (*indices)[0] = 0;
-  (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
+  (*indices)[1] = static_cast<int> (cloud->size ()) - 1;
 
   PointCloud<PointXYZ> output;
   ei.setInputCloud (cloud);
   ei.setIndices (indices);
   ei.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
   EXPECT_EQ (int (output.height), 1);
 
@@ -127,24 +127,24 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[1].z);
 
   ei.setNegative (true);
   ei.filter (output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size () - 2);
-  EXPECT_EQ (output.width, cloud->points.size () - 2);
+  EXPECT_EQ (output.size (), cloud->size () - 2);
+  EXPECT_EQ (output.width, cloud->size () - 2);
   EXPECT_EQ (int (output.height), 1);
 
   EXPECT_EQ (cloud->points[1].x, output.points[0].x);
   EXPECT_EQ (cloud->points[1].y, output.points[0].y);
   EXPECT_EQ (cloud->points[1].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].x, output.points[output.points.size () - 1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].y, output.points[output.points.size () - 1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].z, output.points[output.points.size () - 1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].x, output.points[output.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].y, output.points[output.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].z, output.points[output.size () - 1].z);
 
   // Test the pcl::PCLPointCloud2 method
   ExtractIndices<PCLPointCloud2> ei2;
@@ -156,7 +156,7 @@ TEST (ExtractIndices, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
   EXPECT_EQ (int (output.height), 1);
 
@@ -164,26 +164,26 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[1].z);
 
   ei2.setNegative (true);
   ei2.filter (output_blob);
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size () - 2);
-  EXPECT_EQ (output.width, cloud->points.size () - 2);
+  EXPECT_EQ (output.size (), cloud->size () - 2);
+  EXPECT_EQ (output.width, cloud->size () - 2);
   EXPECT_EQ (int (output.height), 1);
 
   EXPECT_EQ (cloud->points[1].x, output.points[0].x);
   EXPECT_EQ (cloud->points[1].y, output.points[0].y);
   EXPECT_EQ (cloud->points[1].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].x, output.points[output.points.size () - 1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].y, output.points[output.points.size () - 1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 2].z, output.points[output.points.size () - 1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].x, output.points[output.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].y, output.points[output.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 2].z, output.points[output.size () - 1].z);
 
   ei2.setNegative (false);
   ei2.setKeepOrganized (true);
@@ -226,19 +226,19 @@ TEST (ExtractIndices, Filters)
   eie.setNegative (false);
   eie.filter (result);
 
-  EXPECT_EQ (int (result.points.size ()), 0);
+  EXPECT_EQ (int (result.size ()), 0);
   eie.setNegative (true);
   eie.filter (result);
-  EXPECT_EQ (int (result.points.size ()), 0);
+  EXPECT_EQ (int (result.size ()), 0);
 
   boost::shared_ptr<vector<int> > idx (new vector<int> (10));
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
-  EXPECT_EQ (int (result.points.size ()), 0);
+  EXPECT_EQ (int (result.size ()), 0);
   eie.setNegative (true);
   eie.filter (result);
-  EXPECT_EQ (int (result.points.size ()), 0);
+  EXPECT_EQ (int (result.size ()), 0);
 
   empty.points.resize (10);
   empty.width = 10; empty.height = 1;
@@ -248,10 +248,10 @@ TEST (ExtractIndices, Filters)
   eie.setIndices (idx);
   eie.setNegative (false);
   eie.filter (result);
-  EXPECT_EQ (int (result.points.size ()), 10);
+  EXPECT_EQ (int (result.size ()), 10);
   eie.setNegative (true);
   eie.filter (result);
-  EXPECT_EQ (int (result.points.size ()), 0);
+  EXPECT_EQ (int (result.size ()), 0);
 
   /*
   PointCloud<PointXYZ> sc, scf;
@@ -269,8 +269,8 @@ TEST (ExtractIndices, Filters)
   {
     ps.setFilterLimitsNegative ((bool)i);
     ps.filter (scf);
-    std::cerr << scf.points.size () << std::endl;
-    for (size_t j = 0; j < scf.points.size (); ++j)
+    std::cerr << scf.size () << std::endl;
+    for (size_t j = 0; j < scf.size (); ++j)
       std::cerr << scf.points[j] << std::endl;
   }
   */
@@ -286,7 +286,7 @@ TEST (PassThrough, Filters)
   pt.setInputCloud (cloud);
   pt.filter (output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
@@ -294,7 +294,7 @@ TEST (PassThrough, Filters)
   pt.setFilterLimits (0.05f, 0.1f);
   pt.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 42);
+  EXPECT_EQ (int (output.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -310,7 +310,7 @@ TEST (PassThrough, Filters)
   pt.setFilterLimitsNegative (true);
   pt.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 355);
+  EXPECT_EQ (int (output.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -329,7 +329,7 @@ TEST (PassThrough, Filters)
   pt_.filter (output);
 
   EXPECT_EQ (pt_.getRemovedIndices()->size(), 0);
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
@@ -337,11 +337,11 @@ TEST (PassThrough, Filters)
   pt_.setFilterLimits (0.05f, 0.1f);
   pt_.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 42);
+  EXPECT_EQ (int (output.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size ()-pt_.getRemovedIndices()->size());
+  EXPECT_EQ (int (output.size ()), cloud->size ()-pt_.getRemovedIndices()->size());
 
   EXPECT_NEAR (output.points[0].x, -0.074556, 1e-5);
   EXPECT_NEAR (output.points[0].y, 0.13415, 1e-5);
@@ -354,11 +354,11 @@ TEST (PassThrough, Filters)
   pt_.setFilterLimitsNegative (true);
   pt_.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 355);
+  EXPECT_EQ (int (output.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size ()-pt_.getRemovedIndices()->size());
+  EXPECT_EQ (int (output.size ()), cloud->size ()-pt_.getRemovedIndices()->size());
 
   EXPECT_NEAR (output.points[0].x, 0.0054216, 1e-5);
   EXPECT_NEAR (output.points[0].y, 0.11349, 1e-5);
@@ -373,19 +373,19 @@ TEST (PassThrough, Filters)
   pt.setFilterFieldName ("");
   pt.filter (output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (output.is_dense, cloud->is_dense);
   EXPECT_NEAR (output.points[0].x, cloud->points[0].x, 1e-5);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, cloud->points[cloud->points.size () - 1].x, 1e-5);
+  EXPECT_NEAR (output.points[output.size () - 1].x, cloud->points[cloud->size () - 1].x, 1e-5);
 
   pt.setFilterFieldName ("z");
   pt.setFilterLimitsNegative (false);
   pt.setKeepOrganized (true);
   pt.filter (output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
@@ -400,7 +400,7 @@ TEST (PassThrough, Filters)
   pt.setFilterLimitsNegative (true);
   pt.filter (output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
@@ -422,7 +422,7 @@ TEST (PassThrough, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
@@ -432,7 +432,7 @@ TEST (PassThrough, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 42);
+  EXPECT_EQ (int (output.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -450,7 +450,7 @@ TEST (PassThrough, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 355);
+  EXPECT_EQ (int (output.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -470,7 +470,7 @@ TEST (PassThrough, Filters)
   fromPCLPointCloud2 (output_blob, output);
 
   EXPECT_EQ (pt2_.getRemovedIndices()->size(), 0);
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
@@ -480,11 +480,11 @@ TEST (PassThrough, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 42);
+  EXPECT_EQ (int (output.size ()), 42);
   EXPECT_EQ (int (output.width), 42);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size ()-pt2_.getRemovedIndices()->size());
+  EXPECT_EQ (int (output.size ()), cloud->size ()-pt2_.getRemovedIndices()->size());
 
   EXPECT_NEAR (output.points[0].x, -0.074556, 1e-5);
   EXPECT_NEAR (output.points[0].y, 0.13415, 1e-5);
@@ -499,11 +499,11 @@ TEST (PassThrough, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 355);
+  EXPECT_EQ (int (output.size ()), 355);
   EXPECT_EQ (int (output.width), 355);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size ()-pt2_.getRemovedIndices()->size());
+  EXPECT_EQ (int (output.size ()), cloud->size ()-pt2_.getRemovedIndices()->size());
 
   EXPECT_NEAR (output.points[0].x, 0.0054216, 1e-5);
   EXPECT_NEAR (output.points[0].y, 0.11349, 1e-5);
@@ -519,12 +519,12 @@ TEST (PassThrough, Filters)
   pt2.filter (output_blob);
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (output.is_dense, cloud->is_dense);
   EXPECT_NEAR (output.points[0].x, cloud->points[0].x, 1e-5);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, cloud->points[cloud->points.size () - 1].x, 1e-5);
+  EXPECT_NEAR (output.points[output.size () - 1].x, cloud->points[cloud->size () - 1].x, 1e-5);
 
   pt2.setFilterFieldName ("z");
   pt2.setFilterLimitsNegative (false);
@@ -532,7 +532,7 @@ TEST (PassThrough, Filters)
   pt2.filter (output_blob);
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
@@ -549,7 +549,7 @@ TEST (PassThrough, Filters)
   pt2.filter (output_blob);
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.size (), cloud->size ());
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
   EXPECT_EQ (bool (output.is_dense), false); // NaN was set as a user filter value
@@ -574,7 +574,7 @@ TEST (VoxelGrid, Filters)
   grid.setInputCloud (cloud);
   grid.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 103);
+  EXPECT_EQ (int (output.size ()), 103);
   EXPECT_EQ (int (output.width), 103);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -583,7 +583,7 @@ TEST (VoxelGrid, Filters)
   grid.setFilterLimits (0.05, 0.1);
   grid.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 14);
+  EXPECT_EQ (int (output.size ()), 14);
   EXPECT_EQ (int (output.width), 14);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -600,7 +600,7 @@ TEST (VoxelGrid, Filters)
   grid.setSaveLeafLayout(true);
   grid.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 100);
+  EXPECT_EQ (int (output.size ()), 100);
   EXPECT_EQ (int (output.width), 100);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -651,7 +651,7 @@ TEST (VoxelGrid, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 103);
+  EXPECT_EQ (int (output.size ()), 103);
   EXPECT_EQ (int (output.width), 103);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -662,7 +662,7 @@ TEST (VoxelGrid, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 14);
+  EXPECT_EQ (int (output.size ()), 14);
   EXPECT_EQ (int (output.width), 14);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -681,7 +681,7 @@ TEST (VoxelGrid, Filters)
 
   fromPCLPointCloud2 (output_blob, output);
 
-  EXPECT_EQ (int (output.points.size ()), 100);
+  EXPECT_EQ (int (output.size ()), 100);
   EXPECT_EQ (int (output.width), 100);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -915,7 +915,7 @@ TEST (VoxelGrid_RGB, Filters)
   grid_rgb.setInputCloud (cloud_rgb_ptr_);
   grid_rgb.filter (output_rgb);
 
-  EXPECT_EQ (int (output_rgb.points.size ()), 1);
+  EXPECT_EQ (int (output_rgb.size ()), 1);
   EXPECT_EQ (int (output_rgb.width), 1);
   EXPECT_EQ (int (output_rgb.height), 1);
   EXPECT_EQ (bool (output_rgb.is_dense), true);
@@ -941,7 +941,7 @@ TEST (VoxelGrid_RGB, Filters)
 
   fromPCLPointCloud2 (output_rgb_blob, output_rgb);
 
-  EXPECT_EQ (int (output_rgb.points.size ()), 1);
+  EXPECT_EQ (int (output_rgb.size ()), 1);
   EXPECT_EQ (int (output_rgb.width), 1);
   EXPECT_EQ (int (output_rgb.height), 1);
   EXPECT_EQ (bool (output_rgb.is_dense), true);
@@ -1258,7 +1258,7 @@ TEST (VoxelGridCovariance, Filters)
   grid.setInputCloud (cloud);
   grid.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 23);
+  EXPECT_EQ (int (output.size ()), 23);
   EXPECT_EQ (int (output.width), 23);
   EXPECT_EQ (int (output.height), 1);
   EXPECT_EQ (bool (output.is_dense), true);
@@ -1348,7 +1348,7 @@ TEST (ProjectInliers, Filters)
   proj.setModelCoefficients (coefficients);
   proj.filter (output);
 
-  for (size_t i = 0; i < output.points.size (); ++i)
+  for (size_t i = 0; i < output.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
 
     // Test the pcl::PCLPointCloud2 method
@@ -1363,7 +1363,7 @@ TEST (ProjectInliers, Filters)
 
     fromPCLPointCloud2 (output_blob, output);
 
-    for (size_t i = 0; i < output.points.size (); ++i)
+    for (size_t i = 0; i < output.size (); ++i)
     EXPECT_NEAR (output.points[i].z, 0.0, 1e-4);
   }
 
@@ -1379,12 +1379,12 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem.setMinNeighborsInRadius (14);
   outrem.filter (cloud_out);
 
-  EXPECT_EQ (int (cloud_out.points.size ()), 307);
+  EXPECT_EQ (int (cloud_out.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].x, -0.077893, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].z, -0.021299, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 cloud_out2;
@@ -1395,12 +1395,12 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem2.filter (cloud_out2);
 
   fromPCLPointCloud2 (cloud_out2, cloud_out);
-  EXPECT_EQ (int (cloud_out.points.size ()), 307);
+  EXPECT_EQ (int (cloud_out.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].x, -0.077893, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].z, -0.021299, 1e-4);
 
   // Remove outliers using a spherical density criterion
   RadiusOutlierRemoval<PointXYZ> outrem_(true);
@@ -1409,14 +1409,14 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem_.setMinNeighborsInRadius (14);
   outrem_.filter (cloud_out);
 
-  EXPECT_EQ (int (cloud_out.points.size ()), 307);
+  EXPECT_EQ (int (cloud_out.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
-  EXPECT_EQ (int (cloud_out.points.size ()), cloud->points.size ()-outrem_.getRemovedIndices()->size());
+  EXPECT_EQ (int (cloud_out.size ()), cloud->size ()-outrem_.getRemovedIndices()->size());
 
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].x, -0.077893, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].z, -0.021299, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
   RadiusOutlierRemoval<PCLPointCloud2> outrem2_(true);
@@ -1426,14 +1426,14 @@ TEST (RadiusOutlierRemoval, Filters)
   outrem2_.filter (cloud_out2);
 
   fromPCLPointCloud2 (cloud_out2, cloud_out);
-  EXPECT_EQ (int (cloud_out.points.size ()), 307);
+  EXPECT_EQ (int (cloud_out.size ()), 307);
   EXPECT_EQ (int (cloud_out.width), 307);
   EXPECT_EQ (bool (cloud_out.is_dense), true);
-  EXPECT_EQ (int (cloud_out.points.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
+  EXPECT_EQ (int (cloud_out.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
 
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].x, -0.077893, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].y, 0.16039, 1e-4);
-  EXPECT_NEAR (cloud_out.points[cloud_out.points.size () - 1].z, -0.021299, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].x, -0.077893, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].y, 0.16039, 1e-4);
+  EXPECT_NEAR (cloud_out.points[cloud_out.size () - 1].z, -0.021299, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1763,22 +1763,22 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem.setStddevMulThresh (1.0);
   outrem.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 352);
+  EXPECT_EQ (int (output.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.034667, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.15131, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.00071029, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.034667, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.15131, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.00071029, 1e-4);
 
   outrem.setNegative (true);
   outrem.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.07793, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.07793, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.17516, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.0444, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
   PCLPointCloud2 output2;
@@ -1790,24 +1790,24 @@ TEST (StatisticalOutlierRemoval, Filters)
 
   fromPCLPointCloud2 (output2, output);
 
-  EXPECT_EQ (int (output.points.size ()), 352);
+  EXPECT_EQ (int (output.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.034667, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.15131, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.00071029, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.034667, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.15131, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.00071029, 1e-4);
 
   outrem2.setNegative (true);
   outrem2.filter (output2);
 
   fromPCLPointCloud2 (output2, output);
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.07793, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.07793, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.17516, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.0444, 1e-4);
 
   // Remove outliers using a spherical density criterion
   StatisticalOutlierRemoval<PointXYZ> outrem_(true);
@@ -1816,24 +1816,24 @@ TEST (StatisticalOutlierRemoval, Filters)
   outrem_.setStddevMulThresh (1.0);
   outrem_.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 352);
+  EXPECT_EQ (int (output.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size ()-outrem_.getRemovedIndices()->size());
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.034667, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.15131, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.00071029, 1e-4);
+  EXPECT_EQ (int (output.size ()), cloud->size ()-outrem_.getRemovedIndices()->size());
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.034667, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.15131, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.00071029, 1e-4);
 
   outrem_.setNegative (true);
   outrem_.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()) ,cloud->points.size ()-outrem_.getRemovedIndices()->size());
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.07793, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
+  EXPECT_EQ (int (output.size ()) ,cloud->size ()-outrem_.getRemovedIndices()->size());
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.07793, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.17516, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.0444, 1e-4);
 
   // Test the pcl::PCLPointCloud2 method
   StatisticalOutlierRemoval<PCLPointCloud2> outrem2_(true);
@@ -1844,26 +1844,26 @@ TEST (StatisticalOutlierRemoval, Filters)
 
   fromPCLPointCloud2 (output2, output);
 
-  EXPECT_EQ (int (output.points.size ()), 352);
+  EXPECT_EQ (int (output.size ()), 352);
   EXPECT_EQ (int (output.width), 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.034667, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.15131, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.00071029, 1e-4);
+  EXPECT_EQ (int (output.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.034667, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.15131, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.00071029, 1e-4);
 
   outrem2_.setNegative (true);
   outrem2_.filter (output2);
 
   fromPCLPointCloud2 (output2, output);
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()) - 352);
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()) - 352);
   EXPECT_EQ (int (output.width), int (cloud->width) - 352);
   EXPECT_EQ (bool (output.is_dense), true);
-  EXPECT_EQ (int (output.points.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.07793, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.17516, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, -0.0444, 1e-4);
+  EXPECT_EQ (int (output.size ()), cloud_blob->width*cloud_blob->height-outrem2_.getRemovedIndices()->size());
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.07793, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.17516, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, -0.0444, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1897,10 +1897,10 @@ TEST (ConditionalRemoval, Filters)
   condrem.filter (output);
 
   EXPECT_EQ (bool (output.isOrganized ()), false);
-  EXPECT_EQ (int (output.points.size ()), 28);
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.087292, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.103140, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, 0.020825, 1e-4);
+  EXPECT_EQ (int (output.size ()), 28);
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.087292, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.103140, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, 0.020825, 1e-4);
   EXPECT_EQ (bool (output.is_dense), true);
 
   // try the not dense version
@@ -1908,7 +1908,7 @@ TEST (ConditionalRemoval, Filters)
   condrem.filter (output);
 
   int num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (size_t i = 0; i < output.size (); i++)
   {
     if (pcl_isfinite (output.points[i].x) &&
         pcl_isfinite (output.points[i].y) &&
@@ -1917,7 +1917,7 @@ TEST (ConditionalRemoval, Filters)
   }
 
   EXPECT_EQ (bool (output.isOrganized ()), bool (cloud->isOrganized ()));
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 28);
@@ -1933,11 +1933,11 @@ TEST (ConditionalRemoval, Filters)
   condrem_.filter (output);
 
   EXPECT_EQ (bool (output.isOrganized ()), false);
-  EXPECT_EQ (int (output.points.size ()), 28);
-  EXPECT_EQ (int (output.points.size ()), cloud->points.size()-condrem_.getRemovedIndices()->size());
-  EXPECT_NEAR (output.points[output.points.size () - 1].x, -0.087292, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].y, 0.103140, 1e-4);
-  EXPECT_NEAR (output.points[output.points.size () - 1].z, 0.020825, 1e-4);
+  EXPECT_EQ (int (output.size ()), 28);
+  EXPECT_EQ (int (output.size ()), cloud->size()-condrem_.getRemovedIndices()->size());
+  EXPECT_NEAR (output.points[output.size () - 1].x, -0.087292, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].y, 0.103140, 1e-4);
+  EXPECT_NEAR (output.points[output.size () - 1].z, 0.020825, 1e-4);
   EXPECT_EQ (bool (output.is_dense), true);
 
   // try the not dense version
@@ -1945,7 +1945,7 @@ TEST (ConditionalRemoval, Filters)
   condrem_.filter (output);
 
   num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (size_t i = 0; i < output.size (); i++)
   {
     if (pcl_isfinite (output.points[i].x) &&
         pcl_isfinite (output.points[i].y) &&
@@ -1954,12 +1954,12 @@ TEST (ConditionalRemoval, Filters)
   }
 
   EXPECT_EQ (bool (output.isOrganized ()), bool (cloud->isOrganized ()));
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 28);
   EXPECT_EQ (bool (output.is_dense), false);
-  EXPECT_EQ (int (num_not_nan), cloud->points.size()-condrem_.getRemovedIndices()->size());
+  EXPECT_EQ (int (num_not_nan), cloud->size()-condrem_.getRemovedIndices()->size());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1971,7 +1971,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   // build some indices
   boost::shared_ptr<vector<int> > indices (new vector<int> (2));
   (*indices)[0] = 0;
-  (*indices)[1] = static_cast<int> (cloud->points.size ()) - 1;
+  (*indices)[1] = static_cast<int> (cloud->size ()) - 1;
 
   // build a condition which is always true
   ConditionAnd<PointXYZ>::Ptr true_cond (new ConditionAnd<PointXYZ> ());
@@ -1988,7 +1988,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   condrem2.setKeepOrganized (false);
   condrem2.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
   EXPECT_EQ (int (output.height), 1);
 
@@ -1996,9 +1996,9 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[1].z);
 
   // try the not dense version
   condrem2.setKeepOrganized (true);
@@ -2008,12 +2008,12 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[output.points.size () - 1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[output.points.size () - 1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[output.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[output.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[output.size () - 1].z);
 
   int num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (size_t i = 0; i < output.size (); i++)
   {
     if (pcl_isfinite (output.points[i].x) &&
         pcl_isfinite (output.points[i].y) &&
@@ -2021,7 +2021,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
       num_not_nan++;
   }
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 2);
@@ -2036,7 +2036,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
   condrem2_.setKeepOrganized (false);
   condrem2_.filter (output);
 
-  EXPECT_EQ (int (output.points.size ()), 2);
+  EXPECT_EQ (int (output.size ()), 2);
   EXPECT_EQ (int (output.width), 2);
   EXPECT_EQ (int (output.height), 1);
 
@@ -2044,11 +2044,11 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[1].z);
 
-  EXPECT_EQ (int (output.points.size ()), int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
+  EXPECT_EQ (int (output.size ()), int (indices->size ()) - int (condrem2_.getRemovedIndices ()->size ()));
 
   // try the not dense version
   condrem2_.setKeepOrganized (true);
@@ -2058,12 +2058,12 @@ TEST (ConditionalRemovalSetIndices, Filters)
   EXPECT_EQ (cloud->points[0].y, output.points[0].y);
   EXPECT_EQ (cloud->points[0].z, output.points[0].z);
 
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].x, output.points[output.points.size () - 1].x);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].y, output.points[output.points.size () - 1].y);
-  EXPECT_EQ (cloud->points[cloud->points.size () - 1].z, output.points[output.points.size () - 1].z);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].x, output.points[output.size () - 1].x);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].y, output.points[output.size () - 1].y);
+  EXPECT_EQ (cloud->points[cloud->size () - 1].z, output.points[output.size () - 1].z);
 
   num_not_nan = 0;
-  for (size_t i = 0; i < output.points.size (); i++)
+  for (size_t i = 0; i < output.size (); i++)
   {
     if (pcl_isfinite (output.points[i].x) &&
         pcl_isfinite (output.points[i].y) &&
@@ -2071,7 +2071,7 @@ TEST (ConditionalRemovalSetIndices, Filters)
       num_not_nan++;
   }
 
-  EXPECT_EQ (int (output.points.size ()), int (cloud->points.size ()));
+  EXPECT_EQ (int (output.size ()), int (cloud->size ()));
   EXPECT_EQ (int (output.width), int (cloud->width));
   EXPECT_EQ (int (output.height), int (cloud->height));
   EXPECT_EQ (num_not_nan, 2);
@@ -2098,7 +2098,7 @@ TEST (SamplingSurfaceNormal, Filters)
     }
   }
   incloud->width = 1;
-  incloud->height = uint32_t (incloud->points.size ());
+  incloud->height = uint32_t (incloud->size ());
 
   pcl::SamplingSurfaceNormal <pcl::PointNormal> ssn_filter;
   ssn_filter.setInputCloud (incloud);
@@ -2106,7 +2106,7 @@ TEST (SamplingSurfaceNormal, Filters)
   ssn_filter.filter (outcloud);
 
   // All the sampled points should have normals along the direction of Z axis
-  for (unsigned int i = 0; i < outcloud.points.size (); i++)
+  for (unsigned int i = 0; i < outcloud.size (); i++)
   {
     EXPECT_NEAR (outcloud.points[i].normal[0], 0, 1e-3);
     EXPECT_NEAR (outcloud.points[i].normal[1], 0, 1e-3);
@@ -2132,7 +2132,7 @@ TEST (ShadowPoints, Filters)
   input->points.push_back (pt);
 
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<uint32_t> (input->size ());
 
 	NormalEstimation<PointXYZ, PointNormal> ne;
 	ne.setInputCloud (input);
@@ -2153,10 +2153,10 @@ TEST (ShadowPoints, Filters)
   spfilter.filter (output);
 
   // Should filter out the one shadow point that was added.
-  EXPECT_EQ (int (output.points.size ()), 10000);
+  EXPECT_EQ (int (output.size ()), 10000);
   pcl::IndicesConstPtr removed = spfilter.getRemovedIndices ();
   EXPECT_EQ (int (removed->size ()), 1);
-  EXPECT_EQ (removed->at (0), output.points.size ());
+  EXPECT_EQ (removed->at (0), output.size ());
   // Try organized
   spfilter.setKeepOrganized (true);
   spfilter.filter (output);
@@ -2169,7 +2169,7 @@ TEST (ShadowPoints, Filters)
   spfilter.setKeepOrganized (false);
   spfilter.setNegative (true);
   spfilter.filter (output);
-  EXPECT_EQ (int (output.points.size ()), 1);
+  EXPECT_EQ (int (output.size ()), 1);
   EXPECT_EQ (output.at (0).x, pt.x);
   EXPECT_EQ (output.at (0).y, pt.y);
   EXPECT_EQ (output.at (0).z, pt.z);
@@ -2199,7 +2199,7 @@ TEST (FrustumCulling, Filters)
     }
   }
   input->width = 1;
-  input->height = static_cast<uint32_t> (input->points.size ());
+  input->height = static_cast<uint32_t> (input->size ());
 
   pcl::FrustumCulling<pcl::PointXYZ> fc (true); // Extract removed indices
   fc.setInputCloud (input);
@@ -2229,7 +2229,7 @@ TEST (FrustumCulling, Filters)
   fc.filter (*output);
   
   // Should filter all points in the input cloud
-  EXPECT_EQ (output->points.size (), input->points.size ());
+  EXPECT_EQ (output->size (), input->size ());
   pcl::IndicesConstPtr removed;
   removed = fc.getRemovedIndices ();
   EXPECT_EQ (int (removed->size ()), 0);
@@ -2293,7 +2293,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
   // apply it
   condrem.filter (output);
 
-  EXPECT_EQ (10, int (output.points.size ()));
+  EXPECT_EQ (10, int (output.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
@@ -2308,7 +2308,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 
   condrem.filter (output);
 
-  EXPECT_EQ (4, int (output.points.size ()));
+  EXPECT_EQ (4, int (output.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
@@ -2329,7 +2329,7 @@ TEST (ConditionalRemovalTfQuadraticXYZComparison, Filters)
 
   condrem.filter (output);
 
-  EXPECT_EQ (6, int (output.points.size ()));
+  EXPECT_EQ (6, int (output.size ()));
 
   EXPECT_EQ (input->points[0].x, output.points[0].x);
   EXPECT_EQ (input->points[0].y, output.points[0].y);
@@ -2654,7 +2654,7 @@ main (int argc, char** argv)
   loadPCDFile (file_name, *cloud_blob);
   fromPCLPointCloud2 (*cloud_blob, *cloud);
 
-  indices_.resize (cloud->points.size ());
+  indices_.resize (cloud->size ());
   for (int i = 0; i < static_cast<int> (indices_.size ()); ++i)
     indices_[i] = i;
 

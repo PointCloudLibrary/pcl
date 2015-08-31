@@ -134,7 +134,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
     if (delta_p_norm == 0 || delta_p_norm != delta_p_norm)
     {
-      trans_probability_ = score / static_cast<double> (input_->points.size ());
+      trans_probability_ = score / static_cast<double> (input_->size ());
       converged_ = delta_p_norm == delta_p_norm;
       return;
     }
@@ -168,7 +168,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
 
   // Store transformation probability.  The realtive differences within each scan registration are accurate
   // but the normalization constants need to be modified for it to be globally accurate
-  trans_probability_ = score / static_cast<double> (input_->points.size ());
+  trans_probability_ = score / static_cast<double> (input_->size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +196,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives 
   computeAngleDerivatives (p);
 
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
-  for (size_t idx = 0; idx < input_->points.size (); idx++)
+  for (size_t idx = 0; idx < input_->size (); idx++)
   {
     x_trans_pt = trans_cloud.points[idx];
 
@@ -411,7 +411,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eig
   // Precompute Angular Derivatives unessisary because only used after regular derivative calculation
 
   // Update hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
-  for (size_t idx = 0; idx < input_->points.size (); idx++)
+  for (size_t idx = 0; idx < input_->size (); idx++)
   {
     x_trans_pt = trans_cloud.points[idx];
 

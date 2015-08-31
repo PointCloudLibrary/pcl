@@ -94,7 +94,7 @@ namespace pcl
 
             void generateColor()
             {
-                size_t cloud_size = cloud->points.size();
+                size_t cloud_size = cloud->size();
                 for(size_t i = 0; i < cloud_size; ++i)
                 {
                     PointXYZ& p = cloud->points[i];
@@ -130,7 +130,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                size_t cloud_size = cloud->points.size();
+                size_t cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
@@ -149,7 +149,7 @@ namespace pcl
                 KdTreeFLANN<PointXYZ>::Ptr kdtree(new KdTreeFLANN<PointXYZ>);
                 kdtree->setInputCloud(cloud);                
                 
-                size_t cloud_size = cloud->points.size();
+                size_t cloud_size = cloud->size();
 
                 std::vector<float> dists;
                 neighbors_all.resize(cloud_size);
@@ -187,7 +187,7 @@ namespace pcl
             void generateIndices(size_t step = 100)
             {
                 indices->clear();
-                for(size_t i = 0; i < cloud->points.size(); i += step)
+                for(size_t i = 0; i < cloud->size(); i += step)
                     indices->push_back(i);                
             }
 

@@ -176,14 +176,14 @@ int main (int argc, char** argv)
     double keypoint_extraction_start_time = pcl::getTime();
     narf_keypoint_detector.compute (keypoint_indices);
     double keypoint_extraction_time = pcl::getTime()-keypoint_extraction_start_time;
-    std::cout << "Found "<<keypoint_indices.points.size ()<<" key points. "
+    std::cout << "Found "<<keypoint_indices.size ()<<" key points. "
               << "This took "<<1000.0*keypoint_extraction_time<<"ms.\n";
     
     // ----------------------------------------------
     // -----Show keypoints in range image widget-----
     // ----------------------------------------------
     range_image_widget.showRangeImage (range_image_planar, 0.5f, 10.0f);
-    //for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+    //for (size_t i=0; i<keypoint_indices.size (); ++i)
       //range_image_widget.markPoint (keypoint_indices.points[i]%range_image_planar.width,
                                     //keypoint_indices.points[i]/range_image_planar.width,
                                     //pcl::visualization::Vector3ub (0,255,0));
@@ -196,8 +196,8 @@ int main (int argc, char** argv)
     if (!viewer.updatePointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image"))
       viewer.addPointCloud<pcl::PointWithRange> (range_image_planar_ptr, color_handler_cloud, "range image");
     
-    keypoints_cloud.points.resize (keypoint_indices.points.size ());
-    for (size_t i=0; i<keypoint_indices.points.size (); ++i)
+    keypoints_cloud.points.resize (keypoint_indices.size ());
+    for (size_t i=0; i<keypoint_indices.size (); ++i)
       keypoints_cloud.points[i].getVector3fMap () =
         range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_handler_keypoints

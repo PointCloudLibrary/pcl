@@ -382,7 +382,7 @@ class HRCSSegmentation
       Eigen::Vector4f ground_plane_params (1.0, 0.0, 0.0, 1.0);
       Eigen::Vector4f ground_centroid (0.0, 0.0, 0.0, 0.0);
       
-      if (ground_cloud->points.size () > 0)
+      if (ground_cloud->size () > 0)
       {
         ground_centroid = centroids[0];
         ground_plane_params = Eigen::Vector4f (model_coefficients[0].values[0], model_coefficients[0].values[1], model_coefficients[0].values[2], model_coefficients[0].values[3]);
@@ -391,7 +391,7 @@ class HRCSSegmentation
       if (detect_obstacles)
       {
         pcl::PointCloud<PointT>::CloudVectorType clusters;
-        if (ground_cloud->points.size () > 0)
+        if (ground_cloud->size () > 0)
         {
           std::vector<bool> plane_labels;
           plane_labels.resize (region_indices.size (), false);
@@ -451,7 +451,7 @@ class HRCSSegmentation
       }
 
       // note the NAN points in the image as well
-      for (size_t i = 0; i < cloud->points.size (); i++)
+      for (size_t i = 0; i < cloud->size (); i++)
       {
         if (!pcl::isFinite (cloud->points[i]))
         {
@@ -504,14 +504,14 @@ class HRCSSegmentation
           if (!viewer->updatePointCloud (prev_ground_image, "cloud"))
             viewer->addPointCloud (prev_ground_image, "cloud");
           
-          if (prev_normal_cloud->points.size () > 1000 && display_normals)
+          if (prev_normal_cloud->size () > 1000 && display_normals)
           {  
             viewer->removePointCloud ("normals");
             viewer->addPointCloudNormals<PointT, pcl::Normal>(prev_ground_image, prev_normal_cloud, 10, 0.15f, "normals");
             viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.5, "normals");
           }
           
-          if (prev_cloud->points.size () > 1000)
+          if (prev_cloud->size () > 1000)
           {
             image_viewer->addRGBImage<PointT>(prev_ground_image, "rgb_image", 0.3);
           }

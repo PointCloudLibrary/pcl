@@ -160,7 +160,7 @@ pcl::gpu::people::PeopleDetector::process (const pcl::PointCloud<PointTC>::Const
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(size_t i = 0; i < cloud->points.size(); ++i)
+  for(size_t i = 0; i < cloud->size(); ++i)
   {
     cloud_host_.points[i].x = cloud->points[i].x;
     cloud_host_.points[i].y = cloud->points[i].y;
@@ -249,7 +249,7 @@ pcl::gpu::people::PeopleDetector::processProb (const pcl::PointCloud<PointTC>::C
 
   const float qnan = std::numeric_limits<float>::quiet_NaN();
 
-  for(size_t i = 0; i < cloud->points.size(); ++i)
+  for(size_t i = 0; i < cloud->size(); ++i)
   {
     cloud_host_color_.points[i].x  = cloud_host_.points[i].x = cloud->points[i].x;
     cloud_host_color_.points[i].y  = cloud_host_.points[i].y = cloud->points[i].y;

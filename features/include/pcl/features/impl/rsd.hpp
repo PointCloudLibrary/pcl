@@ -267,7 +267,7 @@ pcl::RSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   {
     // Reserve space for the output histogram dataset
     histograms_.reset (new std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> >);
-    histograms_->reserve (output.points.size ());
+    histograms_->reserve (output.size ());
     
     // Iterating over the entire index vector
     for (size_t idx = 0; idx < indices_->size (); ++idx)

@@ -80,24 +80,24 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSm
                                                                                         unsigned int min_pts_per_cluster,
                                                                                         unsigned int max_pts_per_cluster)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
-  if (cloud.points.size () != normals.points.size ())
+  if (cloud.size () != normals.size ())
   {
-    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.points.size (), normals.points.size ());
+    PCL_ERROR ("[pcl::extractEuclideanClusters] Number of points in the input point cloud (%lu) different than normals (%lu)!\n", cloud.size (), normals.size ());
     return;
   }
 
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
   // Process all points in the indices vector
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
     if (processed[i])
       continue;
@@ -163,8 +163,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurva
                                                                                         std::vector<int> &indices_out, std::vector<int> &indices_in,
                                                                                         float threshold)
 {
-  indices_out.resize (cloud.points.size ());
-  indices_in.resize (cloud.points.size ());
+  indices_out.resize (cloud.size ());
+  indices_in.resize (cloud.size ());
 
   size_t in, out;
   in = out = 0;
@@ -205,8 +205,8 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
 
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
-  grid->points.resize (processed->points.size ());
-  for (size_t k = 0; k < processed->points.size (); k++)
+  grid->points.resize (processed->size ());
+  for (size_t k = 0; k < processed->size (); k++)
     grid->points[k].getVector4fMap () = processed->points[k].getVector4fMap ();
 
   pcl::transformPointCloud (*grid, *grid, transformPC);
@@ -237,7 +237,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   scatter.setZero ();
   float sum_w = 0.f;
 
-  //for (int k = 0; k < static_cast<intgrid->points[k].getVector3fMap ();> (grid->points.size ()); k++)
+  //for (int k = 0; k < static_cast<intgrid->points[k].getVector3fMap ();> (grid->size ()); k++)
   for (int k = 0; k < static_cast<int> (indices.indices.size ()); k++)
   {
     Eigen::Vector3f pvector = grid->points[indices.indices[k]].getVector3fMap ();
@@ -263,7 +263,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::sgurf (Eigen::Vector3f & c
   s_xplus = s_xminus = s_yplus = s_yminus = 0.f;
 
   //disambiguate rf using all points
-  for (int k = 0; k < static_cast<int> (grid->points.size ()); k++)
+  for (int k = 0; k < static_cast<int> (grid->size ()); k++)
   {
     Eigen::Vector3f pvector = grid->points[k].getVector3fMap ();
     float dist_x, dist_y;
@@ -412,7 +412,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
 
       float hist_incr;
       if (normalize_bins_)
-        hist_incr = 100.0f / static_cast<float> (grid->points.size () - 1);
+        hist_incr = 100.0f / static_cast<float> (grid->size () - 1);
       else
         hist_incr = 1.0f;
 
@@ -420,7 +420,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       float sigma = 0.01f; //1cm
       float sigma_sq = sigma * sigma;
 
-      for (int k = 0; k < static_cast<int> (grid->points.size ()); k++)
+      for (int k = 0; k < static_cast<int> (grid->size ()); k++)
       {
         Eigen::Vector4f p = grid->points[k].getVector4fMap ();
         p[3] = 0.f;
@@ -517,12 +517,12 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       }
 
       ourcvfh_output.points.push_back (vfh_signature.points[0]);
-      ourcvfh_output.width = ourcvfh_output.points.size ();
+      ourcvfh_output.width = ourcvfh_output.size ();
       delete[] weights;
     }
   }
 
-  if (ourcvfh_output.points.size ())
+  if (ourcvfh_output.size ())
   {
     ourcvfh_output.height = 1;
   }
@@ -544,7 +544,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     output.points.clear ();
     return;
   }
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -578,7 +578,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
   std::vector<pcl::PointIndices> clusters;
 
-  if (normals_filtered_cloud->points.size () >= min_points_)
+  if (normals_filtered_cloud->size () >= min_points_)
   {
     //recompute normals and use them for clustering
     {

@@ -87,7 +87,7 @@ pcl::search::Search<PointT>::nearestKSearch (
     const PointCloud &cloud, int index, int k,
     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
 {
-  assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
+  assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in nearestKSearch!");
   return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
 }
 
@@ -100,7 +100,7 @@ pcl::search::Search<PointT>::nearestKSearch (
 {
   if (indices_ == NULL)
   {
-    assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
+    assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in nearestKSearch!");
     return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
   }
   else
@@ -142,7 +142,7 @@ pcl::search::Search<PointT>::radiusSearch (
     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances,
     unsigned int max_nn) const
 {
-  assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
+  assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in radiusSearch!");
   return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
 }
 
@@ -154,7 +154,7 @@ pcl::search::Search<PointT>::radiusSearch (
 {
   if (indices_ == NULL)
   {
-    assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
+    assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in radiusSearch!");
     return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
   }
   else

@@ -68,7 +68,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
 
-          for (size_t dd = 0; dd < signature->points.size (); dd++)
+          for (size_t dd = 0; dd < signature->size (); dd++)
           {
             descr_model.keypoint_id = static_cast<int> (dd);
             descr_model.descr.resize (size_feat);
@@ -173,7 +173,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             keypoints_sstr << path << "/keypoint_indices_" << v << ".pcd";
 
             /*boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
-            indices->resize (keypoints.points.size ());
+            indices->resize (keypoints.size ());
             for (size_t kk = 0; kk < indices->size (); kk++)
               (*indices)[kk] = keypoints.points[kk];
             typename pcl::PointCloud<PointInT> keypoints_pointcloud;
@@ -208,7 +208,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     //pcl::PointCloud<int> keypoints_input;
     PointInTPtr keypoints_pointcloud;
 
-    if (signatures_ != 0 && processed_ != 0 && (signatures_->size () == keypoints_pointcloud->points.size ()))
+    if (signatures_ != 0 && processed_ != 0 && (signatures_->size () == keypoints_pointcloud->size ()))
     {
       keypoints_pointcloud = keypoints_input_;
       signatures = signatures_;
@@ -233,14 +233,14 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     }
 
-    std::cout << "Number of keypoints:" << keypoints_pointcloud->points.size () << std::endl;
+    std::cout << "Number of keypoints:" << keypoints_pointcloud->size () << std::endl;
 
     int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
     //feature matching and object hypotheses
     std::map<std::string, ObjectHypothesis> object_hypotheses;
     {
-      for (size_t idx = 0; idx < signatures->points.size (); idx++)
+      for (size_t idx = 0; idx < signatures->size (); idx++)
       {
         float* hist = signatures->points[idx].histogram;
         std::vector<float> std_hist (hist, hist + size_feat);
@@ -268,7 +268,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           ObjectHypothesis oh = (*it_map).second;
           oh.correspondences_pointcloud->points.push_back (model_keypoint);
           oh.correspondences_to_inputcloud->push_back (
-                                                       pcl::Correspondence (static_cast<int> (oh.correspondences_pointcloud->points.size () - 1),
+                                                       pcl::Correspondence (static_cast<int> (oh.correspondences_pointcloud->size () - 1),
                                                                             static_cast<int> (idx), distances[0][0]));
           oh.feature_distances_->push_back (distances[0][0]);
 

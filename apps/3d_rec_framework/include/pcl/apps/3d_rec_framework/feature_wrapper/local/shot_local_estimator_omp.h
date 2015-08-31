@@ -87,9 +87,9 @@ namespace pcl
           }
 
           this->computeKeypoints(processed, keypoints, normals);
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
+          std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->size () == 0)
           {
             PCL_WARN("SHOTLocalEstimationOMP :: No keypoints were found\n");
             return false;
@@ -114,14 +114,14 @@ namespace pcl
             shot_estimate.compute (*shots);
           }
 
-          signatures->resize (shots->points.size ());
-          signatures->width = static_cast<int> (shots->points.size ());
+          signatures->resize (shots->size ());
+          signatures->width = static_cast<int> (shots->size ());
           signatures->height = 1;
 
           int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
           int good = 0;
-          for (size_t k = 0; k < shots->points.size (); k++)
+          for (size_t k = 0; k < shots->size (); k++)
           {
 
             int NaNs = 0;

@@ -151,9 +151,9 @@ TEST (PCL, NormalEstimation)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (size_t i = 0; i < normals->size (); ++i)
   {
     EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
     EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
@@ -171,14 +171,14 @@ TEST (PCL, NormalEstimation)
   surfaceptr->points.resize (640 * 480);
   surfaceptr->width = 640;
   surfaceptr->height = 480;
-  EXPECT_EQ (surfaceptr->points.size (), surfaceptr->width * surfaceptr->height);
+  EXPECT_EQ (surfaceptr->size (), surfaceptr->width * surfaceptr->height);
   n.setSearchSurface (surfaceptr);
   tree.reset ();
   n.setSearchMethod (tree);
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -202,9 +202,9 @@ TEST (PCL, NormalEstimationOpenMP)
 
   // estimate
   n.compute (*normals);
-  EXPECT_EQ (normals->points.size (), indices.size ());
+  EXPECT_EQ (normals->size (), indices.size ());
 
-  for (size_t i = 0; i < normals->points.size (); ++i)
+  for (size_t i = 0; i < normals->size (); ++i)
   {
     EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
     EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
@@ -229,7 +229,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

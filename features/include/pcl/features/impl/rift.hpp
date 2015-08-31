@@ -148,7 +148,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeFeature (PointCloudO
     output.points.clear ();
     return;
   }
-  if (gradient_->points.size () != surface_->points.size ())
+  if (gradient_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] ", getClassName ().c_str ());
     PCL_ERROR ("The number of points in the input dataset differs from the number of points in the gradient!\n");

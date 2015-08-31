@@ -85,7 +85,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const int index, 
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= cloud.points.size ())
+  if (index < 0 || index >= cloud.size ())
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -170,7 +170,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud, const std::string &field_name, const int index, 
     const std::string &id)
 {
-  if (index < 0 || index >= cloud.points.size ())
+  if (index < 0 || index >= cloud.size ())
   {
     PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);

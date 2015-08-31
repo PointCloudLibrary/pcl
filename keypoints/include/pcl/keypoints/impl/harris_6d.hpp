@@ -223,12 +223,12 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   else
   {
     output.points.clear ();
-    output.points.reserve (response->points.size());
+    output.points.reserve (response->size());
 
 #ifdef _OPENMP
   #pragma omp parallel for num_threads(threads_) default(shared)
 #endif  
-    for (size_t idx = 0; idx < response->points.size (); ++idx)
+    for (size_t idx = 0; idx < response->size (); ++idx)
     {
       if (!isFinite (response->points[idx]) || response->points[idx].intensity < threshold_)
         continue;
@@ -259,7 +259,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       refineCorners (output);
 
     output.height = 1;
-    output.width = static_cast<uint32_t> (output.points.size());
+    output.width = static_cast<uint32_t> (output.size());
     output.is_dense = true;
   }
 }

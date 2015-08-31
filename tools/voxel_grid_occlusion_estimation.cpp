@@ -93,7 +93,7 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
   size_t i;
   double s = voxelSideLen/2.0;
   
-  for (i = 0; i < voxelCenters.points.size (); i++)
+  for (i = 0; i < voxelCenters.size (); i++)
   {
     double x = voxelCenters.points[i].x;
     double y = voxelCenters.points[i].y;
@@ -237,7 +237,7 @@ int main (int argc, char** argv)
   CloudT::Ptr cloud_centroids (new CloudT (input_cloud->size ()));
   cloud_centroids->is_dense = false;
 
-  for (size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (size_t i = 0; i < input_cloud->size (); ++i)
   {
     float x = input_cloud->points[i].x;
     float y = input_cloud->points[i].y;

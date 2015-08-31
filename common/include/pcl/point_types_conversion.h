@@ -249,7 +249,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       Intensity& p = out.points[i];
       PointRGBtoI (in.points[i], p);
@@ -267,7 +267,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       Intensity8u& p = out.points[i];
       PointRGBtoI (in.points[i], p);
@@ -285,7 +285,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       Intensity32u& p = out.points[i];
       PointRGBtoI (in.points[i], p);
@@ -303,7 +303,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       PointXYZHSV& p = out.points[i];
       PointXYZRGBtoXYZHSV (in.points[i], p);
@@ -321,7 +321,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       PointXYZHSV& p = out.points[i];
       PointXYZRGBAtoXYZHSV (in.points[i], p);
@@ -339,7 +339,7 @@ namespace pcl
     out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
       PointXYZI& p = out.points[i];
       PointXYZRGBtoXYZI (in.points[i], p);

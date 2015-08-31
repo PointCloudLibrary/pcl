@@ -60,7 +60,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
     return;
   }
 
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
     output.width = output.height = 0;
@@ -100,7 +100,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   float sum_w = 0, w = 0;
   int bin = 0;
-  for (size_t i = 0; i < grid.points.size (); ++i)
+  for (size_t i = 0; i < grid.size (); ++i)
   {
     bin = static_cast<int> ((((atan2 (grid.points[i].normal_y, grid.points[i].normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
     w = sqrtf (grid.points[i].normal_y * grid.points[i].normal_y + grid.points[i].normal_x * grid.points[i].normal_x);

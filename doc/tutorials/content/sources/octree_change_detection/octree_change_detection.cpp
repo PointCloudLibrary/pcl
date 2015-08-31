@@ -20,7 +20,7 @@ main (int argc, char** argv)
 
   // Generate pointcloud data for cloudA
 
-  for (size_t i = 0; i < cloudA->points.size (); ++i)
+  for (size_t i = 0; i < cloudA->size (); ++i)
   {
     cloudA->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudA->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);
@@ -38,7 +38,7 @@ main (int argc, char** argv)
    
   // Generate pointcloud data for cloudB 
 
-  for (size_t i = 0; i < cloudB->points.size (); ++i)
+  for (size_t i = 0; i < cloudB->size (); ++i)
   {
     cloudB->points[i].x = 64.0f * rand () / (RAND_MAX + 1.0f);
     cloudB->points[i].y = 64.0f * rand () / (RAND_MAX + 1.0f);

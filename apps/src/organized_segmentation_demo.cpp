@@ -64,7 +64,7 @@ void
 displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& normals, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (size_t i  = 0; i < cloud.size (); i++)
   {
     if (normals.points[i].curvature < 0.04)
     {
@@ -89,7 +89,7 @@ void
 displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (size_t i  = 0; i < cloud.size (); i++)
   {
     if (distance_map[i] < 5.0)
     {
@@ -135,7 +135,7 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
   Eigen::Vector4f model = region.getCoefficients ();
   pcl::PointCloud<PointT> poly (egion.getContour ());
   
-  for (size_t i = 0; i < cluster.points.size (); i++)
+  for (size_t i = 0; i < cluster.size (); i++)
   {
     double ptp_dist = fabs (model[0] * cluster.points[i].x +
                             model[1] * cluster.points[i].y +

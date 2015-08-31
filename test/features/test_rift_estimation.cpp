@@ -65,11 +65,11 @@ TEST (PCL, RIFTEstimation)
       cloud_xyzi.points.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
+  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.size ());
 
   // Generate the intensity gradient data
   PointCloud<IntensityGradient> gradient (cloud_xyzi.size ());
-  for (size_t i = 0; i < cloud_xyzi.points.size (); ++i)
+  for (size_t i = 0; i < cloud_xyzi.size (); ++i)
   {
     const PointXYZI &p = cloud_xyzi.points[i];
 

@@ -217,7 +217,7 @@ template <typename PointT, typename NormalT> bool
 pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
 {
   // if user forgot to pass point cloud or if it is empty
-  if ( input_->points.size () == 0 )
+  if ( input_->size () == 0 )
     return (false);
 
   // if normal/smoothness test is on then we need to check if all needed variables and parameters
@@ -225,7 +225,7 @@ pcl::RegionGrowingRGB<PointT, NormalT>::prepareForSegmentation ()
   if (normal_flag_)
   {
     // if user forgot to pass normals or the sizes of point and normal cloud are different
-    if ( normals_ == 0 || input_->points.size () != normals_->points.size () )
+    if ( normals_ == 0 || input_->size () != normals_->size () )
       return (false);
   }
 
@@ -275,8 +275,8 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findPointNeighbours ()
   std::vector<int> neighbours;
   std::vector<float> distances;
 
-  point_neighbours_.resize (input_->points.size (), neighbours);
-  point_distances_.resize (input_->points.size (), distances);
+  point_neighbours_.resize (input_->size (), neighbours);
+  point_distances_.resize (input_->size (), distances);
 
   for (int i_point = 0; i_point < point_number; i_point++)
   {

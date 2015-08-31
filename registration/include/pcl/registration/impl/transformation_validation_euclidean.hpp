@@ -74,7 +74,7 @@ pcl::registration::TransformationValidationEuclidean<PointSource, PointTarget, S
 
   // For each point in the source dataset
   int nr = 0;
-  for (size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (size_t i = 0; i < input_transformed.size (); ++i)
   {
     // Find its nearest neighbor in the target
     tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);

@@ -759,10 +759,10 @@ TEST (PCL, Octree_Pointcloud_Test)
       cloudB->push_back (newPoint);
     }
 
-    ASSERT_EQ(octreeA.getLeafCount(), cloudA->points.size());
+    ASSERT_EQ(octreeA.getLeafCount(), cloudA->size());
 
     // checks for getVoxelDataAtPoint() and isVoxelOccupiedAtPoint() functionality
-    for (i = 0; i < cloudA->points.size (); i++)
+    for (i = 0; i < cloudA->size (); i++)
     {
       ASSERT_EQ(octreeA.isVoxelOccupiedAtPoint(cloudA->points[i]), true);
       octreeA.deleteVoxelAtPoint (cloudA->points[i]);
@@ -823,7 +823,7 @@ TEST (PCL, Octree_Pointcloud_Test)
     ASSERT_EQ(node_count, branch_count + leaf_count);
     ASSERT_EQ(leaf_count, octreeB.getLeafCount ());
 
-    for (i = 0; i < cloudB->points.size (); i++)
+    for (i = 0; i < cloudB->size (); i++)
     {
 
       std::vector<int> pointIdxVec;
@@ -861,7 +861,7 @@ TEST (PCL, Octree_Pointcloud_Density_Test)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
         cloudIn->push_back (PointXYZ (x, y, z));
 
-  cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
+  cloudIn->width = static_cast<uint32_t> (cloudIn->size ());
   cloudIn->height = 1;
 
   OctreePointCloudDensity<PointXYZ> octreeA (1.0f); // low resolution
@@ -900,7 +900,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
       for (float x = 0.05f; x < 7.0f; x += 0.1f)
         cloudIn->push_back (PointXYZ (x, y, z));
 
-  cloudIn->width = static_cast<uint32_t> (cloudIn->points.size ());
+  cloudIn->width = static_cast<uint32_t> (cloudIn->size ());
   cloudIn->height = 1;
 
   OctreePointCloud<PointXYZ> octreeA (1.0f); // low resolution
@@ -922,7 +922,7 @@ TEST (PCL, Octree_Pointcloud_Iterator_Test)
     leafNodeCounter++;
   }
 
-  ASSERT_EQ(indexVector.size(), cloudIn->points.size ());
+  ASSERT_EQ(indexVector.size(), cloudIn->size ());
   ASSERT_EQ(leafNodeCounter, octreeA.getLeafCount());
 
   OctreePointCloud<PointXYZ>::Iterator it2;
@@ -1223,7 +1223,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     k_sqr_distances_bruteforce.clear ();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
           + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
@@ -1299,7 +1299,7 @@ TEST (PCL, Octree_Pointcloud_Box_Search)
     std::vector<int> k_indices;
 
     // generate point cloud
-    for (i = 0; i < cloudIn->points.size(); i++)
+    for (i = 0; i < cloudIn->size(); i++)
     {
       cloudIn->points[i] = PointXYZ (static_cast<float> (10.0 * rand () / RAND_MAX),
                                      static_cast<float> (10.0 * rand () / RAND_MAX),
@@ -1388,7 +1388,7 @@ TEST(PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     double BFdistance = numeric_limits<double>::max ();
     int BFindex = 0;
 
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
           + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
@@ -1463,7 +1463,7 @@ TEST (PCL, Octree_Pointcloud_Neighbours_Within_Radius_Search)
 
     // bruteforce radius search
     vector<int> cloudSearchBruteforce;
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = sqrt (
           (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
@@ -1564,9 +1564,9 @@ TEST (PCL, Octree_Pointcloud_Ray_Traversal)
     octree_search.getIntersectedVoxelIndices (o, dir, indicesInRay);
 
     // check if all voxels in the cloud are penetraded by the ray
-    ASSERT_EQ( voxelsInRay.size (), cloudIn->points.size ());
+    ASSERT_EQ( voxelsInRay.size (), cloudIn->size ());
     // check if all indices of penetrated voxels are in cloud
-    ASSERT_EQ( indicesInRay.size (), cloudIn->points.size ());
+    ASSERT_EQ( indicesInRay.size (), cloudIn->size ());
 
     octree_search.getIntersectedVoxelCenters (o, dir, voxelsInRay2, 1);
     octree_search.getIntersectedVoxelIndices (o, dir, indicesInRay2, 1);

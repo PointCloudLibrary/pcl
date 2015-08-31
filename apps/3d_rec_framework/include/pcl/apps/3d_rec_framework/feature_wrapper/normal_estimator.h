@@ -36,9 +36,9 @@ namespace pcl
           std::vector<int> src_indices;
 
           float sum_distances = 0.0;
-          std::vector<float> avg_distances (input->points.size ());
+          std::vector<float> avg_distances (input->size ());
           // Iterate through the source data set
-          for (size_t i = 0; i < input->points.size (); ++i)
+          for (size_t i = 0; i < input->size (); ++i)
           {
             tree->nearestKSearch (input->points[i], 9, nn_indices, nn_distances);
 
@@ -138,7 +138,7 @@ namespace pcl
             out = in;
           }
 
-          if (out->points.size () == 0)
+          if (out->size () == 0)
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, wont be able to compute normals!\n");
             return;
@@ -168,7 +168,7 @@ namespace pcl
 
           }
 
-          if (out->points.size () == 0)
+          if (out->size () == 0)
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after removing outliers...!\n");
             return;
@@ -205,7 +205,7 @@ namespace pcl
             {
               pcl::ScopeTime t ("check nans...");
               int j = 0;
-              for (size_t i = 0; i < out->points.size (); ++i)
+              for (size_t i = 0; i < out->size (); ++i)
               {
                 if (!pcl_isfinite (out->points[i].x) || !pcl_isfinite (out->points[i].y) || !pcl_isfinite (out->points[i].z))
                   continue;
@@ -214,7 +214,7 @@ namespace pcl
                 j++;
               }
 
-              if (j != static_cast<int> (out->points.size ()))
+              if (j != static_cast<int> (out->size ()))
               {
                 PCL_ERROR("Contain nans...");
               }
@@ -242,7 +242,7 @@ namespace pcl
           {
             pcl::ScopeTime t ("check nans...");
             int j = 0;
-            for (size_t i = 0; i < normals->points.size (); ++i)
+            for (size_t i = 0; i < normals->size (); ++i)
             {
               if (!pcl_isfinite (normals->points[i].normal_x) || !pcl_isfinite (normals->points[i].normal_y)
                   || !pcl_isfinite (normals->points[i].normal_z))
@@ -266,7 +266,7 @@ namespace pcl
             //is is organized, we set the xyz points to NaN
             pcl::ScopeTime t ("check nans organized...");
             bool NaNs = false;
-            for (size_t i = 0; i < normals->points.size (); ++i)
+            for (size_t i = 0; i < normals->size (); ++i)
             {
               if (pcl_isfinite (normals->points[i].normal_x) && pcl_isfinite (normals->points[i].normal_y)
                   && pcl_isfinite (normals->points[i].normal_z))
@@ -284,7 +284,7 @@ namespace pcl
             }
           }
 
-          /*for (size_t i = 0; i < out->points.size (); i++)
+          /*for (size_t i = 0; i < out->size (); i++)
           {
             int r, g, b;
             r = static_cast<int> (out->points[i].r);

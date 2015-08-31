@@ -83,9 +83,9 @@ TEST (PCL, MomentInvariantsEstimation)
 
   // estimate
   mi.compute (*moments);
-  EXPECT_EQ (moments->points.size (), indices.size ());
+  EXPECT_EQ (moments->size (), indices.size ());
 
-  for (size_t i = 0; i < moments->points.size (); ++i)
+  for (size_t i = 0; i < moments->size (); ++i)
   {
     EXPECT_NEAR (moments->points[i].j1, 1.59244, 1e-4);
     EXPECT_NEAR (moments->points[i].j2, 0.652063, 1e-4);
@@ -109,7 +109,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

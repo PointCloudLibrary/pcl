@@ -86,7 +86,7 @@ TEST (PCL, CVFHEstimation)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 1);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +116,7 @@ TEST (PCL, CVFHEstimationMilk)
 
   // estimate
   cvfh.compute (*vfhs);
-  EXPECT_EQ (static_cast<int>(vfhs->points.size ()), 2);
+  EXPECT_EQ (static_cast<int>(vfhs->size ()), 2);
 }
 
 /* ---[ */
@@ -142,7 +142,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (size_t i = 0; i < indices.size (); ++i)
   {
     indices[i] = static_cast<int>(i);

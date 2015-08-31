@@ -84,7 +84,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
   detect (&(intensity_data[0]), output.points);
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<uint32_t> (output.size ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ pcl::keypoints::agast::AbstractAgastDetector::detectKeypoints (
   detect (&(intensity_data[0]), output.points);
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<uint32_t> (output.size ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -236,7 +236,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
   }
 
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<uint32_t> (output.size ());
   output.is_dense = input.is_dense;
 }
 

@@ -52,8 +52,8 @@ projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& no
 {
   Eigen::Vector3f norm (normal[0], normal[1], normal[2]); //(region.coefficients_[0], region.coefficients_[1], region.coefficients_[2]); 
   pcl::PointCloud<PointT> projected_cloud;
-  projected_cloud.resize (cloud.points.size ());
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  projected_cloud.resize (cloud.size ());
+  for (size_t i = 0; i < cloud.size (); i++)
   {
     Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
     //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
@@ -92,11 +92,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
     return;
 
   // Check that we got the same number of points and normals
-  if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
+  if (static_cast<int> (normals_->size ()) != static_cast<int> (input_->size ()))
   {
     PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
-               getClassName ().c_str (), input_->points.size (),
-               normals_->points.size ());
+               getClassName ().c_str (), input_->size (),
+               normals_->size ());
     return;
   }
 
@@ -109,7 +109,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   }
 
   // Calculate range part of planes' hessian normal form
-  std::vector<float> plane_d (input_->points.size ());
+  std::vector<float> plane_d (input_->size ());
   
   for (unsigned int i = 0; i < input_->size (); ++i)
     plane_d[i] = input_->points[i].getVector3fMap ().dot (normals_->points[i].getNormalVector3fMap ());
@@ -297,7 +297,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
                                              model_coefficients[i].values[3]);
 
     Eigen::Vector3f vp (0.0, 0.0, 0.0);
-    if (project_points_ && boundary_cloud.points.size () > 0)
+    if (project_points_ && boundary_cloud.size () > 0)
       boundary_cloud = projectToPlaneFromViewpoint (boundary_cloud, model, centroid, vp);
 
     regions[i] = PlanarRegion<PointT> (centroid,

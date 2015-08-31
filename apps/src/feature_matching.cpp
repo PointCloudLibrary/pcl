@@ -236,7 +236,7 @@ void ICCVTutorial<FeatureType>::detectKeypoints (typename pcl::PointCloud<pcl::P
   cout << "keypoint detection..." << std::flush;
   keypoint_detector_->setInputCloud(input);
   keypoint_detector_->compute(*keypoints);
-  cout << "OK. keypoints found: " << keypoints->points.size() << endl;
+  cout << "OK. keypoints found: " << keypoints->size() << endl;
 }
 
 template<typename FeatureType>

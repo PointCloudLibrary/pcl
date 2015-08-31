@@ -567,7 +567,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   cloud_out.width = input_gray.width;
   cloud_out.height = input_gray.height;
-  cloud_out.points.resize (input_gray.points.size ());
+  cloud_out.points.resize (input_gray.size ());
 
   PCL_ASSERT_ERROR_PRINT_RETURN(!gpu_allocator.isCounting(),"retcode=NCV_NULL_PTR", NCV_NULL_PTR);
 
@@ -584,7 +584,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
 
   NCV_SKIP_COND_BEGIN
 
-  for(int i=0; i<input_gray.points.size(); i++)
+  for(int i=0; i<input_gray.size(); i++)
   {
     memcpy(h_src.ptr(), &input_gray.points[i].intensity, sizeof(input_gray.points[i].intensity));
   }
@@ -629,7 +629,7 @@ pcl::gpu::people::FaceDetector::NCVprocess(pcl::PointCloud<pcl::RGB>&           
   PCL_ASSERT_CUDA_RETURN(cudaStreamSynchronize(0), NCV_CUDA_ERROR);
 
   // Copy result back into output cloud
-  for(int i=0; i<cloud_out.points.size(); i++)
+  for(int i=0; i<cloud_out.size(); i++)
   {
     memcpy(&cloud_out.points[i].intensity, h_src.ptr() /* + i * ??? */, sizeof(cloud_out.points[i].intensity));
   }

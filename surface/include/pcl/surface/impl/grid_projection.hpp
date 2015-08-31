@@ -75,7 +75,7 @@ pcl::GridProjection<PointNT>::~GridProjection ()
 template <typename PointNT> void
 pcl::GridProjection<PointNT>::scaleInputDataPoint (double scale_factor)
 {
-  for (size_t i = 0; i < data_->points.size(); ++i)
+  for (size_t i = 0; i < data_->size(); ++i)
   {
     data_->points[i].x /= static_cast<float> (scale_factor);
     data_->points[i].y /= static_cast<float> (scale_factor);
@@ -630,10 +630,10 @@ pcl::GridProjection<PointNT>::reconstructPolygons (std::vector<pcl::Vertices> &p
   // Store the point cloud data into the voxel grid, and at the same time
   // create a hash map to store the information for each cell
   cell_hash_map_.max_load_factor (2.0);
-  cell_hash_map_.rehash (data_->points.size () / static_cast<long unsigned int> (cell_hash_map_.max_load_factor ()));
+  cell_hash_map_.rehash (data_->size () / static_cast<long unsigned int> (cell_hash_map_.max_load_factor ()));
 
   // Go over all points and insert them into the right leaf
-  for (int cp = 0; cp < static_cast<int> (data_->points.size ()); ++cp)
+  for (int cp = 0; cp < static_cast<int> (data_->size ()); ++cp)
   {
     // Check if the point is invalid
     if (!pcl_isfinite (data_->points[cp].x) ||
@@ -741,7 +741,7 @@ pcl::GridProjection<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 
   cloud.points.resize (surface_.size ());
   // Copy the data from surface_ to cloud
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     cloud.points[i].x = surface_[i].x ();
     cloud.points[i].y = surface_[i].y ();

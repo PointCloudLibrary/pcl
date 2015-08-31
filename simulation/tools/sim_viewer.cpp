@@ -464,7 +464,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     // Save in local frame
     range_likelihood_->getPointCloud (pc_out,false,camera_->getPose ());
     // TODO: what to do when there are more than one simulated view?
-    std::cout << pc_out->points.size() << " points written to file\n";
+    std::cout << pc_out->size() << " points written to file\n";
    
     pcl::PCDWriter writer;
     //writer.write (point_cloud_fname, *pc_out, false);  /// ASCII

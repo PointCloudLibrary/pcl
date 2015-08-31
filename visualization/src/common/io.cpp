@@ -71,7 +71,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);

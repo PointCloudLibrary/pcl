@@ -57,7 +57,7 @@ init ()
     for (float y = -0.5f; y <= 0.5f; y += resolution)
       for (float x = -0.5f; x <= 0.5f; x += resolution)
         cloud.points.push_back (PointXYZ (x, y, z));
-  cloud.width  = cloud.points.size ();
+  cloud.width  = cloud.size ();
   cloud.height = 1;
 
   srand (time (NULL));
@@ -142,7 +142,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     k_sqr_distances_bruteforce.clear();
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
           + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) + (cloudIn->points[i].z
@@ -226,7 +226,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
     double BFdistance = numeric_limits<double>::max ();
     int BFindex = 0;
 
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
           + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) + (cloudIn->points[i].z
@@ -268,7 +268,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
   PointXYZ test_point (0.01f, 0.01f, 0.01f);
   unsigned int no_of_neighbors = 20;
   multimap<float, int> sorted_brute_force_result;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     float distance = euclideanDistance (cloud.points[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, (int) i));
@@ -307,7 +307,7 @@ TEST (PCL, KdTreeWrapper_nearestKSearch)
     pcl::search::Search<PointXYZ>* kdtree = new pcl::search::AutotunedSearch<PointXYZ>(pcl::search::KDTREE);
     //kdtree->initSearchDS ();
     kdtree->setInputCloud (cloud_big.makeShared ());
-    for (size_t i = 0; i < cloud_big.points.size (); ++i)
+    for (size_t i = 0; i < cloud_big.size (); ++i)
       kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
   }
 

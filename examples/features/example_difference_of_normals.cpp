@@ -196,7 +196,7 @@ int main (int argc, char *argv[])
   doncloud = doncloud_filtered;
 
   // Save filtered output
-  std::cout << "Filtered Pointcloud: " << doncloud->points.size () << " data points." << std::endl;
+  std::cout << "Filtered Pointcloud: " << doncloud->size () << " data points." << std::endl;
   std::stringstream ss;
   ss << outfile.substr(0,outfile.length()-4) << "_threshold_"<< threshold << "_.pcd";
   writer.write<PointOutT> (ss.str (), *doncloud, false);

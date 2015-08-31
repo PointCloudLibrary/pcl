@@ -103,9 +103,9 @@ namespace pcl
     double max_dist = std::numeric_limits<double>::min ();
     int i_min = -1, i_max = -1;
 
-    for (size_t i = 0; i < cloud.points.size (); ++i)
+    for (size_t i = 0; i < cloud.size (); ++i)
     {
-      for (size_t j = i; j < cloud.points.size (); ++j)
+      for (size_t j = i; j < cloud.size (); ++j)
       {
         // Compute the distance 
         double dist = (cloud.points[i].getVector4fMap () - 

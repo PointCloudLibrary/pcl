@@ -11,24 +11,24 @@ int
 
   // Fill in the CloudIn data
   cloud_in->is_dense = false;
-  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  for (size_t i = 0; i < cloud_in->size (); ++i)
   {
     cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud_in->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
     cloud_in->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
-  std::cout << "Saved " << cloud_in->points.size () << " data points to input:"
+  std::cout << "Saved " << cloud_in->size () << " data points to input:"
       << std::endl;
-  for (size_t i = 0; i < cloud_in->points.size (); ++i) std::cout << "    " <<
+  for (size_t i = 0; i < cloud_in->size (); ++i) std::cout << "    " <<
       cloud_in->points[i].x << " " << cloud_in->points[i].y << " " <<
       cloud_in->points[i].z << std::endl;
   *cloud_out = *cloud_in;
-  std::cout << "size:" << cloud_out->points.size() << std::endl;
-  for (size_t i = 0; i < cloud_in->points.size (); ++i)
+  std::cout << "size:" << cloud_out->size() << std::endl;
+  for (size_t i = 0; i < cloud_in->size (); ++i)
     cloud_out->points[i].x = cloud_in->points[i].x + 0.7f;
-  std::cout << "Transformed " << cloud_in->points.size () << " data points:"
+  std::cout << "Transformed " << cloud_in->size () << " data points:"
       << std::endl;
-  for (size_t i = 0; i < cloud_out->points.size (); ++i)
+  for (size_t i = 0; i < cloud_out->size (); ++i)
     std::cout << "    " << cloud_out->points[i].x << " " <<
       cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
   pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;

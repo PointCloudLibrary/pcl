@@ -90,7 +90,7 @@ pcl::MomentInvariantsEstimation<PointInT, PointOutT>::computePointMomentInvarian
   float mu200 = 0, mu020 = 0, mu002 = 0, mu110 = 0, mu101 = 0, mu011  = 0;
 
   // Iterate over the nearest neighbors set
-  for (size_t nn_idx = 0; nn_idx < cloud.points.size (); ++nn_idx )
+  for (size_t nn_idx = 0; nn_idx < cloud.size (); ++nn_idx )
   {
     // Demean the points
     temp_pt_[0] = cloud.points[nn_idx].x - xyz_centroid_[0];

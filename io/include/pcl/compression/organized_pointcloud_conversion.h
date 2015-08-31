@@ -103,7 +103,7 @@ namespace pcl
       {
         size_t cloud_size, i;
 
-        cloud_size = cloud_arg.points.size ();
+        cloud_size = cloud_arg.size ();
 
         // Clear image data
         disparityData_arg.clear ();
@@ -113,7 +113,7 @@ namespace pcl
         for (i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
-          const PointT& point = cloud_arg.points[i];
+          const PointT& point = cloud_arg[i];
 
           if (pcl::isFinite (point))
           {
@@ -294,7 +294,7 @@ namespace pcl
       {
         size_t cloud_size, i;
 
-        cloud_size = cloud_arg.points.size ();
+        cloud_size = cloud_arg.size ();
 
         // Reset output vectors
         disparityData_arg.clear ();

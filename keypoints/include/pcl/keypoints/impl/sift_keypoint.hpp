@@ -129,7 +129,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
     // Make sure the downsampled cloud still has enough points
     const size_t min_nr_points = 25;
-    if (cloud->points.size () < min_nr_points)
+    if (cloud->size () < min_nr_points)
       break;
 
     // Update the KdTree with the downsampled points
@@ -144,7 +144,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 
   // Set final properties
   output.height = 1;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<uint32_t> (output.size ());
   output.header = input_->header;
   output.sensor_origin_ = input_->sensor_origin_;
   output.sensor_orientation_ = input_->sensor_orientation_;

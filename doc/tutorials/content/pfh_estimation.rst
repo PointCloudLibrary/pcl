@@ -163,7 +163,7 @@ points in the input dataset.
      // Compute the features
      pfh.compute (*pfhs);
 
-     // pfhs->points.size () should have the same size as the input cloud->points.size ()*
+     // pfhs->size () should have the same size as the input cloud->size ()*
    }
 
 The actual **compute** call from the **PFHEstimation** class does nothing internally but::
@@ -203,7 +203,7 @@ resultant histogram as an array of float values.
 
   .. code-block:: cpp
 
-     for (int i = 0; i < normals->points.size(); i++)
+     for (int i = 0; i < normals->size(); i++)
      {
        if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
        {

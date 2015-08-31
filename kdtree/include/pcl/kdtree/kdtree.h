@@ -141,7 +141,7 @@ namespace pcl
       /** \brief Search for k-nearest neighbors for the given query point.
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] cloud the point cloud data
         * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
@@ -158,7 +158,7 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k, 
                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
-        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in nearestKSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in nearestKSearch!");
         return (nearestKSearch (cloud.points[index], k, k_indices, k_sqr_distances));
       }
 
@@ -183,7 +183,7 @@ namespace pcl
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
         * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
@@ -203,7 +203,7 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in nearestKSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in nearestKSearch!");
           return (nearestKSearch (input_->points[index], k, k_indices, k_sqr_distances));
         }
         else
@@ -230,7 +230,7 @@ namespace pcl
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] cloud the point cloud data
         * \param[in] index a \a valid index in \a cloud representing a \a valid (i.e., finite) query point
@@ -249,7 +249,7 @@ namespace pcl
                     std::vector<int> &k_indices, std::vector<float> &k_sqr_distances, 
                     unsigned int max_nn = 0) const
       {
-        assert (index >= 0 && index < static_cast<int> (cloud.points.size ()) && "Out-of-bounds error in radiusSearch!");
+        assert (index >= 0 && index < static_cast<int> (cloud.size ()) && "Out-of-bounds error in radiusSearch!");
         return (radiusSearch(cloud.points[index], radius, k_indices, k_sqr_distances, max_nn));
       }
 
@@ -275,7 +275,7 @@ namespace pcl
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
         * 
         * \attention This method does not do any bounds checking for the input index
-        * (i.e., index >= cloud.points.size () || index < 0), and assumes valid (i.e., finite) data.
+        * (i.e., index >= cloud.size () || index < 0), and assumes valid (i.e., finite) data.
         * 
         * \param[in] index a \a valid index representing a \a valid query point in the dataset given 
         * by \a setInputCloud. If indices were given in setInputCloud, index will be the position in 
@@ -297,7 +297,7 @@ namespace pcl
       {
         if (indices_ == NULL)
         {
-          assert (index >= 0 && index < static_cast<int> (input_->points.size ()) && "Out-of-bounds error in radiusSearch!");
+          assert (index >= 0 && index < static_cast<int> (input_->size ()) && "Out-of-bounds error in radiusSearch!");
           return (radiusSearch (input_->points[index], radius, k_indices, k_sqr_distances, max_nn));
         }
         else

@@ -649,7 +649,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
 
-          if (view->points.size () == 0)
+          if (view->size () == 0)
             PCL_WARN("View has no points!!!\n");
 
           if (noisify_)
@@ -662,7 +662,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             boost::normal_distribution<> nd (0.0, noise_std);
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
             // Noisify each point in the dataset
-            for (size_t cp = 0; cp < view->points.size (); ++cp)
+            for (size_t cp = 0; cp < view->size (); ++cp)
               view->points[cp].z += static_cast<float> (var_nor ());
 
           }

@@ -63,7 +63,7 @@ main (int, char* argv[])
     // Nearest neighbors classification
     pcl::NNClassification<pcl::VFHSignature308> nn;
     //nn.setTrainingFeatures(cloud);
-    //nn.setTrainingLabels(std::vector<std::string>(cloud->points.size(), "bla"));
+    //nn.setTrainingLabels(std::vector<std::string>(cloud->size(), "bla"));
     nn.loadTrainingFeatures (argv[2], argv[3]);
     result = nn.classify(feature->points[0], 300, 50);
   }

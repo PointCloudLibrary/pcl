@@ -73,7 +73,7 @@ TEST (PCL, PPFEstimation)
   ppf_estimation.compute (*feature_cloud);
 
   // Check for size of output
-  EXPECT_EQ (feature_cloud->points.size (), indices.size () * cloud.points.size ());
+  EXPECT_EQ (feature_cloud->size (), indices.size () * cloud.size ());
 
   // Now check for a few values in the feature cloud
   EXPECT_TRUE (pcl_isnan (feature_cloud->points[0].f1));
@@ -115,7 +115,7 @@ main (int argc, char** argv)
     return (-1);
   }
 
-  indices.resize (cloud.points.size ());
+  indices.resize (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i)
     indices[i] = i;
 

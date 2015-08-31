@@ -116,7 +116,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 #ifdef _OPENMP
 #pragma omp parallel for private(u, v) num_threads(threads_)
 #endif
-  for (index = 0; index < int (input.points.size ()); index++)
+  for (index = 0; index < int (input.size ()); index++)
   {
     edge_points[index] = false;
     PointInT current_point = input.points[index];
@@ -448,7 +448,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   }
 
   output.header = input_->header;
-  output.width = static_cast<uint32_t> (output.points.size ());
+  output.width = static_cast<uint32_t> (output.size ());
   output.height = 1;
 
   // Clear the contents of variables and arrays before the beginning of the next computation.

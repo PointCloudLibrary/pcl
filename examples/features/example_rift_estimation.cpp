@@ -63,7 +63,7 @@ main (int, char** argv)
     return -1;
   }
 
-  std::cout << "points: " << cloud->points.size () << std::endl;
+  std::cout << "points: " << cloud->size () << std::endl;
 
   // Estimate the surface normals
   pcl::PointCloud<pcl::Normal>::Ptr cloud_n (new pcl::PointCloud<pcl::Normal>);
@@ -75,7 +75,7 @@ main (int, char** argv)
   norm_est.compute(*cloud_n);
 
   std::cout<<" Surface normals estimated";
-  std::cout<<" with size "<< cloud_n->points.size() <<std::endl;
+  std::cout<<" with size "<< cloud_n->size() <<std::endl;
  
   // Estimate the Intensity Gradient
   pcl::PointCloud<pcl::IntensityGradient>::Ptr cloud_ig (new pcl::PointCloud<pcl::IntensityGradient>);
@@ -87,7 +87,7 @@ main (int, char** argv)
   gradient_est.setRadiusSearch(0.25);
   gradient_est.compute(*cloud_ig);
   std::cout<<" Intesity Gradient estimated";
-  std::cout<<" with size "<< cloud_ig->points.size() <<std::endl;
+  std::cout<<" with size "<< cloud_ig->size() <<std::endl;
 
 
   // Estimate the RIFT feature
@@ -103,7 +103,7 @@ main (int, char** argv)
   rift_est.compute(rift_output);
 
   std::cout<<" RIFT feature estimated";
-  std::cout<<" with size "<<rift_output.points.size()<<std::endl;
+  std::cout<<" with size "<<rift_output.size()<<std::endl;
   
   // Display and retrieve the rift descriptor vector for the first point
   pcl::Histogram<32> first_descriptor = rift_output.points[0];

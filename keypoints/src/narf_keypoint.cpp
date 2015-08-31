@@ -843,7 +843,7 @@ NarfKeypoint::calculateInterestPoints ()
     const InterestPoint& interest_point = tmp_interest_points[int_point_idx];
     
     bool better_point_too_close = false;
-    for (size_t int_point_idx2=0; int_point_idx2<interest_points_->points.size (); ++int_point_idx2)
+    for (size_t int_point_idx2=0; int_point_idx2<interest_points_->size (); ++int_point_idx2)
     {
       const InterestPoint& interest_point2 = interest_points_->points[int_point_idx2];
       float distance_squared = (interest_point.getVector3fMap ()-interest_point2.getVector3fMap ()).squaredNorm ();
@@ -862,7 +862,7 @@ NarfKeypoint::calculateInterestPoints ()
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
   }
-  interest_points_->width = static_cast<uint32_t> (interest_points_->points.size ());
+  interest_points_->width = static_cast<uint32_t> (interest_points_->size ());
   interest_points_->height = 1;
   interest_points_->is_dense = true;
 }

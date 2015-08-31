@@ -456,7 +456,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (size_t i = 0; i < cloud->size (); i++)
     {
       cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
       cloud->points[i].y *= -1.0f;

@@ -33,7 +33,7 @@ main(int argc, char** argv)
 
   // populate our PointCloud with points
   cloud->is_dense = false;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)
     {

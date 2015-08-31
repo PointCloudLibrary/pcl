@@ -118,17 +118,17 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
   cloud_out.is_dense = cloud_in.is_dense;
   cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
   cloud_out.sensor_origin_ = cloud_in.sensor_origin_;
-  cloud_out.points.resize (cloud_in.points.size ());
+  cloud_out.points.resize (cloud_in.size ());
 
-  if (cloud_in.points.size () == 0)
+  if (cloud_in.size () == 0)
     return;
 
   if (isSamePointType<PointInT, PointOutT> ())
     // Copy the whole memory block
-    memcpy (&cloud_out.points[0], &cloud_in.points[0], cloud_in.points.size () * sizeof (PointInT));
+    memcpy (&cloud_out.points[0], &cloud_in.points[0], cloud_in.size () * sizeof (PointInT));
   else
     // Iterate over each point
-    for (size_t i = 0; i < cloud_in.points.size (); ++i)
+    for (size_t i = 0; i < cloud_in.size (); ++i)
       copyPoint (cloud_in.points[i], cloud_out.points[i]);
 }
 
@@ -139,7 +139,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      pcl::PointCloud<PointT> &cloud_out)
 {
   // Do we want to copy everything?
-  if (indices.size () == cloud_in.points.size ())
+  if (indices.size () == cloud_in.size ())
   {
     cloud_out = cloud_in;
     return;
@@ -166,7 +166,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      pcl::PointCloud<PointT> &cloud_out)
 {
   // Do we want to copy everything?
-  if (indices.size () == cloud_in.points.size ())
+  if (indices.size () == cloud_in.size ())
   {
     cloud_out = cloud_in;
     return;
@@ -233,7 +233,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                      pcl::PointCloud<PointT> &cloud_out)
 {
   // Do we want to copy everything?
-  if (indices.indices.size () == cloud_in.points.size ())
+  if (indices.indices.size () == cloud_in.size ())
   {
     cloud_out = cloud_in;
     return;
@@ -273,7 +273,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     nr_p += indices[i].indices.size ();
 
   // Do we want to copy everything? Remember we assume UNIQUE indices
-  if (nr_p == cloud_in.points.size ())
+  if (nr_p == cloud_in.size ())
   {
     cloud_out = cloud_in;
     return;
@@ -313,7 +313,7 @@ pcl::copyPointCloud (const pcl::PointCloud<PointInT> &cloud_in,
     nr_p += indices[i].indices.size ();
 
   // Do we want to copy everything? Remember we assume UNIQUE indices
-  if (nr_p == cloud_in.points.size ())
+  if (nr_p == cloud_in.size ())
   {
     copyPointCloud<PointInT, PointOutT> (cloud_in, cloud_out);
     return;
@@ -350,14 +350,14 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
   typedef typename pcl::traits::fieldList<PointIn1T>::type FieldList1;
   typedef typename pcl::traits::fieldList<PointIn2T>::type FieldList2;
 
-  if (cloud1_in.points.size () != cloud2_in.points.size ())
+  if (cloud1_in.size () != cloud2_in.size ())
   {
     PCL_ERROR ("[pcl::concatenateFields] The number of points in the two input datasets differs!\n");
     return;
   }
 
   // Resize the output dataset
-  cloud_out.points.resize (cloud1_in.points.size ());
+  cloud_out.points.resize (cloud1_in.size ());
   cloud_out.header   = cloud1_in.header;
   cloud_out.width    = cloud1_in.width;
   cloud_out.height   = cloud1_in.height;
@@ -367,7 +367,7 @@ pcl::concatenateFields (const pcl::PointCloud<PointIn1T> &cloud1_in,
     cloud_out.is_dense = true;
 
   // Iterate over each point
-  for (size_t i = 0; i < cloud_out.points.size (); ++i)
+  for (size_t i = 0; i < cloud_out.size (); ++i)
   {
     // Iterate over each dimension
     pcl::for_each_type <FieldList1> (pcl::NdConcatenateFunctor <PointIn1T, PointOutT> (cloud1_in.points[i], cloud_out.points[i]));

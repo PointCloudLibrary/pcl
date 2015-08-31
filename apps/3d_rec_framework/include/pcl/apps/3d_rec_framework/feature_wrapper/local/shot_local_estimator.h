@@ -88,25 +88,25 @@ namespace pcl
 
           //compute keypoints
           this->computeKeypoints(processed, keypoints, normals);
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
+          std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
           //compute keypoints
           /*keypoint_extractor_->setInputCloud (processed);
           if(keypoint_extractor_->needNormals())
             keypoint_extractor_->setNormals(normals);
 
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
+          std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
           keypoint_extractor_->setSupportRadius(support_radius_);
           keypoint_extractor_->compute (keypoints);*/
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->size () == 0)
           {
             PCL_WARN("SHOTLocalEstimation :: No keypoints were found\n");
             return false;
           }
 
-          std::cout << keypoints->points.size() << " " << normals->points.size() << " " << processed->points.size() << std::endl;
+          std::cout << keypoints->size() << " " << normals->size() << " " << processed->size() << std::endl;
           //compute signatures
           typedef typename pcl::SHOTEstimation<PointInT, pcl::Normal, pcl::SHOT352> SHOTEstimator;
           typename pcl::search::KdTree<PointInT>::Ptr tree (new pcl::search::KdTree<PointInT>);
@@ -120,13 +120,13 @@ namespace pcl
           shot_estimate.setInputNormals (normals);
           shot_estimate.setRadiusSearch (support_radius_);
           shot_estimate.compute (*shots);
-          signatures->resize (shots->points.size ());
-          signatures->width = static_cast<int> (shots->points.size ());
+          signatures->resize (shots->size ());
+          signatures->width = static_cast<int> (shots->size ());
           signatures->height = 1;
 
           int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
 
-          for (size_t k = 0; k < shots->points.size (); k++)
+          for (size_t k = 0; k < shots->size (); k++)
             for (int i = 0; i < size_feat; i++)
               signatures->points[k].histogram[i] = shots->points[k].descriptor[i];
 

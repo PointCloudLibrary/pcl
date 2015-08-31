@@ -34,14 +34,14 @@ main (int argc, char** argv)
 
   // Read in the cloud data
   reader.read ("table_scene_mug_stereo_textured.pcd", *cloud);
-  std::cerr << "PointCloud has: " << cloud->points.size () << " data points." << std::endl;
+  std::cerr << "PointCloud has: " << cloud->size () << " data points." << std::endl;
 
   // Build a passthrough filter to remove spurious NaNs
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
   pass.setFilterLimits (0, 1.5);
   pass.filter (*cloud_filtered);
-  std::cerr << "PointCloud after filtering has: " << cloud_filtered->points.size () << " data points." << std::endl;
+  std::cerr << "PointCloud after filtering has: " << cloud_filtered->size () << " data points." << std::endl;
 
   // Estimate point normals
   ne.setSearchMethod (tree);
@@ -70,7 +70,7 @@ main (int argc, char** argv)
   // Write the planar inliers to disk
   pcl::PointCloud<PointT>::Ptr cloud_plane (new pcl::PointCloud<PointT> ());
   extract.filter (*cloud_plane);
-  std::cerr << "PointCloud representing the planar component: " << cloud_plane->points.size () << " data points." << std::endl;
+  std::cerr << "PointCloud representing the planar component: " << cloud_plane->size () << " data points." << std::endl;
   writer.write ("table_scene_mug_stereo_textured_plane.pcd", *cloud_plane, false);
 
   // Remove the planar inliers, extract the rest
@@ -106,7 +106,7 @@ main (int argc, char** argv)
     std::cerr << "Can't find the cylindrical component." << std::endl;
   else
   {
-	  std::cerr << "PointCloud representing the cylindrical component: " << cloud_cylinder->points.size () << " data points." << std::endl;
+	  std::cerr << "PointCloud representing the cylindrical component: " << cloud_cylinder->size () << " data points." << std::endl;
 	  writer.write ("table_scene_mug_stereo_textured_cylinder.pcd", *cloud_cylinder, false);
   }
   return (0);

@@ -139,7 +139,7 @@ pcl::visualization::RangeImageVisualizer::getInterestPointsWidget (
   RangeImageVisualizer* widget = new RangeImageVisualizer;
   widget->showFloatImage (interest_image, range_image.width, range_image.height, min_value, max_value);
   widget->setWindowTitle (name);
-  for (unsigned int i=0; i<interest_points.points.size(); ++i)
+  for (unsigned int i=0; i<interest_points.size(); ++i)
   {
     const pcl::InterestPoint& interest_point = interest_points.points[i];
     float image_x, image_y;

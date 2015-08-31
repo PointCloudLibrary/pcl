@@ -382,7 +382,7 @@ main (int argc, char** argv)
 
     // Noisify each point in the dataset
     // \note: we might decide to noisify along the ray later
-    for (size_t cp = 0; cp < cloud.points.size (); ++cp)
+    for (size_t cp = 0; cp < cloud.size (); ++cp)
     {
       // Add noise ?
       switch (noise_model)
@@ -426,12 +426,12 @@ main (int argc, char** argv)
     }
     else
     {
-      cloud.width = static_cast<uint32_t> (cloud.points.size ());
+      cloud.width = static_cast<uint32_t> (cloud.size ());
       cloud.height = 1;
     }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
+    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.size (), cloud.width, cloud.height, fname.c_str ());
     writer.writeBinaryCompressed (fname.c_str (), cloud);
   } // sphere
   return (0);

@@ -111,7 +111,7 @@ namespace pcl
         void setOccupiedVoxelsAtPointsFromCloud( PointCloudPtr cloud_arg ) {
             size_t i;
 
-            for (i = 0; i < cloud_arg->points.size (); i++)
+            for (i = 0; i < cloud_arg->size (); i++)
             {
               // check for NaNs
               if (isFinite(cloud_arg->points[i])) {

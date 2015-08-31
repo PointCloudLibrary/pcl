@@ -67,7 +67,7 @@ main (int, char ** argv)
   pcl::visualization::ImageViewer depth_image_viewer_;
   float* img = new float[cloud.width * cloud.height];
 
-  for (int i = 0; i < static_cast<int> (xyz.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (xyz.size ()); ++i)
     img[i] = xyz.points[i].z;
   
   depth_image_viewer_.showFloatImage (img, 

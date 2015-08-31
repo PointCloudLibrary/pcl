@@ -223,7 +223,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   if (!vertices)
     vertices = vtkSmartPointer<vtkCellArray>::New ();
 
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   // Create the point set
   vtkSmartPointer<vtkPoints> points = polydata->GetPoints ();
   if (!points)
@@ -725,7 +725,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   int level, float scale,
   const std::string &id, int viewport)
 {
-  if (normals->points.size () != cloud->points.size ())
+  if (normals->size () != cloud->size ())
   {
     PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
@@ -779,7 +779,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   }
   else
   {
-    nr_normals = (cloud->points.size () - 1) / level + 1 ;
+    nr_normals = (cloud->size () - 1) / level + 1 ;
     pts = new float[2 * nr_normals * 3];
 
     for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
@@ -850,7 +850,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   int level, float scale,
   const std::string &id, int viewport)
 {
-  if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
+  if (pcs->size () != cloud->size () || normals->size () != cloud->size ())
   {
     pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
     return (false);
@@ -878,7 +878,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   line_2_colors->SetName ("Colors");
 
   // Create the first sets of lines
-  for (size_t i = 0; i < cloud->points.size (); i+=level)
+  for (size_t i = 0; i < cloud->size (); i+=level)
   {
     PointT p = cloud->points[i];
     p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
@@ -901,7 +901,7 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   line_1_data->GetCellData ()->SetScalars (line_1_colors);
 
   // Create the second sets of lines
-  for (size_t i = 0; i < cloud->points.size (); i += level)
+  for (size_t i = 0; i < cloud->size (); i += level)
   {
     Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
                         pcs->points[i].principal_curvature[1],
@@ -965,7 +965,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     int level, double scale,
     const std::string &id, int viewport)
 {
-  if (gradients->points.size () != cloud->points.size ())
+  if (gradients->size () != cloud->size ())
   {
     PCL_ERROR ("[addPointCloudGradients] The number of points differs from the number of gradients!\n");
     return (false);
@@ -983,7 +983,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
   vtkSmartPointer<vtkFloatArray> data = vtkSmartPointer<vtkFloatArray>::New ();
   data->SetNumberOfComponents (3);
 
-  vtkIdType nr_gradients = (cloud->points.size () - 1) / level + 1 ;
+  vtkIdType nr_gradients = (cloud->size () - 1) / level + 1 ;
   float* pts = new float[2 * nr_gradients * 3];
 
   for (vtkIdType i = 0, j = 0; j < nr_gradients; j++, i = j * level)
@@ -1484,7 +1484,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vtkSmartPointer<vtkCellArray> vertices = polydata->GetVerts ();
   vtkSmartPointer<vtkPoints> points      = polydata->GetPoints ();
   // Copy the new point array in
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
@@ -1585,7 +1585,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
 
   // Create points from polyMesh.cloud
   vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   points->SetNumberOfPoints (nr_points);
   vtkSmartPointer<vtkLODActor> actor;
 
@@ -1739,7 +1739,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     return (false);
   vtkSmartPointer<vtkPoints> points   = polydata->GetPoints ();
   // Copy the new point array in
-  vtkIdType nr_points = cloud->points.size ();
+  vtkIdType nr_points = cloud->size ();
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array

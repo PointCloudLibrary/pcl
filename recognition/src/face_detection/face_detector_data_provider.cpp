@@ -330,10 +330,10 @@ void pcl::face_detection::FaceDetectorDataProvider<FeatureType, DataSet, LabelTy
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud_intensity(new pcl::PointCloud<pcl::PointXYZI>);
     cloud_intensity->width = cloud->width;
     cloud_intensity->height = cloud->height;
-    cloud_intensity->points.resize(cloud->points.size());
+    cloud_intensity->resize(cloud->size());
     cloud_intensity->is_dense = cloud->is_dense;
 
-    for (int jjj = 0; jjj < static_cast<int>(cloud->points.size()); jjj++)
+    for (int jjj = 0; jjj < static_cast<int>(cloud->size()); jjj++)
     {
       cloud_intensity->points[jjj].getVector4fMap() = cloud->points[jjj].getVector4fMap();
       cloud_intensity->points[jjj].intensity = 0.f;
