@@ -271,7 +271,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
   for (test = 0; test < test_runs; ++test)
   {
     // clean up
-    cloud->points.clear ();
+    cloud->clear ();
     octree.deleteTree ();
 
     PointXYZ newPoint (1.5, 2.5, 3.5);
@@ -303,7 +303,7 @@ TEST (PCL, Octree_Dynamic_Depth_Test)
     }
 
     // clean up
-    cloud->points.clear ();
+    cloud->clear ();
     octree.deleteTree ();
 
     for (point = 0; point < pointcount; point++)
@@ -734,10 +734,10 @@ TEST (PCL, Octree_Pointcloud_Test)
   {
 
     // clean up
-    cloudA->points.clear ();
+    cloudA->clear ();
     octreeA.deleteTree ();
 
-    cloudB->points.clear ();
+    cloudB->clear ();
     octreeB.deleteTree ();
 
     octreeC.deleteTree ();

@@ -212,7 +212,7 @@ namespace pcl
       point_coder_.initializeDecoding ();
 
       // initialize output cloud
-      output_->points.clear ();
+      output_->clear ();
       output_->points.reserve (static_cast<std::size_t> (point_count_));
 
       if (i_frame_)

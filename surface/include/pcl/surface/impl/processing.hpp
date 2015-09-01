@@ -47,8 +47,7 @@ pcl::CloudSurfaceProcessing<PointInT, PointOutT>::process (pcl::PointCloud<Point
 
   if (!initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

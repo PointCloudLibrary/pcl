@@ -506,8 +506,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header

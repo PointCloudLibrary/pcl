@@ -773,7 +773,7 @@ struct SceneCloudView
         point_colors_ptr_->height = 1;
       }
       else
-        point_colors_ptr_->points.clear();
+        point_colors_ptr_->clear();
     }
     size_t points_size = valid_combined_ ? combined_ptr_->size () : cloud_ptr_->size ();
     cout << "Done.  Cloud size: " << points_size / 1000 << "K" << endl;
@@ -828,8 +828,8 @@ struct SceneCloudView
   clearClouds (bool print_message = false)
   {
     cloud_viewer_.removeAllPointClouds ();
-    cloud_ptr_->points.clear ();
-    normals_ptr_->points.clear ();    
+    cloud_ptr_->clear ();
+    normals_ptr_->clear ();
     if (print_message)
       cout << "Clouds/Meshes were cleared" << endl;
   }

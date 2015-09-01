@@ -95,7 +95,7 @@ namespace pcl
           if(world_->size () != 0)
           {
             PCL_WARN("Clearing world model\n");
-            world_->points.clear ();
+            world_->clear ();
           }
         }
 

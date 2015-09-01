@@ -293,7 +293,7 @@ template<typename PointInT, typename PointOutT, typename NormalT> void
 pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
   // Make sure the output cloud is empty
-  output.points.clear ();
+  output.clear ();
 
   if (border_radius_ > 0.0)
     edge_points_ = getBoundaryPoints (*(input_->makeShared ()), border_radius_, angle_threshold_);

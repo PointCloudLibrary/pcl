@@ -423,7 +423,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   }
   else
   {
-    output.points.clear ();
+    output.clear ();
     output.points.reserve (response->size());
     
 //#ifdef _OPENMP

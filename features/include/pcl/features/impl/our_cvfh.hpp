@@ -53,8 +53,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &ou
 {
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Resize the output dataset
@@ -540,15 +539,13 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   if (!normals_)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

@@ -156,7 +156,7 @@ namespace pcl
         assert(disparityData_arg.size()==cloud_size);
 
         // Reset point cloud
-        cloud_arg.points.clear ();
+        cloud_arg.clear ();
         cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
@@ -223,7 +223,7 @@ namespace pcl
         assert(depthData_arg.size()==cloud_size);
 
         // Reset point cloud
-        cloud_arg.points.clear ();
+        cloud_arg.clear ();
         cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
@@ -406,7 +406,7 @@ namespace pcl
         int x, y, centerX, centerY;
 
         // Reset point cloud
-        cloud_arg.points.clear();
+        cloud_arg.clear();
         cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
@@ -522,7 +522,7 @@ namespace pcl
         int x, y, centerX, centerY;
 
         // Reset point cloud
-        cloud_arg.points.clear();
+        cloud_arg.clear();
         cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters

@@ -55,8 +55,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
 {
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header

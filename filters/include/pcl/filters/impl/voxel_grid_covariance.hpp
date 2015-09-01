@@ -54,15 +54,14 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (!input_)
   {
     PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   // Copy the header (and thus the frame_id) + allocate enough space for points
+  output.clear ();
   output.height = 1;                          // downsampling breaks the organized structure
   output.is_dense = true;                     // we filter out invalid points
-  output.points.clear ();
 
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions

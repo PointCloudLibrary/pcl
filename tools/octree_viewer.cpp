@@ -329,7 +329,7 @@ private:
    */
   void extractPointsAtLevel(int depth)
   {
-    displayCloud->points.clear();
+    displayCloud->clear();
 
     pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it;
     pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it_end = octree.end();

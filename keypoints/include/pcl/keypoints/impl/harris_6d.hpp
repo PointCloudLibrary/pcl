@@ -222,7 +222,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
   else
   {
-    output.points.clear ();
+    output.clear ();
     output.points.reserve (response->size());
 
 #ifdef _OPENMP

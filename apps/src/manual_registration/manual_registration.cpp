@@ -180,10 +180,8 @@ ManualRegistration::clearPressed()
 {
   dst_point_selected_ = false;
   src_point_selected_ = false;
-  src_pc_.points.clear();
-  dst_pc_.points.clear();
-  src_pc_.height = 1; src_pc_.width = 0;
-  dst_pc_.height = 1; dst_pc_.width = 0;
+  src_pc_.clear();
+  dst_pc_.clear();
 }
 
 void 

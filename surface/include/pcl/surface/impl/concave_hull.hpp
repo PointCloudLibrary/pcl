@@ -73,13 +73,13 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output)
   if (alpha_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   if (!initCompute ())
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -102,13 +102,13 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
   if (alpha_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::reconstruct] Alpha parameter must be set to a positive number!\n", getClassName ().c_str ());
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   if (!initCompute ())
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

@@ -114,8 +114,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The search radius must be set before computing the feature!\n",
                getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -124,16 +123,14 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of intensity bins must be greater than zero!\n",
                getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (nr_distance_bins_ <= 0)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of distance bins must be greater than zero!\n",
                getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

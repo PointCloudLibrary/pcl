@@ -1040,7 +1040,7 @@ TEST (PCL, ExtendedIO)
   }
 
   savePCDFile ("v.pcd", cloud);
-  cloud.points.clear ();
+  cloud.clear ();
   loadPCDFile ("v.pcd", cloud);
 
   EXPECT_EQ (int (cloud.width), 2);

@@ -47,8 +47,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   if (indices_->empty ())
   {
     PCL_WARN ("[pcl::%s::applyFilter] No indices given or empty indices!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -62,8 +61,7 @@ pcl::ProjectInliers<PointT>::applyFilter (PointCloud &output)
   if (!initSACModel (model_type_))
   {
     PCL_ERROR ("[pcl::%s::segment] Error initializing the SAC model!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (copy_all_data_)

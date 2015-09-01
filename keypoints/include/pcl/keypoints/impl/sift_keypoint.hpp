@@ -109,7 +109,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
   scale_idx_ = pcl::getFieldIndex<PointOutT> (output, "scale", out_fields_);
 
   // Make sure the output cloud is empty
-  output.points.clear ();
+  output.clear ();
 
   // Create a local copy of the input cloud that will be resized for each octave
   boost::shared_ptr<pcl::PointCloud<PointInT> > cloud (new pcl::PointCloud<PointInT> (*input_));

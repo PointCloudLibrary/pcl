@@ -134,7 +134,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 {
   if (triangles_.size () == 0)
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

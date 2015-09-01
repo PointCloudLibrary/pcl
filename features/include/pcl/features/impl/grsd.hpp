@@ -68,8 +68,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   if (width_ < 0)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] A voxel cell width needs to be set!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 

@@ -338,7 +338,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
   const std::vector<double> zero_mean (StateT::stateDimension (), 0.0);
   // memoize the original list of particles
   PointCloudStatePtr origparticles = particles_;
-  particles_->points.clear ();
+  particles_->clear ();
   // the first particle, it is a just copy of the maximum result
   StateT p = representative_state_;
   particles_->points.push_back (p);

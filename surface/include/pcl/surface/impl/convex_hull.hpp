@@ -435,7 +435,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
   points.header = input_->header;
   if (!initCompute () || input_->points.empty () || indices_->empty ())
   {
-    points.points.clear ();
+    points.clear ();
     return;
   }
 
@@ -478,7 +478,7 @@ pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Ver
   points.header = input_->header;
   if (!initCompute () || input_->points.empty () || indices_->empty ())
   {
-    points.points.clear ();
+    points.clear ();
     return;
   }
 

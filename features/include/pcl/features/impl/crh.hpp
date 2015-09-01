@@ -55,16 +55,14 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   if (!normals_)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
   if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
