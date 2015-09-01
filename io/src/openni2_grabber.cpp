@@ -647,7 +647,10 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 255; // point has no color info -> alpha = max => transparent 
-    cloud->points.assign (cloud->size (), pt);
+    for (int i = 0; i < cloud->size(); i++)
+    {
+      (*cloud)[i] = pt;
+    }
   }
 
   // fill in XYZ values

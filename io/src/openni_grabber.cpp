@@ -655,7 +655,10 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 0; // point has no color info -> alpha = min => transparent
-    cloud->points.assign (cloud->size (), pt);
+    for (int i = 0; i < cloud->size(); i++)
+    {
+      (*cloud)[i] = pt;
+    }
   }
   
   // fill in XYZ values
