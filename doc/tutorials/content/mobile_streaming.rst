@@ -241,7 +241,7 @@ After a successful connection, the program enters the main server loop:
 
         if (nr_points)
         {
-          boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->points.front(), nr_points * 3 * sizeof (short)));
+          boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->front(), nr_points * 3 * sizeof (short)));
           boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->rgb.front(), nr_points * 3 * sizeof (unsigned char)));
         }
 
@@ -289,7 +289,7 @@ buffers to the client:
 
     if (nr_points)
     {
-      boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->points.front(), nr_points * 3 * sizeof (short)));
+      boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->front(), nr_points * 3 * sizeof (short)));
       boost::asio::write (socket, boost::asio::buffer (&buffers_to_send->rgb.front(), nr_points * 3 * sizeof (unsigned char)));
     }
 

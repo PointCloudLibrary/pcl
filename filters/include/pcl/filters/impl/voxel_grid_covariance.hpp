@@ -302,9 +302,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Do we need to process all the fields?
       if (!downsample_all_data_)
       {
-        output.points.back ().x = leaf.centroid[0];
-        output.points.back ().y = leaf.centroid[1];
-        output.points.back ().z = leaf.centroid[2];
+        output.back ().x = leaf.centroid[0];
+        output.back ().y = leaf.centroid[1];
+        output.back ().z = leaf.centroid[2];
       }
       else
       {
@@ -312,7 +312,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
-          pcl::RGB& rgb = *reinterpret_cast<RGB*> (reinterpret_cast<char*> (&output.points.back ()) + rgba_index);
+          pcl::RGB& rgb = *reinterpret_cast<RGB*> (reinterpret_cast<char*> (&output.back ()) + rgba_index);
           rgb.a = leaf.centroid[centroid_size - 4];
           rgb.r = leaf.centroid[centroid_size - 3];
           rgb.g = leaf.centroid[centroid_size - 2];
