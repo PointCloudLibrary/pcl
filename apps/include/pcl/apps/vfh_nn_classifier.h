@@ -249,7 +249,7 @@ namespace pcl
         // compute gaussian parameter producing the desired minimum score (around 50 for the default values)
         float gaussian_param = - static_cast<float> (radius / log (min_score));
         // TODO accept result to be filled in by reference
-        return classifier_.classify(vfhs->points.at (0), radius, gaussian_param);
+        return classifier_.classify(vfhs->at (0), radius, gaussian_param);
       }
 
       /** \brief Extract the VFH feature describing the given point cloud.
