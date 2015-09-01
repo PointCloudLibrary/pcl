@@ -74,7 +74,7 @@ pcl::features::ISMVoteList<PointT>::addVote (
     pcl::InterestPoint& vote, const PointT &vote_origin, int votes_class)
 {
   tree_is_valid_ = false;
-  votes_->points.insert (votes_->end (), vote);// TODO: adjust height and width
+  votes_->insert (votes_->end (), vote);
 
   votes_origins_->points.push_back (vote_origin);
   votes_class_.push_back (votes_class);

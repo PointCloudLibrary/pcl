@@ -172,7 +172,7 @@ namespace pcl
         if (labels.size () == training_features->size ())
         {
           labels_.insert (labels_.end (), labels.begin (), labels.end ());
-          training_features_->points.insert (training_features_->end (), training_features->begin (), training_features->end ());
+          training_features_->insert (training_features_->end (), training_features->begin (), training_features->end ());
           training_features_->header = training_features->header;
           training_features_->height = 1;
           training_features_->width  = static_cast<uint32_t> (training_features_->size ());
