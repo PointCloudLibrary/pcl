@@ -161,7 +161,7 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, boo
   volume_.download (volume_host, cols);
 
   cloud.clear ();
-  cloud.points.reserve (10000);
+  cloud.reserve (10000);
 
   const int DIVISOR = pcl::device::kinfuLS::DIVISOR; // SHRT_MAX;
 

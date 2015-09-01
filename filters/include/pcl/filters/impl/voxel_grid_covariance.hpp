@@ -262,7 +262,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   }
 
   // Second pass: go over all leaves and compute centroids and covariance matrices
-  output.points.reserve (leaves_.size ());
+  output.reserve (leaves_.size ());
   if (searchable_)
     voxel_centroids_leaf_indices_.reserve (leaves_.size ());
   int cp = 0;

@@ -213,7 +213,7 @@ namespace pcl
 
       // initialize output cloud
       output_->clear ();
-      output_->points.reserve (static_cast<std::size_t> (point_count_));
+      output_->reserve (static_cast<std::size_t> (point_count_));
 
       if (i_frame_)
         // i-frame decoding - decode tree structure without referencing previous buffer

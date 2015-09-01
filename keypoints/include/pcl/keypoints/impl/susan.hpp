@@ -424,7 +424,7 @@ pcl::SUSANKeypoint<PointInT, PointOutT, NormalT, IntensityT>::detectKeypoints (P
   else
   {
     output.clear ();
-    output.points.reserve (response->size());
+    output.reserve (response->size());
     
 //#ifdef _OPENMP
 //#pragma omp parallel for shared (output) num_threads(threads_)   
