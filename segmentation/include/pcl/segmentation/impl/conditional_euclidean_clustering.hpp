@@ -51,7 +51,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
   }
 
   // Validity checks
-  if (!initCompute () || input_->points.empty () || indices_->empty () || !condition_function_)
+  if (!initCompute () || input_->empty () || indices_->empty () || !condition_function_)
     return;
 
   // Initialize the search class

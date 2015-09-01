@@ -103,7 +103,7 @@ pcl::SegmentDifferences<PointT>::segment (PointCloud &output)
   }
 
   // If target is empty, input - target = input
-  if (target_->points.empty ())
+  if (target_->empty ())
   {
     output = *input_;
     return;

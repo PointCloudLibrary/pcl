@@ -433,7 +433,7 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points)
 {
   points.header = input_->header;
-  if (!initCompute () || input_->points.empty () || indices_->empty ())
+  if (!initCompute () || input_->empty () || indices_->empty ())
   {
     points.clear ();
     return;
@@ -476,7 +476,7 @@ template <typename PointInT> void
 pcl::ConvexHull<PointInT>::reconstruct (PointCloud &points, std::vector<pcl::Vertices> &polygons)
 {
   points.header = input_->header;
-  if (!initCompute () || input_->points.empty () || indices_->empty ())
+  if (!initCompute () || input_->empty () || indices_->empty ())
   {
     points.clear ();
     return;

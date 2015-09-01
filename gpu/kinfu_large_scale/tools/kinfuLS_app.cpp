@@ -1032,9 +1032,9 @@ struct KinFuLSApp
   {      
     const SceneCloudView& view = scene_cloud_view_;
 
-    if (!view.cloud_ptr_->points.empty ())
+    if (!view.cloud_ptr_->empty ())
     {
-      if(view.point_colors_ptr_->points.empty()) // no colors
+      if(view.point_colors_ptr_->empty()) // no colors
       {
         if (view.valid_combined_)
           writeCloudFile (format, view.combined_ptr_);

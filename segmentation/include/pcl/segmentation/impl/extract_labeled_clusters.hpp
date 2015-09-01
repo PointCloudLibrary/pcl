@@ -123,7 +123,7 @@ template <typename PointT> void
 pcl::LabeledEuclideanClusterExtraction<PointT>::extract (std::vector<std::vector<PointIndices> > &labeled_clusters)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
+      (input_ != 0   && input_->empty ()) ||
       (indices_ != 0 && indices_->empty ()))
   {
     labeled_clusters.clear ();

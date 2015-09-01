@@ -199,7 +199,7 @@ void
 pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &indices_out)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
+      (input_ != 0   && input_->empty ()) ||
       (indices_ != 0 && indices_->empty ()))
   {
     indices_out.indices.clear ();

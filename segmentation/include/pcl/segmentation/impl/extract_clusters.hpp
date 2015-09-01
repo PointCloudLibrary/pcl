@@ -210,7 +210,7 @@ template <typename PointT> void
 pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clusters)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
+      (input_ != 0   && input_->empty ()) ||
       (indices_ != 0 && indices_->empty ()))
   {
     clusters.clear ();

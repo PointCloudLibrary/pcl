@@ -208,7 +208,7 @@ class AGASTDemo
         const CloudConstPtr &cloud,
         const PointCloud<KeyPointT>::Ptr &keypoints, PointCloud<PointT> &keypoints3d)
     {
-      if (!cloud || !keypoints || cloud->points.empty () || keypoints->points.empty ())
+      if (!cloud || !keypoints || cloud->empty () || keypoints->empty ())
         return;
 
       keypoints3d.resize (keypoints->size ());

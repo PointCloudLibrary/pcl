@@ -175,7 +175,7 @@ namespace pcl
                 for(size_t i = 0; i < cloud->size(); i+= 10)
                     (*surface)[i] = (*cloud)[i];
                   
-                if (!normals->points.empty())
+                if (!normals->empty())
                 {
                     normals_surface->resize (normals->size ());
                     for(size_t i = 0; i < normals->size(); i+= 10)

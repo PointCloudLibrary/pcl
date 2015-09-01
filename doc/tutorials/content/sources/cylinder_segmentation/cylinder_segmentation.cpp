@@ -102,7 +102,7 @@ main (int argc, char** argv)
   extract.setNegative (false);
   pcl::PointCloud<PointT>::Ptr cloud_cylinder (new pcl::PointCloud<PointT> ());
   extract.filter (*cloud_cylinder);
-  if (cloud_cylinder->points.empty ()) 
+  if (cloud_cylinder->empty ())
     std::cerr << "Can't find the cylindrical component." << std::endl;
   else
   {

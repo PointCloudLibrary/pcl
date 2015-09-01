@@ -1548,7 +1548,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     const std::string &id,
     int viewport)
 {
-  if (vertices.empty () || cloud->points.empty ())
+  if (vertices.empty () || cloud->empty ())
     return (false);
 
   if (contains (id))

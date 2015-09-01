@@ -145,7 +145,7 @@ class NILinemod
         // Visualize the object in 3D...
         CloudPtr plane_inliers (new Cloud);
         pcl::copyPointCloud (*search_.getInputCloud (), inliers.indices, *plane_inliers);
-        if (plane_inliers->points.empty ())
+        if (plane_inliers->empty ())
         {
           PCL_ERROR ("No planar model found. Select the object again to continue.\n");
           first_frame_ = true;

@@ -141,7 +141,7 @@ compute (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input,
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr output_down (new pcl::PointCloud<pcl::PointXYZRGB>);
   downsample (input, output_down);
 
-  if (output_down->points.empty ())
+  if (output_down->empty ())
   {
     inliers.indices.clear ();
     coefficients.values.clear ();
@@ -149,7 +149,7 @@ compute (const pcl::PointCloud<pcl::PointXYZRGB>::Ptr &input,
   }
   filterGreen (output_down, output);
 
-  if (output->points.empty ())
+  if (output->empty ())
   {
     inliers.indices.clear ();
     coefficients.values.clear ();

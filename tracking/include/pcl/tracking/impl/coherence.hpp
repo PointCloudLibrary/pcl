@@ -35,7 +35,7 @@ namespace pcl
     template <typename PointInT> bool
     PointCloudCoherence<PointInT>::initCompute ()
     {
-      if (!target_input_ || target_input_->points.empty ())
+      if (!target_input_ || target_input_->empty ())
       {
         PCL_ERROR ("[pcl::%s::compute] target_input_ is empty!\n", getClassName ().c_str ());
         return false;

@@ -1021,13 +1021,13 @@ struct KinFuApp
 
     // Points to export are either in cloud_ptr_ or combined_ptr_.
     // If none have points, we have nothing to export.
-    if (view.cloud_ptr_->points.empty () && view.combined_ptr_->points.empty ())
+    if (view.cloud_ptr_->empty () && view.combined_ptr_->empty ())
     {
       cout << "Not writing cloud: Cloud is empty" << endl;
     }
     else
     {
-      if(view.point_colors_ptr_->points.empty()) // no colors
+      if(view.point_colors_ptr_->empty()) // no colors
       {
         if (view.valid_combined_)
           writeCloudFile (format, view.combined_ptr_);

@@ -47,7 +47,7 @@ template <typename PointT> vtkSmartPointer<vtkDataSet>
 pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
   vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
-  if (cloud->points.empty ())
+  if (cloud->empty ())
     return (poly_grid);
 
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
