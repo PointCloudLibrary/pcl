@@ -1270,10 +1270,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
     }
   }
 
-  if (!actor_found)
-    PCL_WARN ("[updateLookUpTableDisplay] No actor was found with LUT information!\n");
-
-  if (!actor_found || (lut_enabled_ && add_lut))  // Remove actor
+  if ( (!actor_found && lut_enabled_) || (lut_enabled_ && add_lut))  // Remove actor
   {
     CurrentRenderer->RemoveActor (lut_actor_);
     lut_enabled_ = false;
