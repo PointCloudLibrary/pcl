@@ -1,6 +1,12 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+if(POLICY CMP0017)
+  # Do not include files in CMAKE_MODULE_PATH from files
+  # in CMake module directory. Fix MXE build
+  cmake_policy(SET CMP0017 NEW)
+endif()
+
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
 endif()
