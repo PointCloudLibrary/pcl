@@ -803,8 +803,12 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   {
     if (removeActorFromRenderer (am_it->second, viewport))
     {
+      bool update_LUT (true);
+      if (!style_->lut_actor_id_.empty() && am_it->first != style_->lut_actor_id_)
+        update_LUT = false;
       shape_actor_map_->erase (am_it);
-      style_->updateLookUpTableDisplay (false);
+      if (update_LUT)
+        style_->updateLookUpTableDisplay (false);
       return (true);
     }
   }
@@ -812,8 +816,12 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
   {
     if (removeActorFromRenderer (ca_it->second.actor, viewport))
     {
+      bool update_LUT (true);
+      if (!style_->lut_actor_id_.empty() && ca_it->first != style_->lut_actor_id_)
+        update_LUT = false;
       cloud_actor_map_->erase (ca_it);
-      style_->updateLookUpTableDisplay (false);
+      if (update_LUT)
+        style_->updateLookUpTableDisplay (false);
       return (true);
     }
   }
@@ -863,6 +871,9 @@ pcl::visualization::PCLVisualizer::removeAllPointClouds (int viewport)
 bool
 pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
 {
+  bool display_lut (style_->lut_enabled_);
+  style_->lut_enabled_ = false; // Temporally disable LUT to fasten shape removal
+
   // Check to see if the given ID entry exists
   ShapeActorMap::iterator am_it = shape_actor_map_->begin ();
   while (am_it != shape_actor_map_->end ())
@@ -871,6 +882,12 @@ pcl::visualization::PCLVisualizer::removeAllShapes (int viewport)
       am_it = shape_actor_map_->begin ();
     else
       ++am_it;
+  }
+
+  if (display_lut)
+  {
+    style_->lut_enabled_ = true;
+    style_->updateLookUpTableDisplay (true);
   }
   return (true);
 }
