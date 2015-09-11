@@ -120,10 +120,10 @@ namespace pcl
       inline PCA& 
       operator= (PCA const & pca) 
       {
-        eigenvectors_ = pca.eigenvectors;
-        coefficients_ = pca.coefficients;
-        eigenvalues_  = pca.eigenvalues;
-        mean_         = pca.mean;
+        eigenvectors_ = pca.eigenvectors_;
+        coefficients_ = pca.coefficients_;
+        eigenvalues_  = pca.eigenvalues_;
+        mean_         = pca.mean_;
         return (*this);
       }
       
