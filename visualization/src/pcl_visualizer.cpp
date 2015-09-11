@@ -1854,21 +1854,10 @@ pcl::visualization::PCLVisualizer::getViewerPose (int viewport)
       z_axis = (z_axis - pos).normalized ();
       x_axis = y_axis.cross (z_axis).normalized ();
 
-      /// TODO replace this ugly thing with matrix.block () = vector3f
-      ret (0, 0) = static_cast<float> (x_axis[0]);
-      ret (0, 1) = static_cast<float> (y_axis[0]);
-      ret (0, 2) = static_cast<float> (z_axis[0]);
-      ret (0, 3) = static_cast<float> (pos[0]);
-
-      ret (1, 0) = static_cast<float> (x_axis[1]);
-      ret (1, 1) = static_cast<float> (y_axis[1]);
-      ret (1, 2) = static_cast<float> (z_axis[1]);
-      ret (1, 3) = static_cast<float> (pos[1]);
-
-      ret (2, 0) = static_cast<float> (x_axis[2]);
-      ret (2, 1) = static_cast<float> (y_axis[2]);
-      ret (2, 2) = static_cast<float> (z_axis[2]);
-      ret (2, 3) = static_cast<float> (pos[2]);
+      ret.translation () = pos.cast<float> ();
+      ret.linear ().col (0) << x_axis.cast<float> ();
+      ret.linear ().col (1) << y_axis.cast<float> ();
+      ret.linear ().col (2) << z_axis.cast<float> ();
 
       return ret;
     }
