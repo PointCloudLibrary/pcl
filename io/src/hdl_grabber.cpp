@@ -139,7 +139,7 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   {
     cos_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*cos_lookup_table_)));
     sin_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*sin_lookup_table_)));
-    for (unsigned int i = 0; i < HDL_NUM_ROT_ANGLES; i++)
+    for (int i = 0; i < HDL_NUM_ROT_ANGLES; i++)
     {
       double rad = (M_PI / 180.0) * (static_cast<double> (i) / 100.0);
       cos_lookup_table_[i] = std::cos (rad);
@@ -582,7 +582,7 @@ void
 pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
                                    unsigned int laserNumber)
 {
-  if (laserNumber >= HDL_MAX_NUM_LASERS)
+  if (laserNumber >= (unsigned int) HDL_MAX_NUM_LASERS)
     return;
 
   laser_rgb_mapping_[laserNumber] = color;
