@@ -177,7 +177,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::configureColorNode (DepthSense::Col
 }
 
 void
-pcl::io::depth_sense::DepthSenseGrabberImpl::onDepthDataReceived (DepthSense::DepthNode node, DepthSense::DepthNode::NewSampleReceivedData data)
+pcl::io::depth_sense::DepthSenseGrabberImpl::onDepthDataReceived (DepthSense::DepthNode, DepthSense::DepthNode::NewSampleReceivedData data)
 {
   fps_mutex_.lock ();
   frequency_.event ();
@@ -230,7 +230,7 @@ pcl::io::depth_sense::DepthSenseGrabberImpl::onDepthDataReceived (DepthSense::De
 }
 
 void
-pcl::io::depth_sense::DepthSenseGrabberImpl::onColorDataReceived (DepthSense::ColorNode node, DepthSense::ColorNode::NewSampleReceivedData data)
+pcl::io::depth_sense::DepthSenseGrabberImpl::onColorDataReceived (DepthSense::ColorNode, DepthSense::ColorNode::NewSampleReceivedData data)
 {
   if (need_xyzrgba_)
     memcpy (&color_data_[0], data.colorMap, color_data_.size ());
