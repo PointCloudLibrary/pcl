@@ -48,3 +48,8 @@ if(WITH_DAVIDSDK)
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_davidsdk_viewer ${SUBSYS_NAME} davidsdk_viewer.cpp)
     target_link_libraries(pcl_davidsdk_viewer pcl_common pcl_io pcl_visualization)
 endif()
+
+if(WITH_DSSDK)
+    PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_depth_sense_viewer ${SUBSYS_NAME} depth_sense_viewer.cpp)
+    target_link_libraries(pcl_depth_sense_viewer pcl_common pcl_io pcl_visualization)
+endif()

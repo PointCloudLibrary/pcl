@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -148,6 +148,17 @@ if(build)
             )
     endif()
 
+    if(WITH_DSSDK)
+        set(DSSDK_GRABBER_INCLUDES
+            include/pcl/io/depth_sense_grabber.h
+        )
+        set(DSSDK_GRABBER_SOURCES
+            src/depth_sense_grabber.cpp
+            src/depth_sense/depth_sense_grabber_impl.cpp
+            src/depth_sense/depth_sense_device_manager.cpp
+        )
+    endif()
+
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -211,6 +222,7 @@ if(build)
         ${FZAPI_GRABBER_SOURCES}
         ${ENSENSO_GRABBER_SOURCES}
         ${DAVIDSDK_GRABBER_SOURCES}
+        ${DSSDK_GRABBER_SOURCES}
         ${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
@@ -256,6 +268,7 @@ if(build)
         ${FZAPI_GRABBER_INCLUDES}
         ${ENSENSO_GRABBER_INCLUDES}
         ${DAVIDSDK_GRABBER_INCLUDES}
+        ${DSSDK_GRABBER_INCLUDES}
         ${PXC_GRABBER_INCLUDES}
         )
 
@@ -334,6 +347,10 @@ if(build)
     if(WITH_PXCAPI)
       link_directories(${PXCAPI_LIB_DIRS})
       target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
+    endif()
+
+    if(WITH_DSSDK)
+      target_link_libraries(${LIB_NAME} ${DSSDK_LIBRARIES})
     endif()
 
     if (PCAP_FOUND)
