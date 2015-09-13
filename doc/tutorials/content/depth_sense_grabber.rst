@@ -9,7 +9,7 @@ any camera supported by the SDK (e.g. `Creative Senz3D <http://us.creative.com/p
 `DepthSense DS325 <http://www.softkinetic.com/Store/ProductID/6>`_).
 
 .. note:: This grabber obsoletes `PXCGrabber`, which was a Windows-only solution
-  based on `Intel Perceptual Computing SDK <https://software.intel.com/en-us/perceptual-computing-sdk>`_.
+  based on discontinued `Intel Perceptual Computing SDK <https://web.archive.org/web/20141228120859/https://software.intel.com/en-us/perceptual-computing-sdk>`_.
 
 In this tutorial we will learn how to setup and use DepthSense cameras within
 PCL on both Linux and Windows platforms.
@@ -31,7 +31,7 @@ Linux
 The Linux version of camera driver was built against an outdated version of
 `libudev`, so it will not work unless you have version 0.13 of this library
 installed (for example Ubuntu 14.04 comes with a newer version). There are
-several easy ways to solve this problem, see `this <http://choorucode.com/2014/05/06/depthsense-error-some-dll-files-are-missing/>`_
+several easy ways to solve this problem, see `this <https://web.archive.org/web/20150326145256/http://choorucode.com/2014/05/06/depthsense-error-some-dll-files-are-missing/>`_
 or `this <https://ph4m.wordpress.com/2014/02/11/getting-softkinetics-depthsense-sdk-to-work-on-arch-linux/>`_
 blog post.
 
