@@ -143,8 +143,8 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         // Check to see if we need to remove an element due to exceeding max_size
         if (key_list_.size () > max_cache_size_)
         {
-          // Remove the last element.
-          feature_map_.erase (key_list_.back ());
+          // Remove the oldest element.
+          feature_map_.erase (key_list_.front ());
           key_list_.pop ();
         }
       }
