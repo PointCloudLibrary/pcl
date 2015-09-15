@@ -321,8 +321,7 @@ macro(find_dssdk)
                   "C:/Program Files/SoftKinetic/DepthSenseSDK"
                   "/opt/softkinetic/DepthSenseSDK"
             DOC "DepthSense SDK directory")
-  set(DSSDK_INCLUDE_DIRS ${DSSDK_DIR}/include)
-  mark_as_advanced(DSSDK_INCLUDE_DIRS)
+  set(_DSSDK_INCLUDE_DIRS ${DSSDK_DIR}/include)
   if(MSVC)
     set(DSSDK_LIBRARIES_NAMES DepthSense)
   else()
@@ -332,10 +331,16 @@ macro(find_dssdk)
     find_library(DSSDK_LIBRARY_${LIB}
                  NAMES "${LIB}"
                  PATHS "${DSSDK_DIR}/lib/" NO_DEFAULT_PATH)
-    list(APPEND DSSDK_LIBRARIES ${DSSDK_LIBRARY_${LIB}})
+    list(APPEND _DSSDK_LIBRARIES ${DSSDK_LIBRARY_${LIB}})
     mark_as_advanced(DSSDK_LIBRARY_${LIB})
   endforeach()
-  find_package_handle_standard_args(DSSDK DEFAULT_MSG DSSDK_LIBRARIES DSSDK_INCLUDE_DIRS)
+  find_package_handle_standard_args(DSSDK DEFAULT_MSG _DSSDK_LIBRARIES _DSSDK_INCLUDE_DIRS)
+  if(DSSDK_FOUND)
+    set(DSSDK_LIBRARIES ${_DSSDK_LIBRARIES})
+    mark_as_advanced(DSSDK_LIBRARIES)
+    set(DSSDK_INCLUDE_DIRS ${_DSSDK_INCLUDE_DIRS})
+    mark_as_advanced(DSSDK_INCLUDE_DIRS)
+  endif()
 endmacro(find_dssdk)
 
 #remove this as soon as flann is shipped with FindFlann.cmake
