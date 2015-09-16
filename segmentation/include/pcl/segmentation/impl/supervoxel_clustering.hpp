@@ -658,7 +658,7 @@ pcl::SupervoxelClustering<PointT>::setVoxelResolution (float resolution)
 template <typename PointT> float
 pcl::SupervoxelClustering<PointT>::getSeedResolution () const
 {
-  return (resolution_);
+  return (seed_resolution_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
