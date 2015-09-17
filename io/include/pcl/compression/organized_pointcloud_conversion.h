@@ -545,11 +545,22 @@ namespace pcl
         const float fl_const = 1.0f/focalLength_arg;
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
+		//Data pointers
+		PointT* p = &cloud_arg.points[0]; //points to the first point element
+		uint8_t* parg = &rgbData_arg[0]; //points to the first colour element
+
+		//Colour variables
+		uint8_t* pixel_r;
+		uint8_t* pixel_g;
+		uint8_t* pixel_b;
+		uint32_t rgb;
+
+
         i = 0;
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-            PointT newPoint;
+			  PointT &newPoint = *p++; //increments the pointer to access new point eliminating the need for pushback
 
             const float& pixel_depth = depthData_arg[i];
 
@@ -566,25 +577,26 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i];
-                  const uint8_t& pixel_g = rgbData_arg[i];
-                  const uint8_t& pixel_b = rgbData_arg[i];
+					pixel_r = parg;
+					pixel_g = parg;
+					pixel_b = parg++;
 
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
+                  uint32_t rgb = (static_cast<uint32_t>(*pixel_r) << 16
+                                | static_cast<uint32_t>(*pixel_g) << 8
+                                | static_cast<uint32_t>(*pixel_b));
                   newPoint.rgb = *reinterpret_cast<float*>(&rgb);
                 } else
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
+					//Increment the colour pointer to go through colours
+					pixel_r = parg++;
+					pixel_g = parg++;
+					pixel_b = parg++;
 
-                  // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
+                  // Define point color		  
+                  uint32_t rgb = (static_cast<uint32_t>(*pixel_r) << 16
+                                | static_cast<uint32_t>(*pixel_g) << 8
+                                | static_cast<uint32_t>(*pixel_b));
                   newPoint.rgb = *reinterpret_cast<float*>(&rgb);
                 }
 
@@ -603,8 +615,6 @@ namespace pcl
               newPoint.rgb = 0.0f;
             }
 
-            // Add point to cloud
-            cloud_arg.points.push_back(newPoint);
             // Increment point iterator
             ++i;
         }
