@@ -547,8 +547,8 @@ namespace pcl
         static const float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
 		//Data pointers
-		PointT* p = &cloud_arg.points[0]; //points to the first point element
-		uint8_t* parg = &rgbData_arg[0]; //points to the first colour element
+		PointT* next_point = &cloud_arg.points[0]; //points to the first point element
+		uint8_t* ptr_arg = &rgbData_arg[0]; //points to the first colour element
 
 		//Colour variables
 		uint8_t* pixel_r;
@@ -561,7 +561,7 @@ namespace pcl
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-			  PointT &newPoint = *p++; //increments the pointer to access new point eliminating the need for pushback
+			PointT &newPoint = *next_point++; //increments the pointer to access new point eliminating the need for pushback
 
             const float& pixel_depth = depthData_arg[i];
 
@@ -578,9 +578,9 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-					pixel_r = parg;
-					pixel_g = parg;
-					pixel_b = parg++;
+				  pixel_r = ptr_arg;
+				  pixel_g = ptr_arg;
+				  pixel_b = ptr_arg++;
 
                   // Define point color
                   uint32_t rgb = (static_cast<uint32_t>(*pixel_r) << 16
@@ -590,9 +590,9 @@ namespace pcl
                 } else
                 {
 					//Increment the colour pointer to go through colours
-					pixel_r = parg++;
-					pixel_g = parg++;
-					pixel_b = parg++;
+				  pixel_r = ptr_arg++;
+				  pixel_g = ptr_arg++;
+				  pixel_b = ptr_arg++;
 
                   // Define point color		  
                   uint32_t rgb = (static_cast<uint32_t>(*pixel_r) << 16
