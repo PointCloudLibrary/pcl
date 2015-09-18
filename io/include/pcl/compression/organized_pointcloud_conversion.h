@@ -526,7 +526,8 @@ namespace pcl
         }
 
         int x, y, centerX, centerY;
-
+		
+		// Reset point cloud
         if (cloud_arg.points.size() != cloud_size) //If new pointcloud is the same size no need to clear/reserve
 		{
 			cloud_arg.points.clear();
