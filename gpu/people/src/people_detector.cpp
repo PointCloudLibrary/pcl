@@ -199,7 +199,7 @@ pcl::gpu::people::PeopleDetector::process ()
     
     const std::vector<int>& seed = t.indices.indices;
         
-    std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
+    std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
       //ScopeTime time("shs");    
       shs5(cloud_host_, seed, &flowermat_host_.points[0]);
@@ -340,7 +340,7 @@ pcl::gpu::people::PeopleDetector::processProb ()
 
     const std::vector<int>& seed = t.indices.indices;
 
-    std::fill(flowermat_host_.points.begin(), flowermat_host_.points.end(), 0);
+    std::fill(flowermat_host_.begin(), flowermat_host_.end(), 0);
     {
       //ScopeTime time("shs");
       shs5(cloud_host_, seed, &flowermat_host_.points[0]);

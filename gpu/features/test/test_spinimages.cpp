@@ -159,7 +159,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 	const int min_beighbours = 15;
                    
     vector<PointXYZ> normals_for_gpu(source.normals->size());
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU
@@ -249,7 +249,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 	const int min_beighbours = 15;
                    
     vector<PointXYZ> normals_for_gpu(source.normals->size());
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU
@@ -339,7 +339,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 	const int min_beighbours = 15;
                    
     vector<PointXYZ> normals_for_gpu(source.normals->size());
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU

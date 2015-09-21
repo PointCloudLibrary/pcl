@@ -74,7 +74,7 @@ pcl::features::ISMVoteList<PointT>::addVote (
     pcl::InterestPoint& vote, const PointT &vote_origin, int votes_class)
 {
   tree_is_valid_ = false;
-  votes_->points.insert (votes_->points.end (), vote);// TODO: adjust height and width
+  votes_->points.insert (votes_->end (), vote);// TODO: adjust height and width
 
   votes_origins_->points.push_back (vote_origin);
   votes_class_.push_back (votes_class);
@@ -878,7 +878,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
     int point_index = 0;
     typename pcl::PointCloud<PointT>::iterator point_i;
-    for (point_i = sampled_point_cloud->points.begin (); point_i != sampled_point_cloud->points.end (); point_i++, point_index++)
+    for (point_i = sampled_point_cloud->begin (); point_i != sampled_point_cloud->end (); point_i++, point_index++)
     {
       float descriptor_sum = Eigen::VectorXf::Map (feature_cloud->points[point_index].histogram, FeatureSize).sum ();
       if (descriptor_sum < std::numeric_limits<float>::epsilon ())
@@ -886,7 +886,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::extractDes
 
       histograms.insert ( histograms.end (), feature_cloud->begin () + point_index, feature_cloud->begin () + point_index + 1 );
 
-      int dist = static_cast<int> (std::distance (sampled_point_cloud->points.begin (), point_i));
+      int dist = static_cast<int> (std::distance (sampled_point_cloud->begin (), point_i));
       Eigen::Matrix3f new_basis = alignYCoordWithNormal (sampled_normal_cloud->points[dist]);
       Eigen::Vector3f zero;
       zero (0) = 0.0;
@@ -1182,7 +1182,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::shiftCloud
   Eigen::Vector3f shift_point)
 {
   typename pcl::PointCloud<PointT>::iterator point_it;
-  for (point_it = in_cloud->points.begin (); point_it != in_cloud->points.end (); point_it++)
+  for (point_it = in_cloud->begin (); point_it != in_cloud->end (); point_it++)
   {
     point_it->x -= shift_point.x ();
     point_it->y -= shift_point.y ();

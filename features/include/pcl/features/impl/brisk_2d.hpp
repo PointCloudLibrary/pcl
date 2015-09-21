@@ -472,7 +472,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   static const float log2 = 0.693147180559945f;
   static const float lb_scalerange = std::log (scalerange_) / (log2);
 
-  typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->points.begin ();
+  typename std::vector<KeypointT, Eigen::aligned_allocator<KeypointT> >::iterator beginning = keypoints_->begin ();
   std::vector<int>::iterator beginningkscales = kscales.begin ();
   
   static const float basic_size_06 = basic_size_ * 0.6f;
@@ -508,7 +508,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
       kscales.erase (beginningkscales + k);
       if (k == 0)
       {
-        beginning = keypoints_->points.begin ();
+        beginning = keypoints_->begin ();
         beginningkscales = kscales.begin ();
       }
       ksize--;
