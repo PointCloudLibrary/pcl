@@ -459,9 +459,9 @@ namespace pcl
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
         */
-      inline void resize (size_t n) 
+      inline void resize (size_t n, const PointT& value = PointT())
       { 
-        points.resize (n);
+        points.resize (n, value);
         if (width * height != n)
         {
           width = static_cast<uint32_t> (n);
