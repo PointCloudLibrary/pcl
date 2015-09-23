@@ -248,6 +248,10 @@ namespace pcl
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_PLANE); }
 
+      /** \brief Return the size of a sample from which a model is computed */
+      virtual unsigned int
+      getSampleSize () const { return (SAC_SAMPLE_SIZE[getModelType ()]); }
+
     protected:
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients

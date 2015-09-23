@@ -267,6 +267,10 @@ namespace pcl
       inline pcl::SacModel 
       getModelType () const { return (SACMODEL_CONE); }
 
+      /** \brief Return the size of a sample from which a model is computed */
+      virtual unsigned int
+      getSampleSize () const { return (SAC_SAMPLE_SIZE[getModelType ()]); }
+
     protected:
       /** \brief Get the distance from a point to a line (represented by a point and a direction)
         * \param[in] pt a point

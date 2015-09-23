@@ -196,6 +196,10 @@ namespace pcl
       /** \brief Return an unique id for this model (SACMODEL_SPHERE). */
       inline pcl::SacModel getModelType () const { return (SACMODEL_SPHERE); }
 
+      /** \brief Return the size of a sample from which a model is computed */
+      virtual unsigned int
+      getSampleSize () const { return (SAC_SAMPLE_SIZE[getModelType ()]); }
+
     protected:
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients

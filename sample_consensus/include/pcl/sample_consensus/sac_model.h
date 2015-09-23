@@ -201,7 +201,7 @@ namespace pcl
           // If it's a good sample, stop here
           if (isSampleGood (samples))
           {
-            PCL_DEBUG ("[pcl::SampleConsensusModel::getSamples] Selected %lu samples.\n", samples.size ());
+            PCL_VERBOSE ("[pcl::SampleConsensusModel::getSamples] Selected %lu samples.\n", samples.size ());
             return;
           }
         }
@@ -356,14 +356,8 @@ namespace pcl
       }
 
       /** \brief Return the size of a sample from which a model is computed */
-      inline unsigned int 
-      getSampleSize () const 
-      { 
-        std::map<pcl::SacModel, unsigned int>::const_iterator it = SAC_SAMPLE_SIZE.find (getModelType ());
-        if (it == SAC_SAMPLE_SIZE.end ())
-          throw InvalidSACModelTypeException ("No sample size defined for given model type!\n");
-        return (it->second);
-      }
+      virtual unsigned int
+      getSampleSize () const = 0;
 
       /** \brief Set the minimum and maximum allowable radius limits for the
         * model (applicable to models that estimate a radius)

@@ -81,6 +81,7 @@ namespace pcl
       SampleConsensusModelCircle3D (const PointCloudConstPtr &cloud,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random)
+        , tmp_inliers_ (NULL)
       {
         model_name_ = "SampleConsensusModelCircle3D";
       }
@@ -94,6 +95,7 @@ namespace pcl
                                     const std::vector<int> &indices,
                                     bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random)
+        , tmp_inliers_ (NULL)
       {
         model_name_ = "SampleConsensusModelCircle3D";
       }
@@ -195,6 +197,10 @@ namespace pcl
       /** \brief Return an unique id for this model (SACMODEL_CIRCLE3D). */
       inline pcl::SacModel
       getModelType () const { return (SACMODEL_CIRCLE3D); }
+
+      /** \brief Return the size of a sample from which a model is computed */
+      virtual unsigned int
+      getSampleSize () const { return (SAC_SAMPLE_SIZE[getModelType ()]); }
 
     protected:
       /** \brief Check whether a model is valid given the user constraints.

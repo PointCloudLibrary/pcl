@@ -69,6 +69,8 @@ namespace pcl
 }
 
 // Define the number of samples in SacModel needs
+// However, getSampleSize is realized by virtual methods by now, so this is
+// only kept to not break client code.
 typedef std::map<pcl::SacModel, unsigned int>::value_type SampleSizeModel;
 const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
                                                     SampleSizeModel (pcl::SACMODEL_LINE, 2),
