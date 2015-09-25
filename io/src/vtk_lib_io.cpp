@@ -266,9 +266,9 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
   for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
   {
     mesh_points->GetPoint (i, &point_xyz[0]);
-    xyz_cloud->points[i].x = static_cast<float> (point_xyz[0]);
-    xyz_cloud->points[i].y = static_cast<float> (point_xyz[1]);
-    xyz_cloud->points[i].z = static_cast<float> (point_xyz[2]);
+    (*xyz_cloud)[i].x = static_cast<float> (point_xyz[0]);
+    (*xyz_cloud)[i].y = static_cast<float> (point_xyz[1]);
+    (*xyz_cloud)[i].z = static_cast<float> (point_xyz[2]);
   }
   // And put it in the mesh cloud
   pcl::toPCLPointCloud2 (*xyz_cloud, mesh.cloud);
@@ -295,9 +295,9 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     for (vtkIdType i = 0; i < mesh_points->GetNumberOfPoints (); i++)
     {
       poly_colors->GetTupleValue (i, &point_color[0]);
-      rgb_cloud->points[i].r = point_color[0];
-      rgb_cloud->points[i].g = point_color[1];
-      rgb_cloud->points[i].b = point_color[2];
+      (*rgb_cloud)[i].r = point_color[0];
+      (*rgb_cloud)[i].g = point_color[1];
+      (*rgb_cloud)[i].b = point_color[2];
     }
 
     pcl::PCLPointCloud2 rgb_cloud2;
@@ -324,9 +324,9 @@ pcl::io::vtk2mesh (const vtkSmartPointer<vtkPolyData>& poly_data, pcl::PolygonMe
     {
       float normal[3];
       normals->GetTupleValue (i, normal);
-      normal_cloud->points[i].normal_x = normal[0];
-      normal_cloud->points[i].normal_y = normal[1];
-      normal_cloud->points[i].normal_z = normal[2];
+      (*normal_cloud)[i].normal_x = normal[0];
+      (*normal_cloud)[i].normal_y = normal[1];
+      (*normal_cloud)[i].normal_z = normal[2];
     }
 
     pcl::PCLPointCloud2 normal_cloud2;

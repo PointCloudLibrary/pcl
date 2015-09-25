@@ -78,8 +78,8 @@ TEST (PCL, BoundaryEstimation)
   // getCoordinateSystemOnPlane
   for (size_t i = 0; i < normals->size (); ++i)
   {
-    b.getCoordinateSystemOnPlane (normals->points[i], u, v);
-    Vector4fMap n4uv = normals->points[i].getNormalVector4fMap ();
+    b.getCoordinateSystemOnPlane ((*normals)[i], u, v);
+    Vector4fMap n4uv = (*normals)[i].getNormalVector4fMap ();
     EXPECT_NEAR (n4uv.dot(u), 0, 1e-4);
     EXPECT_NEAR (n4uv.dot(v), 0, 1e-4);
     EXPECT_NEAR (u.dot(v), 0, 1e-4);
@@ -98,13 +98,13 @@ TEST (PCL, BoundaryEstimation)
 
   // isBoundaryPoint (points)
   pt = false;
-  pt = b.isBoundaryPoint (cloud, cloud.points[0], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[0], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 3], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () / 2], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, false);
-  pt = b.isBoundaryPoint (cloud, cloud.points[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
+  pt = b.isBoundaryPoint (cloud, cloud[indices.size () - 1], indices, u, v, float (M_PI) / 2.0);
   EXPECT_EQ (pt, true);
 
   // Object
@@ -120,13 +120,13 @@ TEST (PCL, BoundaryEstimation)
   b.compute (*bps);
   EXPECT_EQ (bps->size (), indices.size ());
 
-  pt = bps->points[0].boundary_point;
+  pt = (*bps)[0].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 3].boundary_point;
+  pt = (*bps)[indices.size () / 3].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () / 2].boundary_point;
+  pt = (*bps)[indices.size () / 2].boundary_point;
   EXPECT_EQ (pt, false);
-  pt = bps->points[indices.size () - 1].boundary_point;
+  pt = (*bps)[indices.size () - 1].boundary_point;
   EXPECT_EQ (pt, true);
 }
 

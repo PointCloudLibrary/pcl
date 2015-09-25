@@ -93,7 +93,7 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
     std::vector<int> indices (1);
     std::vector<float> sqr_distances (1);
 
-    tree_b.nearestKSearch (cloud_a.points[i], 1, indices, sqr_distances);
+    tree_b.nearestKSearch (cloud_a[i], 1, indices, sqr_distances);
     if (sqr_distances[0] > max_dist_a)
       max_dist_a = sqr_distances[0];
   }
@@ -107,7 +107,7 @@ compute (Cloud &cloud_a, Cloud &cloud_b)
     std::vector<int> indices (1);
     std::vector<float> sqr_distances (1);
 
-    tree_a.nearestKSearch (cloud_b.points[i], 1, indices, sqr_distances);
+    tree_a.nearestKSearch (cloud_b[i], 1, indices, sqr_distances);
     if (sqr_distances[0] > max_dist_b)
       max_dist_b = sqr_distances[0];
   }

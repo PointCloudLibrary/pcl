@@ -344,11 +344,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
           worldPicker->Pick (x, y, value, renderer);
           worldPicker->GetPickPosition (coords);
-          cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
-          cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
-          cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
-          cloud->points[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
-                      * cloud->points[count_valid_depth_pixels].getVector4fMap ();
+          (*cloud)[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+          (*cloud)[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+          (*cloud)[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
+          (*cloud)[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
+                      * (*cloud)[count_valid_depth_pixels].getVector4fMap ();
           count_valid_depth_pixels++;
         }
       }
@@ -457,9 +457,9 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     //thus, the fliping in y and z
     for (size_t i = 0; i < cloud->size (); i++)
     {
-      cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0f;
-      cloud->points[i].z *= -1.0f;
+      (*cloud)[i].getVector4fMap () = trans_view * (*cloud)[i].getVector4fMap ();
+      (*cloud)[i].y *= -1.0f;
+      (*cloud)[i].z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);

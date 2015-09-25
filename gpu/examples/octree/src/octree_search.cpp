@@ -18,7 +18,7 @@ int main (int argc, char** argv)
   {
     for (size_t h = 0; h < cloud.height; ++h, ++i)
     {
-      pcl::PointXYZ& p = cloud.points[i];
+      pcl::PointXYZ& p = cloud[i];
       p.x = w; p.y = h; p.z = 1;
     }
   }

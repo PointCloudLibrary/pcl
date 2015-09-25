@@ -374,7 +374,7 @@ pcl::RegionGrowing<PointT, NormalT>::findPointNeighbours ()
     {
       neighbours.clear ();
       int point_index = (*indices_)[i_point];
-      if (!pcl::isFinite (input_->points[point_index]))
+      if (!pcl::isFinite ((*input_)[point_index]))
         continue;
       search_->nearestKSearch (i_point, neighbour_number_, neighbours, distances);
       point_neighbours_[point_index].swap (neighbours);
@@ -398,7 +398,7 @@ pcl::RegionGrowing<PointT, NormalT>::applySmoothRegionGrowingAlgorithm ()
     for (int i_point = 0; i_point < num_of_pts; i_point++)
     {
       int point_index = (*indices_)[i_point];
-      point_residual[i_point].first = normals_->points[point_index].curvature;
+      point_residual[i_point].first = (*normals_)[point_index].curvature;
       point_residual[i_point].second = point_index;
     }
     std::sort (point_residual.begin (), point_residual.end (), comparePair);
@@ -497,17 +497,17 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   float cosine_threshold = cosf (theta_threshold_);
   float data[4];
 
-  data[0] = input_->points[point].data[0];
-  data[1] = input_->points[point].data[1];
-  data[2] = input_->points[point].data[2];
-  data[3] = input_->points[point].data[3];
+  data[0] = (*input_)[point].data[0];
+  data[1] = (*input_)[point].data[1];
+  data[2] = (*input_)[point].data[2];
+  data[3] = (*input_)[point].data[3];
   Eigen::Map<Eigen::Vector3f> initial_point (static_cast<float*> (data));
-  Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> (normals_->points[point].normal));
+  Eigen::Map<Eigen::Vector3f> initial_normal (static_cast<float*> ((*normals_)[point].normal));
 
   //check the angle between normals
   if (smooth_mode_flag_ == true)
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
     float dot_product = fabsf (nghbr_normal.dot (initial_normal));
     if (dot_product < cosine_threshold)
     {
@@ -516,15 +516,15 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   }
   else
   {
-    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> (normals_->points[nghbr].normal));
-    Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> (normals_->points[initial_seed].normal));
+    Eigen::Map<Eigen::Vector3f> nghbr_normal (static_cast<float*> ((*normals_)[nghbr].normal));
+    Eigen::Map<Eigen::Vector3f> initial_seed_normal (static_cast<float*> ((*normals_)[initial_seed].normal));
     float dot_product = fabsf (nghbr_normal.dot (initial_seed_normal));
     if (dot_product < cosine_threshold)
       return (false);
   }
 
   // check the curvature if needed
-  if (curvature_flag_ && normals_->points[nghbr].curvature > curvature_threshold_)
+  if (curvature_flag_ && (*normals_)[nghbr].curvature > curvature_threshold_)
   {
     is_a_seed = false;
   }
@@ -532,10 +532,10 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   // check the residual if needed
   float data_1[4];
   
-  data_1[0] = input_->points[nghbr].data[0];
-  data_1[1] = input_->points[nghbr].data[1];
-  data_1[2] = input_->points[nghbr].data[2];
-  data_1[3] = input_->points[nghbr].data[3];
+  data_1[0] = (*input_)[nghbr].data[0];
+  data_1[1] = (*input_)[nghbr].data[1];
+  data_1[2] = (*input_)[nghbr].data[2];
+  data_1[3] = (*input_)[nghbr].data[3];
   Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data_1));
   float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
@@ -671,10 +671,10 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
     colored_cloud->is_dense = input_->is_dense;
     for (size_t i_point = 0; i_point < input_->size (); i_point++)
     {
-      pcl::PointXYZRGB& point = colored_cloud->points[i_point];
-      point.x = *(input_->points[i_point].data);
-      point.y = *(input_->points[i_point].data + 1);
-      point.z = *(input_->points[i_point].data + 2);
+      pcl::PointXYZRGB& point = (*colored_cloud)[i_point];
+      point.x = *((*input_)[i_point].data);
+      point.y = *((*input_)[i_point].data + 1);
+      point.z = *((*input_)[i_point].data + 2);
       point.r = 255;
       point.g = 0;
       point.b = 0;
@@ -689,9 +689,9 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloud ()
       {
         int index;
         index = *i_point;
-        colored_cloud->points[index].r = colors[3 * next_color];
-        colored_cloud->points[index].g = colors[3 * next_color + 1];
-        colored_cloud->points[index].b = colors[3 * next_color + 2];
+        (*colored_cloud)[index].r = colors[3 * next_color];
+        (*colored_cloud)[index].g = colors[3 * next_color + 1];
+        (*colored_cloud)[index].b = colors[3 * next_color + 2];
       }
       next_color++;
     }
@@ -725,10 +725,10 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
     colored_cloud->is_dense = input_->is_dense;
     for (size_t i_point = 0; i_point < input_->size (); i_point++)
     {
-      pcl::PointXYZRGBA& point = colored_cloud->points[i_point];
-      point.x = *(input_->points[i_point].data);
-      point.y = *(input_->points[i_point].data + 1);
-      point.z = *(input_->points[i_point].data + 2);
+      pcl::PointXYZRGBA& point = (*colored_cloud)[i_point];
+      point.x = *((*input_)[i_point].data);
+      point.y = *((*input_)[i_point].data + 1);
+      point.z = *((*input_)[i_point].data + 2);
       point.r = 255;
       point.g = 0;
       point.b = 0;
@@ -744,9 +744,9 @@ pcl::RegionGrowing<PointT, NormalT>::getColoredCloudRGBA ()
       {
         int index;
         index = *i_point;
-        colored_cloud->points[index].r = colors[3 * next_color];
-        colored_cloud->points[index].g = colors[3 * next_color + 1];
-        colored_cloud->points[index].b = colors[3 * next_color + 2];
+        (*colored_cloud)[index].r = colors[3 * next_color];
+        (*colored_cloud)[index].g = colors[3 * next_color + 1];
+        (*colored_cloud)[index].b = colors[3 * next_color + 2];
       }
       next_color++;
     }

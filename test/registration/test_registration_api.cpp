@@ -691,7 +691,7 @@ main (int argc, char** argv)
   // Tranpose the cloud_model
   /*for (size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

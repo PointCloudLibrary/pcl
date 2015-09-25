@@ -56,7 +56,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
   int curr_idx = start_idx;
   int curr_x   = start_idx % labels->width;
   int curr_y   = start_idx / labels->width;
-  unsigned label = labels->points[start_idx].label;
+  unsigned label = (*labels)[start_idx].label;
   
   // fill lookup table for next points to visit
   Neighbor directions [8] = {Neighbor(-1,  0,                 -1),
@@ -78,7 +78,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
     x = curr_x + directions [dIdx].d_x;
     y = curr_y + directions [dIdx].d_y;
     index = curr_idx + directions [dIdx].d_index;
-    if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label != label)
+    if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && (*labels)[index].label != label)
     {
       direction = dIdx;
       break;
@@ -100,7 +100,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
       x = curr_x + directions [nIdx].d_x;
       y = curr_y + directions [nIdx].d_y;
       index = curr_idx + directions [nIdx].d_index;
-      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
+      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && (*labels)[index].label == label)
         break;
     }
     
@@ -128,7 +128,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   unsigned int clust_id = 0;
   
   //First pixel
-  if (pcl_isfinite (input_->points[0].x))
+  if (pcl_isfinite ((*input_)[0].x))
   {
     labels[0].label = clust_id++;
     run_ids.push_back (labels[0].label );
@@ -137,7 +137,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   // First row
   for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
   {
-    if (!pcl_isfinite (input_->points[colIdx].x))
+    if (!pcl_isfinite ((*input_)[colIdx].x))
       continue;
     else if (compare_->compare (colIdx, colIdx - 1 ))
     {
@@ -156,7 +156,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   for (size_t rowIdx = 1; rowIdx < input_->height; ++rowIdx, previous_row = current_row, current_row += input_->width)
   {
     // First pixel
-    if (pcl_isfinite (input_->points[current_row].x))
+    if (pcl_isfinite ((*input_)[current_row].x))
     {
       if (compare_->compare (current_row, previous_row))
       {
@@ -172,7 +172,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
     // Rest of row
     for (int colIdx = 1; colIdx < static_cast<int> (input_->width); ++colIdx)
     {
-      if (pcl_isfinite (input_->points[current_row + colIdx].x))
+      if (pcl_isfinite ((*input_)[current_row + colIdx].x))
       {
         if (compare_->compare (current_row + colIdx, current_row + colIdx - 1))
         {

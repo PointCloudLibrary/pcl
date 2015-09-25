@@ -104,7 +104,7 @@ TEST(PCL_FeaturesGPU, ppf)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFSignature& gpu = downloaded[i];
-        PPFSignature& cpu = ppfs.points[i];        
+        PPFSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -178,7 +178,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     for(size_t i = 207025; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -266,7 +266,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);

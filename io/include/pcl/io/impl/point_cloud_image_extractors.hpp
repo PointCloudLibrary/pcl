@@ -91,9 +91,9 @@ pcl::io::PointCloudImageExtractorFromNormalField<PointT>::extractImpl (const Poi
     float x;
     float y;
     float z;
-    pcl::getFieldValue<PointT, float> (cloud.points[i], offset_x, x);
-    pcl::getFieldValue<PointT, float> (cloud.points[i], offset_y, y);
-    pcl::getFieldValue<PointT, float> (cloud.points[i], offset_z, z);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_x, x);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_y, y);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset_z, z);
     img.data[i * 3 + 0] = static_cast<unsigned char>((x + 1.0) * 127);
     img.data[i * 3 + 1] = static_cast<unsigned char>((y + 1.0) * 127);
     img.data[i * 3 + 2] = static_cast<unsigned char>((z + 1.0) * 127);
@@ -125,7 +125,7 @@ pcl::io::PointCloudImageExtractorFromRGBField<PointT>::extractImpl (const PointC
   for (size_t i = 0; i < cloud.size (); ++i)
   {
     uint32_t val;
-    pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+    pcl::getFieldValue<PointT, uint32_t> (cloud[i], offset, val);
     img.data[i * 3 + 0] = (val >> 16) & 0x0000ff;
     img.data[i * 3 + 1] = (val >> 8) & 0x0000ff;
     img.data[i * 3 + 2] = (val) & 0x0000ff;
@@ -157,7 +157,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       for (size_t i = 0; i < cloud.size (); ++i)
       {
         uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        pcl::getFieldValue<PointT, uint32_t> (cloud[i], offset, val);
         data[i] = static_cast<unsigned short>(val);
       }
       break;
@@ -176,7 +176,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       for (size_t i = 0; i < cloud.size (); ++i)
       {
         uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        pcl::getFieldValue<PointT, uint32_t> (cloud[i], offset, val);
         if (colormap.count (val) == 0)
         {
           colormap[val] = i * 3;
@@ -207,10 +207,10 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       for (size_t i = 0; i < cloud.size (); ++i)
       {
         // If we need to paint NaN points with black do not waste colors on them
-        if (paint_nans_with_black_ && !pcl::isFinite (cloud.points[i]))
+        if (paint_nans_with_black_ && !pcl::isFinite (cloud[i]))
           continue;
         uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        pcl::getFieldValue<PointT, uint32_t> (cloud[i], offset, val);
         labels.insert (val);
       }
 
@@ -228,7 +228,7 @@ pcl::io::PointCloudImageExtractorFromLabelField<PointT>::extractImpl (const Poin
       for (size_t i = 0; i < cloud.size (); ++i)
       {
         uint32_t val;
-        pcl::getFieldValue<PointT, uint32_t> (cloud.points[i], offset, val);
+        pcl::getFieldValue<PointT, uint32_t> (cloud[i], offset, val);
         memcpy (&img.data[i * 3], GlasbeyLUT::data () + colormap[val] * 3, 3);
       }
 
@@ -265,7 +265,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
     for (size_t i = 0; i < cloud.size (); ++i)
     {
       float val;
-      pcl::getFieldValue<PointT, float> (cloud.points[i], offset, val);
+      pcl::getFieldValue<PointT, float> (cloud[i], offset, val);
       if (val < min)
         min = val;
       if (val > max)
@@ -278,7 +278,7 @@ pcl::io::PointCloudImageExtractorWithScaling<PointT>::extractImpl (const PointCl
   for (size_t i = 0; i < cloud.size (); ++i)
   {
     float val;
-    pcl::getFieldValue<PointT, float> (cloud.points[i], offset, val);
+    pcl::getFieldValue<PointT, float> (cloud[i], offset, val);
     if (scaling_method_ == SCALING_NO)
     {
       data[i] = val;

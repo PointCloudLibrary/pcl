@@ -103,7 +103,7 @@ TEST(PCL_FeaturesGPU, fpfh_low_level)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         FPFHSignature33& gpu = downloaded[i];
-        FPFHSignature33& cpu = fpfhs.points[i];
+        FPFHSignature33& cpu = fpfhs[i];
         
         size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
         
@@ -178,7 +178,7 @@ TEST(PCL_FeaturesGPU, fpfh_high_level1)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         FPFHSignature33& gpu = downloaded[i];
-        FPFHSignature33& cpu = fpfhs.points[i];
+        FPFHSignature33& cpu = fpfhs[i];
         
         size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
         
@@ -256,7 +256,7 @@ TEST(PCL_FeaturesGPU, fpfh_high_level2)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         FPFHSignature33& gpu = downloaded[i];
-        FPFHSignature33& cpu = fpfhs.points[i];
+        FPFHSignature33& cpu = fpfhs[i];
         
         size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
         
@@ -333,7 +333,7 @@ TEST(PCL_FeaturesGPU, fpfh_high_level3)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         FPFHSignature33& gpu = downloaded[i];
-        FPFHSignature33& cpu = fpfhs.points[i];
+        FPFHSignature33& cpu = fpfhs[i];
         
         size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
         
@@ -411,7 +411,7 @@ TEST(PCL_FeaturesGPU, fpfh_high_level4)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         FPFHSignature33& gpu = downloaded[i];
-        FPFHSignature33& cpu = fpfhs.points[i];
+        FPFHSignature33& cpu = fpfhs[i];
         
         size_t FSize = sizeof(FPFHSignature33)/sizeof(gpu.histogram[0]);                                
         

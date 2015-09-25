@@ -178,7 +178,7 @@ namespace pcl
     // Copy point data
     uint32_t num_points = msg.width * msg.height;
     cloud.resize (num_points);
-    uint8_t* cloud_data = reinterpret_cast<uint8_t*>(&cloud.points[0]);
+    uint8_t* cloud_data = reinterpret_cast<uint8_t*>(&cloud[0]);
 
     // Check if we can copy adjacent points in a single memcpy
     if (field_map.size() == 1 &&
@@ -254,7 +254,7 @@ namespace pcl
     // Fill point cloud binary data (padding and all)
     size_t data_size = sizeof (PointT) * cloud.size ();
     msg.data.resize (data_size);
-    memcpy (&msg.data[0], &cloud.points[0], data_size);
+    memcpy (&msg.data[0], &cloud[0], data_size);
 
     // Fill fields metadata
     msg.fields.clear ();

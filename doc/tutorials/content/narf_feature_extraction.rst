@@ -35,7 +35,7 @@ The interesting part begins here:
   std::vector<int> keypoint_indices2;
   keypoint_indices2.resize(keypoint_indices.size());
   for (unsigned int i=0; i<keypoint_indices.size(); ++i) // This step is necessary to get the right vector type
-    keypoint_indices2[i]=keypoint_indices.points[i];
+    keypoint_indices2[i]=keypoint_indices[i];
   ...
 
 Here we copy the indices to the vector used as input for the feature.

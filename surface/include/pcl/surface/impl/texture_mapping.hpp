@@ -330,7 +330,7 @@ pcl::TextureMapping<PointInT>::mapMultipleTexturesToMeshUV (pcl::TextureMesh &te
       {
         // get point
         idx = tex_mesh.tex_polygons[m][i].vertices[j];
-        pt = camera_transformed_cloud->points[idx];
+        pt = (*camera_transformed_cloud)[idx];
 
         // compute UV coordinates for this point
         getPointUVCoordinates (pt, current_cam, tmp_VT);
@@ -395,13 +395,13 @@ pcl::TextureMapping<PointInT>::isPointOccluded (const PointInT &pt, OctreePtr oc
   for (size_t j = 0; j < indices.size (); j++)
   {
    // if intersected point is on the over side of the camera
-   if (pt.z * cloud->points[indices[j]].z < 0)
+   if (pt.z * (*cloud)[indices[j]].z < 0)
    {
      nbocc--;
      continue;
    }
 
-   if (fabs (cloud->points[indices[j]].z - pt.z) <= distance_threshold)
+   if (fabs ((*cloud)[indices[j]].z - pt.z) <= distance_threshold)
    {
      // points are very close to each-other, we do not consider the occlusion
      nbocc--;
@@ -440,9 +440,9 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
   std::vector<int> indices;
   for (size_t i = 0; i < input_cloud->size (); ++i)
   {
-    direction (0) = input_cloud->points[i].x;
-    direction (1) = input_cloud->points[i].y;
-    direction (2) = input_cloud->points[i].z;
+    direction (0) = (*input_cloud)[i].x;
+    direction (1) = (*input_cloud)[i].y;
+    direction (2) = (*input_cloud)[i].z;
 
     // if point is not occluded
     octree->getIntersectedVoxelIndices (direction, -direction, indices);
@@ -451,13 +451,13 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     for (size_t j = 0; j < indices.size (); j++)
     {
       // if intersected point is on the over side of the camera
-      if (input_cloud->points[i].z * input_cloud->points[indices[j]].z < 0)
+      if ((*input_cloud)[i].z * (*input_cloud)[indices[j]].z < 0)
       {
         nbocc--;
         continue;
       }
 
-      if (fabs (input_cloud->points[indices[j]].z - input_cloud->points[i].z) <= maxDeltaZ)
+      if (fabs ((*input_cloud)[indices[j]].z - (*input_cloud)[i].z) <= maxDeltaZ)
       {
         // points are very close to each-other, we do not consider the occlusion
         nbocc--;
@@ -467,7 +467,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     if (nbocc == 0)
     {
       // point is added in the filtered mesh
-      filtered_cloud->push_back (input_cloud->points[i]);
+      filtered_cloud->push_back ((*input_cloud)[i]);
       visible_indices.push_back (static_cast<int> (i));
     }
     else
@@ -613,7 +613,7 @@ pcl::TextureMapping<PointInT>::sortFacesByCamera (pcl::TextureMesh &tex_mesh, pc
         {
           // point is not occluded
           // does it land on the camera's image plane?
-          PointInT pt = transformed_cloud->points[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
+          PointInT pt = (*transformed_cloud)[tex_mesh.tex_polygons[0][faces].vertices[current_pt_indice]];
           Eigen::Vector2f dummy_UV;
           if (!getPointUVCoordinates (pt, cameras[cam], dummy_UV))
           {
@@ -678,12 +678,12 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
   // for each point of the cloud, ray-trace toward the camera and check intersected voxels.
   for (size_t i = 0; i < input_cloud->size (); ++i)
   {
-    direction (0) = input_cloud->points[i].x;
-    pt.x = input_cloud->points[i].x;
-    direction (1) = input_cloud->points[i].y;
-    pt.y = input_cloud->points[i].y;
-    direction (2) = input_cloud->points[i].z;
-    pt.z = input_cloud->points[i].z;
+    direction (0) = (*input_cloud)[i].x;
+    pt.x = (*input_cloud)[i].x;
+    direction (1) = (*input_cloud)[i].y;
+    pt.y = (*input_cloud)[i].y;
+    direction (2) = (*input_cloud)[i].z;
+    pt.z = (*input_cloud)[i].z;
 
     // get number of occlusions for that point
     indices.clear ();
@@ -695,19 +695,19 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     for (size_t j = 0; j < indices.size (); j++)
     {
       // if intersected point is on the over side of the camera
-      if (pt.z * input_cloud->points[indices[j]].z < 0)
+      if (pt.z * (*input_cloud)[indices[j]].z < 0)
       {
         nbocc--;
       }
-      else if (fabs (input_cloud->points[indices[j]].z - pt.z) <= maxDeltaZ)
+      else if (fabs ((*input_cloud)[indices[j]].z - pt.z) <= maxDeltaZ)
       {
         // points are very close to each-other, we do not consider the occlusion
         nbocc--;
       }
       else
       {
-        zDist.push_back (fabs (input_cloud->points[indices[j]].z - pt.z));
-        ptDist.push_back (pcl::euclideanDistance (input_cloud->points[indices[j]], pt));
+        zDist.push_back (fabs ((*input_cloud)[indices[j]].z - pt.z));
+        ptDist.push_back (pcl::euclideanDistance ((*input_cloud)[indices[j]], pt));
       }
     }
 
@@ -785,9 +785,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
       pcl::PointXY uv_coord3;
 
       if (isFaceProjected (cameras[current_cam],
-                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[0]],
-                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[1]],
-                           camera_cloud->points[mesh.tex_polygons[current_cam][idx_face].vertices[2]],
+                           (*camera_cloud)[mesh.tex_polygons[current_cam][idx_face].vertices[0]],
+                           (*camera_cloud)[mesh.tex_polygons[current_cam][idx_face].vertices[1]],
+                           (*camera_cloud)[mesh.tex_polygons[current_cam][idx_face].vertices[2]],
                            uv_coord1,
                            uv_coord2,
                            uv_coord3))
@@ -862,9 +862,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
             pcl::PointXY uv_coord3;
 
             if (isFaceProjected (cameras[current_cam],
-                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]],
-                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]],
-                                 camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]],
+                                 (*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]],
+                                 (*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]],
+                                 (*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]],
                                  uv_coord1,
                                  uv_coord2,
                                  uv_coord3))
@@ -882,13 +882,13 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
                 // for each neighbor
                 for (size_t i = 0; i < idxNeighbors.size (); ++i)
                 {
-                  if (std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
-                                std::max (camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z, 
-                                          camera_cloud->points[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]].z))
-                     < camera_cloud->points[indexes_uv_to_points[idxNeighbors[i]].idx_cloud].z)
+                  if (std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[0]].z,
+                                std::max ((*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[1]].z,
+                                          (*camera_cloud)[mesh.tex_polygons[idx_pcam][idx_face].vertices[2]].z))
+                     < (*camera_cloud)[indexes_uv_to_points[idxNeighbors[i]].idx_cloud].z)
                   {
                     // neighbor is farther than all the face's points. Check if it falls into the triangle
-                    if (checkPointInsideTriangle(uv_coord1, uv_coord2, uv_coord3, projections->points[idxNeighbors[i]]))
+                    if (checkPointInsideTriangle(uv_coord1, uv_coord2, uv_coord3, (*projections)[idxNeighbors[i]]))
                     {
                       // current neighbor is inside triangle and is closer => the corresponding face
                       visibility[indexes_uv_to_points[idxNeighbors[i]].idx_face] = false;
@@ -926,14 +926,14 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
       if (visibility[idx_face])
       {
         // face is visible by the current camera copy UV coordinates
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](0) = projections->points[idx_face*3].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](1) = projections->points[idx_face*3].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](0) = (*projections)[idx_face*3].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3](1) = (*projections)[idx_face*3].y;
 
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](0) = projections->points[idx_face*3 + 1].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](1) = projections->points[idx_face*3 + 1].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](0) = (*projections)[idx_face*3 + 1].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 1](1) = (*projections)[idx_face*3 + 1].y;
 
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](0) = projections->points[idx_face*3 + 2].x;
-        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](1) = projections->points[idx_face*3 + 2].y;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](0) = (*projections)[idx_face*3 + 2].x;
+        mesh.tex_coordinates[current_cam][cpt_visible_faces * 3 + 2](1) = (*projections)[idx_face*3 + 2].y;
 
         visible_faces[cpt_visible_faces] = mesh.tex_polygons[current_cam][idx_face];
 

@@ -126,9 +126,9 @@ namespace pcl
 
       for (size_t i = 0; i < cloud.size (); ++i)
       {
-        data[i*3 + 0] = cloud.points[i].r;
-        data[i*3 + 1] = cloud.points[i].g;
-        data[i*3 + 2] = cloud.points[i].b;        
+        data[i*3 + 0] = cloud[i].r;
+        data[i*3 + 1] = cloud[i].g;
+        data[i*3 + 2] = cloud[i].b;
       }
       saveRgbPNGFile(file_name, &data[0], cloud.width, cloud.height);
     }

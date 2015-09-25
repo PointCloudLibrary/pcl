@@ -273,14 +273,14 @@ class HRCSSegmentation
 
           for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {  
-            pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
-                                     cloud->points[region_indices[i].indices[j]].y,
-                                     cloud->points[region_indices[i].indices[j]].z);
+            pcl::PointXYZ ground_pt ((*cloud)[region_indices[i].indices[j]].x,
+                                     (*cloud)[region_indices[i].indices[j]].y,
+                                     (*cloud)[region_indices[i].indices[j]].z);
             ground_cloud->push_back (ground_pt);
-            ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
-            label_image->points[region_indices[i].indices[j]].r = 0;
-            label_image->points[region_indices[i].indices[j]].g = 255;
-            label_image->points[region_indices[i].indices[j]].b = 0;
+            (*ground_image)[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> (((*cloud)[region_indices[i].indices[j]].g + 255) / 2);
+            (*label_image)[region_indices[i].indices[j]].r = 0;
+            (*label_image)[region_indices[i].indices[j]].g = 255;
+            (*label_image)[region_indices[i].indices[j]].b = 0;
           } 
           
           // Compute plane info
@@ -361,17 +361,17 @@ class HRCSSegmentation
           for (size_t j = 0; j < region_indices[i].indices.size (); j++)
           {
             // Check to see if it has already been labeled
-            if (ground_image->points[region_indices[i].indices[j]].g == ground_image->points[region_indices[i].indices[j]].b)
+            if ((*ground_image)[region_indices[i].indices[j]].g == (*ground_image)[region_indices[i].indices[j]].b)
             {
-              pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
-                                       cloud->points[region_indices[i].indices[j]].y,
-                                       cloud->points[region_indices[i].indices[j]].z);
+              pcl::PointXYZ ground_pt ((*cloud)[region_indices[i].indices[j]].x,
+                                       (*cloud)[region_indices[i].indices[j]].y,
+                                       (*cloud)[region_indices[i].indices[j]].z);
               ground_cloud->push_back (ground_pt);
-              ground_image->points[region_indices[i].indices[j]].r = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].r + 255) / 2);
-              ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
-              label_image->points[region_indices[i].indices[j]].r = 128;
-              label_image->points[region_indices[i].indices[j]].g = 128;
-              label_image->points[region_indices[i].indices[j]].b = 0;
+              (*ground_image)[region_indices[i].indices[j]].r = static_cast<pcl::uint8_t> (((*cloud)[region_indices[i].indices[j]].r + 255) / 2);
+              (*ground_image)[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> (((*cloud)[region_indices[i].indices[j]].g + 255) / 2);
+              (*label_image)[region_indices[i].indices[j]].r = 128;
+              (*label_image)[region_indices[i].indices[j]].g = 128;
+              (*label_image)[region_indices[i].indices[j]].b = 0;
             }
             
           }
@@ -436,10 +436,10 @@ class HRCSSegmentation
               
                 for (size_t j = 0; j < euclidean_label_indices[i].indices.size (); j++)
                 {
-                  ground_image->points[euclidean_label_indices[i].indices[j]].r = 255;
-                  label_image->points[euclidean_label_indices[i].indices[j]].r = 255;
-                  label_image->points[euclidean_label_indices[i].indices[j]].g = 0;
-                  label_image->points[euclidean_label_indices[i].indices[j]].b = 0;
+                  (*ground_image)[euclidean_label_indices[i].indices[j]].r = 255;
+                  (*label_image)[euclidean_label_indices[i].indices[j]].r = 255;
+                  (*label_image)[euclidean_label_indices[i].indices[j]].g = 0;
+                  (*label_image)[euclidean_label_indices[i].indices[j]].b = 0;
                 }
 
               }
@@ -453,12 +453,12 @@ class HRCSSegmentation
       // note the NAN points in the image as well
       for (size_t i = 0; i < cloud->size (); i++)
       {
-        if (!pcl::isFinite (cloud->points[i]))
+        if (!pcl::isFinite ((*cloud)[i]))
         {
-          ground_image->points[i].b = static_cast<pcl::uint8_t>((cloud->points[i].b + 255) / 2);
-          label_image->points[i].r = 0;
-          label_image->points[i].g = 0;
-          label_image->points[i].b = 255;
+          (*ground_image)[i].b = static_cast<pcl::uint8_t>(((*cloud)[i].b + 255) / 2);
+          (*label_image)[i].r = 0;
+          (*label_image)[i].g = 0;
+          (*label_image)[i].b = 255;
         }
       }
 

@@ -87,9 +87,9 @@ TEST (PCL, MomentInvariantsEstimation)
 
   for (size_t i = 0; i < moments->size (); ++i)
   {
-    EXPECT_NEAR (moments->points[i].j1, 1.59244, 1e-4);
-    EXPECT_NEAR (moments->points[i].j2, 0.652063, 1e-4);
-    EXPECT_NEAR (moments->points[i].j3, 0.053917, 1e-4);
+    EXPECT_NEAR ((*moments)[i].j1, 1.59244, 1e-4);
+    EXPECT_NEAR ((*moments)[i].j2, 0.652063, 1e-4);
+    EXPECT_NEAR ((*moments)[i].j3, 0.053917, 1e-4);
   }
 }
 

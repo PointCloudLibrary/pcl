@@ -70,14 +70,14 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
       if (i != j)
       {
         if (pcl::computeRGBPairFeatures
-            (input_->points[i].getVector4fMap (), normals_->points[i].getNormalVector4fMap (), input_->points[i].getRGBVector4i (),
-             input_->points[j].getVector4fMap (), normals_->points[j].getNormalVector4fMap (), input_->points[j].getRGBVector4i (),
+            ((*input_)[i].getVector4fMap (), (*normals_)[i].getNormalVector4fMap (), (*input_)[i].getRGBVector4i (),
+             (*input_)[j].getVector4fMap (), (*normals_)[j].getNormalVector4fMap (), (*input_)[j].getRGBVector4i (),
              p.f1, p.f2, p.f3, p.f4, p.r_ratio, p.g_ratio, p.b_ratio))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-              model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-              model_point = input_->points[j].getVector3fMap ();
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+              model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+              model_point = (*input_)[j].getVector3fMap ();
           Eigen::AngleAxisf rotation_mg (acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ())),
                                          model_reference_normal.cross (Eigen::Vector3f::UnitX ()).normalized ());
           Eigen::Affine3f transform_mg = Eigen::Translation3f ( rotation_mg * ((-1) * model_reference_point)) * rotation_mg;
@@ -99,7 +99,7 @@ pcl::PPFRGBEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudO
       else
          p.f1 = p.f2 = p.f3 = p.f4 = p.alpha_m = p.r_ratio = p.g_ratio = p.b_ratio = 0.f;
 
-      output.points[index_i*input_->size () + j] = p;
+      output[index_i*input_->size () + j] = p;
     }
   }
 }
@@ -140,8 +140,8 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
       {
         float f1, f2, f3, f4, r_ratio, g_ratio, b_ratio;
         if (pcl::computeRGBPairFeatures
-            (input_->points[i].getVector4fMap (), normals_->points[i].getNormalVector4fMap (), input_->points[i].getRGBVector4i (),
-             input_->points[j].getVector4fMap (), normals_->points[j].getNormalVector4fMap (), input_->points[j].getRGBVector4i (),
+            ((*input_)[i].getVector4fMap (), (*normals_)[i].getNormalVector4fMap (), (*input_)[i].getRGBVector4i (),
+             (*input_)[j].getVector4fMap (), (*normals_)[j].getNormalVector4fMap (), (*input_)[j].getRGBVector4i (),
              f1, f2, f3, f4, r_ratio, g_ratio, b_ratio))
         {
           average_feature_nn.f1 += f1;
@@ -167,7 +167,7 @@ pcl::PPFRGBRegionEstimation<PointInT, PointNT, PointOutT>::computeFeature (Point
     average_feature_nn.r_ratio /= normalization_factor;
     average_feature_nn.g_ratio /= normalization_factor;
     average_feature_nn.b_ratio /= normalization_factor;
-    output.points[index_i] = average_feature_nn;
+    output[index_i] = average_feature_nn;
   }
   PCL_INFO ("Output size: %u\n", output.size ());
 }

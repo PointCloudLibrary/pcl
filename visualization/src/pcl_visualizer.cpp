@@ -2839,7 +2839,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
   size_t i;
   for (i = 0; i < point_cloud->size (); ++i)
-    poly_points->InsertPoint (i, point_cloud->points[i].x, point_cloud->points[i].y, point_cloud->points[i].z);
+    poly_points->InsertPoint (i, (*point_cloud)[i].x, (*point_cloud)[i].y, (*point_cloud)[i].z);
 
   bool has_color = false;
   vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
@@ -2852,7 +2852,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
     for (i = 0; i < cloud.size (); ++i)
     {
-      const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
+      const unsigned char color[3] = {cloud[i].r, cloud[i].g, cloud[i].b};
       colors->InsertNextTupleValue(color);
     }
   }
@@ -2865,7 +2865,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
     pcl::fromPCLPointCloud2(poly_mesh.cloud, cloud);
     for (i = 0; i < cloud.size (); ++i)
     {
-      const unsigned char color[3] = {cloud.points[i].r, cloud.points[i].g, cloud.points[i].b};
+      const unsigned char color[3] = {cloud[i].r, cloud[i].g, cloud[i].b};
       colors->InsertNextTupleValue(color);
     }
   }
@@ -2976,7 +2976,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
   }
   else
   {
@@ -2985,11 +2985,11 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
 
       lookup [i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
       j++;
       ptr += 3;
     }
@@ -3058,7 +3058,7 @@ pcl::visualization::PCLVisualizer::addPolylineFromPolygonMesh (
 
   size_t i;
   for (i = 0; i < point_cloud.size (); ++i)
-    poly_points->InsertPoint (i, point_cloud.points[i].x, point_cloud.points[i].y, point_cloud.points[i].z);
+    poly_points->InsertPoint (i, point_cloud[i].x, point_cloud[i].y, point_cloud[i].z);
 
   // Create a cell array to store the lines in and add the lines to it
   vtkSmartPointer <vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
@@ -3180,7 +3180,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     poly_points->SetNumberOfPoints (cloud.size ());
     for (std::size_t i = 0; i < cloud.size (); ++i)
     {
-      const pcl::PointXYZRGB &p = cloud.points[i];
+      const pcl::PointXYZRGB &p = cloud[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
       const unsigned char color[3] = {p.r, p.g, p.b};
       colors->InsertNextTupleValue(color);
@@ -3200,7 +3200,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
     poly_points->SetNumberOfPoints (cloud->size ());
     for (std::size_t i = 0; i < cloud->size (); ++i)
     {
-      const pcl::PointXYZ &p = cloud->points[i];
+      const pcl::PointXYZ &p = (*cloud)[i];
       poly_points->InsertPoint (i, p.x, p.y, p.z);
     }
   }
@@ -3686,11 +3686,11 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
         worldPicker->Pick (static_cast<double> (x), static_cast<double> (y), value, renderer);
         worldPicker->GetPickPosition (coords);
-        cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
-        cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
-        cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
-        cloud->points[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
-            * cloud->points[count_valid_depth_pixels].getVector4fMap ();
+        (*cloud)[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+        (*cloud)[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+        (*cloud)[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
+        (*cloud)[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
+            * (*cloud)[count_valid_depth_pixels].getVector4fMap ();
         count_valid_depth_pixels++;
       }
     }
@@ -3809,9 +3809,9 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
     //thus, the fliping in y and z
     for (size_t i = 0; i < cloud->size (); i++)
     {
-      cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0f;
-      cloud->points[i].z *= -1.0f;
+      (*cloud)[i].getVector4fMap () = trans_view * (*cloud)[i].getVector4fMap ();
+      (*cloud)[i].y *= -1.0f;
+      (*cloud)[i].z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);

@@ -290,7 +290,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
       int y = index/range_image.width,
           x = index - y*range_image.width;
       
-      const BorderTraits& border_traits = border_descriptions.points[index].traits;
+      const BorderTraits& border_traits = border_descriptions[index].traits;
       if (border_traits[BORDER_TRAIT__SHADOW_BORDER] || border_traits[BORDER_TRAIT__VEIL_POINT])
         continue;
       
@@ -323,7 +323,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
         int index2 = neighbors_to_check[neighbors_to_check_idx];
         if (!range_image.isValid (index2))
           continue;
-        const BorderTraits& border_traits2 = border_descriptions.points[index2].traits;
+        const BorderTraits& border_traits2 = border_descriptions[index2].traits;
         if (border_traits2[BORDER_TRAIT__SHADOW_BORDER] || border_traits2[BORDER_TRAIT__VEIL_POINT])
           continue;
         int y2 = index2/range_image.width,
@@ -455,7 +455,7 @@ NarfKeypoint::calculateSparseInterestImage ()
     interest_image_[index] = 0.0f;
     if (!range_image.isValid (index))
       continue;
-    const BorderTraits& border_traits = border_descriptions.points[index].traits;
+    const BorderTraits& border_traits = border_descriptions[index].traits;
     if (border_traits[BORDER_TRAIT__SHADOW_BORDER] || border_traits[BORDER_TRAIT__VEIL_POINT])
       continue;
     interest_image_[index] = 2.0f;
@@ -506,7 +506,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       int index2 = neighbors_to_check[neighbors_to_check_idx];
       if (!range_image.isValid (index2))
         continue;
-      const BorderTraits& border_traits2 = border_descriptions.points[index2].traits;
+      const BorderTraits& border_traits2 = border_descriptions[index2].traits;
       if (border_traits2[BORDER_TRAIT__SHADOW_BORDER] || border_traits2[BORDER_TRAIT__VEIL_POINT])
         continue;
       int y2 = index2/range_image.width,
@@ -781,7 +781,7 @@ NarfKeypoint::calculateInterestPoints ()
             if (invalid_beams[i] || !range_image.isValid (x2, y2))
               continue;
             int index2 = y2*width + x2;
-            const BorderTraits& neighbor_border_traits = border_descriptions.points[index2].traits;
+            const BorderTraits& neighbor_border_traits = border_descriptions[index2].traits;
             if (neighbor_border_traits[BORDER_TRAIT__SHADOW_BORDER] || neighbor_border_traits[BORDER_TRAIT__VEIL_POINT])
             {
               invalid_beams[i] = true;
@@ -845,7 +845,7 @@ NarfKeypoint::calculateInterestPoints ()
     bool better_point_too_close = false;
     for (size_t int_point_idx2=0; int_point_idx2<interest_points_->size (); ++int_point_idx2)
     {
-      const InterestPoint& interest_point2 = interest_points_->points[int_point_idx2];
+      const InterestPoint& interest_point2 = (*interest_points_)[int_point_idx2];
       float distance_squared = (interest_point.getVector3fMap ()-interest_point2.getVector3fMap ()).squaredNorm ();
       if (distance_squared < min_distance_squared)
       {

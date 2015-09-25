@@ -164,7 +164,7 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
     for(size_t i = 0; i < cloud.points.size(); ++i)
     {
         PointXYZHSV h;
-        PointXYZRGB p = cloud.points[i];
+        PointXYZRGB p = cloud[i];
         PointXYZRGBtoXYZHSV(p, h);
         hue[i] = h.h;
     }    
@@ -195,13 +195,13 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
         int sq_idx = 0;
         seed_queue.push_back (i);
 
-        PointXYZRGB p = cloud.points[i];
+        PointXYZRGB p = cloud[i];
         float h = hue[i];
 
         while (sq_idx < (int)seed_queue.size ())
         {
             int index = seed_queue[sq_idx];
-            const PointXYZRGB& q = cloud.points[index];
+            const PointXYZRGB& q = cloud[index];
 
             if(!isFinite (q))
                 continue;
@@ -229,7 +229,7 @@ void optimized_shs5(const PointCloud<PointXYZRGB> &cloud, float tolerance, const
                     if (mask[idx])
                         continue;
 
-                    if (sqnorm(cloud.points[idx], q) <= squared_radius)
+                    if (sqnorm(cloud[idx], q) <= squared_radius)
                     {
                         float h_l = hue[idx];
 

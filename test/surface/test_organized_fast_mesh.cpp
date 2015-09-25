@@ -72,16 +72,16 @@ TEST (PCL, Organized)
   {
     for (size_t j = 0; j < cloud_organized->width; j++)
     {
-      cloud_organized->points[npoints].x = static_cast<float> (i);
-      cloud_organized->points[npoints].y = static_cast<float> (j);
-      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->size ()); // to avoid shadowing
+      (*cloud_organized)[npoints].x = static_cast<float> (i);
+      (*cloud_organized)[npoints].y = static_cast<float> (j);
+      (*cloud_organized)[npoints].z = static_cast<float> (cloud_organized->size ()); // to avoid shadowing
       npoints++;
     }
   }
   int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
-  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].x = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].y = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].z = numeric_limits<float>::quiet_NaN ();
   
   // Init objects
   PolygonMesh triangles;

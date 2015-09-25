@@ -130,13 +130,13 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || 
-            !pcl_isfinite (input_->points[cp].y) || 
-            !pcl_isfinite (input_->points[cp].z))
+        if (!pcl_isfinite ((*input_)[cp].x) ||
+            !pcl_isfinite ((*input_)[cp].y) ||
+            !pcl_isfinite ((*input_)[cp].z))
           continue;
 
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[cp]);
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&(*input_)[cp]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -153,9 +153,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
           continue;
       }
       
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
+      int ijk0 = static_cast<int> (floor ((*input_)[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
+      int ijk1 = static_cast<int> (floor ((*input_)[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
+      int ijk2 = static_cast<int> (floor ((*input_)[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -172,14 +172,14 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) || 
-            !pcl_isfinite (input_->points[cp].y) || 
-            !pcl_isfinite (input_->points[cp].z))
+        if (!pcl_isfinite ((*input_)[cp].x) ||
+            !pcl_isfinite ((*input_)[cp].y) ||
+            !pcl_isfinite ((*input_)[cp].z))
           continue;
 
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
+      int ijk0 = static_cast<int> (floor ((*input_)[cp].x * inverse_leaf_size_[0]) - min_b_[0]);
+      int ijk1 = static_cast<int> (floor ((*input_)[cp].y * inverse_leaf_size_[1]) - min_b_[1]);
+      int ijk2 = static_cast<int> (floor ((*input_)[cp].z * inverse_leaf_size_[2]) - min_b_[2]);
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -243,9 +243,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
     if (!downsample_all_data_) 
     {
-      centroid[0] = input_->points[index_vector[cp].cloud_point_index].x;
-      centroid[1] = input_->points[index_vector[cp].cloud_point_index].y;
-      centroid[2] = input_->points[index_vector[cp].cloud_point_index].z;
+      centroid[0] = (*input_)[index_vector[cp].cloud_point_index].x;
+      centroid[1] = (*input_)[index_vector[cp].cloud_point_index].y;
+      centroid[2] = (*input_)[index_vector[cp].cloud_point_index].z;
     }
     else 
     {
@@ -254,7 +254,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       {
         // Fill r/g/b data, assuming that the order is BGRA
         pcl::RGB rgb;
-        memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[cp].cloud_point_index]) + rgba_index, sizeof (RGB));
+        memcpy (&rgb, reinterpret_cast<const char*> (&(*input_)[index_vector[cp].cloud_point_index]) + rgba_index, sizeof (RGB));
         centroid[centroid_size-3] = rgb.r;
         centroid[centroid_size-2] = rgb.g;
         centroid[centroid_size-1] = rgb.b;
@@ -264,7 +264,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
       if (label_index >= 0)
       {
         // store the label in a map data structure
-        uint32_t label = input_->points[index_vector[cp].cloud_point_index].label;
+        uint32_t label = (*input_)[index_vector[cp].cloud_point_index].label;
         std::map<int, int>::iterator it = labels.find (label);
         if (it == labels.end ())
           labels.insert (labels.begin (), std::pair<int, int> (label, 1));
@@ -272,7 +272,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
           it->second = it->second++;
       }
 
-      pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <pcl::PointXYZRGBL> (input_->points[index_vector[cp].cloud_point_index], centroid));
+      pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <pcl::PointXYZRGBL> ((*input_)[index_vector[cp].cloud_point_index], centroid));
     }
 
     unsigned int i = cp + 1;
@@ -280,9 +280,9 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     {
       if (!downsample_all_data_) 
       {
-        centroid[0] += input_->points[index_vector[i].cloud_point_index].x;
-        centroid[1] += input_->points[index_vector[i].cloud_point_index].y;
-        centroid[2] += input_->points[index_vector[i].cloud_point_index].z;
+        centroid[0] += (*input_)[index_vector[i].cloud_point_index].x;
+        centroid[1] += (*input_)[index_vector[i].cloud_point_index].y;
+        centroid[2] += (*input_)[index_vector[i].cloud_point_index].z;
       }
       else 
       {
@@ -291,12 +291,12 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
         {
           // Fill r/g/b data, assuming that the order is BGRA
           pcl::RGB rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
+          memcpy (&rgb, reinterpret_cast<const char*> (&(*input_)[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
           temporary[centroid_size-3] = rgb.r;
           temporary[centroid_size-2] = rgb.g;
           temporary[centroid_size-1] = rgb.b;
         }
-        pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <pcl::PointXYZRGBL> (input_->points[index_vector[i].cloud_point_index], temporary));
+        pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <pcl::PointXYZRGBL> ((*input_)[index_vector[i].cloud_point_index], temporary));
         centroid += temporary;
       }
       ++i;
@@ -312,20 +312,20 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
     // Do we need to process all the fields?
     if (!downsample_all_data_) 
     {
-      output.points[index].x = centroid[0];
-      output.points[index].y = centroid[1];
-      output.points[index].z = centroid[2];
+      output[index].x = centroid[0];
+      output[index].y = centroid[1];
+      output[index].z = centroid[2];
     }
     else 
     {
-      pcl::for_each_type<FieldList> (pcl::NdCopyEigenPointFunctor <pcl::PointXYZRGBL> (centroid, output.points[index]));
+      pcl::for_each_type<FieldList> (pcl::NdCopyEigenPointFunctor <pcl::PointXYZRGBL> (centroid, output[index]));
       // ---[ RGB special case
       if (rgba_index >= 0) 
       {
         // pack r/g/b into rgb
         float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
         int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
-        memcpy (reinterpret_cast<char*> (&output.points[index]) + rgba_index, &rgb, sizeof (float));
+        memcpy (reinterpret_cast<char*> (&output[index]) + rgba_index, &rgb, sizeof (float));
       }
 
       if (label_index >= 0)
@@ -345,7 +345,7 @@ pcl::VoxelGridLabel::applyFilter (PointCloud &output)
             }
           }
         }
-        output.points[index].label = label;
+        output[index].label = label;
       }
     }
     cp = i;

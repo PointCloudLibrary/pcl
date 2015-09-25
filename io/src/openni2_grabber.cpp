@@ -561,7 +561,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   {
     for (int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
         depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -663,7 +663,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
 
@@ -696,7 +696,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (unsigned xIdx = 0; xIdx < image_width_; ++xIdx, point_idx += step, value_idx += 3)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
 
       color.Red   = rgb_buffer[value_idx];
       color.Green = rgb_buffer[value_idx + 1];
@@ -771,7 +771,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   {
     for (int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||

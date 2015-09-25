@@ -91,7 +91,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
     while (cii < static_cast<int> (current_cluster.size ()))
     {
       // Search for neighbors around the current seed point of the current cluster
-      if (searcher_->radiusSearch (input_->points[current_cluster[cii]], cluster_tolerance_, nn_indices, nn_distances) < 1)
+      if (searcher_->radiusSearch ((*input_)[current_cluster[cii]], cluster_tolerance_, nn_indices, nn_distances) < 1)
       {
         cii++;
         continue;
@@ -105,7 +105,7 @@ pcl::ConditionalEuclideanClustering<PointT>::segment (pcl::IndicesClusters &clus
           continue;
 
         // Validate if condition holds
-        if (condition_function_ (input_->points[current_cluster[cii]], input_->points[nn_indices[nii]], nn_distances[nii]))
+        if (condition_function_ ((*input_)[current_cluster[cii]], (*input_)[nn_indices[nii]], nn_distances[nii]))
         {
           // Add the point to the cluster
           current_cluster.push_back (nn_indices[nii]);

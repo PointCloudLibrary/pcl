@@ -205,7 +205,7 @@ resultant histogram as an array of float values.
 
      for (int i = 0; i < normals->size(); i++)
      {
-       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       if (!pcl::isFinite<pcl::Normal>((*normals)[i]))
        {
          PCL_WARN("normals[%d] is not finite\n", i);
        }

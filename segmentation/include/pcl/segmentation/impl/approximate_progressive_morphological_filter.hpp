@@ -139,7 +139,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
   for (int i = 0; i < (int)input_->size (); ++i)
   {
     // ...then test for lower points within the cell
-    PointT p = input_->points[i];
+    PointT p = (*input_)[i];
     int row = std::floor((p.y - global_min.y ()) / cell_size_);
     int col = std::floor((p.x - global_min.x ()) / cell_size_);
 
@@ -237,7 +237,7 @@ pcl::ApproximateProgressiveMorphologicalFilter<PointT>::extract (std::vector<int
     std::vector<int> pt_indices;
     for (size_t p_idx = 0; p_idx < ground.size (); ++p_idx)
     {
-      PointT p = cloud->points[p_idx];
+      PointT p = (*cloud)[p_idx];
       int erow = static_cast<int> (std::floor ((p.y - global_min.y ()) / cell_size_));
       int ecol = static_cast<int> (std::floor ((p.x - global_min.x ()) / cell_size_));
 

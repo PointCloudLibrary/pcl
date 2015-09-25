@@ -84,9 +84,9 @@ namespace pcl
       if (samples.size () != 1)
         return (false);
 
-    /*  if (isnan ((PointXYZRGB)input_->points[samples[0]]).x ||
-          isnan ((PointXYZRGB)input_->points[samples[1]]).x ||
-          isnan ((PointXYZRGB)input_->points[samples[2]]).x)
+    /*  if (isnan ((PointXYZRGB)(*input_)[samples[0]]).x ||
+          isnan ((PointXYZRGB)(*input_)[samples[1]]).x ||
+          isnan ((PointXYZRGB)(*input_)[samples[2]]).x)
         return (false);*/
 
       float3 normal;
@@ -104,7 +104,7 @@ namespace pcl
       model_coefficients[1] = mc.y;
       model_coefficients[2] = mc.z;
       // ... + d = 0
-      model_coefficients[3] = -1 * dot (mc, ((PointXYZRGB)input_->points[samples[0]]).xyz);
+      model_coefficients[3] = -1 * dot (mc, ((PointXYZRGB)(*input_)[samples[0]]).xyz);
 
       return (true);
     }
@@ -333,7 +333,7 @@ namespace pcl
                  //index_sequence_begin + max_iterations, 
                  randoms.begin (), randoms.begin () + max_iterations,
                  h.begin (), 
-                 Create1PointPlaneHypothesis<Storage> (thrust::raw_pointer_cast (&input_->points[0]), 
+                 Create1PointPlaneHypothesis<Storage> (thrust::raw_pointer_cast (&(*input_)[0]),
                                                        thrust::raw_pointer_cast (&(*indices_)[0]),
                                                        indices_->size (), std::numeric_limits<float>::quiet_NaN ()));
       return (true);
@@ -371,7 +371,7 @@ namespace pcl
                  //index_sequence_begin, index_sequence_begin + max_iterations,
                  thrust::make_zip_iterator (thrust::make_tuple (samples.begin (), h.begin())),
     //             h.begin (), 
-                 Create1PointPlaneSampleHypothesis<Storage> (thrust::raw_pointer_cast (&input_->points[0]), 
+                 Create1PointPlaneSampleHypothesis<Storage> (thrust::raw_pointer_cast (&(*input_)[0]),
                                                              thrust::raw_pointer_cast (&(*normals_)[0]),
                                                              thrust::raw_pointer_cast (&(*indices_)[0]),
                                                              input_->width, input_->height,

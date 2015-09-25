@@ -119,7 +119,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
   for (index = 0; index < int (input.size ()); index++)
   {
     edge_points[index] = false;
-    PointInT current_point = input.points[index];
+    PointInT current_point = input[index];
 
     if (pcl::isFinite(current_point))
     {
@@ -133,7 +133,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 
       if (n_neighbors >= min_neighbors_)
       {
-	boundary_estimator.getCoordinateSystemOnPlane (normals_->points[index], u, v);
+	boundary_estimator.getCoordinateSystemOnPlane ((*normals_)[index], u, v);
 
 	if (boundary_estimator.isBoundaryPoint (input, static_cast<int> (index), nn_indices, u, v, angle_threshold))
 	  edge_points[index] = true;
@@ -148,7 +148,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getBoundaryPoints (PointCloudI
 template<typename PointInT, typename PointOutT, typename NormalT> void
 pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& current_index, Eigen::Matrix3d &cov_m)
 {
-  const PointInT& current_point = (*input_).points[current_index];
+  const PointInT& current_point = (*input_)[current_index];
 
   double central_point[3];
   memset(central_point, 0, sizeof(double) * 3);
@@ -175,7 +175,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::getScatterMatrix (const int& c
 
   for (int n_idx = 0; n_idx < n_neighbors; n_idx++)
   {
-    const PointInT& n_point = (*input_).points[nn_indices[n_idx]];
+    const PointInT& n_point = (*input_)[nn_indices[n_idx]];
 
     double neigh_point[3];
     memset(neigh_point, 0, sizeof(double) * 3);
@@ -307,7 +307,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   for (index = 0; index < int (input_->size ()); index++)
   {
     borders[index] = false;
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((border_radius_ > 0.0) && (pcl::isFinite(current_point)))
     {
@@ -354,7 +354,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #else
     int tid = 0;
 #endif
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((!borders[index]) && pcl::isFinite(current_point))
     {
@@ -405,7 +405,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   for (index = 0; index < int (input_->size ()); index++)
   {
     feat_max [index] = false;
-    PointInT current_point = input_->points[index];
+    PointInT current_point = (*input_)[index];
 
     if ((third_eigen_value_[index] > 0.0) && (pcl::isFinite(current_point)))
     {
@@ -441,7 +441,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
 #endif
     {
       PointOutT p;
-      p.getVector3fMap () = input_->points[index].getVector3fMap ();
+      p.getVector3fMap () = (*input_)[index].getVector3fMap ();
       output.push_back(p);
       keypoints_indices_->indices.push_back (index);
     }

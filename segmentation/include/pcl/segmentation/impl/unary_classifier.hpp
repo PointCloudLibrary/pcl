@@ -96,10 +96,10 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
   {
     pcl::PointXYZ point;
     // fill X Y Z
-    point.x = in->points[i].x;
-    point.y = in->points[i].y;
-    point.z = in->points[i].z;
-    out->points[i] = point;
+    point.x = (*in)[i].x;
+    point.y = (*in)[i].y;
+    point.z = (*in)[i].z;
+    (*out)[i] = point;
   }
 }
 
@@ -119,12 +119,12 @@ pcl::UnaryClassifier<PointT>::convertCloud (typename pcl::PointCloud<PointT>::Pt
   {
     pcl::PointXYZRGBL point;
     // X Y Z R G B L
-    point.x = in->points[i].x;
-    point.y = in->points[i].y;
-    point.z = in->points[i].z;
-    //point.rgba = in->points[i].rgba;
+    point.x = (*in)[i].x;
+    point.y = (*in)[i].y;
+    point.z = (*in)[i].z;
+    //point.rgba = (*in)[i].rgba;
     point.label = 1;
-    out->points[i] = point;
+    (*out)[i] = point;
   }
 }
 
@@ -146,7 +146,7 @@ pcl::UnaryClassifier<PointT>::findClusters (typename pcl::PointCloud<PointT>::Pt
     {
       // get the 'label' field                                                                       
       uint32_t label;      
-      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(uint32_t));
+      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(uint32_t));
 
       // check if label exist
       bool exist = false;
@@ -182,15 +182,15 @@ pcl::UnaryClassifier<PointT>::getCloudWithLabel (typename pcl::PointCloud<PointT
     {
       // get the 'label' field                                                                       
       uint32_t label;
-      memcpy (&label, reinterpret_cast<char*> (&in->points[i]) + fields[label_idx].offset, sizeof(uint32_t));
+      memcpy (&label, reinterpret_cast<char*> (&(*in)[i]) + fields[label_idx].offset, sizeof(uint32_t));
 
       if (static_cast<int> (label) == label_num)
       {
         pcl::PointXYZ point;
         // X Y Z
-        point.x = in->points[i].x;
-        point.y = in->points[i].y;
-        point.z = in->points[i].z;
+        point.x = (*in)[i].x;
+        point.y = (*in)[i].y;
+        point.z = (*in)[i].z;
         out->push_back (point);
       }
     }
@@ -241,7 +241,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
   {
     std::vector<float> data (33);
     for (int idx = 0; idx < 33; idx++)
-      data[idx] = in->points[i].histogram[idx];
+      data[idx] = (*in)[i].histogram[idx];
     kmeans.addDataPoint (data);
   }
 
@@ -262,7 +262,7 @@ pcl::UnaryClassifier<PointT>::kmeansClustering (pcl::PointCloud<pcl::FPFHSignatu
     pcl::FPFHSignature33 point;
     for (int idx = 0; idx < 33; idx++)
       point.histogram[idx] = centroids[i][idx];
-    out->points[i] = point;
+    (*out)[i] = point;
   }
 }
 
@@ -287,7 +287,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
     size_t c = hist->size ();
     for (size_t i = 0; i < c; ++i)
       for (size_t j = 0; j < data.cols; ++j)
-        data[(k * c) + i][j] = hist->points[i].histogram[j];
+        data[(k * c) + i][j] = (*hist)[i].histogram[j];
   }
 
   // build kd-tree given the training features
@@ -306,7 +306,7 @@ pcl::UnaryClassifier<PointT>::queryFeatureDistances (std::vector<pcl::PointCloud
   {
     // Query point  
     flann::Matrix<float> p = flann::Matrix<float>(new float[n_col], 1, n_col);
-    memcpy (&p.ptr ()[0], query_features->points[i].histogram, p.cols * p.rows * sizeof (float));
+    memcpy (&p.ptr ()[0], (*query_features)[i].histogram, p.cols * p.rows * sizeof (float));
 
     flann::Matrix<int> indices (new int[k], 1, k);
     flann::Matrix<float> distances (new float[k], 1, k);  
@@ -343,7 +343,7 @@ pcl::UnaryClassifier<PointT>::assignLabels (std::vector<int> &indi,
       std::modf (l , &intpart);
       int label = static_cast<int> (intpart);
       
-      out->points[i].label = label+2;
+      (*out)[i].label = label+2;
     }
   }
 }

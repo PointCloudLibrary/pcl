@@ -17,7 +17,7 @@ namespace pcl
       //for (size_t i = 0; i < indices->size (); i++)
       for (size_t i = 0; i < cloud->size (); i++)
       {
-        PointInT input_point = cloud->points[i];
+        PointInT input_point = (*cloud)[i];
         std::vector<int> k_indices(1);
         std::vector<float> k_distances(1);
         search_->nearestKSearch (input_point, 1, k_indices, k_distances);
@@ -27,7 +27,7 @@ namespace pcl
         {
           // nearest_targets.push_back (k_index);
           // nearest_inputs.push_back (i);
-          PointInT target_point = target_input_->points[k_index];
+          PointInT target_point = (*target_input_)[k_index];
           double coherence_val = 1.0;
           for (size_t i = 0; i < point_coherences_.size (); i++)
           {

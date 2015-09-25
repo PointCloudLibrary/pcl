@@ -175,7 +175,7 @@ namespace pcl
         for (y = -centerY; y < +centerY; ++y)
           for (x = -centerX; x < +centerX; ++x)
           {
-            PointT& newPoint = cloud_arg.points[i];
+            PointT& newPoint = cloud_arg[i];
             const uint16_t& pixel_disparity = disparityData_arg[i];
             ++i;
 
@@ -242,7 +242,7 @@ namespace pcl
         for (y = -centerY; y < +centerY; ++y)
           for (x = -centerX; x < +centerX; ++x)
           {
-            PointT& newPoint = cloud_arg.points[i];
+            PointT& newPoint = cloud_arg[i];
             const float& pixel_depth = depthData_arg[i];
             ++i;
 
@@ -313,7 +313,7 @@ namespace pcl
 
         for (i = 0; i < cloud_size; ++i)
         {
-          const PointT& point = cloud_arg.points[i];
+          const PointT& point = cloud_arg[i];
 
           if (pcl::isFinite (point))
           {
@@ -425,7 +425,7 @@ namespace pcl
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-            PointT& newPoint = cloud_arg.points[i];
+            PointT& newPoint = cloud_arg[i];
 
             const uint16_t& pixel_disparity = disparityData_arg[i];
 
@@ -541,7 +541,7 @@ namespace pcl
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-            PointT& newPoint = cloud_arg.points[i];
+            PointT& newPoint = cloud_arg[i];
 
             const float& pixel_depth = depthData_arg[i];
 

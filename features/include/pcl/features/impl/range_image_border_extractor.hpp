@@ -167,7 +167,7 @@ void RangeImageBorderExtractor::calculateBorderDirection(int x, int y)
   int index = y*range_image_->width + x;
   Eigen::Vector3f*& border_direction = border_directions_[index];
   border_direction = NULL;
-  const BorderDescription& border_description = border_descriptions_->points[index];
+  const BorderDescription& border_description = (*border_descriptions_)[index];
   const BorderTraits& border_traits = border_description.traits;
   if (!border_traits[BORDER_TRAIT__OBSTACLE_BORDER])
     return;
@@ -352,7 +352,7 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
         
         int index2 = y2*range_image_->width + x2;
         
-        const BorderTraits& border_traits = border_descriptions_->points[index2].traits;
+        const BorderTraits& border_traits = (*border_descriptions_)[index2].traits;
         if (border_traits[BORDER_TRAIT__VEIL_POINT] || border_traits[BORDER_TRAIT__SHADOW_BORDER])
         {
           beam_valid = false;

@@ -105,7 +105,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::computeFeaturesAtA
     for (size_t feature_i = 0; feature_i < feature_cloud->size (); ++feature_i)
     {
       std::vector<float> feature_vectorized (feature_representation_->getNumberOfDimensions ());
-      feature_representation_->vectorize (feature_cloud->points[feature_i], feature_vectorized);
+      feature_representation_->vectorize ((*feature_cloud)[feature_i], feature_vectorized);
       feature_cloud_vectorized[feature_i] = feature_vectorized;
     }
     features_at_scale_vectorized_[scale_i] = feature_cloud_vectorized;
@@ -234,7 +234,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::determinePersisten
 
     if (present_in_all)
     {
-      output_features.push_back (features_at_scale_.front ()->points[*feature_it]);
+      output_features.push_back ((*features_at_scale_.front ())[*feature_it]);
       output_indices->push_back (feature_estimator_->getIndices ()->at (*feature_it));
     }
   }

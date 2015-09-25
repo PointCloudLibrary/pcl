@@ -114,10 +114,10 @@ TEST (PCL, SIFTKeypoint)
   ASSERT_EQ (keypoints.size (), correct_nr_keypoints);
   for (size_t i = 0; i < correct_nr_keypoints; ++i)
   {
-    EXPECT_NEAR (keypoints.points[i].x, correct_keypoints[i][0], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].y, correct_keypoints[i][1], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].z, correct_keypoints[i][2], 1e-4);
-    EXPECT_NEAR (keypoints.points[i].scale, correct_keypoints[i][3], 1e-4);
+    EXPECT_NEAR (keypoints[i].x, correct_keypoints[i][0], 1e-4);
+    EXPECT_NEAR (keypoints[i].y, correct_keypoints[i][1], 1e-4);
+    EXPECT_NEAR (keypoints[i].z, correct_keypoints[i][2], 1e-4);
+    EXPECT_NEAR (keypoints[i].scale, correct_keypoints[i][3], 1e-4);
   }
 
 }

@@ -111,37 +111,37 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
             float val_exp_depth = val_exp_depth_matrix(dx+window_size_, dy+window_size_);
 
             float d_color = static_cast<float> (
-                abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
-                abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
-                abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
+                abs ((*input_)[y_w * input_->width + x_w].r - (*input_)[y * input_->width + x].r) +
+                abs ((*input_)[y_w * input_->width + x_w].g - (*input_)[y * input_->width + x].g) +
+                abs ((*input_)[y_w * input_->width + x_w].b - (*input_)[y * input_->width + x].b));
             
             float val_exp_rgb = val_exp_rgb_vector(d_color);
 
-            if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
+            if (pcl_isfinite ((*input_)[y_w*input_->width + x_w].z))
             {
-              sum += val_exp_depth * val_exp_rgb * input_->points[y_w*input_->width + x_w].z;
+              sum += val_exp_depth * val_exp_rgb * (*input_)[y_w*input_->width + x_w].z;
               norm_sum += val_exp_depth * val_exp_rgb;
             }
           }
 
-        output.points[y*input_->width + x].r = input_->points[y*input_->width + x].r;
-        output.points[y*input_->width + x].g = input_->points[y*input_->width + x].g;
-        output.points[y*input_->width + x].b = input_->points[y*input_->width + x].b;
+        output[y*input_->width + x].r = (*input_)[y*input_->width + x].r;
+        output[y*input_->width + x].g = (*input_)[y*input_->width + x].g;
+        output[y*input_->width + x].b = (*input_)[y*input_->width + x].b;
 
         if (norm_sum != 0.0f)
         {
           float depth = sum / norm_sum;
           Eigen::Vector3f pc (static_cast<float> (x) * depth, static_cast<float> (y) * depth, depth);
           Eigen::Vector3f pw (unprojection_matrix_ * pc);
-          output.points[y*input_->width + x].x = pw[0];
-          output.points[y*input_->width + x].y = pw[1];
-          output.points[y*input_->width + x].z = pw[2];
+          output[y*input_->width + x].x = pw[0];
+          output[y*input_->width + x].y = pw[1];
+          output[y*input_->width + x].z = pw[2];
         }
         else
         {
-          output.points[y*input_->width + x].x = nan;
-          output.points[y*input_->width + x].y = nan;
-          output.points[y*input_->width + x].z = nan;
+          output[y*input_->width + x].x = nan;
+          output[y*input_->width + x].y = nan;
+          output[y*input_->width + x].z = nan;
         }
       }
 

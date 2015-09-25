@@ -172,8 +172,8 @@ main (int argc, char** argv)
   // -----Show keypoints in range image widget-----
   // ----------------------------------------------
   //for (size_t i=0; i<keypoint_indices.size (); ++i)
-    //range_image_widget.markPoint (keypoint_indices.points[i]%range_image.width,
-                                  //keypoint_indices.points[i]/range_image.width);
+    //range_image_widget.markPoint (keypoint_indices[i]%range_image.width,
+                                  //keypoint_indices[i]/range_image.width);
   
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
@@ -181,7 +181,7 @@ main (int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ> (keypoint_indices.size ()));
   pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
   for (size_t i=0; i<keypoint_indices.size (); ++i)
-    keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
+    keypoints[i].getVector3fMap () = range_image[keypoint_indices[i]].getVector3fMap ();
 
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);
   viewer.addPointCloud<pcl::PointXYZ> (keypoints_ptr, keypoints_color_handler, "keypoints");

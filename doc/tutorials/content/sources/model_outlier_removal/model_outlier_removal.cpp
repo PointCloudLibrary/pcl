@@ -15,9 +15,9 @@ main ()
   // 1.1 Add noise
   for (size_t i = 0; i < noise_size; ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
   // 1.2 Add sphere:
   double rand_x1 = 1;
@@ -31,16 +31,16 @@ main ()
       rand_x2 = (rand () % 100) / (50.0f) - 1;
     }
     double pre_calc = sqrt (1 - pow (rand_x1, 2) - pow (rand_x2, 2));
-    cloud->points[i].x = 2 * rand_x1 * pre_calc;
-    cloud->points[i].y = 2 * rand_x2 * pre_calc;
-    cloud->points[i].z = 1 - 2 * (pow (rand_x1, 2) + pow (rand_x2, 2));
+    (*cloud)[i].x = 2 * rand_x1 * pre_calc;
+    (*cloud)[i].y = 2 * rand_x2 * pre_calc;
+    (*cloud)[i].z = 1 - 2 * (pow (rand_x1, 2) + pow (rand_x2, 2));
     rand_x1 = 1;
     rand_x2 = 1;
   }
 
   std::cerr << "Cloud before filtering: " << std::endl;
   for (size_t i = 0; i < cloud->size (); ++i)
-    std::cout << "    " << cloud->points[i].x << " " << cloud->points[i].y << " " << cloud->points[i].z << std::endl;
+    std::cout << "    " << (*cloud)[i].x << " " << (*cloud)[i].y << " " << (*cloud)[i].z << std::endl;
 
   // 2. filter sphere:
   // 2.1 generate model:
@@ -62,7 +62,7 @@ main ()
 
   std::cerr << "Sphere after filtering: " << std::endl;
   for (size_t i = 0; i < cloud_sphere_filtered->size (); ++i)
-    std::cout << "    " << cloud_sphere_filtered->points[i].x << " " << cloud_sphere_filtered->points[i].y << " " << cloud_sphere_filtered->points[i].z
+    std::cout << "    " << (*cloud_sphere_filtered)[i].x << " " << (*cloud_sphere_filtered)[i].y << " " << (*cloud_sphere_filtered)[i].z
         << std::endl;
 
   return (0);

@@ -138,7 +138,7 @@ namespace pcl
         {
           pcl::PointCloud<FeatureT> vfh_signature (1);
           for (int d = 0; d < 308; ++d)
-            vfh_signature.points[0].histogram[d] = cvfh_signatures.points[i].histogram[d];
+            vfh_signature[0].histogram[d] = cvfh_signatures[i].histogram[d];
 
           signatures.push_back (vfh_signature);
         }

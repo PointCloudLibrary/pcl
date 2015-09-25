@@ -127,7 +127,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
 
   output.clear ();
   output.resize (1);
-  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
+  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,7 +251,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (size_t i = 0; i < indices.size (); ++i)
   {
-    uint32_t label = labels_->points[indices[i]].label;
+    uint32_t label = (*labels_)[indices[i]].label;
     counts[label] += 1;
   }
 

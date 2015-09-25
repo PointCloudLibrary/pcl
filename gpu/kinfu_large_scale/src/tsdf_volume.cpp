@@ -308,7 +308,7 @@ pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_da
     return;
   }
 
-  const pcl::PointXYZI *first_point_ptr = &(existing_data_cloud->points[0]);
+  const pcl::PointXYZI *first_point_ptr = &((*existing_data_cloud)[0]);
 
   pcl::gpu::DeviceArray<pcl::PointXYZI> cloud_gpu;
   cloud_gpu.upload (first_point_ptr, gpu_array_size);
@@ -371,7 +371,7 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZ
       for (int x = 0; x < sx; x+=step, ++cloud_idx)
       {
         volume_idx = sx*sy*z + sx*y + x;
-        // pcl::PointXYZI &point = cloud->points[cloud_idx];
+        // pcl::PointXYZI &point = (*cloud)[cloud_idx];
 
         if (weights_host_->at(volume_idx) == 0 || volume_host_->at(volume_idx) > 0.98 )
           continue;

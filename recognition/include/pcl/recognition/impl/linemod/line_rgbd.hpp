@@ -179,7 +179,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
     size_t counter = 0;
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZRGBA & p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -212,7 +212,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZRGBA p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -221,7 +221,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud.points[j] = p;
+      template_point_cloud[j] = p;
     }
   }
 
@@ -266,7 +266,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
     size_t counter = 0;
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZRGBA & p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -299,7 +299,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZRGBA p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -308,7 +308,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::createAndAddTemplate (
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud.points[j] = p;
+      template_point_cloud[j] = p;
     }
   }
 
@@ -358,7 +358,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
     size_t counter = 0;
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      const PointXYZRGBA & p = template_point_cloud.points[j];
+      const PointXYZRGBA & p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -391,7 +391,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
 
     for (size_t j = 0; j < template_point_cloud.size (); ++j)
     {
-      PointXYZRGBA p = template_point_cloud.points[j];
+      PointXYZRGBA p = template_point_cloud[j];
 
       if (!pcl_isfinite (p.x) || !pcl_isfinite (p.y) || !pcl_isfinite (p.z))
         continue;
@@ -400,7 +400,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::addTemplate (const SparseQuantizedMultiModT
       p.y -= center_y;
       p.z -= center_z;
 
-      template_point_cloud.points[j] = p;
+      template_point_cloud[j] = p;
     }
   }
 
@@ -643,13 +643,13 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::computeTransformedTemplatePoints (
   cloud.height = template_point_cloud.height;
   for (size_t point_index = 0; point_index < nr_points; ++point_index)
   {
-    pcl::PointXYZRGBA point = template_point_cloud.points[point_index];
+    pcl::PointXYZRGBA point = template_point_cloud[point_index];
 
     point.x += translation_x;
     point.y += translation_y;
     point.z += translation_z;
 
-    cloud.points[point_index] = point;
+    cloud[point_index] = point;
   }
 }
 

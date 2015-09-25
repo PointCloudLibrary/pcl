@@ -243,8 +243,8 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the circle and the datapoint X_i
-            float xt = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
-            float yt = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
+            float xt = (*model_->input_)[(*model_->tmp_inliers_)[i]].x - x[0];
+            float yt = (*model_->input_)[(*model_->tmp_inliers_)[i]].y - x[1];
             
             // g = sqrt ((x-a)^2 + (y-b)^2) - R
             fvec[i] = sqrtf (xt * xt + yt * yt) - x[2];

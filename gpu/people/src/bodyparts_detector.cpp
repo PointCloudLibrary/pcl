@@ -214,7 +214,7 @@ pcl::gpu::people::RDFBodyPartsDetector::process (const pcl::device::Depth& depth
 
     for(size_t k = 0; k < dst_labels_.size(); ++k)
     {
-      const PointXYZ& p = cloud.points[k];
+      const PointXYZ& p = cloud[k];
       int cc = dst_labels_[k];
       means[cc].x += p.x;
       means[cc].y += p.y;
@@ -308,7 +308,7 @@ pcl::gpu::people::RDFBodyPartsDetector::processSmooth (const pcl::device::Depth&
 
     for(size_t k = 0; k < dst_labels_.size(); ++k)
     {
-      const PointXYZ& p = cloud.points[k];
+      const PointXYZ& p = cloud[k];
       int cc = dst_labels_[k];
       means[cc].x += p.x;
       means[cc].y += p.y;

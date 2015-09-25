@@ -122,13 +122,13 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
 
   for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
   {
-    if (pcl_isfinite (normals_->points[*iIt].normal_x))
+    if (pcl_isfinite ((*normals_)[*iIt].normal_x))
     {
       // nx, ny, nz, h
-      norm1 = _mm_load_ps (&(normals_->points[*iIt].normal_x));
+      norm1 = _mm_load_ps (&((*normals_)[*iIt].normal_x));
 
       // nx, nx, nx, nx
-      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_x);
+      norm2 = _mm_set1_ps ((*normals_)[*iIt].normal_x);
 
       // nx * nx, nx * ny, nx * nz, nx * h
       norm2 = _mm_mul_ps (norm1, norm2);
@@ -137,7 +137,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
       vec1 = _mm_add_ps (vec1, norm2);
 
       // ny, ny, ny, ny
-      norm2 = _mm_set1_ps (normals_->points[*iIt].normal_y);
+      norm2 = _mm_set1_ps ((*normals_)[*iIt].normal_y);
 
       // ny * nx, ny * ny, ny * nz, ny * h
       norm2 = _mm_mul_ps (norm1, norm2);
@@ -145,7 +145,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
       // accumulate
       vec2 = _mm_add_ps (vec2, norm2);
 
-      zz += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
+      zz += (*normals_)[*iIt].normal_z * (*normals_)[*iIt].normal_z;
       ++count;
     }
   }
@@ -164,15 +164,15 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::calculateNormalCovar (const
   memset (coefficients, 0, sizeof (float) * 8);
   for (std::vector<int>::const_iterator iIt = neighbors.begin(); iIt != neighbors.end(); ++iIt)
   {
-    if (pcl_isfinite (normals_->points[*iIt].normal_x))
+    if (pcl_isfinite ((*normals_)[*iIt].normal_x))
     {
-      coefficients[0] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_x;
-      coefficients[1] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_y;
-      coefficients[2] += normals_->points[*iIt].normal_x * normals_->points[*iIt].normal_z;
+      coefficients[0] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_x;
+      coefficients[1] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_y;
+      coefficients[2] += (*normals_)[*iIt].normal_x * (*normals_)[*iIt].normal_z;
 
-      coefficients[5] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_y;
-      coefficients[6] += normals_->points[*iIt].normal_y * normals_->points[*iIt].normal_z;
-      coefficients[7] += normals_->points[*iIt].normal_z * normals_->points[*iIt].normal_z;
+      coefficients[5] += (*normals_)[*iIt].normal_y * (*normals_)[*iIt].normal_y;
+      coefficients[6] += (*normals_)[*iIt].normal_y * (*normals_)[*iIt].normal_z;
+      coefficients[7] += (*normals_)[*iIt].normal_z * (*normals_)[*iIt].normal_z;
 
       ++count;
     }
@@ -278,9 +278,9 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #endif
     for (int idx = 0; idx < static_cast<int> (response->size ()); ++idx)
     {
-      if (!isFinite (response->points[idx]) ||
-          !pcl_isfinite (response->points[idx].intensity) ||
-          response->points[idx].intensity < threshold_)
+      if (!isFinite ((*response)[idx]) ||
+          !pcl_isfinite ((*response)[idx].intensity) ||
+          (*response)[idx].intensity < threshold_)
         continue;
 
       std::vector<int> nn_indices;
@@ -289,7 +289,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
       bool is_maxima = true;
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
-        if (response->points[idx].intensity < response->points[*iIt].intensity)
+        if ((*response)[idx].intensity < (*response)[*iIt].intensity)
         {
           is_maxima = false;
           break;
@@ -300,7 +300,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #pragma omp critical
 #endif
       {
-        output.push_back (response->points[idx]);
+        output.push_back ((*response)[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }
@@ -323,7 +323,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseHarris (PointCloudO
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
-    const PointInT& pointIn = input_->points [pIdx];
+    const PointInT& pointIn = (*input_)[pIdx];
     output [pIdx].intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
@@ -362,7 +362,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseNoble (PointCloudOu
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
-    const PointInT& pointIn = input_->points [pIdx];
+    const PointInT& pointIn = (*input_)[pIdx];
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
@@ -400,7 +400,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
-    const PointInT& pointIn = input_->points [pIdx];
+    const PointInT& pointIn = (*input_)[pIdx];
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
@@ -456,7 +456,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
 #endif
   for (int pIdx = 0; pIdx < static_cast<int> (input_->size ()); ++pIdx)
   {
-    const PointInT& pointIn = input_->points [pIdx];
+    const PointInT& pointIn = (*input_)[pIdx];
     output [pIdx].intensity = 0.0;
     if (isFinite (pointIn))
     {
@@ -515,12 +515,12 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::refineCorners (PointCloudOu
       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
       {
-        if (!pcl_isfinite (normals_->points[*iIt].normal_x))
+        if (!pcl_isfinite ((*normals_)[*iIt].normal_x))
           continue;
 
-        nnT = normals_->points[*iIt].getNormalVector3fMap () * normals_->points[*iIt].getNormalVector3fMap ().transpose();
+        nnT = (*normals_)[*iIt].getNormalVector3fMap () * (*normals_)[*iIt].getNormalVector3fMap ().transpose();
         NNT += nnT;
-        NNTp += nnT * surface_->points[*iIt].getVector3fMap ();
+        NNTp += nnT * (*surface_)[*iIt].getVector3fMap ();
       }
       if (invert3x3SymMatrix (NNT, NNTInv) != 0)
         corners[cIdx].getVector3fMap () = NNTInv * NNTp;

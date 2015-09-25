@@ -251,8 +251,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity& p = out.points[i];
-      PointRGBtoI (in.points[i], p);
+      Intensity& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -269,8 +269,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity8u& p = out.points[i];
-      PointRGBtoI (in.points[i], p);
+      Intensity8u& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -287,8 +287,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity32u& p = out.points[i];
-      PointRGBtoI (in.points[i], p);
+      Intensity32u& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -305,8 +305,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZHSV& p = out.points[i];
-      PointXYZRGBtoXYZHSV (in.points[i], p);
+      PointXYZHSV& p = out[i];
+      PointXYZRGBtoXYZHSV (in[i], p);
     }
   }
 
@@ -323,8 +323,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZHSV& p = out.points[i];
-      PointXYZRGBAtoXYZHSV (in.points[i], p);
+      PointXYZHSV& p = out[i];
+      PointXYZRGBAtoXYZHSV (in[i], p);
     }
   }
 
@@ -341,8 +341,8 @@ namespace pcl
     out.height  = in.height;
     for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZI& p = out.points[i];
-      PointXYZRGBtoXYZI (in.points[i], p);
+      PointXYZI& p = out[i];
+      PointXYZRGBtoXYZI (in[i], p);
     }
   }
 
@@ -369,7 +369,7 @@ namespace pcl
     {
       for (size_t u = 0; u < width_; u++, i++)
       {
-        PointXYZRGBA& pt = out.points[i];
+        PointXYZRGBA& pt = out[i];
         pt.a = 0;
         float depth_ = depth.at (u, v).intensity;
 

@@ -69,7 +69,7 @@ TEST (PCL, RIFTEstimation)
   PointCloud<IntensityGradient> gradient (cloud_xyzi.size ());
   for (size_t i = 0; i < cloud_xyzi.size (); ++i)
   {
-    const PointXYZI &p = cloud_xyzi.points[i];
+    const PointXYZI &p = cloud_xyzi[i];
 
     // Compute the surface normal analytically.
     float nx = p.x;
@@ -91,9 +91,9 @@ TEST (PCL, RIFTEstimation)
     float gy = (-ny * nx) * tmpx + (1 - ny * ny) * tmpy + (-ny * nz) * tmpz;
     float gz = (-nz * nx) * tmpx + (-nz * ny) * tmpy + (1 - nz * nz) * tmpz;
 
-    gradient.points[i].gradient[0] = gx;
-    gradient.points[i].gradient[1] = gy;
-    gradient.points[i].gradient[2] = gz;
+    gradient[i].gradient[0] = gx;
+    gradient[i].gradient[1] = gy;
+    gradient[i].gradient[2] = gz;
   }
 
   // Compute the RIFT features
@@ -111,7 +111,7 @@ TEST (PCL, RIFTEstimation)
   rift_est.compute (rift_output);
 
   // Compare to independently verified values
-  const RIFTDescriptor &rift = rift_output.points[220];
+  const RIFTDescriptor &rift = rift_output[220];
   const float correct_rift_feature_values[32] = {0.0187f, 0.0349f, 0.0647f, 0.0881f, 0.0042f, 0.0131f, 0.0346f, 0.0030f,
                                                  0.0076f, 0.0218f, 0.0463f, 0.0030f, 0.0087f, 0.0288f, 0.0920f, 0.0472f,
                                                  0.0076f, 0.0420f, 0.0726f, 0.0669f, 0.0090f, 0.0901f, 0.1274f, 0.2185f,

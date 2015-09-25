@@ -178,7 +178,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
         float phi_hat_i_j = phi[point_i][point_j] / (point_density[point_i] * point_density[point_j]);
         A_hat_normalization += phi_hat_i_j;
 
-        PointT aux = input_->points[point_j];
+        PointT aux = (*input_)[point_j];
         aux.x *= phi_hat_i_j; aux.y *= phi_hat_i_j; aux.z *= phi_hat_i_j;
 
         A_hat.x += aux.x; A_hat.y += aux.y; A_hat.z += aux.z;
@@ -186,7 +186,7 @@ pcl::StatisticalMultiscaleInterestRegionExtraction<PointT>::computeF ()
       A_hat.x /= A_hat_normalization; A_hat.y /= A_hat_normalization; A_hat.z /= A_hat_normalization;
 
       // compute the invariant F
-      float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, input_->points[point_i]);
+      float aux = 2.0f / scale_values_[scale_i] * euclideanDistance<PointT, PointT> (A_hat, (*input_)[point_i]);
       F[point_i] = aux * expf (-aux);
     }
 

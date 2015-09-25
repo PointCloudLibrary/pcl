@@ -85,9 +85,9 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
 	{
 	  pcl::PointXYZ &point = (*particle_cloud) [i];
           
-	  point.x = particles->points[i].x;
-	  point.y = particles->points[i].y;
-	  point.z = particles->points[i].z;
+	  point.x = (*particles)[i].x;
+	  point.y = (*particles)[i].y;
+	  point.z = (*particles)[i].z;
 	}
 
       //Draw red particles 

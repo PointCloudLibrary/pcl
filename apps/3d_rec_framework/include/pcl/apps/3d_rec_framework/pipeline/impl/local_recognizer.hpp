@@ -66,14 +66,14 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           typename pcl::PointCloud<FeatureT>::Ptr signature (new pcl::PointCloud<FeatureT> ());
           pcl::io::loadPCDFile (full_file_name, *signature);
 
-          int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
 
           for (size_t dd = 0; dd < signature->size (); dd++)
           {
             descr_model.keypoint_id = static_cast<int> (dd);
             descr_model.descr.resize (size_feat);
 
-            memcpy (&descr_model.descr[0], &signature->points[dd].histogram[0], size_feat * sizeof(float));
+            memcpy (&descr_model.descr[0], &(*signature)[dd].histogram[0], size_feat * sizeof(float));
 
             flann_models_.push_back (descr_model);
           }
@@ -175,7 +175,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             /*boost::shared_ptr < std::vector<int> > indices (new std::vector<int> ());
             indices->resize (keypoints.size ());
             for (size_t kk = 0; kk < indices->size (); kk++)
-              (*indices)[kk] = keypoints.points[kk];
+              (*indices)[kk] = keypoints[kk];
             typename pcl::PointCloud<PointInT> keypoints_pointcloud;
             pcl::copyPointCloud (*processed, *indices, keypoints_pointcloud);*/
             pcl::io::savePCDFileBinary (keypoints_sstr.str (), *keypoints_pointcloud);
@@ -235,14 +235,14 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
     std::cout << "Number of keypoints:" << keypoints_pointcloud->size () << std::endl;
 
-    int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+    int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
     //feature matching and object hypotheses
     std::map<std::string, ObjectHypothesis> object_hypotheses;
     {
       for (size_t idx = 0; idx < signatures->size (); idx++)
       {
-        float* hist = signatures->points[idx].histogram;
+        float* hist = (*signatures)[idx].histogram;
         std::vector<float> std_hist (hist, hist + size_feat);
         flann_model histogram;
         histogram.descr = std_hist;
@@ -257,7 +257,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         typename pcl::PointCloud<PointInT>::Ptr keypoints (new pcl::PointCloud<PointInT> ());
         getKeypoints (flann_models_.at (indices[0][0]).model, flann_models_.at (indices[0][0]).view_id, keypoints);
 
-        PointInT view_keypoint = keypoints->points[flann_models_.at (indices[0][0]).keypoint_id];
+        PointInT view_keypoint = (*keypoints)[flann_models_.at (indices[0][0]).keypoint_id];
         PointInT model_keypoint;
         model_keypoint.getVector4fMap () = homMatrixPose.inverse () * view_keypoint.getVector4fMap ();
 

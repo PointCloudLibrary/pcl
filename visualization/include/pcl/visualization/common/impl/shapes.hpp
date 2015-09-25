@@ -59,7 +59,7 @@ pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::Const
   size_t i;
   for (i = 0; i < cloud->size (); ++i)
   {
-    poly_points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     polygon->GetPointIds ()->SetId (i, i);
   }
 

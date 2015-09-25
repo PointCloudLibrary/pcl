@@ -18,12 +18,12 @@ namespace pcl
       {
         int k_index = 0;
         float k_distance = 0.0;
-        //PointInT input_point = cloud->points[(*indices)[i]];
-        PointInT input_point = cloud->points[i];
+        //PointInT input_point = (*cloud)[(*indices)[i]];
+        PointInT input_point = (*cloud)[i];
         search_->approxNearestSearch(input_point, k_index, k_distance);
         if (k_distance < maximum_distance_ * maximum_distance_)
         {
-          PointInT target_point = target_input_->points[k_index];
+          PointInT target_point = (*target_input_)[k_index];
           double coherence_val = 1.0;
           for (size_t i = 0; i < point_coherences_.size (); i++)
           {

@@ -104,7 +104,7 @@ TEST(PCL_FeaturesGPU, pfh_low_level)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = pfhs.points[i];
+        PFHSignature125& cpu = pfhs[i];
         
         size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -183,7 +183,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level1)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -261,7 +261,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level2)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -339,7 +339,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level3)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -417,7 +417,7 @@ TEST(PCL_FeaturesGPU, pfh_high_level4)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PFHSignature125& gpu = downloaded[i];
-        PFHSignature125& cpu = fpfhs.points[i];
+        PFHSignature125& cpu = fpfhs[i];
         
         size_t FSize = sizeof(PFHSignature125)/sizeof(gpu.histogram[0]);                                
         
@@ -511,7 +511,7 @@ TEST(PCL_FeaturesGPU, pfhrgb)
     for(size_t i = 170; i < downloaded.size(); ++i)
     {
         PFHRGBSignature250& gpu = downloaded[i];
-        PFHRGBSignature250& cpu = fpfhs.points[i];
+        PFHRGBSignature250& cpu = fpfhs[i];
         
         size_t FSize = sizeof(PFHRGBSignature250)/sizeof(gpu.histogram[0]);                                
         

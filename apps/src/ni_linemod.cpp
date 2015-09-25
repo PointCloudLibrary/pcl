@@ -257,7 +257,7 @@ class NILinemod
       PointCloud<Label>::Ptr scene (new PointCloud<Label> (cloud->width, cloud->height, l));
       // Mask the objects that we want to split into clusters
       for (int i = 0; i < static_cast<int> (points_above_plane->indices.size ()); ++i)
-        scene->points[points_above_plane->indices[i]].label = 1;
+        (*scene)[points_above_plane->indices[i]].label = 1;
       euclidean_cluster_comparator->setLabels (scene);
 
       vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;

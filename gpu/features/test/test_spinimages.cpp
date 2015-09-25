@@ -127,7 +127,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -217,7 +217,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -307,7 +307,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -397,7 +397,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         

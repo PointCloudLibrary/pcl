@@ -184,7 +184,7 @@ namespace pcl
 
         for (size_t i = 0; i < head_center_votes_.size (); i++)
         {
-          votes_cloud->points[i].getVector3fMap () = head_center_votes_[i];
+          (*votes_cloud)[i].getVector3fMap () = head_center_votes_[i];
         }
       }
 
@@ -199,8 +199,8 @@ namespace pcl
         {
           for (size_t j = 0; j < head_center_votes_clustered_[i].size (); j++, p++)
           {
-            votes_cloud->points[p].getVector3fMap () = head_center_votes_clustered_[i][j];
-            votes_cloud->points[p].intensity = 0.1f * static_cast<float> (i);
+            (*votes_cloud)[p].getVector3fMap () = head_center_votes_clustered_[i][j];
+            (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
           }
         }
 
@@ -218,8 +218,8 @@ namespace pcl
         {
           for (size_t j = 0; j < head_center_original_votes_clustered_[i].size (); j++, p++)
           {
-            votes_cloud->points[p].getVector3fMap () = head_center_original_votes_clustered_[i][j];
-            votes_cloud->points[p].intensity = 0.1f * static_cast<float> (i);
+            (*votes_cloud)[p].getVector3fMap () = head_center_original_votes_clustered_[i][j];
+            (*votes_cloud)[p].intensity = 0.1f * static_cast<float> (i);
           }
         }
 

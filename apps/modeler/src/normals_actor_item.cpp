@@ -84,7 +84,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     data->SetNumberOfValues(2*3*nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = static_cast<vtkIdType> (j * level_))
     {
-      const CloudMesh::PointT& p = cloud->points[i];
+      const CloudMesh::PointT& p = (*cloud)[i];
       data->SetValue(2*j*3 + 0, p.x);
       data->SetValue(2*j*3 + 1, p.y);
       data->SetValue(2*j*3 + 2, p.z);
@@ -106,7 +106,7 @@ pcl::modeler::NormalsActorItem::createNormalLines()
     data->SetNumberOfValues(2*3*nr_normals);
     for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = static_cast<vtkIdType> (j * level_))
     {
-      const CloudMesh::PointT& p= cloud->points[(*indices)[i]];
+      const CloudMesh::PointT& p= (*cloud)[(*indices)[i]];
       data->SetValue (2*j*3 + 0, p.x);
       data->SetValue (2*j*3 + 1, p.y);
       data->SetValue (2*j*3 + 2, p.z);

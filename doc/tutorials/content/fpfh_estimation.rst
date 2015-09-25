@@ -163,7 +163,7 @@ The actual **compute** call from the **FPFHEstimation** class does nothing inter
 
      for (int i = 0; i < normals->size(); i++)
      {
-       if (!pcl::isFinite<pcl::Normal>(normals->points[i]))
+       if (!pcl::isFinite<pcl::Normal>((*normals)[i]))
        {
          PCL_WARN("normals[%d] is not finite\n", i);
        }

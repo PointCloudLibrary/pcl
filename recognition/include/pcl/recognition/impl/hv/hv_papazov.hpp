@@ -85,7 +85,7 @@ template<typename ModelT, typename SceneT>
 
       for (size_t i = 0; i < recog_model->cloud_->size (); i++)
       {
-        if (!scene_downsampled_tree_->radiusSearch (recog_model->cloud_->points[i], inliers_threshold_, nn_indices, nn_distances,
+        if (!scene_downsampled_tree_->radiusSearch ((*recog_model->cloud_)[i], inliers_threshold_, nn_indices, nn_distances,
                                                     std::numeric_limits<int>::max ()))
         {
           outliers.push_back (static_cast<int> (i));

@@ -429,7 +429,7 @@ namespace pcl
       for (y = -centerY; y < +centerY; ++y)
         for (x = -centerX; x < +centerX; ++x)
         {
-          const PointT& point = cloud_arg->points[it++];
+          const PointT& point = (*cloud_arg)[it++];
 
           if (pcl::isFinite (point))
           {

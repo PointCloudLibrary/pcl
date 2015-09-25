@@ -147,9 +147,9 @@ namespace pcl
 
           //processed[nn_indices[j]] = true;
           // [-1;1]
-          double dot_p = normals.points[i].normal[0] * normals.points[nn_indices[j]].normal[0] +
-                         normals.points[i].normal[1] * normals.points[nn_indices[j]].normal[1] +
-                         normals.points[i].normal[2] * normals.points[nn_indices[j]].normal[2];
+          double dot_p = normals[i].normal[0] * normals[nn_indices[j]].normal[0] +
+                         normals[i].normal[1] * normals[nn_indices[j]].normal[1] +
+                         normals[i].normal[2] * normals[nn_indices[j]].normal[2];
           if ( fabs (acos (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;
@@ -239,7 +239,7 @@ namespace pcl
       while (sq_idx < static_cast<int> (seed_queue.size ()))
       {
         // Search for sq_idx
-        if (!tree->radiusSearch (cloud.points[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances))
+        if (!tree->radiusSearch (cloud[seed_queue[sq_idx]], tolerance, nn_indices, nn_distances))
         {
           sq_idx++;
           continue;
@@ -253,9 +253,9 @@ namespace pcl
           //processed[nn_indices[j]] = true;
           // [-1;1]
           double dot_p =
-            normals.points[indices[i]].normal[0] * normals.points[indices[nn_indices[j]]].normal[0] +
-            normals.points[indices[i]].normal[1] * normals.points[indices[nn_indices[j]]].normal[1] +
-            normals.points[indices[i]].normal[2] * normals.points[indices[nn_indices[j]]].normal[2];
+            normals[indices[i]].normal[0] * normals[indices[nn_indices[j]]].normal[0] +
+            normals[indices[i]].normal[1] * normals[indices[nn_indices[j]]].normal[1] +
+            normals[indices[i]].normal[2] * normals[indices[nn_indices[j]]].normal[2];
           if ( fabs (acos (dot_p)) < eps_angle )
           {
             processed[nn_indices[j]] = true;

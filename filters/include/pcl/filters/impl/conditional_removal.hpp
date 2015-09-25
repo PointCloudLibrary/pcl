@@ -712,9 +712,9 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
     for (size_t cp = 0; cp < Filter<PointT>::indices_->size (); ++cp)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].x)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].y)
-          || !pcl_isfinite (input_->points[(*Filter < PointT > ::indices_)[cp]].z))
+      if (!pcl_isfinite ((*input_)[(*Filter < PointT > ::indices_)[cp]].x)
+          || !pcl_isfinite ((*input_)[(*Filter < PointT > ::indices_)[cp]].y)
+          || !pcl_isfinite ((*input_)[(*Filter < PointT > ::indices_)[cp]].z))
       {
         if (extract_removed_indices_)
         {
@@ -724,9 +724,9 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
         continue;
       }
 
-      if (condition_->evaluate (input_->points[(*Filter < PointT > ::indices_)[cp]]))
+      if (condition_->evaluate ((*input_)[(*Filter < PointT > ::indices_)[cp]]))
       {
-        copyPoint (input_->points[(*Filter < PointT > ::indices_)[cp]], output.points[nr_p]);
+        copyPoint ((*input_)[(*Filter < PointT > ::indices_)[cp]], output[nr_p]);
         nr_p++;
       }
       else
@@ -759,11 +759,11 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
         }
 
         // copy all the fields
-        copyPoint (input_->points[cp], output.points[cp]);
+        copyPoint ((*input_)[cp], output[cp]);
 
-        if (!condition_->evaluate (input_->points[cp]))
+        if (!condition_->evaluate ((*input_)[cp]))
         {
-          output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+          output[cp].getVector4fMap ().setConstant (user_filter_value_);
           removed_p = true;
 
           if (extract_removed_indices_)
@@ -775,7 +775,7 @@ pcl::ConditionalRemoval<PointT>::applyFilter (PointCloud &output)
       }
       else
       {
-        output.points[cp].getVector4fMap ().setConstant (user_filter_value_);
+        output[cp].getVector4fMap ().setConstant (user_filter_value_);
         removed_p = true;
         //as for !keep_organized_: removed points due to setIndices are not considered as removed_indices_
       }

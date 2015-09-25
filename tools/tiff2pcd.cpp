@@ -116,9 +116,9 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
   {
     for(int u = 0; u < rgb_dimensions[0]; u++, i++)
     {
-      RGB&           color_point = pc_image.points[i];
-      Intensity&     depth_point = pc_depth.points[i];
-      PointXYZRGBA&  xyzrgba_point = pc_xyzrgba.points[i];
+      RGB&           color_point = pc_image[i];
+      Intensity&     depth_point = pc_depth[i];
+      PointXYZRGBA&  xyzrgba_point = pc_xyzrgba[i];
 
       color_point.r = xyzrgba_point.r = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,0));
       color_point.g = xyzrgba_point.g = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,1));

@@ -181,9 +181,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       PointOutT &keypoint = output[previous_size + i_keypoint];
       const int &keypoint_index = extrema_indices[i_keypoint];
    
-      keypoint.x = input.points[keypoint_index].x;
-      keypoint.y = input.points[keypoint_index].y;
-      keypoint.z = input.points[keypoint_index].z;
+      keypoint.x = input[keypoint_index].x;
+      keypoint.y = input[keypoint_index].y;
+      keypoint.z = input[keypoint_index].z;
       memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset,
               &scales[extrema_scales[i_keypoint]], sizeof (float));
     }
@@ -196,9 +196,9 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       PointOutT &keypoint = output[previous_size + i_keypoint];
       const int &keypoint_index = extrema_indices[i_keypoint];
    
-      keypoint.x = input.points[keypoint_index].x;
-      keypoint.y = input.points[keypoint_index].y;
-      keypoint.z = input.points[keypoint_index].z;
+      keypoint.x = input[keypoint_index].x;
+      keypoint.y = input[keypoint_index].y;
+      keypoint.z = input[keypoint_index].z;
     }
   }
 }
@@ -235,7 +235,7 @@ void pcl::SIFTKeypoint<PointInT, PointOutT>::computeScaleSpace (
       float denominator = 0.0f;
       for (size_t i_neighbor = 0; i_neighbor < nn_indices.size (); ++i_neighbor)
       {
-        const float &value = getFieldValue_ (input.points[nn_indices[i_neighbor]]);
+        const float &value = getFieldValue_ (input[nn_indices[i_neighbor]]);
         const float &dist_sqr = nn_dist[i_neighbor];
         if (dist_sqr <= 9*sigma_sqr)
         {

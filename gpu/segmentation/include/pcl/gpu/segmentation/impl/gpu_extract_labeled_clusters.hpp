@@ -79,7 +79,7 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
     pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
 
     // Buffer in a new PointXYZ type
-    PointT t = host_cloud_->points[i];
+    PointT t = (*host_cloud_)[i];
     PointXYZ p;
     p.x = t.x; p.y = t.y; p.z = t.z;
 
@@ -120,10 +120,10 @@ pcl::gpu::extractLabeledEuclideanClusters (const boost::shared_ptr<pcl::PointClo
           if(processed[data[qp_r + qp * max_answers]])
             continue;
           // Only add if label matches the original label
-          if(host_cloud_->points[i].label == host_cloud_->points[data[qp_r + qp * max_answers]].label)
+          if((*host_cloud_)[i].label == (*host_cloud_)[data[qp_r + qp * max_answers]].label)
           {
             processed[data[qp_r + qp * max_answers]] = true;
-            PointT t_l = host_cloud_->points[data[qp_r + qp * max_answers]];
+            PointT t_l = (*host_cloud_)[data[qp_r + qp * max_answers]];
             PointXYZ p_l;
             p_l.x = t_l.x; p_l.y = t_l.y; p_l.z = t_l.z;
             queries_host.push_back (p_l);

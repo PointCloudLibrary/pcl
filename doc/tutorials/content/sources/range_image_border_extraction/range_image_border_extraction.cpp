@@ -149,12 +149,12 @@ main (int argc, char** argv)
   {
     for (int x=0; x< (int)range_image.width; ++x)
     {
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
-        border_points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
-        veil_points.push_back (range_image.points[y*range_image.width + x]);
-      if (border_descriptions.points[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
-        shadow_points.push_back (range_image.points[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__OBSTACLE_BORDER])
+        border_points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__VEIL_POINT])
+        veil_points.push_back (range_image[y*range_image.width + x]);
+      if (border_descriptions[y*range_image.width + x].traits[pcl::BORDER_TRAIT__SHADOW_BORDER])
+        shadow_points.push_back (range_image[y*range_image.width + x]);
     }
   }
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointWithRange> border_points_color_handler (border_points_ptr, 0, 255, 0);

@@ -131,13 +131,13 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) ||
-            !pcl_isfinite (input_->points[cp].y) ||
-            !pcl_isfinite (input_->points[cp].z))
+        if (!pcl_isfinite ((*input_)[cp].x) ||
+            !pcl_isfinite ((*input_)[cp].y) ||
+            !pcl_isfinite ((*input_)[cp].z))
           continue;
 
       // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[cp]);
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&(*input_)[cp]);
       float distance_value = 0;
       memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
 
@@ -154,9 +154,9 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
           continue;
       }
 
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+      int ijk0 = static_cast<int> (floor ((*input_)[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (floor ((*input_)[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (floor ((*input_)[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
@@ -168,7 +168,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
         leaf.centroid.setZero ();
       }
 
-      Eigen::Vector3d pt3d (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z);
+      Eigen::Vector3d pt3d ((*input_)[cp].x, (*input_)[cp].y, (*input_)[cp].z);
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
@@ -177,19 +177,19 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Do we need to process all the fields?
       if (!downsample_all_data_)
       {
-        Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
+        Eigen::Vector4f pt ((*input_)[cp].x, (*input_)[cp].y, (*input_)[cp].z, 0);
         leaf.centroid.template head<4> () += pt;
       }
       else
       {
         // Copy all the fields
         Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
-        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
+        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> ((*input_)[cp], centroid));
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
           // Fill r/g/b data, assuming that the order is BGRA
-          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index);
+          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&(*input_)[cp]) + rgba_index);
           centroid[centroid_size - 4] = rgb.a;
           centroid[centroid_size - 3] = rgb.r;
           centroid[centroid_size - 2] = rgb.g;
@@ -208,19 +208,19 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[cp].x) ||
-            !pcl_isfinite (input_->points[cp].y) ||
-            !pcl_isfinite (input_->points[cp].z))
+        if (!pcl_isfinite ((*input_)[cp].x) ||
+            !pcl_isfinite ((*input_)[cp].y) ||
+            !pcl_isfinite ((*input_)[cp].z))
           continue;
 
-      int ijk0 = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
-      int ijk1 = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
-      int ijk2 = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
+      int ijk0 = static_cast<int> (floor ((*input_)[cp].x * inverse_leaf_size_[0]) - static_cast<float> (min_b_[0]));
+      int ijk1 = static_cast<int> (floor ((*input_)[cp].y * inverse_leaf_size_[1]) - static_cast<float> (min_b_[1]));
+      int ijk2 = static_cast<int> (floor ((*input_)[cp].z * inverse_leaf_size_[2]) - static_cast<float> (min_b_[2]));
 
       // Compute the centroid leaf index
       int idx = ijk0 * divb_mul_[0] + ijk1 * divb_mul_[1] + ijk2 * divb_mul_[2];
 
-      //int idx = (((input_->points[cp].getArray4fmap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
+      //int idx = ((((*input_)[cp].getArray4fmap () * inverse_leaf_size_).template cast<int> ()).matrix () - min_b_).dot (divb_mul_);
       Leaf& leaf = leaves_[idx];
       if (leaf.nr_points == 0)
       {
@@ -228,7 +228,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
         leaf.centroid.setZero ();
       }
 
-      Eigen::Vector3d pt3d (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z);
+      Eigen::Vector3d pt3d ((*input_)[cp].x, (*input_)[cp].y, (*input_)[cp].z);
       // Accumulate point sum for centroid calculation
       leaf.mean_ += pt3d;
       // Accumulate x*xT for single pass covariance calculation
@@ -237,19 +237,19 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       // Do we need to process all the fields?
       if (!downsample_all_data_)
       {
-        Eigen::Vector4f pt (input_->points[cp].x, input_->points[cp].y, input_->points[cp].z, 0);
+        Eigen::Vector4f pt ((*input_)[cp].x, (*input_)[cp].y, (*input_)[cp].z, 0);
         leaf.centroid.template head<4> () += pt;
       }
       else
       {
         // Copy all the fields
         Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
-        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
+        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> ((*input_)[cp], centroid));
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
           // Fill r/g/b data, assuming that the order is BGRA
-          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index);
+          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&(*input_)[cp]) + rgba_index);
           centroid[centroid_size - 4] = rgb.a;
           centroid[centroid_size - 3] = rgb.r;
           centroid[centroid_size - 2] = rgb.g;

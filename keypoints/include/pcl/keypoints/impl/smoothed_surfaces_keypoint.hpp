@@ -86,8 +86,8 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
     diffs[cloud_i].resize (input_->size ());
     PCL_INFO ("cloud_i %u cloud_i_minus_one %u\n", cloud_i, cloud_i_minus_one);
     for (size_t point_i = 0; point_i < input_->size (); ++point_i)
-      diffs[cloud_i][point_i] = cloud_normals_[cloud_i]->points[point_i].getNormalVector3fMap ().dot (
-          clouds_[cloud_i]->points[point_i].getVector3fMap () - clouds_[cloud_i_minus_one]->points[point_i].getVector3fMap ());
+      diffs[cloud_i][point_i] = (*cloud_normals_[cloud_i])[point_i].getNormalVector3fMap ().dot (
+          (*clouds_[cloud_i])[point_i].getVector3fMap () - (*clouds_[cloud_i_minus_one])[point_i].getVector3fMap ());
 
     // Setup kdtree for this cloud
     cloud_trees_[cloud_i]->setInputCloud (clouds_[cloud_i]);
@@ -148,7 +148,7 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
       // check if point was minimum/maximum over all the scales
       if (passed_min || passed_max)
       {
-        output.push_back (input_->points[point_i]);
+        output.push_back ((*input_)[point_i]);
         keypoints_indices_->indices.push_back (point_i);
       }
     }
@@ -162,10 +162,10 @@ pcl::SmoothedSurfacesKeypoint<PointT, PointNT>::detectKeypoints (PointCloudT &ou
 //    PointCloud<PointXYZI>::Ptr debug_cloud (new PointCloud<PointXYZI> (input_->width, input_->height));
 //    for (size_t point_i = 0; point_i < input_->size (); ++point_i)
 //    {
-//      debug_cloud->points[point_i].intensity = diffs[scales_[scale_i].second][point_i];
-//      debug_cloud->points[point_i].x = input_->points[point_i].x;
-//      debug_cloud->points[point_i].y = input_->points[point_i].y;
-//      debug_cloud->points[point_i].z = input_->points[point_i].z;
+//      (*debug_cloud)[point_i].intensity = diffs[scales_[scale_i].second][point_i];
+//      (*debug_cloud)[point_i].x = (*input_)[point_i].x;
+//      (*debug_cloud)[point_i].y = (*input_)[point_i].y;
+//      (*debug_cloud)[point_i].z = (*input_)[point_i].z;
 //    }
 
 //    char str[512]; sprintf (str, "diffs_%2d.pcd", scale_i);

@@ -112,9 +112,9 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> shapesVis (pcl::PointCloud<
   //------------------------------------
   //-----Add shapes at cloud points-----
   //------------------------------------
-  viewer->addLine<pcl::PointXYZRGB> (cloud->points[0],
-                                     cloud->points[cloud->size() - 1], "line");
-  viewer->addSphere (cloud->points[0], 0.2, 0.5, 0.5, 0.0, "sphere");
+  viewer->addLine<pcl::PointXYZRGB> ((*cloud)[0],
+                                     (*cloud)[cloud->size() - 1], "line");
+  viewer->addSphere ((*cloud)[0], 0.2, 0.5, 0.5, 0.0, "sphere");
 
   //---------------------------------------
   //-----Add shapes at other locations-----

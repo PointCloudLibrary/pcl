@@ -82,7 +82,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (PointCloud &output)
 
     output = *input_;
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
-      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
+      output[(*removed_indices_)[rii]].x = output[(*removed_indices_)[rii]].y = output[(*removed_indices_)[rii]].z = user_filter_value_;
     if (!pcl_isfinite (user_filter_value_))
       output.is_dense = false;
   }
@@ -198,7 +198,7 @@ pcl::NormalSpaceSampling<PointT, NormalT>::applyFilter (std::vector<int> &indice
 
   for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
   {
-    unsigned int bin_number = findBin (input_normals_->points[*it].normal, n_bins);
+    unsigned int bin_number = findBin ((*input_normals_)[*it].normal, n_bins);
     normals_hg[bin_number].push_back (*it);
   }
 

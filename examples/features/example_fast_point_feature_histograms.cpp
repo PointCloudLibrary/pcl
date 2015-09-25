@@ -102,7 +102,7 @@ main (int argc, char** argv)
   std::cout << "output points.size (): " << pfh_features->size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::FPFHSignature33 descriptor = pfh_features->points[0];
+  pcl::FPFHSignature33 descriptor = (*pfh_features)[0];
   std::cout << descriptor << std::endl;
 
   return 0;

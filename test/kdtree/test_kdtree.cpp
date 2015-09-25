@@ -60,6 +60,7 @@ PointCloud<PointXYZ>::Ptr cloud_in (new PointCloud<PointXYZ> ());
 struct MyPoint : public PointXYZ 
 {
     MyPoint (float x, float y, float z) {this->x=x; this->y=y; this->z=z;}
+    MyPoint () {this->x = this->y = this->z = 0;}
 };
 
 PointCloud<MyPoint> cloud, cloud_big;
@@ -96,7 +97,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
   double max_dist = 0.15;
   set<int> brute_force_result;
   for (unsigned int i=0; i<cloud.size(); ++i)
-    if (euclideanDistance(cloud.points[i], test_point) < max_dist)
+    if (euclideanDistance(cloud[i], test_point) < max_dist)
       brute_force_result.insert(i);
   vector<int> k_indices;
   vector<float> k_distances;
@@ -128,7 +129,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
     ScopeTime scopeTime ("FLANN radiusSearch");
     {
       for (size_t i = 0; i < cloud_big.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+        kdtree.radiusSearch (cloud_big[i], 0.1, k_indices, k_distances);
     }
   }
   
@@ -139,7 +140,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
     ScopeTime scopeTime ("FLANN radiusSearch (max neighbors in radius)");
     {
       for (size_t i = 0; i < cloud_big.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances, 10);
+        kdtree.radiusSearch (cloud_big[i], 0.1, k_indices, k_distances, 10);
     }
   }
   
@@ -151,7 +152,7 @@ TEST (PCL, KdTreeFLANN_radiusSearch)
     ScopeTime scopeTime ("FLANN radiusSearch (unsorted results)");
     {
       for (size_t i = 0; i < cloud_big.size (); ++i)
-        kdtree.radiusSearch (cloud_big.points[i], 0.1, k_indices, k_distances);
+        kdtree.radiusSearch (cloud_big[i], 0.1, k_indices, k_distances);
     }
   }
 }
@@ -166,7 +167,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   multimap<float, int> sorted_brute_force_result;
   for (size_t i = 0; i < cloud.size (); ++i)
   {
-    float distance = euclideanDistance (cloud.points[i], test_point);
+    float distance = euclideanDistance (cloud[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
@@ -188,7 +189,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
   // Check if all found neighbors have distance smaller than max_dist
   for (size_t i = 0; i < k_indices.size (); ++i)
   {
-    const MyPoint& point = cloud.points[k_indices[i]];
+    const MyPoint& point = cloud[k_indices[i]];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
       ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
@@ -202,7 +203,7 @@ TEST (PCL, KdTreeFLANN_nearestKSearch)
     KdTreeFLANN<MyPoint> kdtree;
     kdtree.setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.size (); ++i)
-      kdtree.nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+      kdtree.nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
   }
 }
 

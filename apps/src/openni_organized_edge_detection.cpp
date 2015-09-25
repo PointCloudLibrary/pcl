@@ -203,8 +203,8 @@ class OpenNIOrganizedEdgeDetection
           // Make gray point cloud
           for (size_t idx = 0; idx < cloud_.size (); idx++)
           {
-            pcl::uint8_t gray = pcl::uint8_t((cloud_.points[idx].r + cloud_.points[idx].g + cloud_.points[idx].b)/3);
-            cloud_.points[idx].r = cloud_.points[idx].g = cloud_.points[idx].b = gray;
+            pcl::uint8_t gray = pcl::uint8_t((cloud_[idx].r + cloud_[idx].g + cloud_[idx].b)/3);
+            cloud_[idx].r = cloud_[idx].g = cloud_[idx].b = gray;
           }
 
           // Show the gray point cloud

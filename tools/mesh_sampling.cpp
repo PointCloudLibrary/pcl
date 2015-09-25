@@ -125,9 +125,9 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, pcl::
   {
     Eigen::Vector4f p;
     randPSurface (polydata, &cumulativeAreas, totalArea, p);
-    cloud_out.points[i].x = p[0];
-    cloud_out.points[i].y = p[1];
-    cloud_out.points[i].z = p[2];
+    cloud_out[i].x = p[0];
+    cloud_out[i].y = p[1];
+    cloud_out[i].z = p[2];
   }
 }
 

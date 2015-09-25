@@ -124,9 +124,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::extractEuclideanClustersSmoot
         //processed[nn_indices[j]] = true;
         // [-1;1]
 
-        double dot_p = normals.points[seed_queue[sq_idx]].normal[0] * normals.points[nn_indices[j]].normal[0]
-                     + normals.points[seed_queue[sq_idx]].normal[1] * normals.points[nn_indices[j]].normal[1]
-                     + normals.points[seed_queue[sq_idx]].normal[2] * normals.points[nn_indices[j]].normal[2];
+        double dot_p = normals[seed_queue[sq_idx]].normal[0] * normals[nn_indices[j]].normal[0]
+                     + normals[seed_queue[sq_idx]].normal[1] * normals[nn_indices[j]].normal[1]
+                     + normals[seed_queue[sq_idx]].normal[2] * normals[nn_indices[j]].normal[2];
 
         if (fabs (acos (dot_p)) < eps_angle)
         {
@@ -172,7 +172,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::filterNormalsWithHighCurvatur
 
   for (int i = 0; i < static_cast<int> (indices_to_use.size ()); i++)
   {
-    if (cloud.points[indices_to_use[i]].curvature > threshold)
+    if (cloud[indices_to_use[i]].curvature > threshold)
     {
       indices_out[out] = indices_to_use[i];
       out++;
@@ -217,9 +217,9 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
   for (size_t i = 0; i < indices_in.size (); ++i)
   {
-    normals_filtered_cloud->points[i].x = surface_->points[indices_in[i]].x;
-    normals_filtered_cloud->points[i].y = surface_->points[indices_in[i]].y;
-    normals_filtered_cloud->points[i].z = surface_->points[indices_in[i]].z;
+    (*normals_filtered_cloud)[i].x = (*surface_)[indices_in[i]].x;
+    (*normals_filtered_cloud)[i].y = (*surface_)[indices_in[i]].y;
+    (*normals_filtered_cloud)[i].z = (*surface_)[indices_in[i]].z;
   }
 
   std::vector<pcl::PointIndices> clusters;
@@ -273,8 +273,8 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
       for (size_t j = 0; j < clusters[i].indices.size (); j++)
       {
-        avg_normal += normals_filtered_cloud->points[clusters[i].indices[j]].getNormalVector4fMap ();
-        avg_centroid += normals_filtered_cloud->points[clusters[i].indices[j]].getVector4fMap ();
+        avg_normal += (*normals_filtered_cloud)[clusters[i].indices[j]].getNormalVector4fMap ();
+        avg_centroid += (*normals_filtered_cloud)[clusters[i].indices[j]].getVector4fMap ();
       }
 
       avg_normal /= static_cast<float> (clusters[i].indices.size ());
@@ -302,7 +302,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       vfh.setCentroidToUse (centroids_dominant_orientations_[i]);
       pcl::PointCloud<pcl::VFHSignature308> vfh_signature;
       vfh.compute (vfh_signature);
-      output.points[i] = vfh_signature.points[0];
+      output[i] = vfh_signature[0];
     }
   }
   else
@@ -321,7 +321,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
     output.resize (1);
 
-    output.points[0] = vfh_signature.points[0];
+    output[0] = vfh_signature[0];
   }
 }
 

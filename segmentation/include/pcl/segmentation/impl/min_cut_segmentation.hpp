@@ -207,7 +207,7 @@ pcl::MinCutSegmentation<PointT>::setForegroundPoints (typename pcl::PointCloud<P
   foreground_points_.clear ();
   foreground_points_.reserve (foreground_points->size ());
   for (size_t i_point = 0; i_point < foreground_points->size (); i_point++)
-    foreground_points_.push_back (foreground_points->points[i_point]);
+    foreground_points_.push_back ((*foreground_points)[i_point]);
 
   unary_potentials_are_valid_ = false;
 }
@@ -226,7 +226,7 @@ pcl::MinCutSegmentation<PointT>::setBackgroundPoints (typename pcl::PointCloud<P
   background_points_.clear ();
   background_points_.reserve (background_points->size ());
   for (size_t i_point = 0; i_point < background_points->size (); i_point++)
-    background_points_.push_back (background_points->points[i_point]);
+    background_points_.push_back ((*background_points)[i_point]);
 
   unary_potentials_are_valid_ = false;
 }
@@ -396,8 +396,8 @@ pcl::MinCutSegmentation<PointT>::calculateUnaryPotential (int point, double& sou
   //double closest_background_point[] = {0.0, 0.0};
   double initial_point[] = {0.0, 0.0};
 
-  initial_point[0] = input_->points[point].x;
-  initial_point[1] = input_->points[point].y;
+  initial_point[0] = (*input_)[point].x;
+  initial_point[1] = (*input_)[point].y;
 
   for (size_t i_point = 0; i_point < foreground_points_.size (); i_point++)
   {
@@ -477,9 +477,9 @@ pcl::MinCutSegmentation<PointT>::calculateBinaryPotential (int source, int targe
 {
   double weight = 0.0;
   double distance = 0.0;
-  distance += (input_->points[source].x - input_->points[target].x) * (input_->points[source].x - input_->points[target].x);
-  distance += (input_->points[source].y - input_->points[target].y) * (input_->points[source].y - input_->points[target].y);
-  distance += (input_->points[source].z - input_->points[target].z) * (input_->points[source].z - input_->points[target].z);
+  distance += ((*input_)[source].x - (*input_)[target].x) * ((*input_)[source].x - (*input_)[target].x);
+  distance += ((*input_)[source].y - (*input_)[target].y) * ((*input_)[source].y - (*input_)[target].y);
+  distance += ((*input_)[source].z - (*input_)[target].z) * ((*input_)[source].z - (*input_)[target].z);
   distance *= inverse_sigma_;
   weight = exp (-distance);
 
@@ -606,11 +606,11 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
     int point_index = 0;
     for (int i_point = 0; i_point < num_of_pts_in_first_cluster; i_point++)
     {
-      pcl::PointXYZRGB& point = colored_cloud->points[i_point];
+      pcl::PointXYZRGB& point = (*colored_cloud)[i_point];
       point_index = clusters_[0].indices[i_point];
-      point.x = *(input_->points[point_index].data);
-      point.y = *(input_->points[point_index].data + 1);
-      point.z = *(input_->points[point_index].data + 2);
+      point.x = *((*input_)[point_index].data);
+      point.y = *((*input_)[point_index].data + 1);
+      point.z = *((*input_)[point_index].data + 2);
       point.r = background_color[0];
       point.g = background_color[1];
       point.b = background_color[2];
@@ -618,11 +618,11 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
 
     for (int i_point = 0; i_point < num_of_pts_in_second_cluster; i_point++)
     {
-      pcl::PointXYZRGB& point = colored_cloud->points[num_of_pts_in_first_cluster+i_point];
+      pcl::PointXYZRGB& point = (*colored_cloud)[num_of_pts_in_first_cluster+i_point];
       point_index = clusters_[1].indices[i_point];
-      point.x = *(input_->points[point_index].data);
-      point.y = *(input_->points[point_index].data + 1);
-      point.z = *(input_->points[point_index].data + 2);
+      point.x = *((*input_)[point_index].data);
+      point.y = *((*input_)[point_index].data + 1);
+      point.z = *((*input_)[point_index].data + 2);
       point.r = foreground_color[0];
       point.g = foreground_color[1];
       point.b = foreground_color[2];

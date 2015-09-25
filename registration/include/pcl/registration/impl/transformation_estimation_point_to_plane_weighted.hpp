@@ -258,8 +258,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
   {
-    const PointSource & p_src = src_points.points[i];
-    const PointTarget & p_tgt = tgt_points.points[i];
+    const PointSource & p_src = src_points[i];
+    const PointTarget & p_tgt = tgt_points[i];
 
     // Transform the source point based on the current warp parameters
     Vector4 p_src_warped;
@@ -287,8 +287,8 @@ pcl::registration::TransformationEstimationPointToPlaneWeighted<PointSource, Poi
   // Transform each source point and compute its distance to the corresponding target point
   for (int i = 0; i < values (); ++i)
   {
-    const PointSource & p_src = src_points.points[src_indices[i]];
-    const PointTarget & p_tgt = tgt_points.points[tgt_indices[i]];
+    const PointSource & p_src = src_points[src_indices[i]];
+    const PointTarget & p_tgt = tgt_points[tgt_indices[i]];
 
     // Transform the source point based on the current warp parameters
     Vector4 p_src_warped;

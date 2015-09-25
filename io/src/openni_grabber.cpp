@@ -578,7 +578,7 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
   {
     for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
           depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -671,7 +671,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   {
     for (register unsigned int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
 
@@ -701,7 +701,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   {
     for (unsigned xIdx = 0; xIdx < image_width_; ++xIdx, point_idx += step, value_idx += 3)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
       
       pt.r = rgb_buffer[value_idx];
       pt.g = rgb_buffer[value_idx + 1];
@@ -765,7 +765,7 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
   {
     for (register unsigned int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||

@@ -221,9 +221,9 @@ public:
         {
           pcl::PointXYZ &point = (*particle_cloud) [i];
           
-          point.x = particles->points[i].x;
-          point.y = particles->points[i].y;
-          point.z = particles->points[i].z;
+          point.x = (*particles)[i].x;
+          point.y = (*particles)[i].y;
+          point.z = (*particles)[i].z;
         }
         
         {
@@ -492,7 +492,7 @@ public:
   {
     for (size_t i = 0; i < cloud->size (); i++)
     {
-      PointType point = cloud->points[i];
+      PointType point = (*cloud)[i];
       if (!(fabs(point.x) < 0.01 &&
             fabs(point.y) < 0.01 &&
             fabs(point.z) < 0.01) &&

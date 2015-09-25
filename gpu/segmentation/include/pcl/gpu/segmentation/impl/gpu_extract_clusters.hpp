@@ -82,7 +82,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
     // Create the query queue on the host
 	pcl::PointCloud<pcl::PointXYZ>::VectorType queries_host;
     // Push the starting point in the vector
-    queries_host.push_back (host_cloud_->points[i]);
+    queries_host.push_back ((*host_cloud_)[i]);
     // Clear vector
     r.indices.clear();
     // Push the starting point in
@@ -123,7 +123,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
           if(processed[data[i]])
             continue;
           processed[data[i]] = true;
-          queries_host.push_back (host_cloud_->points[data[i]]);
+          queries_host.push_back ((*host_cloud_)[data[i]]);
           found_points++;
           r.indices.push_back(data[i]);
         }
@@ -153,7 +153,7 @@ pcl::gpu::extractEuclideanClusters (const boost::shared_ptr<pcl::PointCloud<pcl:
             if(processed[data[qp_r + qp * max_answers]])
               continue;
             processed[data[qp_r + qp * max_answers]] = true;
-            queries_host.push_back (host_cloud_->points[data[qp_r + qp * max_answers]]);
+            queries_host.push_back ((*host_cloud_)[data[qp_r + qp * max_answers]]);
             found_points++;
             r.indices.push_back(data[qp_r + qp * max_answers]);
           }

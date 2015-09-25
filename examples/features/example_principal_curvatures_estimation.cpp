@@ -96,7 +96,7 @@ main (int, char** argv)
   std::cout << "output points.size (): " << principal_curvatures->size () << std::endl;
 
   // Display and retrieve the shape context descriptor vector for the 0th point.
-  pcl::PrincipalCurvatures descriptor = principal_curvatures->points[0];
+  pcl::PrincipalCurvatures descriptor = (*principal_curvatures)[0];
   std::cout << descriptor << std::endl;
 
   return 0;

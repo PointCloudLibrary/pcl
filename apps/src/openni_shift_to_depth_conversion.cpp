@@ -182,7 +182,7 @@ protected:
     for (y = -centerY; y < +centerY; ++y)
       for (x = -centerX; x < +centerX; ++x)
       {
-        PointXYZRGB& newPoint = cloud_arg.points[i];
+        PointXYZRGB& newPoint = cloud_arg[i];
 
         const uint16_t& pixel_depth = depthData_arg[i];
 

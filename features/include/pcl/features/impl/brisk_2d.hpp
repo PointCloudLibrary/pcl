@@ -248,7 +248,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedInte
     const int r_x_1 = (1024 - r_x);
     const int r_y_1 = (1024 - r_y);
     
-    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x + y * imagecols;
+    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x + y * imagecols;
     const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x + y * imagecols;
     
     // just interpolate:
@@ -311,7 +311,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedInte
   {
     // now the calculation:
     
-    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x_left + imagecols * y_top;
+    //+const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
     const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
 
     // first the corners:
@@ -373,7 +373,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::smoothedInte
 
   // now the calculation:
   
-  //const unsigned char* ptr = static_cast<const unsigned char*> (&image.points[0].r) + x_left + imagecols * y_top;
+  //const unsigned char* ptr = static_cast<const unsigned char*> (&image[0].r) + x_left + imagecols * y_top;
   const unsigned char* ptr = static_cast<const unsigned char*>(&image[0]) + x_left + imagecols * y_top;
   
   // first row:
@@ -486,7 +486,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     unsigned int scale;
     if (scale_invariance_enabled_)
     {
-      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (log (keypoints_->points[k].size / (basic_size_06)) / log2) + 0.5f), 0);
+      scale = std::max (static_cast<int> (float (scales_) / lb_scalerange * (log ((*keypoints_)[k].size / (basic_size_06)) / log2) + 0.5f), 0);
       // saturate
       if (scale >= scales_) scale = scales_ - 1;
       kscales[k] = scale;
@@ -501,7 +501,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     const int border_x = width - border;
     const int border_y = height - border;
 
-    if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), keypoints_->points[k]))
+    if (RoiPredicate (float (border), float (border), float (border_x), float (border_y), (*keypoints_)[k]))
     {
       //std::cerr << "remove keypoint" << std::endl;
       keypoints_->points.erase (beginning + k);
@@ -557,10 +557,10 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
   //output.height = 1;
   for (size_t k = 0; k < ksize; k++)
   {
-    unsigned char* ptr = &output.points[k].descriptor[0];
+    unsigned char* ptr = &output[k].descriptor[0];
 
     int theta;
-    KeypointT &kp    = keypoints_->points[k];
+    KeypointT &kp    = (*keypoints_)[k];
     const int& scale = kscales[k];
     int shifter = 0;
     int* pvalues = values;
@@ -569,7 +569,7 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     if (true) // kp.angle==-1
     {
       if (!rotation_invariance_enabled_)
-        // don't compute the gradient direction, just assign a rotation of 0°
+        // don't compute the gradient direction, just assign a rotation of 0ï¿½
         theta = 0;
       else
       {
@@ -663,8 +663,8 @@ pcl::BRISK2DEstimation<PointInT, PointOutT, KeypointT, IntensityT>::compute (
     //ptr += strings_;
  
     //// Account for the scale + orientation;
-    //ptr += sizeof (output.points[0].scale);
-    //ptr += sizeof (output.points[0].orientation);
+    //ptr += sizeof (output[0].scale);
+    //ptr += sizeof (output[0].orientation);
   }
 
   // we do not change the denseness

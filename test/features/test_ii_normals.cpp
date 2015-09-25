@@ -360,9 +360,9 @@ TEST (PCL, NormalEstimation)
 
   for (size_t i = 0; i < cloud.size (); ++i)
   {
-    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_x),   0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_y),   0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_z), 1.0, 1e-2);
   }
 }
 

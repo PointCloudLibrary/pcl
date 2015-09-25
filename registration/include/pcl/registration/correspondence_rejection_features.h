@@ -250,8 +250,8 @@ namespace pcl
                 feature_representation_.reset (new DefaultFeatureRepresentation<FeatureT>);
 
               // Get the source and the target feature from the list
-              const FeatureT &feat_src = source_features_->points[index];
-              const FeatureT &feat_tgt = target_features_->points[index];
+              const FeatureT &feat_src = (*source_features_)[index];
+              const FeatureT &feat_tgt = (*target_features_)[index];
 
               // Check if the representations are valid
               if (!feature_representation_->isValid (feat_src) || !feature_representation_->isValid (feat_tgt))

@@ -290,9 +290,9 @@ private:
     for (i = 0; i < displayCloud->size(); i++)
     {
 
-      double x = displayCloud->points[i].x;
-      double y = displayCloud->points[i].y;
-      double z = displayCloud->points[i].z;
+      double x = (*displayCloud)[i].x;
+      double y = (*displayCloud)[i].y;
+      double z = (*displayCloud)[i].z;
 
 #if VTK_MAJOR_VERSION < 6
       treeWireframe->AddInput(GetCuboid(x - s, x + s, y - s, y + s, z - s, z + s));

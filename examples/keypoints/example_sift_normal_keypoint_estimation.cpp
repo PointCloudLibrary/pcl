@@ -86,9 +86,9 @@ main(int, char** argv)
   // Copy the xyz info from cloud_xyz and add it to cloud_normals as the xyz field in PointNormals estimation is zero
   for(size_t i = 0; i<cloud_normals->size(); ++i)
   {
-    cloud_normals->points[i].x = cloud_xyz->points[i].x;
-    cloud_normals->points[i].y = cloud_xyz->points[i].y;
-    cloud_normals->points[i].z = cloud_xyz->points[i].z;
+    (*cloud_normals)[i].x = (*cloud_xyz)[i].x;
+    (*cloud_normals)[i].y = (*cloud_xyz)[i].y;
+    (*cloud_normals)[i].z = (*cloud_xyz)[i].z;
   }
 
   // Estimate the sift interest points using normals values from xyz as the Intensity variants

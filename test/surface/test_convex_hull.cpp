@@ -127,8 +127,8 @@ TEST (PCL, ConvexHull_bunny)
   ASSERT_EQ (hull.size (), hull2.size ());
   for (size_t i = 0; i < hull.size (); ++i)
   {
-    const PointXYZ & p1 = hull.points[i];
-    const PointXYZ & p2 = hull2.points[i];
+    const PointXYZ & p1 = hull[i];
+    const PointXYZ & p2 = hull2[i];
     ASSERT_EQ (p1.x, p2.x);
     ASSERT_EQ (p1.y, p2.y);
     ASSERT_EQ (p1.z, p2.z);
@@ -193,9 +193,9 @@ TEST (PCL, ConvexHull_LTable)
   {
     for (size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -204,37 +204,37 @@ TEST (PCL, ConvexHull_LTable)
   {
     for (size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }
 
   // add the five points on the hull
-  cloud_out_ltable.points[npoints].x = -0.5f;
-  cloud_out_ltable.points[npoints].y = 0.5f;
-  cloud_out_ltable.points[npoints].z = 0.f;
+  cloud_out_ltable[npoints].x = -0.5f;
+  cloud_out_ltable[npoints].y = 0.5f;
+  cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 4.5f;
-  cloud_out_ltable.points[npoints].y = 0.5f;
-  cloud_out_ltable.points[npoints].z = 0.f;
+  cloud_out_ltable[npoints].x = 4.5f;
+  cloud_out_ltable[npoints].y = 0.5f;
+  cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 4.5f;
-  cloud_out_ltable.points[npoints].y = -1.0f;
-  cloud_out_ltable.points[npoints].z = 0.f;
+  cloud_out_ltable[npoints].x = 4.5f;
+  cloud_out_ltable[npoints].y = -1.0f;
+  cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = 1.0f;
-  cloud_out_ltable.points[npoints].y = -4.5f;
-  cloud_out_ltable.points[npoints].z = 0.f;
+  cloud_out_ltable[npoints].x = 1.0f;
+  cloud_out_ltable[npoints].y = -4.5f;
+  cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
-  cloud_out_ltable.points[npoints].x = -0.5f;
-  cloud_out_ltable.points[npoints].y = -4.5f;
-  cloud_out_ltable.points[npoints].z = 0.f;
+  cloud_out_ltable[npoints].x = -0.5f;
+  cloud_out_ltable[npoints].y = -4.5f;
+  cloud_out_ltable[npoints].z = 0.f;
   npoints++;
 
   cloud_out_ltable.resize (npoints);
@@ -288,8 +288,8 @@ TEST (PCL, ConvexHull_LTable)
   ASSERT_EQ (hull.size (), hull2.size ());
   for (size_t i = 0; i < hull.size (); ++i)
   {
-    const PointXYZ & p1 = hull.points[i];
-    const PointXYZ & p2 = hull2.points[i];
+    const PointXYZ & p1 = hull[i];
+    const PointXYZ & p2 = hull2[i];
     ASSERT_EQ (p1.x, p2.x);
     ASSERT_EQ (p1.y, p2.y);
     ASSERT_EQ (p1.z, p2.z);
@@ -323,9 +323,9 @@ TEST (PCL, ConvexHull_2dsquare)
 
   for (size_t i = 0; i < input_cloud->size (); i++)
   {
-    input_cloud->points[i].x = (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].y = (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].z = 1.0f;
+    (*input_cloud)[i].x = (2.0f * float (rng ()))-1.0f;
+    (*input_cloud)[i].y = (2.0f * float (rng ()))-1.0f;
+    (*input_cloud)[i].z = 1.0f;
   }
 
   //Set up for creating a hull
@@ -352,13 +352,13 @@ TEST (PCL, ConvexHull_2dsquare)
   //Make sure they're in the plane
   for (size_t i = 0; i < hull.size (); i++)
   {
-    float dist = fabs (hull.points[i].getVector4fMap ().dot (plane_normal));
+    float dist = fabs (hull[i].getVector4fMap ().dot (plane_normal));
     EXPECT_NEAR (dist, 0.0, 1e-2);
 
     float min_dist = std::numeric_limits<float>::infinity ();
     for (size_t j = 0; j < facets.size (); j++)
     {
-      float d2 = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      float d2 = fabs (hull[i].getVector4fMap ().dot (facets[j]));
       
       if (d2 < min_dist)
         min_dist = d2;
@@ -380,9 +380,9 @@ TEST (PCL, ConvexHull_3dcube)
 
   for (size_t i = 0; i < input_cloud->size (); i++)
   {
-    input_cloud->points[i].x =  (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].y =  (2.0f * float (rng ()))-1.0f;
-    input_cloud->points[i].z =  (2.0f * float (rng ()))-1.0f;
+    (*input_cloud)[i].x =  (2.0f * float (rng ()))-1.0f;
+    (*input_cloud)[i].y =  (2.0f * float (rng ()))-1.0f;
+    (*input_cloud)[i].z =  (2.0f * float (rng ()))-1.0f;
   }
 
   //Set up for creating a hull
@@ -410,7 +410,7 @@ TEST (PCL, ConvexHull_3dcube)
     float min_dist = std::numeric_limits<float>::infinity ();
     for (size_t j = 0; j < facets.size (); j++)
     {
-      float dist = fabs (hull.points[i].getVector4fMap ().dot (facets[j]));
+      float dist = fabs (hull[i].getVector4fMap ().dot (facets[j]));
       
       if (dist < min_dist)
         min_dist = dist;

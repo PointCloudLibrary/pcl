@@ -86,9 +86,9 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   // Go over all the points and calculate the mean or smallest distance
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || 
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
+    if (!pcl_isfinite ((*cloud)[(*indices_)[cp]].x) ||
+        !pcl_isfinite ((*cloud)[(*indices_)[cp]].y) ||
+        !pcl_isfinite ((*cloud)[(*indices_)[cp]].z))
     {
       distances[cp] = 0;
       continue;

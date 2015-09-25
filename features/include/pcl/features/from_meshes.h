@@ -25,7 +25,7 @@ namespace pcl
       normals.resize(nr_points);
 
       for ( int i = 0; i < nr_points; ++i )
-        normals.points[i].getNormalVector3fMap() = Eigen::Vector3f::Zero();
+        normals[i].getNormalVector3fMap() = Eigen::Vector3f::Zero();
 
       // NOTE: for efficiency the weight is computed implicitly by using the
       // cross product, this causes inaccurate normals for meshes containing
@@ -36,20 +36,20 @@ namespace pcl
         if (nr_points_polygon < 3) continue;
 
         // compute normal for triangle
-        Eigen::Vector3f vec_a_b = cloud.points[polygons[i].vertices[0]].getVector3fMap() - cloud.points[polygons[i].vertices[1]].getVector3fMap();
-        Eigen::Vector3f vec_a_c = cloud.points[polygons[i].vertices[0]].getVector3fMap() - cloud.points[polygons[i].vertices[2]].getVector3fMap();
+        Eigen::Vector3f vec_a_b = cloud[polygons[i].vertices[0]].getVector3fMap() - cloud[polygons[i].vertices[1]].getVector3fMap();
+        Eigen::Vector3f vec_a_c = cloud[polygons[i].vertices[0]].getVector3fMap() - cloud[polygons[i].vertices[2]].getVector3fMap();
         Eigen::Vector3f normal = vec_a_b.cross(vec_a_c);
-        pcl::flipNormalTowardsViewpoint(cloud.points[polygons[i].vertices[0]], 0.0f, 0.0f, 0.0f, normal(0), normal(1), normal(2));
+        pcl::flipNormalTowardsViewpoint(cloud[polygons[i].vertices[0]], 0.0f, 0.0f, 0.0f, normal(0), normal(1), normal(2));
 
         // add normal to all points in polygon
         for ( int j = 0; j < nr_points_polygon; ++j )
-          normals.points[polygons[i].vertices[j]].getNormalVector3fMap() += normal;
+          normals[polygons[i].vertices[j]].getNormalVector3fMap() += normal;
       }
 
       for ( int i = 0; i < nr_points; ++i )
       {
-        normals.points[i].getNormalVector3fMap().normalize();
-        pcl::flipNormalTowardsViewpoint(cloud.points[i], 0.0f, 0.0f, 0.0f, normals.points[i].normal_x, normals.points[i].normal_y, normals.points[i].normal_z);
+        normals[i].getNormalVector3fMap().normalize();
+        pcl::flipNormalTowardsViewpoint(cloud[i], 0.0f, 0.0f, 0.0f, normals[i].normal_x, normals[i].normal_y, normals[i].normal_z);
       }
     }
 
@@ -73,9 +73,9 @@ namespace pcl
       covariances.resize(nr_points);
       for (int i = 0; i < nr_points; ++i)
       {
-        Eigen::Vector3d normal(normals.points[i].normal_x, 
-                               normals.points[i].normal_y, 
-                               normals.points[i].normal_z);
+        Eigen::Vector3d normal(normals[i].normal_x,
+                               normals[i].normal_y,
+                               normals[i].normal_z);
 
         // compute rotation matrix
         Eigen::Matrix3d rot;

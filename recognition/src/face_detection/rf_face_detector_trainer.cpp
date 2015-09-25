@@ -278,7 +278,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
   int element_stride = sizeof(pcl::PointXYZ) / sizeof(float);
   int row_stride = element_stride * cloud->width;
-  const float *data = reinterpret_cast<const float*> (&cloud->points[0]);
+  const float *data = reinterpret_cast<const float*> (&(*cloud)[0]);
   integral_image_depth->setInput (data + 2, cloud->width, cloud->height, element_stride, row_stride);
 
   //Compute normals and normal integral images
@@ -304,15 +304,15 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
   if (use_normals_)
   {
     integral_image_normal_x.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_nx = reinterpret_cast<const float*> (&normals->points[0]);
+    const float *data_nx = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_x->setInput (data_nx, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
     integral_image_normal_y.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_ny = reinterpret_cast<const float*> (&normals->points[0]);
+    const float *data_ny = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_y->setInput (data_ny + 1, normals->width, normals->height, element_stride_normal, row_stride_normal);
 
     integral_image_normal_z.reset (new pcl::IntegralImage2D<float, 1> (false));
-    const float *data_nz = reinterpret_cast<const float*> (&normals->points[0]);
+    const float *data_nz = reinterpret_cast<const float*> (&(*normals)[0]);
     integral_image_normal_z->setInput (data_nz + 2, normals->width, normals->height, element_stride_normal, row_stride_normal);
   }
 
@@ -423,8 +423,8 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
       for (size_t i = 0; i < cloud->size (); i++)
       {
-        face_heat_map_->points[i].getVector4fMap () = cloud->points[i].getVector4fMap ();
-        face_heat_map_->points[i].intensity = weights[i];
+        (*face_heat_map_)[i].getVector4fMap () = (*cloud)[i].getVector4fMap ();
+        (*face_heat_map_)[i].intensity = weights[i];
       }
     }
   }

@@ -104,9 +104,9 @@ void verifyPlaneSac (ModelType& model,
   // Projection tests
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff_refined, proj_points);
-  EXPECT_XYZ_NEAR (PointXYZ (1.1266,  0.0152, -0.0156), proj_points.points[20], proj_tol);
-  EXPECT_XYZ_NEAR (PointXYZ (1.1843, -0.0635, -0.0201), proj_points.points[30], proj_tol);
-  EXPECT_XYZ_NEAR (PointXYZ (1.0749, -0.0586,  0.0587), proj_points.points[50], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1266,  0.0152, -0.0156), proj_points[20], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.1843, -0.0635, -0.0201), proj_points[30], proj_tol);
+  EXPECT_XYZ_NEAR (PointXYZ (1.0749, -0.0586,  0.0587), proj_points[50], proj_tol);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,13 +250,13 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
 
   for (unsigned idx = 0; idx < cloud.size (); ++idx)
   {
-    cloud.points[idx].x = static_cast<float> ((rand () % 200) - 100);
-    cloud.points[idx].y = static_cast<float> ((rand () % 200) - 100);
-    cloud.points[idx].z = 0.0f;
+    cloud[idx].x = static_cast<float> ((rand () % 200) - 100);
+    cloud[idx].y = static_cast<float> ((rand () % 200) - 100);
+    cloud[idx].z = 0.0f;
 
-    normals.points[idx].normal_x = 0.0f;
-    normals.points[idx].normal_y = 0.0f;
-    normals.points[idx].normal_z = 1.0f;
+    normals[idx].normal_x = 0.0f;
+    normals[idx].normal_y = 0.0f;
+    normals[idx].normal_z = 1.0f;
   }
 
   // Create a shared plane model pointer directly

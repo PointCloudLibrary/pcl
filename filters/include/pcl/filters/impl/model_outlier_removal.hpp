@@ -155,7 +155,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilter (PointCloud &output)
 
     output = *input_;
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
-      output.points[ (*removed_indices_)[rii]].x = output.points[ (*removed_indices_)[rii]].y = output.points[ (*removed_indices_)[rii]].z = user_filter_value_;
+      output[ (*removed_indices_)[rii]].x = output[ (*removed_indices_)[rii]].y = output[ (*removed_indices_)[rii]].z = user_filter_value_;
     if (!pcl_isfinite (user_filter_value_))
       output.is_dense = false;
   }
@@ -203,7 +203,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
     for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
     {
       // Non-finite entries are always passed to removed indices
-      if (!isFinite (input_->points[ (*indices_)[iii]]))
+      if (!isFinite ((*input_)[ (*indices_)[iii]]))
       {
         if (extract_removed_indices_)
           (*removed_indices_)[rii++] = (*indices_)[iii];
@@ -223,7 +223,7 @@ pcl::ModelOutlierRemoval<PointT>::applyFilterIndices (std::vector<int> &indices)
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)  // iii = input indices iterator
   {
     // Non-finite entries are always passed to removed indices
-    if (!isFinite (input_->points[ (*indices_)[iii]]))
+    if (!isFinite ((*input_)[ (*indices_)[iii]]))
     {
       if (extract_removed_indices_)
         (*removed_indices_)[rii++] = (*indices_)[iii];

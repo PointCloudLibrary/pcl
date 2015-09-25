@@ -58,9 +58,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   {
     double p[3];
     src->GetPoint (i, p);
-    cloud.points[i].x = static_cast<float> (p[0]); 
-    cloud.points[i].y = static_cast<float> (p[1]); 
-    cloud.points[i].z = static_cast<float> (p[2]);
+    cloud[i].x = static_cast<float> (p[0]);
+    cloud[i].y = static_cast<float> (p[1]);
+    cloud[i].z = static_cast<float> (p[2]);
   }
 
   // Compute a kd-tree for tgt
@@ -73,7 +73,7 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   // For each point on screen, find its correspondent in the target
   for (size_t i = 0; i < cloud.size (); ++i)
   {
-    kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
+    kdtree.nearestKSearch (cloud[i], 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices

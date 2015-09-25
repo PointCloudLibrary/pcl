@@ -40,9 +40,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
 
           flann_model descr_model;
           descr_model.first = models->at (i);
-          int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
           descr_model.second.resize (size_feat);
-          memcpy (&descr_model.second[0], &signature->points[0].histogram[0], size_feat * sizeof(float));
+          memcpy (&descr_model.second[0], &(*signature)[0].histogram[0], size_feat * sizeof(float));
 
           flann_models_.push_back (descr_model);
         }
@@ -101,8 +101,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
     {
       for (size_t idx = 0; idx < signatures.size (); idx++)
       {
-        float* hist = signatures[idx].points[0].histogram;
-        int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+        float* hist = signatures[idx][0].histogram;
+        int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
         std::vector<float> std_hist (hist, hist + size_feat);
         ModelT empty;
 

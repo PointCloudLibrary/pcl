@@ -117,9 +117,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           descr_model.view_id = view_id;
           descr_model.descriptor_id = descriptor_id;
 
-          int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
           descr_model.descr.resize (size_feat);
-          memcpy (&descr_model.descr[0], &signature->points[0].histogram[0], size_feat * sizeof(float));
+          memcpy (&descr_model.descr[0], &(*signature)[0].histogram[0], size_feat * sizeof(float));
 
           flann_models_.push_back (descr_model);
 
@@ -195,8 +195,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         for (size_t idx = 0; idx < signatures.size (); idx++)
         {
 
-          float* hist = signatures[idx].points[0].histogram;
-          int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+          float* hist = signatures[idx][0].histogram;
+          int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
           std::vector<float> std_hist (hist, hist + size_feat);
           ModelT empty;
 
@@ -436,7 +436,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
             // Noisify each point in the dataset
             for (size_t cp = 0; cp < view->size (); ++cp)
-              view->points[cp].z += static_cast<float> (var_nor ());
+              (*view)[cp].z += static_cast<float> (var_nor ());
 
           }
 

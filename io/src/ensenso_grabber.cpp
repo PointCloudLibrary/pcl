@@ -326,9 +326,9 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
     // Copy data in point cloud (and convert milimeters in meters)
     for (size_t i = 0; i < pointMap.size (); i += 3)
     {
-      cloud.points[i / 3].x = pointMap[i] / 1000.0;
-      cloud.points[i / 3].y = pointMap[i + 1] / 1000.0;
-      cloud.points[i / 3].z = pointMap[i + 2] / 1000.0;
+      cloud[i / 3].x = pointMap[i] / 1000.0;
+      cloud[i / 3].y = pointMap[i + 1] / 1000.0;
+      cloud[i / 3].z = pointMap[i + 2] / 1000.0;
     }
 
     return (true);
@@ -1046,9 +1046,9 @@ pcl::EnsensoGrabber::processGrabbing ()
           // Copy data in point cloud (and convert milimeters in meters)
           for (size_t i = 0; i < pointMap.size (); i += 3)
           {
-            cloud->points[i / 3].x = pointMap[i] / 1000.0;
-            cloud->points[i / 3].y = pointMap[i + 1] / 1000.0;
-            cloud->points[i / 3].z = pointMap[i + 2] / 1000.0;
+            (*cloud)[i / 3].x = pointMap[i] / 1000.0;
+            (*cloud)[i / 3].y = pointMap[i + 1] / 1000.0;
+            (*cloud)[i / 3].z = pointMap[i + 2] / 1000.0;
           }
         }
 

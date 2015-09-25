@@ -58,7 +58,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
   for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
-    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[(*removed_indices_)[rii]]);
+    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&(*cloud)[(*removed_indices_)[rii]]);
     for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
       memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
   }
@@ -83,7 +83,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
     {
-      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[(*removed_indices_)[rii]]);
+      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output[(*removed_indices_)[rii]]);
       for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
         memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
     }

@@ -137,7 +137,7 @@ namespace pcl
 
       /** \brief Override PointCloud operator[] to shorten code
         * \note this method can be called instead of (*input_)[(*indices_)[pos]]
-        * or input_->points[(*indices_)[pos]]
+        * or (*input_)[(*indices_)[pos]]
         * \param[in] pos position in indices_ vector
         */
       inline const PointT& operator[] (size_t pos) const 

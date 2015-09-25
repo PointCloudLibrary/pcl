@@ -17,9 +17,9 @@ main (int argc, char** argv)
             << " data points from test_pcd.pcd with the following fields: "
             << std::endl;
   for (size_t i = 0; i < cloud->size (); ++i)
-    std::cout << "    " << cloud->points[i].x
-              << " "    << cloud->points[i].y
-              << " "    << cloud->points[i].z << std::endl;
+    std::cout << "    " << (*cloud)[i].x
+              << " "    << (*cloud)[i].y
+              << " "    << (*cloud)[i].z << std::endl;
 
   return (0);
 }

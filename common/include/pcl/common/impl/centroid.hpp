@@ -764,7 +764,7 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out (1, i) = cloud_in[i].y - centroid[1];
     cloud_out (2, i) = cloud_in[i].z - centroid[2];
     // One column at a time
-    //cloud_out.block<4, 1> (0, i) = cloud_in.points[i].getVector4fMap () - centroid;
+    //cloud_out.block<4, 1> (0, i) = cloud_in[i].getVector4fMap () - centroid;
   }
 
   // Make sure we zero the 4th dimension out (1 row, N columns)
@@ -788,7 +788,7 @@ pcl::demeanPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     cloud_out (1, i) = cloud_in[indices[i]].y - centroid[1];
     cloud_out (2, i) = cloud_in[indices[i]].z - centroid[2];
     // One column at a time
-    //cloud_out.block<4, 1> (0, i) = cloud_in.points[indices[i]].getVector4fMap () - centroid;
+    //cloud_out.block<4, 1> (0, i) = cloud_in[indices[i]].getVector4fMap () - centroid;
   }
 
   // Make sure we zero the 4th dimension out (1 row, N columns)

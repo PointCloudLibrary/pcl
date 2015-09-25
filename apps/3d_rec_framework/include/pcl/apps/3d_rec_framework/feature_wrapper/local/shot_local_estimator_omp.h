@@ -118,7 +118,7 @@ namespace pcl
           signatures->width = static_cast<int> (shots->size ());
           signatures->height = 1;
 
-          int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
           int good = 0;
           for (size_t k = 0; k < shots->size (); k++)
@@ -127,7 +127,7 @@ namespace pcl
             int NaNs = 0;
             for (int i = 0; i < size_feat; i++)
             {
-              if (!pcl_isfinite(shots->points[k].descriptor[i]))
+              if (!pcl_isfinite((*shots)[k].descriptor[i]))
                 NaNs++;
             }
 
@@ -135,7 +135,7 @@ namespace pcl
             {
               for (int i = 0; i < size_feat; i++)
               {
-                signatures->points[good].histogram[i] = shots->points[k].descriptor[i];
+                (*signatures)[good].histogram[i] = (*shots)[k].descriptor[i];
               }
 
               good++;

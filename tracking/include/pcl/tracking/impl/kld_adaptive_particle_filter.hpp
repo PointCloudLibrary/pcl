@@ -64,7 +64,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
   do
   {
     int j_n = sampleWithReplacement (a, q);
-    StateT x_t = particles_->points[j_n];
+    StateT x_t = (*particles_)[j_n];
     x_t.sample (zero_mean, step_noise_covariance_);
     
     // motion

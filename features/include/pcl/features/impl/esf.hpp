@@ -98,9 +98,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
       continue;
     }
 
-    Eigen::Vector4f p1 = pc.points[index1].getVector4fMap ();
-    Eigen::Vector4f p2 = pc.points[index2].getVector4fMap ();
-    Eigen::Vector4f p3 = pc.points[index3].getVector4fMap ();
+    Eigen::Vector4f p1 = pc[index1].getVector4fMap ();
+    Eigen::Vector4f p2 = pc[index2].getVector4fMap ();
+    Eigen::Vector4f p3 = pc[index3].getVector4fMap ();
 
     // A3
     Eigen::Vector4f v21 (p2 - p1);
@@ -135,9 +135,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
 
     // D2
-    d2v.push_back (pcl::euclideanDistance (pc.points[index1], pc.points[index2]));
-    d2v.push_back (pcl::euclideanDistance (pc.points[index1], pc.points[index3]));
-    d2v.push_back (pcl::euclideanDistance (pc.points[index2], pc.points[index3]));
+    d2v.push_back (pcl::euclideanDistance (pc[index1], pc[index2]));
+    d2v.push_back (pcl::euclideanDistance (pc[index1], pc[index3]));
+    d2v.push_back (pcl::euclideanDistance (pc[index2], pc[index3]));
 
     int vxlcnt_sum = 0;
     int p_cnt = 0;
@@ -424,9 +424,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::voxelize9 (PointCloudIn &cluster)
   int xi,yi,zi,xx,yy,zz;
   for (size_t i = 0; i < cluster.size (); ++i)
   {
-    xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    zz = cluster.points[i].z<0.0? static_cast<int>(floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    xx = cluster[i].x<0.0? static_cast<int>(floor(cluster[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].x)+GRIDSIZE_H-1);
+    yy = cluster[i].y<0.0? static_cast<int>(floor(cluster[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].y)+GRIDSIZE_H-1);
+    zz = cluster[i].z<0.0? static_cast<int>(floor(cluster[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)
@@ -453,9 +453,9 @@ pcl::ESFEstimation<PointInT, PointOutT>::cleanup9 (PointCloudIn &cluster)
   int xi,yi,zi,xx,yy,zz;
   for (size_t i = 0; i < cluster.size (); ++i)
   {
-    xx = cluster.points[i].x<0.0? static_cast<int>(floor(cluster.points[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].x)+GRIDSIZE_H-1);
-    yy = cluster.points[i].y<0.0? static_cast<int>(floor(cluster.points[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].y)+GRIDSIZE_H-1);
-    zz = cluster.points[i].z<0.0? static_cast<int>(floor(cluster.points[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster.points[i].z)+GRIDSIZE_H-1);
+    xx = cluster[i].x<0.0? static_cast<int>(floor(cluster[i].x)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].x)+GRIDSIZE_H-1);
+    yy = cluster[i].y<0.0? static_cast<int>(floor(cluster[i].y)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].y)+GRIDSIZE_H-1);
+    zz = cluster[i].z<0.0? static_cast<int>(floor(cluster[i].z)+GRIDSIZE_H) : static_cast<int>(ceil(cluster[i].z)+GRIDSIZE_H-1);
 
     for (int x = -1; x < 2; x++)
       for (int y = -1; y < 2; y++)
@@ -488,7 +488,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::scale_points_unit_sphere (
 
   for (size_t i = 0; i < local_cloud_.size (); ++i)
   {
-    d = pcl::euclideanDistance(cog,local_cloud_.points[i]);
+    d = pcl::euclideanDistance(cog,local_cloud_[i]);
     if (d > max_distance)
       max_distance = d;
   }
@@ -541,7 +541,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   output.resize (1);
 
   for (size_t d = 0; d < hist.size (); ++d)
-    output.points[0].histogram[d] = hist[d];
+    output[0].histogram[d] = hist[d];
 }
 
 #define PCL_INSTANTIATE_ESFEstimation(T,OutT) template class PCL_EXPORTS pcl::ESFEstimation<T,OutT>;

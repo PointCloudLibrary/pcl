@@ -66,17 +66,17 @@ displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& 
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
   for (size_t i  = 0; i < cloud.size (); i++)
   {
-    if (normals.points[i].curvature < 0.04)
+    if (normals[i].curvature < 0.04)
     {
-      curvature_cloud.points[i].r = 0;
-      curvature_cloud.points[i].g = 255;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 0;
+      curvature_cloud[i].g = 255;
+      curvature_cloud[i].b = 0;
     }
     else
     {
-      curvature_cloud.points[i].r = 255;
-      curvature_cloud.points[i].g = 0;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 255;
+      curvature_cloud[i].g = 0;
+      curvature_cloud[i].b = 0;
     }
   }
   
@@ -93,15 +93,15 @@ displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, boost::
   {
     if (distance_map[i] < 5.0)
     {
-      distance_map_cloud.points[i].r = 255;
-      distance_map_cloud.points[i].g = 0;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 255;
+      distance_map_cloud[i].g = 0;
+      distance_map_cloud[i].b = 0;
     }
     else
     {
-      distance_map_cloud.points[i].r = 0;
-      distance_map_cloud.points[i].g = 255;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 0;
+      distance_map_cloud[i].g = 255;
+      distance_map_cloud[i].b = 0;
     }
   }
   
@@ -137,11 +137,11 @@ compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<Point
   
   for (size_t i = 0; i < cluster.size (); i++)
   {
-    double ptp_dist = fabs (model[0] * cluster.points[i].x +
-                            model[1] * cluster.points[i].y +
-                            model[2] * cluster.points[i].z +
+    double ptp_dist = fabs (model[0] * cluster[i].x +
+                            model[1] * cluster[i].y +
+                            model[2] * cluster[i].z +
                             model[3]);
-    bool in_poly = pcl::isPointIn2DPolygon<PointT> (cluster.points[i], poly);
+    bool in_poly = pcl::isPointIn2DPolygon<PointT> (cluster[i], poly);
     if (in_poly && ptp_dist < 0.02)
       return true;
   }

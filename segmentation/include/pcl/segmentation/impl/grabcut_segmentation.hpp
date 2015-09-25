@@ -98,7 +98,7 @@ pcl::GrabCut<PointT>::initCompute ()
   image_.reset (new Image (input_->width, input_->height));
   for (std::size_t i = 0; i < input_->size (); ++i)
   {
-    (*image_) [i] = Color (input_->points[i]);
+    (*image_) [i] = Color ((*input_)[i]);
   }
   width_ = image_->width;
   height_ = image_->height;
@@ -285,8 +285,8 @@ pcl::GrabCut<PointT>::initGraph ()
     {
       case TrimapUnknown :
       {
-        fore = static_cast<float> (-log (background_GMM_.probabilityDensity (image_->points[point_index])));
-        back = static_cast<float> (-log (foreground_GMM_.probabilityDensity (image_->points[point_index])));
+        fore = static_cast<float> (-log (background_GMM_.probabilityDensity ((*image_)[point_index])));
+        back = static_cast<float> (-log (foreground_GMM_.probabilityDensity ((*image_)[point_index])));
         break;
       }
       case TrimapBackground :
@@ -390,7 +390,7 @@ pcl::GrabCut<PointT>::computeBetaNonOrganized ()
   for (int i_point = 0; i_point < number_of_indices; i_point++)
   {
     int point_index = (*indices_)[i_point];
-    const PointT& point = input_->points [point_index];
+    const PointT& point = (*input_)[point_index];
     if (pcl::isFinite (point))
     {
       NLinks &links = n_links_[i_point];
@@ -403,7 +403,7 @@ pcl::GrabCut<PointT>::computeBetaNonOrganized ()
         {
           if (*nn_it != point_index)
           {
-            float color_distance = squaredEuclideanDistance (image_->points[point_index], image_->points[*nn_it]);
+            float color_distance = squaredEuclideanDistance ((*image_)[point_index], (*image_)[*nn_it]);
             links.weights.push_back (color_distance);
             result+= color_distance;
             ++edges;
@@ -440,8 +440,8 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
         std::size_t upleft = (y+1)  * input_->width + x - 1;
         links.indices[0] = upleft;
         links.dists[0] = sqrt (2.f);
-        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
-                                                      image_->points[upleft]);
+        float color_dist =  squaredEuclideanDistance ((*image_)[point_index],
+                                                      (*image_)[upleft]);
         links.weights[0] = color_dist;
         result+= color_dist;
         edges++;
@@ -452,8 +452,8 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
         std::size_t up = (y+1) * input_->width + x;
         links.indices[1] = up;
         links.dists[1] = 1;
-        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
-                                                      image_->points[up]);
+        float color_dist =  squaredEuclideanDistance ((*image_)[point_index],
+                                                      (*image_)[up]);
         links.weights[1] = color_dist;
         result+= color_dist;
         edges++;
@@ -464,8 +464,8 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
         std::size_t upright = (y+1) * input_->width + x + 1;
         links.indices[2] = upright;
         links.dists[2] = sqrt (2.f);
-        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
-                                                      image_->points [upright]);
+        float color_dist =  squaredEuclideanDistance ((*image_)[point_index],
+                                                      (*image_)[upright]);
         links.weights[2] = color_dist;
         result+= color_dist;
         edges++;
@@ -476,8 +476,8 @@ pcl::GrabCut<PointT>::computeBetaOrganized ()
         std::size_t right = y * input_->width + x + 1;
         links.indices[3] = right;
         links.dists[3] = 1;
-        float color_dist =  squaredEuclideanDistance (image_->points[point_index],
-                                                      image_->points[right]);
+        float color_dist =  squaredEuclideanDistance ((*image_)[point_index],
+                                                      (*image_)[right]);
         links.weights[3] = color_dist;
         result+= color_dist;
         edges++;

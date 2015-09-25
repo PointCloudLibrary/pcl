@@ -82,9 +82,9 @@ namespace pcl
       }
 
       // Compute the segment values (in 3d) between p1 and p0
-      float3 p1p0 = ((PointXYZRGB)input_->points[samples[1]]).xyz - ((PointXYZRGB)input_->points[samples[0]]).xyz;
+      float3 p1p0 = ((PointXYZRGB)(*input_)[samples[1]]).xyz - ((PointXYZRGB)(*input_)[samples[0]]).xyz;
       // Compute the segment values (in 3d) between p2 and p0
-      float3 p2p0 = ((PointXYZRGB)input_->points[samples[2]]).xyz - ((PointXYZRGB)input_->points[samples[0]]).xyz;
+      float3 p2p0 = ((PointXYZRGB)(*input_)[samples[2]]).xyz - ((PointXYZRGB)(*input_)[samples[0]]).xyz;
 
       // Avoid some crashes by checking for collinearity here
       float3 dy1dy2 = p1p0 / p2p0;
@@ -101,7 +101,7 @@ namespace pcl
       model_coefficients[1] = mc.y;
       model_coefficients[2] = mc.z;
       // ... + d = 0
-      model_coefficients[3] = -1 * dot (mc, ((PointXYZRGB)input_->points[samples[0]]).xyz);
+      model_coefficients[3] = -1 * dot (mc, ((PointXYZRGB)(*input_)[samples[0]]).xyz);
 
       return (true);
     }
@@ -182,7 +182,7 @@ namespace pcl
       transform (//first, first + max_iterations,
                  randoms.begin (), randoms.begin () + max_iterations,
                  h.begin (), 
-                 CreatePlaneHypothesis<Storage> (thrust::raw_pointer_cast (&input_->points[0]), 
+                 CreatePlaneHypothesis<Storage> (thrust::raw_pointer_cast (&(*input_)[0]),
                                                  thrust::raw_pointer_cast (&(*indices_)[0]),
                                                  (int) indices_->size (), std::numeric_limits<float>::quiet_NaN ()));
       return (true);

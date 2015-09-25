@@ -388,7 +388,7 @@ main (int argc, char** argv)
       switch (noise_model)
       {
         // Gaussian
-        case 1: { cloud.points[cp].x += gaussian_rng (); cloud.points[cp].y += gaussian_rng (); cloud.points[cp].z += gaussian_rng (); break; }
+        case 1: { cloud[cp].x += gaussian_rng (); cloud[cp].y += gaussian_rng (); cloud[cp].z += gaussian_rng (); break; }
       }
     }
 

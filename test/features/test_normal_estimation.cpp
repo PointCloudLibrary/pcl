@@ -123,14 +123,14 @@ TEST (PCL, NormalEstimation)
   EXPECT_NEAR (curvature,            0.0693136, 1e-4);
 
   // flipNormalTowardsViewpoint (Vector)
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, plane_parameters);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, plane_parameters);
   EXPECT_NEAR (plane_parameters[0], -0.035592,  1e-4);
   EXPECT_NEAR (plane_parameters[1], -0.369596,  1e-4);
   EXPECT_NEAR (plane_parameters[2], -0.928511,  1e-4);
   EXPECT_NEAR (plane_parameters[3],  0.0799743, 1e-4);
 
   // flipNormalTowardsViewpoint
-  flipNormalTowardsViewpoint (cloud.points[0], 0, 0, 0, nx, ny, nz);
+  flipNormalTowardsViewpoint (cloud[0], 0, 0, 0, nx, ny, nz);
   EXPECT_NEAR (nx, -0.035592, 1e-4);
   EXPECT_NEAR (ny, -0.369596, 1e-4);
   EXPECT_NEAR (nz, -0.928511, 1e-4);
@@ -155,10 +155,10 @@ TEST (PCL, NormalEstimation)
 
   for (size_t i = 0; i < normals->size (); ++i)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR ((*normals)[i].curvature, 0.0693136, 1e-4);
   }
 
   PointCloud<PointXYZ>::Ptr surfaceptr = cloudptr;
@@ -206,10 +206,10 @@ TEST (PCL, NormalEstimationOpenMP)
 
   for (size_t i = 0; i < normals->size (); ++i)
   {
-    EXPECT_NEAR (normals->points[i].normal[0], -0.035592, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[1], -0.369596, 1e-4);
-    EXPECT_NEAR (normals->points[i].normal[2], -0.928511, 1e-4);
-    EXPECT_NEAR (normals->points[i].curvature, 0.0693136, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[0], -0.035592, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[1], -0.369596, 1e-4);
+    EXPECT_NEAR ((*normals)[i].normal[2], -0.928511, 1e-4);
+    EXPECT_NEAR ((*normals)[i].curvature, 0.0693136, 1e-4);
   }
 }
 

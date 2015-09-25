@@ -85,9 +85,9 @@ namespace pcl
           for (vtkIdType cp = 0; cp < nr_points; ++cp)
           {
             int idx = cp * 3;
-            colors[idx + 0] = rgb_->points[cp].r;
-            colors[idx + 1] = rgb_->points[cp].g;
-            colors[idx + 2] = rgb_->points[cp].b;
+            colors[idx + 0] = (*rgb_)[cp].r;
+            colors[idx + 1] = (*rgb_)[cp].g;
+            colors[idx + 2] = (*rgb_)[cp].b;
           }
         return (true);
       }

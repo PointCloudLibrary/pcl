@@ -14,16 +14,16 @@ int
 
   for (size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
   }
 
   std::cerr << "Cloud before projection: " << std::endl;
   for (size_t i = 0; i < cloud->size (); ++i)
-    std::cerr << "    " << cloud->points[i].x << " " 
-                        << cloud->points[i].y << " " 
-                        << cloud->points[i].z << std::endl;
+    std::cerr << "    " << (*cloud)[i].x << " "
+                        << (*cloud)[i].y << " "
+                        << (*cloud)[i].z << std::endl;
 
   // Create a set of planar coefficients with X=Y=0,Z=1
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
@@ -41,9 +41,9 @@ int
 
   std::cerr << "Cloud after projection: " << std::endl;
   for (size_t i = 0; i < cloud_projected->size (); ++i)
-    std::cerr << "    " << cloud_projected->points[i].x << " " 
-                        << cloud_projected->points[i].y << " " 
-                        << cloud_projected->points[i].z << std::endl;
+    std::cerr << "    " << (*cloud_projected)[i].x << " "
+                        << (*cloud_projected)[i].y << " "
+                        << (*cloud_projected)[i].z << std::endl;
 
   return (0);
 }

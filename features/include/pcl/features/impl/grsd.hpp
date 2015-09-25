@@ -96,14 +96,14 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   int NR_CLASS = 5; // TODO make this nicer
   std::vector<int> types (radii->size ());
   for (size_t idx = 0; idx < radii->size (); ++idx)
-    types[idx] = getSimpleType (radii->points[idx].r_min, radii->points[idx].r_max);
+    types[idx] = getSimpleType ((*radii)[idx].r_min, (*radii)[idx].r_max);
 
   // Get the transitions between surface types between neighbors of occupied cells
   Eigen::MatrixXi transition_matrix = Eigen::MatrixXi::Zero (NR_CLASS + 1, NR_CLASS + 1);
   for (size_t idx = 0; idx < cloud_downsampled->size (); ++idx)
   {
     int source_type = types[idx];
-    std::vector<int> neighbors = grid.getNeighborCentroidIndices (cloud_downsampled->points[idx], relative_coordinates_all_);
+    std::vector<int> neighbors = grid.getNeighborCentroidIndices ((*cloud_downsampled)[idx], relative_coordinates_all_);
     for (unsigned id_n = 0; id_n < neighbors.size (); id_n++)
     {
       int neighbor_type;
@@ -120,7 +120,7 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   int nrf = 0;
   for (int i = 0; i < NR_CLASS + 1; i++)
     for (int j = i; j < NR_CLASS + 1; j++)
-      output.points[0].histogram[nrf++] = transition_matrix (i, j) + transition_matrix (j, i);
+      output[0].histogram[nrf++] = transition_matrix (i, j) + transition_matrix (j, i);
 }
 
 #define PCL_INSTANTIATE_GRSDEstimation(T,NT,OutT) template class PCL_EXPORTS pcl::GRSDEstimation<T,NT,OutT>;

@@ -241,7 +241,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[i * 3], &(*cloud)[i].x, 12);    // sizeof (float) * 3
   }
   else
   {
@@ -249,12 +249,12 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!pcl_isfinite (cloud->points[i].x) ||
-          !pcl_isfinite (cloud->points[i].y) ||
-          !pcl_isfinite (cloud->points[i].z))
+      if (!pcl_isfinite ((*cloud)[i].x) ||
+          !pcl_isfinite ((*cloud)[i].y) ||
+          !pcl_isfinite ((*cloud)[i].z))
         continue;
 
-      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[j * 3], &(*cloud)[i].x, 12);    // sizeof (float) * 3
       j++;
     }
     nr_points = j;
@@ -784,14 +784,14 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 
     for (vtkIdType i = 0, j = 0; j < nr_normals; j++, i = j * level)
     {
-      PointT p = cloud->points[i];
-      p.x += normals->points[i].normal[0] * scale;
-      p.y += normals->points[i].normal[1] * scale;
-      p.z += normals->points[i].normal[2] * scale;
+      PointT p = (*cloud)[i];
+      p.x += (*normals)[i].normal[0] * scale;
+      p.y += (*normals)[i].normal[1] * scale;
+      p.z += (*normals)[i].normal[2] * scale;
 
-      pts[2 * j * 3 + 0] = cloud->points[i].x;
-      pts[2 * j * 3 + 1] = cloud->points[i].y;
-      pts[2 * j * 3 + 2] = cloud->points[i].z;
+      pts[2 * j * 3 + 0] = (*cloud)[i].x;
+      pts[2 * j * 3 + 1] = (*cloud)[i].y;
+      pts[2 * j * 3 + 2] = (*cloud)[i].z;
       pts[2 * j * 3 + 3] = p.x;
       pts[2 * j * 3 + 4] = p.y;
       pts[2 * j * 3 + 5] = p.z;
@@ -880,13 +880,13 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   // Create the first sets of lines
   for (size_t i = 0; i < cloud->size (); i+=level)
   {
-    PointT p = cloud->points[i];
-    p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
-    p.y += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[1]) * scale;
-    p.z += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[2]) * scale;
+    PointT p = (*cloud)[i];
+    p.x += ((*pcs)[i].pc1 * (*pcs)[i].principal_curvature[0]) * scale;
+    p.y += ((*pcs)[i].pc1 * (*pcs)[i].principal_curvature[1]) * scale;
+    p.z += ((*pcs)[i].pc1 * (*pcs)[i].principal_curvature[2]) * scale;
 
     vtkSmartPointer<vtkLineSource> line_1 = vtkSmartPointer<vtkLineSource>::New ();
-    line_1->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_1->SetPoint1 ((*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     line_1->SetPoint2 (p.x, p.y, p.z);
     line_1->Update ();
 #if VTK_MAJOR_VERSION < 6
@@ -903,21 +903,21 @@ pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
   // Create the second sets of lines
   for (size_t i = 0; i < cloud->size (); i += level)
   {
-    Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
-                        pcs->points[i].principal_curvature[1],
-                        pcs->points[i].principal_curvature[2]);
-    Eigen::Vector3f normal (normals->points[i].normal[0],
-                            normals->points[i].normal[1],
-                            normals->points[i].normal[2]);
+    Eigen::Vector3f pc ((*pcs)[i].principal_curvature[0],
+                        (*pcs)[i].principal_curvature[1],
+                        (*pcs)[i].principal_curvature[2]);
+    Eigen::Vector3f normal ((*normals)[i].normal[0],
+                            (*normals)[i].normal[1],
+                            (*normals)[i].normal[2]);
     Eigen::Vector3f pc_c = pc.cross (normal);
 
-    PointT p = cloud->points[i];
-    p.x += (pcs->points[i].pc2 * pc_c[0]) * scale;
-    p.y += (pcs->points[i].pc2 * pc_c[1]) * scale;
-    p.z += (pcs->points[i].pc2 * pc_c[2]) * scale;
+    PointT p = (*cloud)[i];
+    p.x += ((*pcs)[i].pc2 * pc_c[0]) * scale;
+    p.y += ((*pcs)[i].pc2 * pc_c[1]) * scale;
+    p.z += ((*pcs)[i].pc2 * pc_c[2]) * scale;
 
     vtkSmartPointer<vtkLineSource> line_2 = vtkSmartPointer<vtkLineSource>::New ();
-    line_2->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_2->SetPoint1 ((*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     line_2->SetPoint2 (p.x, p.y, p.z);
     line_2->Update ();
 #if VTK_MAJOR_VERSION < 6
@@ -988,14 +988,14 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
 
   for (vtkIdType i = 0, j = 0; j < nr_gradients; j++, i = j * level)
   {
-    PointT p = cloud->points[i];
-    p.x += gradients->points[i].gradient[0] * scale;
-    p.y += gradients->points[i].gradient[1] * scale;
-    p.z += gradients->points[i].gradient[2] * scale;
+    PointT p = (*cloud)[i];
+    p.x += (*gradients)[i].gradient[0] * scale;
+    p.y += (*gradients)[i].gradient[1] * scale;
+    p.z += (*gradients)[i].gradient[2] * scale;
 
-    pts[2 * j * 3 + 0] = cloud->points[i].x;
-    pts[2 * j * 3 + 1] = cloud->points[i].y;
-    pts[2 * j * 3 + 2] = cloud->points[i].z;
+    pts[2 * j * 3 + 0] = (*cloud)[i].x;
+    pts[2 * j * 3 + 1] = (*cloud)[i].y;
+    pts[2 * j * 3 + 2] = (*cloud)[i].z;
     pts[2 * j * 3 + 3] = p.x;
     pts[2 * j * 3 + 4] = p.y;
     pts[2 * j * 3 + 5] = p.z;
@@ -1127,8 +1127,8 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
       continue;
     }
 
-    PointT p_src (source_points->points[correspondences[i].index_query]);
-    PointT p_tgt (target_points->points[correspondences[i].index_match]);
+    PointT p_src ((*source_points)[correspondences[i].index_query]);
+    PointT p_tgt ((*target_points)[correspondences[i].index_match]);
 
     p_src.getVector3fMap () = source_transformation * p_src.getVector3fMap ();
     p_tgt.getVector3fMap () = target_transformation * p_tgt.getVector3fMap ();
@@ -1495,7 +1495,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, pts += 3)
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[pts], &(*cloud)[i].x, 12);    // sizeof (float) * 3
   }
   else
   {
@@ -1503,10 +1503,10 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
 
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      memcpy (&data[pts], &(*cloud)[i].x, 12);    // sizeof (float) * 3
       pts += 3;
       j++;
     }
@@ -1572,9 +1572,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     pcl::RGB rgb_data;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
-      memcpy (&rgb_data, reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset, sizeof (pcl::RGB));
+      memcpy (&rgb_data, reinterpret_cast<const char*> (&(*cloud)[i]) + fields[rgb_idx].offset, sizeof (pcl::RGB));
       unsigned char color[3];
       color[0] = rgb_data.r;
       color[1] = rgb_data.g;
@@ -1598,7 +1598,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
   }
   else
   {
@@ -1607,11 +1607,11 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
 
       lookup[i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
       j++;
       ptr += 3;
     }
@@ -1751,7 +1751,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
   }
   else
   {
@@ -1760,11 +1760,11 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     for (vtkIdType i = 0; i < nr_points; ++i)
     {
       // Check if the point is invalid
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
 
       lookup [i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      memcpy (&data[ptr], &(*cloud)[i].x, sizeof (float) * 3);
       j++;
       ptr += 3;
     }
@@ -1787,10 +1787,10 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     int j = 0;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
-      if (!isFinite (cloud->points[i]))
+      if (!isFinite ((*cloud)[i]))
         continue;
       memcpy (&rgb_data, 
-              reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset,
+              reinterpret_cast<const char*> (&(*cloud)[i]) + fields[rgb_idx].offset,
               sizeof (pcl::RGB));
       unsigned char color[3];
       color[0] = rgb_data.r;

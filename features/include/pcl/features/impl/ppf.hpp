@@ -73,16 +73,16 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
       if (i != j)
       {
         if (//pcl::computePPFPairFeature
-            pcl::computePairFeatures (input_->points[i].getVector4fMap (),
-                                      normals_->points[i].getNormalVector4fMap (),
-                                      input_->points[j].getVector4fMap (),
-                                      normals_->points[j].getNormalVector4fMap (),
+            pcl::computePairFeatures ((*input_)[i].getVector4fMap (),
+                                      (*normals_)[i].getNormalVector4fMap (),
+                                      (*input_)[j].getVector4fMap (),
+                                      (*normals_)[j].getNormalVector4fMap (),
                                       p.f1, p.f2, p.f3, p.f4))
         {
           // Calculate alpha_m angle
-          Eigen::Vector3f model_reference_point = input_->points[i].getVector3fMap (),
-                          model_reference_normal = normals_->points[i].getNormalVector3fMap (),
-                          model_point = input_->points[j].getVector3fMap ();
+          Eigen::Vector3f model_reference_point = (*input_)[i].getVector3fMap (),
+                          model_reference_normal = (*normals_)[i].getNormalVector3fMap (),
+                          model_point = (*input_)[j].getVector3fMap ();
           float rotation_angle = acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
           bool parallel_to_x = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
           Eigen::Vector3f rotation_axis = (parallel_to_x)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());
@@ -110,7 +110,7 @@ pcl::PPFEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
         output.is_dense = false;
       }
 
-      output.points[index_i*input_->size () + j] = p;
+      output[index_i*input_->size () + j] = p;
     }
   }
 }

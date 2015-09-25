@@ -71,8 +71,8 @@ checkDesc(const pcl::PointCloud<PointT>& d0, const pcl::PointCloud<PointT>& d1)
 {
   ASSERT_EQ (d0.size (), d1.size ());
   for (size_t i = 0; i < d1.size (); ++i)
-    for (size_t j = 0; j < d0.points[i].descriptor.size(); ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+    for (size_t j = 0; j < d0[i].descriptor.size(); ++j)
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ checkDesc<SHOT352>(const pcl::PointCloud<SHOT352>& d0, const pcl::PointCloud<SHO
   ASSERT_EQ (d0.size (), d1.size ());
   for (size_t i = 0; i < d1.size (); ++i)
     for (size_t j = 0; j < 352; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ checkDesc<SHOT1344>(const pcl::PointCloud<SHOT1344>& d0, const pcl::PointCloud<S
   ASSERT_EQ (d0.size (), d1.size ());
   for (size_t i = 0; i < d1.size (); ++i)
     for (size_t j = 0; j < 1344; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ checkDesc<ShapeContext1980>(const pcl::PointCloud<ShapeContext1980>& d0, const p
   ASSERT_EQ (d0.size (), d1.size ());
   for (size_t i = 0; i < d1.size (); ++i)
     for (size_t j = 0; j < 1980; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ checkDesc<UniqueShapeContext1960>(const pcl::PointCloud<UniqueShapeContext1960>&
   ASSERT_EQ (d0.size (), d1.size ());
   for (size_t i = 0; i < d1.size (); ++i)
     for (size_t j = 0; j < 1960; ++j)
-      ASSERT_EQ (d0.points[i].descriptor[j], d1.points[i].descriptor[j]);
+      ASSERT_EQ (d0[i].descriptor[j], d1[i].descriptor[j]);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -332,10 +332,10 @@ testSHOTLocalReferenceFrame (const typename PointCloud<PointT>::Ptr & points,
   for (int i = 0; i < static_cast<int> (frames->size ()); ++i)
   {
     for (unsigned j = 0; j < 9; ++j)
-      ASSERT_EQ (frames->points[i].rf[j], f->points[i].rf[j]);
+      ASSERT_EQ ((*frames)[i].rf[j], (*f)[i].rf[j]);
 
     for (unsigned j = 0; j < 9; ++j)
-      ASSERT_EQ (frames->points[i].rf[j], f2->points[i].rf[j]);
+      ASSERT_EQ ((*frames)[i].rf[j], (*f2)[i].rf[j]);
   }
 
   // The two cases above should produce equivalent results
@@ -357,16 +357,16 @@ TEST (PCL, SHOTShapeEstimation)
   n.setRadiusSearch (20 * mr);
   n.compute (*normals);
 
-  EXPECT_NEAR (normals->points[103].normal_x, 0.36683175, 1e-4);
-  EXPECT_NEAR (normals->points[103].normal_y, -0.44696972, 1e-4);
-  EXPECT_NEAR (normals->points[103].normal_z, -0.81587529, 1e-4);
-  EXPECT_NEAR (normals->points[200].normal_x, -0.71414840, 1e-4);
-  EXPECT_NEAR (normals->points[200].normal_y, -0.06002361, 1e-4);
-  EXPECT_NEAR (normals->points[200].normal_z, -0.69741613, 1e-4);
+  EXPECT_NEAR ((*normals)[103].normal_x, 0.36683175, 1e-4);
+  EXPECT_NEAR ((*normals)[103].normal_y, -0.44696972, 1e-4);
+  EXPECT_NEAR ((*normals)[103].normal_z, -0.81587529, 1e-4);
+  EXPECT_NEAR ((*normals)[200].normal_x, -0.71414840, 1e-4);
+  EXPECT_NEAR ((*normals)[200].normal_y, -0.06002361, 1e-4);
+  EXPECT_NEAR ((*normals)[200].normal_z, -0.69741613, 1e-4);
 
-  EXPECT_NEAR (normals->points[140].normal_x, -0.45109111, 1e-4);
-  EXPECT_NEAR (normals->points[140].normal_y, -0.19499126, 1e-4);
-  EXPECT_NEAR (normals->points[140].normal_z, -0.87091631, 1e-4);
+  EXPECT_NEAR ((*normals)[140].normal_x, -0.45109111, 1e-4);
+  EXPECT_NEAR ((*normals)[140].normal_y, -0.19499126, 1e-4);
+  EXPECT_NEAR ((*normals)[140].normal_z, -0.87091631, 1e-4);
 
 /*
   SHOTEstimation<PointXYZ, Normal, SHOT> shot;
@@ -386,16 +386,16 @@ TEST (PCL, SHOTShapeEstimation)
   shot.compute (*shots);
   EXPECT_EQ (shots->size (), indices.size ());
 
-  EXPECT_NEAR (shots->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.070665278, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0050609680, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[9 ], 0.0072018504, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[10], 0.0023103887, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[11], 0.0024724449, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[19], 0.0031367359, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[20], 0.17439659, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[21], 0.070665278, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[42], 0.013304681, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[53], 0.0073520984, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[54], 0.013584172, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[55], 0.0050609680, 1e-4);
 */
 
   // SHOT352
@@ -416,16 +416,16 @@ TEST (PCL, SHOTShapeEstimation)
   shot352.compute (*shots352);
   EXPECT_EQ (shots352->size (), indices.size ());
 
-  EXPECT_NEAR (shots352->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[21], 0.070665278, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[55], 0.0050609680, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[9 ], 0.0072018504, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[10], 0.0023103887, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[11], 0.0024724449, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[19], 0.0031367359, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[20], 0.17439659, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[21], 0.070665278, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[42], 0.013304681, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[53], 0.0073520984, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[54], 0.013584172, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[55], 0.0050609680, 1e-4);
 
 
   // Test results when setIndices and/or setSearchSurface are used
@@ -478,16 +478,16 @@ TEST (PCL, GenericSHOTShapeEstimation)
   shot.compute (*shots);
   EXPECT_EQ (shots->size (), indices.size ());
 
-  EXPECT_NEAR (shots->points[103].descriptor[18], 0.0077019366, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[19], 0.0024708188, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.0079652183, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[38], 0.0067090928, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[39], 0.17498907, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[40], 0.078413926, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[81], 0.014228539, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[103], 0.022390056, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[105], 0.0058866320, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[123], 0.019105887, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[18], 0.0077019366, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[19], 0.0024708188, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[21], 0.0079652183, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[38], 0.0067090928, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[39], 0.17498907, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[40], 0.078413926, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[81], 0.014228539, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[103], 0.022390056, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[105], 0.0058866320, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[123], 0.019105887, 1e-5);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
@@ -521,9 +521,9 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
     PointXYZRGBA p;
-    p.x = cloud.points[i].x;
-    p.y = cloud.points[i].y;
-    p.z = cloud.points[i].z;
+    p.x = cloud[i].x;
+    p.y = cloud[i].y;
+    p.z = cloud[i].z;
 
     p.rgba = ( (i%255) << 16 ) + ( ( (255 - i ) %255) << 8) + ( ( i*37 ) %255);
     cloudWithColors.push_back(p);
@@ -548,27 +548,27 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   shot.compute (*shots);
   EXPECT_EQ (shots->size (), indices.size ());
 
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.062557608, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[64], 0.064429596, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[65], 0.046486385, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[86], 0.011518310, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[10], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[11], 0.0021887729, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[21], 0.062557608, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[42], 0.011778189, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[53], 0.0065085669, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[54], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[55], 0.0044803056, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[64], 0.064429596, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[65], 0.046486385, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[86], 0.011518310, 1e-5);
 
-  EXPECT_NEAR (shots->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[386], 0.045115642, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[387], 0.059068538, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[512], 0.048357654, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[357], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[360], 0.0027993850, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[386], 0.045115642, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[387], 0.059068538, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[389], 0.0047547864, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[453], 0.0051176427, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[481], 0.0053625242, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[482], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[511], 0.0057367259, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[512], 0.048357654, 1e-5);
 */
 
   // SHOT1344
@@ -588,27 +588,27 @@ TEST (PCL, SHOTShapeAndColorEstimation)
   shot1344.compute (*shots1344);
   EXPECT_EQ (shots1344->size (), indices.size ());
 
-  EXPECT_NEAR (shots1344->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[21], 0.062557608, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[64], 0.064429596, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[65], 0.046486385, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[86], 0.011518310, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[10], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[11], 0.0021887729, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[21], 0.062557608, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[42], 0.011778189, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[53], 0.0065085669, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[54], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[55], 0.0044803056, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[64], 0.064429596, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[65], 0.046486385, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[86], 0.011518310, 1e-5);
 
-  EXPECT_NEAR (shots1344->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[386], 0.045115642, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[387], 0.059068538, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[512], 0.048357654, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[357], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[360], 0.0027993850, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[386], 0.045115642, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[387], 0.059068538, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[389], 0.0047547864, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[453], 0.0051176427, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[481], 0.0053625242, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[482], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[511], 0.0057367259, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[512], 0.048357654, 1e-5);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
@@ -660,16 +660,16 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   shot.compute (*shots);
   EXPECT_EQ (shots->size (), indices.size ());
 
-  EXPECT_NEAR (shots->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.070665278, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0050609680, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[9 ], 0.0072018504, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[10], 0.0023103887, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[11], 0.0024724449, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[19], 0.0031367359, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[20], 0.17439659, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[21], 0.070665278, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[42], 0.013304681, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[53], 0.0073520984, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[54], 0.013584172, 1e-4);
+  EXPECT_NEAR ((*shots)[103].descriptor[55], 0.0050609680, 1e-4);
 */
 
   // SHOT352
@@ -691,16 +691,16 @@ TEST (PCL, SHOTShapeEstimationOpenMP)
   shot352.compute (*shots352);
   EXPECT_EQ (shots352->size (), indices.size ());
 
-  EXPECT_NEAR (shots352->points[103].descriptor[9 ], 0.0072018504, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[10], 0.0023103887, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[11], 0.0024724449, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[19], 0.0031367359, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[20], 0.17439659, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[21], 0.070665278, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[42], 0.013304681, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[53], 0.0073520984, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[54], 0.013584172, 1e-4);
-  EXPECT_NEAR (shots352->points[103].descriptor[55], 0.0050609680, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[9 ], 0.0072018504, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[10], 0.0023103887, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[11], 0.0024724449, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[19], 0.0031367359, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[20], 0.17439659, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[21], 0.070665278, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[42], 0.013304681, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[53], 0.0073520984, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[54], 0.013584172, 1e-4);
+  EXPECT_NEAR ((*shots352)[103].descriptor[55], 0.0050609680, 1e-4);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));
@@ -738,9 +738,9 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
     PointXYZRGBA p;
-    p.x = cloud.points[i].x;
-    p.y = cloud.points[i].y;
-    p.z = cloud.points[i].z;
+    p.x = cloud[i].x;
+    p.y = cloud[i].y;
+    p.z = cloud[i].z;
 
     p.rgba = ( (i%255) << 16 ) + ( ( (255 - i ) %255) << 8) + ( ( i*37 ) %255);
     cloudWithColors.push_back(p);
@@ -767,27 +767,27 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   shot.compute (*shots);
   EXPECT_EQ (shots->size (), indices.size ());
 
-  EXPECT_NEAR (shots->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[21], 0.062557608, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[64], 0.064429596, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[65], 0.046486385, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[86], 0.011518310, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[10], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[11], 0.0021887729, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[21], 0.062557608, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[42], 0.011778189, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[53], 0.0065085669, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[54], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[55], 0.0044803056, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[64], 0.064429596, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[65], 0.046486385, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[86], 0.011518310, 1e-5);
 
-  EXPECT_NEAR (shots->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[386], 0.045115642, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[387], 0.059068538, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots->points[103].descriptor[512], 0.048357654, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[357], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[360], 0.0027993850, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[386], 0.045115642, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[387], 0.059068538, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[389], 0.0047547864, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[453], 0.0051176427, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[481], 0.0053625242, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[482], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[511], 0.0057367259, 1e-5);
+  EXPECT_NEAR ((*shots)[103].descriptor[512], 0.048357654, 1e-5);
 */
 
   // SHOT1344
@@ -808,27 +808,27 @@ TEST (PCL,SHOTShapeAndColorEstimationOpenMP)
   shot1344.compute (*shots1344);
   EXPECT_EQ (shots1344->size (), indices.size ());
 
-  EXPECT_NEAR (shots1344->points[103].descriptor[10], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[11], 0.0021887729, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[21], 0.062557608, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[42], 0.011778189, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[53], 0.0065085669, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[54], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[55], 0.0044803056, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[64], 0.064429596, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[65], 0.046486385, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[86], 0.011518310, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[10], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[11], 0.0021887729, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[21], 0.062557608, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[42], 0.011778189, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[53], 0.0065085669, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[54], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[55], 0.0044803056, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[64], 0.064429596, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[65], 0.046486385, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[86], 0.011518310, 1e-5);
 
-  EXPECT_NEAR (shots1344->points[103].descriptor[357], 0.0020453099, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[360], 0.0027993850, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[386], 0.045115642, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[387], 0.059068538, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[389], 0.0047547864, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[453], 0.0051176427, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[481], 0.0053625242, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[482], 0.012025614, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[511], 0.0057367259, 1e-5);
-  EXPECT_NEAR (shots1344->points[103].descriptor[512], 0.048357654, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[357], 0.0020453099, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[360], 0.0027993850, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[386], 0.045115642, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[387], 0.059068538, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[389], 0.0047547864, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[453], 0.0051176427, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[481], 0.0053625242, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[482], 0.012025614, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[511], 0.0057367259, 1e-5);
+  EXPECT_NEAR ((*shots1344)[103].descriptor[512], 0.048357654, 1e-5);
 
   // Test results when setIndices and/or setSearchSurface are used
   boost::shared_ptr<vector<int> > test_indices (new vector<int> (0));

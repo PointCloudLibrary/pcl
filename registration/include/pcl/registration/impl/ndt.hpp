@@ -198,7 +198,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives 
   // Update gradient and hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
   for (size_t idx = 0; idx < input_->size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
@@ -208,7 +208,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeDerivatives 
     for (typename std::vector<TargetGridLeafConstPtr>::iterator neighborhood_it = neighborhood.begin (); neighborhood_it != neighborhood.end (); neighborhood_it++)
     {
       cell = *neighborhood_it;
-      x_pt = input_->points[idx];
+      x_pt = (*input_)[idx];
       x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
       x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);
@@ -413,7 +413,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eig
   // Update hessian for each point, line 17 in Algorithm 2 [Magnusson 2009]
   for (size_t idx = 0; idx < input_->size (); idx++)
   {
-    x_trans_pt = trans_cloud.points[idx];
+    x_trans_pt = trans_cloud[idx];
 
     // Find nieghbors (Radius search has been experimentally faster than direct neighbor checking.
     std::vector<TargetGridLeafConstPtr> neighborhood;
@@ -425,7 +425,7 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeHessian (Eig
       cell = *neighborhood_it;
 
       {
-        x_pt = input_->points[idx];
+        x_pt = (*input_)[idx];
         x = Eigen::Vector3d (x_pt.x, x_pt.y, x_pt.z);
 
         x_trans = Eigen::Vector3d (x_trans_pt.x, x_trans_pt.y, x_trans_pt.z);

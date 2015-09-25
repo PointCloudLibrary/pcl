@@ -124,11 +124,11 @@ namespace pcl
           signatures->width = static_cast<int> (shots->size ());
           signatures->height = 1;
 
-          int size_feat = sizeof(signatures->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signatures)[0].histogram) / sizeof(float);
 
           for (size_t k = 0; k < shots->size (); k++)
             for (int i = 0; i < size_feat; i++)
-              signatures->points[k].histogram[i] = shots->points[k].descriptor[i];
+              (*signatures)[k].histogram[i] = (*shots)[k].descriptor[i];
 
           return true;
 

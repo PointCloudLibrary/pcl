@@ -68,7 +68,7 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     // If the dataset is dense, simply transform it!
     for (size_t i = 0; i < cloud_out.size (); ++i)
     {
-      //cloud_out.points[i].getVector3fMap () = transform * cloud_in.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap () = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[i].x, cloud_in[i].y, cloud_in[i].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
@@ -81,11 +81,11 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     // otherwise we get errors during the multiplication (?)
     for (size_t i = 0; i < cloud_out.size (); ++i)
     {
-      if (!pcl_isfinite (cloud_in.points[i].x) || 
-          !pcl_isfinite (cloud_in.points[i].y) || 
-          !pcl_isfinite (cloud_in.points[i].z))
+      if (!pcl_isfinite (cloud_in[i].x) ||
+          !pcl_isfinite (cloud_in[i].y) ||
+          !pcl_isfinite (cloud_in[i].z))
         continue;
-      //cloud_out.points[i].getVector3fMap () = transform * cloud_in.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap () = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[i].x, cloud_in[i].y, cloud_in[i].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
@@ -119,8 +119,8 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform xyz data
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
-      //cloud_out.points[i].getVector3fMap () = transform*cloud_out.points[i].getVector3fMap ();
+        cloud_out[i] = cloud_in[indices[i]];
+      //cloud_out[i].getVector3fMap () = transform*cloud_out[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[indices[i]].x, cloud_in[indices[i]].y, cloud_in[indices[i]].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
@@ -134,12 +134,12 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
     for (size_t i = 0; i < npts; ++i)
     {
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
-      if (!pcl_isfinite (cloud_in.points[indices[i]].x) || 
-          !pcl_isfinite (cloud_in.points[indices[i]].y) || 
-          !pcl_isfinite (cloud_in.points[indices[i]].z))
+        cloud_out[i] = cloud_in[indices[i]];
+      if (!pcl_isfinite (cloud_in[indices[i]].x) ||
+          !pcl_isfinite (cloud_in[indices[i]].y) ||
+          !pcl_isfinite (cloud_in[indices[i]].z))
         continue;
-      //cloud_out.points[i].getVector3fMap () = transform*cloud_out.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap () = transform*cloud_out[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[indices[i]].x, cloud_in[indices[i]].y, cloud_in[indices[i]].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
@@ -179,14 +179,14 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   {
     for (size_t i = 0; i < cloud_out.size (); ++i)
     {
-      //cloud_out.points[i].getVector3fMap() = transform * cloud_in.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap() = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[i].x, cloud_in[i].y, cloud_in[i].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
       cloud_out[i].z = static_cast<float> (transform (2, 0) * pt.coeffRef (0) + transform (2, 1) * pt.coeffRef (1) + transform (2, 2) * pt.coeffRef (2) + transform (2, 3));
 
       // Rotate normals (WARNING: transform.rotation () uses SVD internally!)
-      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
+      //cloud_out[i].getNormalVector3fMap() = transform.rotation () * cloud_in[i].getNormalVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
       cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
       cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
@@ -198,19 +198,19 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
   {
     for (size_t i = 0; i < cloud_out.size (); ++i)
     {
-      if (!pcl_isfinite (cloud_in.points[i].x) || 
-          !pcl_isfinite (cloud_in.points[i].y) || 
-          !pcl_isfinite (cloud_in.points[i].z))
+      if (!pcl_isfinite (cloud_in[i].x) ||
+          !pcl_isfinite (cloud_in[i].y) ||
+          !pcl_isfinite (cloud_in[i].z))
         continue;
 
-      //cloud_out.points[i].getVector3fMap() = transform * cloud_in.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap() = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[i].x, cloud_in[i].y, cloud_in[i].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
       cloud_out[i].z = static_cast<float> (transform (2, 0) * pt.coeffRef (0) + transform (2, 1) * pt.coeffRef (1) + transform (2, 2) * pt.coeffRef (2) + transform (2, 3));
 
       // Rotate normals
-      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
+      //cloud_out[i].getNormalVector3fMap() = transform.rotation () * cloud_in[i].getNormalVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[i].normal_x, cloud_in[i].normal_y, cloud_in[i].normal_z);
       cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
       cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
@@ -244,15 +244,15 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
-      //cloud_out.points[i].getVector3fMap() = transform * cloud_in.points[i].getVector3fMap ();
+        cloud_out[i] = cloud_in[indices[i]];
+      //cloud_out[i].getVector3fMap() = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[indices[i]].x, cloud_in[indices[i]].y, cloud_in[indices[i]].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
       cloud_out[i].z = static_cast<float> (transform (2, 0) * pt.coeffRef (0) + transform (2, 1) * pt.coeffRef (1) + transform (2, 2) * pt.coeffRef (2) + transform (2, 3));
 
       // Rotate normals
-      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
+      //cloud_out[i].getNormalVector3fMap() = transform.rotation () * cloud_in[i].getNormalVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[indices[i]].normal_x, cloud_in[indices[i]].normal_y, cloud_in[indices[i]].normal_z);
       cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
       cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));
@@ -266,21 +266,21 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
     {
       // Copy fields first, then transform
       if (copy_all_fields)
-        cloud_out.points[i] = cloud_in.points[indices[i]];
+        cloud_out[i] = cloud_in[indices[i]];
 
-      if (!pcl_isfinite (cloud_in.points[indices[i]].x) || 
-          !pcl_isfinite (cloud_in.points[indices[i]].y) || 
-          !pcl_isfinite (cloud_in.points[indices[i]].z))
+      if (!pcl_isfinite (cloud_in[indices[i]].x) ||
+          !pcl_isfinite (cloud_in[indices[i]].y) ||
+          !pcl_isfinite (cloud_in[indices[i]].z))
         continue;
 
-      //cloud_out.points[i].getVector3fMap() = transform * cloud_in.points[i].getVector3fMap ();
+      //cloud_out[i].getVector3fMap() = transform * cloud_in[i].getVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> pt (cloud_in[indices[i]].x, cloud_in[indices[i]].y, cloud_in[indices[i]].z);
       cloud_out[i].x = static_cast<float> (transform (0, 0) * pt.coeffRef (0) + transform (0, 1) * pt.coeffRef (1) + transform (0, 2) * pt.coeffRef (2) + transform (0, 3));
       cloud_out[i].y = static_cast<float> (transform (1, 0) * pt.coeffRef (0) + transform (1, 1) * pt.coeffRef (1) + transform (1, 2) * pt.coeffRef (2) + transform (1, 3));
       cloud_out[i].z = static_cast<float> (transform (2, 0) * pt.coeffRef (0) + transform (2, 1) * pt.coeffRef (1) + transform (2, 2) * pt.coeffRef (2) + transform (2, 3));
 
       // Rotate normals
-      //cloud_out.points[i].getNormalVector3fMap() = transform.rotation () * cloud_in.points[i].getNormalVector3fMap ();
+      //cloud_out[i].getNormalVector3fMap() = transform.rotation () * cloud_in[i].getNormalVector3fMap ();
       Eigen::Matrix<Scalar, 3, 1> nt (cloud_in[indices[i]].normal_x, cloud_in[indices[i]].normal_y, cloud_in[indices[i]].normal_z);
       cloud_out[i].normal_x = static_cast<float> (transform (0, 0) * nt.coeffRef (0) + transform (0, 1) * nt.coeffRef (1) + transform (0, 2) * nt.coeffRef (2));
       cloud_out[i].normal_y = static_cast<float> (transform (1, 0) * nt.coeffRef (0) + transform (1, 1) * nt.coeffRef (1) + transform (1, 2) * nt.coeffRef (2));

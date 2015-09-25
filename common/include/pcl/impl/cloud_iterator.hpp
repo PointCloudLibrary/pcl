@@ -286,12 +286,12 @@ namespace pcl
 
       const PointT& operator* () const
       {
-        return (cloud_.points[*iterator_]);
+        return (cloud_[*iterator_]);
       }
 
       const PointT* operator-> () const
       {
-        return (&(cloud_.points [*iterator_]));
+        return (&(cloud_[*iterator_]));
       }
 
       unsigned getCurrentPointIndex () const

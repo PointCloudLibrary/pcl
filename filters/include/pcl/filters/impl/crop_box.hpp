@@ -58,7 +58,7 @@ pcl::CropBox<PointT>::applyFilter (PointCloud &output)
 
     output = *input_;
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
-      output.points[(*removed_indices_)[rii]].x = output.points[(*removed_indices_)[rii]].y = output.points[(*removed_indices_)[rii]].z = user_filter_value_;
+      output[(*removed_indices_)[rii]].x = output[(*removed_indices_)[rii]].y = output[(*removed_indices_)[rii]].z = user_filter_value_;
     if (!pcl_isfinite (user_filter_value_))
       output.is_dense = false;
   }
@@ -98,11 +98,11 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
   {
     if (!input_->is_dense)
       // Check if the point is invalid
-      if (!isFinite (input_->points[index]))
+      if (!isFinite ((*input_)[index]))
         continue;
 
     // Get local point
-    PointT local_pt = input_->points[(*indices_)[index]];
+    PointT local_pt = (*input_)[(*indices_)[index]];
 
     // Transform point to world space
     if (!transform_matrix_is_identity)

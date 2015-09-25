@@ -97,15 +97,15 @@ main (int argc, char** argv)
   // Using the intensity channel for lazy visualization of the output
   for (int i = 0; i < small_clusters->size (); ++i)
     for (int j = 0; j < (*small_clusters)[i].indices.size (); ++j)
-      cloud_out->points[(*small_clusters)[i].indices[j]].intensity = -2.0;
+      (*cloud_out)[(*small_clusters)[i].indices[j]].intensity = -2.0;
   for (int i = 0; i < large_clusters->size (); ++i)
     for (int j = 0; j < (*large_clusters)[i].indices.size (); ++j)
-      cloud_out->points[(*large_clusters)[i].indices[j]].intensity = +10.0;
+      (*cloud_out)[(*large_clusters)[i].indices[j]].intensity = +10.0;
   for (int i = 0; i < clusters->size (); ++i)
   {
     int label = rand () % 8;
     for (int j = 0; j < (*clusters)[i].indices.size (); ++j)
-      cloud_out->points[(*clusters)[i].indices[j]].intensity = label;
+      (*cloud_out)[(*clusters)[i].indices[j]].intensity = label;
   }
 
   // Save the output point cloud

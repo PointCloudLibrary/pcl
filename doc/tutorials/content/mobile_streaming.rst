@@ -176,7 +176,7 @@ that lie outside of the predefined bounding box or contain NaN values.
       for (size_t i = 0; i < nr_points; ++i)
       {
 
-        const pcl::PointXYZRGBA& point = cloud->points[i];
+        const pcl::PointXYZRGBA& point = (*cloud)[i];
 
         if (!pcl_isfinite (point.x) || 
             !pcl_isfinite (point.y) || 
@@ -193,9 +193,9 @@ that lie outside of the predefined bounding box or contain NaN values.
 
         const int conversion_factor = 500;
 
-        cloud_buffers.points[j*3 + 0] = static_cast<short> (point.x * conversion_factor);
-        cloud_buffers.points[j*3 + 1] = static_cast<short> (point.y * conversion_factor);
-        cloud_buffers.points[j*3 + 2] = static_cast<short> (point.z * conversion_factor);
+        cloud_buffers[j*3 + 0] = static_cast<short> (point.x * conversion_factor);
+        cloud_buffers[j*3 + 1] = static_cast<short> (point.y * conversion_factor);
+        cloud_buffers[j*3 + 2] = static_cast<short> (point.z * conversion_factor);
 
         cloud_buffers.rgb[j*3 + 0] = point.r;
         cloud_buffers.rgb[j*3 + 1] = point.g;

@@ -105,7 +105,7 @@ namespace pcl
           for (size_t i = 0; i < keypoints_cloud->size (); i++)
           {
 
-            if (tree->radiusSearch (keypoints_cloud->points[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
+            if (tree->radiusSearch ((*keypoints_cloud)[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
             {
 
               EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
@@ -126,7 +126,7 @@ namespace pcl
               if ((fabs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && fabs (eigenValues[0] / eigsum) > 1.e-2))
               {
                 //region is not planar, add to filtered keypoint
-                keypoints_cloud->points[good] = keypoints_cloud->points[i];
+                (*keypoints_cloud)[good] = (*keypoints_cloud)[i];
                 good++;
               }
             }
@@ -227,8 +227,8 @@ namespace pcl
           typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud (new pcl::PointCloud<pcl::PointNormal> (input_->width, input_->height));
           for (size_t i = 0; i < input_->size (); i++)
           {
-            input_cloud->points[i].getVector3fMap () = input_->points[i].getVector3fMap ();
-            input_cloud->points[i].getNormalVector3fMap () = normals_->points[i].getNormalVector3fMap ();
+            (*input_cloud)[i].getVector3fMap () = (*input_)[i].getVector3fMap ();
+            (*input_cloud)[i].getNormalVector3fMap () = (*normals_)[i].getNormalVector3fMap ();
           }
 
           typename pcl::PointCloud<pcl::PointXYZI>::Ptr intensity_keypoints (new pcl::PointCloud<pcl::PointXYZI>);
@@ -501,7 +501,7 @@ namespace pcl
          if ((fabs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && fabs (eigenValues[0] / eigsum) > 1.e-2))
          {
          //region is not planar, add to filtered keypoint
-         keypoints_cloud.points[good] = keypoints_cloud.points[i];
+         keypoints_cloud[good] = keypoints_cloud[i];
          good++;
          }
          }

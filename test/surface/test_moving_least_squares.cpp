@@ -79,13 +79,13 @@ TEST (PCL, MovingLeastSquares)
   // Reconstruct
   mls.process (*mls_normals);
 
-  EXPECT_NEAR (mls_normals->points[0].x, 0.005417, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].y, 0.113463, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].z, 0.040715, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[0]), 0.111894, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[1]), 0.594906, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[0].normal[2]), 0.795969, 1e-3);
-  EXPECT_NEAR (mls_normals->points[0].curvature, 0.012019, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[0].x, 0.005417, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[0].y, 0.113463, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[0].z, 0.040715, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[0].normal[0]), 0.111894, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[0].normal[1]), 0.594906, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[0].normal[2]), 0.795969, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[0].curvature, 0.012019, 1e-3);
 
 #ifdef _OPENMP
   // Testing OpenMP version
@@ -104,13 +104,13 @@ TEST (PCL, MovingLeastSquares)
   int count = 0;
   for (size_t i = 0; i < mls_normals->size (); ++i)
   {
-  	if (fabs (mls_normals->points[i].x - 0.005417) < 1e-3 &&
-	    fabs (mls_normals->points[i].y - 0.113463) < 1e-3 &&
-	    fabs (mls_normals->points[i].z - 0.040715) < 1e-3 &&
-	    fabs (fabs (mls_normals->points[i].normal[0]) - 0.111894) < 1e-3 &&
-		fabs (fabs (mls_normals->points[i].normal[1]) - 0.594906) < 1e-3 &&
-		fabs (fabs (mls_normals->points[i].normal[2]) - 0.795969) < 1e-3 &&
-		fabs (mls_normals->points[i].curvature - 0.012019) < 1e-3)
+  	if (fabs ((*mls_normals)[i].x - 0.005417) < 1e-3 &&
+	    fabs ((*mls_normals)[i].y - 0.113463) < 1e-3 &&
+	    fabs ((*mls_normals)[i].z - 0.040715) < 1e-3 &&
+	    fabs (fabs ((*mls_normals)[i].normal[0]) - 0.111894) < 1e-3 &&
+		fabs (fabs ((*mls_normals)[i].normal[1]) - 0.594906) < 1e-3 &&
+		fabs (fabs ((*mls_normals)[i].normal[2]) - 0.795969) < 1e-3 &&
+		fabs ((*mls_normals)[i].curvature - 0.012019) < 1e-3)
 		count ++;
   }
 
@@ -133,13 +133,13 @@ TEST (PCL, MovingLeastSquares)
   mls_normals->clear ();
   mls_upsampling.process (*mls_normals);
 
-  EXPECT_NEAR (mls_normals->points[10].x, -0.000538, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].y, 0.110080, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].z, 0.043602, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.022678, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.554978, 1e-3);
-  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.831556, 1e-3);
-  EXPECT_NEAR (mls_normals->points[10].curvature, 0.012019, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[10].x, -0.000538, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[10].y, 0.110080, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[10].z, 0.043602, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[0]), 0.022678, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[1]), 0.554978, 1e-3);
+  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[2]), 0.831556, 1e-3);
+  EXPECT_NEAR ((*mls_normals)[10].curvature, 0.012019, 1e-3);
   EXPECT_EQ (mls_normals->size (), 6352);
 
 
@@ -151,13 +151,13 @@ TEST (PCL, MovingLeastSquares)
 //  mls_normals->clear ();
 //  mls_upsampling.process (*mls_normals);
 //
-//  EXPECT_NEAR (mls_normals->points[10].x, 0.018806, 1e-3);
-//  EXPECT_NEAR (mls_normals->points[10].y, 0.114685, 1e-3);
-//  EXPECT_NEAR (mls_normals->points[10].z, 0.037500, 1e-3);
-//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[0]), 0.351352, 1e-3);
-//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[1]), 0.537741, 1e-3);
-//  EXPECT_NEAR (fabs (mls_normals->points[10].normal[2]), 0.766411, 1e-3);
-//  EXPECT_NEAR (mls_normals->points[10].curvature, 0.019003, 1e-3);
+//  EXPECT_NEAR ((*mls_normals)[10].x, 0.018806, 1e-3);
+//  EXPECT_NEAR ((*mls_normals)[10].y, 0.114685, 1e-3);
+//  EXPECT_NEAR ((*mls_normals)[10].z, 0.037500, 1e-3);
+//  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[0]), 0.351352, 1e-3);
+//  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[1]), 0.537741, 1e-3);
+//  EXPECT_NEAR (fabs ((*mls_normals)[10].normal[2]), 0.766411, 1e-3);
+//  EXPECT_NEAR ((*mls_normals)[10].curvature, 0.019003, 1e-3);
 //  EXPECT_EQ (mls_normals->size (), 457);
 
 
@@ -166,10 +166,10 @@ TEST (PCL, MovingLeastSquares)
   mls_upsampling.setDilationVoxelSize (0.005f);
   mls_normals->clear ();
   mls_upsampling.process (*mls_normals);
-  EXPECT_NEAR (mls_normals->points[10].x, -0.070005938410758972, 2e-3);
-  EXPECT_NEAR (mls_normals->points[10].y, 0.028887597844004631, 2e-3);
-  EXPECT_NEAR (mls_normals->points[10].z, 0.01788550429046154, 2e-3);
-  EXPECT_NEAR (mls_normals->points[10].curvature, 0.107273, 1e-1);
+  EXPECT_NEAR ((*mls_normals)[10].x, -0.070005938410758972, 2e-3);
+  EXPECT_NEAR ((*mls_normals)[10].y, 0.028887597844004631, 2e-3);
+  EXPECT_NEAR ((*mls_normals)[10].z, 0.01788550429046154, 2e-3);
+  EXPECT_NEAR ((*mls_normals)[10].curvature, 0.107273, 1e-1);
   EXPECT_NEAR (double (mls_normals->size ()), 29394, 2);
 }
 

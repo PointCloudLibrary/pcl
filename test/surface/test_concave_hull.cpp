@@ -70,7 +70,7 @@ TEST (PCL, ConcaveHull_bunny)
   //construct dataset
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2D (new pcl::PointCloud<pcl::PointXYZ> (*cloud));
   for (size_t i = 0; i < cloud2D->size (); i++)
-    cloud2D->points[i].z = 0;
+    (*cloud2D)[i].z = 0;
 
   pcl::PointCloud<pcl::PointXYZ> alpha_shape;
   pcl::PointCloud<pcl::PointXYZ>::Ptr voronoi_centers (new pcl::PointCloud<pcl::PointXYZ>);
@@ -218,9 +218,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for (size_t j = 0; j <= 2; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }
@@ -229,9 +229,9 @@ TEST (PCL, ConcaveHull_LTable)
   {
     for(size_t j = 3; j < 8; j++)
     {
-      cloud_out_ltable.points[npoints].x = float (i) * 0.5f;
-      cloud_out_ltable.points[npoints].y = -float (j) * 0.5f;
-      cloud_out_ltable.points[npoints].z = 0.f;
+      cloud_out_ltable[npoints].x = float (i) * 0.5f;
+      cloud_out_ltable[npoints].y = -float (j) * 0.5f;
+      cloud_out_ltable[npoints].z = 0.f;
       npoints++;
     }
   }

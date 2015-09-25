@@ -95,9 +95,9 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
   
   for (i = 0; i < voxelCenters.size (); i++)
   {
-    double x = voxelCenters.points[i].x;
-    double y = voxelCenters.points[i].y;
-    double z = voxelCenters.points[i].z;
+    double x = voxelCenters[i].x;
+    double y = voxelCenters[i].y;
+    double z = voxelCenters[i].z;
     
 #if VTK_MAJOR_VERSION < 6
     treeWireframe->AddInput (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
@@ -231,7 +231,7 @@ int main (int argc, char** argv)
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    occ_centroids->points[i] = point;
+    (*occ_centroids)[i] = point;
   }
 
   CloudT::Ptr cloud_centroids (new CloudT (input_cloud->size ()));
@@ -239,16 +239,16 @@ int main (int argc, char** argv)
 
   for (size_t i = 0; i < input_cloud->size (); ++i)
   {
-    float x = input_cloud->points[i].x;
-    float y = input_cloud->points[i].y;
-    float z = input_cloud->points[i].z;
+    float x = (*input_cloud)[i].x;
+    float y = (*input_cloud)[i].y;
+    float z = (*input_cloud)[i].z;
     Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    cloud_centroids->points[i] = point;
+    (*cloud_centroids)[i] = point;
   }
 
   // visualization

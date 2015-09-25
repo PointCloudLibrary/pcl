@@ -47,7 +47,7 @@ template <typename PointT> void
 pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe, int rgba_index, int centroid_size)
 {
   hhe->centroid /= static_cast<float> (hhe->count);
-  pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output.points[op]));
+  pcl::for_each_type <FieldList> (pcl::xNdCopyEigenPointFunctor <PointT> (hhe->centroid, output[op]));
   // ---[ RGB special case
   if (rgba_index >= 0)
   {
@@ -56,7 +56,7 @@ pcl::ApproximateVoxelGrid<PointT>::flush (PointCloud &output, size_t op, he *hhe
           g = hhe->centroid[centroid_size-2], 
           b = hhe->centroid[centroid_size-1];
     int rgb = (static_cast<int> (r)) << 16 | (static_cast<int> (g)) << 8 | (static_cast<int> (b));
-    memcpy (reinterpret_cast<char*> (&output.points[op]) + rgba_index, &rgb, sizeof (float));
+    memcpy (reinterpret_cast<char*> (&output[op]) + rgba_index, &rgb, sizeof (float));
   }
 }
 
@@ -91,9 +91,9 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
   size_t op = 0;    // output pointer
   for (size_t cp = 0; cp < input_->size (); ++cp)
   {
-    int ix = static_cast<int> (floor (input_->points[cp].x * inverse_leaf_size_[0]));
-    int iy = static_cast<int> (floor (input_->points[cp].y * inverse_leaf_size_[1]));
-    int iz = static_cast<int> (floor (input_->points[cp].z * inverse_leaf_size_[2]));
+    int ix = static_cast<int> (floor ((*input_)[cp].x * inverse_leaf_size_[0]));
+    int iy = static_cast<int> (floor ((*input_)[cp].y * inverse_leaf_size_[1]));
+    int iz = static_cast<int> (floor ((*input_)[cp].z * inverse_leaf_size_[2]));
     unsigned int hash = static_cast<unsigned int> ((ix * 7171 + iy * 3079 + iz * 4231) & (histsize_ - 1));
     he *hhe = &history_[hash];
     if (hhe->count && ((ix != hhe->ix) || (iy != hhe->iy) || (iz != hhe->iz))) 
@@ -113,12 +113,12 @@ pcl::ApproximateVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       // fill r/g/b data
       pcl::RGB rgb;
-      memcpy (&rgb, (reinterpret_cast<const char *> (&input_->points[cp])) + rgba_index, sizeof (RGB));
+      memcpy (&rgb, (reinterpret_cast<const char *> (&(*input_)[cp])) + rgba_index, sizeof (RGB));
       scratch[centroid_size-3] = rgb.r;
       scratch[centroid_size-2] = rgb.g;
       scratch[centroid_size-1] = rgb.b;
     }
-    pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> (input_->points[cp], scratch));
+    pcl::for_each_type <FieldList> (xNdCopyPointEigenFunctor <PointT> ((*input_)[cp], scratch));
     hhe->centroid += scratch;
   }
   for (size_t i = 0; i < histsize_; i++) 

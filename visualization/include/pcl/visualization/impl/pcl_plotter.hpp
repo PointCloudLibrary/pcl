@@ -49,7 +49,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
   for (int i = 0; i < hsize; ++i)
   {
     array_x[i] = i;
-    array_y[i] = cloud.points[0].histogram[i];
+    array_y[i] = cloud[0].histogram[i];
   }
   
   this->addPlotData(array_x, array_y, id.c_str(), vtkChart::LINE);
@@ -89,7 +89,7 @@ pcl::visualization::PCLPlotter::addFeatureHistogram (
     array_x[i] = i;
     float data;
     // TODO: replace float with the real data type
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + i * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + i * sizeof (float), sizeof (float));
     array_y[i] = data;
   }
   

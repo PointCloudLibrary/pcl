@@ -112,7 +112,7 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   intensities.download (intensities_vector);
   current_slice_intensities->resize (current_slice_xyz->size ());
   for(int i = 0 ; i < current_slice_intensities->size () ; ++i)
-    current_slice_intensities->points[i].intensity = intensities_vector[i];
+    (*current_slice_intensities)[i].intensity = intensities_vector[i];
 
   current_slice_intensities->width = (int) current_slice_intensities->size ();
   current_slice_intensities->height = 1;

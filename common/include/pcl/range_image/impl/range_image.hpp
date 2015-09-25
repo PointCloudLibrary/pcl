@@ -1127,7 +1127,7 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
   int point_counter = 0;
   for (unsigned int point_idx=0; point_idx<point_cloud.size (); ++point_idx)
   {
-    const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud.points[point_idx];
+    const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud[point_idx];
     if (!pcl_isfinite (point.vp_x) || !pcl_isfinite (point.vp_y) || !pcl_isfinite (point.vp_z))
       continue;
     average_viewpoint[0] += point.vp_x;

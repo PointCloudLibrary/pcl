@@ -264,7 +264,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }

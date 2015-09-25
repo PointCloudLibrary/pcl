@@ -81,22 +81,22 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   bool xz_proj_safe = true;
 
   // Check the input's normal to see which projection to use
-  PointInT p0 = input_->points[(*indices_)[0]];
-  PointInT p1 = input_->points[(*indices_)[indices_->size () - 1]];
-  PointInT p2 = input_->points[(*indices_)[indices_->size () / 2]];
+  PointInT p0 = (*input_)[(*indices_)[0]];
+  PointInT p1 = (*input_)[(*indices_)[indices_->size () - 1]];
+  PointInT p2 = (*input_)[(*indices_)[indices_->size () / 2]];
   Eigen::Array4f dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   while (!( (dy1dy2[0] != dy1dy2[1]) || (dy1dy2[2] != dy1dy2[1]) ) )
   {
-    p0 = input_->points[(*indices_)[rand () % indices_->size ()]];
-    p1 = input_->points[(*indices_)[rand () % indices_->size ()]];
-    p2 = input_->points[(*indices_)[rand () % indices_->size ()]];
+    p0 = (*input_)[(*indices_)[rand () % indices_->size ()]];
+    p1 = (*input_)[(*indices_)[rand () % indices_->size ()]];
+    p2 = (*input_)[(*indices_)[rand () % indices_->size ()]];
     dy1dy2 = (p1.getArray4fMap () - p0.getArray4fMap ()) / (p2.getArray4fMap () - p0.getArray4fMap ());
   }
     
   pcl::PointCloud<PointInT> normal_calc_cloud (3);
-  normal_calc_cloud.points[0] = p0;
-  normal_calc_cloud.points[1] = p1;
-  normal_calc_cloud.points[2] = p2;
+  normal_calc_cloud[0] = p0;
+  normal_calc_cloud[1] = p1;
+  normal_calc_cloud[2] = p2;
     
   Eigen::Vector4d normal_calc_centroid;
   Eigen::Matrix3d normal_calc_covariance;
@@ -151,24 +151,24 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
     }
   } 
   else if (yz_proj_safe)
   {
     for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
     }
   }
   else if (xz_proj_safe)
   {
     for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
     {
-      points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-      points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
+      points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+      points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
     }
   }
   else
@@ -211,7 +211,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
 
   int num_vertices = qh num_vertices;
   hull.resize (num_vertices);
-  memset (&hull.points[0], static_cast<int> (hull.size ()), sizeof (PointInT));
+  memset (&hull[0], static_cast<int> (hull.size ()), sizeof (PointInT));
 
   vertexT * vertex;
   int i = 0;
@@ -222,7 +222,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
 
   FORALLvertices
   {
-    hull.points[i] = input_->points[(*indices_)[qh_pointid (vertex->point)]];
+    hull[i] = (*input_)[(*indices_)[qh_pointid (vertex->point)]];
     idx_points[i].first = qh_pointid (vertex->point);
     ++i;
   }
@@ -234,24 +234,24 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   {
     for (size_t j = 0; j < hull.size (); j++)
     {
-      idx_points[j].second[0] = hull.points[j].x - centroid[0];
-      idx_points[j].second[1] = hull.points[j].y - centroid[1];
+      idx_points[j].second[0] = hull[j].x - centroid[0];
+      idx_points[j].second[1] = hull[j].y - centroid[1];
     }
   }
   else if (yz_proj_safe)
   {
     for (size_t j = 0; j < hull.size (); j++)
     {
-      idx_points[j].second[0] = hull.points[j].y - centroid[1];
-      idx_points[j].second[1] = hull.points[j].z - centroid[2];
+      idx_points[j].second[0] = hull[j].y - centroid[1];
+      idx_points[j].second[1] = hull[j].z - centroid[2];
     }
   }
   else if (xz_proj_safe)
   {
     for (size_t j = 0; j < hull.size (); j++)
     {
-      idx_points[j].second[0] = hull.points[j].x - centroid[0];
-      idx_points[j].second[1] = hull.points[j].z - centroid[2];
+      idx_points[j].second[0] = hull[j].x - centroid[0];
+      idx_points[j].second[1] = hull[j].z - centroid[2];
     }
   }
   std::sort (idx_points.begin (), idx_points.end (), comparePoints2D);
@@ -266,7 +266,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
   for (int j = 0; j < static_cast<int> (hull.size ()); j++)
   {
     hull_indices_.indices.push_back ((*indices_)[idx_points[j].first]);
-    hull.points[j] = input_->points[(*indices_)[idx_points[j].first]];
+    hull[j] = (*input_)[(*indices_)[idx_points[j].first]];
     polygons[0].vertices[j] = static_cast<unsigned int> (j);
   }
     
@@ -311,9 +311,9 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   int j = 0;
   for (size_t i = 0; i < indices_->size (); ++i, j+=dimension)
   {
-    points[j + 0] = static_cast<coordT> (input_->points[(*indices_)[i]].x);
-    points[j + 1] = static_cast<coordT> (input_->points[(*indices_)[i]].y);
-    points[j + 2] = static_cast<coordT> (input_->points[(*indices_)[i]].z);
+    points[j + 0] = static_cast<coordT> ((*input_)[(*indices_)[i]].x);
+    points[j + 1] = static_cast<coordT> ((*input_)[(*indices_)[i]].y);
+    points[j + 2] = static_cast<coordT> ((*input_)[(*indices_)[i]].z);
   }
 
   // Compute convex hull
@@ -369,7 +369,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
   {
     // Add vertices to hull point_cloud and store index
     hull_indices_.indices.push_back ((*indices_)[qh_pointid (vertex->point)]);
-    hull.points[i] = input_->points[(*indices_)[hull_indices_.indices.back ()]];
+    hull[i] = (*input_)[(*indices_)[hull_indices_.indices.back ()]];
 
     qhid_to_pcidx[vertex->id] = i; // map the vertex id of qhull to the point cloud index
     ++i;

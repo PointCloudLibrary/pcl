@@ -77,7 +77,7 @@ init ()
   multimap<float, int> sorted_brute_force_result;
   for (size_t i = 0; i < cloud.size (); ++i)
   {
-    float distance = euclideanDistance (cloud.points[i], test_point);
+    float distance = euclideanDistance (cloud[i], test_point);
     sorted_brute_force_result.insert (make_pair (distance, static_cast<int> (i)));
   }
   float max_dist = 0.0f;
@@ -102,7 +102,7 @@ init ()
   // Check if all found neighbors have distance smaller than max_dist
   for (size_t i = 0; i < k_indices.size (); ++i)
   {
-    const PointXYZ& point = cloud.points[k_indices[i]];
+    const PointXYZ& point = cloud[k_indices[i]];
     bool ok = euclideanDistance (test_point, point) <= max_dist;
     if (!ok)
     ok = (fabs (euclideanDistance (test_point, point)) - max_dist) <= 1e-6;
@@ -117,7 +117,7 @@ init ()
     //kdtree->initSearchDS ();
     kdtree->setInputCloud (cloud_big.makeShared ());
     for (size_t i = 0; i < cloud_big.size (); ++i)
-    kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    kdtree->nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
   }
 }
 
@@ -151,8 +151,8 @@ TEST (PCL, KdTree_differentPointT)
 
   for (size_t i = 0; i < cloud_rgb.size (); ++i)
   {
-    kdtree->nearestKSearchT<pcl::PointXYZRGB> (cloud_rgb.points[i], no_of_neighbors, k_indices_t, k_distances_t);
-    kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    kdtree->nearestKSearchT<pcl::PointXYZRGB> (cloud_rgb[i], no_of_neighbors, k_indices_t, k_distances_t);
+    kdtree->nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (size_t j=0; j< no_of_neighbors; j++)
@@ -184,7 +184,7 @@ TEST (PCL, KdTree_multipointKnnSearch)
 
   for (size_t i = 0; i < cloud_big.size (); ++i)
   {
-    kdtree->nearestKSearch (cloud_big.points[i], no_of_neighbors, k_indices, k_distances);
+    kdtree->nearestKSearch (cloud_big[i], no_of_neighbors, k_indices, k_distances);
     EXPECT_EQ (k_indices.size (), indices[i].size ());
     EXPECT_EQ (k_distances.size (), dists[i].size ());
     for (size_t j=0; j< no_of_neighbors; j++)

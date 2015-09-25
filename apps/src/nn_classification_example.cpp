@@ -65,7 +65,7 @@ main (int, char* argv[])
     //nn.setTrainingFeatures(cloud);
     //nn.setTrainingLabels(std::vector<std::string>(cloud->size(), "bla"));
     nn.loadTrainingFeatures (argv[2], argv[3]);
-    result = nn.classify(feature->points[0], 300, 50);
+    result = nn.classify((*feature)[0], 300, 50);
   }
   else
   {

@@ -170,8 +170,8 @@ namespace pcl
       virtual bool
       compare (int idx1, int idx2) const
       {
-        int label1 = labels_->points[idx1].label;
-        int label2 = labels_->points[idx2].label;
+        int label1 = (*labels_)[idx1].label;
+        int label2 = (*labels_)[idx2].label;
         
         if (label1 == -1 || label2 == -1)
           return false;
@@ -182,14 +182,14 @@ namespace pcl
         float dist_threshold = distance_threshold_;
         if (depth_dependent_)
         {
-          Eigen::Vector3f vec = input_->points[idx1].getVector3fMap ();
+          Eigen::Vector3f vec = (*input_)[idx1].getVector3fMap ();
           float z = vec.dot (z_axis_);
           dist_threshold *= z * z;
         }
 
-        float dx = input_->points[idx1].x - input_->points[idx2].x;
-        float dy = input_->points[idx1].y - input_->points[idx2].y;
-        float dz = input_->points[idx1].z - input_->points[idx2].z;
+        float dx = (*input_)[idx1].x - (*input_)[idx2].x;
+        float dy = (*input_)[idx1].y - (*input_)[idx2].y;
+        float dz = (*input_)[idx1].z - (*input_)[idx2].z;
         float dist = sqrtf (dx*dx + dy*dy + dz*dz);
 
         return (dist < dist_threshold);

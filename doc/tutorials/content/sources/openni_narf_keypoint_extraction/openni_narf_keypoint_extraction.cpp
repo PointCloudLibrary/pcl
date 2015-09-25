@@ -184,8 +184,8 @@ int main (int argc, char** argv)
     // ----------------------------------------------
     range_image_widget.showRangeImage (range_image_planar, 0.5f, 10.0f);
     //for (size_t i=0; i<keypoint_indices.size (); ++i)
-      //range_image_widget.markPoint (keypoint_indices.points[i]%range_image_planar.width,
-                                    //keypoint_indices.points[i]/range_image_planar.width,
+      //range_image_widget.markPoint (keypoint_indices[i]%range_image_planar.width,
+                                    //keypoint_indices[i]/range_image_planar.width,
                                     //pcl::visualization::Vector3ub (0,255,0));
     
     // -------------------------------------
@@ -198,8 +198,8 @@ int main (int argc, char** argv)
     
     keypoints_cloud.resize (keypoint_indices.size ());
     for (size_t i=0; i<keypoint_indices.size (); ++i)
-      keypoints_cloud.points[i].getVector3fMap () =
-        range_image_planar.points[keypoint_indices.points[i]].getVector3fMap ();
+      keypoints_cloud[i].getVector3fMap () =
+        range_image_planar[keypoint_indices[i]].getVector3fMap ();
     pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> color_handler_keypoints
       (keypoints_cloud_ptr, 0, 255, 0);
     if (!viewer.updatePointCloud (keypoints_cloud_ptr, color_handler_keypoints, "keypoints"))

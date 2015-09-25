@@ -52,7 +52,7 @@ namespace pcl
     {
       typedef boost::shared_ptr <const PointCloudAOS <Storage> > CloudConstPtr;
       NormalEstimationKernel (const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float focallength, float sqr_radius, float sqrt_desired_nr_neighbors)
-        : points_ (thrust::raw_pointer_cast(&input->points[0]))
+        : points_ (thrust::raw_pointer_cast(&(*input)[0]))
         , focallength_ (focallength)
         , search_ (input, focallength, sqr_radius)
         , sqr_radius_(sqr_radius)
@@ -99,7 +99,7 @@ namespace pcl
     struct FastNormalEstimationKernel
     {
       FastNormalEstimationKernel (const boost::shared_ptr <const PointCloudAOS <Storage> > &input, int width, int height)
-        : points_ (thrust::raw_pointer_cast(&input->points[0])), width_(width), height_(height)
+        : points_ (thrust::raw_pointer_cast(&(*input)[0])), width_(width), height_(height)
       {}
   
       inline __host__ __device__
@@ -158,7 +158,7 @@ namespace pcl
     {
       typedef boost::shared_ptr <const PointCloudAOS <Storage> > CloudConstPtr;
       NormalDeviationKernel (const boost::shared_ptr <const PointCloudAOS <Storage> > &input, float focallength, float sqr_radius, float sqrt_desired_nr_neighbors)
-        : points_ (thrust::raw_pointer_cast(&input->points[0]))
+        : points_ (thrust::raw_pointer_cast(&(*input)[0]))
         , focallength_ (focallength)
         , search_ (input, focallength, sqr_radius)
         , sqr_radius_(sqr_radius)

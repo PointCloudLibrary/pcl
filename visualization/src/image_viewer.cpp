@@ -1047,7 +1047,7 @@ pcl::visualization::ImageViewer::convertIntensityCloudToUChar (
   int j = 0;
   for (size_t i = 0; i < cloud.size (); ++i)
   {
-    data[j++] = static_cast <unsigned char> (cloud.points[i].intensity * 255);
+    data[j++] = static_cast <unsigned char> (cloud[i].intensity * 255);
   }
 }
 
@@ -1059,7 +1059,7 @@ pcl::visualization::ImageViewer::convertIntensityCloud8uToUChar (
 {
   int j = 0;
   for (size_t i = 0; i < cloud.size (); ++i)
-    data[j++] = static_cast<unsigned char> (cloud.points[i].intensity);
+    data[j++] = static_cast<unsigned char> (cloud[i].intensity);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

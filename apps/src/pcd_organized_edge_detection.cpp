@@ -167,8 +167,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   // Make gray point clouds
   for (size_t idx = 0; idx < cloud->size (); idx++)
   {
-    uint8_t gray = uint8_t ((cloud->points[idx].r + cloud->points[idx].g + cloud->points[idx].b) / 3);
-    cloud->points[idx].r = cloud->points[idx].g = cloud->points[idx].b = gray;
+    uint8_t gray = uint8_t (((*cloud)[idx].r + (*cloud)[idx].g + (*cloud)[idx].b) / 3);
+    (*cloud)[idx].r = (*cloud)[idx].g = (*cloud)[idx].b = gray;
   }
 
   // Display edges in PCLVisualizer

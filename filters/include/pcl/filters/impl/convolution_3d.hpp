@@ -242,7 +242,7 @@ pcl::filters::Convolution3D<PointInT, PointOutT, KernelT>::convolve (PointCloudO
 #endif
   for (int64_t point_idx = 0; point_idx < static_cast<int64_t> (surface_->size ()); ++point_idx)
   {
-    const PointInT& point_in = surface_->points [point_idx];
+    const PointInT& point_in = (*surface_)[point_idx];
     PointOutT& point_out = output [point_idx];
     if (isFinite (point_in) &&
         tree_->radiusSearch (point_in, search_radius_, nn_indices, nn_distances))

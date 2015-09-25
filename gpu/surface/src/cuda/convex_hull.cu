@@ -77,9 +77,9 @@ namespace pcl
 			  thrust::tuple<float, int> res;
 			  
 			  if (use_max)
-			    res.get<0>() = fmax(e1.get<0>(), e2.get<0>());			  			  
+			    res.get<0>() = ::fmax(e1.get<0>(), e2.get<0>());
 			  else
-				res.get<0>() = fmin(e1.get<0>(), e2.get<0>());			  			  
+				res.get<0>() = ::fmin(e1.get<0>(), e2.get<0>());
 
 			  res.get<1>()  = (res.get<0>() == e1.get<0>()) ? e1.get<1>() : e2.get<1>();
 			  return res;			  
