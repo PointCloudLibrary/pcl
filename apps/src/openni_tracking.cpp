@@ -216,15 +216,14 @@ public:
     {
       if (visualize_particles_)
       {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-        for (size_t i = 0; i < particles->points.size (); i++)
+        pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> (particles->size ()));
+        for (size_t i = 0; i < particles->size (); i++)
         {
-          pcl::PointXYZ point;
+          pcl::PointXYZ &point = (*particle_cloud) [i];
           
           point.x = particles->points[i].x;
           point.y = particles->points[i].y;
           point.z = particles->points[i].z;
-          particle_cloud->points.push_back (point);
         }
         
         {
@@ -454,18 +453,18 @@ public:
   {
     result.width = cloud->width;
     result.height = cloud->height;
+    result.resize (cloud->size ());
     result.is_dense = cloud->is_dense;
     for (size_t i = 0; i < cloud->points.size (); i++)
     {
-      RefPointType point;
-      point.x = cloud->points[i].x;
-      point.y = cloud->points[i].y;
-      point.z = cloud->points[i].z;
-      point.rgba = cloud->points[i].rgba;
-      // point.normal[0] = normals->points[i].normal[0];
-      // point.normal[1] = normals->points[i].normal[1];
-      // point.normal[2] = normals->points[i].normal[2];
-      result.points.push_back (point);
+      RefPointType &point = result [i];
+      point.x = (*cloud)[i].x;
+      point.y = (*cloud)[i].y;
+      point.z = (*cloud)[i].z;
+      point.rgba = (*cloud)[i].rgba;
+      // point.normal[0] = (*normals)[i].normal[0];
+      // point.normal[1] = (*normals)[i].normal[1];
+      // point.normal[2] = (*normals)[i].normal[2];
     }
   }
 
@@ -514,14 +513,12 @@ public:
                               Cloud &result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
+    result.resize (segmented_indices.indices.size ());
+    result.is_dense = true;
     for (size_t i = 0; i < segmented_indices.indices.size (); i++)
     {
-      PointType point = cloud->points[segmented_indices.indices[i]];
-      result.points.push_back (point);
+      result [i] = (*cloud)[segmented_indices.indices[i]];
     }
-    result.width = pcl::uint32_t (result.points.size ());
-    result.height = 1;
-    result.is_dense = true;
   }
   
   void

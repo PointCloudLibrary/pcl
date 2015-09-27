@@ -162,18 +162,15 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
     const PointCloud& data, const int first, const int last,
     std::vector <int>& indices, PointCloud& output)
 {
-  pcl::PointCloud <PointT> cloud;
+  pcl::PointCloud <PointT> cloud (last - first);
   
   for (int i = first; i < last; i++)
   {
-    PointT pt;
-    pt.x = data.points[indices[i]].x;
-    pt.y = data.points[indices[i]].y;
-    pt.z = data.points[indices[i]].z;
-    cloud.points.push_back (pt);
+    PointT &pt = cloud [i - first];
+    pt.x = data[indices[i]].x;
+    pt.y = data[indices[i]].y;
+    pt.z = data[indices[i]].z;
   }
-  cloud.width = 1;
-  cloud.height = uint32_t (cloud.points.size ());
 
   Eigen::Vector4f normal;
   float curvature = 0;

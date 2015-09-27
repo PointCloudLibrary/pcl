@@ -84,37 +84,30 @@ pcl::features::ISMVoteList<PointT>::addVote (
 template <typename PointT> typename pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 pcl::features::ISMVoteList<PointT>::getColoredCloud (typename pcl::PointCloud<PointT>::Ptr cloud)
 {
-  pcl::PointXYZRGB point;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
-  colored_cloud->height = 0;
-  colored_cloud->width = 1;
+  size_t cloud_size = cloud?cloud->size ():0;
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGB> (cloud_size + votes_->size ()));
 
-  if (cloud != 0)
+  for (size_t i_point = 0; i_point < cloud_size; i_point++)
   {
-    colored_cloud->height += static_cast<uint32_t> (cloud->points.size ());
+    pcl::PointXYZRGB& point = (*colored_cloud)[i_point];
     point.r = 255;
     point.g = 255;
     point.b = 255;
-    for (size_t i_point = 0; i_point < cloud->points.size (); i_point++)
-    {
-      point.x = cloud->points[i_point].x;
-      point.y = cloud->points[i_point].y;
-      point.z = cloud->points[i_point].z;
-      colored_cloud->points.push_back (point);
-    }
+    point.x = (*cloud)[i_point].x;
+    point.y = (*cloud)[i_point].y;
+    point.z = (*cloud)[i_point].z;
   }
 
-  point.r = 0;
-  point.g = 0;
-  point.b = 255;
   for (size_t i_vote = 0; i_vote < votes_->points.size (); i_vote++)
   {
-    point.x = votes_->points[i_vote].x;
-    point.y = votes_->points[i_vote].y;
-    point.z = votes_->points[i_vote].z;
-    colored_cloud->points.push_back (point);
+    pcl::PointXYZRGB& point = (*colored_cloud)[cloud_size + i_vote];
+    point.r = 0;
+    point.g = 0;
+    point.b = 255;
+    point.x = (*votes_)[i_vote].x;
+    point.y = (*votes_)[i_vote].y;
+    point.z = (*votes_)[i_vote].z;
   }
-  colored_cloud->height += static_cast<uint32_t> (votes_->points.size ());
 
   return (colored_cloud);
 }

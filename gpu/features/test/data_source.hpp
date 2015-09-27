@@ -171,20 +171,16 @@ namespace pcl
 
             void generateSurface()
             {
-                surface->points.clear();
-                for(size_t i = 0; i < cloud->points.size(); i+= 10)               
-                    surface->points.push_back(cloud->points[i]);
-                surface->width = surface->points.size();
-                surface->height = 1;
+                surface->resize (cloud->size ());
+                for(size_t i = 0; i < cloud->size(); i+= 10)
+                    (*surface)[i] = (*cloud)[i];
                   
                 if (!normals->points.empty())
                 {
-                    normals_surface->points.clear();
-                    for(size_t i = 0; i < normals->points.size(); i+= 10)               
-                        normals_surface->points.push_back(normals->points[i]);
+                    normals_surface->resize (normals->size ());
+                    for(size_t i = 0; i < normals->size(); i+= 10)
+                        (*normals_surface)[i] = (*normals)[i];
 
-                    normals_surface->width = surface->points.size();
-                    normals_surface->height = 1;
                 }                                
             }
 

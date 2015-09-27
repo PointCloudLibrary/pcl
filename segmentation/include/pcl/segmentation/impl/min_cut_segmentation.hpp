@@ -600,14 +600,13 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
     colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
     unsigned char foreground_color[3] = {255, 255, 255};
     unsigned char background_color[3] = {255, 0, 0};
-    colored_cloud->width = number_of_points;
-    colored_cloud->height = 1;
+    colored_cloud->resize (number_of_points);
     colored_cloud->is_dense = input_->is_dense;
 
-    pcl::PointXYZRGB point;
     int point_index = 0;
     for (int i_point = 0; i_point < num_of_pts_in_first_cluster; i_point++)
     {
+      pcl::PointXYZRGB& point = colored_cloud->points[i_point];
       point_index = clusters_[0].indices[i_point];
       point.x = *(input_->points[point_index].data);
       point.y = *(input_->points[point_index].data + 1);
@@ -615,11 +614,11 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
       point.r = background_color[0];
       point.g = background_color[1];
       point.b = background_color[2];
-      colored_cloud->points.push_back (point);
     }
 
     for (int i_point = 0; i_point < num_of_pts_in_second_cluster; i_point++)
     {
+      pcl::PointXYZRGB& point = colored_cloud->points[num_of_pts_in_first_cluster+i_point];
       point_index = clusters_[1].indices[i_point];
       point.x = *(input_->points[point_index].data);
       point.y = *(input_->points[point_index].data + 1);
@@ -627,7 +626,6 @@ pcl::MinCutSegmentation<PointT>::getColoredCloud ()
       point.r = foreground_color[0];
       point.g = foreground_color[1];
       point.b = foreground_color[2];
-      colored_cloud->points.push_back (point);
     }
   }
 

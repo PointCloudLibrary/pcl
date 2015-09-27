@@ -433,18 +433,17 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseLowe (PointCloudOut
 template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::responseCurvature (PointCloudOut &output) const
 {
-  PointOutT point;
-  for (unsigned idx = 0; idx < input_->points.size(); ++idx)
-  {
-    point.x = input_->points[idx].x;
-    point.y = input_->points[idx].y;
-    point.z = input_->points[idx].z;
-    point.intensity = normals_->points[idx].curvature;
-    output.points.push_back(point);
-  }
-  // does not change the order
+  output.resize (input_->size ());
   output.height = input_->height;
   output.width = input_->width;
+  for (unsigned idx = 0; idx < input_->points.size(); ++idx)
+  {
+    PointOutT& point = output[idx];
+    point.x = (*input_)[idx].x;
+    point.y = (*input_)[idx].y;
+    point.z = (*input_)[idx].z;
+    point.intensity = (*normals_)[idx].curvature;
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

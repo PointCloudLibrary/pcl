@@ -138,9 +138,9 @@ main (int argc, char** argv)
     PointCloud<PointNormal> cloud_output_subsampled;
     ppf_registration.align (cloud_output_subsampled);
 
-    PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> ());
-    for (size_t i = 0; i < cloud_output_subsampled.points.size (); ++i)
-      cloud_output_subsampled_xyz->points.push_back ( PointXYZ (cloud_output_subsampled.points[i].x, cloud_output_subsampled.points[i].y, cloud_output_subsampled.points[i].z));
+    PointCloud<PointXYZ>::Ptr cloud_output_subsampled_xyz (new PointCloud<PointXYZ> (cloud_output_subsampled.size ()));
+    for (size_t i = 0; i < cloud_output_subsampled.size (); ++i)
+      (*cloud_output_subsampled_xyz) [i] = PointXYZ (cloud_output_subsampled[i].x, cloud_output_subsampled[i].y, cloud_output_subsampled[i].z);
 
 
     Eigen::Matrix4f mat = ppf_registration.getFinalTransformation ();

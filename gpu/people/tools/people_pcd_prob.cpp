@@ -187,17 +187,17 @@ class PeoplePCDApp
     void
     convertProbToRGB (pcl::PointCloud<pcl::device::prob_histogram>& histograms, int label, pcl::PointCloud<pcl::RGB>& rgb)
     {
-      for(size_t t = 0; t < histograms.points.size(); t++)
-      {
-        float value = histograms.points[t].probs[label];
-        float value8 = value * 255;
-        char val = static_cast<char> (value8);
-        pcl::RGB p;
-        p.r = val; p.b = val; p.g = val;
-        rgb.points.push_back(p);
-      }
+      rgb.resize (histograms.size ());
       rgb.width = histograms.width;
       rgb.height = histograms.height;
+      for(size_t t = 0; t < histograms.points.size(); t++)
+      {
+        float value = histograms[t].probs[label];
+        float value8 = value * 255;
+        char val = static_cast<char> (value8);
+        pcl::RGB& p = rgb[t];
+        p.r = val; p.b = val; p.g = val;
+      }
     }
 
     void

@@ -84,7 +84,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
   unsigned int test_id;
 
   // instantiate point cloud
-  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (128, 32));
 
   size_t i;
 
@@ -114,22 +114,17 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
     K = (rand () % 10)+1;
 
     // generate point cloud
-    cloudIn->width = 128;
-    cloudIn->height = 32;
-    cloudIn->points.clear();
-    cloudIn->points.reserve (cloudIn->width * cloudIn->height);
-
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;
 
-    for (ypos = -centerY; ypos < centerY; ypos++)
-      for (xpos = -centerX; xpos < centerX; xpos++)
+    for (ypos = -centerY, i = 0; ypos < centerY; ypos++)
+      for (xpos = -centerX; xpos < centerX; xpos++, i++)
       {
         z = 15.0 * (double (rand ()) / double (RAND_MAX+1.0))+20;
         y = double (ypos * oneOverFocalLength * z);
         x = double (xpos * oneOverFocalLength * z);
 
-        cloudIn->points.push_back (PointXYZ (float (x), float (y), float (z)));
+        (*cloudIn) [i] = PointXYZ (float (x), float (y), float (z));
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);

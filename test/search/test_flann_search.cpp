@@ -64,14 +64,15 @@ init ()
 
   cloud_big.width = 640;
   cloud_big.height = 480;
+  cloud_big.resize (cloud_big.width * cloud_big.height);
   srand (int (time (NULL)));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
-    cloud_big.points.push_back (
+    cloud_big[i] =
                                 PointXYZ (
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
                                   float (1024 * rand () / (RAND_MAX + 1.0)),
-                                  float (1024 * rand () / (RAND_MAX + 1.0))));
+                                  float (1024 * rand () / (RAND_MAX + 1.0)));
 }
 
 

@@ -153,22 +153,19 @@ TEST(PCL_FeaturesGPU, ppfrgb)
 
     pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
+    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
     for(size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
-        const PointXYZ& p = source.cloud->points[i];        
+        const PointXYZ& p = (*source.cloud)[i];
+        PointXYZRGB& o = (*cloud_XYZRGB)[i];
+
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
         int b = (color >> 16) & 0xFF;
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
+        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
-    cloud_XYZRGB->height = 1;
 
 
     fe.setInputCloud (cloud_XYZRGB);
@@ -243,22 +240,19 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
+    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
     for(size_t i = 0; i < source.cloud->points.size(); ++i)               
     {
-        const PointXYZ& p = source.cloud->points[i];        
+        const PointXYZ& p = (*source.cloud)[i];
+        PointXYZRGB& o = (*cloud_XYZRGB)[i];
+
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
         int b = (color >> 16) & 0xFF;
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
+        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
-    cloud_XYZRGB->height = 1;
 
 
     fe.setInputCloud (cloud_XYZRGB);

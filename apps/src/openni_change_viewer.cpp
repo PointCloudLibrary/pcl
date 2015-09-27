@@ -97,13 +97,11 @@ class OpenNIChangeViewer
 
           break;
         case ONLYDIFF_MODE:
-          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
+          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (newPointIdxVector->size()));
 
-          filtered_cloud->points.reserve(newPointIdxVector->size());
-
+          int i=0;
           for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
-            filtered_cloud->points.push_back(cloud->points[*it]);
-
+            (*filtered_cloud)[i++] = filtered_point = (*cloud)[*it];
 
           if (!viewer.wasStopped())
             viewer.showCloud (filtered_cloud);

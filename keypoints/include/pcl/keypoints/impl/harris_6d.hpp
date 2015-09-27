@@ -268,17 +268,21 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudOut &output) const
 {
   // get the 6x6 covar-mat
-  PointOutT pointOut;
   PCL_ALIGN (16) float covar [21];
   Eigen::SelfAdjointEigenSolver <Eigen::Matrix<float, 6, 6> > solver;
   Eigen::Matrix<float, 6, 6> covariance;
 
+  output.resize (input_->size ());
+  output.height = input_->height;
+  output.width = input_->width;
+
 #ifdef _OPENMP
-  #pragma omp parallel for default (shared) private (pointOut, covar, covariance, solver) num_threads(threads_)
+  #pragma omp parallel for default (shared) private (covar, covariance, solver) num_threads(threads_)
 #endif  
   for (unsigned pIdx = 0; pIdx < input_->size (); ++pIdx)
   {
-    const PointInT& pointIn = input_->points [pIdx];
+    PointOutT& pointOut = output[pIdx];
+    const PointInT& pointIn = (*input_) [pIdx];
     pointOut.intensity = 0.0; //std::numeric_limits<float>::quiet_NaN ();
     if (isFinite (pointIn))
     {
@@ -345,14 +349,7 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::responseTomasi (PointCloudO
     pointOut.x = pointIn.x;
     pointOut.y = pointIn.y;
     pointOut.z = pointIn.z;
-#ifdef _OPENMP
-    #pragma omp critical
-#endif
-
-    output.points.push_back(pointOut);
   }
-  output.height = input_->height;
-  output.width = input_->width;
 }
 
 template <typename PointInT, typename PointOutT, typename NormalT> void

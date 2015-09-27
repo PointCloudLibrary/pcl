@@ -92,18 +92,14 @@ project (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   //First, we'll find a point on the plane
   print_highlight (stderr, "Projecting ");
 
-  PointCloud<PointXYZ>::Ptr projected_cloud_pcl (new PointCloud<PointXYZ>);
-  projected_cloud_pcl->width = xyz->width;
-  projected_cloud_pcl->height = xyz->height;
+  PointCloud<PointXYZ>::Ptr projected_cloud_pcl (new PointCloud<PointXYZ> (xyz->width, xyz->height));
   projected_cloud_pcl->is_dense = xyz->is_dense;
   projected_cloud_pcl->sensor_origin_ = xyz->sensor_origin_;
   projected_cloud_pcl->sensor_orientation_ = xyz->sensor_orientation_;
 
   for(size_t i = 0; i < xyz->points.size(); ++i)
   {
-    pcl::PointXYZ projection;
-    pcl::projectPoint<PointXYZ> (xyz->points[i], coeffs, projection);
-    projected_cloud_pcl->points.push_back(projection);
+    pcl::projectPoint<PointXYZ> ((*xyz)[i], coeffs, (*projected_cloud_pcl)[i]);
   }
 
 

@@ -170,15 +170,10 @@ main (int argc, char *argv[])
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
   {
-    pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal>);
+    pcl::PointCloud<PointNormal>::Ptr cloud_cluster_don (new pcl::PointCloud<PointNormal> (it->indices.size ()));
+    int i = 0;
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-    {
-      cloud_cluster_don->points.push_back (doncloud->points[*pit]);
-    }
-
-    cloud_cluster_don->width = int (cloud_cluster_don->points.size ());
-    cloud_cluster_don->height = 1;
-    cloud_cluster_don->is_dense = true;
+      (*cloud_cluster_don) [i++] = (*doncloud)[*pit];
 
     //Save cluster
     cout << "PointCloud representing the Cluster: " << cloud_cluster_don->points.size () << " data points." << std::endl;

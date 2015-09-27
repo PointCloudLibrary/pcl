@@ -170,14 +170,15 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   std::vector<int> extrema_indices, extrema_scales;
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
-  output.points.reserve (output.points.size () + extrema_indices.size ());
+  size_t previous_size = output.size ();
+  output.resize (previous_size + extrema_indices.size ());
   // Save scale?
   if (scale_idx_ != -1)
   {
     // Add keypoints to output
     for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
     {
-      PointOutT keypoint;
+      PointOutT &keypoint = output[previous_size + i_keypoint];
       const int &keypoint_index = extrema_indices[i_keypoint];
    
       keypoint.x = input.points[keypoint_index].x;
@@ -185,7 +186,6 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       keypoint.z = input.points[keypoint_index].z;
       memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset,
               &scales[extrema_scales[i_keypoint]], sizeof (float));
-      output.points.push_back (keypoint); 
     }
   }
   else
@@ -193,14 +193,12 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
     // Add keypoints to output
     for (size_t i_keypoint = 0; i_keypoint < extrema_indices.size (); ++i_keypoint)
     {
-      PointOutT keypoint;
+      PointOutT &keypoint = output[previous_size + i_keypoint];
       const int &keypoint_index = extrema_indices[i_keypoint];
    
       keypoint.x = input.points[keypoint_index].x;
       keypoint.y = input.points[keypoint_index].y;
       keypoint.z = input.points[keypoint_index].z;
-
-      output.points.push_back (keypoint); 
     }
   }
 }

@@ -164,8 +164,7 @@ protected:
     int x, y, centerX, centerY;
 
     // Reset point cloud
-    cloud_arg.points.clear ();
-    cloud_arg.points.reserve (cloud_size);
+    cloud_arg.resize (cloud_size);
 
     // Define point cloud parameters
     cloud_arg.width = static_cast<uint32_t> (width_arg);
@@ -183,7 +182,7 @@ protected:
     for (y = -centerY; y < +centerY; ++y)
       for (x = -centerX; x < +centerX; ++x)
       {
-        PointXYZRGB newPoint;
+        PointXYZRGB& newPoint = cloud_arg.points[i];
 
         const uint16_t& pixel_depth = depthData_arg[i];
 
@@ -212,8 +211,6 @@ protected:
           newPoint.rgb = 0.0f;
         }
 
-        // Add point to cloud
-        cloud_arg.points.push_back (newPoint);
         // Increment point iterator
         ++i;
       }

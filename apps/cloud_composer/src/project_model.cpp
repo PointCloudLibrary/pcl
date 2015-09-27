@@ -274,10 +274,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     return;
   }
   qDebug () << "Images loaded, making cloud";
-  PointCloud<PointXYZRGB>::Ptr cloud = boost::make_shared <PointCloud<PointXYZRGB> >();
-  cloud->points.reserve (depth_dims[0] * depth_dims[1]);
-  cloud->width = depth_dims[0];
-  cloud->height = depth_dims[1];
+  PointCloud<PointXYZRGB>::Ptr cloud = boost::make_shared <PointCloud<PointXYZRGB> >(depth_dims[0], depth_dims[1]);
   cloud->is_dense = false;
  
 
@@ -292,11 +289,11 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
   depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
   
-  for (int y=0; y<cloud->height; ++y)
+  for (int y=0, i=0; y<cloud->height; ++y)
   {
-    for (int x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+    for (int x=0; x<cloud->width; ++x, ++i, --depth_pixel, color_pixel-=3)
     {
-      PointXYZRGB new_point;
+      PointXYZRGB& new_point = (*cloud)[i];
       //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
       float depth = (float)(*depth_pixel) * scale;
     //  qDebug () << "Depth = "<<depth;
@@ -313,7 +310,6 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
       
       uint32_t rgb = (uint32_t)color_pixel[0] << 16 | (uint32_t)color_pixel[1] << 8 | (uint32_t)color_pixel[2];
       new_point.rgb = *reinterpret_cast<float*> (&rgb);
-      cloud->points.push_back (new_point);
       //   qDebug () << "depth = "<<depth << "x,y,z="<<data[0]<<","<<data[1]<<","<<data[2];
       //qDebug() << "r ="<<color_pixel[0]<<" g="<<color_pixel[1]<<" b="<<color_pixel[2];
       
