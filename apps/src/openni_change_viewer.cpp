@@ -87,8 +87,6 @@ class OpenNIChangeViewer
       {
         case REDDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud));
-          filtered_cloud->points.reserve(newPointIdxVector->size());
-
           for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
             filtered_cloud->points[*it].rgba = 255<<16;
 
