@@ -186,8 +186,7 @@ TEST (PCL, ConvexHull_planar_bunny)
 TEST (PCL, ConvexHull_LTable)
 {
   //construct dataset
-  pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable;
-  cloud_out_ltable.points.resize (100);
+  pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable (100);
 
   int npoints = 0;
   for (size_t i = 0; i < 8; i++)
@@ -315,10 +314,7 @@ TEST (PCL, ConvexHull_LTable)
 TEST (PCL, ConvexHull_2dsquare)
 {
   //Generate data
-  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  input_cloud->width = 1000000;
-  input_cloud->height = 1;
-  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> (1000000));
   
   //rng
   boost::mt19937 rng_alg;
@@ -375,10 +371,7 @@ TEST (PCL, ConvexHull_2dsquare)
 TEST (PCL, ConvexHull_3dcube)
 {
   //Generate data
-  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-  input_cloud->width = 10000000;
-  input_cloud->height = 1;
-  input_cloud->points.resize (input_cloud->width * input_cloud->height);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr input_cloud (new pcl::PointCloud<pcl::PointXYZ> (10000000));
   
   //rng
   boost::mt19937 rng_alg;

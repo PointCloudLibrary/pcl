@@ -47,7 +47,7 @@
 using namespace std;
 using namespace pcl;
 
-PointCloud<PointXYZ> cloud, cloud_big;
+PointCloud<PointXYZ> cloud, cloud_big (640, 480);
 
 void
 init ()
@@ -60,9 +60,6 @@ init ()
   cloud.width  = cloud.points.size ();
   cloud.height = 1;
 
-  cloud_big.width  = 640;
-  cloud_big.height = 480;
-  cloud_big.resize (cloud_big.width * cloud_big.height);
   srand (time (NULL));
   // Randomly create a new point cloud
   for (size_t i = 0; i < cloud_big.width * cloud_big.height; ++i)
@@ -101,7 +98,7 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
   unsigned int test_id;
 
   // instantiate point cloud
-  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (1000));
 
   size_t i;
   srand (time (NULL));
@@ -128,9 +125,6 @@ TEST (PCL, Octree_Pointcloud_Nearest_K_Neighbour_Search)
     K = rand () % 10;
 
     // generate point cloud
-    cloudIn->width = 1000;
-    cloudIn->height = 1;
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
     for (i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),
@@ -202,7 +196,7 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
   unsigned int bestMatchCount = 0;
 
   // instantiate point cloud
-  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (1000));
 
   size_t i;
   srand (time (NULL));
@@ -219,9 +213,6 @@ TEST (PCL, Octree_Pointcloud_Approx_Nearest_Neighbour_Search)
                           10.0 * ((double)rand () / (double)RAND_MAX));
 
     // generate point cloud
-    cloudIn->width = 1000;
-    cloudIn->height = 1;
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
     for (i = 0; i < 1000; i++)
     {
       cloudIn->points[i] = PointXYZ (5.0 * ((double)rand () / (double)RAND_MAX),

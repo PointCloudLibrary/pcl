@@ -531,13 +531,9 @@ pcl::OpenNIGrabber::irDepthImageCallback (const boost::shared_ptr<openni_wrapper
 pcl::PointCloud<pcl::PointXYZ>::Ptr
 pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapper::DepthImage>& depth_image) const
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ> (depth_width_, depth_height_));
 
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
   register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
@@ -606,14 +602,10 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
                                                const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
   unsigned char* rgb_buffer = rgb_array_.get ();
-  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
+  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT> (std::max (image_width_, depth_width_), std::max (image_height_, depth_height_)));
 
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = std::max (image_height_, depth_height_);
-  cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
   register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
@@ -721,14 +713,10 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrapper::IRImage> &ir_image,
                                              const boost::shared_ptr<openni_wrapper::DepthImage> &depth_image) const
 {
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > ());
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > (depth_width_, depth_height_));
 
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (cloud->width);
   register float constant_x = 1.0f / device_->getImageFocalLength (cloud->width);

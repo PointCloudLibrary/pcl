@@ -80,8 +80,7 @@ TEST (SampleConsensus, Base)
 TEST (SampleConsensus, InfiniteLoop)
 {
   const unsigned point_count = 100;
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (point_count);
+  PointCloud<PointXYZ> cloud (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx)
   {
     cloud.points[idx].x = static_cast<float> (idx);

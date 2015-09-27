@@ -61,8 +61,7 @@ TEST (SampleConsensusModelSphere, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (10);
+  PointCloud<PointXYZ> cloud (10);
   cloud.points[0].getVector3fMap () << 1.7068f, 1.0684f, 2.2147f;
   cloud.points[1].getVector3fMap () << 2.4708f, 2.3081f, 1.1736f;
   cloud.points[2].getVector3fMap () << 2.7609f, 1.9095f, 1.3574f;
@@ -113,9 +112,8 @@ TEST (SampleConsensusModelNormalSphere, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  PointCloud<Normal> normals;
-  cloud.points.resize (27); normals.points.resize (27);
+  PointCloud<PointXYZ> cloud (27);
+  PointCloud<Normal> normals (27);
   cloud.points[ 0].getVector3fMap () << -0.014695f,  0.009549f, 0.954775f;
   cloud.points[ 1].getVector3fMap () <<  0.014695f,  0.009549f, 0.954775f;
   cloud.points[ 2].getVector3fMap () << -0.014695f,  0.040451f, 0.954775f;
@@ -213,9 +211,8 @@ TEST (SampleConsensusModelCone, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  PointCloud<Normal> normals;
-  cloud.points.resize (31); normals.points.resize (31);
+  PointCloud<PointXYZ> cloud (31);
+  PointCloud<Normal> normals (31);
 
   cloud.points[ 0].getVector3fMap () << -0.011247f, 0.200000f, 0.965384f;
   cloud.points[ 1].getVector3fMap () <<  0.000000f, 0.200000f, 0.963603f;
@@ -319,9 +316,8 @@ TEST (SampleConsensusModelCylinder, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  PointCloud<Normal> normals;
-  cloud.points.resize (20); normals.points.resize (20);
+  PointCloud<PointXYZ> cloud (20);
+  PointCloud<Normal> normals (20);
 
   cloud.points[ 0].getVector3fMap () << -0.499902f, 2.199701f, 0.000008f;
   cloud.points[ 1].getVector3fMap () << -0.875397f, 2.030177f, 0.050104f;
@@ -403,8 +399,7 @@ TEST (SampleConsensusModelCircle2D, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (18);
+  PointCloud<PointXYZ> cloud (18);
 
   cloud.points[ 0].getVector3fMap () << 3.587751f, -4.190982f, 0.0f;
   cloud.points[ 1].getVector3fMap () << 3.808883f, -4.412265f, 0.0f;
@@ -464,8 +459,7 @@ TEST (SampleConsensusModelCircle3D, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (20);
+  PointCloud<PointXYZ> cloud (20);
 
   cloud.points[ 0].getVector3fMap () << 1.00000000f, 5.0000000f, -2.9000001f;
   cloud.points[ 1].getVector3fMap () << 1.03420200f, 5.0000000f, -2.9060307f;

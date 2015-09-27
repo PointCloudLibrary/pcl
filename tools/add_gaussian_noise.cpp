@@ -85,11 +85,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   PointCloud<PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<PointXYZ> ());
   fromPCLPointCloud2 (*input, *xyz_cloud);
 
-  PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> ());
-  xyz_cloud_filtered->points.resize (xyz_cloud->points.size ());
+  PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> (xyz_cloud->width, xyz_cloud->height));
   xyz_cloud_filtered->header = xyz_cloud->header;
-  xyz_cloud_filtered->width = xyz_cloud->width;
-  xyz_cloud_filtered->height = xyz_cloud->height;
 
 
   boost::mt19937 rng; rng.seed (static_cast<unsigned int> (time (0)));

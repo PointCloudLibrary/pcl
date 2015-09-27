@@ -50,11 +50,7 @@ using namespace pcl::io;
 TEST (PCL, PointCloudImageExtractorFromNormalField)
 {
   typedef PointNormal PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
   {
     cloud.points[i].normal_x = -1.0;
@@ -88,11 +84,7 @@ TEST (PCL, PointCloudImageExtractorFromNormalField)
 TEST (PCL, PointCloudImageExtractorFromRGBField)
 {
   typedef PointXYZRGB PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
   {
     cloud.points[i].r =   0;
@@ -126,11 +118,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBField)
 TEST (PCL, PointCloudImageExtractorFromRGBAField)
 {
   typedef PointXYZRGBA PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
   {
     cloud.points[i].r =   0;
@@ -165,11 +153,7 @@ TEST (PCL, PointCloudImageExtractorFromRGBAField)
 TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 {
   typedef PointXYZL PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i;
 
@@ -192,11 +176,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldMono)
 TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 {
   typedef PointXYZL PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i % 2;
 
@@ -230,11 +210,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldRGB)
 TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
 {
   typedef PointXYZL PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].label = i % 2;
 
@@ -267,11 +243,7 @@ TEST (PCL, PointCloudImageExtractorFromLabelFieldGlasbey)
 TEST (PCL, PointCloudImageExtractorFromZField)
 {
   typedef PointXYZL PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
   for (size_t i = 0; i < cloud.points.size (); i++)
     cloud.points[i].z = 1.0 + i;
 
@@ -294,11 +266,7 @@ TEST (PCL, PointCloudImageExtractorFromZField)
 TEST (PCL, PointCloudImageExtractorFromCurvatureField)
 {
   typedef PointNormal PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
 
   cloud.points[0].curvature = 1.0;
   cloud.points[1].curvature = 2.0;
@@ -326,11 +294,7 @@ TEST (PCL, PointCloudImageExtractorFromCurvatureField)
 TEST (PCL, PointCloudImageExtractorFromIntensityField)
 {
   typedef PointXYZI PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
 
   cloud.points[0].intensity = 10.0;
   cloud.points[1].intensity = 23.3;
@@ -356,11 +320,7 @@ TEST (PCL, PointCloudImageExtractorFromIntensityField)
 TEST (PCL, PointCloudImageExtractorBadInput)
 {
   typedef PointXY PointT; // none of point cloud image extractors support this
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
-  cloud.is_dense = true;
-  cloud.points.resize (cloud.width * cloud.height);
+  PointCloud<PointT> cloud (2, 2);
 
   pcl::PCLImage image;
   {
@@ -393,11 +353,8 @@ TEST (PCL, PointCloudImageExtractorBadInput)
 TEST (PCL, PointCloudImageExtractorBlackNaNs)
 {
   typedef PointNormal PointT;
-  PointCloud<PointT> cloud;
-  cloud.width = 2;
-  cloud.height = 2;
+  PointCloud<PointT> cloud (2, 2);
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
 
   cloud.points[0].curvature = 1.0;
   cloud.points[1].curvature = 2.0;

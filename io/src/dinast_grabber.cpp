@@ -298,11 +298,8 @@ pcl::DinastGrabber::readImage ()
 pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::DinastGrabber::getXYZIPointCloud ()
 {
-  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI>);
-  
-  cloud->points.resize (image_size_);
-  cloud->width = image_width_;
-  cloud->height = image_height_;
+  pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI> (image_width_, image_height_));
+
   cloud->is_dense = false;
   
   int depth_idx = 0;

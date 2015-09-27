@@ -297,12 +297,9 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   extract_object_indices.filter (*cloud_objects_);
 
   //create new binary pointcloud with intensity values (0 and 1), 0 for non-object pixels and 1 otherwise
-  pcl::PointCloud<pcl::PointXYZI>::Ptr binary_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr binary_cloud (new pcl::PointCloud<pcl::PointXYZI> (input_->width, input_->height));
 
   {
-    binary_cloud->width = input_->width;
-    binary_cloud->height = input_->height;
-    binary_cloud->points.resize (input_->points.size ());
     binary_cloud->is_dense = input_->is_dense;
 
     size_t idx;

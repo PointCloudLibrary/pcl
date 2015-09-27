@@ -6,14 +6,11 @@
 int
  main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_in (new pcl::PointCloud<pcl::PointXYZ> (5));
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_out (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the CloudIn data
-  cloud_in->width    = 5;
-  cloud_in->height   = 1;
   cloud_in->is_dense = false;
-  cloud_in->points.resize (cloud_in->width * cloud_in->height);
   for (size_t i = 0; i < cloud_in->points.size (); ++i)
   {
     cloud_in->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);

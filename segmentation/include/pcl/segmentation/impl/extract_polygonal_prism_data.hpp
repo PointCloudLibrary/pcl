@@ -84,8 +84,7 @@ pcl::isPointIn2DPolygon (const PointT &point, const pcl::PointCloud<PointT> &pol
   k1 = (k0 + 1) % 3;
   k2 = (k0 + 2) % 3;
   // Project the convex hull
-  pcl::PointCloud<PointT> xy_polygon;
-  xy_polygon.points.resize (polygon.points.size ());
+  pcl::PointCloud<PointT> xy_polygon (polygon.size ());
   for (size_t i = 0; i < polygon.points.size (); ++i)
   {
     Eigen::Vector4f pt (polygon.points[i].x, polygon.points[i].y, polygon.points[i].z, 0);
@@ -211,8 +210,7 @@ pcl::ExtractPolygonalPrismData<PointT>::segment (pcl::PointIndices &output)
   k1 = (k0 + 1) % 3;
   k2 = (k0 + 2) % 3;
   // Project the convex hull
-  pcl::PointCloud<PointT> polygon;
-  polygon.points.resize (planar_hull_->points.size ());
+  pcl::PointCloud<PointT> polygon (planar_hull_->size ());
   for (size_t i = 0; i < planar_hull_->points.size (); ++i)
   {
     Eigen::Vector4f pt (planar_hull_->points[i].x, planar_hull_->points[i].y, planar_hull_->points[i].z, 0);

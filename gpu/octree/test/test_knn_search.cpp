@@ -94,10 +94,7 @@ TEST(PCL_OctreeGPU, exactNeighbourSearch)
     cloud_device.upload(data.points);
 
     //prepare host cloud
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ>);	
-    cloud_host->width = data.points.size();
-    cloud_host->height = 1;
-    cloud_host->points.resize (cloud_host->width * cloud_host->height);    
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_host(new pcl::PointCloud<pcl::PointXYZ> (data.points.size ()));
     std::transform(data.points.begin(), data.points.end(), cloud_host->points.begin(), DataGenerator::ConvPoint<pcl::PointXYZ>());
 
     //gpu build 

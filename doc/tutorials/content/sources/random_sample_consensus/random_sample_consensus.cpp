@@ -28,14 +28,11 @@ int
 main(int argc, char** argv)
 {
   // initialize PointClouds
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (500));
   pcl::PointCloud<pcl::PointXYZ>::Ptr final (new pcl::PointCloud<pcl::PointXYZ>);
 
   // populate our PointCloud with points
-  cloud->width    = 500;
-  cloud->height   = 1;
   cloud->is_dense = false;
-  cloud->points.resize (cloud->width * cloud->height);
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
     if (pcl::console::find_argument (argc, argv, "-s") >= 0 || pcl::console::find_argument (argc, argv, "-sf") >= 0)

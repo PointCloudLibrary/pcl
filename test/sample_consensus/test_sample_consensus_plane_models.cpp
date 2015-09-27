@@ -245,10 +245,8 @@ TEST (SampleConsensusModelNormalParallelPlane, RANSAC)
   srand (0);
 
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  PointCloud<Normal> normals;
-  cloud.points.resize (10);
-  normals.resize (10);
+  PointCloud<PointXYZ> cloud (10);
+  PointCloud<Normal> normals (10);
 
   for (unsigned idx = 0; idx < cloud.size (); ++idx)
   {

@@ -9,9 +9,8 @@ main (int , char **)
 {
   srand (unsigned (time (0)));
 
-  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+  PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ> (5));
 
-  cloud->points.resize (5);
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {
     cloud->points[i].x = float (i); 

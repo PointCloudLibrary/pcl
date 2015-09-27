@@ -65,10 +65,7 @@ search::KdTree<PointNormal>::Ptr tree4;
 TEST (PCL, Organized)
 {
   //construct dataset
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> ());
-  cloud_organized->width = 5;
-  cloud_organized->height = 10;
-  cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> (5, 10));
 
   int npoints = 0;
   for (size_t i = 0; i < cloud_organized->height; i++)

@@ -503,9 +503,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       }
 
       //copy to the cvfh signature
-      PointCloudOut vfh_signature;
-      vfh_signature.points.resize (1);
-      vfh_signature.width = vfh_signature.height = 1;
+      PointCloudOut vfh_signature (1);
       for (int d = 0; d < 308; ++d)
         vfh_signature.points[0].histogram[d] = output.points[i].histogram[d];
 
@@ -564,10 +562,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
   std::vector<int> indices_in;
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
-  normals_filtered_cloud->height = 1;
-  normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> (indices_in.size ()));
 
   std::vector<int> indices_from_nfc_to_indices;
   indices_from_nfc_to_indices.resize (indices_in.size ());

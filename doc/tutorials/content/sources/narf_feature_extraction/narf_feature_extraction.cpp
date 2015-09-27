@@ -184,9 +184,8 @@ main (int argc, char** argv)
   // -------------------------------------
   // -----Show keypoints in 3D viewer-----
   // -------------------------------------
-  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr keypoints_ptr (new pcl::PointCloud<pcl::PointXYZ> (keypoint_indices.size ()));
   pcl::PointCloud<pcl::PointXYZ>& keypoints = *keypoints_ptr;
-  keypoints.points.resize (keypoint_indices.points.size ());
   for (size_t i=0; i<keypoint_indices.points.size (); ++i)
     keypoints.points[i].getVector3fMap () = range_image.points[keypoint_indices.points[i]].getVector3fMap ();
   pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> keypoints_color_handler (keypoints_ptr, 0, 255, 0);

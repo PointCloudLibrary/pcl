@@ -842,10 +842,7 @@ data (SSE padded), together with a test float.
    int
    main (int argc, char** argv)
    {
-     pcl::PointCloud<MyPointType> cloud;
-     cloud.points.resize (2);
-     cloud.width = 2;
-     cloud.height = 1;
+     pcl::PointCloud<MyPointType> cloud (2);
 
      cloud.points[0].test = 1;
      cloud.points[1].test = 2;

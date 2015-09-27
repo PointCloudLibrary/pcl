@@ -109,10 +109,7 @@ compute (const CloudT::Ptr &cloud,
   
   print_highlight ("Computing ");
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal>);
-  cloud_normals->width = cloud->width;
-  cloud_normals->height = cloud->height;
-  cloud_normals->points.resize (cloud->points.size ());
+  pcl::PointCloud<pcl::PointNormal>::Ptr cloud_normals (new pcl::PointCloud<pcl::PointNormal> (cloud->width, cloud->height));
   for (size_t i = 0; i < cloud->points.size (); i++)
   {
     cloud_normals->points[i].x = cloud->points[i].x;

@@ -10,23 +10,11 @@ int
     std::cerr << "please specify command line arg '-f' or '-p'" << std::endl;
     exit(0);
   }
-  pcl::PointCloud<pcl::PointXYZ> cloud_a, cloud_b, cloud_c;
-  pcl::PointCloud<pcl::Normal> n_cloud_b;
+  pcl::PointCloud<pcl::PointXYZ> cloud_a (5), cloud_b (3), cloud_c;
+  pcl::PointCloud<pcl::Normal> n_cloud_b (5);
   pcl::PointCloud<pcl::PointNormal> p_n_cloud_c;
 
   // Fill in the cloud data
-  cloud_a.width  = 5;
-  cloud_a.height = cloud_b.height = n_cloud_b.height = 1;
-    cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  if (strcmp(argv[1], "-p") == 0)
-  {
-    cloud_b.width  = 3;
-    cloud_b.points.resize (cloud_b.width * cloud_b.height);
-  }
-  else{
-    n_cloud_b.width = 5;
-    n_cloud_b.points.resize (n_cloud_b.width * n_cloud_b.height);
-  }
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {

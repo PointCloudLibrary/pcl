@@ -5,14 +5,9 @@
 int
   main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ> cloud_a, cloud_b, cloud_c;
+  pcl::PointCloud<pcl::PointXYZ> cloud_a (5), cloud_b (3), cloud_c;
 
   // Fill in the cloud data
-  cloud_a.width  = 5;
-  cloud_b.width  = 3;
-  cloud_a.height = cloud_b.height = 1;
-  cloud_a.points.resize (cloud_a.width * cloud_a.height);
-  cloud_b.points.resize (cloud_b.width * cloud_b.height);
 
   for (size_t i = 0; i < cloud_a.points.size (); ++i)
   {

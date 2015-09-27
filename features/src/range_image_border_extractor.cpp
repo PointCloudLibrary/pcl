@@ -375,11 +375,7 @@ RangeImageBorderExtractor::classifyBorders ()
   
   BorderDescription initial_border_description;
   initial_border_description.traits = 0;
-  border_descriptions_ = new PointCloudOut;
-  border_descriptions_->width = width;
-  border_descriptions_->height = height;
-  border_descriptions_->is_dense = true;
-  border_descriptions_->points.resize(size, initial_border_description);
+  border_descriptions_ = new PointCloudOut (width, height, initial_border_description);
   
   for (int y = 0; y < static_cast<int> (height); ++y) 
   {

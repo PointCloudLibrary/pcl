@@ -5,15 +5,13 @@
 int
 main ()
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sphere_filtered (new pcl::PointCloud<pcl::PointXYZ>);
-
   // 1. Generate cloud data
   int noise_size = 5;
   int sphere_data_size = 10;
-  cloud->width = noise_size + sphere_data_size;
-  cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (noise_size + sphere_data_size));
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_sphere_filtered (new pcl::PointCloud<pcl::PointXYZ>);
+
   // 1.1 Add noise
   for (size_t i = 0; i < noise_size; ++i)
   {

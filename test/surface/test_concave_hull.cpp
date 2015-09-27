@@ -211,8 +211,7 @@ TEST (PCL, ConcaveHull_4points)
 TEST (PCL, ConcaveHull_LTable)
 {
   //construct dataset
-  pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable;
-  cloud_out_ltable.points.resize (100);
+  pcl::PointCloud<pcl::PointXYZ> cloud_out_ltable (100);
 
   int npoints = 0;
   for (size_t i = 0; i < 8; i++)

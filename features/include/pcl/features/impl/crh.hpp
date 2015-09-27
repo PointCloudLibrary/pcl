@@ -83,8 +83,7 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
-  pcl::PointCloud<pcl::PointNormal> grid;
-  grid.points.resize (indices_->size ());
+  pcl::PointCloud<pcl::PointNormal> grid (indices_->size ());
 
   for (size_t i = 0; i < indices_->size (); i++)
   {

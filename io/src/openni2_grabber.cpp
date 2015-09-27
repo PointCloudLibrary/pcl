@@ -515,15 +515,11 @@ pcl::io::OpenNI2Grabber::irDepthImageCallback (const IRImage::Ptr &ir_image,
 pcl::PointCloud<pcl::PointXYZ>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_image)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ> (depth_width_, depth_height_));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   float constant_x = 1.0f / device_->getDepthFocalLength ();
   float constant_y = 1.0f / device_->getDepthFocalLength ();
@@ -593,16 +589,12 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, const DepthImage::Ptr &depth_image)
 {
-  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
+  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT> (std::max (image_width_, depth_width_), std::max (image_height_, depth_height_)));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = std::max (image_height_, depth_height_);
-  cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   // Generate default camera parameters
   float fx = device_->getDepthFocalLength (); // Horizontal focal length
@@ -720,16 +712,12 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, const DepthImage::Ptr &depth_image)
 {
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > ());
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > (depth_width_, depth_height_));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
 
   float fx = device_->getDepthFocalLength (); // Horizontal focal length

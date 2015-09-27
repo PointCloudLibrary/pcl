@@ -217,10 +217,7 @@ pcl::CVFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   std::vector<int> indices_in;
   filterNormalsWithHighCurvature (*normals_, *indices_, indices_out, indices_in, curv_threshold_);
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> ());
-  normals_filtered_cloud->width = static_cast<uint32_t> (indices_in.size ());
-  normals_filtered_cloud->height = 1;
-  normals_filtered_cloud->points.resize (normals_filtered_cloud->width);
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered_cloud (new pcl::PointCloud<pcl::PointNormal> (indices_in.size ()));
 
   for (size_t i = 0; i < indices_in.size (); ++i)
   {

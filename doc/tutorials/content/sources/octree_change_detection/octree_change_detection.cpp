@@ -16,12 +16,9 @@ main (int argc, char** argv)
   // Instantiate octree-based point cloud change detection class
   pcl::octree::OctreePointCloudChangeDetector<pcl::PointXYZ> octree (resolution);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudA (new pcl::PointCloud<pcl::PointXYZ> );
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudA (new pcl::PointCloud<pcl::PointXYZ> (128));
 
   // Generate pointcloud data for cloudA
-  cloudA->width = 128;
-  cloudA->height = 1;
-  cloudA->points.resize (cloudA->width * cloudA->height);
 
   for (size_t i = 0; i < cloudA->points.size (); ++i)
   {
@@ -37,12 +34,9 @@ main (int argc, char** argv)
   // Switch octree buffers: This resets octree but keeps previous tree structure in memory.
   octree.switchBuffers ();
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudB (new pcl::PointCloud<pcl::PointXYZ> );
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloudB (new pcl::PointCloud<pcl::PointXYZ> (128));
    
   // Generate pointcloud data for cloudB 
-  cloudB->width = 128;
-  cloudB->height = 1;
-  cloudB->points.resize (cloudB->width * cloudB->height);
 
   for (size_t i = 0; i < cloudB->points.size (); ++i)
   {

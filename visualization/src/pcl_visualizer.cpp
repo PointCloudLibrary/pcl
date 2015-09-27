@@ -3667,11 +3667,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       for (int y = 0; y < 4; y++)
         backToRealScale_eigen (x, y) = static_cast<float> (backToRealScale->GetMatrix ()->GetElement (x, y));
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-
-    cloud->points.resize (xres * yres);
-    cloud->width = xres * yres;
-    cloud->height = 1;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (xres * yres));
 
     double coords[3];
     float * depth = new float[xres * yres];

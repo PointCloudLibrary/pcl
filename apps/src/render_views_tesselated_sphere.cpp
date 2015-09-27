@@ -289,13 +289,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       for (int y = 0; y < 4; y++)
         backToRealScale_eigen (x, y) = float (backToRealScale->GetMatrix ()->GetElement (x, y));
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    cloud->points.resize (resolution_ * resolution_);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
     if (gen_organized_)
     {
-      cloud->width = resolution_;
-      cloud->height = resolution_;
+      cloud.reset (new pcl::PointCloud<pcl::PointXYZ> (resolution_, resolution_));
       cloud->is_dense = false;
 
       double coords[3];
@@ -329,8 +327,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     }
     else
     {
-      cloud->width = resolution_ * resolution_;
-      cloud->height = 1;
+      cloud.reset (new pcl::PointCloud<pcl::PointXYZ> (resolution_ * resolution_));
 
       double coords[3];
       float * depth = new float[resolution_ * resolution_];

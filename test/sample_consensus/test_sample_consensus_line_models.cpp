@@ -53,8 +53,7 @@ typedef SampleConsensusModelParallelLine<PointXYZ>::Ptr SampleConsensusModelPara
 TEST (SampleConsensusModelLine, RANSAC)
 {
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (10);
+  PointCloud<PointXYZ> cloud (10);
 
   cloud.points[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
   cloud.points[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;

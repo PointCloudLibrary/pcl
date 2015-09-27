@@ -9,9 +9,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   this->setWindowTitle ("PCL viewer");
 
   // Setup the cloud pointer
-  cloud.reset (new PointCloudT);
-  // The number of points in the cloud
-  cloud->points.resize (200);
+  cloud.reset (new PointCloudT (200));
 
   // The default color
   red   = 128;

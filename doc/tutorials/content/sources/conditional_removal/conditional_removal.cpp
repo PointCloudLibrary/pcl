@@ -5,13 +5,10 @@
 int
  main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (5));
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
 
   // Fill in the cloud data
-  cloud->width  = 5;
-  cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
 
   for (size_t i = 0; i < cloud->points.size (); ++i)
   {

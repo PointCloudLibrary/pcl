@@ -297,12 +297,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search)
   for (test_id = 0; test_id < test_runs; test_id++)
   {
     // generate point cloud
-    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-
-    cloudIn->width = 640;
-    cloudIn->height = 480;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (640, 480));
 
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;
@@ -435,12 +430,7 @@ TEST (PCL, Organized_Neighbor_Search_Pointcloud_Neighbours_Within_Radius_Search_
   {
     // generate point cloud
 
-    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-
-    cloudIn->width = 1024;
-    cloudIn->height = 768;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (1024, 768));
 
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;

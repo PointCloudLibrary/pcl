@@ -224,10 +224,7 @@ namespace pcl
 
           keypoints.reset (new pcl::PointCloud<PointInT>);
 
-          typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud (new pcl::PointCloud<pcl::PointNormal>);
-          input_cloud->width = input_->width;
-          input_cloud->height = input_->height;
-          input_cloud->points.resize (input_->width * input_->height);
+          typename pcl::PointCloud<pcl::PointNormal>::Ptr input_cloud (new pcl::PointCloud<pcl::PointNormal> (input_->width, input_->height));
           for (size_t i = 0; i < input_->points.size (); i++)
           {
             input_cloud->points[i].getVector3fMap () = input_->points[i].getVector3fMap ();

@@ -93,10 +93,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
   PointCloud<PointXYZ>::Ptr xyz_target (new PointCloud<PointXYZ> ());
   fromPCLPointCloud2 (*cloud_target, *xyz_target);
 
-  PointCloud<PointXYZI>::Ptr output_xyzi (new PointCloud<PointXYZI> ());
-  output_xyzi->points.resize (xyz_source->points.size ());
-  output_xyzi->height = cloud_source->height;
-  output_xyzi->width = cloud_source->width;
+  PointCloud<PointXYZI>::Ptr output_xyzi (new PointCloud<PointXYZI> (cloud_source->width, cloud_source->height));
 
   float rmse = 0.0f;
 
