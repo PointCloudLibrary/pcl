@@ -346,7 +346,7 @@ private:
       pt.x = (voxel_min.x() + voxel_max.x()) / 2.0f;
       pt.y = (voxel_min.y() + voxel_max.y()) / 2.0f;
       pt.z = (voxel_min.z() + voxel_max.z()) / 2.0f;
-      displayCloud->points.push_back(pt);
+      displayCloud->push_back(pt);
     }
 
     double end = pcl::getTime ();

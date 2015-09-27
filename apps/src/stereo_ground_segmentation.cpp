@@ -276,7 +276,7 @@ class HRCSSegmentation
             pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
                                      cloud->points[region_indices[i].indices[j]].y,
                                      cloud->points[region_indices[i].indices[j]].z);
-            ground_cloud->points.push_back (ground_pt);
+            ground_cloud->push_back (ground_pt);
             ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
             label_image->points[region_indices[i].indices[j]].r = 0;
             label_image->points[region_indices[i].indices[j]].g = 255;
@@ -366,7 +366,7 @@ class HRCSSegmentation
               pcl::PointXYZ ground_pt (cloud->points[region_indices[i].indices[j]].x,
                                        cloud->points[region_indices[i].indices[j]].y,
                                        cloud->points[region_indices[i].indices[j]].z);
-              ground_cloud->points.push_back (ground_pt);
+              ground_cloud->push_back (ground_pt);
               ground_image->points[region_indices[i].indices[j]].r = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].r + 255) / 2);
               ground_image->points[region_indices[i].indices[j]].g = static_cast<pcl::uint8_t> ((cloud->points[region_indices[i].indices[j]].g + 255) / 2);
               label_image->points[region_indices[i].indices[j]].r = 128;

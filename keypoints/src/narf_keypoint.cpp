@@ -855,15 +855,13 @@ NarfKeypoint::calculateInterestPoints ()
     }
     if (better_point_too_close)
       continue;
-    interest_points_->points.push_back (interest_point);
+    interest_points_->push_back (interest_point);
     int image_x, image_y;
     //std::cout << interest_point.x<<","<<interest_point.y<<","<<interest_point.z<<", "<<std::flush;
     range_image.getImagePoint (interest_point.getVector3fMap (), image_x, image_y);
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
   }
-  interest_points_->width = static_cast<uint32_t> (interest_points_->size ());
-  interest_points_->height = 1;
   interest_points_->is_dense = true;
 }
 
@@ -910,7 +908,7 @@ NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
   {
     if (!is_interest_point_image_[index])
       continue;
-    output.points.push_back (index);
+    output.push_back (index);
   }
 }
 

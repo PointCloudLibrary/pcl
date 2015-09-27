@@ -300,7 +300,7 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 #pragma omp critical
 #endif
       {
-        output.points.push_back (response->points[idx]);
+        output.push_back (response->points[idx]);
         keypoints_indices_->indices.push_back (idx);
       }
     }
@@ -308,8 +308,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
     if (refine_)
       refineCorners (output);
 
-    output.height = 1;
-    output.width = static_cast<uint32_t> (output.size());
     output.is_dense = true;
   }
 }

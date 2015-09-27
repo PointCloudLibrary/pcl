@@ -556,10 +556,8 @@ TEST (PCL, GFPFH)
         p.x = static_cast<float> (x);
         p.y = static_cast<float> (y);
         p.z = static_cast<float> (z);
-        cloud->points.push_back (p);
+        cloud->push_back (p);
       }
-  cloud->width = static_cast<uint32_t> (cloud->size ());
-  cloud->height = 1;
 
   GFPFHEstimation<PointXYZL, PointXYZL, GFPFHSignature16> gfpfh;
   gfpfh.setNumberOfClasses (num_classes);

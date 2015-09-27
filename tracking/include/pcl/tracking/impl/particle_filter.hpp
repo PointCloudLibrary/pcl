@@ -109,7 +109,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::initParticles (bool rese
     p.sample (initial_noise_mean_, initial_noise_covariance_);
     p = p + representative_state_;
     p.weight = 1.0f / static_cast<float> (particle_num_);
-    particles_->points.push_back (p); // update
+    particles_->push_back (p); // update
   }
 }
 
@@ -341,7 +341,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
   particles_->clear ();
   // the first particle, it is a just copy of the maximum result
   StateT p = representative_state_;
-  particles_->points.push_back (p);
+  particles_->push_back (p);
   
   // with motion
   int motion_num = static_cast<int> (particles_->size ()) * static_cast<int> (motion_ratio_);
@@ -352,7 +352,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
     // add noise using gaussian
     p.sample (zero_mean, step_noise_covariance_);
     p = p + motion_;
-    particles_->points.push_back (p);
+    particles_->push_back (p);
   }
   
   // no motion
@@ -362,7 +362,7 @@ pcl::tracking::ParticleFilterTracker<PointInT, StateT>::resampleWithReplacement 
     StateT p = origparticles->points[target_particle_index];
     // add noise using gaussian
     p.sample (zero_mean, step_noise_covariance_);
-    particles_->points.push_back (p);
+    particles_->push_back (p);
   }
 }
 

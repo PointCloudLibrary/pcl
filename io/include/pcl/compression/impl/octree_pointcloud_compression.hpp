@@ -528,7 +528,7 @@ namespace pcl
 
         // increase point cloud by amount of voxel points
         for (i = 0; i < pointCount; i++)
-          output_->points.push_back (newPoint);
+          output_->push_back (newPoint);
 
         // calculcate position of lower voxel corner
         lowerVoxelCorner[0] = static_cast<double> (key_arg.x) * this->resolution_ + this->min_x_;
@@ -546,7 +546,7 @@ namespace pcl
         newPoint.z = static_cast<float> ((static_cast<double> (key_arg.z) + 0.5) * this->resolution_ + this->min_z_);
 
         // add point to point cloud
-        output_->points.push_back (newPoint);
+        output_->push_back (newPoint);
       }
 
       if (cloud_with_color_)

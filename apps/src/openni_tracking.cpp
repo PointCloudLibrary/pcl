@@ -499,7 +499,7 @@ public:
           !pcl_isnan(point.x) &&
           !pcl_isnan(point.y) &&
           !pcl_isnan(point.z))
-        result.points.push_back(point);
+        result.push_back(point);
     }
 
     result.width = static_cast<pcl::uint32_t> (result.size ());

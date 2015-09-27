@@ -64,10 +64,10 @@ init ()
   PointXYZ p1 (1, 0, 0);
   PointXYZ p2 (0, 1, 0);
   PointXYZ p3 (0, 0, 1);
-  cloud.points.push_back (p0);
-  cloud.points.push_back (p1);
-  cloud.points.push_back (p2);
-  cloud.points.push_back (p3);
+  cloud.push_back (p0);
+  cloud.push_back (p1);
+  cloud.push_back (p2);
+  cloud.push_back (p3);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

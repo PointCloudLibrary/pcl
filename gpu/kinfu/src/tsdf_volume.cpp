@@ -196,7 +196,7 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
           dz = 0;
@@ -220,7 +220,7 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
                 xyz.y = point (1);
                 xyz.z = point (2);
 
-                cloud.points.push_back (xyz);
+                cloud.push_back (xyz);
               }
             }
         }
@@ -252,7 +252,7 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
               xyz.y = point (1);
               xyz.z = point (2);
 
-              cloud.points.push_back (xyz);
+              cloud.push_back (xyz);
             }
           }
         } /* if (connected26) */
@@ -260,8 +260,6 @@ pcl::gpu::TsdfVolume::fetchCloudHost (PointCloud<PointType>& cloud, bool connect
     }
   }
 #undef FETCH
-  cloud.width  = (int)cloud.size ();
-  cloud.height = 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

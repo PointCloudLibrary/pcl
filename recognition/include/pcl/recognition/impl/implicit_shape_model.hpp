@@ -76,7 +76,7 @@ pcl::features::ISMVoteList<PointT>::addVote (
   tree_is_valid_ = false;
   votes_->insert (votes_->end (), vote);
 
-  votes_origins_->points.push_back (vote_origin);
+  votes_origins_->push_back (vote_origin);
   votes_class_.push_back (votes_class);
 }
 

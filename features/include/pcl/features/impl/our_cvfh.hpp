@@ -514,16 +514,11 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
         }
       }
 
-      ourcvfh_output.points.push_back (vfh_signature.points[0]);
-      ourcvfh_output.width = ourcvfh_output.size ();
+      ourcvfh_output.push_back (vfh_signature.points[0]);
       delete[] weights;
     }
   }
 
-  if (ourcvfh_output.size ())
-  {
-    ourcvfh_output.height = 1;
-  }
   output = ourcvfh_output;
 }
 

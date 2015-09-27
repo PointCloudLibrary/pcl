@@ -447,7 +447,7 @@ RangeImageBorderExtractor::classifyBorders ()
       
       //if (border_traits[BORDER_TRAIT__OBSTACLE_BORDER])
       //{
-        //border_points.push_back(&border_description);
+        //border_push_back(&border_description);
       //}
     }
   }

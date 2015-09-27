@@ -65,14 +65,12 @@ search::KdTree<PointNormal>::Ptr tree4;
 TEST (PCL, EarClipping)
 {
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
-  cloud->height = 1;
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 5.f, 0.f, 0.6f));
-  cloud->points.push_back (PointXYZ ( 9.f, 4.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 4.f, 7.f, 0.5f));
-  cloud->points.push_back (PointXYZ ( 2.f, 5.f, 0.5f));
-  cloud->points.push_back (PointXYZ (-1.f, 8.f, 0.5f));
-  cloud->width = static_cast<uint32_t> (cloud->size ());
+  cloud->push_back (PointXYZ ( 0.f, 0.f, 0.5f));
+  cloud->push_back (PointXYZ ( 5.f, 0.f, 0.6f));
+  cloud->push_back (PointXYZ ( 9.f, 4.f, 0.5f));
+  cloud->push_back (PointXYZ ( 4.f, 7.f, 0.5f));
+  cloud->push_back (PointXYZ ( 2.f, 5.f, 0.5f));
+  cloud->push_back (PointXYZ (-1.f, 8.f, 0.5f));
 
   Vertices vertices;
   vertices.vertices.resize (cloud->size ());
@@ -109,18 +107,16 @@ TEST (PCL, EarClipping)
 TEST (PCL, EarClippingCubeTest)
 {
   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>());
-  cloud->height = 1;
   //bottom of cube (z=0)
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 0.f));
-  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 0.f));
+  cloud->push_back (PointXYZ ( 0.f, 0.f, 0.f));
+  cloud->push_back (PointXYZ ( 1.f, 0.f, 0.f));
+  cloud->push_back (PointXYZ ( 1.f, 1.f, 0.f));
+  cloud->push_back (PointXYZ ( 0.f, 1.f, 0.f));
   //top of cube (z=1.0)
-  cloud->points.push_back (PointXYZ ( 0.f, 0.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 0.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 1.f, 1.f, 1.f));
-  cloud->points.push_back (PointXYZ ( 0.f, 1.f, 1.f));
-  cloud->width = static_cast<uint32_t> (cloud->size ());
+  cloud->push_back (PointXYZ ( 0.f, 0.f, 1.f));
+  cloud->push_back (PointXYZ ( 1.f, 0.f, 1.f));
+  cloud->push_back (PointXYZ ( 1.f, 1.f, 1.f));
+  cloud->push_back (PointXYZ ( 0.f, 1.f, 1.f));
 
   Vertices vertices;
   vertices.vertices.resize(4);

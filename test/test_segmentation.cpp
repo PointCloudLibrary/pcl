@@ -223,7 +223,7 @@ TEST (MinCutSegmentationTest, Segment)
   neighbor_number = 14;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
 
   mcSeg.setForegroundPoints (foreground_points);
   mcSeg.setInputCloud (another_cloud_);
@@ -285,7 +285,7 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
   object_center.y = -64.73f;
   object_center.z = -6.18f;
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
   mcSeg.setForegroundPoints (foreground_points);
 
   unsigned int prev_neighbor_number = mcSeg.getNumberOfNeighbours ();

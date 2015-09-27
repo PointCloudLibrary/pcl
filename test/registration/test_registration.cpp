@@ -97,7 +97,6 @@ TEST (PCL, findFeatureCorrespondences)
   RegistrationWrapper <PointXYZ, PointXYZ> reg;
 
   FeatureCloud feature0, feature1, feature2, feature3;
-  feature0.height = feature1.height = feature2.height = feature3.height = 1;
   feature0.is_dense = feature1.is_dense = feature2.is_dense = feature3.is_dense = true;
 
   for (float x = -5.0f; x <= 5.0f; x += 0.2f)
@@ -107,25 +106,21 @@ TEST (PCL, findFeatureCorrespondences)
       FeatureT f;
       f.histogram[0] = x;
       f.histogram[1] = y;
-      feature0.points.push_back (f);
+      feature0.push_back (f);
 
       f.histogram[0] = x;
       f.histogram[1] = y - 2.5f;
-      feature1.points.push_back (f);
+      feature1.push_back (f);
 
       f.histogram[0] = x - 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature2.points.push_back (f);
+      feature2.push_back (f);
 
       f.histogram[0] = x + 2.0f;
       f.histogram[1] = y + 1.5f;
-      feature3.points.push_back (f);
+      feature3.push_back (f);
     }
   }
-  feature0.width = static_cast<uint32_t> (feature0.size ());
-  feature1.width = static_cast<uint32_t> (feature1.size ());
-  feature2.width = static_cast<uint32_t> (feature2.size ());
-  feature3.width = static_cast<uint32_t> (feature3.size ());
 
   KdTreeFLANN<FeatureT> tree;
 

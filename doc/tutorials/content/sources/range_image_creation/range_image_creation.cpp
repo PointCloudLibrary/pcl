@@ -10,11 +10,9 @@ int main (int argc, char** argv) {
       point.x = 2.0f - y;
       point.y = y;
       point.z = z;
-      pointCloud.points.push_back(point);
+      pointCloud.push_back(point);
     }
   }
-  pointCloud.width = (uint32_t) pointCloud.size();
-  pointCloud.height = 1;
   
   // We now want to create a range image from the above point cloud, with a 1deg angular resolution
   float angularResolution = (float) (  1.0f * (M_PI/180.0f));  //   1.0 degree in radians

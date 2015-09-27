@@ -191,7 +191,7 @@ pcl::SamplingSurfaceNormal<PointT>::samplePartition (
       pt.normal[2] = normal (2);
       pt.curvature = curvature;
 
-      output.points.push_back (pt);
+      output.push_back (pt);
     }
   }
 }

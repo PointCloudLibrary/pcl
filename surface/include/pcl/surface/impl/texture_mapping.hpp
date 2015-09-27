@@ -467,7 +467,7 @@ pcl::TextureMapping<PointInT>::removeOccludedPoints (const PointCloudPtr &input_
     if (nbocc == 0)
     {
       // point is added in the filtered mesh
-      filtered_cloud->points.push_back (input_cloud->points[i]);
+      filtered_cloud->push_back (input_cloud->points[i]);
       visible_indices.push_back (static_cast<int> (i));
     }
     else
@@ -716,7 +716,7 @@ pcl::TextureMapping<PointInT>::showOcclusions (const PointCloudPtr &input_cloud,
     else
       (nbocc == 0) ? (pt.intensity = 0) : (pt.intensity = 1);
 
-    colored_cloud->points.push_back (pt);
+    colored_cloud->push_back (pt);
   }
 
   if (zDist.size () >= 2)
@@ -795,9 +795,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
         // face is in the camera's FOV
 
         // add UV coordinates
-        projections->points.push_back (uv_coord1);
-        projections->points.push_back (uv_coord2);
-        projections->points.push_back (uv_coord3);
+        projections->push_back (uv_coord1);
+        projections->push_back (uv_coord2);
+        projections->push_back (uv_coord3);
 
         // remember corresponding face
         UvIndex u1, u2, u3;
@@ -814,9 +814,9 @@ pcl::TextureMapping<PointInT>::textureMeshwithMultipleCameras (pcl::TextureMesh 
       }
       else
       {
-        projections->points.push_back (nan_point);
-        projections->points.push_back (nan_point);
-        projections->points.push_back (nan_point);
+        projections->push_back (nan_point);
+        projections->push_back (nan_point);
+        projections->push_back (nan_point);
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);
         indexes_uv_to_points.push_back (u_null);

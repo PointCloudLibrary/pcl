@@ -266,7 +266,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
         {
           //if the object hypothesis already exists, then add information
           ObjectHypothesis oh = (*it_map).second;
-          oh.correspondences_pointcloud->points.push_back (model_keypoint);
+          oh.correspondences_pointcloud->push_back (model_keypoint);
           oh.correspondences_to_inputcloud->push_back (
                                                        pcl::Correspondence (static_cast<int> (oh.correspondences_pointcloud->size () - 1),
                                                                             static_cast<int> (idx), distances[0][0]));
@@ -279,7 +279,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           ObjectHypothesis oh;
 
           typename pcl::PointCloud<PointInT>::Ptr correspondences_pointcloud (new pcl::PointCloud<PointInT> ());
-          correspondences_pointcloud->points.push_back (model_keypoint);
+          correspondences_pointcloud->push_back (model_keypoint);
 
           oh.model_ = flann_models_.at (indices[0][0]).model;
           oh.correspondences_pointcloud = correspondences_pointcloud;

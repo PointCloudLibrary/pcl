@@ -71,7 +71,7 @@ pcl::tracking::KLDAdaptiveParticleFilterTracker<PointInT, StateT>::resample ()
     if (rand () / double (RAND_MAX) < motion_ratio_)
       x_t = x_t + motion_;
     
-    S->points.push_back (x_t);
+    S->push_back (x_t);
     // calc bin
     std::vector<int> bin (StateT::stateDimension ());
     for (int i = 0; i < StateT::stateDimension (); i++)

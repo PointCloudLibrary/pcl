@@ -99,7 +99,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
     return;
   PointT current_point;
   event.getPoint(current_point.x, current_point.y, current_point.z);
-  data->clicked_points_3d->points.push_back(current_point);
+  data->clicked_points_3d->push_back(current_point);
   // Draw clicked points in red:
   pcl::visualization::PointCloudColorHandlerCustom<PointT> red (data->clicked_points_3d, 255, 0, 0);
   data->viewerPtr->removePointCloud("clicked_points");

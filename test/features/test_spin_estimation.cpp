@@ -237,7 +237,6 @@ TEST (PCL, IntensitySpinEstimation)
 {
   // Generate a sample point cloud
   PointCloud<PointXYZI> cloud_xyzi;
-  cloud_xyzi.height = 1;
   cloud_xyzi.is_dense = true;
 
   for (float x = -10.0f; x <= 10.0f; x += 1.0f)
@@ -251,10 +250,9 @@ TEST (PCL, IntensitySpinEstimation)
       p.intensity = expf (-(powf (x - 3.0f, 2.0f) + powf (y + 2.0f, 2.0f)) / (2.0f * 25.0f)) + expf (-(powf (x + 5.0f, 2.0f) + powf (y - 5.0f, 2.0f))
                                                                                  / (2.0f * 4.0f));
 
-      cloud_xyzi.points.push_back (p);
+      cloud_xyzi.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.size ());
 
   // Compute the intensity-domain spin features
   typedef Histogram<20> IntensitySpin;

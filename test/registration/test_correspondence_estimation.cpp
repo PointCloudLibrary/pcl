@@ -52,8 +52,8 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationNormalShooting)
   {
     for (float z = 0.0f; z < 5.0f; z += 0.2f)
     {
-      cloud1->points.push_back (pcl::PointXYZ (i, 0, z));
-      cloud2->points.push_back (pcl::PointXYZ (i, 2, z)); // Ideally this should be the corresponding point to the point defined in the previous line
+      cloud1->push_back (pcl::PointXYZ (i, 0, z));
+      cloud2->push_back (pcl::PointXYZ (i, 2, z)); // Ideally this should be the corresponding point to the point defined in the previous line
     }
   }
         
