@@ -225,7 +225,7 @@ namespace pcl
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (uint32_t width_, uint32_t height_ = 1, const PointT& value_ = PointT ())
         : header ()
         , points (width_ * height_, value_)
         , width (width_)
