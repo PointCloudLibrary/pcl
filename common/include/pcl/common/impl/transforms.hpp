@@ -46,17 +46,21 @@ pcl::transformPointCloud (const pcl::PointCloud<PointT> &cloud_in,
 {
   if (&cloud_in != &cloud_out)
   {
-    cloud_out.header   = cloud_in.header;
-    cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
-    cloud_out.points.reserve (cloud_in.points.size ());
     if (copy_all_fields)
-      cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+    {
+      cloud_out = cloud_in;
+    }
     else
-      cloud_out.points.resize (cloud_in.points.size ());
-    cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-    cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+    {
+      cloud_out.header   = cloud_in.header;
+      cloud_out.is_dense = cloud_in.is_dense;
+      cloud_out.width    = cloud_in.width;
+      cloud_out.height   = cloud_in.height;
+      cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+      cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+
+      cloud_out.resize (cloud_in.size ());
+    }
   }
 
   if (cloud_in.is_dense)
@@ -153,18 +157,21 @@ pcl::transformPointCloudWithNormals (const pcl::PointCloud<PointT> &cloud_in,
 {
   if (&cloud_in != &cloud_out)
   {
-    // Note: could be replaced by cloud_out = cloud_in
-    cloud_out.header   = cloud_in.header;
-    cloud_out.width    = cloud_in.width;
-    cloud_out.height   = cloud_in.height;
-    cloud_out.is_dense = cloud_in.is_dense;
-    cloud_out.points.reserve (cloud_out.points.size ());
     if (copy_all_fields)
-      cloud_out.points.assign (cloud_in.points.begin (), cloud_in.points.end ());
+    {
+      cloud_out = cloud_in;
+    }
     else
-      cloud_out.points.resize (cloud_in.points.size ());
-    cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
-    cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+    {
+      cloud_out.header   = cloud_in.header;
+      cloud_out.is_dense = cloud_in.is_dense;
+      cloud_out.width    = cloud_in.width;
+      cloud_out.height   = cloud_in.height;
+      cloud_out.sensor_orientation_ = cloud_in.sensor_orientation_;
+      cloud_out.sensor_origin_      = cloud_in.sensor_origin_;
+
+      cloud_out.resize (cloud_in.size ());
+    }
   }
 
   // If the data is dense, we don't need to check for NaN
