@@ -425,9 +425,81 @@ namespace pcl
   };
 
 
+#define PI_FLOAT 3.14159265f
+#define PI_BY_2_FLOAT 1.5707963f
+#define PI_DOUBLE 3.1415926535897932384626433832795
+
+  /** \brief Compilation of all relevant edge detection algorithm parameters applicable to OrganizedEdgeFromPoints and OrganizedEdgeFromRGBPoints */
+  struct EdgeDetectionConfig
+  {
+    /** \brief Noise suppression mode on differentiated images */
+    enum NoiseReductionMode { NONE, GAUSSIAN };   //, BILATERAL }; bilateral not yet implemented
+
+    /** \brief Noise suppression mode on differentiated images */
+    NoiseReductionMode noise_reduction_mode;
+
+    /** \brief Kernel size of noise reduction filter, usually 3, 5 or 7 */
+    int noise_reduction_kernel_size;
+
+    /** \brief Threshold for depth dependent depth edge (step) verification, corresponds to minimum depth step in [m] at 1m distance (default ~ 0.01 - 0.02) */
+    float depth_step_factor;
+
+    /** \brief Minimum angle of surrounding surfaces around a surface discontinuity (edge), in [deg] */
+    double min_detectable_edge_angle;
+
+    /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default). If set to false no surface edge will be computed when the scan line crosses depth edges. If true, the scan line is adapted close to depth edges which yields more accurate results (though at little lower speed). */
+    bool use_adaptive_scan_line;
+
+    /** \brief Minimum scan line width used for surface slope approximation, in [pixels] (typically around 5pix) */
+    int min_scan_line_width;
+
+    /** \brief Maximum scan line width used for surface slope approximation, in [pixels] (typically between 20 and 40pix) */
+    int max_scan_line_width;
+
+    /** \brief Scan_line_width is the length of the scan line left and right of the query pixel at 2m distance (using linear model with scan line width at 0.5m of 5 pixels) */
+    int scan_line_width_at_2m;
+
+    /** \brief Computed value from scan_line_width_at_2m (slope in linear model) */
+    double scan_line_model_m;
+
+    /** \brief Computed value from scan_line_width_at_2m (offset in linear model) */
+    double scan_line_model_n;
+
+    /** \brief Standard constructor with default parameters */
+    EdgeDetectionConfig()
+    {
+      noise_reduction_mode = GAUSSIAN;
+      noise_reduction_kernel_size = 3;
+      depth_step_factor = 0.01f;
+      min_detectable_edge_angle = 45;
+      use_adaptive_scan_line = true;
+      min_scan_line_width = 5;
+      max_scan_line_width = 20;
+      scan_line_width_at_2m = 15;
+      scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
+      scan_line_model_m = 10 - 2*scan_line_model_n;
+    }
+
+    /** \brief Constructor with user defined parameters */
+    EdgeDetectionConfig(const NoiseReductionMode noise_reduction_mode_, const int noise_reduction_kernel_size_, const float depth_step_factor_, const double min_detectable_edge_angle_, const bool use_adaptive_scan_line_, const int min_scan_line_width_, const int max_scan_line_width_, const int scan_line_width_at_2m_)
+    {
+      noise_reduction_mode = noise_reduction_mode_;
+      noise_reduction_kernel_size = noise_reduction_kernel_size_;
+      depth_step_factor = depth_step_factor_;
+      min_detectable_edge_angle = min_detectable_edge_angle_;
+      use_adaptive_scan_line = use_adaptive_scan_line_;
+      min_scan_line_width = min_scan_line_width_;
+      max_scan_line_width = max_scan_line_width_;
+      scan_line_width_at_2m = scan_line_width_at_2m_;
+      scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
+      scan_line_model_m = 10 - 2*scan_line_model_n;
+    }
+  };
+
   /** \brief OrganizedEdgeFromPoints and OrganizedEdgeFromRGBPoints efficiently find 3D depth edges and surface discontinuities (EDGELABEL_HIGH_CURVATURE)
     * directly from organized point cloud data without needing any input on pre-computed normals. Given an organized point cloud, they will output a PointCloud
     * of edge labels, a vector of PointIndices, and optionally a point cloud of efficiently computed surface normals.
+    * That algorithm uses specialized integral images on local slope for discovering surface edges which makes it very fast.
     * OrganizedEdgeFromPoints accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_HIGH_CURVATURE.
     * OrganizedEdgeFromRGBPoints accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, EDGELABEL_HIGH_CURVATURE, and EDGELABEL_RGB_CANNY.
     *
@@ -463,73 +535,6 @@ namespace pcl
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_HIGH_CURVATURE;
-
-      /** \brief Compilation of all relevant algorithm parameters */
-      struct EdgeDetectionConfig
-      {
-        /** \brief Noise suppression mode on differentiated images */
-        enum NoiseReductionMode { NONE, GAUSSIAN };   //, BILATERAL }; bilateral not yet implemented
-
-        /** \brief Noise suppression mode on differentiated images */
-        NoiseReductionMode noise_reduction_mode;
-
-        /** \brief Kernel size of noise reduction filter, usually 3, 5 or 7 */
-        int noise_reduction_kernel_size;
-
-        /** \brief Threshold for depth dependent depth edge (step) verification, corresponds to minimum depth step in [m] at 1m distance (default ~ 0.01 - 0.02) */
-        float depth_step_factor;
-
-        /** \brief Minimum angle of surrounding surfaces around a surface discontinuity (edge), in [deg] */
-        double min_detectable_edge_angle;
-
-        /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default). If set to false no surface edge will be computed when the scan line crosses depth edges. If true, the scan line is adapted close to depth edges which yields more accurate results (though at little lower speed). */
-        bool use_adaptive_scan_line;
-
-        /** \brief Minimum scan line width used for surface slope approximation, in [pixels] (typically around 5pix) */
-        int min_scan_line_width;
-
-        /** \brief Maximum scan line width used for surface slope approximation, in [pixels] (typically between 20 and 40pix) */
-        int max_scan_line_width;
-
-        /** \brief Scan_line_width is the length of the scan line left and right of the query pixel at 2m distance (using linear model with scan line width at 0.5m of 5 pixels) */
-        int scan_line_width_at_2m;
-
-        /** \brief Computed value from scan_line_width_at_2m (slope in linear model) */
-        double scan_line_model_m;
-
-        /** \brief Computed value from scan_line_width_at_2m (offset in linear model) */
-        double scan_line_model_n;
-
-        /** \brief Standard constructor with default parameters */
-        EdgeDetectionConfig()
-        {
-          noise_reduction_mode = GAUSSIAN;
-          noise_reduction_kernel_size = 3;
-          depth_step_factor = 0.01f;
-          min_detectable_edge_angle = 45;
-          use_adaptive_scan_line = true;
-          min_scan_line_width = 5;
-          max_scan_line_width = 20;
-          scan_line_width_at_2m = 15;
-          scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
-          scan_line_model_m = 10 - 2*scan_line_model_n;
-        }
-
-        /** \brief Constructor with user defined parameters */
-        EdgeDetectionConfig(const NoiseReductionMode noise_reduction_mode_, const int noise_reduction_kernel_size_, const float depth_step_factor_, const double min_detectable_edge_angle_, const bool use_adaptive_scan_line_, const int min_scan_line_width_, const int max_scan_line_width_, const int scan_line_width_at_2m_)
-        {
-          noise_reduction_mode = noise_reduction_mode_;
-          noise_reduction_kernel_size = noise_reduction_kernel_size_;
-          depth_step_factor = depth_step_factor_;
-          min_detectable_edge_angle = min_detectable_edge_angle_;
-          use_adaptive_scan_line = use_adaptive_scan_line_;
-          min_scan_line_width = min_scan_line_width_;
-          max_scan_line_width = max_scan_line_width_;
-          scan_line_width_at_2m = scan_line_width_at_2m_;
-          scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
-          scan_line_model_m = 10 - 2*scan_line_model_n;
-        }
-      };
 
       /** \brief Constructor for OrganizedEdgeFromPoints */
       OrganizedEdgeFromPoints ()
@@ -686,10 +691,6 @@ namespace pcl
       /** \brief Sets the labels point cloud accordingly */
       void
       setLabels(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<PointLT>& labels);
-
-      static const float pi_float_ = 3.14159265f;
-      static const float pi_by_2_float_ = 1.5707963f;
-      static const double pi_double_ = 3.1415926535897932384626433832795;
 
       /** \brief Gaussian kernel for smoothing operations */
       pcl::PointCloud<pcl::Intensity>::Ptr gaussian_kernel_;

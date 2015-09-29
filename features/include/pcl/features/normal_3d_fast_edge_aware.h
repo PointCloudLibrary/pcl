@@ -42,6 +42,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
+#include <pcl/features/organized_edge_detection.h>
 
 namespace pcl
 {
@@ -65,8 +66,8 @@ namespace pcl
   class FastEdgeAwareNormalEstimation : public Feature<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<LinearLeastSquaresNormalEstimation<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const LinearLeastSquaresNormalEstimation<PointInT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<FastEdgeAwareNormalEstimation<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const FastEdgeAwareNormalEstimation<PointInT, PointOutT> > ConstPtr;
       typedef typename Feature<PointInT, PointOutT>::PointCloudIn  PointCloudIn;
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
       using Feature<PointInT, PointOutT>::input_;
@@ -75,54 +76,31 @@ namespace pcl
       using Feature<PointInT, PointOutT>::k_;
 
       /** \brief Constructor */
-      FastEdgeAwareNormalEstimation () :
-          use_depth_dependent_smoothing_(false),
-          max_depth_change_factor_(1.0f),
-          normal_smoothing_size_(9.0f)
+      FastEdgeAwareNormalEstimation ()
+        : edge_detection_()
       {
-          feature_name_ = "LinearLeastSquaresNormalEstimation";
-          tree_.reset ();
-          k_ = 1;
+        edge_detection_.setReturnLabelIndices(false);   // this return value is not needed
+        edge_detection_.setUseFastDepthDiscontinuityMode(true);   // fast mode is better suitable since we do not access the individual edge label types
+        feature_name_ = "FastEdgeAwareNormalEstimation";
+        tree_.reset ();
+        k_ = 1;
       };
 
       /** \brief Destructor */
       virtual ~FastEdgeAwareNormalEstimation ();
 
-      /** \brief Computes the normal at the specified position. 
-        * \param[in] pos_x x position (pixel)
-        * \param[in] pos_y y position (pixel)
-        * \param[out] normal the output estimated normal 
-        */
-      void
-      computePointNormal (const int pos_x, const int pos_y, PointOutT &normal);
-
-      /** \brief Set the normal smoothing size
-        * \param[in] normal_smoothing_size factor which influences the size of the area used to smooth normals 
-        * (depth dependent if useDepthDependentSmoothing is true)
-        */
-      void
-      setNormalSmoothingSize (float normal_smoothing_size)
+      /** \brief Set the structure comprising all edge detection parameters */
+      inline void
+      setEdgeDetectionConfig (const EdgeDetectionConfig edge_detection_config)
       {
-        normal_smoothing_size_ = normal_smoothing_size;
+        edge_detection_.setEdgeDetectionConfig(edge_detection_config);
       }
 
-      /** \brief Set whether to use depth depending smoothing or not
-        * \param[in] use_depth_dependent_smoothing decides whether the smoothing is depth dependent
-        */
-      void
-      setDepthDependentSmoothing (bool use_depth_dependent_smoothing)
+      /** \brief Get the structure comprising all edge detection parameters */
+      inline EdgeDetectionConfig
+      getEdgeDetectionConfig () const
       {
-        use_depth_dependent_smoothing_ = use_depth_dependent_smoothing;
-      }
-
-      /** \brief The depth change threshold for computing object borders
-        * \param[in] max_depth_change_factor the depth change threshold for computing object borders based on 
-        * depth changes
-        */
-      void 
-      setMaxDepthChangeFactor (float max_depth_change_factor)
-      {
-        max_depth_change_factor_ = max_depth_change_factor;
+        return edge_detection_.getEdgeDetectionConfig();
       }
 
       /** \brief Provide a pointer to the input dataset (overwrites the PCLBase::setInputCloud method)
@@ -130,8 +108,9 @@ namespace pcl
         */
       virtual inline void 
       setInputCloud (const typename PointCloudIn::ConstPtr &cloud) 
-      { 
-        input_ = cloud; 
+      {
+        input_ = cloud;
+        edge_detection_.setInputCloud(cloud);
       }
 
     protected:
@@ -141,19 +120,9 @@ namespace pcl
       void 
       computeFeature (PointCloudOut &output);
 
-    private:
+      /** \brief Computes depth and surface edges and yields the normal estimates. */
+      pcl::OrganizedEdgeFromPoints<PointInT, PointOutT, pcl::Label> edge_detection_;
 
-      /** the threshold used to detect depth discontinuities */
-      //float distance_threshold_;
-
-      /** \brief Smooth data based on depth (true/false). */
-      bool use_depth_dependent_smoothing_;
-
-      /** \brief Threshold for detecting depth discontinuities */
-      float max_depth_change_factor_;
-
-      /** \brief */
-      float normal_smoothing_size_;
   };
 }
 

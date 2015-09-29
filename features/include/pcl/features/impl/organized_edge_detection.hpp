@@ -356,6 +356,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud
   pcl::Label invalid_pt;
   invalid_pt.label = unsigned(0);
   labels.points.resize(input_->points.size(), invalid_pt);
+  labels.header = input_->header;
+  labels.is_dense = input_->is_dense;
   labels.width = input_->width;
   labels.height = input_->height;
 
@@ -610,12 +612,12 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       const float alpha_left = fast_atan2f_1(-avg_dz_l, -avg_dx_l);
       const float alpha_right = fast_atan2f_1(avg_dz_r, avg_dx_r);
       const float diff = fabs(alpha_left - alpha_right);
-      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * pi_double_ || diff > (180.+min_detectable_edge_angle) * 1./180. * pi_double_))
+      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * PI_DOUBLE || diff > (180.+min_detectable_edge_angle) * 1./180. * PI_DOUBLE))
       {
         // found an edge, i.e. the directions of left and right surface lines differ enough
         if (edge_start_index == -1)
           edge_start_index = u;
-        const float dist = fabs(pi_double_ - diff);
+        const float dist = fabs(PI_DOUBLE - diff);
         if (dist > max_edge_strength)
         {
           max_edge_strength = dist;
@@ -634,10 +636,11 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       }
     }
   }
+
   // y direction scan lines
   pcl::PointCloud<pcl::Intensity>::Ptr y_dy_t(new pcl::PointCloud<pcl::Intensity>);
   pcl::PointCloud<pcl::Intensity>::Ptr z_dy_t(new pcl::PointCloud<pcl::Intensity>);
-  transposeImage(y_dy, y_dy_t);
+  transposeImage(y_dy, y_dy_t); // transpose for better memory access latency (blocks with simultaneous and successive accesses will already reside in cache)
   transposeImage(z_dy, z_dy_t);
   pcl::PointCloud<pcl::Intensity>::Ptr y_dy_integral_y(new pcl::PointCloud<pcl::Intensity>);
   pcl::PointCloud<pcl::Intensity>::Ptr z_dy_integral_y(new pcl::PointCloud<pcl::Intensity>);
@@ -649,7 +652,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
 #ifdef USE_OMP
 #pragma omp parallel for //num_threads(2)
 #endif
-  for (int v = max_line_width+1; v < max_vy; ++v)
+  for (int v = max_line_width+1; v < max_vy; ++v)   // this is the original u coordinate, but the y-data structures are transposed for memory access efficiency
   {
     int scan_line_width = 10; // width of scan line left or right of a query pixel, measured in [px]
     int last_line_width = scan_line_width;
@@ -693,12 +696,12 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       const float alpha_above = fast_atan2f_1(-avg_dz_u, -avg_dy_u);
       const float alpha_below = fast_atan2f_1(avg_dz_b, avg_dy_b);
       const float diff = fabs(alpha_above - alpha_below);
-      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * pi_double_ || diff > (180.+min_detectable_edge_angle) * 1./180. * pi_double_))
+      if (diff!=0 && (diff < (180.-min_detectable_edge_angle) * 1./180. * PI_DOUBLE || diff > (180.+min_detectable_edge_angle) * 1./180. * PI_DOUBLE))
       {
         // found an edge, i.e. the directions of upper and lower surface lines differ enough
         if (edge_start_index == -1)
           edge_start_index = u;
-        const float dist = fabs(pi_double_ - diff);
+        const float dist = fabs(PI_DOUBLE - diff);
         if (dist > max_edge_strength)
         {
           max_edge_strength = dist;
@@ -739,7 +742,9 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
   // optionally: compute edge-aware normals exploiting the already computed structures
   if (normals != 0)
   {
-    normals->resize(input_->size());
+    computeEdgeDistanceMapHorizontal(edge, distance_map_horizontal);
+    computeEdgeDistanceMapVertical(edge, distance_map_vertical);
+    normals->resize(input_->points.size());
     normals->header = input_->header;
     normals->is_dense = input_->is_dense;
     normals->height = input_->height;
@@ -779,7 +784,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
                      !adaptScanLineNormal(scan_line_height_upper, scan_line_height_lower, distance_map_vertical, u, v, min_line_width);
         else
           edge_hit = distance_map_horizontal->at(u,v).x < scan_line_width_left || distance_map_horizontal->at(u,v).y < scan_line_width_right ||
-                     distance_map_vertical->at(v,u).x < scan_line_height_upper || distance_map_vertical->at(v,u).y < scan_line_height_lower; // do not compute surface edges if a depth discontinuity is on the scan line
+                     distance_map_vertical->at(u,v).x < scan_line_height_upper || distance_map_vertical->at(u,v).y < scan_line_height_lower; // do not compute surface edges if a depth discontinuity is on the scan line
         if (edge_hit == true)
         {
           // not enough support for solid normal estimation
@@ -963,7 +968,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::adaptScanLineNormal(int&
   scan_line_length_1 = std::min(scan_line_length_1, (int)distance_to_edge.x-1-min_distance_to_depth_edge);
   scan_line_length_2 = std::min(scan_line_length_2, (int)distance_to_edge.y-1-min_distance_to_depth_edge);
 
-  if ((scan_line_length_1+scan_line_length_2)<min_scan_line_length)
+  if ((scan_line_length_1+scan_line_length_2+1)<min_scan_line_length)
     return false;
   return true;
 }
@@ -976,17 +981,21 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::transposeImage(const pcl
   dst->resize(src->height * src->width);
   dst->height = src->width;
   dst->width = src->height;
+
   for (unsigned int v = 0; v < dst->height; ++v)
-  {
-    pcl::Intensity* src_ptr = & (src->points[v]);
-    pcl::Intensity* dst_ptr = & (dst->points[v * input_->width]);
-    for (unsigned int u = 0; u < dst->width; u++)
-    {
-      *dst_ptr = *src_ptr;
-      src_ptr += src->width;
-      ++dst_ptr;
-    }
-  }
+    for (unsigned int u = 0; u < dst->width; ++u)
+      dst->at(u, v) = src->at(v, u);
+//  for (unsigned int v = 0; v < dst->height; ++v)
+//  {
+//    pcl::Intensity* src_ptr = & (src->points[v]);
+//    pcl::Intensity* dst_ptr = & (dst->points[v * dst->width]);
+//    for (unsigned int u = 0; u < dst->width; ++u)
+//    {
+//      *dst_ptr = *src_ptr;
+//      src_ptr += src->width;
+//      ++dst_ptr;
+//    }
+//  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -995,9 +1004,9 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::fast_atan2f_1(float y, f
 {
   if (x == 0.0f)
   {
-    if (y > 0.0f) return pi_by_2_float_;
+    if (y > 0.0f) return PI_BY_2_FLOAT;
     if (y == 0.0f) return 0.0f;
-    return -pi_by_2_float_;
+    return -PI_BY_2_FLOAT;
   }
   float atan;
   float z = y/x;
@@ -1006,14 +1015,14 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::fast_atan2f_1(float y, f
     atan = z/(1.0f + 0.28f*z*z);
     if (x < 0.0f)
     {
-      if (y < 0.0f) return atan - pi_float_;
-      return atan + pi_float_;
+      if (y < 0.0f) return atan - PI_FLOAT;
+      return atan + PI_FLOAT;
     }
   }
   else
   {
-    atan = pi_by_2_float_ - z/(z*z + 0.28f);
-    if ( y < 0.0f ) return atan - pi_float_;
+    atan = PI_BY_2_FLOAT - z/(z*z + 0.28f);
+    if ( y < 0.0f ) return atan - PI_FLOAT;
   }
   return atan;
 }
