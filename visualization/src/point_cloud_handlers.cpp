@@ -805,7 +805,7 @@ pcl::visualization::PointCloudGeometryHandlerCustom<pcl::PCLPointCloud2>::PointC
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, (pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZL)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBL))
+  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, (pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZL)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBL)(pcl::PointWithRange))
   PCL_INSTANTIATE(PointCloudGeometryHandlerSurfaceNormal, (pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, PCL_XYZ_POINT_TYPES)
