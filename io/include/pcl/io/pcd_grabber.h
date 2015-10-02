@@ -144,7 +144,7 @@ namespace pcl
 
     private:
       virtual void 
-      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const = 0;
+      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation, const std::string& file_name) const = 0;
 
       // to separate and hide the implementation from interface: PIMPL
       struct PCDGrabberImpl;
@@ -175,9 +175,10 @@ namespace pcl
     protected:
 
       virtual void 
-      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const;
+      publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation, const std::string& file_name) const;
       
       boost::signals2::signal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>* signal_;
+      boost::signals2::signal<void (const std::string&)>* file_name_signal_;
 
 #ifdef HAVE_OPENNI
       boost::signals2::signal<void (const boost::shared_ptr<openni_wrapper::DepthImage>&)>*     depth_image_signal_;
@@ -192,6 +193,7 @@ namespace pcl
   : PCDGrabberBase (pcd_path, frames_per_second, repeat)
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    file_name_signal_ = createSignal<void (const std::string&)>();
 #ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
     image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&)> ();
@@ -205,6 +207,7 @@ namespace pcl
     : PCDGrabberBase (pcd_files, frames_per_second, repeat), signal_ ()
   {
     signal_ = createSignal<void (const boost::shared_ptr<const pcl::PointCloud<PointT> >&)>();
+    file_name_signal_ = createSignal<void (const std::string&)>();
 #ifdef HAVE_OPENNI
     depth_image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::DepthImage>&)> ();
     image_signal_ = createSignal <void (const boost::shared_ptr<openni_wrapper::Image>&)> ();
@@ -236,7 +239,7 @@ namespace pcl
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template<typename PointT> void 
-  PCDGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation) const
+  PCDGrabber<PointT>::publish (const pcl::PCLPointCloud2& blob, const Eigen::Vector4f& origin, const Eigen::Quaternionf& orientation, const std::string& file_name) const
   {
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
     pcl::fromPCLPointCloud2 (blob, *cloud);
@@ -244,6 +247,8 @@ namespace pcl
     cloud->sensor_orientation_ = orientation;
 
     signal_->operator () (cloud);
+    if (file_name_signal_->num_slots() > 0)
+        file_name_signal_->operator()(file_name);
 
 #ifdef HAVE_OPENNI
     // If dataset is not organized, return
