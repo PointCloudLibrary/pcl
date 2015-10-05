@@ -118,7 +118,7 @@ main (int argc, char** argv)
   vtk_file_indices = parse_file_extension_argument (argc, argv, ".vtk");
   if (vtk_file_indices.size () != 1)
   {
-    print_error ("Need one ouput VTK file to continue.\n");
+    print_error ("Need one output VTK file to continue.\n");
     return (-1);
   }
 
