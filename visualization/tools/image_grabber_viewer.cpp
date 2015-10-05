@@ -65,7 +65,7 @@ printHelp (int, char **argv)
   print_info ("\t-dir directory_path      = directory path to image or pclzf file(s) to be read from\n");
   print_info ("\t-fps frequency           = frames per second\n");
   print_info ("\t-pclzf                   = Load pclzf files instead\n");
-  print_info ("\t-repeat                  = optional parameter that tells wheter the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
+  print_info ("\t-repeat                  = optional parameter that tells whether the TIFF file(s) should be \"grabbed\" in a endless loop.\n");
   print_info ("\n");
   print_info ("\t-cam (*)                 = use given camera settings as initial view\n");
   print_info (stderr, " (*) [Clipping Range / Focal Point / Position / ViewUp / Distance / Window Size / Window Pos] or use a <filename.cam> that contains the same information.\n");
