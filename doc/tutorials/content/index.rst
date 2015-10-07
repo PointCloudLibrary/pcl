@@ -643,7 +643,7 @@ I/O
              In this tutorial we will learn how to setup and use DepthSense cameras within PCL on both Linux and Windows platforms.
      ======  ======
 
-     .. |i_o8| image:: images/creative_camera.jpg
+     .. |i_o9| image:: images/creative_camera.jpg
                :height: 70px
 
 .. _keypoints_tutorial:
