@@ -1299,6 +1299,8 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
   {
     case PCL_VISUALIZER_COLOR:
     {
+      if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
+        PCL_WARN ("[setPointCloudRenderingProperties] Colors go from 0.0 to 1.0!\n");
       actor->GetProperty ()->SetColor (val1, val2, val3);
       actor->GetMapper ()->ScalarVisibilityOff ();
       actor->Modified ();
@@ -1468,6 +1470,9 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
   {
     case PCL_VISUALIZER_COLOR:
     {
+      if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
+        PCL_WARN ("[setShapeRenderingProperties] Colors go from 0.0 to 1.0!\n");
+
       actor->GetMapper ()->ScalarVisibilityOff ();
       actor->GetProperty ()->SetColor (val1, val2, val3);
       actor->GetProperty ()->SetEdgeColor (val1, val2, val3);

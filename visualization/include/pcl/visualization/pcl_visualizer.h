@@ -1142,6 +1142,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the point cloud object id (default: cloud)
           * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
           */
         bool
         setPointCloudRenderingProperties (int property, double val1, double val2, double val3,
@@ -1152,6 +1153,7 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the point cloud object id (default: cloud)
          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setPointCloudRenderingProperties (int property, double value,
@@ -1161,6 +1163,7 @@ namespace pcl
          * \param[in] property the property type
          * \param[in] value the resultant property value
          * \param[in] id the point cloud object id (default: cloud)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         getPointCloudRenderingProperties (int property, double &value,
@@ -1179,6 +1182,7 @@ namespace pcl
          * \param[in] id the shape object id
          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setShapeRenderingProperties (int property, double value,
