@@ -60,6 +60,7 @@ namespace pcl
       using pcl::SampleConsensusModelRegistration<PointT>::correspondences_;
       using pcl::SampleConsensusModelRegistration<PointT>::sample_dist_thresh_;
       using pcl::SampleConsensusModelRegistration<PointT>::computeOriginalIndexMapping;
+      using pcl::SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename pcl::SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename pcl::SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
