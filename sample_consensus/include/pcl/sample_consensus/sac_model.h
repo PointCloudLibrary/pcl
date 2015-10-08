@@ -365,6 +365,13 @@ namespace pcl
         return (it->second);
       }
 
+      /** \brief Return the number of coefficients in the model. */
+      inline unsigned int
+      getModelSize () const
+      {
+        return model_size_;
+      }
+
       /** \brief Set the minimum and maximum allowable radius limits for the
         * model (applicable to models that estimate a radius)
         * \param[in] min_radius the minimum radius model
@@ -443,6 +450,7 @@ namespace pcl
       }
 
     protected:
+
       /** \brief Fills a sample array with random samples from the indices_ vector
         * \param[out] sample the set of indices of target_ to analyze
         */
@@ -550,6 +558,9 @@ namespace pcl
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
+
+      /** \brief The number of coefficients in the model. Every subclass should initialize this appropriately. */
+      unsigned int model_size_;
 
       /** \brief Boost-based random number generator. */
       inline int

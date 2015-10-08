@@ -82,6 +82,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelSphere";
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelSphere.
@@ -95,6 +96,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelSphere";
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -197,6 +199,8 @@ namespace pcl
       inline pcl::SacModel getModelType () const { return (SACMODEL_SPHERE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

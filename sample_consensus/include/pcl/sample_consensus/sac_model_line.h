@@ -82,6 +82,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelLine";
+        model_size_ = 6;
       }
 
       /** \brief Constructor for base SampleConsensusModelLine.
@@ -95,6 +96,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelLine";
+        model_size_ = 6;
       }
       
       /** \brief Empty destructor */
@@ -176,6 +178,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_LINE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

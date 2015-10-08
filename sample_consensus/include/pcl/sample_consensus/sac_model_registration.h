@@ -84,6 +84,7 @@ namespace pcl
         // Call our own setInputCloud
         setInputCloud (cloud);
         model_name_ = "SampleConsensusModelRegistration";
+        model_size_ = 16;
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
@@ -103,6 +104,7 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
         model_name_ = "SampleConsensusModelRegistration";
+        model_size_ = 16;
       }
       
       /** \brief Empty destructor */
@@ -214,6 +216,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

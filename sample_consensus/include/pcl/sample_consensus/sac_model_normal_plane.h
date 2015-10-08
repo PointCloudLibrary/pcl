@@ -103,6 +103,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalPlane";
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalPlane.
@@ -117,6 +118,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalPlane";
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -155,6 +157,9 @@ namespace pcl
       getModelType () const { return (SACMODEL_NORMAL_PLANE); }
 
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+    protected:
+      using SampleConsensusModel<PointT>::model_size_;
   };
 }
 

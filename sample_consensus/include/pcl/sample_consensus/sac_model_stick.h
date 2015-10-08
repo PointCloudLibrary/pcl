@@ -86,6 +86,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelStick";
+        model_size_ = 7;
       }
 
       /** \brief Constructor for base SampleConsensusModelStick.
@@ -99,6 +100,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelStick";
+        model_size_ = 7;
       }
       
       /** \brief Empty destructor */
@@ -180,6 +182,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_STICK); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

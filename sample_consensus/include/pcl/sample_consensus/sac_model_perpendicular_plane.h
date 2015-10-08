@@ -90,6 +90,7 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelPerpendicularPlane";
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
@@ -105,6 +106,7 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelPerpendicularPlane";
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -164,6 +166,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_PERPENDICULAR_PLANE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

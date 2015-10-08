@@ -80,6 +80,7 @@ namespace pcl
         // Call our own setInputCloud
         setInputCloud (cloud);
         model_name_ = "SampleConsensusModelRegistration2D";
+        model_size_ = 16;
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
@@ -96,6 +97,7 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
         model_name_ = "SampleConsensusModelRegistration2D";
+        model_size_ = 16;
       }
       
       /** \brief Empty destructor */
@@ -142,6 +144,8 @@ namespace pcl
       { return (projection_matrix_); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.
         * \param[in] samples the resultant index samples

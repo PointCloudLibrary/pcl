@@ -114,6 +114,7 @@ namespace pcl
         , eps_dist_ (0.0)
       {
         model_name_ = "SampleConsensusModelNormalParallelPlane";
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalParallelPlane.
@@ -132,6 +133,7 @@ namespace pcl
         , eps_dist_ (0.0)
       {
         model_name_ = "SampleConsensusModelNormalParallelPlane";
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -185,6 +187,8 @@ namespace pcl
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */

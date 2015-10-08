@@ -95,6 +95,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
+        model_size_ = 7;
       }
 
       /** \brief Constructor for base SampleConsensusModelCone.
@@ -114,6 +115,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
+        model_size_ = 7;
       }
 
       /** \brief Copy constructor.
@@ -268,6 +270,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_CONE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Get the distance from a point to a line (represented by a point and a direction)
         * \param[in] pt a point
         * \param[in] model_coefficients the line coefficients (a point on the line, line direction)
