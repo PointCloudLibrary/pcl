@@ -242,14 +242,16 @@ main (int argc, char **argv)
   VoxelGrid<PointXYZ> grid_;
   grid_.setInputCloud (cloud_1);
   grid_.setLeafSize (leaf_size, leaf_size, leaf_size);
-  grid_.filter (*cloud_1);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr res(new pcl::PointCloud<pcl::PointXYZ>);
+  grid_.filter (*res);
 
   if (VIS)
   {
     visualization::PCLVisualizer vis3 ("VOXELIZED SAMPLES CLOUD");
-    vis3.addPointCloud (cloud_1);
+    vis3.addPointCloud (res);
     vis3.spin ();
   }
 
-  savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_1);
+  savePCDFileASCII (argv[pcd_file_indices[0]], *res);
 }
