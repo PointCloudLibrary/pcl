@@ -66,6 +66,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -200,15 +201,11 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      inline bool 
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients)
       {
-        // Needs a valid model coefficients
-        if (model_coefficients.size () != 4)
-        {
-          PCL_ERROR ("[pcl::SampleConsensusModelSphere::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+        if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
           return (false);
-        }
 
         if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
           return (false);
