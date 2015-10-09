@@ -66,6 +66,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -83,6 +84,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelCircle3D";
+        model_size_ = 7;
       }
 
       /** \brief Constructor for base SampleConsensusModelCircle3D.
@@ -96,6 +98,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelCircle3D";
+        model_size_ = 7;
       }
       
       /** \brief Empty destructor */
@@ -197,10 +200,12 @@ namespace pcl
       getModelType () const { return (SACMODEL_CIRCLE3D); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief Check if a sample of indices results in a good sample of points indices.

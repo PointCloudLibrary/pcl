@@ -67,6 +67,7 @@ namespace pcl
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModelLine<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelLine<PointT>::PointCloudPtr PointCloudPtr;
@@ -85,6 +86,7 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelParallelLine";
+        model_size_ = 6;
       }
 
       /** \brief Constructor for base SampleConsensusModelParallelLine.
@@ -100,6 +102,7 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelParallelLine";
+        model_size_ = 6;
       }
 
       /** \brief Empty destructor */
@@ -157,13 +160,14 @@ namespace pcl
       getModelType () const { return (SACMODEL_PARALLEL_LINE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
-    protected:
       /** \brief The axis along which we need to search for a line. */
       Eigen::Vector3f axis_;
 

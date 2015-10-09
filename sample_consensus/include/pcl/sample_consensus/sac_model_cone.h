@@ -74,6 +74,7 @@ namespace pcl
       using SampleConsensusModelFromNormals<PointT, PointNT>::normals_;
       using SampleConsensusModelFromNormals<PointT, PointNT>::normal_distance_weight_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -95,6 +96,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
+        model_size_ = 7;
       }
 
       /** \brief Constructor for base SampleConsensusModelCone.
@@ -114,6 +116,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
+        model_size_ = 7;
       }
 
       /** \brief Copy constructor.
@@ -268,6 +271,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_CONE); }
 
     protected:
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Get the distance from a point to a line (represented by a point and a direction)
         * \param[in] pt a point
         * \param[in] model_coefficients the line coefficients (a point on the line, line direction)
@@ -284,7 +289,7 @@ namespace pcl
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief Check if a sample of indices results in a good sample of points

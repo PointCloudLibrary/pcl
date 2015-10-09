@@ -70,6 +70,7 @@ namespace pcl
       using SampleConsensusModel<PointT>::radius_min_;
       using SampleConsensusModel<PointT>::radius_max_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -86,6 +87,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelStick";
+        model_size_ = 7;
       }
 
       /** \brief Constructor for base SampleConsensusModelStick.
@@ -99,6 +101,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelStick";
+        model_size_ = 7;
       }
       
       /** \brief Empty destructor */
@@ -180,20 +183,7 @@ namespace pcl
       getModelType () const { return (SACMODEL_STICK); }
 
     protected:
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      inline bool 
-      isModelValid (const Eigen::VectorXf &model_coefficients)
-      {
-        if (model_coefficients.size () != 7)
-        {
-          PCL_ERROR ("[pcl::SampleConsensusModelStick::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
-          return (false);
-        }
-
-        return (true);
-      }
+      using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.
