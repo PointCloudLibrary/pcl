@@ -42,6 +42,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/image_viewer.h>
+#include <pcl/visualization/common/float_image_utils.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -119,8 +120,10 @@ public:
   OpenNI2Viewer (pcl::io::OpenNI2Grabber& grabber)
     : cloud_viewer_ (new pcl::visualization::PCLVisualizer ("PCL OpenNI2 cloud"))
     , image_viewer_ ()
+    , depth_viewer_ ()
     , grabber_ (grabber)
     , rgb_data_ (0), rgb_data_size_ (0)
+    , xyz_data_ (0), xyz_data_size_ (0)
   {
   }
 
@@ -150,6 +153,15 @@ public:
       }
       image_->fillRGB (image_->getWidth (), image_->getHeight (), rgb_data_);
     }
+  }
+
+
+  void
+  depth_callback (const boost::shared_ptr<pcl::io::openni2::DepthImage>& depth)
+  {
+    FPS_CALC ("depth callback");
+    boost::mutex::scoped_lock lock (depth_mutex_);
+    depth_ = depth;
   }
 
   void
@@ -189,20 +201,34 @@ public:
     boost::signals2::connection image_connection;
     if (grabber_.providesCallback<void (const boost::shared_ptr<pcl::io::openni2::Image>&)>())
     {
-      image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI image"));
+      image_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI2 image"));
       image_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
       image_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
       boost::function<void (const boost::shared_ptr<pcl::io::openni2::Image>&) > image_cb = boost::bind (&OpenNI2Viewer::image_callback, this, _1);
       image_connection = grabber_.registerCallback (image_cb);
     }
 
-    bool image_init = false, cloud_init = false;
+    boost::signals2::connection depth_connection;
+    if (grabber_.providesCallback<void (const boost::shared_ptr<pcl::io::openni2::DepthImage>&)>())
+    {
+      depth_viewer_.reset (new pcl::visualization::ImageViewer ("PCL OpenNI2 Depth"));
+      depth_viewer_->registerMouseCallback (&OpenNI2Viewer::mouse_callback, *this);
+      depth_viewer_->registerKeyboardCallback (&OpenNI2Viewer::keyboard_callback, *this);
+      boost::function<void (const boost::shared_ptr<pcl::io::openni2::DepthImage>&) > depth_cb = boost::bind (&OpenNI2Viewer::depth_callback, this, _1);
+      depth_connection = grabber_.registerCallback (depth_cb);
+    }
+
+
+
+
+    bool image_init = false, cloud_init = false, depth_init = false;
 
     grabber_.start ();
 
-    while (!cloud_viewer_->wasStopped () && (image_viewer_ && !image_viewer_->wasStopped ()))
+    while (!cloud_viewer_->wasStopped () && ((image_viewer_ && !image_viewer_->wasStopped ()) || ( depth_viewer_ && !depth_viewer_->wasStopped ())))
     {
       boost::shared_ptr<pcl::io::openni2::Image> image;
+      boost::shared_ptr<pcl::io::openni2::DepthImage> depth;
       CloudConstPtr cloud;
 
       cloud_viewer_->spinOnce ();
@@ -243,7 +269,6 @@ public:
         image_mutex_.unlock ();
       }
 
-
       if (image)
       {
         if (!image_init && cloud && cloud->width != 0)
@@ -258,34 +283,65 @@ public:
         else
           image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
         image_viewer_->spinOnce ();
+      }
 
+      if (depth_mutex_.try_lock ())
+      {
+        depth_.swap (depth);
+        depth_mutex_.unlock ();
+      }
+
+      if (depth)
+      {
+        if (!depth_init && cloud && cloud->width != 0)
+        {
+          depth_viewer_->setPosition (cloud->width, 0);
+          depth_viewer_->setSize (cloud->width, cloud->height);
+          depth_init = !depth_init;
+        }
+
+        unsigned char* data = pcl::visualization::FloatImageUtils::getVisualImage (
+                  reinterpret_cast<const unsigned short*> (depth->getData ()), 
+                  depth->getWidth (), depth->getHeight (),
+                  std::numeric_limits<unsigned short>::min (), 
+                  std::numeric_limits<unsigned short>::max () / 10, 
+                                                       true);
+                  
+        depth_viewer_->addRGBImage ( data, depth->getWidth (), depth->getHeight ());
+        depth_viewer_->spinOnce ();
       }
     }
-
     grabber_.stop ();
 
     cloud_connection.disconnect ();
     image_connection.disconnect ();
+    depth_connection.disconnect ();
     if (rgb_data_)
       delete[] rgb_data_;
   }
 
   boost::shared_ptr<pcl::visualization::PCLVisualizer> cloud_viewer_;
   boost::shared_ptr<pcl::visualization::ImageViewer> image_viewer_;
+  boost::shared_ptr<pcl::visualization::ImageViewer> depth_viewer_;
 
   pcl::io::OpenNI2Grabber& grabber_;
   boost::mutex cloud_mutex_;
   boost::mutex image_mutex_;
+  boost::mutex depth_mutex_;
 
   CloudConstPtr cloud_;
   boost::shared_ptr<pcl::io::openni2::Image> image_;
+  boost::shared_ptr<pcl::io::openni2::DepthImage> depth_;
   unsigned char* rgb_data_;
+  unsigned char* xyz_data_;
   unsigned rgb_data_size_;
+  unsigned xyz_data_size_;
 };
 
 // Create the PCLVisualizer object
 boost::shared_ptr<pcl::visualization::PCLVisualizer> cld;
 boost::shared_ptr<pcl::visualization::ImageViewer> img;
+boost::shared_ptr<pcl::visualization::ImageViewer> dep;
 
 /* ---[ */
 int
