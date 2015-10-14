@@ -87,7 +87,6 @@ namespace pcl
         void
         filterPlanar (PointInTPtr & input, PointInTPtr & keypoints_cloud)
         {
-          pcl::PointCloud<int> filtered_keypoints;
           //create a search object
           typename pcl::search::Search<PointInT>::Ptr tree;
           if (input->isOrganized ())
@@ -101,7 +100,6 @@ namespace pcl
           neighborhood_dist_.reset (new std::vector<std::vector<float> >);
           neighborhood_dist_->resize (keypoints_cloud->points.size ());
 
-          filtered_keypoints.points.resize (keypoints_cloud->points.size ());
           int good = 0;
 
           for (size_t i = 0; i < keypoints_cloud->points.size (); i++)
@@ -463,7 +461,6 @@ namespace pcl
          void
          filterPlanar (PointInTPtr & input, KeypointCloud & keypoints_cloud)
          {
-         pcl::PointCloud<int> filtered_keypoints;
          //create a search object
          typename pcl::search::Search<PointInT>::Ptr tree;
          if (input->isOrganized ())
@@ -480,7 +477,6 @@ namespace pcl
          neighborhood_dist_.reset (new std::vector<std::vector<float> >);
          neighborhood_dist_->resize (keypoints_cloud.points.size ());
 
-         filtered_keypoints.points.resize (keypoints_cloud.points.size ());
          int good = 0;
 
          //#pragma omp parallel for num_threads(8)
