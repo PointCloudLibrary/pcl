@@ -203,6 +203,9 @@ if (BUILD_tools)
       PCL_ADD_EXECUTABLE(pcl_obj2pcd "${SUBSYS_NAME}" obj2pcd.cpp)
       target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
 
+      PCL_ADD_EXECUTABLE(pcl_obj2ply "${SUBSYS_NAME}" obj2ply.cpp)
+      target_link_libraries(pcl_obj2ply pcl_common pcl_io)
+
       PCL_ADD_EXECUTABLE(pcl_vtk2pcd "${SUBSYS_NAME}" vtk2pcd.cpp)
       target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
 
