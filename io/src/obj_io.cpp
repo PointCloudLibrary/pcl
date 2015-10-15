@@ -312,7 +312,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
       {
         try
         {
-          materials_.back ().tex_d = boost::lexical_cast<float> (st[1]);
+          materials_.back ().tex_Ns = boost::lexical_cast<float> (st[1]);
         }
         catch (boost::bad_lexical_cast &)
         {
