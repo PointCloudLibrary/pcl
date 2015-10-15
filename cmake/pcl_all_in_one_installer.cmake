@@ -5,6 +5,7 @@ endif(WIN32)
 
 if(BUILD_all_in_one_installer)
     get_filename_component(BOOST_ROOT "${Boost_INCLUDE_DIR}" PATH)
+    get_filename_component(BOOST_ROOT "${BOOST_ROOT}" PATH)
     get_filename_component(EIGEN_ROOT "${EIGEN_INCLUDE_DIRS}" PATH)
     get_filename_component(QHULL_ROOT "${QHULL_INCLUDE_DIRS}" PATH)
     get_filename_component(FLANN_ROOT "${FLANN_INCLUDE_DIRS}" PATH)
