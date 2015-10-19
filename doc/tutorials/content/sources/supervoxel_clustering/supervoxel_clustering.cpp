@@ -36,7 +36,7 @@ main (int argc, char ** argv)
   }
 
 
-  PointCloudT::Ptr cloud = boost::make_shared <PointCloudT> ();
+  PointCloudT::Ptr cloud = boost::shared_ptr <PointCloudT> (new PointCloudT ());
   pcl::console::print_highlight ("Loading point cloud...\n");
   if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud))
   {
