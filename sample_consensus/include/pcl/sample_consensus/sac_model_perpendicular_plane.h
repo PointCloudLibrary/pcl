@@ -72,7 +72,6 @@ namespace pcl
   {
     public:
       using SampleConsensusModel<PointT>::model_name_;
-      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModelPlane<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModelPlane<PointT>::PointCloudPtr PointCloudPtr;
