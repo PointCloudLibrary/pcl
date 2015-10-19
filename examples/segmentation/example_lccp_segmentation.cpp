@@ -321,13 +321,9 @@ LCCPSegmentation Parameters: \n\
   lccp.setSanityCheck (use_sanity_criterion);
   lccp.setSmoothnessCheck (true, voxel_resolution, seed_resolution, smoothness_threshold);
   lccp.setKFactor (k_factor);
-  lccp.segment (supervoxel_clusters, supervoxel_adjacency);
-
-  if (min_segment_size > 0)
-  {
-    PCL_INFO ("Merging small segments\n");
-    lccp.mergeSmallSegments (min_segment_size);
-  }
+  lccp.setInputSupervoxels (supervoxel_clusters, supervoxel_adjacency);
+  lccp.setMinSegmentSize (min_segment_size);
+  lccp.segment ();
 
   PCL_INFO ("Interpolation voxel cloud -> input cloud and relabeling\n");
   pcl::PointCloud<pcl::PointXYZL>::Ptr sv_labeled_cloud = super.getLabeledCloud ();
