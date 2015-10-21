@@ -176,10 +176,10 @@ endmacro(find_qhull)
 
 #remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
-  if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+  if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "TRUE"))
     set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
     get_filename_component(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@" PATH)
-  endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+  endif()
 
   if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_OPENNI libopenni)
@@ -212,9 +212,9 @@ endmacro(find_openni)
 
 #remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
-  if(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
+  if(NOT OPENNI2_ROOT AND ("@HAVE_OPENNI2@" STREQUAL "TRUE"))
     get_filename_component(OPENNI2_LIBRARY_HINT "OPENNI_LIBRARY-NOTFOUND" PATH)
-  endif(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
+  endif()
 
   set(OPENNI2_SUFFIX)
   if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -249,9 +249,9 @@ endmacro(find_openni2)
 
 #remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
 macro(find_ensenso)
-  if(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+  if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
     get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
-  endif(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+  endif()
 
   find_path(ENSENSO_INCLUDE_DIR nxLib.h
             HINTS ${ENSENSO_ABI_HINT}
@@ -279,9 +279,9 @@ endmacro(find_ensenso)
 
 #remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
 macro(find_davidSDK)
-  if(NOT davidSDK_ROOT AND ("ON" STREQUAL "ON"))
+  if(NOT davidSDK_ROOT AND ("@HAVE_DAVIDSDK@" STREQUAL "TRUE"))
     get_filename_component(DAVIDSDK_ABI_HINT @DAVIDSDK_INCLUDE_DIR@ PATH)
-  endif(NOT davidSDK_ROOT AND ("ON" STREQUAL "ON"))
+  endif()
 
   find_path(DAVIDSDK_INCLUDE_DIR david.h
             HINTS ${DAVIDSDK_ABI_HINT}
@@ -308,7 +308,7 @@ macro(find_davidSDK)
 endmacro(find_davidSDK)
 
 macro(find_dssdk)
-  if(NOT DSSDK_DIR AND ("@HAVE_DSSDK@" STREQUAL "ON"))
+  if(NOT DSSDK_DIR AND ("@HAVE_DSSDK@" STREQUAL "TRUE"))
     get_filename_component(DSSDK_DIR_HINT "@DSSDK_INCLUDE_DIRS@" PATH)
   endif()
   find_path(DSSDK_DIR include/DepthSenseVersion.hxx
