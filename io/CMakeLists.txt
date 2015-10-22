@@ -139,15 +139,6 @@ if(build)
             )
     endif()
 
-    if(WITH_PXCAPI)
-        set(PXC_GRABBER_INCLUDES
-            include/pcl/io/pxc_grabber.h
-            )
-        set(PXC_GRABBER_SOURCES
-            src/pxc_grabber.cpp
-            )
-    endif()
-
     if(WITH_DSSDK)
         set(DSSDK_GRABBER_INCLUDES
             include/pcl/io/depth_sense_grabber.h
@@ -224,7 +215,6 @@ if(build)
         ${ENSENSO_GRABBER_SOURCES}
         ${DAVIDSDK_GRABBER_SOURCES}
         ${DSSDK_GRABBER_SOURCES}
-        ${PXC_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -271,7 +261,7 @@ if(build)
         ${ENSENSO_GRABBER_INCLUDES}
         ${DAVIDSDK_GRABBER_INCLUDES}
         ${DSSDK_GRABBER_INCLUDES}
-        ${PXC_GRABBER_INCLUDES}
+        "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
         )
 
     set(compression_incs
@@ -345,11 +335,6 @@ if(build)
 
     if(WITH_DAVIDSDK)
       target_link_libraries(${LIB_NAME} ${DAVIDSDK_LIBRARIES})
-    endif()
-
-    if(WITH_PXCAPI)
-      link_directories(${PXCAPI_LIB_DIRS})
-      target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
     endif()
 
     if(WITH_DSSDK)
