@@ -209,7 +209,6 @@ pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::initCompute ()
   if (!normals_)
   {
     PointCloudNPtr normals (new PointCloudN ());
-    normals->reserve (normals->size ());
     if (!surface_->isOrganized ())
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
@@ -241,8 +240,6 @@ template <typename PointInT, typename PointOutT, typename NormalT> void
 pcl::HarrisKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut &output)
 {
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
-
-  response->points.reserve (input_->points.size());
 
   switch (method_)
   {

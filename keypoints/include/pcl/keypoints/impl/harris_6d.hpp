@@ -144,7 +144,6 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
 {
   if (normals_->empty ())
   {
-    normals_->reserve (surface_->size ());
     if (!surface_->isOrganized ())
     {
       pcl::NormalEstimation<PointInT, NormalT> normal_estimation;
@@ -210,7 +209,6 @@ pcl::HarrisKeypoint6D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloud
   }
 
   boost::shared_ptr<pcl::PointCloud<PointOutT> > response (new pcl::PointCloud<PointOutT> ());
-  response->points.reserve (input_->points.size());
   responseTomasi(*response);
 
   // just return the response
