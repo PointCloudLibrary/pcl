@@ -103,6 +103,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalPlane";
+        sample_size_ = 3;
         model_size_ = 4;
       }
 
@@ -118,6 +119,7 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalPlane";
+        sample_size_ = 3;
         model_size_ = 4;
       }
       
@@ -159,6 +161,7 @@ namespace pcl
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
   };
 }

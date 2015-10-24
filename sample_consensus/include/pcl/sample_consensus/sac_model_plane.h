@@ -156,6 +156,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelPlane";
+        sample_size_ = 3;
         model_size_ = 4;
       }
 
@@ -170,6 +171,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelPlane";
+        sample_size_ = 3;
         model_size_ = 4;
       }
       
@@ -252,6 +254,7 @@ namespace pcl
       getModelType () const { return (SACMODEL_PLANE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
     private:

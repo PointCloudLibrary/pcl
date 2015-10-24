@@ -355,14 +355,11 @@ namespace pcl
         return (model_name_);
       }
 
-      /** \brief Return the size of a sample from which a model is computed */
-      inline unsigned int 
-      getSampleSize () const 
-      { 
-        std::map<pcl::SacModel, unsigned int>::const_iterator it = SAC_SAMPLE_SIZE.find (getModelType ());
-        if (it == SAC_SAMPLE_SIZE.end ())
-          throw InvalidSACModelTypeException ("No sample size defined for given model type!\n");
-        return (it->second);
+      /** \brief Return the size of a sample from which the model is computed. */
+      inline unsigned int
+      getSampleSize () const
+      {
+        return sample_size_;
       }
 
       /** \brief Return the number of coefficients in the model. */
@@ -570,6 +567,9 @@ namespace pcl
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
+
+      /** \brief The size of a sample from which the model is computed. Every subclass should initialize this appropriately. */
+      unsigned int sample_size_;
 
       /** \brief The number of coefficients in the model. Every subclass should initialize this appropriately. */
       unsigned int model_size_;

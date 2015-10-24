@@ -93,6 +93,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCylinder";
+        sample_size_ = 2;
         model_size_ = 7;
       }
 
@@ -111,6 +112,7 @@ namespace pcl
         , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCylinder";
+        sample_size_ = 2;
         model_size_ = 7;
       }
 
@@ -242,6 +244,7 @@ namespace pcl
       getModelType () const { return (SACMODEL_CYLINDER); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Get the distance from a point to a line (represented by a point and a direction)

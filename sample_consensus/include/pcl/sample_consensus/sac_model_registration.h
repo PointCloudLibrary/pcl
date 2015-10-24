@@ -85,6 +85,7 @@ namespace pcl
         // Call our own setInputCloud
         setInputCloud (cloud);
         model_name_ = "SampleConsensusModelRegistration";
+        sample_size_ = 3;
         model_size_ = 16;
       }
 
@@ -105,6 +106,7 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
         model_name_ = "SampleConsensusModelRegistration";
+        sample_size_ = 3;
         model_size_ = 16;
       }
       
@@ -217,6 +219,7 @@ namespace pcl
       getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Check if a sample of indices results in a good sample of points
