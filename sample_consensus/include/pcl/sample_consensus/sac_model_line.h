@@ -83,6 +83,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelLine";
+        sample_size_ = 2;
         model_size_ = 6;
       }
 
@@ -97,6 +98,7 @@ namespace pcl
         : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelLine";
+        sample_size_ = 2;
         model_size_ = 6;
       }
       
@@ -179,6 +181,7 @@ namespace pcl
       getModelType () const { return (SACMODEL_LINE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
       using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Check if a sample of indices results in a good sample of points
