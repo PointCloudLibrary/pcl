@@ -344,6 +344,43 @@ macro(find_dssdk)
   endif()
 endmacro(find_dssdk)
 
+macro(find_rssdk)
+  if(NOT RSSDK_DIR AND ("@HAVE_RSSDK@" STREQUAL "TRUE"))
+    get_filename_component(RSSDK_DIR_HINT "@RSSDK_INCLUDE_DIRS@" PATH)
+  endif()
+  find_path(RSSDK_DIR include/pxcversion.h
+            HINTS ${RSSDK_DIR_HINT}
+            PATHS "$ENV{RSSDK_DIR}"
+                  "$ENV{PROGRAMFILES}/Intel/RSSDK"
+                  "$ENV{PROGRAMW6432}/Intel/RSSDK"
+                  "C:/Program Files (x86)/Intel/RSSDK"
+                  "C:/Program Files/Intel/RSSDK"
+            DOC "RealSense SDK directory")
+  set(_RSSDK_INCLUDE_DIRS ${RSSDK_DIR}/include)
+  set(RSSDK_RELEASE_NAME libpxc.lib)
+  set(RSSDK_DEBUG_NAME libpxc_d.lib)
+  find_library(RSSDK_LIBRARY
+               NAMES ${RSSDK_RELEASE_NAME}
+               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
+               PATH_SUFFIXES x64 Win32)
+  find_library(RSSDK_LIBRARY_DEBUG
+               NAMES ${RSSDK_DEBUG_NAME} ${RSSDK_RELEASE_NAME}
+               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
+               PATH_SUFFIXES x64 Win32)
+  if(NOT RSSDK_LIBRARY_DEBUG)
+    set(RSSDK_LIBRARY_DEBUG ${RSSDK_LIBRARY})
+  endif()
+  set(_RSSDK_LIBRARIES optimized ${RSSDK_LIBRARY} debug ${RSSDK_LIBRARY_DEBUG})
+  mark_as_advanced(RSSDK_LIBRARY RSSDK_LIBRARY_DEBUG)
+  find_package_handle_standard_args(RSSDK DEFAULT_MSG _RSSDK_LIBRARIES _RSSDK_INCLUDE_DIRS)
+  if(RSSDK_FOUND)
+    set(RSSDK_LIBRARIES ${_RSSDK_LIBRARIES})
+    mark_as_advanced(RSSDK_LIBRARIES)
+    set(RSSDK_INCLUDE_DIRS ${_RSSDK_INCLUDE_DIRS})
+    mark_as_advanced(RSSDK_INCLUDE_DIRS)
+  endif()
+endmacro(find_rssdk)
+
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
@@ -549,6 +586,8 @@ macro(find_external_library _component _lib _is_optional)
     find_davidSDK()
   elseif("${_lib}" STREQUAL "dssdk")
     find_dssdk()
+  elseif("${_lib}" STREQUAL "rssdk")
+    find_rssdk()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -825,7 +864,7 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)
