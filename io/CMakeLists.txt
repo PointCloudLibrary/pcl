@@ -5,7 +5,7 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk pcap png vtk)
 else(WIN32)
     PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
 endif(WIN32)
@@ -150,6 +150,16 @@ if(build)
         )
     endif()
 
+    if(WITH_RSSDK)
+        set(RSSDK_GRABBER_INCLUDES
+            include/pcl/io/real_sense_grabber.h
+        )
+        set(RSSDK_GRABBER_SOURCES
+            src/real_sense_grabber.cpp
+            src/real_sense/real_sense_device_manager.cpp
+        )
+    endif()
+
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -215,6 +225,7 @@ if(build)
         ${ENSENSO_GRABBER_SOURCES}
         ${DAVIDSDK_GRABBER_SOURCES}
         ${DSSDK_GRABBER_SOURCES}
+        ${RSSDK_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -261,6 +272,7 @@ if(build)
         ${ENSENSO_GRABBER_INCLUDES}
         ${DAVIDSDK_GRABBER_INCLUDES}
         ${DSSDK_GRABBER_INCLUDES}
+        ${RSSDK_GRABBER_INCLUDES}
         "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
         )
 
@@ -339,6 +351,10 @@ if(build)
 
     if(WITH_DSSDK)
       target_link_libraries(${LIB_NAME} ${DSSDK_LIBRARIES})
+    endif()
+
+    if(WITH_RSSDK)
+      target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
     endif()
 
     if (PCAP_FOUND)
