@@ -155,7 +155,7 @@ ON_BOOL32 ON_BrepRegionTopologyUserData::GetDescription( ON_wString& description
 
 ON_OBJECT_IMPLEMENT(ON_BrepFaceSide,ON_Object,"30930370-0D5B-4ee4-8083-BD635C7398A4");
 
-ON_BOOL32 ON_BrepFaceSide::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_BrepFaceSide::IsValid( ON_TextLog* ) const
 {
   return true;
 }
@@ -283,7 +283,7 @@ int ON_BrepFaceSide::SurfaceNormalDirection() const
 
 ON_OBJECT_IMPLEMENT(ON_BrepRegion,ON_Object,"CA7A0092-7EE6-4f99-B9D2-E1D6AA798AA1");
 
-ON_BOOL32 ON_BrepRegion::IsValid( ON_TextLog* text_log ) const
+ON_BOOL32 ON_BrepRegion::IsValid( ON_TextLog* ) const
 {
   return true;
 }

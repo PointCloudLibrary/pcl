@@ -2015,12 +2015,12 @@ bool ON_Brep::ChangeVertex( int old_vi, int new_vi, bool bClearTolerances )
   return true;
 }
 
-ON_BOOL32 ON_BrepEdge::SetStartPoint(ON_3dPoint start_point)
+ON_BOOL32 ON_BrepEdge::SetStartPoint(ON_3dPoint)
 {
   return false;
 }
 
-ON_BOOL32 ON_BrepEdge::SetEndPoint(ON_3dPoint end_point)
+ON_BOOL32 ON_BrepEdge::SetEndPoint(ON_3dPoint)
 {
   return false;
 }
@@ -2065,7 +2065,7 @@ ON_BOOL32 ON_BrepTrim::SetStartPoint(ON_3dPoint point)
   return false;
 }
 
-ON_BOOL32 ON_BrepTrim::SetEndPoint(ON_3dPoint end_point)
+ON_BOOL32 ON_BrepTrim::SetEndPoint(ON_3dPoint)
 {
   return false;
 }
@@ -2119,7 +2119,6 @@ bool ON_Brep::CloseTrimGap( ON_BrepTrim& trim0, ON_BrepTrim& trim1 )
     p.y = p0.y;
 
   int coord0_lock = -1;
-  int coord1_lock = -1;
   switch(trim0.m_iso)
   {
   case ON_Surface::x_iso:
@@ -2144,7 +2143,6 @@ bool ON_Brep::CloseTrimGap( ON_BrepTrim& trim0, ON_BrepTrim& trim1 )
   case ON_Surface::W_iso:
   case ON_Surface::E_iso:
     // vertical iso curve - lock x coordinate
-    coord1_lock = 0;
     switch(coord0_lock)
     {
     case 0:
@@ -2174,7 +2172,6 @@ bool ON_Brep::CloseTrimGap( ON_BrepTrim& trim0, ON_BrepTrim& trim1 )
   case ON_Surface::S_iso:
   case ON_Surface::N_iso:
     // horizontal iso curve - lock y coordinate
-    coord1_lock = 1;
     switch(coord0_lock)
     {
     case 0:

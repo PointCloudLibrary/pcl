@@ -1104,7 +1104,7 @@ int ON_BoundingBox::IsVisible(
   const ON_Xform& bbox2c
   ) const
 {
-  int i,j,k,n;
+  int i,j,k;
   unsigned int all_out, some_out, out;
   double bx,by,bz,x,w;
   const double* p;
@@ -1115,7 +1115,6 @@ int ON_BoundingBox::IsVisible(
   some_out = 0;    // will be != 0 if some portion of box is outside visible region
   all_out  = 0xFFFFFFFF; // will be == 0 if some portion of box is inside visible region
   p = &bbox2c.m_xform[0][0];
-  n = 0; 
   i = 2; bx = m_min.x;
   while(i--)
   {
