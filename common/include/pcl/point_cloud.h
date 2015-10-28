@@ -220,6 +220,21 @@ namespace pcl
           points[i] = pc.points[indices[i]];
       }
 
+      /** \brief Allocate constructor from point vector
+        * \param[in] points_ the vector of points
+        */
+      PointCloud (const std::vector<PointT> &points_)
+          : header ()
+          , points (points_)
+          , width (points_.size ())
+          , height (1)
+          , is_dense (true)
+          , sensor_origin_ (Eigen::Vector4f::Zero ())
+          , sensor_orientation_ (Eigen::Quaternionf::Identity ())
+          , mapping_ ()
+      {
+      }
+
       /** \brief Allocate constructor from point cloud subset
         * \param[in] width_ the cloud width
         * \param[in] height_ the cloud height
