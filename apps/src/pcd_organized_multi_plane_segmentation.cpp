@@ -132,8 +132,6 @@ class PCDOrganizedMultiPlaneSegmentation
       mps.setRefinementComparator (refinement_compare);
       
       std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
-      typename pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
-      typename pcl::PointCloud<PointT>::Ptr approx_contour (new pcl::PointCloud<PointT>);
       char name[1024];
 
       typename pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
@@ -174,13 +172,13 @@ class PCDOrganizedMultiPlaneSegmentation
         sprintf (name, "normal_%d", unsigned (i));
         viewer.addArrow (pt2, pt1, 1.0, 0, 0, std::string (name));
 
-        contour->points = regions[i].getContour ();        
+        pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT> (regions[i].getContour ()));
         sprintf (name, "plane_%02d", int (i));
         pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
         viewer.addPointCloud (contour, color, name);
 
         pcl::approximatePolygon (regions[i], approx_polygon, threshold_, polygon_refinement_);
-        approx_contour->points = approx_polygon.getContour ();
+        pcl::PointCloud<PointT>::Ptr approx_contour (new pcl::PointCloud<PointT> (approx_polygon.getContour ()));
         std::cout << "polygon: " << contour->size () << " -> " << approx_contour->size () << std::endl;
         typename pcl::PointCloud<PointT>::ConstPtr approx_contour_const = approx_contour;
         

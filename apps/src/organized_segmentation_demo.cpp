@@ -20,8 +20,6 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
   unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
   unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
-  pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
-
   for (size_t i = 0; i < regions.size (); i++)
   {
     Eigen::Vector3f centroid = regions[i].getCentroid ();
@@ -32,8 +30,8 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
                                        centroid[2] + (0.5f * model[2]));
     sprintf (name, "normal_%d", unsigned (i));
     viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
-    
-    contour->points = regions[i].getContour ();
+
+    pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT> (regions[i].getContour ()));
     sprintf (name, "plane_%02d", int (i));
     pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i%6], grn[i%6], blu[i%6]);
     if(!viewer->updatePointCloud(contour, color, name))
@@ -135,8 +133,7 @@ bool
 compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<PointT>& cluster)
 {
   Eigen::Vector4f model = region.getCoefficients ();
-  pcl::PointCloud<PointT> poly;
-  poly.points = region.getContour ();
+  pcl::PointCloud<PointT> poly (egion.getContour ());
   
   for (size_t i = 0; i < cluster.points.size (); i++)
   {

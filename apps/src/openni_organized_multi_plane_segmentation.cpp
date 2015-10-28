@@ -132,7 +132,6 @@ class OpenNIOrganizedMultiPlaneSegmentation
       mps.setDistanceThreshold (0.02); //2cm
 
       std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
-      pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
       size_t prev_models_size = 0;
       char name[1024];
 
@@ -176,7 +175,7 @@ class OpenNIOrganizedMultiPlaneSegmentation
             sprintf (name, "normal_%lu", i);
             viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
 
-            contour->points = regions[i].getContour ();
+            pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT> (regions[i].getContour ()));
             sprintf (name, "plane_%02zu", i);
             pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i], grn[i], blu[i]);
             viewer->addPointCloud (contour, color, name);
