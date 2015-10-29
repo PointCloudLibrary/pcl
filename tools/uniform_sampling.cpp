@@ -37,7 +37,7 @@
 
 #include <pcl/PCLPointCloud2.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/voxel_grid.h>
 #include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/console/time.h>
@@ -90,17 +90,16 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   
   print_highlight (stderr, "Computing ");
 
-  UniformSampling<PointXYZ> us;
+  VoxelGrid<PointXYZ> us;
   us.setInputCloud (xyz);
-  us.setRadiusSearch (radius);
-  PointCloud<int> subsampled_indices;
-  us.compute (subsampled_indices);
-  std::sort (subsampled_indices.points.begin (), subsampled_indices.points.end ());
+  us.setLeafSize (radius, radius, radius);
+  PointCloud<PointXYZ> output_;
+  us.filter (output_);
 
-  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", subsampled_indices.width * subsampled_indices.height); print_info (" points]\n");
+  print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", output_.size()); print_info (" points]\n");
 
   // Convert data back
-  copyPointCloud (*input, subsampled_indices.points, output);
+  toPCLPointCloud2 (output_, output);
 }
 
 void
