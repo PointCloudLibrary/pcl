@@ -420,7 +420,7 @@ TEST (PCL, IterativeClosestPoint_PointToPlane)
   reg.setCorrespondenceEstimation (ce);
   // Add rejector
   registration::CorrespondenceRejectorSurfaceNormal::Ptr rej (new registration::CorrespondenceRejectorSurfaceNormal);
-  rej->setThreshold (0); //Could be a lot of rotation -- just make sure they're at least within 0 degrees
+  rej->setThreshold (std::cos(M_PI/8.0)); //Could be a lot of rotation -- just make sure they're at least within pi/8 radians
   reg.addCorrespondenceRejector (rej);
 
   // Register
