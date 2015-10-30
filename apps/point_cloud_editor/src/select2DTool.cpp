@@ -94,7 +94,7 @@ Select2DTool::end (int x, int y, BitMask modifiers, BitMask)
   GLfloat project[16];
   glGetFloatv(GL_PROJECTION_MATRIX, project);
 
-  std::vector<Point3D> ptsvec;
+  Point3DVector ptsvec;
   cloud_ptr_->getDisplaySpacePoints(ptsvec);
   for(unsigned int i = 0; i < ptsvec.size(); ++i)
   {

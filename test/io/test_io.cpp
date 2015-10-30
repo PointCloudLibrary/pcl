@@ -796,7 +796,7 @@ TEST (PCL, ASCIIReader)
   EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
 
-  for(int i=0;i < rcloud.points.size(); i++){
+  for(size_t i=0;i < rcloud.points.size(); i++){
     EXPECT_FLOAT_EQ(cloud.points[i].x, rcloud.points[i].x);
     EXPECT_FLOAT_EQ(cloud.points[i].y,rcloud.points[i].y);
     EXPECT_FLOAT_EQ(cloud.points[i].z, rcloud.points[i].z);
@@ -1148,7 +1148,7 @@ TEST (PCL, Locale)
       std::locale::global (std::locale ("de_DE.UTF-8"));
 #endif
     }
-    catch (std::runtime_error e)
+    catch (const std::runtime_error&)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
@@ -1164,7 +1164,7 @@ TEST (PCL, Locale)
       std::locale::global (std::locale ("en_US.UTF-8"));
 #endif
     }
-    catch (std::runtime_error e)
+    catch (const std::runtime_error&)
     {
       PCL_WARN ("Failed to set locale, skipping test.\n");
     }
@@ -1186,7 +1186,7 @@ TEST (PCL, Locale)
       ASSERT_FLOAT_EQ (cloud2.points[i].z, cloud.points[i].z);
     }
   }
-  catch(std::exception& e)
+  catch (const std::exception&)
   {
   }
 #endif

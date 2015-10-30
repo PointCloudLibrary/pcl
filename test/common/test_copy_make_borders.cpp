@@ -52,14 +52,14 @@ TEST (CopyPointCloud, constant)
   pcl::copyPointCloud (cloud, dst, top, bottom, left, right, pcl::BORDER_CONSTANT, constant);
 
   for (int j = 0; j < top; ++j)
-    for (int i = 0; i < dst.width; ++i)
+    for (uint32_t i = 0; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), constant);
 
-  for (int j = top; j < cloud.height+top; ++j)
+  for (unsigned int j = top; j < cloud.height+top; ++j)
   {
-    for (int i = 0; i < dst.width; ++i)
+    for (uint32_t i = 0; i < dst.width; ++i)
     {
-      if (i < left)
+      if (static_cast<int> (i) < left)
         EXPECT_XYZ_EQ (dst (i,j), constant);
       else
       {
@@ -71,8 +71,8 @@ TEST (CopyPointCloud, constant)
     }
   }
 
-  for (int j = cloud.height+top; j < dst.height; ++j)
-    for (int i = 0; i < dst.width; ++i)
+  for (uint32_t j = cloud.height+top; j < dst.height; ++j)
+    for (uint32_t i = 0; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), constant);
 }
 
@@ -85,17 +85,17 @@ TEST (CopyPointCloud, replicate)
   {
     for (int i = 0; i < left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (0,0));
-    for (int i = left; i < cloud.width+left; ++i)
+    for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,0));
-    for (int i = cloud.width+left; i < dst.width; ++i)
+    for (uint32_t i = cloud.width+left; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,0));
   }
 
-  for (int j = top; j < cloud.height+top; ++j)
+  for (unsigned int j = top; j < cloud.height+top; ++j)
   {
-    for (int i = 0; i < dst.width; ++i)
+    for (uint32_t i = 0; i < dst.width; ++i)
     {
-      if (i < left)
+      if (static_cast<int> (i) < left)
         EXPECT_XYZ_EQ (dst (i,j), cloud (0,j-top));
       else
       {
@@ -107,13 +107,13 @@ TEST (CopyPointCloud, replicate)
     }
   }
 
-  for (int j = cloud.height+top; j < dst.height; ++j)
+  for (uint32_t j = cloud.height+top; j < dst.height; ++j)
   {
     for (int i = 0; i < left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (0,cloud.height-1));
-    for (int i = left; i < cloud.width+left; ++i)
+    for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,cloud.height-1));
-    for (int i = cloud.width+left; i < dst.width; ++i)
+    for (uint32_t i = cloud.width+left; i < dst.width; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (cloud.width-1,cloud.height-1));
   }
 }
@@ -128,19 +128,19 @@ TEST (CopyPointCloud, reflect)
     for (int i = 0, l = left-1; i < left; ++i, --l)
       EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
 
-    for (int i = left; i < cloud.width+left; ++i)
+    for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,k));
 
     for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)
       EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
   }
 
-  for (int j = top; j < cloud.height+top; ++j)
+  for (unsigned int j = top; j < cloud.height+top; ++j)
   {
     for (int i = 0, l = left-1; i < left; ++i, --l)
       EXPECT_XYZ_EQ (dst (i,j), cloud (l, j-top));
 
-    for (int i = left; i < cloud.width + left; ++i)
+    for (unsigned int i = left; i < cloud.width + left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,j-top));
 
     for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)
@@ -152,7 +152,7 @@ TEST (CopyPointCloud, reflect)
     for (int i = 0, l = left-1; i < left; ++i, --l)
       EXPECT_XYZ_EQ (dst (i,j), cloud (l, k));
 
-    for (int i = left; i < cloud.width+left; ++i)
+    for (unsigned int i = left; i < cloud.width+left; ++i)
       EXPECT_XYZ_EQ (dst (i,j), cloud (i-left,k));
 
     for (int i = cloud.width+left, l = cloud.width-left; i < left; ++i, --l)

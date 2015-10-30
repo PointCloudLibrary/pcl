@@ -67,7 +67,7 @@ pcl::visualization::PointCloudColorHandlerCustom<pcl::PCLPointCloud2>::getColor 
     colors[cp * 3 + 1] = static_cast<unsigned char> (g_);
     colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
   return (true);
 }
 
@@ -99,7 +99,7 @@ pcl::visualization::PointCloudColorHandlerRandom<pcl::PCLPointCloud2>::getColor 
     colors[cp * 3 + 1] = static_cast<unsigned char> (g_);
     colors[cp * 3 + 2] = static_cast<unsigned char> (b_);
   }
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0);
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * nr_points, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
   return (true);
 }
 
@@ -189,7 +189,7 @@ pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2>::getColo
     }
   }
   if (j != 0)
-    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0);
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
   else
     reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (0);
   //delete [] colors;
@@ -416,7 +416,7 @@ pcl::visualization::PointCloudColorHandlerHSVField<pcl::PCLPointCloud2>::getColo
     }
   }
   // Set array takes over allocation (Set save to 1 to keep the class from deleting the array when it cleans up or reallocates memory.)
-  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0);
+  reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, 3 * j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
   return (true);
 }
 
@@ -493,7 +493,7 @@ pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2>::get
       j++;
     }
   }
-  reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetArray (colors, j, 0);
+  reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetArray (colors, j, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
   return (true);
 }
 
@@ -576,7 +576,110 @@ pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PCLPointCloud2>::getCol
     }
   }
   if (j != 0)
-    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0);
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
+  else
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (0);
+  //delete [] colors;
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::PointCloudColorHandlerLabelField (const pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloudConstPtr &cloud,
+                                                                                                             const bool static_mapping)
+: pcl::visualization::PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloudColorHandler (cloud)
+{
+  field_idx_ = pcl::getFieldIndex (*cloud, "label");
+  if (field_idx_ != -1)
+    capable_ = true;
+  else
+    capable_ = false;
+  static_mapping_ = static_mapping;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_ || !cloud_)
+    return (false);
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  scalars->SetNumberOfComponents (3);
+
+  vtkIdType nr_points = cloud_->width * cloud_->height;
+  reinterpret_cast<vtkUnsignedCharArray*> (&(*scalars))->SetNumberOfTuples (nr_points);
+  // Allocate enough memory to hold all colors
+  unsigned char* colors = new unsigned char[nr_points * 3];
+
+  int j = 0;
+  int point_offset = cloud_->fields[field_idx_].offset;
+  const int field_size = pcl::getFieldSize (cloud_->fields[field_idx_].datatype);
+
+
+  std::map<uint32_t, pcl::RGB> colormap;
+  if (!static_mapping_)
+  {
+    std::set<uint32_t> labels;
+    // First pass: find unique labels
+    for (vtkIdType i = 0; i < nr_points; ++i, point_offset += cloud_->point_step)
+    {
+      uint32_t label;
+      memcpy (&label, &cloud_->data[point_offset], field_size);
+      labels.insert (label);
+    }
+
+    // Assign Glasbey colors in ascending order of labels
+    size_t color = 0;
+    for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
+      colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
+  }
+  // If XYZ present, check if the points are invalid
+  int x_idx = pcl::getFieldIndex (*cloud_, "x");
+  point_offset = cloud_->fields[field_idx_].offset;
+  if (x_idx != -1)
+  {
+    float x_data, y_data, z_data;
+    int x_point_offset = cloud_->fields[x_idx].offset;
+
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp,
+                                           point_offset += cloud_->point_step,
+                                           x_point_offset += cloud_->point_step)
+    {
+      uint32_t label;
+      memcpy (&label, &cloud_->data[point_offset], field_size);
+
+      memcpy (&x_data, &cloud_->data[x_point_offset], sizeof (float));
+      memcpy (&y_data, &cloud_->data[x_point_offset + sizeof (float)], sizeof (float));
+      memcpy (&z_data, &cloud_->data[x_point_offset + 2 * sizeof (float)], sizeof (float));
+
+      if (!pcl_isfinite (x_data) || !pcl_isfinite (y_data) || !pcl_isfinite (z_data))
+        continue;
+      const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (label % GlasbeyLUT::size ()) : colormap[label];
+      colors[j    ] = color.r;
+      colors[j + 1] = color.g;
+      colors[j + 2] = color.b;
+      j += 3;
+    }
+  }
+  // No XYZ data checks
+  else
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp, point_offset += cloud_->point_step)
+    {
+      uint32_t label;
+      memcpy (&label, &cloud_->data[point_offset], field_size);
+      const pcl::RGB& color = static_mapping_ ? GlasbeyLUT::at (label % GlasbeyLUT::size ()) : colormap[label];
+      colors[j    ] = color.r;
+      colors[j + 1] = color.g;
+      colors[j + 2] = color.b;
+      j += 3;
+    }
+  }
+  if (j != 0)
+    reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetArray (colors, j, 0, vtkUnsignedCharArray::VTK_DATA_ARRAY_DELETE);
   else
     reinterpret_cast<vtkUnsignedCharArray*>(&(*scalars))->SetNumberOfTuples (0);
   //delete [] colors;
@@ -702,7 +805,7 @@ pcl::visualization::PointCloudGeometryHandlerCustom<pcl::PCLPointCloud2>::PointC
 
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, (pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBL))
+  PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, (pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZL)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZRGBL)(pcl::PointWithRange))
   PCL_INSTANTIATE(PointCloudGeometryHandlerSurfaceNormal, (pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(PointCloudGeometryHandlerXYZ, PCL_XYZ_POINT_TYPES)

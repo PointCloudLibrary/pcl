@@ -63,7 +63,7 @@ namespace pcl
         typedef boost::chrono::high_resolution_clock::time_point Timestamp;
 
         /** \brief Constructor
-          * \param[in] depth_meta_data the actual data from the OpenNI library
+          * \param[in] depth_metadata the actual data from the OpenNI library
           * \param[in] baseline the baseline of the "stereo" camera, i.e. the distance between the projector and the IR camera for
           *        Primesense like cameras. e.g. 7.5cm for PSDK5 and PSDK6 reference design.
           * \param[in] focal_length focal length of the "stereo" frame.

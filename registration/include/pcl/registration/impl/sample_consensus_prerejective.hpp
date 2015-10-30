@@ -220,7 +220,6 @@ pcl::SampleConsensusPrerejective<PointSource, PointTarget, FeatureT>::computeTra
   {
     getFitness (inliers, error);
     inlier_fraction = static_cast<float> (inliers.size ()) / static_cast<float> (input_->size ());
-    error /= static_cast<float> (inliers.size ());
     
     if (inlier_fraction >= inlier_fraction_ && error < lowest_error)
     {

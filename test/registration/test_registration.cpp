@@ -203,6 +203,7 @@ TEST (PCL, IterativeClosestPoint)
 void
 sampleRandomTransform (Eigen::Affine3f &trans, float max_angle, float max_trans)
 {
+    srand(0);
     // Sample random transform
     Eigen::Vector3f axis((float)rand() / RAND_MAX, (float)rand() / RAND_MAX, (float)rand() / RAND_MAX);
     axis.normalize();

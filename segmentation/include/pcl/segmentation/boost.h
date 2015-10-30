@@ -45,6 +45,7 @@
 #pragma GCC system_header 
 #endif
 
+#ifndef Q_MOC_RUN
 // Marking all Boost headers as system headers to remove warnings
 #include <boost/version.hpp>
 #include <boost/make_shared.hpp>
@@ -55,6 +56,6 @@
 #if (BOOST_VERSION >= 104400) 
   #include <boost/graph/boykov_kolmogorov_max_flow.hpp>
 #endif 
-
+#endif
 
 #endif    // PCL_SEGMENTATION_BOOST_H_

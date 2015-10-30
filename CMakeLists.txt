@@ -1,8 +1,18 @@
 ### ---[ PCL global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
+if(POLICY CMP0017)
+  # Do not include files in CMAKE_MODULE_PATH from files
+  # in CMake module directory. Fix MXE build
+  cmake_policy(SET CMP0017 NEW)
+endif()
+
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
+endif()
+
+if(POLICY CMP0054)
+  cmake_policy(SET CMP0054 OLD) # Silent warnings about quoted variables
 endif()
 
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "possible configurations" FORCE)
@@ -64,12 +74,6 @@ MARK_AS_ADVANCED(
 SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
-
-# ---[ Android check
-if (ANDROID)
-  set (PCL_SHARED_LIBS OFF)
-  message ("PCL shared libs on Android must be: ${PCL_SHARED_LIBS}")
-endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
@@ -223,20 +227,29 @@ if(OPENMP_FOUND)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
   message (STATUS "Found OpenMP")
-  if(MSVC90 OR MSVC10)
+  if(MSVC)
     if(MSVC90)
       set(OPENMP_DLL VCOMP90)
     elseif(MSVC10)
       set(OPENMP_DLL VCOMP100)
+    elseif(MSVC11)
+      set(OPENMP_DLL VCOMP110)
+    elseif(MSVC12)
+      set(OPENMP_DLL VCOMP120)
+    elseif(MSVC14)
+      set(OPENMP_DLL VCOMP140)
     endif(MSVC90)
-    set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DELAYLOAD:${OPENMP_DLL}D.dll")
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DELAYLOAD:${OPENMP_DLL}.dll")
-  endif(MSVC90 OR MSVC10)
+    if(OPENMP_DLL)
+      set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "${CMAKE_SHARED_LINKER_FLAGS_DEBUG} /DELAYLOAD:${OPENMP_DLL}D.dll")
+      set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DELAYLOAD:${OPENMP_DLL}.dll")
+    else(OPENMP_DLL)
+      message(WARNING "Delay loading flag for OpenMP DLL is invalid.")
+    endif(OPENMP_DLL)
+  endif(MSVC)
 else(OPENMP_FOUND)
   message (STATUS "Not found OpenMP")
 endif()
-# Boost (required)
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
+
 # Eigen (required)
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
@@ -258,45 +271,14 @@ if(WITH_LIBUSB)
   endif(LIBUSB_1_FOUND)
 endif(WITH_LIBUSB)
 
-# OpenNI
-option(WITH_OPENNI "OpenNI driver support" TRUE)
-if(WITH_OPENNI)
-  find_package(OpenNI)
-  if (OPENNI_FOUND)
-    set(HAVE_OPENNI ON)
-    include_directories(SYSTEM ${OPENNI_INCLUDE_DIRS})
-  endif(OPENNI_FOUND)
-endif(WITH_OPENNI)
-
-# OpenNI 2
-option(WITH_OPENNI2 "OpenNI 2 driver support" TRUE)
-if(WITH_OPENNI2)
-  find_package(OpenNI2)
-  if (OPENNI2_FOUND)
-    set(HAVE_OPENNI2 ON)
-    include_directories(SYSTEM ${OPENNI2_INCLUDE_DIRS})
-  endif(OPENNI2_FOUND)
-endif(WITH_OPENNI2)
-
-# Fotonic (FZ_API)
-option(WITH_FZAPI "Build Fotonic Camera support" TRUE)
-if(WITH_FZAPI)
-  find_package(FZAPI)
-  if (FZAPI_FOUND)
-    set(HAVE_FZAPI ON)
-    include_directories(SYSTEM "${FZAPI_INCLUDE_DIR}")
-  endif(FZAPI_FOUND)
-endif(WITH_FZAPI)
-
-# Intel Perceptional Computing Interface (PXCAPI)
-option(WITH_PXCAPI "Build PXC Device support" TRUE)
-if(WITH_PXCAPI)
-  find_package(PXCAPI)
-  if (PXCAPI_FOUND)
-    set(HAVE_PXCAPI ON)
-    include_directories(SYSTEM ${PXCAPI_INCLUDE_DIRS})
-  endif(PXCAPI_FOUND)
-endif(WITH_PXCAPI)
+# Dependencies for different grabbers
+PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
+PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
+PCL_ADD_GRABBER_DEPENDENCY("FZAPI" "Fotonic camera support")
+PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
+PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
+PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
+PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
 
 # metslib
 if (PKG_CONFIG_FOUND)
@@ -328,6 +310,9 @@ if(WITH_QHULL)
     set(QHULL_USE_STATIC ON)
   endif(NOT PCL_SHARED_LIBS OR WIN32)
   find_package(Qhull)
+  if(QHULL_FOUND)
+    include_directories(${QHULL_INCLUDE_DIRS})
+  endif(QHULL_FOUND)
 endif(WITH_QHULL)
 
 # Cuda
@@ -338,16 +323,17 @@ endif(WITH_CUDA)
 
 option(WITH_QT "Build QT Front-End" TRUE)
 if(WITH_QT)
-  # Find Qt4
-  find_package(Qt4)
-  if (QT4_FOUND)
-    include("${QT_USE_FILE}")
-  endif (QT4_FOUND)
-
-  # Find QT5
-  if(NOT QT4_FOUND)
-      include(cmake/pcl_find_qt5.cmake)
-  endif(NOT QT4_FOUND)
+  set(PCL_QT_VERSION 5 CACHE STRING "Which QT version to use")
+  if("${PCL_QT_VERSION}" STREQUAL "4")
+    find_package(Qt4)
+    if (QT4_FOUND)
+      include("${QT_USE_FILE}")
+    endif (QT4_FOUND)
+  elseif("${PCL_QT_VERSION}" STREQUAL "5")
+    include(cmake/pcl_find_qt5.cmake)
+  else()
+    message(SEND_ERROR "PCL_QT_VERSION must be 4 or 5")
+  endif()
 endif(WITH_QT)
 
 # Find VTK
@@ -392,7 +378,13 @@ if(WITH_PCAP)
 endif(WITH_PCAP)
 
 # OpenGL and GLUT
-include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
+option(WITH_OPENGL "Support for OpenGL" TRUE)
+if(WITH_OPENGL)
+  include("${PCL_SOURCE_DIR}/cmake/pcl_find_gl.cmake")
+endif(WITH_OPENGL)
+
+# Boost (required)
+include("${PCL_SOURCE_DIR}/cmake/pcl_find_boost.cmake")
 
 ### ---[ Create the config.h file
 set(pcl_config_h_in "${CMAKE_CURRENT_SOURCE_DIR}/pcl_config.h.in")
@@ -441,3 +433,4 @@ MAKE_DEP_GRAPH()
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
+

@@ -132,5 +132,5 @@ After few seconds, tracking will start working and you can move tracking object 
 
 More Advanced
 -------------
-If you want to see more flexible and useful tracking code which starts tracking without preparing to make segemented model beforehand, you should refer a tracking code  https://github.com/aginika/pcl/blob/master/apps/src/openni_tracking.cpp. It will show you better and more legible code. The above Figures  are windows when you implement that code.
+If you want to see more flexible and useful tracking code which starts tracking without preparing to make segemented model beforehand, you should refer a tracking code  https://github.com/PointCloudLibrary/pcl/blob/master/apps/src/openni_tracking.cpp. It will show you better and more legible code. The above Figures  are windows when you implement that code.
 

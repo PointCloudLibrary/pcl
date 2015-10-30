@@ -429,6 +429,12 @@ namespace pcl
         bool
         removeAllShapes (int viewport = 0);
 
+        /** \brief Removes  all existing 3D axes (coordinate systems)
+          * \param[in] viewport view port where the 3D axes should be removed from (default: all)
+          */
+        bool
+        removeAllCoordinateSystems (int viewport = 0);
+
         /** \brief Set the viewport's background color.
           * \param[in] r the red component of the RGB color
           * \param[in] g the green component of the RGB color
@@ -573,6 +579,18 @@ namespace pcl
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
 
+        /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this vizualizer.
+          * \param[in] id the id of the cloud, shape, or coordinate to check
+          * \return true if a cloud, shape, or coordinate with the specified id was found
+          */
+        inline bool
+        contains(const std::string &id) const
+        {
+          return (cloud_actor_map_->find (id) != cloud_actor_map_->end () ||
+                  shape_actor_map_->find (id) != shape_actor_map_->end () ||
+                  coordinate_actor_map_->find (id) != coordinate_actor_map_-> end());
+        }
+
         /** \brief Add the estimated surface normals of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing XYZ data and normals
           * \param[in] level display only every level'th point (default: 100)
@@ -600,6 +618,21 @@ namespace pcl
                               const std::string &id = "cloud", int viewport = 0);
 
         /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset containing the XYZ data and normals
+          * \param[in] pcs the input point cloud dataset containing the principal curvatures data
+          * \param[in] level display only every level'th point. Default: 100
+          * \param[in] scale the normal arrow scale. Default: 1.0
+          * \param[in] id the point cloud object id. Default: "cloud"
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        template <typename PointNT> bool
+        addPointCloudPrincipalCurvatures (
+            const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+            int level = 100, float scale = 1.0f,
+            const std::string &id = "cloud", int viewport = 0);
+        
+        /** \brief Add the estimated principal curvatures of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing the XYZ data
           * \param[in] normals the input point cloud dataset containing the normal data
           * \param[in] pcs the input point cloud dataset containing the principal curvatures data
@@ -608,10 +641,10 @@ namespace pcl
           * \param[in] id the point cloud object id. Default: "cloud"
           * \param[in] viewport the view port where the Point Cloud should be added (default: all)
           */
-        bool
+        template <typename PointT, typename PointNT> bool
         addPointCloudPrincipalCurvatures (
-            const pcl::PointCloud<pcl::PointXYZ>::ConstPtr &cloud,
-            const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+            const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+            const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
             const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
             int level = 100, float scale = 1.0f,
             const std::string &id = "cloud", int viewport = 0);
@@ -858,8 +891,21 @@ namespace pcl
         addPointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud,
                        const std::string &id = "cloud", int viewport = 0)
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA> color_handler (cloud);
           return (addPointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id, viewport));
+        }
+
+        /** \brief Add a PointXYZL Point Cloud to screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud should be added (default: all)
+          */
+        inline bool
+        addPointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                       const std::string &id = "cloud", int viewport = 0)
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (addPointCloud<pcl::PointXYZL> (cloud, color_handler, id, viewport));
         }
 
         /** \brief Updates the XYZ data for an existing cloud object id on screen.
@@ -896,8 +942,21 @@ namespace pcl
         updatePointCloud (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud,
                           const std::string &id = "cloud")
         {
-          pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGBA> color_handler (cloud);
+          pcl::visualization::PointCloudColorHandlerRGBAField<pcl::PointXYZRGBA> color_handler (cloud);
           return (updatePointCloud<pcl::PointXYZRGBA> (cloud, color_handler, id));
+        }
+
+        /** \brief Updates the XYZL data for an existing cloud object id on screen.
+          * \param[in] cloud the input point cloud dataset
+          * \param[in] id the point cloud object id to update (default: cloud)
+          * \return false if no cloud with the specified ID was found
+          */
+        inline bool
+        updatePointCloud (const pcl::PointCloud<pcl::PointXYZL>::ConstPtr &cloud,
+                          const std::string &id = "cloud")
+        {
+          pcl::visualization::PointCloudColorHandlerLabelField<pcl::PointXYZL> color_handler (cloud);
+          return (updatePointCloud<pcl::PointXYZL> (cloud, color_handler, id));
         }
 
         /** \brief Add a PolygonMesh object to screen
@@ -983,6 +1042,7 @@ namespace pcl
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
           * \param[in] viewport the view port where the correspondences should be added (default: all)
+          * \param[in] overwrite allow to overwrite already existing correspondences
           */
         template <typename PointT> bool
         addCorrespondences (const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
@@ -990,7 +1050,8 @@ namespace pcl
                             const pcl::Correspondences &correspondences,
                             int nth,
                             const std::string &id = "correspondences",
-                            int viewport = 0);
+                            int viewport = 0,
+                            bool overwrite = false);
 
         /** \brief Add the specified correspondences to the display.
           * \param[in] source_points The source points
@@ -1017,6 +1078,7 @@ namespace pcl
           * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
           * \param[in] nth display only the Nth correspondence (e.g., skip the rest)
           * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
           */
         template <typename PointT> bool
         updateCorrespondences (
@@ -1024,7 +1086,28 @@ namespace pcl
             const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
             const pcl::Correspondences &correspondences,
             int nth,
-            const std::string &id = "correspondences");
+            const std::string &id = "correspondences",
+            int viewport = 0);
+
+        /** \brief Update the specified correspondences to the display.
+          * \param[in] source_points The source points
+          * \param[in] target_points The target points
+          * \param[in] correspondences The mapping from source points to target points. Each element must be an index into target_points
+          * \param[in] id the polygon object id (default: "correspondences")
+          * \param[in] viewport the view port where the correspondences should be updated (default: all)
+          */
+        template <typename PointT> bool
+        updateCorrespondences (
+            const typename pcl::PointCloud<PointT>::ConstPtr &source_points,
+            const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
+            const pcl::Correspondences &correspondences,
+            const std::string &id = "correspondences",
+            int viewport = 0)
+        {
+          // If Nth not given, display all correspondences
+          return (updateCorrespondences<PointT> (source_points, target_points,
+                                              correspondences, 1, id, viewport));
+        }
 
         /** \brief Remove the specified correspondences from the display.
           * \param[in] id the polygon correspondences object id (i.e., given on \ref addCorrespondences)
@@ -1059,6 +1142,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the point cloud object id (default: cloud)
           * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
           */
         bool
         setPointCloudRenderingProperties (int property, double val1, double val2, double val3,
@@ -1069,6 +1153,7 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the point cloud object id (default: cloud)
          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setPointCloudRenderingProperties (int property, double value,
@@ -1078,6 +1163,7 @@ namespace pcl
          * \param[in] property the property type
          * \param[in] value the resultant property value
          * \param[in] id the point cloud object id (default: cloud)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         getPointCloudRenderingProperties (int property, double &value,
@@ -1095,6 +1181,8 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the shape object id
          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+         * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setShapeRenderingProperties (int property, double value,
@@ -1107,6 +1195,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the shape object id
           * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
           */
          bool
          setShapeRenderingProperties (int property, double val1, double val2, double val3,
@@ -1254,11 +1343,11 @@ namespace pcl
           * \param[in] id the line id/name (default: "arrow")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
-	      template <typename P1, typename P2> bool
-	      addArrow (const P1 &pt1, const P2 &pt2,
-		              double r_line, double g_line, double b_line,
-		              double r_text, double g_text, double b_text,
-		              const std::string &id = "arrow", int viewport = 0);
+              template <typename P1, typename P2> bool
+              addArrow (const P1 &pt1, const P2 &pt2,
+                              double r_line, double g_line, double b_line,
+                              double r_text, double g_text, double b_text,
+                              const std::string &id = "arrow", int viewport = 0);
 
 
         /** \brief Add a sphere shape from a point and a radius
@@ -1480,7 +1569,7 @@ namespace pcl
                    int viewport = 0);
 
         /** \brief Add a cone from a set of given model coefficients
-          * \param[in] coefficients the model coefficients (point_on_axis, axis_direction, radiu)
+          * \param[in] coefficients the model coefficients (see \ref pcl::visualization::createCone)
           * \param[in] id the cone id/name (default: "cone")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
@@ -1490,7 +1579,7 @@ namespace pcl
                  int viewport = 0);
 
         /** \brief Add a cube from a set of given model coefficients
-          * \param[in] coefficients the model coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
+          * \param[in] coefficients the model coefficients (see \ref pcl::visualization::createCube)
           * \param[in] id the cube id/name (default: "cube")
           * \param[in] viewport (optional) the id of the new viewport (default: 0)
           */
@@ -1774,6 +1863,12 @@ namespace pcl
           */
         void
         setUseVbos (bool use_vbos);
+
+        /** \brief Set the ID of a cloud or shape to be used for LUT display
+          * \param[in] id The id of the cloud/shape look up table to be displayed
+          * The look up table is displayed by pressing 'u' in the PCLVisualizer */
+        void
+        setLookUpTableID (const std::string id);
 
         /** \brief Create the internal Interactor object. */
         void

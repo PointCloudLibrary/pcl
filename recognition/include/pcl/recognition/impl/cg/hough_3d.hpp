@@ -177,7 +177,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
     return (false);
   }
 
-  std::vector<Eigen::Vector3d> scene_votes (n_matches);
+  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > scene_votes (n_matches);
   Eigen::Vector3d d_min, d_max, bin_size;
 
   d_min.setConstant (std::numeric_limits<double>::max ());

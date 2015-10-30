@@ -48,22 +48,6 @@
 #include <pcl/exceptions.h>
 #include <iostream>
 
-namespace pcl
-{
-  typedef union
-  {
-    struct
-    {
-      unsigned char Blue;
-      unsigned char Green;
-      unsigned char Red;
-      unsigned char Alpha;
-    };
-    float float_value;
-    uint32_t long_value;
-  } RGBValue;
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 pcl::OpenNIGrabber::OpenNIGrabber (const std::string& device_id, const Mode& depth_mode, const Mode& image_mode)
   : rgb_sync_ ()
@@ -140,7 +124,7 @@ pcl::OpenNIGrabber::~OpenNIGrabber () throw ()
       device_->unregisterImageCallback (image_callback_handle);
 
     if (device_->hasIRStream ())
-      device_->unregisterIRCallback (image_callback_handle);
+      device_->unregisterIRCallback (ir_callback_handle);
 
     // release the pointer to the device object
     device_.reset ();
@@ -613,11 +597,6 @@ pcl::OpenNIGrabber::convertToXYZPointCloud (const boost::shared_ptr<openni_wrapp
       pt.y = (static_cast<float> (v) - centerY) * pt.z * constant_y;
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0f;
-  cloud->sensor_orientation_.x () = 0.0f;
-  cloud->sensor_orientation_.y () = 0.0f;
-  cloud->sensor_orientation_.z () = 0.0f;  
   return (cloud);
 }
 
@@ -637,22 +616,22 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   cloud->points.resize (cloud->height * cloud->width);
 
   //float constant = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_x = 1.0f / device_->getImageFocalLength (depth_width_);
-  register float constant_y = 1.0f / device_->getImageFocalLength (depth_width_);
+  register float constant_x = 1.0f / device_->getDepthFocalLength (depth_width_);
+  register float constant_y = 1.0f / device_->getDepthFocalLength (depth_width_);
   register float centerX = ((float)cloud->width - 1.f) / 2.f;
   register float centerY = ((float)cloud->height - 1.f) / 2.f;
 
-  if (pcl_isfinite (rgb_focal_length_x_))
-    constant_x =  1.0f / static_cast<float> (rgb_focal_length_x_);
+  if (pcl_isfinite (depth_focal_length_x_))
+    constant_x =  1.0f / static_cast<float> (depth_focal_length_x_);
 
-  if (pcl_isfinite (rgb_focal_length_y_))
-    constant_y =  1.0f / static_cast<float> (rgb_focal_length_y_);
+  if (pcl_isfinite (depth_focal_length_y_))
+    constant_y =  1.0f / static_cast<float> (depth_focal_length_y_);
   
-  if (pcl_isfinite (rgb_principal_point_x_))
-    centerX =  static_cast<float> (rgb_principal_point_x_);
+  if (pcl_isfinite (depth_principal_point_x_))
+    centerX =  static_cast<float> (depth_principal_point_x_);
   
-  if (pcl_isfinite (rgb_principal_point_y_))
-    centerY =  static_cast<float> (rgb_principal_point_y_);
+  if (pcl_isfinite (depth_principal_point_y_))
+    centerY =  static_cast<float> (depth_principal_point_y_);
 
   register const XnDepthPixel* depth_map = depth_image->getDepthMetaData ().Data ();
   if (depth_image->getWidth () != depth_width_ || depth_image->getHeight() != depth_height_)
@@ -683,7 +662,7 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     PointT pt;
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
-    pt.a = 255; // point has no color info -> alpha = max => transparent 
+    pt.a = 0; // point has no color info -> alpha = min => transparent
     cloud->points.assign (cloud->points.size (), pt);
   }
   
@@ -722,8 +701,6 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
   
   value_idx = 0;
   point_idx = 0;
-  RGBValue color;
-  color.Alpha = 0;
 
   for (unsigned yIdx = 0; yIdx < image_height_; ++yIdx, point_idx += skip)
   {
@@ -731,18 +708,11 @@ pcl::OpenNIGrabber::convertToXYZRGBPointCloud (const boost::shared_ptr<openni_wr
     {
       PointT& pt = cloud->points[point_idx];
       
-      color.Red   = rgb_buffer[value_idx];
-      color.Green = rgb_buffer[value_idx + 1];
-      color.Blue  = rgb_buffer[value_idx + 2];
-      
-      pt.rgba = color.long_value;
+      pt.r = rgb_buffer[value_idx];
+      pt.g = rgb_buffer[value_idx + 1];
+      pt.b = rgb_buffer[value_idx + 2];
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0;
-  cloud->sensor_orientation_.x () = 0.0;
-  cloud->sensor_orientation_.y () = 0.0;
-  cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
 }
 
@@ -824,11 +794,6 @@ pcl::OpenNIGrabber::convertToXYZIPointCloud (const boost::shared_ptr<openni_wrap
       pt.intensity = static_cast<float> (ir_map[depth_idx]);
     }
   }
-  cloud->sensor_origin_.setZero ();
-  cloud->sensor_orientation_.w () = 1.0;
-  cloud->sensor_orientation_.x () = 0.0;
-  cloud->sensor_orientation_.y () = 0.0;
-  cloud->sensor_orientation_.z () = 0.0;
   return (cloud);
 }
 

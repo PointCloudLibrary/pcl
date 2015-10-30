@@ -10,6 +10,13 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
+DOWNLOAD_DIR=$HOME/download
+
+export FLANN_ROOT=$HOME/flann
+export VTK_DIR=$HOME/vtk
+export QHULL_ROOT=$HOME/qhull
+export DOXYGEN_DIR=$HOME/doxygen
+
 function build ()
 {
   case $CC in
@@ -69,29 +76,29 @@ function test ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS -DPCL_ONLY_CORE_POINT_TYPES=ON -DBUILD_global_tests=ON -DPCL_NO_PRECOMPILE=ON $PCL_DIR
+  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
+        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_global_tests=ON \
+        -DPCL_NO_PRECOMPILE=ON \
+        $PCL_DIR
   # Build and run tests
-  make pcl_filters -j3
-  make test_filters
-  make pcl_registration -j3
-  make test_registration
-  make test_registration_api
-  make tests -j3
+  make tests
 }
 
 function doc ()
 {
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
-  # Install doxygen and sphinx
-  sudo apt-get install doxygen doxygen-latex graphviz python-pip texlive-latex-base dvipng
-  sudo pip install sphinx sphinxcontrib-doxylink
+  # Add installed doxygen to path and install sphinx
+  export PATH=$DOXYGEN_DIR/bin:$PATH
+  pip install --user sphinx sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
         -DSPHINX_HTML_FILE_SUFFIX=php \
-        -DWITH_DOCS=1 \
-        -DWITH_TUTORIALS=1 \
+        -DWITH_DOCS=ON \
+        -DWITH_TUTORIALS=ON \
         $PCL_DIR
 
   git config --global user.email "documentation@pointclouds.org"
@@ -121,14 +128,205 @@ function doc ()
     # Commit and push
     cd $DOC_DIR
     git add --all
-    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT"
+    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT" -q
     git push --force
   else
     exit 2
   fi
 }
 
-case $TASK in
+function install_flann()
+{
+  local pkg_ver=1.8.4
+  local pkg_file="flann-${pkg_ver}-src"
+  local pkg_url="http://people.cs.ubc.ca/~mariusm/uploads/FLANN/${pkg_file}.zip"
+  local pkg_md5sum="a0ecd46be2ee11a68d2a7d9c6b4ce701"
+  local FLANN_DIR=$HOME/flann
+  local config=$FLANN_DIR/include/flann/config.h
+  echo "Installing FLANN ${pkg_ver}"
+  if [[ -d $FLANN_DIR ]]; then
+    if [[ -e ${config} ]]; then
+      local version=`grep -Po "(?<=FLANN_VERSION_ \").*(?=\")" ${config}`
+      if [[ "$version" = "$pkg_ver" ]]; then
+        local modified=`stat -c %y ${config} | cut -d ' ' -f1`
+        echo " > Found cached installation of FLANN"
+        echo " > Version ${pkg_ver}, built on ${modified}"
+        return 0
+      fi
+    fi
+  fi
+  download ${pkg_url} ${pkg_md5sum}
+  if [[ $? -ne 0 ]]; then
+    return $?
+  fi
+  unzip -qq pkg
+  cd ${pkg_file}
+  mkdir build && cd build
+  cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=$FLANN_DIR \
+    -DBUILD_MATLAB_BINDINGS=OFF \
+    -DBUILD_PYTHON_BINDINGS=OFF \
+    -DBUILD_CUDA_LIB=OFF \
+    -DBUILD_C_BINDINGS=OFF \
+    -DUSE_OPENMP=OFF
+  make -j2 && make install && touch ${config}
+  return $?
+}
+
+function install_vtk()
+{
+  local pkg_ver=5.10.1
+  local pkg_file="vtk-${pkg_ver}"
+  local pkg_url="http://www.vtk.org/files/release/${pkg_ver:0:4}/${pkg_file}.tar.gz"
+  local pkg_md5sum="264b0052e65bd6571a84727113508789"
+  local VTK_DIR=$HOME/vtk
+  local config=$VTK_DIR/include/vtk-${pkg_ver:0:4}/vtkConfigure.h
+  echo "Installing VTK ${pkg_ver}"
+  if [[ -d $VTK_DIR ]]; then
+    if [[ -e ${config} ]]; then
+      local version=`grep -Po "(?<=VTK_VERSION \").*(?=\")" ${config}`
+      if [[ "$version" = "$pkg_ver" ]]; then
+        local modified=`stat -c %y ${config} | cut -d ' ' -f1`
+        echo " > Found cached installation of VTK"
+        echo " > Version ${pkg_ver}, built on ${modified}"
+        return 0
+      fi
+    fi
+  fi
+  download ${pkg_url} ${pkg_md5sum}
+  if [[ $? -ne 0 ]]; then
+    return $?
+  fi
+  tar xzf pkg
+  cd "VTK${pkg_ver}"
+  mkdir build && cd build
+  cmake .. \
+    -Wno-dev \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_INSTALL_PREFIX=$VTK_DIR \
+    -DBUILD_DOCUMENTATION=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_TESTING=OFF \
+    -DVTK_USE_BOOST=ON \
+    -DVTK_USE_CHARTS=ON \
+    -DVTK_USE_VIEWS=ON \
+    -DVTK_USE_RENDERING=ON \
+    -DVTK_USE_CHEMISTRY=OFF \
+    -DVTK_USE_HYBRID=OFF \
+    -DVTK_USE_PARALLEL=OFF \
+    -DVTK_USE_PATENTED=OFF \
+    -DVTK_USE_INFOVIS=ON \
+    -DVTK_USE_GL2PS=OFF \
+    -DVTK_USE_MYSQL=OFF \
+    -DVTK_USE_FFMPEG_ENCODER=OFF \
+    -DVTK_USE_TEXT_ANALYSIS=OFF \
+    -DVTK_WRAP_JAVA=OFF \
+    -DVTK_WRAP_PYTHON=OFF \
+    -DVTK_WRAP_TCL=OFF \
+    -DVTK_USE_QT=OFF \
+    -DVTK_USE_GUISUPPORT=OFF \
+    -DVTK_USE_SYSTEM_ZLIB=ON \
+    -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS"
+  make -j2 && make install && touch ${config}
+  return $?
+}
+
+function install_qhull()
+{
+  local pkg_ver=2012.1
+  local pkg_file="qhull-${pkg_ver}"
+  local pkg_url="http://www.qhull.org/download/${pkg_file}-src.tgz"
+  local pkg_md5sum="d0f978c0d8dfb2e919caefa56ea2953c"
+  local QHULL_DIR=$HOME/qhull
+  local announce=$QHULL_DIR/share/doc/qhull/Announce.txt
+  echo "Installing QHull ${pkg_ver}"
+  if [[ -d $QHULL_DIR ]]; then
+    if [[ -e ${announce} ]]; then
+      local version=`grep -Po "(?<=Qhull )[0-9.]*(?= )" ${announce}`
+      if [[ "$version" = "$pkg_ver" ]]; then
+        local modified=`stat -c %y ${announce} | cut -d ' ' -f1`
+        echo " > Found cached installation of QHull"
+        echo " > Version ${pkg_ver}, built on ${modified}"
+        return 0
+      fi
+    fi
+  fi
+  download ${pkg_url} ${pkg_md5sum}
+  if [[ $? -ne 0 ]]; then
+    return $?
+  fi
+  tar xzf pkg
+  cd ${pkg_file}
+  mkdir -p build && cd build
+  cmake .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS=-fPIC \
+    -DCMAKE_C_FLAGS=-fPIC \
+    -DCMAKE_INSTALL_PREFIX=$QHULL_DIR
+  make -j2 && make install && touch ${announce}
+  return $?
+}
+
+function install_doxygen()
+{
+  local pkg_ver=1.8.9.1
+  local pkg_file="doxygen-${pkg_ver}"
+  local pkg_url="http://ftp.stack.nl/pub/users/dimitri/${pkg_file}.src.tar.gz"
+  local pkg_md5sum="3d1a5c26bef358c10a3894f356a69fbc"
+  local DOXYGEN_EXE=$DOXYGEN_DIR/bin/doxygen
+  echo "Installing Doxygen ${pkg_ver}"
+  if [[ -d $DOXYGEN_DIR ]]; then
+    if [[ -e $DOXYGEN_EXE ]]; then
+      local version=`$DOXYGEN_EXE --version`
+      if [[ "$version" = "$pkg_ver" ]]; then
+        local modified=`stat -c %y $DOXYGEN_EXE | cut -d ' ' -f1`
+        echo " > Found cached installation of Doxygen"
+        echo " > Version ${pkg_ver}, built on ${modified}"
+        return 0
+      fi
+    fi
+  fi
+  download ${pkg_url} ${pkg_md5sum}
+  if [[ $? -ne 0 ]]; then
+    return $?
+  fi
+  tar xzf pkg
+  cd ${pkg_file}
+  ./configure --prefix $DOXYGEN_DIR
+  make -j2 && make install
+  return $?
+}
+
+function install_dependencies()
+{
+  install_flann
+  install_vtk
+  install_qhull
+  install_doxygen
+}
+
+function download()
+{
+  mkdir -p $DOWNLOAD_DIR && cd $DOWNLOAD_DIR && rm -rf *
+  wget --output-document=pkg $1
+  if [[ $? -ne 0 ]]; then
+    return $?
+  fi
+  if [[ $# -ge 2 ]]; then
+    echo "$2  pkg" > "md5"
+    md5sum -c "md5" --quiet --status
+    if [[ $? -ne 0 ]]; then
+      echo "MD5 mismatch"
+      return 1
+    fi
+  fi
+  return 0
+}
+
+case $1 in
+  install ) install_dependencies;;
   build ) build;;
   test ) test;;
   doc ) doc;;

@@ -316,10 +316,19 @@ pcl::transformPoint (const PointT &point,
                      const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform)
 {
   PointT ret = point;
-  //ret.getVector3fMap () = transform * point.getVector3fMap ();
-  ret.x = static_cast<float> (transform (0, 0) * point.x + transform (0, 1) * point.y + transform (0, 2) * point.z + transform (0, 3));
-  ret.y = static_cast<float> (transform (1, 0) * point.x + transform (1, 1) * point.y + transform (1, 2) * point.z + transform (1, 3));
-  ret.z = static_cast<float> (transform (2, 0) * point.x + transform (2, 1) * point.y + transform (2, 2) * point.z + transform (2, 3));
+  ret.getVector3fMap () = transform * point.getVector3fMap ();
+
+  return (ret);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Scalar> inline PointT
+pcl::transformPointWithNormal (const PointT &point, 
+                     const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform)
+{
+  PointT ret = point;
+  ret.getVector3fMap () = transform * point.getVector3fMap ();
+  ret.getNormalVector3fMap () = transform.rotation () * point.getNormalVector3fMap ();
 
   return (ret);
 }

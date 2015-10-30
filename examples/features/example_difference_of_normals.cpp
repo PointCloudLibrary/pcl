@@ -24,6 +24,11 @@
 
 #include <pcl/features/don.h>
 
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+#include <pcl/features/impl/normal_3d_omp.hpp>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
+#endif
+
 using namespace pcl;
 using namespace std;
 
@@ -215,7 +220,7 @@ int main (int argc, char *argv[])
 	for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it, j++)
 	{
 		pcl::PointCloud<PointOutT>::Ptr cloud_cluster_don (new pcl::PointCloud<PointOutT>);
-		for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); pit++){
+		for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit){
 		  cloud_cluster_don->points.push_back (doncloud->points[*pit]);
 		}
 
@@ -229,3 +234,4 @@ int main (int argc, char *argv[])
 		writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);
 	}
 }
+

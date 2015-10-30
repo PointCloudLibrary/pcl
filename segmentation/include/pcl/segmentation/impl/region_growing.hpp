@@ -530,11 +530,13 @@ pcl::RegionGrowing<PointT, NormalT>::validatePoint (int initial_seed, int point,
   }
 
   // check the residual if needed
-  data[0] = input_->points[nghbr].data[0];
-  data[1] = input_->points[nghbr].data[1];
-  data[2] = input_->points[nghbr].data[2];
-  data[3] = input_->points[nghbr].data[3];
-  Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data));
+  float data_1[4];
+  
+  data_1[0] = input_->points[nghbr].data[0];
+  data_1[1] = input_->points[nghbr].data[1];
+  data_1[2] = input_->points[nghbr].data[2];
+  data_1[3] = input_->points[nghbr].data[3];
+  Eigen::Map<Eigen::Vector3f> nghbr_point (static_cast<float*> (data_1));
   float residual = fabsf (initial_normal.dot (initial_point - nghbr_point));
   if (residual_flag_ && residual > residual_threshold_)
     is_a_seed = false;

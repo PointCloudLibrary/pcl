@@ -26,6 +26,10 @@
 
 #cmakedefine HAVE_FZAPI 1
 
+#cmakedefine HAVE_ENSENSO 1
+
+#cmakedefine HAVE_DAVIDSDK 1
+
 // SSE macros
 #cmakedefine HAVE_POSIX_MEMALIGN
 #cmakedefine HAVE_MM_MALLOC

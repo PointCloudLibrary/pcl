@@ -254,15 +254,8 @@ Cloud::drawWithHighlightColor () const
 void
 Cloud::draw (bool disable_highlight) const
 {
-  SelectionPtr selection_ptr;
-  try
-  {
-    selection_ptr = selection_wk_ptr_.lock();
-  }
-  catch (boost::bad_weak_ptr)
-  {
-    selection_ptr.reset();
-  }
+  SelectionPtr selection_ptr = selection_wk_ptr_.lock();
+
   glPushAttrib(GL_CURRENT_BIT | GL_POINT_BIT | GL_COLOR_BUFFER_BIT);
   {
     glPointSize(point_size_);
@@ -425,7 +418,7 @@ Cloud::getDisplaySpacePoint (unsigned int index) const
 }
 
 void
-Cloud::getDisplaySpacePoints (std::vector<Point3D>& pts) const
+Cloud::getDisplaySpacePoints (Point3DVector& pts) const
 {
   for(unsigned int i = 0; i < cloud_.size(); ++i)
     pts.push_back(getDisplaySpacePoint(i));

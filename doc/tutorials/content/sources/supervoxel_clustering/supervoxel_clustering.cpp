@@ -5,6 +5,9 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/segmentation/supervoxel_clustering.h>
 
+//VTK include needed for drawing graph lines
+#include <vtkPolyLine.h>
+
 // Types
 typedef pcl::PointXYZRGBA PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -33,7 +36,7 @@ main (int argc, char ** argv)
   }
 
 
-  PointCloudT::Ptr cloud = boost::make_shared <PointCloudT> ();
+  PointCloudT::Ptr cloud = boost::shared_ptr <PointCloudT> (new PointCloudT ());
   pcl::console::print_highlight ("Loading point cloud...\n");
   if (pcl::io::loadPCDFile<PointT> (argv[1], *cloud))
   {
@@ -42,7 +45,7 @@ main (int argc, char ** argv)
   }
 
 
-  bool use_transform = ! pcl::console::find_switch (argc, argv, "--NT");
+  bool disable_transform = pcl::console::find_switch (argc, argv, "--NT");
 
   float voxel_resolution = 0.008f;
   bool voxel_res_specified = pcl::console::find_switch (argc, argv, "-v");
@@ -70,7 +73,9 @@ main (int argc, char ** argv)
   ////// This is how to use supervoxels
   //////////////////////////////  //////////////////////////////
 
-  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution, use_transform);
+  pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution);
+  if (disable_transform)
+    super.setUseSingleCameraTransform (false);
   super.setInputCloud (cloud);
   super.setColorImportance (color_importance);
   super.setSpatialImportance (spatial_importance);
@@ -90,9 +95,9 @@ main (int argc, char ** argv)
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.95, "voxel centroids");
 
-  PointCloudT::Ptr colored_voxel_cloud = super.getColoredVoxelCloud ();
-  viewer->addPointCloud (colored_voxel_cloud, "colored voxels");
-  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.8, "colored voxels");
+  PointLCloudT::Ptr labeled_voxel_cloud = super.getLabeledVoxelCloud ();
+  viewer->addPointCloud (labeled_voxel_cloud, "labeled voxels");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.8, "labeled voxels");
 
   PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
   //We have this disabled so graph is easy to see, uncomment to see supervoxel normals

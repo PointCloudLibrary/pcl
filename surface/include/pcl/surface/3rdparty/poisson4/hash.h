@@ -1,6 +1,7 @@
 #ifndef HASH_INCLUDED
 #define HASH_INCLUDED
 #if defined _WIN32 && !defined __MINGW32__
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 #include <hash_map>
 using namespace stdext;
 #else // !_WIN32 || __MINGW32__

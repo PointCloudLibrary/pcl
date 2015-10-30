@@ -170,12 +170,12 @@ pcl::Permutohedral::init (const std::vector<float> &feature, const int feature_d
         // check if key is the right one
         int tmp_key_index = -1;
         //for (int ii = key_index; ii < keys.size (); ii++)
-        for (it = hash_table.find (hash_key); it != hash_table.end (); it++)
+        for (it = hash_table.find (hash_key); it != hash_table.end (); ++it)
         {
           int ii = it->second;
           bool same = true;
           std::vector<short> k = keys[ii];
-          for (int i_k = 0; i_k < static_cast<int> (k.size ()); i_k++)
+          for (size_t i_k = 0; i_k < k.size (); i_k++)
           {
             if (key[i_k] != k[i_k])
             {

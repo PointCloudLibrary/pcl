@@ -650,7 +650,7 @@ struct KinFuApp
   enum { PCD_BIN = 1, PCD_ASCII = 2, PLY = 3, MESH_PLY = 7, MESH_VTK = 8 };
   
   KinFuApp(pcl::Grabber& source, float vsz, int icp, int viz, boost::shared_ptr<CameraPoseProcessor> pose_processor=boost::shared_ptr<CameraPoseProcessor> () ) : exit_ (false), scan_ (false), scan_mesh_(false), scan_volume_ (false), independent_camera_ (false),
-      registration_ (false), integrate_colors_ (false), focal_length_(-1.f), capture_ (source), scene_cloud_view_(viz), image_view_(viz), time_ms_(0), icp_(icp), viz_(viz), pose_processor_ (pose_processor)
+      registration_ (false), integrate_colors_ (false), pcd_source_ (false), focal_length_(-1.f), capture_ (source), scene_cloud_view_(viz), image_view_(viz), time_ms_(0), icp_(icp), viz_(viz), pose_processor_ (pose_processor)
   {    
     //Init Kinfu Tracker
     Eigen::Vector3f volume_size = Vector3f::Constant (vsz/*meters*/);    
@@ -704,7 +704,7 @@ struct KinFuApp
     registration_ = capture_.providesCallback<pcl::ONIGrabber::sig_cb_openni_image_depth_image> ();
     cout << "Registration mode: " << (registration_ ? "On" : "Off (not supported by source)") << endl;
     if (registration_)
-        kinfu_.setDepthIntrinsics(KINFU_DEFAULT_RGB_FOCAL_X, KINFU_DEFAULT_RGB_FOCAL_Y);
+      kinfu_.setDepthIntrinsics(KINFU_DEFAULT_RGB_FOCAL_X, KINFU_DEFAULT_RGB_FOCAL_Y);
   }
   
   void
@@ -819,7 +819,7 @@ struct KinFuApp
         scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
     }
      
-    if (has_image)
+    if (viz_ && has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(*scene_cloud_view_.cloud_viewer_);
       image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
@@ -828,7 +828,7 @@ struct KinFuApp
     if (current_frame_cloud_view_)
       current_frame_cloud_view_->show (kinfu_);    
       
-    if (!independent_camera_)
+    if (viz_ && !independent_camera_)
       setViewerPose (*scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
   }
   
@@ -921,6 +921,42 @@ struct KinFuApp
     data_ready_cond_.notify_one();
   }
 
+  void
+  source_cb3 (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr & DC3)
+  {
+    {
+      boost::mutex::scoped_try_lock lock(data_ready_mutex_);
+      if (exit_ || !lock)
+        return;
+      int width  = DC3->width;
+      int height = DC3->height;
+      depth_.cols = width;
+      depth_.rows = height;
+      depth_.step = depth_.cols * depth_.elemSize ();
+      source_depth_data_.resize (depth_.cols * depth_.rows);
+
+      rgb24_.cols = width;
+      rgb24_.rows = height;
+      rgb24_.step = rgb24_.cols * rgb24_.elemSize ();
+      source_image_data_.resize (rgb24_.cols * rgb24_.rows);
+
+      unsigned char *rgb    = (unsigned char *)  &source_image_data_[0];
+      unsigned short *depth = (unsigned short *) &source_depth_data_[0];
+
+      for (int i=0; i < width*height; i++) 
+      {
+        PointXYZRGBA pt = DC3->at (i);
+        rgb[3*i +0] = pt.r;
+        rgb[3*i +1] = pt.g;
+        rgb[3*i +2] = pt.b;
+        depth[i]    = pt.z/0.001;
+      }
+      rgb24_.data = &source_image_data_[0];
+      depth_.data = &source_depth_data_[0];
+    }
+    data_ready_cond_.notify_one ();
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   void
   startMainLoop (bool triggered_capture)
@@ -939,8 +975,14 @@ struct KinFuApp
     boost::function<void (const ImagePtr&, const DepthImagePtr&, float constant)> func1 = is_oni ? func1_oni : func1_dev;
     boost::function<void (const DepthImagePtr&)> func2 = is_oni ? func2_oni : func2_dev;
 
+    boost::function<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&) > func3 = boost::bind (&KinFuApp::source_cb3, this, _1);
+
     bool need_colors = integrate_colors_ || registration_;
-    boost::signals2::connection c = need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
+    if ( pcd_source_ && !capture_.providesCallback<void (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr&)>() )
+    {
+      std::cout << "grabber doesn't provide pcl::PointCloud<pcl::PointXYZRGBA> callback !\n";
+    }
+    boost::signals2::connection c = pcd_source_? capture_.registerCallback (func3) : need_colors ? capture_.registerCallback (func1) : capture_.registerCallback (func2);
 
     {
       boost::unique_lock<boost::mutex> lock(data_ready_mutex_);
@@ -1041,7 +1083,8 @@ struct KinFuApp
   bool independent_camera_;
 
   bool registration_;
-  bool integrate_colors_;  
+  bool integrate_colors_;
+  bool pcd_source_;
   float focal_length_;
   
   pcl::Grabber& capture_;
@@ -1199,6 +1242,7 @@ main (int argc, char* argv[])
   boost::shared_ptr<pcl::Grabber> capture;
   
   bool triggered_capture = false;
+  bool pcd_input = false;
   
   std::string eval_folder, match_file, openni_device, oni_file, pcd_dir;
   try
@@ -1222,7 +1266,9 @@ main (int argc, char* argv[])
 
       // Sort the read files by name
       sort (pcd_files.begin (), pcd_files.end ());
-      capture.reset (new pcl::PCDGrabber<pcl::PointXYZ> (pcd_files, fps_pcd, false));
+      capture.reset (new pcl::PCDGrabber<pcl::PointXYZRGBA> (pcd_files, fps_pcd, false));
+      triggered_capture = true;
+      pcd_input = true;
     }
     else if (pc::parse_argument (argc, argv, "-eval", eval_folder) > 0)
     {
@@ -1268,9 +1314,18 @@ main (int argc, char* argv[])
   if (pc::find_switch (argc, argv, "--save-views") || pc::find_switch (argc, argv, "-sv"))
     app.image_view_.accumulate_views_ = true;  //will cause bad alloc after some time  
   
-  if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))  
-    app.initRegistration();
-      
+  if (pc::find_switch (argc, argv, "--registration") || pc::find_switch (argc, argv, "-r"))
+  {
+    if (pcd_input) 
+    {
+      app.pcd_source_   = true;
+      app.registration_ = true; // since pcd provides registered rgbd
+    } 
+    else 
+    {
+      app.initRegistration ();
+    }
+  }
   if (pc::find_switch (argc, argv, "--integrate-colors") || pc::find_switch (argc, argv, "-ic"))
     app.toggleColorIntegration();
 

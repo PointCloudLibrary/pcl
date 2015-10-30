@@ -37,7 +37,6 @@
  */
 
 #include <pcl/sample_consensus/impl/sac_model_line.hpp>
-#include <pcl/sample_consensus/impl/sac_model_parallel_line.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
@@ -45,10 +44,8 @@
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
   PCL_INSTANTIATE(SampleConsensusModelLine, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
-  PCL_INSTANTIATE(SampleConsensusModelParallelLine, (pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGBA)(pcl::PointXYZRGB)(pcl::PointXYZRGBNormal))
 #else
   PCL_INSTANTIATE(SampleConsensusModelLine, PCL_XYZ_POINT_TYPES)
-  PCL_INSTANTIATE(SampleConsensusModelParallelLine, PCL_XYZ_POINT_TYPES)
 #endif
 #endif    // PCL_NO_PRECOMPILE
 

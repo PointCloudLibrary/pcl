@@ -91,6 +91,8 @@ namespace pcl
   }
 }
 
+Q_DECLARE_METATYPE (pcl::cloud_composer::ToolFactory*);
+
 Q_DECLARE_INTERFACE(pcl::cloud_composer::ToolFactory,
                     "cloud_composer.ToolFactory/1.0")
 

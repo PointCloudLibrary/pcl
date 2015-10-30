@@ -85,7 +85,7 @@ namespace pcl
         {
         }
 
-        /** \brief Empty class constructor. */
+        /** \brief Empty class destructor. */
         virtual
         ~OctreePointCloudSearch ()
         {

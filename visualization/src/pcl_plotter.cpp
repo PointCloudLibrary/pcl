@@ -113,12 +113,12 @@ pcl::visualization::PCLPlotter::addPlotData (
 
   VTK_CREATE (vtkDoubleArray, varray_X);
   varray_X->SetName ("X Axis");
-  varray_X->SetArray (permanent_X, size, 1);
+  varray_X->SetArray (permanent_X, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
   table->AddColumn (varray_X);
 
   VTK_CREATE (vtkDoubleArray, varray_Y);
   varray_Y->SetName (name);
-  varray_Y->SetArray (permanent_Y, size, 1);
+  varray_Y->SetArray (permanent_Y, size, 1, vtkDoubleArray::VTK_DATA_ARRAY_DELETE);
   table->AddColumn (varray_Y);
 
   //adding to chart
@@ -592,12 +592,16 @@ pcl::visualization::PCLPlotter::computeHistogram (
   double min = data[0], max = data[0];
   for (size_t i = 1; i < data.size (); i++)
   {
-    if (data[i] < min) min = data[i];
-    if (data[i] > max) max = data[i];
+    if (pcl_isfinite (data[i]))
+    {
+      if (data[i] < min) min = data[i];
+      if (data[i] > max) max = data[i];
+    }
   }
 
   //finding the size of each bins
   double size = (max - min) / nbins;
+  if (size == 0) size = 1.0;
 
   //fill x values of each bins by bin center
   for (int i = 0; i < nbins; i++)
@@ -609,9 +613,12 @@ pcl::visualization::PCLPlotter::computeHistogram (
   //fill the freq for each data
   for (size_t i = 0; i < data.size (); i++)
   {
-    int index = int (floor ((data[i] - min) / size));
-    if (index == nbins) index = nbins - 1; //including right boundary
-    histogram[index ].second++;
+    if (pcl_isfinite (data[i]))
+    {
+      unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
+      if (index == nbins) index = nbins - 1; //including right boundary
+      histogram[index].second++;
+    }
   }
 }
 

@@ -1,15 +1,6 @@
 # Find CUDA
 
 
-# Recent versions of cmake set CUDA_HOST_COMPILER to CMAKE_C_COMPILER which
-# on OSX defaults to clang (/usr/bin/cc), but this is not a supported cuda
-# compiler.  So, here we will preemptively set CUDA_HOST_COMPILER to gcc if
-# that compiler exists in /usr/bin.  This will not override an existing cache
-# value if the user has passed CUDA_HOST_COMPILER on the command line.
-if (NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND EXISTS /usr/bin/gcc)
-  set(CUDA_HOST_COMPILER /usr/bin/gcc CACHE FILEPATH "Host side compiler used by NVCC")
-  message(STATUS "Setting CMAKE_HOST_COMPILER to /usr/bin/gcc instead of ${CMAKE_C_COMPILER}.  See http://dev.pointclouds.org/issues/979")
-endif()
 
 if(MSVC11)
 	# Setting this to true brakes Visual Studio builds.
@@ -22,6 +13,24 @@ find_package(CUDA 4)
 if(CUDA_FOUND)
 	message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
 	
+	if(${CUDA_VERSION_STRING} VERSION_LESS "7.5")
+	  # Recent versions of cmake set CUDA_HOST_COMPILER to CMAKE_C_COMPILER which
+	  # on OSX defaults to clang (/usr/bin/cc), but this is not a supported cuda
+	  # compiler.  So, here we will preemptively set CUDA_HOST_COMPILER to gcc if
+	  # that compiler exists in /usr/bin.  This will not override an existing cache
+	  # value if the user has passed CUDA_HOST_COMPILER on the command line.
+	  if (NOT DEFINED CUDA_HOST_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang" AND EXISTS /usr/bin/gcc)
+	    set(CUDA_HOST_COMPILER /usr/bin/gcc CACHE FILEPATH "Host side compiler used by NVCC")
+	    message(STATUS "Setting CMAKE_HOST_COMPILER to /usr/bin/gcc instead of ${CMAKE_C_COMPILER}.  See http://dev.pointclouds.org/issues/979")
+	  endif()
+
+	  # Send a warning if CUDA_HOST_COMPILER is set to a compiler that is known
+	  # to be unsupported.
+	  if (CUDA_HOST_COMPILER STREQUAL CMAKE_C_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
+	    message(WARNING "CUDA_HOST_COMPILER is set to an unsupported compiler: ${CMAKE_C_COMPILER}.  See http://dev.pointclouds.org/issues/979")
+	  endif()
+	endif()
+
 	# CUDA_ARCH_BIN is a space separated list of versions to include in output so-file. So you can set CUDA_ARCH_BIN = 10 11 12 13 20
 	# Also user can specify virtual arch in parenthesis to limit instructions  set, 
 	# for example CUDA_ARCH_BIN = 11(11) 12(11) 13(11) 20(11) 21(11) -> forces using only sm_11 instructions.
@@ -34,11 +43,19 @@ if(CUDA_FOUND)
 	
 	# Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
 
-	if(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
-		set(CUDA_ARCH_BIN "2.0 2.1(2.0) 3.0" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
-	else()
-		set(CUDA_ARCH_BIN "2.0 2.1(2.0)" CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
-	endif()
+        if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.5")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
+        elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.0")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0")
+        elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "5.0")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5")
+        elseif(${CUDA_VERSION_STRING} VERSION_GREATER "4.1")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0")
+        else()
+                set(__cuda_arch_bin "2.0 2.1(2.0)")
+        endif()
+
+        set(CUDA_ARCH_BIN ${__cuda_arch_bin} CACHE STRING "Specify 'real' GPU architectures to build binaries for, BIN(PTX) format is supported")
 
 	set(CUDA_ARCH_PTX "" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
 	#set(CUDA_ARCH_PTX "1.1 1.2" CACHE STRING "Specify 'virtual' PTX arch to build PTX intermediate code for. Example: 1.0 1.2 or 10 12")
@@ -46,11 +63,5 @@ if(CUDA_FOUND)
 	# Guess this macros will be included in cmake distributive
 	include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)
 	APPEND_TARGET_ARCH_FLAGS()
-    
-  # Send a warning if CUDA_HOST_COMPILER is set to a compiler that is known
-  # to be unsupported.
-  if (CUDA_HOST_COMPILER STREQUAL CMAKE_C_COMPILER AND CMAKE_C_COMPILER_ID STREQUAL "Clang")
-    message(WARNING "CUDA_HOST_COMPILER is set to an unsupported compiler: ${CMAKE_C_COMPILER}.  See http://dev.pointclouds.org/issues/979")
-  endif()
 
 endif()

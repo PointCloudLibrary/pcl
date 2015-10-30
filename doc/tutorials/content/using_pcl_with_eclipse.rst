@@ -215,6 +215,8 @@ Run the program by clicking on the run icon
 .. image:: images/pcl_with_eclipse/lrun_obj.gif
   :height: 16
 
+The Eclipse console doesn't manage ANSI colours, you could use `an ANSI console plugin <http://www.mihai-nita.net/eclipse/>`_ to get rid of the "[0m" characters in the output.
+
 Where to get more information
 =============================
 

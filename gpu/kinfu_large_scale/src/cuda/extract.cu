@@ -239,13 +239,14 @@ namespace pcl
                 storage_Z[storage_index + offset + l] = points[l].z;
               }
 
-              PointType *pos = output_xyz.data + old_global_count + lane;
-              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, pos += Warp::STRIDE)
+              int offset_storage = old_global_count + lane;
+              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
               {
+                if (offset_storage >= output_xyz.size) break;
                 float x = storage_X[storage_index + idx];
                 float y = storage_Y[storage_index + idx];
                 float z = storage_Z[storage_index + idx];
-                store_point_type (x, y, z, pos);
+                store_point_type (x, y, z, output_xyz.data, offset_storage);
               }
 
               bool full = (old_global_count + total_warp) >= output_xyz.size;
@@ -352,6 +353,7 @@ namespace pcl
               int offset_storage = old_global_count + lane;
               for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
               {
+                if (offset_storage >= output_xyz.size) break;
                 float x = storage_X[storage_index + idx];
                 float y = storage_Y[storage_index + idx];
                 float z = storage_Z[storage_index + idx];
@@ -386,9 +388,9 @@ namespace pcl
         } /* operator() */
 
         __device__ __forceinline__ void
-        store_point_type (float x, float y, float z, float4* ptr) const 
+        store_point_type (float x, float y, float z, float4* ptr, int offset) const
         {
-          *ptr = make_float4 (x, y, z, 0);
+          *(ptr + offset) = make_float4 (x, y, z, 0);
         }
         
         //INLINE FUNCTION THAT STORES XYZ AND INTENSITY VALUES IN 2 SEPARATE DeviceArrays.
@@ -403,9 +405,9 @@ namespace pcl
         }
 
         __device__ __forceinline__ void
-        store_point_type (float x, float y, float z, float3* ptr) const 
+        store_point_type (float x, float y, float z, float3* ptr, int offset) const
         {
-          *ptr = make_float3 (x, y, z);
+          *(ptr + offset) = make_float3 (x, y, z);
         }
       };
 

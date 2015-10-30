@@ -139,7 +139,7 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
   {
     cos_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*cos_lookup_table_)));
     sin_lookup_table_ = static_cast<double *> (malloc (HDL_NUM_ROT_ANGLES * sizeof (*sin_lookup_table_)));
-    for (unsigned int i = 0; i < HDL_NUM_ROT_ANGLES; i++)
+    for (int i = 0; i < HDL_NUM_ROT_ANGLES; i++)
     {
       double rad = (M_PI / 180.0) * (static_cast<double> (i) / 100.0);
       cos_lookup_table_[i] = std::cos (rad);
@@ -425,11 +425,11 @@ pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point, int azimuth,
 
   distanceM += correction.distanceCorrection;
 
-  double xyDistance = distanceM * correction.cosVertCorrection - correction.sinVertOffsetCorrection;
+  double xyDistance = distanceM * correction.cosVertCorrection;
 
   point.x = static_cast<float> (xyDistance * sinAzimuth - correction.horizontalOffsetCorrection * cosAzimuth);
   point.y = static_cast<float> (xyDistance * cosAzimuth + correction.horizontalOffsetCorrection * sinAzimuth);
-  point.z = static_cast<float> (distanceM * correction.sinVertCorrection + correction.cosVertOffsetCorrection);
+  point.z = static_cast<float> (distanceM * correction.sinVertCorrection + correction.verticalOffsetCorrection);
   point.intensity = static_cast<float> (laserReturn.intensity);
 }
 
@@ -497,7 +497,7 @@ pcl::HDLGrabber::start ()
       try {
 		  hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp_listener_endpoint_);
 	  }
-	  catch (std::exception bind) {
+	  catch (const std::exception& bind) {
 		  delete hdl_read_socket_;
 		  hdl_read_socket_ = new udp::socket (hdl_read_socket_service_, udp::endpoint(boost::asio::ip::address_v4::any(), udp_listener_endpoint_.port()));
 	  }
@@ -582,7 +582,7 @@ void
 pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
                                    unsigned int laserNumber)
 {
-  if (laserNumber >= HDL_MAX_NUM_LASERS)
+  if (laserNumber >= (unsigned int) HDL_MAX_NUM_LASERS)
     return;
 
   laser_rgb_mapping_[laserNumber] = color;

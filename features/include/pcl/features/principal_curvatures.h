@@ -116,7 +116,7 @@ namespace pcl
 
     private:
       /** \brief A pointer to the input dataset that contains the point normals of the XYZ dataset. */
-      std::vector<Eigen::Vector3f> projected_normals_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > projected_normals_;
 
       /** \brief SSE aligned placeholder for the XYZ centroid of a surface patch. */
       Eigen::Vector3f xyz_centroid_;

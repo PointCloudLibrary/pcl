@@ -21,3 +21,12 @@ PCL_ADD_TEST(correspondence_rejectors test_correspondence_rejectors
              LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bunny.pcd")
 
+PCL_ADD_TEST(fpcs_ia test_fpcs_ia
+             FILES test_fpcs_ia.cpp test_fpcs_ia_data.h
+             LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/bun4.pcd")
+             
+PCL_ADD_TEST(kfpcs_ia test_kfpcs_ia
+	     FILES test_kfpcs_ia.cpp test_kfpcs_ia_data.h
+	     LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
+	     ARGUMENTS "${PCL_SOURCE_DIR}/test/office1_keypoints.pcd" "${PCL_SOURCE_DIR}/test/office2_keypoints.pcd")

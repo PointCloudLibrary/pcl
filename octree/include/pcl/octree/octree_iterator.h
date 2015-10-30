@@ -340,7 +340,9 @@ namespace pcl
             const OctreeKey& key = getCurrentOctreeKey();
             // calculate integer id with respect to octree key
             unsigned int depth = octree_->getTreeDepth ();
-            id = key.x << (depth * 2) | key.y << (depth * 1) | key.z << (depth * 0);
+            id = static_cast<unsigned long> (key.x) << (depth * 2)
+               | static_cast<unsigned long> (key.y) << (depth * 1)
+               | static_cast<unsigned long> (key.z) << (depth * 0);
           }
 
           return id;

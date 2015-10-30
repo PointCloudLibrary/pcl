@@ -210,7 +210,7 @@ namespace pcl
           * \param[in] k number of maximum nn interested in
           * \param[in] queue priority queue with k NN
           * \param[in] index index on point to be tested
-          * \return wheter the top element changed or not.
+          * \return whether the top element changed or not.
           */
         inline bool 
         testPoint (const PointT& query, unsigned k, std::priority_queue<Entry>& queue, unsigned index) const
