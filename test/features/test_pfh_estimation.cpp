@@ -199,7 +199,7 @@ TEST (PCL, PFHEstimation)
   EXPECT_NEAR (pfh_histogram[22], 18.4947 , 2e-2); // larger error w.r.t. considering all point pairs (feature bins=2,1,1 where 1 is middle, so angle of 0)
   EXPECT_NEAR (pfh_histogram[23], 1.96553 , 1e-4);
   EXPECT_NEAR (pfh_histogram[24], 8.04793 , 1e-4);
-  EXPECT_NEAR (pfh_histogram[25], 11.2793  , 1e-4);
+  EXPECT_NEAR (pfh_histogram[25], 11.278030  , 1e-4);
   EXPECT_NEAR (pfh_histogram[26], 2.91714 , 1e-4);
 
   // Sum of values should be 100
@@ -458,7 +458,7 @@ TEST (PCL, FPFHEstimationOpenMP)
   EXPECT_NEAR (fpfhs->points[0].histogram[0],  1.58591, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[1],  1.68365, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[2],  6.71   , 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.073, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[3],  23.071660, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[4],  33.3828, 1e-2);
   EXPECT_NEAR (fpfhs->points[0].histogram[5],  20.4002, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[6],  7.31067, 1e-3);
@@ -475,8 +475,8 @@ TEST (PCL, FPFHEstimationOpenMP)
   //EXPECT_NEAR (fpfhs->points[0].histogram[17], 14.2766, 1e-3);
   //EXPECT_NEAR (fpfhs->points[0].histogram[18], 10.8542, 1e-3);
   //EXPECT_NEAR (fpfhs->points[0].histogram[19], 6.07925, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.28991, 1e-3);
-  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.73438, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[20], 5.285647, 1e-3);
+  EXPECT_NEAR (fpfhs->points[0].histogram[21], 4.738867, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[22], 0.56984, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[23], 3.29826, 1e-3);
   EXPECT_NEAR (fpfhs->points[0].histogram[24], 5.28156, 1e-3);
