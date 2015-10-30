@@ -34,6 +34,7 @@ if(build)
         src/frustum_culling.cpp
         src/covariance_sampling.cpp
         src/median_filter.cpp
+        src/uniform_sampling.cpp
 	src/voxel_grid_occlusion_estimation.cpp
 	    src/normal_refinement.cpp
         src/grid_minimum.cpp
@@ -74,6 +75,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/frustum_culling.h"
         "include/pcl/${SUBSYS_NAME}/covariance_sampling.h"
         "include/pcl/${SUBSYS_NAME}/median_filter.h"
+        "include/pcl/${SUBSYS_NAME}/uniform_sampling.h"
         "include/pcl/${SUBSYS_NAME}/normal_refinement.h"
         "include/pcl/${SUBSYS_NAME}/grid_minimum.h"
         "include/pcl/${SUBSYS_NAME}/morphological_filter.h"
@@ -110,6 +112,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/frustum_culling.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/covariance_sampling.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/median_filter.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/normal_refinement.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/grid_minimum.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/morphological_filter.hpp"
