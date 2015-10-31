@@ -323,7 +323,10 @@ pcl::gpu::kinfuLS::TsdfVolume::pushSlice (PointCloud<PointXYZI>::Ptr existing_da
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 size_t
-pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ ) const
+pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz,
+  DeviceArray<float>& cloud_buffer_intensity,
+  const pcl::gpu::kinfuLS::tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ,
+  DeviceArray2D<int>& last_data_transfer_matrix,int & finished) const
 {
   if (cloud_buffer_xyz.empty ())
     cloud_buffer_xyz.create (DEFAULT_CLOUD_BUFFER_SIZE/2);
@@ -334,11 +337,82 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsCloud (DeviceArray<PointType>& cloud_
 
   float3 device_volume_size = device_cast<const float3> (size_);
   
-  size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ, cloud_buffer_xyz, cloud_buffer_intensity);
-  
+  size_t size = pcl::device::kinfuLS::extractSliceAsCloud (volume_, device_volume_size, buffer, shiftX, shiftY, shiftZ,
+    cloud_buffer_xyz, cloud_buffer_intensity, last_data_transfer_matrix, finished);
+
   std::cout << " SIZE IS " << size << std::endl;
   
   return (size);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+pcl::gpu::kinfuLS::TsdfVolume::PointCloudXYZI::Ptr
+pcl::gpu::kinfuLS::TsdfVolume::fetchSliceAsPointCloud (DeviceArray<PointType>& cloud_buffer_xyz,
+  DeviceArray<float>& cloud_buffer_intensities, DeviceArray2D<int>& last_data_transfer_matrix,
+  const pcl::gpu::kinfuLS::tsdf_buffer* buffer,
+  int offset_x, int offset_y, int offset_z ) const
+{
+  DeviceArray<PointXYZ> points;
+  DeviceArray<float> intensities;
+  int finished;
+
+  // create data transfer completion matrix and set it to all 0
+  {
+    size_t height, width;
+    pcl::device::kinfuLS::getDataTransferCompletionMatrixSize (height, width);
+    if (last_data_transfer_matrix.empty ())
+      last_data_transfer_matrix.create (height, width);
+    cudaSafeCall ( cudaMemset2D (last_data_transfer_matrix.ptr(), last_data_transfer_matrix.step(), 0,
+                               width * sizeof(int), height));
+    cudaSafeCall ( cudaGetLastError () );
+    cudaSafeCall ( cudaDeviceSynchronize ());
+  }
+
+  PointCloudXYZI::Ptr current_slice (new PointCloudXYZI);
+  PointCloudXYZ::Ptr current_slice_xyz (new PointCloudXYZ);
+  PointCloudIntensity::Ptr current_slice_intensities (new PointCloudIntensity);
+
+  do
+  {
+    size_t downloaded_size = this->fetchSliceAsCloud (cloud_buffer_xyz, cloud_buffer_intensities,
+      buffer, offset_x, offset_y, offset_z, last_data_transfer_matrix, finished);
+
+    points = DeviceArray<PointXYZ> (cloud_buffer_xyz.ptr (), downloaded_size);
+    intensities = DeviceArray<float> (cloud_buffer_intensities.ptr (), downloaded_size);
+
+    // Retrieving XYZ
+    {
+      PointCloudXYZ slice_inc_xyz;
+      points.download (slice_inc_xyz.points);
+      slice_inc_xyz.width = downloaded_size;
+      slice_inc_xyz.height = 1;
+      (*current_slice_xyz) += slice_inc_xyz;
+    }
+
+    // Retrieving intensities
+    // TODO change this mechanism by using PointIntensity directly (in spite of float)
+    // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
+    {
+      std::vector<float , Eigen::aligned_allocator<float> > intensities_vector_inc;
+      intensities.download (intensities_vector_inc);
+
+      const size_t old_size = current_slice_intensities->size();
+      current_slice_intensities->points.resize (old_size + downloaded_size);
+      for(int i = 0 ; i < intensities_vector_inc.size () ; ++i)
+        current_slice_intensities->points[i + old_size].intensity = intensities_vector_inc[i];
+      current_slice_intensities->width = (int) old_size + downloaded_size;
+      current_slice_intensities->height = 1;
+    }
+
+  } while (!finished);
+
+  // Concatenating XYZ and Intensities
+  pcl::concatenateFields (*current_slice_xyz, *current_slice_intensities, *current_slice);
+  current_slice->width = (int) current_slice->points.size ();
+  current_slice->height = 1;
+
+  return current_slice;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

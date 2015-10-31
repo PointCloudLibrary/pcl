@@ -65,7 +65,7 @@ namespace pcl
       class PCL_EXPORTS CyclicalBuffer
       {
         public:
-        
+          typedef PointCloud<PointXYZI> PointCloudXYZI;
           
           /** \brief Constructor for a cubic CyclicalBuffer.
             * \param[in] distance_threshold distance between cube center and target point at which we decide to shift.
@@ -217,6 +217,9 @@ namespace pcl
           
           /** \brief buffer used to extract Intensity values from GPU */
           DeviceArray<float> cloud_buffer_device_intensities_;
+
+          /** \brief buffer used to keep track of extraction status */
+          DeviceArray2D<int> last_data_transfer_matrix_device_;
 
           /** \brief distance threshold (cube's center to target point) to trigger shift */
           double distance_threshold_;

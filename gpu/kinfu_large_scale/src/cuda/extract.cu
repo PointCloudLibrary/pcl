@@ -52,8 +52,9 @@ namespace pcl
       enum
       {
         CTA_SIZE_X = 32,
-        CTA_SIZE_Y = 6,
+        CTA_SIZE_Y = 4,
         CTA_SIZE = CTA_SIZE_X * CTA_SIZE_Y,
+        LOG_CTA_SIZE = (5 + 2),
 
         MAX_LOCAL_POINTS = 3
       };
@@ -61,6 +62,8 @@ namespace pcl
       __device__ int global_count = 0;
       __device__ int output_xyz_count = 0;                                       // *************************************************
       __device__ unsigned int blocks_done = 0;
+
+      __device__ unsigned int data_transfer_finished_device = 1;
 
       __shared__ float storage_X[CTA_SIZE * MAX_LOCAL_POINTS];
       __shared__ float storage_Y[CTA_SIZE * MAX_LOCAL_POINTS];
@@ -75,6 +78,8 @@ namespace pcl
         mutable PtrSz<PointType> output;
         mutable PtrSz<PointType> output_xyz;
         mutable PtrSz<float> output_intensity;
+
+        mutable PtrStep<int> data_transfer_completion_matrix;
 
         __device__ __forceinline__ float
         fetch (pcl::gpu::kinfuLS::tsdf_buffer buffer, int x, int y, int z, int& weight) const
@@ -284,12 +289,20 @@ namespace pcl
           int x = threadIdx.x + blockIdx.x * CTA_SIZE_X;
           int y = threadIdx.y + blockIdx.y * CTA_SIZE_Y;
 
-          int ftid = Block::flattenedThreadId ();
+          const int ftid = Block::flattenedThreadId ();
+          int * const cta_buffer = (int*)(storage_X);
 
-          int minimum_Z = 0;
-          int maximum_Z = VOLUME_Z - 1;
+          int maximum_Z = VOLUME_Z;
+          bool valid_xy = (x < buffer.voxels_size.x) && (y < buffer.voxels_size.y);
 
-          for (int z = minimum_Z; z < maximum_Z; ++z)
+          // fetch minimum z and distribute it to all threads
+          if (ftid == 0)
+            cta_buffer[0] = data_transfer_completion_matrix.ptr(blockIdx.y)[blockIdx.x];
+          __syncthreads();
+          int minimum_Z = cta_buffer[0];
+
+          int z;
+          for (z = minimum_Z; z < maximum_Z; ++z)
           {
             // The black zone is the name given to the subvolume within the TSDF Volume grid that is shifted out.
             // In other words, the set of points in the TSDF grid that we want to extract in order to add it to the world model being built in CPU. 
@@ -298,12 +311,12 @@ namespace pcl
             float4 points[MAX_LOCAL_POINTS];
             int local_count = 0;
 
-            if (x < buffer.voxels_size.x && y < buffer.voxels_size.y && in_black_zone)    
+            if (valid_xy && in_black_zone)
             {
               int W;
               float F = fetch (buffer, x, y, z, W);
 
-              if (W != 0.0f && F != 1.f && F < 0.98 && F != 0.0f && F > -1.0f)
+              if (W != 0 && F != 1.f && F < 0.98 && F != 0.0f && F > -1.0f)
               {
                 float4 p;
                 p.x = x;
@@ -312,79 +325,78 @@ namespace pcl
                 p.w = F;
                 points[local_count++] = p;
               }
-            }/* if (x < VOLUME_X && y < VOLUME_Y) */
+            }
 
             // local_count counts the number of zero crossing for the current thread. Now we need to merge this knowledge with the other threads
             // not we fulfilled points array at current iteration
-            int total_warp = __popc (__ballot (local_count > 0)) + __popc (__ballot (local_count > 1)) + __popc (__ballot (local_count > 2));
-            
+            int total_block_points = __syncthreads_count (local_count > 0);
 
-            if (total_warp > 0)  ///more than 0 zero-crossings
+            if (total_block_points > 0)  ///more than 0 zero-crossings
             {
-              int lane = Warp::laneId ();  ///index of thread within warp [0-31]
-              int storage_index = (ftid >> Warp::LOG_WARP_SIZE) * Warp::WARP_SIZE * MAX_LOCAL_POINTS;
-
-              // Pointer to the beginning of the current warp buffer
-              volatile int* cta_buffer = (int*)(storage_X + storage_index);
-
-              // Compute offset of current warp
+              // Compute offset of current thread
               // Call in place scanning (see http://http.developer.nvidia.com/GPUGems3/gpugems3_ch39.html)
-              cta_buffer[lane] = local_count;
-              int offset = scan_warp<exclusive>(cta_buffer, lane);   //How many crossings did we have before index "lane" ?
+              cta_buffer[ftid] = local_count;
+              __syncthreads();
 
-              // We want to do only 1 operation per warp (not thread) -> because it is faster
-              if (lane == 0) 
+              #pragma unroll
+              for (int i = 0; i < LOG_CTA_SIZE; ++i)
               {
-                int old_global_count = atomicAdd (&global_count, total_warp); ///We use atomicAdd, so that threads do not collide
+                int t_offset = (1 << i);
+                int other_value;
+                if (ftid >= t_offset)
+                  other_value = cta_buffer[ftid - t_offset];
+                __syncthreads();
+                if (ftid >= t_offset)
+                  cta_buffer[ftid] = cta_buffer[ftid] + other_value;
+                __syncthreads();
+              }
+              int offset = ftid > 0 ? cta_buffer[ftid - 1] : 0; //How many crossings did we have before this thread ?
+              __syncthreads();
+
+              // We want to do only 1 operation per block -> because it is faster
+              if (ftid == 0)
+              {
+                int old_global_count = atomicAdd (&global_count, total_block_points); ///We use atomicAdd, so that threads do not collide
                 cta_buffer[0] = old_global_count;
               }
+              __syncthreads();
               int old_global_count = cta_buffer[0];
 
-              // Perform compaction (dump all current crossings)
-              for (int l = 0; l < local_count; ++l)
+              // Sanity check to make sure our output_xyz buffer is not full already
+              bool full = (old_global_count + total_block_points) >= output_xyz.size;
+
+              if (full)
               {
-                storage_X[storage_index + offset + l] = points[l].x;// x coordinates of the points we found in STORAGE_X
-                storage_Y[storage_index + offset + l] = points[l].y;// y coordinates of the points we found in STORAGE_Y
-                storage_Z[storage_index + offset + l] = points[l].z;// z coordinates of the points we found in STORAGE_Z
-                storage_I[storage_index + offset + l] = points[l].w;// Intensity values of the points we found in STORAGE_I
+                if (ftid == 0)
+                {
+                  data_transfer_finished_device = 0; // This may cause collisions, but the threads are writing the same value anyway
+                  atomicSub (&global_count, total_block_points); // Points won't be written, decrease the counter
+                }
+                break;
               }
 
-              // Retrieve Zero-crossings as 3D points
-              int offset_storage = old_global_count + lane;
-              for (int idx = lane; idx < total_warp; idx += Warp::STRIDE, offset_storage += Warp::STRIDE)
+              __syncthreads();
+              // Store
+              for (int l = 0; l < local_count; ++l)
               {
+                int offset_storage = old_global_count + offset + l;
                 if (offset_storage >= output_xyz.size) break;
-                float x = storage_X[storage_index + idx];
-                float y = storage_Y[storage_index + idx];
-                float z = storage_Z[storage_index + idx];
-                float i = storage_I[storage_index + idx];
+                float x = points[l].x; // x coordinates of the points we found in STORAGE_X
+                float y = points[l].y; // y coordinates of the points we found in STORAGE_Y
+                float z = points[l].z; // z coordinates of the points we found in STORAGE_Z
+                float i = points[l].w; // Intensity values of the points we found in STORAGE_I
                 store_point_intensity (x, y, z, i, output_xyz.data, output_intensity.data, offset_storage);
               }
 
-              // Sanity check to make sure our output_xyz buffer is not full already
-              bool full = (old_global_count + total_warp) >= output_xyz.size;
-
-              if (full)
-                break;
+              __syncthreads();
             }
 
-            } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
+          } /* for(int z = 0; z < VOLUME_Z - 1; ++z) */
 
-          ///////////////////////////
-          // Prepare for future scans
+          // Save the z, so we can restart next execution
           if (ftid == 0)
-          {
-            unsigned int total_blocks = gridDim.x * gridDim.y * gridDim.z;
-            unsigned int value = atomicInc (&blocks_done, total_blocks);
+            data_transfer_completion_matrix.ptr(blockIdx.y)[blockIdx.x] = z;
 
-            // Last block
-            if (value == total_blocks - 1)
-            {
-              output_xyz_count = min ((int)output_xyz.size, global_count);
-              blocks_done = 0;
-              global_count = 0;
-            }
-          }
         } /* operator() */
 
         __device__ __forceinline__ void
@@ -452,8 +464,9 @@ namespace pcl
 
       size_t
       extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, 
-                                        const int shiftX, const int shiftY, const int shiftZ, 
-                                        PtrSz<PointType> output_xyz, PtrSz<float> output_intensities)
+                           const int shiftX, const int shiftY, const int shiftZ,
+                           PtrSz<PointType> output_xyz, PtrSz<float> output_intensities,
+                           PtrStep<int> last_data_transfer_matrix, int & data_transfer_finished)
       {
         FullScan6 fs;
         fs.volume = volume;
@@ -462,6 +475,7 @@ namespace pcl
         fs.cell_size.z = volume_size.z / buffer->voxels_size.z;
         fs.output_xyz = output_xyz;
         fs.output_intensity = output_intensities;
+        fs.data_transfer_completion_matrix = last_data_transfer_matrix;
 
         dim3 block (CTA_SIZE_X, CTA_SIZE_Y);
         dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
@@ -545,15 +559,34 @@ namespace pcl
           maxBounds.z += buffer->voxels_size.z;
         }
 
+        const int ZERO = 0;
+        const int ONE = 1;
+        cudaSafeCall ( cudaMemcpyToSymbol (global_count, &ZERO, sizeof(ZERO)) );
+        cudaSafeCall ( cudaMemcpyToSymbol (data_transfer_finished_device, &ONE, sizeof(ONE)) );
+
         // Extraction call
         extractSliceKernel<<<grid, block>>>(fs, *buffer, minBounds, maxBounds);
 
         cudaSafeCall ( cudaGetLastError () );
         cudaSafeCall ( cudaDeviceSynchronize () );
 
+        cudaSafeCall ( cudaMemcpyFromSymbol (&data_transfer_finished, data_transfer_finished_device,
+                                             sizeof(data_transfer_finished)) );
+
         int size;
-        cudaSafeCall ( cudaMemcpyFromSymbol (&size, output_xyz_count, sizeof(size)) );  
-        return (size_t)size;
+        cudaSafeCall ( cudaMemcpyFromSymbol (&size, global_count, sizeof(size)) );
+        return min (size, int(output_xyz.size));
+      }
+
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+      void
+      getDataTransferCompletionMatrixSize(size_t & height, size_t & width)
+      {
+        dim3 block (CTA_SIZE_X, CTA_SIZE_Y);
+        dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
+        width = grid.x;
+        height = grid.y;
       }
     }
   }

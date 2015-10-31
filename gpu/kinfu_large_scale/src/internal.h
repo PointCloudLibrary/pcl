@@ -352,10 +352,23 @@ namespace pcl
         * \param[in] shiftZ Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginZ and stops in OriginZ + shiftZ
         * \param[out] output_xyz buffer large enought to store point cloud xyz values
         * \param[out] output_intensities buffer large enought to store point cloud intensity values
+        * \param[inout] last_data_transfer_matrix a VOLUME_Y * VOLUME_X matrix, an int for every thread, to track progress
+        * \param[out] data_transfer_finished contains 0 if the transfer is incomplete (due to full buffer), 1 otherwise
         * \return number of point stored to passed buffer
         */ 
       PCL_EXPORTS size_t
-      extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size, const pcl::gpu::kinfuLS::tsdf_buffer* buffer, const int shiftX, const int shiftY, const int shiftZ, PtrSz<PointType> output_xyz, PtrSz<float> output_intensities);
+      extractSliceAsCloud (const PtrStep<short2>& volume, const float3& volume_size,
+        const pcl::gpu::kinfuLS::tsdf_buffer* buffer, const int shiftX, const int shiftY, const int shiftZ,
+        PtrSz<PointType> output_xyz, PtrSz<float> output_intensities,
+        PtrStep<int> last_data_transfer_matrix, int & data_transfer_finished
+        );
+
+      /** \brief Returns the size of the data transfer matrix required by extractSliceAsCloud
+        * \param[out] height the height of the matrix
+        * \param[out] width the width of the matrix, in number of (integer) elements
+        */
+      PCL_EXPORTS void
+      getDataTransferCompletionMatrixSize(size_t & height, size_t & width);
 
       /** \brief Performs normals computation for given poins using tsdf volume
         * \param[in] volume tsdf volume
