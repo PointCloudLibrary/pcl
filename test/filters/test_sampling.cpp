@@ -78,27 +78,27 @@ TEST (CovarianceSampling, Filters)
   EXPECT_EQ (686, (*walls_indices)[0]);
   EXPECT_EQ (1900, (*walls_indices)[walls_indices->size () / 4]);
   EXPECT_EQ (1278, (*walls_indices)[walls_indices->size () / 2]);
-  EXPECT_EQ (2960, (*walls_indices)[walls_indices->size () * 3 / 4]);
-  EXPECT_EQ (2060, (*walls_indices)[walls_indices->size () - 1]);
+  EXPECT_EQ (3188, (*walls_indices)[walls_indices->size () * 3 / 4]);
+  EXPECT_EQ (393, (*walls_indices)[walls_indices->size () - 1]);
 
   covariance_sampling.setInputCloud (cloud_turtle_normals);
   covariance_sampling.setNormals (cloud_turtle_normals);
   covariance_sampling.setIndices (IndicesPtr ());
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8);
   double cond_num_turtle = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle, 20661.7663, 0.5);
+  EXPECT_NEAR (cond_num_turtle, 102981832.81, 0.5);
 
   IndicesPtr turtle_indices (new std::vector<int> ());
   covariance_sampling.filter (*turtle_indices);
   covariance_sampling.setIndices (turtle_indices);
   double cond_num_turtle_sampled = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle_sampled, 5795.5057, 0.5);
+  EXPECT_NEAR (cond_num_turtle_sampled, 15695831.19, 0.5);
 
-  EXPECT_EQ ((*turtle_indices)[0], 80344);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 4], 145982);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 2], 104557);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () * 3 / 4], 41512);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () - 1], 136885);
+  EXPECT_EQ ((*turtle_indices)[0], 79526);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 4], 86450);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 2], 33595);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () * 3 / 4], 3085);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () - 1], 84889);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
