@@ -35,15 +35,15 @@
  *
  */
 
-#ifndef PCL_KEYPOINTS_UNIFORM_SAMPLING_IMPL_H_
-#define PCL_KEYPOINTS_UNIFORM_SAMPLING_IMPL_H_
+#ifndef PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
+#define PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
 
 #include <pcl/common/common.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT> void
-pcl::UniformSampling<PointInT>::detectKeypoints (PointCloudOut &output)
+template <typename PointT> void
+pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 {
   // Has the input dataset been set already?
   if (!input_)
@@ -59,7 +59,7 @@ pcl::UniformSampling<PointInT>::detectKeypoints (PointCloudOut &output)
 
   Eigen::Vector4f min_p, max_p;
   // Get the minimum and maximum dimensions
-  pcl::getMinMax3D<PointInT>(*input_, min_p, max_p);
+  pcl::getMinMax3D<PointT>(*input_, min_p, max_p);
 
   // Compute the minimum and maximum bounding box values
   min_b_[0] = static_cast<int> (floor (min_p[0] * inverse_leaf_size_[0]));
@@ -118,11 +118,11 @@ pcl::UniformSampling<PointInT>::detectKeypoints (PointCloudOut &output)
   int cp = 0;
 
   for (typename boost::unordered_map<size_t, Leaf>::const_iterator it = leaves_.begin (); it != leaves_.end (); ++it)
-    output.points[cp++] = it->second.idx;
+    output.points[cp++] = input_->points[it->second.idx];
   output.width = static_cast<uint32_t> (output.points.size ());
 }
 
 #define PCL_INSTANTIATE_UniformSampling(T) template class PCL_EXPORTS pcl::UniformSampling<T>;
 
-#endif    // PCL_KEYPOINTS_UNIFORM_SAMPLING_IMPL_H_
+#endif    // PCL_FILTERS_UNIFORM_SAMPLING_IMPL_H_
 
