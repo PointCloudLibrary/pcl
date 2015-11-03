@@ -86,18 +86,18 @@ TEST (CovarianceSampling, Filters)
   covariance_sampling.setIndices (IndicesPtr ());
   covariance_sampling.setNumberOfSamples (static_cast<unsigned int> (cloud_turtle_normals->size ()) / 8);
   double cond_num_turtle = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle, 102981832.81, 0.5);
+  EXPECT_NEAR (cond_num_turtle, 102981674.98104505, 100.0);
 
   IndicesPtr turtle_indices (new std::vector<int> ());
   covariance_sampling.filter (*turtle_indices);
   covariance_sampling.setIndices (turtle_indices);
   double cond_num_turtle_sampled = covariance_sampling.computeConditionNumber ();
-  EXPECT_NEAR (cond_num_turtle_sampled, 15695831.19, 0.5);
+  EXPECT_NEAR (cond_num_turtle_sampled, 15696408.809876876, 100.0);
 
   EXPECT_EQ ((*turtle_indices)[0], 79526);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 4], 86450);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 2], 33595);
-  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () * 3 / 4], 3085);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 4], 5114);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () / 2], 153849);
+  EXPECT_EQ ((*turtle_indices)[turtle_indices->size () * 3 / 4], 63170);
   EXPECT_EQ ((*turtle_indices)[turtle_indices->size () - 1], 84889);
 }
 
