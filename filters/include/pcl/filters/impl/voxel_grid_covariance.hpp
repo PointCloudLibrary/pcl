@@ -115,7 +115,7 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;
-    centroid_size += 3;
+    centroid_size += 4;
   }
 
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
@@ -185,17 +185,17 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       {
         // Copy all the fields
         Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
+        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
-          // fill r/g/b data
-          int rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index, sizeof (int));
-          centroid[centroid_size - 3] = static_cast<float> ((rgb >> 16) & 0x0000ff);
-          centroid[centroid_size - 2] = static_cast<float> ((rgb >> 8) & 0x0000ff);
-          centroid[centroid_size - 1] = static_cast<float> ((rgb) & 0x0000ff);
+          // Fill r/g/b data, assuming that the order is BGRA
+          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index);
+          centroid[centroid_size - 4] = rgb.a;
+          centroid[centroid_size - 3] = rgb.r;
+          centroid[centroid_size - 2] = rgb.g;
+          centroid[centroid_size - 1] = rgb.b;
         }
-        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;
       }
       ++leaf.nr_points;
@@ -245,17 +245,17 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
       {
         // Copy all the fields
         Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
+        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
           // Fill r/g/b data, assuming that the order is BGRA
-          int rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index, sizeof (int));
-          centroid[centroid_size - 3] = static_cast<float> ((rgb >> 16) & 0x0000ff);
-          centroid[centroid_size - 2] = static_cast<float> ((rgb >> 8) & 0x0000ff);
-          centroid[centroid_size - 1] = static_cast<float> ((rgb) & 0x0000ff);
+          const pcl::RGB& rgb = *reinterpret_cast<const RGB*> (reinterpret_cast<const char*> (&input_->points[cp]) + rgba_index);
+          centroid[centroid_size - 4] = rgb.a;
+          centroid[centroid_size - 3] = rgb.r;
+          centroid[centroid_size - 2] = rgb.g;
+          centroid[centroid_size - 1] = rgb.b;
         }
-        pcl::for_each_type<FieldList> (NdCopyPointEigenFunctor<PointT> (input_->points[cp], centroid));
         leaf.centroid += centroid;
       }
       ++leaf.nr_points;
@@ -313,10 +313,11 @@ pcl::VoxelGridCovariance<PointT>::applyFilter (PointCloud &output)
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
-          // pack r/g/b into rgb
-          float r = leaf.centroid[centroid_size - 3], g = leaf.centroid[centroid_size - 2], b = leaf.centroid[centroid_size - 1];
-          int rgb = (static_cast<int> (r)) << 16 | (static_cast<int> (g)) << 8 | (static_cast<int> (b));
-          memcpy (reinterpret_cast<char*> (&output.points.back ()) + rgba_index, &rgb, sizeof (float));
+          pcl::RGB& rgb = *reinterpret_cast<RGB*> (reinterpret_cast<char*> (&output.points.back ()) + rgba_index);
+          rgb.a = leaf.centroid[centroid_size - 4];
+          rgb.r = leaf.centroid[centroid_size - 3];
+          rgb.g = leaf.centroid[centroid_size - 2];
+          rgb.b = leaf.centroid[centroid_size - 1];
         }
       }
 
