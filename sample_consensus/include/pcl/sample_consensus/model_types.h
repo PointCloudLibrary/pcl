@@ -69,28 +69,26 @@ namespace pcl
 }
 
 typedef std::map<pcl::SacModel, unsigned int>::value_type SampleSizeModel;
-const static SampleSizeModel
-PCL_DEPRECATED("This array is deprecated and is kept only to prevent breaking "
-               "existing user code. Starting from PCL 1.8.0 model sample size "
-               "is a protected member of the SampleConsensusModel class")
-sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
-                       SampleSizeModel (pcl::SACMODEL_LINE, 2),
-                       SampleSizeModel (pcl::SACMODEL_CIRCLE2D, 3),
-                       SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
-                       SampleSizeModel (pcl::SACMODEL_SPHERE, 4),
-                       SampleSizeModel (pcl::SACMODEL_CYLINDER, 2),
-                       SampleSizeModel (pcl::SACMODEL_CONE, 3),
-                       //SampleSizeModel (pcl::SACMODEL_TORUS, 2),
-                       SampleSizeModel (pcl::SACMODEL_PARALLEL_LINE, 2),
-                       SampleSizeModel (pcl::SACMODEL_PERPENDICULAR_PLANE, 3),
-                       //SampleSizeModel (pcl::PARALLEL_LINES, 2),
-                       SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
-                       SampleSizeModel (pcl::SACMODEL_NORMAL_SPHERE, 4),
-                       SampleSizeModel (pcl::SACMODEL_REGISTRATION, 3),
-                       SampleSizeModel (pcl::SACMODEL_REGISTRATION_2D, 3),
-                       SampleSizeModel (pcl::SACMODEL_PARALLEL_PLANE, 3),
-                       SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3),
-                       SampleSizeModel (pcl::SACMODEL_STICK, 2)};
+// Warning: sample_size_pairs is deprecated and is kept only to prevent breaking existing user code.
+// Starting from PCL 1.8.0 model sample size is a protected member of the SampleConsensusModel class.
+const static SampleSizeModel sample_size_pairs[] = {SampleSizeModel (pcl::SACMODEL_PLANE, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_LINE, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_CIRCLE2D, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_CIRCLE3D, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_SPHERE, 4),
+                                                    SampleSizeModel (pcl::SACMODEL_CYLINDER, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_CONE, 3),
+                                                    //SampleSizeModel (pcl::SACMODEL_TORUS, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_PARALLEL_LINE, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_PERPENDICULAR_PLANE, 3),
+                                                    //SampleSizeModel (pcl::PARALLEL_LINES, 2),
+                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PLANE, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_SPHERE, 4),
+                                                    SampleSizeModel (pcl::SACMODEL_REGISTRATION, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_REGISTRATION_2D, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_PARALLEL_PLANE, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_NORMAL_PARALLEL_PLANE, 3),
+                                                    SampleSizeModel (pcl::SACMODEL_STICK, 2)};
 
 namespace pcl
 {
