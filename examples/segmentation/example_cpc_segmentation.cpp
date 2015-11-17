@@ -450,9 +450,11 @@ CPCSegmentation Parameters: \n\
 
     std::set<EdgeID> edge_drawn;
 
-    const unsigned char convex_color  [3] = {bg_white?0:255, bg_white?0:255, bg_white?0:255};
+    const unsigned char black_color   [3] = {0, 0, 0};
+    const unsigned char white_color   [3] = {255, 255, 255};
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
+    const unsigned char* convex_color     = bg_white ? black_color : white_color;
     const unsigned char* color;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
