@@ -272,7 +272,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   if (rgba_index >= 0)
   {
     rgba_index = fields[rgba_index].offset;
-    centroid_size += 3;
+    centroid_size += 4;
   }
 
   std::vector<cloud_point_index_idx> index_vector;
@@ -423,17 +423,17 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     }
     else 
     {
+      pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[first_index].cloud_point_index], centroid));
       // ---[ RGB special case
       if (rgba_index >= 0)
       {
         // Fill r/g/b data, assuming that the order is BGRA
-        pcl::RGB rgb;
-        memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[first_index].cloud_point_index]) + rgba_index, sizeof (RGB));
-        centroid[centroid_size-3] = rgb.r;
-        centroid[centroid_size-2] = rgb.g;
-        centroid[centroid_size-1] = rgb.b;
+        const pcl::RGB& rgb=*reinterpret_cast<const RGB*>(reinterpret_cast<const char*> (&input_->points[index_vector[first_index].cloud_point_index]) + rgba_index);
+        centroid[centroid_size - 4] = rgb.a;
+        centroid[centroid_size - 3] = rgb.r;
+        centroid[centroid_size - 2] = rgb.g;
+        centroid[centroid_size - 1] = rgb.b;
       }
-      pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[first_index].cloud_point_index], centroid));
     }
 
     for (unsigned int i = first_index + 1; i < last_index; ++i) 
@@ -446,17 +446,17 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       }
       else 
       {
+        pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[i].cloud_point_index], temporary));
         // ---[ RGB special case
         if (rgba_index >= 0)
         {
           // Fill r/g/b data, assuming that the order is BGRA
-          pcl::RGB rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
-          temporary[centroid_size-3] = rgb.r;
-          temporary[centroid_size-2] = rgb.g;
-          temporary[centroid_size-1] = rgb.b;
+          const pcl::RGB& rgb=*reinterpret_cast<const RGB*>(reinterpret_cast<const char*> (&input_->points[index_vector[i].cloud_point_index]) + rgba_index);
+          temporary[centroid_size - 4] = rgb.a;
+          temporary[centroid_size - 3] = rgb.r;
+          temporary[centroid_size - 2] = rgb.g;
+          temporary[centroid_size - 1] = rgb.b;
         }
-        pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[i].cloud_point_index], temporary));
         centroid += temporary;
       }
     }
@@ -481,10 +481,11 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
       // ---[ RGB special case
       if (rgba_index >= 0) 
       {
-        // pack r/g/b into rgb
-        float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
-        int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
-        memcpy (reinterpret_cast<char*> (&output.points[index]) + rgba_index, &rgb, sizeof (float));
+        pcl::RGB& rgb=*reinterpret_cast<RGB*>(reinterpret_cast<char*> (&output.points[index]) + rgba_index);
+        rgb.a = centroid[centroid_size - 4];
+        rgb.r = centroid[centroid_size - 3];
+        rgb.g = centroid[centroid_size - 2];
+        rgb.b = centroid[centroid_size - 1];
       }
     }
     ++index;
