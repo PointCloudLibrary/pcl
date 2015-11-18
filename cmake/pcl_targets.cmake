@@ -203,8 +203,6 @@ macro(PCL_ADD_LIBRARY _name _component)
     # Only link if needed
     if(WIN32 AND MSVC)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set_target_properties(${_name} PROPERTIES
@@ -243,8 +241,6 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     # Only link if needed
     if(WIN32 AND MSVC)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     set_target_properties(${_name} PROPERTIES
@@ -281,8 +277,6 @@ macro(PCL_ADD_EXECUTABLE _name _component)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
                                                 DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     if(USE_PROJECT_FOLDERS)
@@ -319,8 +313,6 @@ endif(APPLE AND VTK_USE_COCOA)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
                                                 DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     if(USE_PROJECT_FOLDERS)
@@ -358,8 +350,6 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
                                                 DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
     #
     if(USE_PROJECT_FOLDERS)
@@ -395,7 +385,6 @@ macro(PCL_ADD_TEST _name _exename)
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       target_link_libraries(${_exename} pthread)
     elseif(UNIX AND NOT ANDROID)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
     elseif(WIN32)
