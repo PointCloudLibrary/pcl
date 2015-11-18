@@ -494,8 +494,7 @@ IF (WIN32)
 ELSE (WIN32)
 
   IF (APPLE)
-# These values for Apple could probably do with improvement.  IF (APPLE)
-# These values for Apple could probably do with improvement.
+  
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
       /usr/local/include
       /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
