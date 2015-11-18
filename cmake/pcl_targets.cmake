@@ -199,12 +199,7 @@ macro(PCL_ADD_LIBRARY _name _component)
 	if(MSVC90 OR MSVC10)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
 	endif()
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
@@ -237,12 +232,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
@@ -271,14 +261,12 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -307,14 +295,12 @@ endif(APPLE AND VTK_USE_COCOA)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -344,14 +330,12 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
     cuda_add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -380,17 +364,14 @@ macro(PCL_ADD_TEST _name _exename)
     endif(NOT WIN32)
     #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
-    #
-    # Only link if needed
+
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
       target_link_libraries(${_exename} pthread)
     elseif(UNIX AND NOT ANDROID)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
-    elseif(WIN32)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
-    # 
+
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
