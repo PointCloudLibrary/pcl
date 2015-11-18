@@ -203,8 +203,6 @@ macro(PCL_ADD_LIBRARY _name _component)
     # Only link if needed
     if(WIN32 AND MSVC)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
     else()
@@ -285,8 +283,6 @@ macro(PCL_ADD_EXECUTABLE _name _component)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
                                                 DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
     else()
@@ -327,8 +323,6 @@ endif(APPLE AND VTK_USE_COCOA)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
                                                 DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
     elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
       set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
     else()
