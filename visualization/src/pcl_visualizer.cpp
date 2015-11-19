@@ -467,6 +467,14 @@ void
 pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
 {
   resetStoppedFlag ();
+  #if (defined (__APPLE__)\
+    && ( (VTK_MAJOR_VERSION > 6) || ( (VTK_MAJOR_VERSION == 6) && (VTK_MINOR_VERSION >= 1))))
+    if (!win_->IsDrawable ())
+    {
+      close ();
+      return;
+    }
+  #endif
 
   if (time <= 0)
     time = 1;
