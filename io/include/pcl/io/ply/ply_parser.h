@@ -565,7 +565,7 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
     istream >> value_s;
     try
     {
-      value = boost::lexical_cast<scalar_type> (value_s);
+      value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
     }
     catch (boost::bad_lexical_cast &)
     {
@@ -641,7 +641,7 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
       istream >> value_s;
       try
       {
-        value = boost::lexical_cast<scalar_type> (value_s);
+        value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
       }
       catch (boost::bad_lexical_cast &)
       {
