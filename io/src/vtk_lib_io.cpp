@@ -184,6 +184,8 @@ pcl::io::savePolygonFileVTK (const std::string &file_name,
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
+  else
+    poly_writer->SetFileTypeToASCII ();
 
   poly_writer->SetFileName (file_name.c_str ());
   return (poly_writer->Write ());
@@ -208,6 +210,8 @@ pcl::io::savePolygonFilePLY (const std::string &file_name,
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
+  else
+    poly_writer->SetFileTypeToASCII ();
 
   poly_writer->SetFileName (file_name.c_str ());
 	poly_writer->SetArrayName ("Colors");
@@ -232,6 +236,8 @@ pcl::io::savePolygonFileSTL (const std::string &file_name,
 
   if (binary_format)
     poly_writer->SetFileTypeToBinary ();
+  else
+    poly_writer->SetFileTypeToASCII ();
 
   poly_writer->SetFileName (file_name.c_str ());
   return (poly_writer->Write ());
