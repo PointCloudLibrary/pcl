@@ -87,4 +87,7 @@ the package can be found in the `Institut Maupertuis repository <https://github.
 
 The following video shows the automatic calibration procedure on a Fanuc R1000iA 80f industrial robot:
 
+.. raw:: html
+
   <iframe width="800" height="500" src="https://www.youtube.com/embed/2g6gdx8fKX8" frameborder="0" allowfullscreen></iframe>
+
