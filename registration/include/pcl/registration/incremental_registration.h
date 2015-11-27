@@ -35,8 +35,8 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef PCL_REGISTRATION_INCREMENTAL_ICP_H_
-#define PCL_REGISTRATION_INCREMENTAL_ICP_H_
+#ifndef PCL_REGISTRATION_INCREMENTAL_REGISTRATION_H_
+#define PCL_REGISTRATION_INCREMENTAL_REGISTRATION_H_
 
 #include <pcl/point_cloud.h>
 #include <pcl/registration/registration.h>
@@ -53,8 +53,8 @@ namespace pcl {
       * icp->setMaxCorrespondenceDistance (0.05);
       * icp->setMaximumIterations (50);
       *
-      * IncrementalICP<PointXYZ> iicp;
-      * iicp.setICP (icp);
+      * IncrementalRegistration<PointXYZ> iicp;
+      * iicp.setRegistration (icp);
       *
       * while (true){
       *   PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
@@ -71,7 +71,7 @@ namespace pcl {
       * \ingroup registration
       */
     template <typename PointT, typename Scalar = float>
-    class IncrementalICP {
+    class IncrementalRegistration {
       public:
         typedef typename pcl::PointCloud<PointT>::Ptr PointCloudPtr;
         typedef typename pcl::PointCloud<PointT>::ConstPtr PointCloudConstPtr;
@@ -79,17 +79,17 @@ namespace pcl {
         typedef typename pcl::Registration<PointT,PointT,Scalar>::Ptr RegistrationPtr;
         typedef typename pcl::Registration<PointT,PointT,Scalar>::Matrix4 Matrix4;
 
-        IncrementalICP ();
+        IncrementalRegistration ();
 
         /** \brief Empty destructor */
-        virtual ~IncrementalICP () {}
+        virtual ~IncrementalRegistration () {}
 
         /** \brief Register new point cloud incrementally
-          * \note You have to set a valid registration object with @ref setICP before using this
+          * \note You have to set a valid registration object with @ref setRegistration before using this
           * \note The class doesn't copy cloud. If you afterwards change cloud, that will affect this class.
           * \param[in] cloud point cloud to register
           * \param[in] delta_estimate estimated transform between last registered cloud and this one
-          * \return true if ICP converged
+          * \return true if registration converged
           */
         bool
         registerCloud (const PointCloudConstPtr& cloud, const Matrix4& delta_estimate = Matrix4::Identity ());
@@ -102,20 +102,20 @@ namespace pcl {
         inline Matrix4
         getAbsoluteTransform () const;
 
-        /** \brief Reset incremental ICP without resetting icp_ */
+        /** \brief Reset incremental Registration without resetting registration_ */
         inline void
         reset ();
 
         /** \brief Set registration instance used to align clouds */
         inline void
-        setICP (RegistrationPtr);
+        setRegistration (RegistrationPtr);
       protected:
 
         /** \brief last registered point cloud */
         PointCloudConstPtr last_cloud_;
 
         /** \brief registration instance to align clouds */
-        RegistrationPtr icp_;
+        RegistrationPtr registration_;
 
         /** \brief estimated transforms */
         Matrix4 delta_transform_;
@@ -125,6 +125,6 @@ namespace pcl {
   }
 }
 
-#include <pcl/registration/impl/incremental_icp.hpp>
+#include <pcl/registration/impl/incremental_registration.hpp>
 
-#endif /*PCL_REGISTRATION_INCREMENTAL_ICP_H_*/
+#endif /*PCL_REGISTRATION_INCREMENTAL_REGISTRATION_H_*/
