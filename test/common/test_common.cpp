@@ -522,6 +522,35 @@ TEST (PCL, HasField)
   EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GetMaxDistance)
+{
+  PointCloud<PointXYZ> cloud;
+  Eigen::Vector4f max_pt, max_exp_pt;
+  const Eigen::Vector4f pivot_pt (Eigen::Vector4f::Zero ());
+
+  // populate cloud
+  cloud.points.resize (3);
+  cloud[0].data[0] = 4.f; cloud[0].data[1] = 3.f;
+  cloud[0].data[2] = 0.f; cloud[0].data[3] = 0.f;
+  cloud[1].data[0] = 0.f; cloud[1].data[1] = 0.f;
+  cloud[1].data[2] = 0.f; cloud[1].data[3] = 1000.f;  //This term should not influence max dist
+  cloud[2].data[0] = -1.5f; cloud[2].data[1] = 1.5f;
+  cloud[2].data[2] = -.5f; cloud[2].data[3] = 0.f;
+
+  // No indices specified
+  max_exp_pt = cloud[0].getVector4fMap ();
+  getMaxDistance (cloud, pivot_pt, max_pt);
+  EXPECT_EQ (max_exp_pt, max_pt);
+
+  // Specifying indices
+  std::vector<int> idx (2);
+  idx[0] = 1; idx[1] = 2;
+  max_exp_pt = cloud[2].getVector4fMap ();
+  getMaxDistance (cloud, idx, pivot_pt, max_pt);
+  EXPECT_EQ (max_exp_pt, max_pt);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
