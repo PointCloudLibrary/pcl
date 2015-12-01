@@ -610,6 +610,7 @@ macro(find_external_library _component _lib _is_optional)
 
   string(TOUPPER "${_component}" COMPONENT)
   string(TOUPPER "${_lib}" LIB)
+  string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
     if(${LIB}_USE_FILE)
