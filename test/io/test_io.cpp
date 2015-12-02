@@ -941,7 +941,7 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoBlob)
   EXPECT_EQ (cloud_blob.point_step, 16);
   EXPECT_EQ (cloud_blob.row_step, 16 * 4);
   EXPECT_EQ (cloud_blob.data.size(), 16 * 4);
-  // EXPECT_TRUE (cloud_blob.is_dense);   // this is failing and it shouldn't?
+  EXPECT_TRUE (cloud_blob.is_dense);
 
   // scope blob data
   ps = cloud_blob.point_step;
@@ -989,7 +989,7 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   EXPECT_EQ (mesh.cloud.point_step, 16);
   EXPECT_EQ (mesh.cloud.row_step, 16 * 4);
   EXPECT_EQ (mesh.cloud.data.size(), 16 * 4);
-  // EXPECT_TRUE (mesh.cloud.is_dense);   // this is failing and it shouldn't?
+  EXPECT_TRUE (mesh.cloud.is_dense);
 
   // scope blob data
   ps = mesh.cloud.point_step;
@@ -1033,7 +1033,7 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
   EXPECT_EQ (cloud_rgb.height, 1);
   EXPECT_EQ (cloud_rgb.width, 4);
   EXPECT_EQ (cloud_rgb.points.size(), 4);
-  // EXPECT_TRUE (cloud_rgb.is_dense); // this is failing and it shouldn't?
+  EXPECT_TRUE (cloud_rgb.is_dense);
 
   // scope cloud data
   ASSERT_EQ (cloud_rgb[0].rgba, PLYTest::rgba_1_);
