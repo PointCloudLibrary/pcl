@@ -93,13 +93,13 @@ namespace pcl
          *  \param point_arg:  input point
          * */
         void setOccupiedVoxelAtPoint( const PointT& point_arg ) {
-        	OctreeKey key;
+            OctreeKey key;
 
             // make sure bounding box is big enough
-            adoptBoundingBoxToPoint (point_arg);
+            this->adoptBoundingBoxToPoint (point_arg);
 
             // generate key
-            genOctreeKeyforPoint (point_arg, key);
+            this->genOctreeKeyforPoint (point_arg, key);
 
             // add point to octree at key
             this->createLeaf (key);
