@@ -44,7 +44,19 @@
 void
 pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  // TODO: the PCLPointCloud2 implementation is not yet using the keep_organized_ system -FF
+  if (keep_organized_)
+  {
+    output = *input_;
+    for (size_t i = 0; i < indices_->size (); ++i) {
+      for (size_t j = 0; j < output.fields.size(); ++j) {
+        memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
+                &user_filter_value_, sizeof(float));
+      }
+    }
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
+    return;
+  }
   if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;
