@@ -63,21 +63,18 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
                       inserter (remaining_indices, remaining_indices.begin ()));
 
       // Prepare the output and copy the data
-      for (size_t i = 0; i < remaining_indices.size (); ++i) {
-        for (size_t j = 0; j < output.fields.size(); ++j) {
+      for (size_t i = 0; i < remaining_indices.size (); ++i)
+        for (size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[remaining_indices[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
-        }
-      }
     }
     else
     {
-      for (size_t i = 0; i < indices_->size (); ++i) {
-        for (size_t j = 0; j < output.fields.size(); ++j) {
+      // Prepare the output and copy the data
+      for (size_t i = 0; i < indices_->size (); ++i)
+        for (size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
-        }
-      }
     }
     if (!pcl_isfinite (user_filter_value_))
       output.is_dense = false;
