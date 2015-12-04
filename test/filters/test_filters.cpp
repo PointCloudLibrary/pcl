@@ -199,6 +199,20 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (output.points[1].y, cloud->points[1].y);
   EXPECT_EQ (output.points[1].z, cloud->points[1].z);
 
+  ei2.setNegative (true);
+  ei2.setKeepOrganized (true);
+  ei2.filter (output_blob);
+
+  fromPCLPointCloud2(output_blob, output);
+
+  EXPECT_EQ (output.points.size (), cloud->points.size ());
+  EXPECT_EQ (output.width, cloud->width);
+  EXPECT_EQ (output.height, cloud->height);
+
+  EXPECT_EQ (output.points[0].x, cloud->points[0].x);
+  EXPECT_EQ (output.points[0].y, cloud->points[0].y);
+  EXPECT_EQ (output.points[0].z, cloud->points[0].z);
+
   // Test setNegative on empty datasets
   PointCloud<PointXYZ> empty, result;
   ExtractIndices<PointXYZ> eie;
