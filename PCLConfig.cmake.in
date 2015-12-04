@@ -212,6 +212,10 @@ endmacro(find_openni)
 
 #remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
+  if(PCL_FIND_QUIETLY)
+	set(OpenNI2_FIND_QUIETLY TRUE)
+  endif()
+
   if(NOT OPENNI2_ROOT AND ("@HAVE_OPENNI2@" STREQUAL "TRUE"))
     set(OPENNI2_INCLUDE_DIRS_HINT "@OPENNI2_INCLUDE_DIRS@")
     get_filename_component(OPENNI2_LIBRARY_HINT "@OPENNI2_LIBRARY@" PATH)
@@ -223,7 +227,11 @@ macro(find_openni2)
   endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI2 libopenni2)
+	if(PCL_FIND_QUIETLY)
+    	pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
+	else()
+		pkg_check_modules(PC_OPENNI2 libopenni2)
+	endif()
   endif(PKG_CONFIG_FOUND)
   
   find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
@@ -250,6 +258,10 @@ endmacro(find_openni2)
 
 #remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
 macro(find_ensenso)
+  if(PCL_FIND_QUIETLY)
+	set(ensenso_FIND_QUIETLY TRUE)
+  endif()
+
   if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
     get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
   endif()
@@ -280,6 +292,10 @@ endmacro(find_ensenso)
 
 #remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
 macro(find_davidSDK)
+  if(PCL_FIND_QUIETLY)
+	set(DAVIDSDK_FIND_QUIETLY TRUE)
+  endif()
+
   if(NOT davidSDK_ROOT AND ("@HAVE_DAVIDSDK@" STREQUAL "TRUE"))
     get_filename_component(DAVIDSDK_ABI_HINT @DAVIDSDK_INCLUDE_DIR@ PATH)
   endif()
@@ -309,6 +325,9 @@ macro(find_davidSDK)
 endmacro(find_davidSDK)
 
 macro(find_dssdk)
+  if(PCL_FIND_QUIETLY)
+	set(DSSDK_FIND_QUIETLY TRUE)
+  endif()
   if(NOT DSSDK_DIR AND ("@HAVE_DSSDK@" STREQUAL "TRUE"))
     get_filename_component(DSSDK_DIR_HINT "@DSSDK_INCLUDE_DIRS@" PATH)
   endif()
@@ -345,6 +364,9 @@ macro(find_dssdk)
 endmacro(find_dssdk)
 
 macro(find_rssdk)
+  if(PCL_FIND_QUIETLY)
+	set(RSSDK_FIND_QUIETLY TRUE)
+  endif()
   if(NOT RSSDK_DIR AND ("@HAVE_RSSDK@" STREQUAL "TRUE"))
     get_filename_component(RSSDK_DIR_HINT "@RSSDK_INCLUDE_DIRS@" PATH)
   endif()
