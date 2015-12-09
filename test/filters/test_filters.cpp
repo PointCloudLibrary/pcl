@@ -195,9 +195,12 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
-  EXPECT_EQ (output.points[1].x, cloud->points[1].x);
-  EXPECT_EQ (output.points[1].y, cloud->points[1].y);
-  EXPECT_EQ (output.points[1].z, cloud->points[1].z);
+  EXPECT_EQ (output.points[0].x, cloud->points[0].x);
+  EXPECT_EQ (output.points[0].y, cloud->points[0].y);
+  EXPECT_EQ (output.points[0].z, cloud->points[0].z);
+  EXPECT_EQ (output.points[1].x, std::numeric_limits<float>::quiet_NaN());
+  EXPECT_EQ (output.points[1].y, std::numeric_limits<float>::quiet_NaN());
+  EXPECT_EQ (output.points[1].z, std::numeric_limits<float>::quiet_NaN());
 
   ei2.setNegative (true);
   ei2.setKeepOrganized (true);
@@ -209,9 +212,12 @@ TEST (ExtractIndices, Filters)
   EXPECT_EQ (output.width, cloud->width);
   EXPECT_EQ (output.height, cloud->height);
 
-  EXPECT_EQ (output.points[0].x, cloud->points[0].x);
-  EXPECT_EQ (output.points[0].y, cloud->points[0].y);
-  EXPECT_EQ (output.points[0].z, cloud->points[0].z);
+  EXPECT_EQ (output.points[0].x, std::numeric_limits<float>::quiet_NaN());
+  EXPECT_EQ (output.points[0].y, std::numeric_limits<float>::quiet_NaN());
+  EXPECT_EQ (output.points[0].z, std::numeric_limits<float>::quiet_NaN());
+  EXPECT_EQ (output.points[1].x, cloud->points[1].x);
+  EXPECT_EQ (output.points[1].y, cloud->points[1].y);
+  EXPECT_EQ (output.points[1].z, cloud->points[1].z);
 
   // Test setNegative on empty datasets
   PointCloud<PointXYZ> empty, result;

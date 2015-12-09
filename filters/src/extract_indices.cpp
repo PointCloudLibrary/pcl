@@ -49,6 +49,14 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     output = *input_;
     if (negative_)
     {
+      // Prepare the output and copy the data
+      for (size_t i = 0; i < indices_->size (); ++i)
+        for (size_t j = 0; j < output.fields.size(); ++j)
+          memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
+                  &user_filter_value_, sizeof(float));
+    }
+    else
+    {
       // Prepare a vector holding all indices
       std::vector<int> all_indices (input_->width * input_->height);
       for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
@@ -66,14 +74,6 @@ pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       for (size_t i = 0; i < remaining_indices.size (); ++i)
         for (size_t j = 0; j < output.fields.size(); ++j)
           memcpy (&output.data[remaining_indices[i] * output.point_step + output.fields[j].offset],
-                  &user_filter_value_, sizeof(float));
-    }
-    else
-    {
-      // Prepare the output and copy the data
-      for (size_t i = 0; i < indices_->size (); ++i)
-        for (size_t j = 0; j < output.fields.size(); ++j)
-          memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
                   &user_filter_value_, sizeof(float));
     }
     if (!pcl_isfinite (user_filter_value_))
