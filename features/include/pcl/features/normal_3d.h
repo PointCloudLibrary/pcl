@@ -353,7 +353,7 @@ namespace pcl
     protected:
       /** \brief Estimate normals for all points given in <setInputCloud (), setIndices ()> using the surface in
         * setSearchSurface () and the spatial locator in setSearchMethod ()
-        * \note In situations where not enough neighbors are found, the normal and curvature values are set to -1.
+        * \note In situations where not enough neighbors are found, the normal and curvature values are set to NaN.
         * \param output the resultant point cloud model dataset that contains surface normals and curvatures
         */
       void
