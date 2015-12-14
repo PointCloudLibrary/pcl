@@ -29,6 +29,7 @@ if(build)
         src/progressive_morphological_filter.cpp
         src/approximate_progressive_morphological_filter.cpp
         src/lccp_segmentation.cpp
+        src/cpc_segmentation.cpp
        )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -69,6 +70,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/progressive_morphological_filter.h"
         "include/pcl/${SUBSYS_NAME}/approximate_progressive_morphological_filter.h"
         "include/pcl/${SUBSYS_NAME}/lccp_segmentation.h"
+        "include/pcl/${SUBSYS_NAME}/cpc_segmentation.h"
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)
@@ -104,6 +106,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/progressive_morphological_filter.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/approximate_progressive_morphological_filter.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lccp_segmentation.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/cpc_segmentation.hpp"
         )
     # NOTE: boost/graph/boykov_kolmogorov_max_flow.hpp only exists for versions > 1.43
     if(Boost_MAJOR_VERSION GREATER 1 OR Boost_MINOR_VERSION GREATER 43)

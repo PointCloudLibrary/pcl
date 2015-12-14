@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009-2011, Willow Garage, Inc.
+ *  Copyright (c) 2015, Google, Inc.
  *
  *  All rights reserved.
  *
@@ -89,6 +90,10 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     inverse_transform = transform.inverse ();
   }
 
+  bool transform_matrix_is_identity = transform_.matrix ().isIdentity ();
+  bool translation_is_zero = (translation_ != Eigen::Vector3f::Zero ());
+  bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
+
   for (size_t index = 0; index < indices_->size (); ++index)
   {
     if (!input_->is_dense)
@@ -100,10 +105,10 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     PointT local_pt = input_->points[(*indices_)[index]];
 
     // Transform point to world space
-    if (!(transform_.matrix ().isIdentity ()))
+    if (!transform_matrix_is_identity)
       local_pt = pcl::transformPoint<PointT> (local_pt, transform_);
 
-    if (translation_ != Eigen::Vector3f::Zero ())
+    if (translation_is_zero)
     {
       local_pt.x -= translation_ (0);
       local_pt.y -= translation_ (1);
@@ -111,7 +116,7 @@ pcl::CropBox<PointT>::applyFilter (std::vector<int> &indices)
     }
 
     // Transform point to local space of crop box
-    if (!(inverse_transform.matrix ().isIdentity ()))
+    if (!inverse_transform_matrix_is_identity)
       local_pt = pcl::transformPoint<PointT> (local_pt, inverse_transform);
 
     // If outside the cropbox

@@ -71,7 +71,7 @@ pcl::PFHRGBEstimation<PointInT, PointNT, PointOutT>::computePointPFHRGBSignature
   pfhrgb_histogram.setZero ();
 
   // Factorization constant
-  float hist_incr = 100.0f / static_cast<float> (indices.size () * indices.size () - 1);
+  float hist_incr = 100.0f / static_cast<float> (indices.size () * (indices.size () - 1) / 2);
 
   // Iterate over all the points in the neighborhood
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)

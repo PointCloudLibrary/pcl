@@ -139,7 +139,7 @@ namespace pcl
         * \param[in] v_src source normal map (current frame cloud) 
         * \param[in] coresp Corespondances
         * \param[out] gbuf temp buffer for GPU reduction
-        * \param[out] mbuf ouput GPU buffer for matrix computed
+        * \param[out] mbuf output GPU buffer for matrix computed
         * \param[out] matrixA_host A
         * \param[out] vectorB_host b
         */
@@ -161,7 +161,7 @@ namespace pcl
         * \param[in] distThres distance filtering threshold
         * \param[in] angleThres angle filtering threshold. Represents sine of angle between normals
         * \param[out] gbuf temp buffer for GPU reduction
-        * \param[out] mbuf ouput GPU buffer for matrix computed
+        * \param[out] mbuf output GPU buffer for matrix computed
         * \param[out] matrixA_host A
         * \param[out] vectorB_host b
         */
@@ -183,7 +183,7 @@ namespace pcl
         * \param[in] distThres distance filtering threshold
         * \param[in] angleThres angle filtering threshold. Represents sine of angle between normals
         * \param[out] gbuf temp buffer for GPU reduction
-        * \param[out] mbuf ouput GPU buffer for matrix computed
+        * \param[out] mbuf output GPU buffer for matrix computed
         * \param[out] matrixA_host A
         * \param[out] vectorB_host b
         */

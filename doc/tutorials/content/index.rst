@@ -616,6 +616,35 @@ I/O
      .. |i_o7| image:: images/ensenso/ids.png
                :height: 165px
 
+  * :ref:`david_sdk`
+
+     ======  ======
+     |i_o8|  Title: **Grabbing point clouds / meshes from davidSDK scanners**
+
+             Author: *Victor Lamoine*
+
+             Compatibility: >= PCL 1.8.0
+
+             In this tutorial, we will learn how to acquire point cloud or mesh data from a davidSDK scanner.
+     ======  ======
+
+     .. |i_o8| image:: images/davidsdk/david.png
+               :height: 70px
+
+  * :ref:`depth_sense_grabber`
+
+     ======  ======
+     |i_o9|  Title: **Grabbing point clouds from DepthSense cameras**
+
+             Author: *Sergey Alexandrov*
+
+             Compatibility: >= PCL 1.8.0
+
+             In this tutorial we will learn how to setup and use DepthSense cameras within PCL on both Linux and Windows platforms.
+     ======  ======
+
+     .. |i_o9| image:: images/creative_camera.jpg
+               :height: 70px
 
 .. _keypoints_tutorial:
 

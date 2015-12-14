@@ -157,6 +157,16 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::setDimension] Invalid input dimension specified!\n", getClassName ().c_str ());
       }
 
+      /** \brief Retrieve the indices of the input point cloud that for the convex hull.
+        *
+        * \note Should only be called after reconstruction was performed and if the ConcaveHull is
+        * set to preserve information via setKeepInformation ().
+        *
+        * \param[out] hull_point_indices The indices of the points forming the point cloud
+        */
+      void
+      getHullPointIndices (pcl::PointIndices &hull_point_indices) const;
+
     protected:
       /** \brief Class get name method. */
       std::string
@@ -197,6 +207,9 @@ namespace pcl
       
       /** \brief the dimensionality of the concave hull */
       int dim_;
+
+      /** \brief vector containing the point cloud indices of the convex hull points. */
+      pcl::PointIndices hull_indices_;
   };
 }
 

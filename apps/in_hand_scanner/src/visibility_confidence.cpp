@@ -137,7 +137,7 @@ pcl::ihs::addDirection (const Eigen::Vector4f& normal,
   //       acos (angle) = dot (a, b) / (norm (a) * norm (b)
   //       m_sphere_vertices are already normalized
   unsigned int index = 0;
-  (aligned_direction.transpose () * pcl::ihs::dome.getVertices ()).maxCoeff (&index);
+  aligned_direction.transpose ().lazyProduct (pcl::ihs::dome.getVertices ()).maxCoeff (&index);
 
   // Set the observed direction bit at 'index'
   // http://stackoverflow.com/questions/47981/how-do-you-set-clear-and-toggle-a-single-bit-in-c/47990#47990

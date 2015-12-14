@@ -119,11 +119,14 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object given an input file name, based on the file extension
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \param[in] binary_format if true, exported file is in binary format
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFile (const std::string &file_name, 
-                     const pcl::PolygonMesh& mesh);
+                     const pcl::PolygonMesh& mesh,
+                     const bool binary_format = true);
 
     /** \brief Load a VTK file into a \ref PolygonMesh object
       * \param[in] file_name the name of the file that contains the data
@@ -177,29 +180,38 @@ namespace pcl
     /** \brief Save a \ref PolygonMesh object into a VTK file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \param[in] binary_format if true, exported file is in binary format
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFileVTK (const std::string &file_name, 
-                        const pcl::PolygonMesh& mesh);
+                        const pcl::PolygonMesh& mesh,
+                        const bool binary_format = true);
 
     /** \brief Save a \ref PolygonMesh object into a PLY file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \param[in] binary_format if true, exported file is in binary format
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFilePLY (const std::string &file_name, 
-                        const pcl::PolygonMesh& mesh);
+                        const pcl::PolygonMesh& mesh,
+                        const bool binary_format = true);
 
     /** \brief Save a \ref PolygonMesh object into an STL file
       * \param[in] file_name the name of the file to save the data to
       * \param[in] mesh the object that contains the data
+      * \param[in] binary_format if true, exported file is in binary format
+      * \return True if successful, false otherwise
       * \ingroup io
       */
-    PCL_EXPORTS int
+    PCL_EXPORTS bool
     savePolygonFileSTL (const std::string &file_name, 
-                        const pcl::PolygonMesh& mesh);
+                        const pcl::PolygonMesh& mesh,
+                        const bool binary_format = true);
 
     /** \brief Write a \ref RangeImagePlanar object to a PNG file
       * \param[in] file_name the name of the file to save the data to

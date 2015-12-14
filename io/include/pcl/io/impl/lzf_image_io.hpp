@@ -76,12 +76,12 @@ pcl::io::LZFDepth16ImageReader::read (
   cloud.height   = getHeight ();
   cloud.is_dense = true;
   cloud.resize (getWidth () * getHeight ());
-  register int depth_idx = 0, point_idx = 0;
+  int depth_idx = 0, point_idx = 0;
   double constant_x = 1.0 / parameters_.focal_length_x,
          constant_y = 1.0 / parameters_.focal_length_y;
   for (uint32_t v = 0; v < cloud.height; ++v)
   {
-    for (register uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
+    for (uint32_t u = 0; u < cloud.width; ++u, ++point_idx, depth_idx += 2)
     {
       PointT &pt = cloud.points[point_idx];
       unsigned short val;
@@ -220,7 +220,7 @@ pcl::io::LZFRGB24ImageReader::read (
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
 
-  register int rgb_idx = 0;
+  int rgb_idx = 0;
   unsigned char *color_r = reinterpret_cast<unsigned char*> (&uncompressed_data[0]);
   unsigned char *color_g = reinterpret_cast<unsigned char*> (&uncompressed_data[getWidth () * getHeight ()]);
   unsigned char *color_b = reinterpret_cast<unsigned char*> (&uncompressed_data[2 * getWidth () * getHeight ()]);
@@ -325,7 +325,7 @@ pcl::io::LZFYUV422ImageReader::read (
   unsigned char *color_y = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2]);
   unsigned char *color_v = reinterpret_cast<unsigned char*> (&uncompressed_data[wh2 + getWidth () * getHeight ()]);
   
-  register int y_idx = 0;
+  int y_idx = 0;
   for (int i = 0; i < wh2; ++i, y_idx += 2)
   {
     int v = color_v[i] - 128;
@@ -444,7 +444,7 @@ pcl::io::LZFBayer8ImageReader::read (
   cloud.width  = getWidth ();
   cloud.height = getHeight ();
   cloud.resize (getWidth () * getHeight ());
-  register int rgb_idx = 0;
+  int rgb_idx = 0;
   for (size_t i = 0; i < cloud.size (); ++i, rgb_idx += 3)
   {
     PointT &pt = cloud.points[i];

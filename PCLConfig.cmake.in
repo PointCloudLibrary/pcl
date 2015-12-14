@@ -176,10 +176,10 @@ endmacro(find_qhull)
 
 #remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
-  if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+  if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "TRUE"))
     set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
     get_filename_component(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@" PATH)
-  endif(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "ON"))
+  endif()
 
   if(PKG_CONFIG_FOUND)
     pkg_check_modules(PC_OPENNI libopenni)
@@ -212,9 +212,14 @@ endmacro(find_openni)
 
 #remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
 macro(find_openni2)
-  if(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
-    get_filename_component(OPENNI2_LIBRARY_HINT "OPENNI_LIBRARY-NOTFOUND" PATH)
-  endif(NOT OPENNI2_ROOT AND ("ON" STREQUAL "ON"))
+  if(PCL_FIND_QUIETLY)
+	set(OpenNI2_FIND_QUIETLY TRUE)
+  endif()
+
+  if(NOT OPENNI2_ROOT AND ("@HAVE_OPENNI2@" STREQUAL "TRUE"))
+    set(OPENNI2_INCLUDE_DIRS_HINT "@OPENNI2_INCLUDE_DIRS@")
+    get_filename_component(OPENNI2_LIBRARY_HINT "@OPENNI2_LIBRARY@" PATH)
+  endif()
 
   set(OPENNI2_SUFFIX)
   if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -222,25 +227,29 @@ macro(find_openni2)
   endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   
   if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI2 libopenni2)
+	if(PCL_FIND_QUIETLY)
+    	pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
+	else()
+		pkg_check_modules(PC_OPENNI2 libopenni2)
+	endif()
   endif(PKG_CONFIG_FOUND)
   
   find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
-          HINTS /usr/include/openni2 /usr/include/ni2
-          PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"
+          HINTS /usr/include/openni2 /usr/include/ni2 /usr/local/include/openni2 /usr/local/include/ni2
+          PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}" "${OPENNI2_INCLUDE_DIRS_HINT}"
           PATH_SUFFIXES openni openni2 include Include)
   
   find_library(OPENNI2_LIBRARY 
              NAMES OpenNI2	# No suffix needed on Win64
-             HINTS /usr/lib
-             PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}"
+             HINTS /usr/lib /usr/local/lib/ni2
+             PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}" "${OPENNI2_LIBRARY_HINT}"
              PATH_SUFFIXES lib Lib Lib64)	
   
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(OpenNI2 DEFAULT_MSG OPENNI2_LIBRARY OPENNI2_INCLUDE_DIRS)
   
   if(OPENNI2_FOUND)
-    get_filename_component(OPENNI_LIBRARY_PATH ${OPENNI2_LIBRARY} PATH)
+    get_filename_component(OPENNI2_LIBRARY_PATH ${OPENNI2_LIBRARY} PATH)
     set(OPENNI2_LIBRARY_DIRS ${OPENNI2_LIBRARY_PATH}) 
     set(OPENNI2_LIBRARIES "${OPENNI2_LIBRARY}")
     set(OPENNI2_REDIST_DIR $ENV{OPENNI2_REDIST${OPENNI2_SUFFIX}})
@@ -249,9 +258,13 @@ endmacro(find_openni2)
 
 #remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
 macro(find_ensenso)
-  if(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+  if(PCL_FIND_QUIETLY)
+	set(ensenso_FIND_QUIETLY TRUE)
+  endif()
+
+  if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
     get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
-  endif(NOT ENSENSO_ROOT AND ("ON" STREQUAL "ON"))
+  endif()
 
   find_path(ENSENSO_INCLUDE_DIR nxLib.h
             HINTS ${ENSENSO_ABI_HINT}
@@ -276,6 +289,119 @@ macro(find_ensenso)
     set(ENSENSO_REDIST_DIR $ENV{ENSENSO_REDIST${ENSENSO_SUFFIX}})
   endif(ENSENSO_FOUND)
 endmacro(find_ensenso)
+
+#remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
+macro(find_davidSDK)
+  if(PCL_FIND_QUIETLY)
+	set(DAVIDSDK_FIND_QUIETLY TRUE)
+  endif()
+
+  if(NOT davidSDK_ROOT AND ("@HAVE_DAVIDSDK@" STREQUAL "TRUE"))
+    get_filename_component(DAVIDSDK_ABI_HINT @DAVIDSDK_INCLUDE_DIR@ PATH)
+  endif()
+
+  find_path(DAVIDSDK_INCLUDE_DIR david.h
+            HINTS ${DAVIDSDK_ABI_HINT}
+            /usr/local/include/davidSDK
+            "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
+            PATH_SUFFIXES include/)
+
+  find_library(DAVIDSDK_LIBRARY QUIET NAMES davidSDK
+               HINTS ${DAVIDSDK_ABI_HINT}
+               "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
+               PATH_SUFFIXES lib/)
+
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(DAVIDSDK DEFAULT_MSG
+                                    DAVIDSDK_LIBRARY DAVIDSDK_INCLUDE_DIR)
+
+  if(DAVIDSDK_FOUND)
+    get_filename_component(DAVIDSDK_LIBRARY_PATH ${DAVIDSDK_LIBRARY} PATH)
+    set(DAVIDSDK_INCLUDE_DIRS ${DAVIDSDK_INCLUDE_DIR})
+    set(DAVIDSDK_LIBRARY_DIRS ${DAVIDSDK_LIBRARY_PATH})
+    set(DAVIDSDK_LIBRARIES "${DAVIDSDK_LIBRARY}")
+    set(DAVIDSDK_REDIST_DIR $ENV{DAVIDSDK_REDIST${DAVIDSDK_SUFFIX}})
+  endif(DAVIDSDK_FOUND)
+endmacro(find_davidSDK)
+
+macro(find_dssdk)
+  if(PCL_FIND_QUIETLY)
+	set(DSSDK_FIND_QUIETLY TRUE)
+  endif()
+  if(NOT DSSDK_DIR AND ("@HAVE_DSSDK@" STREQUAL "TRUE"))
+    get_filename_component(DSSDK_DIR_HINT "@DSSDK_INCLUDE_DIRS@" PATH)
+  endif()
+  find_path(DSSDK_DIR include/DepthSenseVersion.hxx
+            HINTS ${DSSDK_DIR_HINT}
+                  "$ENV{DEPTHSENSESDK32}"
+                  "$ENV{DEPTHSENSESDK64}"
+            PATHS "$ENV{PROGRAMFILES}/SoftKinetic/DepthSenseSDK"
+                  "$ENV{PROGRAMW6432}/SoftKinetic/DepthSenseSDK"
+                  "C:/Program Files (x86)/SoftKinetic/DepthSenseSDK"
+                  "C:/Program Files/SoftKinetic/DepthSenseSDK"
+                  "/opt/softkinetic/DepthSenseSDK"
+            DOC "DepthSense SDK directory")
+  set(_DSSDK_INCLUDE_DIRS ${DSSDK_DIR}/include)
+  if(MSVC)
+    set(DSSDK_LIBRARIES_NAMES DepthSense)
+  else()
+    set(DSSDK_LIBRARIES_NAMES DepthSense DepthSensePlugins turbojpeg)
+  endif()
+  foreach(LIB ${DSSDK_LIBRARIES_NAMES})
+    find_library(DSSDK_LIBRARY_${LIB}
+                 NAMES "${LIB}"
+                 PATHS "${DSSDK_DIR}/lib/" NO_DEFAULT_PATH)
+    list(APPEND _DSSDK_LIBRARIES ${DSSDK_LIBRARY_${LIB}})
+    mark_as_advanced(DSSDK_LIBRARY_${LIB})
+  endforeach()
+  find_package_handle_standard_args(DSSDK DEFAULT_MSG _DSSDK_LIBRARIES _DSSDK_INCLUDE_DIRS)
+  if(DSSDK_FOUND)
+    set(DSSDK_LIBRARIES ${_DSSDK_LIBRARIES})
+    mark_as_advanced(DSSDK_LIBRARIES)
+    set(DSSDK_INCLUDE_DIRS ${_DSSDK_INCLUDE_DIRS})
+    mark_as_advanced(DSSDK_INCLUDE_DIRS)
+  endif()
+endmacro(find_dssdk)
+
+macro(find_rssdk)
+  if(PCL_FIND_QUIETLY)
+	set(RSSDK_FIND_QUIETLY TRUE)
+  endif()
+  if(NOT RSSDK_DIR AND ("@HAVE_RSSDK@" STREQUAL "TRUE"))
+    get_filename_component(RSSDK_DIR_HINT "@RSSDK_INCLUDE_DIRS@" PATH)
+  endif()
+  find_path(RSSDK_DIR include/pxcversion.h
+            HINTS ${RSSDK_DIR_HINT}
+            PATHS "$ENV{RSSDK_DIR}"
+                  "$ENV{PROGRAMFILES}/Intel/RSSDK"
+                  "$ENV{PROGRAMW6432}/Intel/RSSDK"
+                  "C:/Program Files (x86)/Intel/RSSDK"
+                  "C:/Program Files/Intel/RSSDK"
+            DOC "RealSense SDK directory")
+  set(_RSSDK_INCLUDE_DIRS ${RSSDK_DIR}/include)
+  set(RSSDK_RELEASE_NAME libpxc.lib)
+  set(RSSDK_DEBUG_NAME libpxc_d.lib)
+  find_library(RSSDK_LIBRARY
+               NAMES ${RSSDK_RELEASE_NAME}
+               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
+               PATH_SUFFIXES x64 Win32)
+  find_library(RSSDK_LIBRARY_DEBUG
+               NAMES ${RSSDK_DEBUG_NAME} ${RSSDK_RELEASE_NAME}
+               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
+               PATH_SUFFIXES x64 Win32)
+  if(NOT RSSDK_LIBRARY_DEBUG)
+    set(RSSDK_LIBRARY_DEBUG ${RSSDK_LIBRARY})
+  endif()
+  set(_RSSDK_LIBRARIES optimized ${RSSDK_LIBRARY} debug ${RSSDK_LIBRARY_DEBUG})
+  mark_as_advanced(RSSDK_LIBRARY RSSDK_LIBRARY_DEBUG)
+  find_package_handle_standard_args(RSSDK DEFAULT_MSG _RSSDK_LIBRARIES _RSSDK_INCLUDE_DIRS)
+  if(RSSDK_FOUND)
+    set(RSSDK_LIBRARIES ${_RSSDK_LIBRARIES})
+    mark_as_advanced(RSSDK_LIBRARIES)
+    set(RSSDK_INCLUDE_DIRS ${_RSSDK_INCLUDE_DIRS})
+    mark_as_advanced(RSSDK_INCLUDE_DIRS)
+  endif()
+endmacro(find_rssdk)
 
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
@@ -328,7 +454,11 @@ endmacro(find_flann)
 
 macro(find_VTK)
   if(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
-    set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/vtk-5.8")
+    if(EXISTS "${PCL_ROOT}/3rdParty/VTK/lib/cmake")
+      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/cmake/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@")
+    else()
+      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@")
+    endif()
   elseif(NOT VTK_DIR AND NOT ANDROID)
     set(VTK_DIR "@VTK_DIR@")
   endif(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
@@ -386,13 +516,23 @@ IF (WIN32)
 ELSE (WIN32)
 
   IF (APPLE)
-# These values for Apple could probably do with improvement.
-    FIND_PATH( GLEW_INCLUDE_DIR glew.h
+  
+    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
+      /usr/local/include
       /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
       ${OPENGL_LIBRARY_DIR}
     )
-    SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
-    SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
+
+    FIND_LIBRARY( GLEW_GLEW_LIBRARY GLEW
+      /usr/local/lib
+      /usr/openwin/lib
+      /usr/X11R6/lib
+    )
+
+    if(NOT GLEW_GLEW_LIBRARY)
+        SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
+        SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
+    endif()
   ELSE (APPLE)
 
     FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
@@ -474,6 +614,12 @@ macro(find_external_library _component _lib _is_optional)
     find_openni2()
   elseif("${_lib}" STREQUAL "ensenso")
     find_ensenso()
+  elseif("${_lib}" STREQUAL "davidSDK")
+    find_davidSDK()
+  elseif("${_lib}" STREQUAL "dssdk")
+    find_dssdk()
+  elseif("${_lib}" STREQUAL "rssdk")
+    find_rssdk()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -486,6 +632,7 @@ macro(find_external_library _component _lib _is_optional)
 
   string(TOUPPER "${_component}" COMPONENT)
   string(TOUPPER "${_lib}" LIB)
+  string(REGEX REPLACE "[.-]" "_" LIB ${LIB})
   if(${LIB}_FOUND)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS ${${LIB}_INCLUDE_DIRS})
     if(${LIB}_USE_FILE)
@@ -750,7 +897,7 @@ endif(NOT "${PCL_DEFINITIONS}" STREQUAL "")
 pcl_remove_duplicate_libraries(PCL_LIBRARIES PCL_DEDUP_LIBRARIES)
 set(PCL_LIBRARIES ${PCL_DEDUP_LIBRARIES})
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${FLANN_LIBRARIES} ${VTK_LIBRARIES})
 
 find_package_handle_standard_args(PCL DEFAULT_MSG PCL_LIBRARIES PCL_INCLUDE_DIRS)
 mark_as_advanced(PCL_LIBRARIES PCL_INCLUDE_DIRS PCL_LIBRARY_DIRS)

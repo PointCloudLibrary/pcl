@@ -323,12 +323,8 @@ pcl::SampleConsensusModelCircle2D<PointT>::doSamplesVerifyModel (
 template <typename PointT> bool 
 pcl::SampleConsensusModelCircle2D<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 3)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCircle2D::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
 
   if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[2] < radius_min_)
     return (false);

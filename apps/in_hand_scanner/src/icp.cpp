@@ -382,7 +382,7 @@ pcl::ihs::ICP::selectModelPoints (const MeshConstPtr&    mesh_model,
   for (Mesh::VertexDataCloud::const_iterator it=cloud.begin (); it!=cloud.end (); ++it)
   {
     // Don't consider points that are facing away from the camera.
-    if ((T_inv * it->getNormalVector4fMap ()).z () < 0.f)
+    if ((T_inv.lazyProduct (it->getNormalVector4fMap ())).z () < 0.f)
     {
       PointNormal pt;
       pt.getVector4fMap ()       = it->getVector4fMap ();

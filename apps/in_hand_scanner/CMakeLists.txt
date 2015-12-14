@@ -23,7 +23,7 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
 endif()
 
 #OpenNI
-if(NOT OPENNI_FOUND OR NOT BUILD_OPENNI)
+if(NOT WITH_OPENNI)
     set(DEFAULT AUTO_OFF)
     set(REASON "OpenNI was not found or was disabled by the user.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")

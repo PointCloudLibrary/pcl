@@ -24,6 +24,11 @@
 
 #include <pcl/features/don.h>
 
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+#include <pcl/features/impl/normal_3d_omp.hpp>
+#include <pcl/segmentation/impl/extract_clusters.hpp>
+#endif
+
 using namespace pcl;
 using namespace std;
 
@@ -229,3 +234,4 @@ int main (int argc, char *argv[])
 		writer.write<PointOutT> (ss.str (), *cloud_cluster_don, false);
 	}
 }
+

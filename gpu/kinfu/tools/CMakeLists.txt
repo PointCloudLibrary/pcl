@@ -1,4 +1,4 @@
-if(OPENNI_FOUND)
+if(WITH_OPENNI)
 	if(NOT VTK_FOUND)
 		set(DEFAULT FALSE)
 		set(REASON "VTK was not found.")
@@ -57,4 +57,4 @@ if(OPENNI_FOUND)
 	#	endif(GLUT_FOUND)
 	#endif (GLEW_FOUND)
 
-endif(OPENNI_FOUND)
+endif()

@@ -7,7 +7,6 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/console/time.h>
-#include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/correspondence_estimation.h>

@@ -48,7 +48,7 @@ if(build)
 
   include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-  # Set Qt files and resources here  
+  # Set Qt files and resources here 
 #  set(uis main_window.ui)
   set(moc_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
                "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/filter_window.h"

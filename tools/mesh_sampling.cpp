@@ -37,6 +37,7 @@
 
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/io/vtk_lib_io.h>
 #include <pcl/common/transforms.h>
 #include <vtkVersion.h>
 #include <vtkPLYReader.h>
@@ -187,11 +188,12 @@ main (int argc, char **argv)
     return (-1);
   }
 
-  vtkSmartPointer<vtkPolyData> polydata1;
+  vtkSmartPointer<vtkPolyData> polydata1 = vtkSmartPointer<vtkPolyData>::New ();;
   if (ply_file_indices.size () == 1)
   {
-    vtkSmartPointer<vtkPLYReader> readerQuery = vtkSmartPointer<vtkPLYReader>::New ();
-    readerQuery->SetFileName (argv[ply_file_indices[0]]);
+    pcl::PolygonMesh mesh;
+    pcl::io::loadPolygonFilePLY (argv[ply_file_indices[0]], mesh);
+    pcl::io::mesh2vtk (mesh, polydata1);
   }
   else if (obj_file_indices.size () == 1)
   {
@@ -240,14 +242,16 @@ main (int argc, char **argv)
   VoxelGrid<PointXYZ> grid_;
   grid_.setInputCloud (cloud_1);
   grid_.setLeafSize (leaf_size, leaf_size, leaf_size);
-  grid_.filter (*cloud_1);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr res(new pcl::PointCloud<pcl::PointXYZ>);
+  grid_.filter (*res);
 
   if (VIS)
   {
     visualization::PCLVisualizer vis3 ("VOXELIZED SAMPLES CLOUD");
-    vis3.addPointCloud (cloud_1);
+    vis3.addPointCloud (res);
     vis3.spin ();
   }
 
-  savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_1);
+  savePCDFileASCII (argv[pcd_file_indices[0]], *res);
 }

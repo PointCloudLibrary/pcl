@@ -6,7 +6,7 @@ set(SUBSYS_DEPS common io gpu_containers geometry search visualization)
 set(build FALSE)
 
 # OpenNI found?
-if(NOT OPENNI_FOUND OR NOT BUILD_OPENNI)
+if(NOT WITH_OPENNI)
     set(DEFAULT FALSE)
     set(REASON "OpenNI was not found or was disabled by the user.")
 else()

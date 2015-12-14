@@ -579,6 +579,18 @@ namespace pcl
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
 
+        /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this vizualizer.
+          * \param[in] id the id of the cloud, shape, or coordinate to check
+          * \return true if a cloud, shape, or coordinate with the specified id was found
+          */
+        inline bool
+        contains(const std::string &id) const
+        {
+          return (cloud_actor_map_->find (id) != cloud_actor_map_->end () ||
+                  shape_actor_map_->find (id) != shape_actor_map_->end () ||
+                  coordinate_actor_map_->find (id) != coordinate_actor_map_-> end());
+        }
+
         /** \brief Add the estimated surface normals of a Point Cloud to screen.
           * \param[in] cloud the input point cloud dataset containing XYZ data and normals
           * \param[in] level display only every level'th point (default: 100)
@@ -1130,6 +1142,7 @@ namespace pcl
           * \param[in] val3 the third value to be set
           * \param[in] id the point cloud object id (default: cloud)
           * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
           */
         bool
         setPointCloudRenderingProperties (int property, double val1, double val2, double val3,
@@ -1140,6 +1153,7 @@ namespace pcl
          * \param[in] value the value to be set
          * \param[in] id the point cloud object id (default: cloud)
          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setPointCloudRenderingProperties (int property, double value,
@@ -1149,6 +1163,7 @@ namespace pcl
          * \param[in] property the property type
          * \param[in] value the resultant property value
          * \param[in] id the point cloud object id (default: cloud)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         getPointCloudRenderingProperties (int property, double &value,
@@ -1167,6 +1182,7 @@ namespace pcl
          * \param[in] id the shape object id
          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
         setShapeRenderingProperties (int property, double value,
@@ -1847,6 +1863,12 @@ namespace pcl
           */
         void
         setUseVbos (bool use_vbos);
+
+        /** \brief Set the ID of a cloud or shape to be used for LUT display
+          * \param[in] id The id of the cloud/shape look up table to be displayed
+          * The look up table is displayed by pressing 'u' in the PCLVisualizer */
+        void
+        setLookUpTableID (const std::string id);
 
         /** \brief Create the internal Interactor object. */
         void
