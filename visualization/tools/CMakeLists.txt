@@ -10,6 +10,9 @@ target_link_libraries(pcl_timed_trigger_test pcl_io pcl_common pcl_kdtree pcl_vi
 PCL_ADD_EXECUTABLE(pcl_hdl_viewer_simple ${SUBSYS_NAME} hdl_viewer_simple.cpp)
 target_link_libraries(pcl_hdl_viewer_simple pcl_io pcl_common pcl_visualization)
 
+PCL_ADD_EXECUTABLE(pcl_vlp_viewer ${SUBSYS_NAME} vlp_viewer.cpp)
+target_link_libraries(pcl_vlp_viewer pcl_io pcl_common pcl_visualization)
+
 if(WITH_OPENNI)
 
     PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_pcd_grabber_viewer ${SUBSYS_NAME} pcd_grabber_viewer.cpp)
