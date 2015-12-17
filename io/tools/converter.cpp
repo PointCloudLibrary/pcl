@@ -281,7 +281,8 @@ main (int argc,
   else
   {
     // PCD, OBJ, PLY or VTK
-    PCL_WARN ("Could not load %s as a mesh, trying as a point cloud instead.\n", argv[file_args[1]]);
+    if (boost::filesystem::path (argv[file_args[0]]).extension () != ".pcd")
+      PCL_WARN ("Could not load %s as a mesh, trying as a point cloud instead.\n", argv[file_args[0]]);
 
     //Eigen::Vector4f origin; // TODO: Support origin/orientation
     //Eigen::Quaternionf orientation;
