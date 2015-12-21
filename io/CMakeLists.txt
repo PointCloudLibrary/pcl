@@ -212,6 +212,7 @@ if(build)
         src/ifs_io.cpp
         src/image_grabber.cpp
         src/hdl_grabber.cpp
+        src/vlp_grabber.cpp
         src/robot_eye_grabber.cpp
         src/file_io.cpp
         src/auto_io.cpp
@@ -260,6 +261,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ifs_io.h"
         "include/pcl/${SUBSYS_NAME}/image_grabber.h"
         "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/vlp_grabber.h"
         "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
         "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
         "include/pcl/${SUBSYS_NAME}/io_exception.h"
