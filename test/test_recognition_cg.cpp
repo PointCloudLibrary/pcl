@@ -109,7 +109,7 @@ TEST (PCL, Hough3DGrouping)
 
   //RFs
   BOARDLocalReferenceFrameEstimation<PointType, NormalType, RFType> rf_est;
-  rf_est.setRadiusSearch (0.015);
+  rf_est.setRadiusSearch (0.03);
   rf_est.setInputCloud (model_downsampled_);
   rf_est.setInputNormals (model_normals_);
   rf_est.setSearchSurface (model_);
@@ -134,8 +134,8 @@ TEST (PCL, Hough3DGrouping)
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
-  EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  ASSERT_EQ (rototranslations.size (), 1);
+  ASSERT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,8 +152,8 @@ TEST (PCL, GeometricConsistencyGrouping)
   EXPECT_TRUE (clusterer.recognize (rototranslations));
 
   //Assertions
-  EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  ASSERT_EQ (rototranslations.size (), 1);
+  ASSERT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
 }
 
 
