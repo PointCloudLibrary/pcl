@@ -2,7 +2,7 @@
 
 
 
-if(MSVC11)
+if(MSVC)
 	# Setting this to true brakes Visual Studio builds.
 	set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF CACHE BOOL "CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE")
 endif()
