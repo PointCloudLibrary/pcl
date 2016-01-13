@@ -45,7 +45,7 @@ using boost::asio::ip::udp;
 
 /////////////////////////////////////////////////////////////////////////////
 pcl::VLPGrabber::VLPGrabber (const std::string& pcapFile) :
-    pcl::HDLGrabber::HDLGrabber ("", pcapFile)
+    HDLGrabber ("", pcapFile)
 {
   loadVLP16Corrections ();
 }
@@ -53,7 +53,7 @@ pcl::VLPGrabber::VLPGrabber (const std::string& pcapFile) :
 /////////////////////////////////////////////////////////////////////////////
 pcl::VLPGrabber::VLPGrabber (const boost::asio::ip::address& ipAddress,
                              const unsigned short int port) :
-    pcl::HDLGrabber::HDLGrabber (ipAddress, port)
+    HDLGrabber (ipAddress, port)
 {
   loadVLP16Corrections ();
 }
