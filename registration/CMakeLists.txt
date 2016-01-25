@@ -71,6 +71,10 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/distances.h"
         "include/pcl/${SUBSYS_NAME}/exceptions.h"
         "include/pcl/${SUBSYS_NAME}/sample_consensus_prerejective.h"
+        "include/pcl/${SUBSYS_NAME}/ia_fpcs.h"
+        "include/pcl/${SUBSYS_NAME}/ia_kfpcs.h"
+        "include/pcl/${SUBSYS_NAME}/matching_candidate.h"
+        "include/pcl/${SUBSYS_NAME}/transformation_estimation_3point.h"
         )
 
     set(impl_incs 
@@ -116,6 +120,9 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/gicp.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/sample_consensus_prerejective.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/ia_fpcs.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/ia_kfpcs.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_3point.hpp"
         )
 
     set(srcs
