@@ -334,28 +334,28 @@ TEST (PCL, Matrix4Affine3Transform)
   PointCloud<PointXYZ> c, ct;
   c.push_back (p);
   pcl::transformPointCloud (c, ct, affine);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   pcl::transformPointCloud (c, ct, transformation);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   affine = transformation;
 
   std::vector<int> indices (1); indices[0] = 0;
 
   pcl::transformPointCloud (c, indices, ct, affine);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   pcl::transformPointCloud (c, indices, ct, transformation);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
