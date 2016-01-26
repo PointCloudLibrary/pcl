@@ -43,6 +43,12 @@ namespace pcl
     return (out);
   }
 
+  inline bool operator== (const PCLHeader &lhs, const PCLHeader &rhs)
+  {
+    return (&lhs == &rhs) ||
+      (lhs.seq == rhs.seq && lhs.stamp == rhs.stamp && lhs.frame_id == rhs.frame_id);
+  }
+
 } // namespace pcl
 
 #endif // PCL_ROSLIB_MESSAGE_HEADER_H
