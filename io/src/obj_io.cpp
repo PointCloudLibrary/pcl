@@ -41,6 +41,7 @@
 #include <pcl/common/io.h>
 #include <pcl/io/boost.h>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/clamp.hpp>
 #include <pcl/console/time.h>
 
 pcl::MTLReader::MTLReader ()
@@ -385,6 +386,7 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   // Read the header and fill it in with wonderful values
   bool vertex_normal_found = false;
   bool vertex_texture_found = false;
+  bool vertex_color_found = false;
   // Material library, skip for now!
   // bool material_found = false;
   std::vector<std::string> material_files;
@@ -414,6 +416,14 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
       if (st.at (0) == "v")
       {
         ++nr_point;
+
+        // there's no line start indicating color
+        if (!vertex_color_found &&
+          (st.size () == 7 || st.size () == 8))
+        {
+          vertex_color_found = true;
+        }
+
         continue;
       }
 
@@ -465,6 +475,16 @@ pcl::OBJReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   cloud.fields[0].name = "x";
   cloud.fields[1].name = "y";
   cloud.fields[2].name = "z";
+
+  if (vertex_color_found)
+  {
+    cloud.fields.push_back (pcl::PCLPointField ());
+    pcl::PCLPointField& last = cloud.fields.back ();
+    last.name     = "rgba";
+    last.offset   = (field_offset += 4);
+    last.datatype = pcl::PCLPointField::UINT32;
+    last.count    = 1;
+  }
 
   if (vertex_normal_found)
   {
@@ -542,17 +562,20 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
-  // std::size_t rgba_field = 0;
+  int rgba_field = -1;
   for (std::size_t i = 0; i < cloud.fields.size (); ++i)
+  {
     if (cloud.fields[i].name == "normal_x")
     {
       normal_x_field = i;
-      break;
+      continue;
     }
-
-
-  // else if (cloud.fields[i].name == "rgba")
-  //   rgba_field = i;
+    else if (cloud.fields[i].name == "rgba")
+    {
+      rgba_field = i;
+      continue;
+    }
+  }
 
   std::size_t point_idx = 0;
   std::size_t normal_idx = 0;
@@ -589,6 +612,27 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
             memcpy (&cloud.data[point_idx * cloud.point_step + cloud.fields[f].offset],
                 &value,
                 sizeof (float));
+          }
+
+          if (rgba_field >= 0)
+          {
+            try
+            {
+              uint32_t rgba = (static_cast<uint32_t> (0xff) << 24);
+              for (size_t i = st.size () - 3, j = 2; i < st.size (); ++i, --j)
+              {
+                uint32_t color = boost::algorithm::clamp (round (255 *
+                  boost::lexical_cast<float> (st[i])), 0, 255u);
+                rgba |= (color << (8 * j));
+              }
+              memcpy (&cloud.data[point_idx * cloud.point_step + cloud.fields[rgba_field].offset],
+                    &rgba, sizeof (uint32_t));
+            }
+            catch (const boost::bad_lexical_cast &e)
+            {
+              PCL_ERROR ("Unable to convert %s to vertex color!", line.c_str ());
+              return (-1);
+            }
           }
           ++point_idx;
         }
@@ -678,13 +722,20 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
-  // std::size_t rgba_field = 0;
+  int rgba_field = -1;
   for (std::size_t i = 0; i < mesh.cloud.fields.size (); ++i)
+  {
     if (mesh.cloud.fields[i].name == "normal_x")
     {
       normal_x_field = i;
-      break;
+      continue;
     }
+    else if (mesh.cloud.fields[i].name == "rgba")
+    {
+      rgba_field = i;
+      continue;
+    }
+  }
 
   std::size_t v_idx = 0;
   std::size_t vn_idx = 0;
@@ -723,6 +774,27 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
             memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
+          }
+
+          if (rgba_field >= 0)
+          {
+            try
+            {
+              uint32_t rgba = (static_cast<uint32_t> (0xff) << 24);
+              for (size_t i = st.size () - 3, j = 2; i < st.size (); ++i, --j)
+              {
+                uint32_t color = boost::algorithm::clamp (round (255 *
+                  boost::lexical_cast<float> (st[i])), 0, 255u);
+                rgba |= (color << (8 * j));
+              }
+              memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[rgba_field].offset],
+                &rgba, sizeof (uint32_t));
+            }
+            catch (const boost::bad_lexical_cast &e)
+            {
+              PCL_ERROR ("Unable to convert %s to vertex color!", line.c_str ());
+              return (-1);
+            }
           }
           ++v_idx;
         }
@@ -869,13 +941,20 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
 
   // Get normal_x and rgba fields indices
   int normal_x_field = -1;
-  // std::size_t rgba_field = 0;
+  int rgba_field = -1;
   for (std::size_t i = 0; i < mesh.cloud.fields.size (); ++i)
+  {
     if (mesh.cloud.fields[i].name == "normal_x")
     {
       normal_x_field = i;
-      break;
+      continue;
     }
+    if (mesh.cloud.fields[i].name == "rgba")
+    {
+      rgba_field = i;
+      continue;
+    }
+  }
 
   std::size_t v_idx = 0;
   std::size_t vn_idx = 0;
@@ -912,6 +991,27 @@ pcl::OBJReader::read (const std::string &file_name, pcl::PolygonMesh &mesh,
             memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[f].offset],
                 &value,
                 sizeof (float));
+          }
+
+          if (rgba_field >= 0)
+          {
+            try
+            {
+              uint32_t rgba = (static_cast<uint32_t> (0xff) << 24);
+              for (size_t i = st.size () - 3, j = 2; i < st.size (); ++i, --j)
+              {
+                uint32_t color = boost::algorithm::clamp (round (255 *
+                  boost::lexical_cast<float> (st[i])), 0, 255u);
+                rgba |= (color << (8 * j));
+              }
+              memcpy (&mesh.cloud.data[v_idx * mesh.cloud.point_step + mesh.cloud.fields[rgba_field].offset],
+                &rgba, sizeof (uint32_t));
+            }
+            catch (const boost::bad_lexical_cast &e)
+            {
+              PCL_ERROR ("Unable to convert %s to vertex color!", line.c_str ());
+              return (-1);
+            }
           }
           ++v_idx;
         }

@@ -43,6 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
+#include <pcl/io/obj_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
@@ -865,14 +866,32 @@ TEST (PCL, PLYReaderWriter)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-class PLYTest : public ::testing::Test
+class FileTest : public ::testing::Test
 {
-  protected:
+public:
+  virtual
+  ~FileTest () { remove (path_.c_str ()); }
 
-  PLYTest () : mesh_file_ply_("ply_color_mesh.ply")
+protected:
+
+  std::string path_;
+  uint32_t rgba_1_;
+  uint32_t rgba_2_;
+  uint32_t rgba_3_;
+  uint32_t rgba_4_;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class PLYTest : public FileTest
+{
+  public:
+
+  PLYTest ()
   {
+    path_ = "ply_color_mesh.ply";
+
     std::ofstream fs;
-    fs.open (mesh_file_ply_.c_str ());
+    fs.open (path_.c_str ());
     fs << "ply\n"
           "format ascii 1.0\n"
           "element vertex 4\n"
@@ -905,14 +924,6 @@ class PLYTest : public ::testing::Test
               static_cast<uint32_t> (255) << 8 | static_cast<uint32_t> (255);
   }
 
-  virtual
-  ~PLYTest () { remove (mesh_file_ply_.c_str ()); }
-
-  std::string mesh_file_ply_;
-  uint32_t rgba_1_;
-  uint32_t rgba_2_;
-  uint32_t rgba_3_;
-  uint32_t rgba_4_;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -926,7 +937,7 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoBlob)
   int32_t offset = -1;
 
   // check if loading is ok
-  res = loadPLYFile (mesh_file_ply_, cloud_blob);
+  res = loadPLYFile (path_, cloud_blob);
   ASSERT_EQ (res, 0);
 
   // blob has proper structure
@@ -974,7 +985,7 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   int32_t offset = -1;
 
   // check if loading is ok
-  res = loadPLYFile (mesh_file_ply_, mesh);
+  res = loadPLYFile (path_, mesh);
   ASSERT_EQ (res, 0);
 
   // blob has proper structure
@@ -1022,7 +1033,7 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
   PointCloud<TypeParam> cloud_rgb;
 
   // check if loading is ok
-  res = loadPLYFile (PLYTest::mesh_file_ply_, cloud_rgb);
+  res = loadPLYFile (FileTest::path_, cloud_rgb);
   ASSERT_EQ (res, 0);
 
   // cloud has proper structure
@@ -1032,14 +1043,178 @@ TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
   // EXPECT_TRUE (cloud_rgb.is_dense); // this is failing and it shouldnt?
 
   // scope cloud data
-  ASSERT_EQ (cloud_rgb[0].rgba, PLYTest::rgba_1_);
-  ASSERT_EQ (cloud_rgb[1].rgba, PLYTest::rgba_2_);
-  ASSERT_EQ (cloud_rgb[2].rgba, PLYTest::rgba_3_);
-  ASSERT_EQ (cloud_rgb[3].rgba, PLYTest::rgba_4_);
+  ASSERT_EQ (FileTest::rgba_1_, cloud_rgb[0].rgba);
+  ASSERT_EQ (FileTest::rgba_2_, cloud_rgb[1].rgba);
+  ASSERT_EQ (FileTest::rgba_3_, cloud_rgb[2].rgba);
+  ASSERT_EQ (FileTest::rgba_4_, cloud_rgb[3].rgba);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class OBJTest : public FileTest
+{
+  public:
 
+  OBJTest ()
+  {
+    path_ = "obj_color_mesh.obj";
+
+    std::ofstream fs;
+    fs.open (path_.c_str ());
+    fs  << "vn 1.000000 0.000000 0.000000\n"
+        << "v 1.000000 0.000000 0.000000 0.678431 0.509804 0.600000\n"
+        << "vn 0.000000 1.000000 0.000000\n"
+        << "v 0.000000 1.000000 0.000000 0.905882 0.149020 0.654902\n"
+        << "vn 0.000000 0.000000 1.000000\n"
+        << "v 0.000000 0.000000 1.000000 1.000000 0.019608 0.792157\n"
+        << "vn -1.000000 0.000000 0.000000\n"
+        << "v -1.000000 0.000000 0.000000 0.188235 0.117647 0.737255\n"
+        << "vn 0.000000 -1.000000 0.000000\n"
+        << "v 0.000000 -1.000000 0.000000 0.298039 0.243137 0.776471\n"
+        << "vn 0.000000 0.000000 -1.000000\n"
+        << "v 0.000000 0.000000 -1.000000 0.019608 0.517647 0.439216\n"
+        << "f 1//1 2//2 3//3\n"
+        << "f 1//1 3//3 5//5\n"
+        << "f 1//1 5//5 6//6\n"
+        << "f 1//1 6//6 2//2\n"
+        << "f 4//4 2//2 6//6\n"
+        << "f 4//4 6//6 5//5\n"
+        << "f 4//4 5//5 3//3\n"
+        << "f 4//4 3//3 2//2\n";
+    fs.close ();
+
+    // Test colors from first 4 vertices
+    rgba_1_ =  static_cast<uint32_t> (255) << 24 | static_cast<uint32_t> (173) << 16 |
+              static_cast<uint32_t> (130) << 8 | static_cast<uint32_t> (153);
+    rgba_2_ =  static_cast<uint32_t> (255) << 24 | static_cast<uint32_t> (231) << 16 |
+              static_cast<uint32_t> (38) << 8 | static_cast<uint32_t> (167);
+    rgba_3_ =  static_cast<uint32_t> (255) << 24 | static_cast<uint32_t> (255) << 16 |
+              static_cast<uint32_t> (5) << 8 | static_cast<uint32_t> (202);
+    rgba_4_ =  static_cast<uint32_t> (255) << 24 | static_cast<uint32_t> (48) << 16 |
+              static_cast<uint32_t> (30) << 8 | static_cast<uint32_t> (188);
+  }
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (OBJTest, LoadOBJFileColoredASCIIIntoBlob)
+{
+  int res;
+  uint32_t rgba;
+
+  PCLPointCloud2 cloud_blob;
+  uint32_t ps;
+  int32_t offset = -1;
+
+  // check if loading is ok
+  res = loadOBJFile (path_, cloud_blob);
+  ASSERT_EQ (0, res);
+
+  // blob has proper structure
+  EXPECT_EQ (1, cloud_blob.height);
+  EXPECT_EQ (6, cloud_blob.width);
+  EXPECT_EQ (7, cloud_blob.fields.size());
+  EXPECT_EQ (28, cloud_blob.point_step);
+  EXPECT_EQ (cloud_blob.point_step * cloud_blob.width, cloud_blob.row_step);
+  EXPECT_EQ (cloud_blob.row_step, cloud_blob.data.size());
+  EXPECT_TRUE (cloud_blob.is_dense);
+
+  // scope blob data
+  ps = cloud_blob.point_step;
+  for (size_t i = 0; i < cloud_blob.fields.size (); ++i)
+    if (cloud_blob.fields[i].name == std::string("rgba"))
+      offset = static_cast<int32_t> (cloud_blob.fields[i].offset);
+
+  ASSERT_LE (0, offset);
+
+  // 1st point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[offset]);
+  ASSERT_EQ (rgba_1_, rgba);
+
+  // 2th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[ps + offset]);
+  ASSERT_EQ (rgba_2_, rgba);
+
+  // 3th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[2 * ps + offset]);
+  ASSERT_EQ (rgba_3_, rgba);
+
+  // 4th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[3 * ps + offset]);
+  ASSERT_EQ (rgba_4_, rgba);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (OBJTest, LoadOBJFileColoredASCIIIntoPolygonMesh)
+{
+  int res;
+  uint32_t rgba;
+  PolygonMesh mesh;
+  uint32_t ps;
+  int32_t offset = -1;
+
+  // check if loading is ok
+  res = loadOBJFile (path_, mesh);
+  ASSERT_EQ (0, res);
+
+  // blob has proper structure
+  EXPECT_EQ (1, mesh.cloud.height);
+  EXPECT_EQ (6, mesh.cloud.width);
+  EXPECT_EQ (7, mesh.cloud.fields.size());
+  EXPECT_EQ (28, mesh.cloud.point_step);
+  EXPECT_EQ (mesh.cloud.point_step * mesh.cloud.width, mesh.cloud.row_step);
+  EXPECT_EQ (mesh.cloud.point_step * mesh.cloud.width, mesh.cloud.data.size());
+  EXPECT_TRUE (mesh.cloud.is_dense);
+
+  // scope blob data
+  ps = mesh.cloud.point_step;
+  for (size_t i = 0; i < mesh.cloud.fields.size (); ++i)
+    if (mesh.cloud.fields[i].name == std::string("rgba"))
+      offset = static_cast<int32_t> (mesh.cloud.fields[i].offset);
+
+  ASSERT_LE (0, offset);
+
+  // 1st point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[offset]);
+  ASSERT_EQ (rgba_1_, rgba);
+
+  // 2th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[ps + offset]);
+  ASSERT_EQ (rgba_2_, rgba);
+
+  // 3th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
+  ASSERT_EQ (rgba_3_, rgba);
+
+  // 4th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
+  ASSERT_EQ (rgba_4_, rgba);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class OBJPointCloudTest : public OBJTest { };
+TYPED_TEST_CASE (OBJPointCloudTest, RGBPointTypes);
+TYPED_TEST (OBJPointCloudTest, LoadOBJFileColoredASCIIIntoPointCloud)
+{
+  int res;
+  PointCloud<TypeParam> cloud_rgb;
+
+  // check if loading is ok
+  res = loadOBJFile (FileTest::path_, cloud_rgb);
+  ASSERT_EQ (0, res);
+
+  // cloud has proper structure
+  EXPECT_EQ (1, cloud_rgb.height);
+  EXPECT_EQ (6, cloud_rgb.width);
+  EXPECT_EQ (6, cloud_rgb.points.size());
+  EXPECT_TRUE (cloud_rgb.is_dense);
+
+  // scope cloud data
+  ASSERT_EQ (FileTest::rgba_1_, cloud_rgb[0].rgba);
+  ASSERT_EQ (FileTest::rgba_2_, cloud_rgb[1].rgba);
+  ASSERT_EQ (FileTest::rgba_3_, cloud_rgb[2].rgba);
+  ASSERT_EQ (FileTest::rgba_4_, cloud_rgb[3].rgba);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct PointXYZFPFH33
 {
   float x, y, z;
