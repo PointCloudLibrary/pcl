@@ -92,6 +92,23 @@ macro(PCL_CHECK_FOR_SSE)
         HAVE_SSE4_1_EXTENSIONS)
 
     if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+        set(CMAKE_REQUIRED_FLAGS "-mssse3")
+    endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
+
+    check_cxx_source_runs("
+        #include <tmmintrin.h>
+        int main ()
+        {
+          __m128i a, b;
+          int vals[4] = {-1, -2, -3, -4};
+          a = _mm_loadu_si128 ((const __m128i*)vals);
+          b = _mm_abs_epi32 (a);
+          _mm_storeu_si128 ((__m128i*)vals, b);
+          return (0);
+        }"
+        HAVE_SSSE3_EXTENSIONS)
+
+    if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
         set(CMAKE_REQUIRED_FLAGS "-msse3")
     endif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_CLANG)
 
@@ -154,6 +171,8 @@ macro(PCL_CHECK_FOR_SSE)
             SET(SSE_FLAGS "${SSE_FLAGS} -msse4.2 -mfpmath=sse")
         elseif(HAVE_SSE4_1_EXTENSIONS)
             SET(SSE_FLAGS "${SSE_FLAGS} -msse4.1 -mfpmath=sse")
+        elseif(HAVE_SSSE3_EXTENSIONS)
+            SET(SSE_FLAGS "${SSE_FLAGS} -mssse3 -mfpmath=sse")
         elseif(HAVE_SSE3_EXTENSIONS)
             SET(SSE_FLAGS "${SSE_FLAGS} -msse3 -mfpmath=sse")
         elseif(HAVE_SSE2_EXTENSIONS)
