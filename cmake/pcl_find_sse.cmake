@@ -2,6 +2,7 @@
 # Check for the presence of SSE and figure out the flags to use for it.
 macro(PCL_CHECK_FOR_SSE)
     set(SSE_FLAGS)
+    set(SSE_DEFINITIONS)
 
     # Test CLANG
     #if(CMAKE_COMPILER_IS_CLANG)
@@ -190,6 +191,18 @@ macro(PCL_CHECK_FOR_SSE)
         elseif(HAVE_SSE_EXTENSIONS)
             SET(SSE_FLAGS "${SSE_FLAGS} /arch:SSE")
         endif(HAVE_SSE2_EXTENSIONS)
+    endif()
+
+    if(MSVC)
+        if(HAVE_SSSE3_EXTENSIONS)
+            SET(SSE_DEFINITIONS "${SSE_DEFINITIONS} -D__SSSE3__")
+        endif()
+        if(HAVE_SSE2_EXTENSIONS)
+            SET(SSE_DEFINITIONS "${SSE_DEFINITIONS} -D__SSE2__")
+        endif()
+        if(HAVE_SSE_EXTENSIONS)
+            SET(SSE_DEFINITIONS "${SSE_DEFINITIONS} -D__SSE__")
+        endif()
     endif()
 endmacro(PCL_CHECK_FOR_SSE)
 
