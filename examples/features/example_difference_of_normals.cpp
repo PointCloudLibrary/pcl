@@ -184,7 +184,8 @@ int main (int argc, char *argv[])
   range_cond->addComparison (pcl::FieldComparison<PointOutT>::ConstPtr (new
   pcl::FieldComparison<PointOutT> ("curvature", pcl::ComparisonOps::GT, threshold)));
   // build the filter
-  pcl::ConditionalRemoval<PointOutT> condrem (range_cond);
+  pcl::ConditionalRemoval<PointOutT> condrem;
+  condrem.setCondition (range_cond);
   condrem.setInputCloud (doncloud);
 
   pcl::PointCloud<PointOutT>::Ptr doncloud_filtered (new pcl::PointCloud<PointOutT>);

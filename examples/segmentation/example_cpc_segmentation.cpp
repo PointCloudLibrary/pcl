@@ -205,7 +205,7 @@ CPCSegmentation Parameters: \n\
   /// -----------------------------------|  Preparations  |-----------------------------------
 
   bool sv_output_specified = pcl::console::find_switch (argc, argv, "-so");
-  bool show_visualization = (not pcl::console::find_switch (argc, argv, "-novis"));
+  bool show_visualization = (!pcl::console::find_switch (argc, argv, "-novis"));
   bool ignore_provided_normals = pcl::console::find_switch (argc, argv, "-nonormals");
   bool add_label_field = pcl::console::find_switch (argc, argv, "-add");
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");
@@ -314,7 +314,7 @@ CPCSegmentation Parameters: \n\
   pcl::console::parse (argc, argv, "-ct", concavity_tolerance_threshold);
   pcl::console::parse (argc, argv, "-st", smoothness_threshold);
   use_extended_convexity = pcl::console::find_switch (argc, argv, "-ec");
-  uint k_factor = 0;
+  unsigned int k_factor = 0;
   if (use_extended_convexity)
     k_factor = 1;
   use_sanity_criterion = pcl::console::find_switch (argc, argv, "-sc");
