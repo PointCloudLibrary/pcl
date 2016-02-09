@@ -43,15 +43,21 @@
 #include <vtkAreaPicker.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkDataSet.h>
-#include <vtkPolyData.h>
-#include <vtkIdTypeArray.h>
-#include <vtkExtractGeometry.h>
 #include <vtkPointData.h>
 #include <vtkVertexGlyphFilter.h>
 #include <vtkPlanes.h>
 #include <vtkXYPlotActor.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
+
+#include <vtkProp3D.h>
+#include <vtkProp3DCollection.h>
+#include <vtkActor.h>
+#include <vtkActorCollection.h>
+#include <vtkMapper.h>
+#include <vtkPolyData.h>
+#include <vtkIdTypeArray.h>
+#include <vtkExtractGeometry.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
@@ -61,6 +67,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
   vtkRenderWindowInteractor* iren = reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->GetInteractor ();
   if (style->CurrentMode == 0)
   {
+    //vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New() ;
     if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () > 0))
     {
       float x = 0, y = 0, z = 0;
@@ -68,7 +75,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       // Create a PointPickingEvent if a point was selected
       if (idx != -1)
       {
-        PointPickingEvent event (idx, x, y, z);
+        PointPickingEvent event (idx, x, y, z, actor_);
         style->point_picking_signal_ (event);
       }
     }
@@ -82,7 +89,8 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       else
         idx = performSinglePick (iren, x, y, z);
       // Create a PointPickingEvent
-      PointPickingEvent event (idx_, idx, x_, y_, z_, x, y, z);
+      //std::cout<< "druhe zjisteni actor: " << actor <<std::endl;
+      PointPickingEvent event (idx_, idx, x_, y_, z_, x, y, z, actor_);
       style->point_picking_signal_ (event);
     }
     // Call the parent's class mouse events
@@ -102,10 +110,13 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
     else if (eventid == vtkCommand::LeftButtonReleaseEvent)
     {
       style->OnLeftButtonUp ();
-      std::vector<int> indices;
-      int nb_points = performAreaPick (iren, indices);
-      AreaPickingEvent event (nb_points, indices);
+      std::vector< std::vector<int> >indices;
+      vtkActorCollection* actors = vtkActorCollection::New();
+      int nb_points = performAreaPick (iren, indices,actors);
+      AreaPickingEvent event (nb_points, indices, actors);
       style->area_picking_signal_ (event);
+      actors->Delete();
+
     }
   }
 }
@@ -115,7 +126,7 @@ int
 pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInteractor *iren)
 {
   vtkPointPicker* point_picker = vtkPointPicker::SafeDownCast (iren->GetPicker ());
-  
+
   if (!point_picker)
   {
     pcl::console::print_error ("Point picker not available, not selecting any points!\n");
@@ -128,6 +139,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   iren->StartPickCallback ();
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
+  actor_ = point_picker->GetActor();
 
   return (static_cast<int> (point_picker->GetPointId ()));
 }
@@ -159,61 +171,76 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     double p[3];
     point_picker->GetDataSet ()->GetPoint (idx, p);
     x = float (p[0]); y = float (p[1]); z = float (p[2]);
+    actor_ = point_picker->GetActor();
   }
-
   return (idx);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::visualization::PointPickingCallback::performAreaPick (vtkRenderWindowInteractor *iren,
-                                                           std::vector<int> &indices)
+                                                           std::vector< std::vector<int> >&indices, vtkActorCollection* actors)
 {
   vtkAreaPicker *picker = static_cast<vtkAreaPicker*> (iren->GetPicker ());
   vtkRenderer *ren = iren->FindPokedRenderer (iren->GetEventPosition ()[0], iren->GetEventPosition ()[1]);
   picker->AreaPick (x_, y_, iren->GetEventPosition ()[0], iren->GetEventPosition ()[1], ren);
-  if (picker->GetDataSet ())
+  if (picker->GetProp3Ds())
   {
-    vtkPolyData* points = reinterpret_cast<vtkPolyData*> (picker->GetDataSet ());
-
-    // This is a naive solution till we fugure out where to add the GlobalIds at an earlier stage
-    if (!points->GetPointData ()->GetGlobalIds () ||
-        points->GetPointData ()->GetGlobalIds ()->GetNumberOfTuples () == 0)
+    int pt_numb=0;
+    vtkProp3DCollection* props = picker->GetProp3Ds();
+    vtkCollectionSimpleIterator pit;
+    vtkProp3D* prop;
+    for(props->InitTraversal(pit);prop = props->GetNextProp3D(pit);)
     {
-      vtkSmartPointer<vtkIdTypeArray> global_ids = vtkIdTypeArray::New ();
-      global_ids->SetNumberOfValues (picker->GetDataSet ()->GetNumberOfPoints ());
-      for (vtkIdType i = 0; i < picker->GetDataSet ()->GetNumberOfPoints (); ++i)
-        global_ids->SetValue (i,i);
+      vtkActor* actor = vtkActor::SafeDownCast(prop);
+      if(actor)
+      {
+        actors->AddItem(actor);
 
-      points->GetPointData ()->SetGlobalIds (global_ids);
+        std::vector<int> actorIndices;
+        vtkPolyData* pd = vtkPolyData::SafeDownCast(actor->GetMapper()->GetInput());
+
+        if(pd->GetPointData()->HasArray("Indices"))
+            pd->GetPointData()->RemoveArray("Indices");
+
+
+        vtkSmartPointer<vtkIdTypeArray> IDs = vtkSmartPointer<vtkIdTypeArray>::New();
+        IDs->SetNumberOfComponents(1);
+        IDs->SetName("Indices");
+        for(vtkIdType i = 0; i < pd->GetNumberOfPoints(); i++)
+          IDs->InsertNextValue(i);
+
+        pd->GetPointData()->AddArray(IDs);
+
+        vtkPlanes* frustum = picker->GetFrustum();
+
+        vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New();
+        extract_geometry->SetImplicitFunction(frustum);
+  #if VTK_MAJOR_VERSION < 6
+        extract_geometry->SetInput(pd);
+  #else
+        extract_geometry->SetInputData(pd);
+  #endif
+
+        extract_geometry->Update();
+
+        vtkSmartPointer<vtkVertexGlyphFilter> glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
+        glyph_filter->SetInputConnection (extract_geometry->GetOutputPort ());
+        glyph_filter->Update ();
+
+        vtkPolyData* selected = glyph_filter->GetOutput ();
+
+        vtkIdTypeArray* GlobalIDs  = vtkIdTypeArray::SafeDownCast(selected->GetPointData()->GetArray("Indices"));
+        for (vtkIdType i = 0; i < selected->GetNumberOfPoints (); i++)
+        {
+          actorIndices.push_back(static_cast<int>(GlobalIDs->GetValue(i)));
+          pt_numb++;
+        }
+        indices.push_back(actorIndices);
+
+      }
     }
-
-    vtkPlanes* frustum = picker->GetFrustum ();
-
-    vtkSmartPointer<vtkExtractGeometry> extract_geometry = vtkSmartPointer<vtkExtractGeometry>::New ();
-    extract_geometry->SetImplicitFunction (frustum);
-
-#if VTK_MAJOR_VERSION < 6
-    extract_geometry->SetInput (picker->GetDataSet ());
-#else
-    extract_geometry->SetInputData (picker->GetDataSet ());
-#endif
-
-    extract_geometry->Update ();
-
-    vtkSmartPointer<vtkVertexGlyphFilter> glyph_filter = vtkSmartPointer<vtkVertexGlyphFilter>::New ();
-    glyph_filter->SetInputConnection (extract_geometry->GetOutputPort ());
-    glyph_filter->Update ();
-
-    vtkPolyData* selected = glyph_filter->GetOutput ();
-    vtkIdTypeArray* ids = vtkIdTypeArray::SafeDownCast(selected->GetPointData ()->GetGlobalIds ());
-    assert (ids);
-    indices.reserve (ids->GetNumberOfTuples ());
-
-    for(vtkIdType i = 0; i < ids->GetNumberOfTuples (); i++)
-      indices.push_back (static_cast<int> (ids->GetValue (i)));
-
-    return (static_cast<int> (selected->GetNumberOfPoints ()));
+    return (pt_numb);
   }
   return (-1);
 }

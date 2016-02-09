@@ -40,7 +40,9 @@
 #define PCL_VISUALIZATION_AREA_PICKING_EVENT_H_
 
 #include <pcl/pcl_macros.h>
-
+#include <vtkActor.h>
+#include <vtkActorCollection.h>
+#include <vtkSmartPointer.h>
 namespace pcl
 {
   namespace visualization
@@ -49,9 +51,10 @@ namespace pcl
     class PCL_EXPORTS AreaPickingEvent
     {
       public:
-        AreaPickingEvent (int nb_points, const std::vector<int>& indices)
+        AreaPickingEvent (int nb_points, const std::vector< std::vector<int> >& indices, vtkActorCollection* actorsCollection)
           : nb_points_ (nb_points)
           , indices_ (indices)
+          ,actors_ (actorsCollection)
         {}
 
         /** \brief For situations where a whole are is selected, return the points indices.
@@ -63,13 +66,46 @@ namespace pcl
         {
           if (nb_points_ <= 0)
             return (false);
-          indices = indices_;
+          for(int i=0; i < indices_.size(); i++)
+          indices.insert(indices.end(), indices_.at(i).begin(), indices_.at(i).end());
+          return (true);
+        }
+        /** \brief For situations where a whole are is selected, return the actors of selected clouds.
+          * \param[out] actors vtkActorCollection of all actors selected by area picking event.
+          * \return true, if the area selected by the user contains points or contains actor, false otherwise
+          */
+        inline bool
+        getActors (vtkActorCollection* actors) const
+        {
+          if (nb_points_ <= 0)
+            return (false);
+          actors = actors_;
           return (true);
         }
 
+        /** \brief For situations where a whole are is selected, return the indices of selected actor.
+          * \param[in] actor vtkActor of cloud.
+          * \param[out] indices vector of indices for given cloud.
+          * \return true, if the area selected by the user contains points or contains actor, false otherwise
+          */
+        inline bool
+        getActorsIndices (vtkSmartPointer<vtkActor> actor, std::vector<int>& indices) const
+        {
+          if (nb_points_ <= 0 || actors_->GetNumberOfItems() <=0)
+            return (false);
+            actors_->InitTraversal();
+            for(vtkIdType i = 0; i< actors_->GetNumberOfItems(); i++)
+            {
+              vtkActor* actor_ = actors_->GetNextActor();
+              if(actor_ == actor)
+                indices = indices_.at(i);
+            }
+          return (true);
+        }
       private:
         int nb_points_;
-        std::vector<int> indices_;
+        std::vector< std::vector<int> > indices_;
+        vtkActorCollection* actors_;
     };
   } //namespace visualization
 } //namespace pcl
