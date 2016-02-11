@@ -84,7 +84,6 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkAreaPicker.h>
 #include <vtkXYPlotActor.h>
-#include <vtkOpenGLHardwareSupport.h>
 #include <vtkOpenGLRenderWindow.h>
 #include <vtkJPEGReader.h>
 #include <vtkBMPReader.h>
@@ -92,6 +91,7 @@
 #include <vtkPNGReader.h>
 #include <vtkTIFFReader.h>
 #include <vtkLookupTable.h>
+#include <vtkTextureUnitManager.h>
 
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -3223,19 +3223,18 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
 #endif
 
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
-  vtkOpenGLHardwareSupport* hardware = vtkOpenGLRenderWindow::SafeDownCast (win_)->GetHardwareSupport ();
-  if (!hardware)
+  vtkTextureUnitManager* tex_manager = vtkOpenGLRenderWindow::SafeDownCast (win_)->GetTextureUnitManager ();
+  if (!tex_manager)
     return (false);
-  bool supported = hardware->GetSupportsMultiTexturing ();
   // Check if hardware support multi texture
-  std::size_t texture_units (hardware->GetNumberOfFixedTextureUnits ());
-  if ((mesh.tex_materials.size () > 1) && supported && (texture_units > 1))
+  int texture_units = tex_manager->GetNumberOfTextureUnits ();
+  if ((mesh.tex_materials.size () > 1) && (texture_units > 1))
   {
     if (texture_units < mesh.tex_materials.size ())
       PCL_WARN ("[PCLVisualizer::addTextureMesh] GPU texture units %d < mesh textures %d!\n",
                 texture_units, mesh.tex_materials.size ());
     // Load textures
-    std::size_t last_tex_id = std::min (mesh.tex_materials.size (), texture_units);
+    std::size_t last_tex_id = std::min (static_cast<int> (mesh.tex_materials.size ()), texture_units);
     int tu = vtkProperty::VTK_TEXTURE_UNIT_0;
     std::size_t tex_id = 0;
     while (tex_id < last_tex_id)
@@ -3279,7 +3278,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   } // end of multi texturing
   else
   {
-    if ((mesh.tex_materials.size () > 1) && (!supported || texture_units < 2))
+    if ((mesh.tex_materials.size () > 1) && (texture_units < 2))
       PCL_WARN ("[PCLVisualizer::addTextureMesh] Your GPU doesn't support multi texturing. "
                 "Will use first one only!\n");
 
