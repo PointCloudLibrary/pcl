@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2010, Willow Garage, Inc.
@@ -1698,6 +1698,27 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
 
   }
 
+}
+
+TEST (PCL, Octree_Pointcloud_Bounds)
+{
+    const double someResolution(10);
+    const int someDepth(4);
+    const double desiredMax = ((1<<someDepth) + 0.5)*someResolution;
+    const double desiredMin = 0;
+    
+    OctreePointCloud<PointXYZ> tree(someResolution);
+    tree.defineBoundingBox(desiredMin, desiredMin, desiredMin, desiredMax, desiredMax, desiredMax);
+    
+    double min_x, min_y, min_z, max_x, max_y, max_z;
+    tree.getBoundingBox(min_x, min_y, min_z, max_x, max_y, max_z);
+    
+    ASSERT_GE(max_x, desiredMax);
+    ASSERT_GE(max_y, desiredMax);
+    ASSERT_GE(max_z, desiredMax);
+    ASSERT_GE(desiredMin, min_x);
+    ASSERT_GE(desiredMin, min_y);
+    ASSERT_GE(desiredMin, min_z);
 }
 /* ---[ */
 int
