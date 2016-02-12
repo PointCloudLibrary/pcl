@@ -620,9 +620,9 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   const float minValue = std::numeric_limits<float>::epsilon();
 
   // find maximum key values for x, y, z
-  max_key_x = static_cast<unsigned int> ((max_x_ - min_x_) / resolution_);
-  max_key_y = static_cast<unsigned int> ((max_y_ - min_y_) / resolution_);
-  max_key_z = static_cast<unsigned int> ((max_z_ - min_z_) / resolution_);
+  max_key_x = static_cast<unsigned int> (ceil((max_x_ - min_x_) / resolution_));
+  max_key_y = static_cast<unsigned int> (ceil((max_y_ - min_y_) / resolution_));
+  max_key_z = static_cast<unsigned int> (ceil((max_z_ - min_z_) / resolution_));
 
   // find maximum amount of keys
   max_voxels = std::max (std::max (std::max (max_key_x, max_key_y), max_key_z), static_cast<unsigned int> (2));
@@ -632,7 +632,7 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
   this->octree_depth_ = std::max ((std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (ceil (this->Log2 (max_voxels)-minValue)))),
                                   static_cast<unsigned int> (0));
 
-  octree_side_len = static_cast<double> (1 << this->octree_depth_) * resolution_-minValue;
+  octree_side_len = static_cast<double> (1 << this->octree_depth_) * resolution_;
 
   if (this->leaf_count_ == 0)
   {
@@ -643,6 +643,10 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
     octree_oversize_x = (octree_side_len - (max_x_ - min_x_)) / 2.0;
     octree_oversize_y = (octree_side_len - (max_y_ - min_y_)) / 2.0;
     octree_oversize_z = (octree_side_len - (max_z_ - min_z_)) / 2.0;
+
+    assert(octree_oversize_x >= 0);
+    assert(octree_oversize_y >= 0);
+    assert(octree_oversize_z >= 0);
 
     min_x_ -= octree_oversize_x;
     min_y_ -= octree_oversize_y;
