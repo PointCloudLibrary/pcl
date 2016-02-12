@@ -160,6 +160,6 @@ Create a ``CMakeLists.txt`` file with the following content (or download it :dow
 
 After you have made the executable, you can run it like so, assuming the pcd file is in the same folder as the executable::
 
-  $ ./supervoxel_clustering milk_cartoon_all_small_clorox.pcd
+  $ ./supervoxel_clustering milk_cartoon_all_small_clorox.pcd --NT
 
 Don't be afraid to play around with the parameters (especially the seed size, -s) to see what happens. The pcd file name should always be the first parameter!
