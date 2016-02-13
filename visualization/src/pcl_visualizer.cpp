@@ -63,8 +63,11 @@
 #include <vtkPointPicker.h>
 
 #include <pcl/visualization/boost.h>
-#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
 #include <pcl/visualization/vtk/vtkRenderWindowInteractorFix.h>
+
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+#include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 #include <vtkPolyLine.h>
 #include <vtkPolyDataMapper.h>
@@ -1079,6 +1082,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (!actor)
     actor = vtkSmartPointer<vtkLODActor>::New ();
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   if (use_vbos_)
   {
     vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
@@ -1111,6 +1115,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     actor->SetMapper (mapper);
   }
   else
+#endif
   {
     vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
 #if VTK_MAJOR_VERSION < 6
@@ -1157,6 +1162,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
   if (!actor)
     actor = vtkSmartPointer<vtkActor>::New ();
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   if (use_vbos_)
   {
     vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
@@ -1189,6 +1195,7 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
     actor->SetMapper (mapper);
   }
   else
+#endif
   {
     vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
 #if VTK_MAJOR_VERSION < 6
@@ -2771,6 +2778,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
   vtkPolyData *data = static_cast<vtkPolyData*>(am_it->second.actor->GetMapper ()->GetInput ());
   data->GetPointData ()->SetScalars (scalars);
   // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   if (use_vbos_)
   {
     vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(am_it->second.actor->GetMapper ());
@@ -2785,6 +2793,7 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     //style_->setCloudActorMap (cloud_actor_map_);
   }
   else
+#endif
   {
     vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ());
     mapper->SetScalarRange (minmax);
@@ -4296,8 +4305,12 @@ pcl::visualization::PCLVisualizer::resetStoppedFlag ()
 void
 pcl::visualization::PCLVisualizer::setUseVbos (bool use_vbos)
 {
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   use_vbos_ = use_vbos;
   style_->setUseVbos (use_vbos_);
+#else
+  PCL_WARN ("[PCLVisualizer::setUseVbos] Has no effect when OpenGL version is ≥ 2\n");
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

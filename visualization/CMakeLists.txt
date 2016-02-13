@@ -50,8 +50,6 @@ if(build)
         src/common/float_image_utils.cpp
         src/vtk/pcl_image_canvas_source_2d.cpp
         src/vtk/pcl_context_item.cpp
-        src/vtk/vtkVertexBufferObject.cxx
-        src/vtk/vtkVertexBufferObjectMapper.cxx
         src/vtk/vtkRenderWindowInteractorFix.cpp
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
@@ -66,6 +64,13 @@ if(build)
             src/pcl_plotter.cpp
             )
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+
+    if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
+      list(APPEND srcs
+        "src/vtk/vtkVertexBufferObject.cxx"
+        "src/vtk/vtkVertexBufferObjectMapper.cxx"
+      )
+    endif()
 
     set(incs 
         "include/pcl/${SUBSYS_NAME}/eigen.h"
@@ -127,10 +132,15 @@ if(build)
     set(vtk_incs 
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h"
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
-        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
         "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
-        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
         )
+
+    if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
+      list(APPEND vtk_incs
+        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
+        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
+      )
+    endif()
 
     # on apple, a workaround is used for the cocoa render window interactor
     if(APPLE)
