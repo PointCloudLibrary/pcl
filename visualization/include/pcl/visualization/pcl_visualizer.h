@@ -1859,6 +1859,8 @@ namespace pcl
         setSize (int xw, int yw);
 
         /** \brief Use Vertex Buffer Objects renderers.
+          * This is an optimization for the obsolete OpenGL backend. Modern OpenGL2 backend (VTK ≥ 6.3) uses vertex
+          * buffer objects by default, transparently for the user.
           * \param[in] use_vbos set to true to use VBOs 
           */
         void
