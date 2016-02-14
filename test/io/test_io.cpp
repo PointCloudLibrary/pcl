@@ -944,7 +944,6 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoBlob)
   EXPECT_EQ (cloud_blob.height, 1);
   EXPECT_EQ (cloud_blob.width, 4);
   EXPECT_EQ (cloud_blob.fields.size(), 4);
-  EXPECT_FALSE (cloud_blob.is_bigendian);
   EXPECT_EQ (cloud_blob.point_step, 16);
   EXPECT_EQ (cloud_blob.row_step, 16 * 4);
   EXPECT_EQ (cloud_blob.data.size(), 16 * 4);
@@ -992,7 +991,6 @@ TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
   EXPECT_EQ (mesh.cloud.height, 1);
   EXPECT_EQ (mesh.cloud.width, 4);
   EXPECT_EQ (mesh.cloud.fields.size(), 4);
-  EXPECT_FALSE (mesh.cloud.is_bigendian);
   EXPECT_EQ (mesh.cloud.point_step, 16);
   EXPECT_EQ (mesh.cloud.row_step, 16 * 4);
   EXPECT_EQ (mesh.cloud.data.size(), 16 * 4);
