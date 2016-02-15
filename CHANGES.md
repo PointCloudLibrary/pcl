@@ -2,12 +2,13 @@
 
 ## *= 1.8.0 (xx.11.2015) =*
 
-* Added missing `Eigen::aligned_allocator` in vectors that contain vectorizable
-  Eigen where appropriate
+* Added missing `Eigen::aligned_allocator` in vectors and maps that contain
+  vectorizable Eigen where appropriate
   [[#1034]](https://github.com/PointCloudLibrary/pcl/pull/1034)
   [[#1052]](https://github.com/PointCloudLibrary/pcl/pull/1052)
   [[#1068]](https://github.com/PointCloudLibrary/pcl/pull/1068)
   [[#1182]](https://github.com/PointCloudLibrary/pcl/pull/1182)
+  [[#1497]](https://github.com/PointCloudLibrary/pcl/pull/1497)
 * Fixed compilation errors/warning when compiling in C++11 mode
   [[#1179]](https://github.com/PointCloudLibrary/pcl/pull/1179)
 * Added a configuration option to choose between Qt4 and Qt5; the default is
@@ -18,6 +19,9 @@
   [[#1298]](https://github.com/PointCloudLibrary/pcl/pull/1298)
   [[#1316]](https://github.com/PointCloudLibrary/pcl/pull/1316)
   [[#1369]](https://github.com/PointCloudLibrary/pcl/pull/1369)
+* Added support for VTK compiled with OpenGL2 backend (was introduced in VTK
+  6.3, became default in VTK 7.0)
+  [[#1534]](https://github.com/PointCloudLibrary/pcl/pull/1534)
 
 ### `libpcl_common:`
 
@@ -69,6 +73,8 @@
 * Fixed a bug in `getMaxDistance()` (this affected computation of OUR-CVFH
   features)
   [[#1449]](https://github.com/PointCloudLibrary/pcl/pull/1449)
+* Added `operator==` to `PCLHeader` class
+  [[#1508]](https://github.com/PointCloudLibrary/pcl/pull/1508)
 
 ### `libpcl_features:`
 
@@ -114,6 +120,8 @@
 * Updated `ExtractIndices` (for `PCLPointCloud2` cloud type) to respect
   `keep_organized_` flag
   [[#1462]](https://github.com/PointCloudLibrary/pcl/pull/1462)
+* Fixed OpenMP support on MSVC in `Convolution3D`
+  [[#1527]](https://github.com/PointCloudLibrary/pcl/pull/1527)
 
 ### `libpcl_gpu:`
 
@@ -214,6 +222,10 @@
   [[#1096]](https://github.com/PointCloudLibrary/pcl/pull/1096)
 * Moved `UniformSampling` to the `filters` module
   [[#1411]](https://github.com/PointCloudLibrary/pcl/pull/1411)
+* Fixed OpenMP support in `HarrisKeypoint2D`
+  [[#1501]](https://github.com/PointCloudLibrary/pcl/pull/1501)
+* Updated `SIFTKeypoint` to preserve point cloud viewpoint
+  [[#1508]](https://github.com/PointCloudLibrary/pcl/pull/1508)
 
 ### `libpcl_octree:`
 
@@ -279,6 +291,8 @@
 * Added a new `MetaRegistration` class that allows to register a stream of
   clouds where each cloud is aligned to the conglomerate of all previous clouds
   [[#1426]](https://github.com/PointCloudLibrary/pcl/pull/1426)
+* Fixed segmentation fault occuring in `CorrespondenceRejectorSurfaceNormal`
+  [[#1536]](https://github.com/PointCloudLibrary/pcl/pull/1536)
 
 ### `libpcl_sample_consensus:`
 
