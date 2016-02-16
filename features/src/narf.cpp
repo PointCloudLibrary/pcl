@@ -380,7 +380,8 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
   for (int interest_point_idx = 0; interest_point_idx < int (interest_points.points.size ()); ++interest_point_idx)
   {
-    Vector3fMapConst point = interest_points.points[interest_point_idx].getVector3fMap ();
+    const InterestPoint& interest_point = interest_points.points[interest_point_idx];
+    Vector3fMapConst point = interest_point.getVector3fMap ();
     
     Narf* feature = new Narf;
     if (!feature->extractFromRangeImage(range_image, point, descriptor_size, support_size))
