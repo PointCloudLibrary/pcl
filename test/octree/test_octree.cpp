@@ -1716,8 +1716,8 @@ TEST (PCL, Octree_Pointcloud_Bounds)
     ASSERT_GE(max_x, desiredMax);
     ASSERT_GE(desiredMin, min_x);
     
-    const double largeMin = 1e7-45*resolution;
-    const double largeMax = 1e7-5*resolution;
+    const double largeMin = 1e7-45*someResolution;
+    const double largeMax = 1e7-5*someResolution;
     tree.defineBoundingBox(largeMin, largeMin, largeMin, largeMax, largeMax, largeMax);
     tree.getBoundingBox(min_x, min_y, min_z, max_x, max_y, max_z);
     const unsigned int depth = tree.getTreeDepth();
