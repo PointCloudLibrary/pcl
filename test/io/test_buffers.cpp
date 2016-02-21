@@ -68,8 +68,8 @@ class BuffersTest : public ::testing::Test
         memcpy (d.data (), dptr, buffer.size () * sizeof (T));
         buffer.push (d);
         for (size_t j = 0; j < buffer.size (); ++j)
-          if (isnan (eptr[j]))
-            EXPECT_TRUE (isnan (buffer[j]));
+          if (isnan ((double) eptr[j]))
+            EXPECT_TRUE (isnan ((double) buffer[j]));
           else
             EXPECT_EQ (eptr[j], buffer[j]);
         dptr += buffer.size ();
