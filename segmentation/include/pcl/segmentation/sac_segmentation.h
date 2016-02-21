@@ -237,7 +237,7 @@ namespace pcl
       getEpsAngle () const { return (eps_angle_); }
 
       /** \brief Base method for segmentation of a model in a PointCloud given by <setInputCloud (), setIndices ()>
-        * \param[in] inliers the resultant point indices that support the model found (inliers)
+        * \param[out] inliers the resultant point indices that support the model found (inliers)
         * \param[out] model_coefficients the resultant model coefficients
         */
       virtual void 

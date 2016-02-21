@@ -38,6 +38,7 @@
 #ifndef PCL_FILTERS_IMPL_VOXEL_GRID_H_
 #define PCL_FILTERS_IMPL_VOXEL_GRID_H_
 
+#include <pcl/common/centroid.h>
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/voxel_grid.h>
@@ -259,22 +260,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  int centroid_size = 4;
-  if (downsample_all_data_)
-    centroid_size = boost::mpl::size<FieldList>::value;
-
-  // ---[ RGB special case
-  std::vector<pcl::PCLPointField> fields;
-  int rgba_index = -1;
-  rgba_index = pcl::getFieldIndex (*input_, "rgb", fields);
-  if (rgba_index == -1)
-    rgba_index = pcl::getFieldIndex (*input_, "rgba", fields);
-  if (rgba_index >= 0)
-  {
-    rgba_index = fields[rgba_index].offset;
-    centroid_size += 3;
-  }
-
+  // Storage for mapping leaf and pointcloud indexes
   std::vector<cloud_point_index_idx> index_vector;
   index_vector.reserve (indices_->size ());
 
@@ -407,86 +393,38 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
   
   index = 0;
-  Eigen::VectorXf centroid = Eigen::VectorXf::Zero (centroid_size);
-  Eigen::VectorXf temporary = Eigen::VectorXf::Zero (centroid_size);
-
   for (unsigned int cp = 0; cp < first_and_last_indices_vector.size (); ++cp)
   {
     // calculate centroid - sum values from all input points, that have the same idx value in index_vector array
-	unsigned int first_index = first_and_last_indices_vector[cp].first;
-	unsigned int last_index = first_and_last_indices_vector[cp].second;
-    if (!downsample_all_data_) 
-    {
-      centroid[0] = input_->points[index_vector[first_index].cloud_point_index].x;
-      centroid[1] = input_->points[index_vector[first_index].cloud_point_index].y;
-      centroid[2] = input_->points[index_vector[first_index].cloud_point_index].z;
-    }
-    else 
-    {
-      // ---[ RGB special case
-      if (rgba_index >= 0)
-      {
-        // Fill r/g/b data, assuming that the order is BGRA
-        pcl::RGB rgb;
-        memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[first_index].cloud_point_index]) + rgba_index, sizeof (RGB));
-        centroid[centroid_size-3] = rgb.r;
-        centroid[centroid_size-2] = rgb.g;
-        centroid[centroid_size-1] = rgb.b;
-      }
-      pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[first_index].cloud_point_index], centroid));
-    }
-
-    for (unsigned int i = first_index + 1; i < last_index; ++i) 
-    {
-      if (!downsample_all_data_) 
-      {
-        centroid[0] += input_->points[index_vector[i].cloud_point_index].x;
-        centroid[1] += input_->points[index_vector[i].cloud_point_index].y;
-        centroid[2] += input_->points[index_vector[i].cloud_point_index].z;
-      }
-      else 
-      {
-        // ---[ RGB special case
-        if (rgba_index >= 0)
-        {
-          // Fill r/g/b data, assuming that the order is BGRA
-          pcl::RGB rgb;
-          memcpy (&rgb, reinterpret_cast<const char*> (&input_->points[index_vector[i].cloud_point_index]) + rgba_index, sizeof (RGB));
-          temporary[centroid_size-3] = rgb.r;
-          temporary[centroid_size-2] = rgb.g;
-          temporary[centroid_size-1] = rgb.b;
-        }
-        pcl::for_each_type <FieldList> (NdCopyPointEigenFunctor <PointT> (input_->points[index_vector[i].cloud_point_index], temporary));
-        centroid += temporary;
-      }
-    }
+  	unsigned int first_index = first_and_last_indices_vector[cp].first;
+  	unsigned int last_index = first_and_last_indices_vector[cp].second;
 
     // index is centroid final position in resulting PointCloud
     if (save_leaf_layout_)
       leaf_layout_[index_vector[first_index].idx] = index;
 
-    centroid /= static_cast<float> (last_index - first_index);
+    //Limit downsampling to coords
+    if (!downsample_all_data_)
+    {
+      Eigen::Vector4f centroid (Eigen::Vector4f::Zero ());
 
-    // store centroid
-    // Do we need to process all the fields?
-    if (!downsample_all_data_) 
-    {
-      output.points[index].x = centroid[0];
-      output.points[index].y = centroid[1];
-      output.points[index].z = centroid[2];
+      for (unsigned int li = first_index; li < last_index; ++li)
+        centroid += input_->points[index_vector[li].cloud_point_index].getVector4fMap ();
+
+      centroid /= static_cast<float> (last_index - first_index);
+      output.points[index].getVector4fMap () = centroid;
     }
-    else 
+    else
     {
-      pcl::for_each_type<FieldList> (pcl::NdCopyEigenPointFunctor <PointT> (centroid, output.points[index]));
-      // ---[ RGB special case
-      if (rgba_index >= 0) 
-      {
-        // pack r/g/b into rgb
-        float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
-        int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
-        memcpy (reinterpret_cast<char*> (&output.points[index]) + rgba_index, &rgb, sizeof (float));
-      }
+      CentroidPoint<PointT> centroid;
+
+      // fill in the accumulator with leaf points
+      for (unsigned int li = first_index; li < last_index; ++li)
+        centroid.add (input_->points[index_vector[li].cloud_point_index]);  
+
+      centroid.get (output.points[index]);
     }
+     
     ++index;
   }
   output.width = static_cast<uint32_t> (output.points.size ());

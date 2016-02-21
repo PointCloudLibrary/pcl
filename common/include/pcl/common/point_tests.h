@@ -48,6 +48,7 @@ namespace pcl
 {
   /** Tests if the 3D components of a point are all finite
     * param[in] pt point to be tested
+    * return true if finite, false otherwise
     */
   template <typename PointT> inline bool
   isFinite (const PointT &pt)

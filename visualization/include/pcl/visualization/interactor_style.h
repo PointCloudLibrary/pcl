@@ -47,8 +47,9 @@
 #include <pcl/visualization/mouse_event.h>
 #include <pcl/visualization/point_picking_event.h>
 #include <pcl/visualization/area_picking_event.h>
+#ifndef Q_MOC_RUN
 #include <boost/signals2/signal.hpp>
-
+#endif
 #include <vtkInteractorStyleRubberBandPick.h>
 
 class vtkRendererCollection;
@@ -113,11 +114,11 @@ namespace pcl
 
         /** \brief Empty constructor. */
         PCLVisualizerInteractorStyle () : 
-          init_ (), rens_ (), actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
-          max_win_height_ (), max_win_width_ (), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
+          init_ (), rens_ (), cloud_actors_ (), shape_actors_ (), win_height_ (), win_width_ (), win_pos_x_ (), win_pos_y_ (),
+          max_win_height_ (), max_win_width_ (), use_vbos_ (false), grid_enabled_ (), grid_actor_ (), lut_enabled_ (),
           lut_actor_ (), snapshot_writer_ (), wif_ (), mouse_signal_ (), keyboard_signal_ (),
           point_picking_signal_ (), area_picking_signal_ (), stereo_anaglyph_mask_default_ (),
-          mouse_callback_ (), modifier_ (), camera_file_ (), camera_ (), camera_saved_ (), win_ ()
+          mouse_callback_ (), modifier_ (), camera_file_ (), camera_ (), camera_saved_ (), win_ (), lut_actor_id_ ("")
         {}
       
         /** \brief Empty destructor */
@@ -130,15 +131,25 @@ namespace pcl
         virtual void 
         Initialize ();
         
-        /** \brief Pass a pointer to the actor map
+        /** \brief Pass a pointer to the cloud actor map
+          * \param[in] actors the actor map that will be used with this style
+          */
+        inline void
+        setCloudActorMap (const CloudActorMapPtr &actors) { cloud_actors_ = actors; }
+
+        /** \brief Pass a pointer to the shape actor map
           * \param[in] actors the actor map that will be used with this style
           */
         inline void 
-        setCloudActorMap (const CloudActorMapPtr &actors) { actors_ = actors; }
+        setShapeActorMap (const ShapeActorMapPtr &actors) { shape_actors_ = actors; }
 
         /** \brief Get the cloud actor map pointer. */
         inline CloudActorMapPtr 
-        getCloudActorMap () { return (actors_); }
+        getCloudActorMap () { return (cloud_actors_); }
+
+        /** \brief Get the cloud actor map pointer. */
+        inline ShapeActorMapPtr
+        getShapeActorMap () { return (shape_actors_); }
 
         /** \brief Pass a set of renderers to the interactor style. 
           * \param[in] rens the vtkRendererCollection to use
@@ -146,8 +157,10 @@ namespace pcl
         void 
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
-        /** \brief Pass a pointer to the actor map
-          * \param[in] use_vbos
+        /** \brief Use Vertex Buffer Objects renderers.
+          * This is an optimization for the obsolete OpenGL backend. Modern OpenGL2 backend (VTK ≥ 6.3) uses vertex
+          * buffer objects by default, transparently for the user.
+          * \param[in] use_vbos set to true to use VBOs
           */
         inline void
         setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }
@@ -256,8 +269,11 @@ namespace pcl
         /** \brief Collection of vtkRenderers stored internally. */
         vtkSmartPointer<vtkRendererCollection> rens_;
 
-        /** \brief Actor map stored internally. */
-        CloudActorMapPtr actors_;
+        /** \brief Cloud actor map stored internally. */
+        CloudActorMapPtr cloud_actors_;
+
+        /** \brief Shape map stored internally. */
+        ShapeActorMapPtr shape_actors_;
 
         /** \brief The current window width/height. */
         int win_height_, win_width_;
@@ -268,7 +284,7 @@ namespace pcl
         /** \brief The maximum resizeable window width/height. */
         int max_win_height_, max_win_width_;
 
-        /** \brief The maximum resizeable window width/height. */
+        /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_;
 
         /** \brief Set to true if the grid actor is enabled. */
@@ -373,6 +389,18 @@ namespace pcl
 
         friend class PointPickingCallback;
         friend class PCLVisualizer;
+
+       private:
+        /** \brief ID used to fetch/display the look up table on the visualizer
+         * It should be set by PCLVisualizer \ref setLookUpTableID
+         * @note If empty, a random actor added to the interactor will be used */
+        std::string lut_actor_id_;
+
+        /** \brief Add/remove the look up table displayed when 'u' is pressed, can also be used to update the current LUT displayed
+         * \ref lut_actor_id_ is used (if not empty) to chose which cloud/shape actor LUT will be updated (depending on what is available)
+         * If \ref lut_actor_id_ is empty the first actor with LUT support found will be used. */
+        void
+        updateLookUpTableDisplay (bool add_lut = false);
     };
 
     /** \brief PCL histogram visualizer interactory style class.

@@ -304,8 +304,8 @@ pcl::registration::LUM<PointT>::computeEdge (const Edge &e)
   pcl::CorrespondencesPtr corrs = (*slam_graph_)[e].corrs_;
 
   // Build the average and difference vectors for all correspondences
-  std::vector <Eigen::Vector3f> corrs_aver (corrs->size ());
-  std::vector <Eigen::Vector3f> corrs_diff (corrs->size ());
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > corrs_aver (corrs->size ());
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > corrs_diff (corrs->size ());
   int oci = 0;  // oci = output correspondence iterator
   for (int ici = 0; ici != static_cast<int> (corrs->size ()); ++ici)  // ici = input correspondence iterator
   {

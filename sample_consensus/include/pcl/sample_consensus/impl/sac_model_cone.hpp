@@ -335,6 +335,12 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::optimizeModelCoefficients (
   PCL_DEBUG ("[pcl::SampleConsensusModelCone::optimizeModelCoefficients] LM solver finished with exit code %i, having a residual norm of %g. \nInitial solution: %g %g %g %g %g %g %g \nFinal solution: %g %g %g %g %g %g %g\n",
              info, lm.fvec.norm (), model_coefficients[0], model_coefficients[1], model_coefficients[2], model_coefficients[3],
              model_coefficients[4], model_coefficients[5], model_coefficients[6], optimized_coefficients[0], optimized_coefficients[1], optimized_coefficients[2], optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5], optimized_coefficients[6]);
+
+  Eigen::Vector3f line_dir (optimized_coefficients[3], optimized_coefficients[4], optimized_coefficients[5]);
+  line_dir.normalize ();
+  optimized_coefficients[3] = line_dir[0];
+  optimized_coefficients[4] = line_dir[1];
+  optimized_coefficients[5] = line_dir[2];
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -490,13 +496,9 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::pointToAxisDistance (
 template <typename PointT, typename PointNT> bool 
 pcl::SampleConsensusModelCone<PointT, PointNT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 7)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelCone::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
- 
+
   // Check against template, if given
   if (eps_angle_ > 0.0)
   {

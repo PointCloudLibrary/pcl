@@ -60,6 +60,7 @@ namespace pcl
   class SampleConsensusModelSphere : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::radius_min_;
@@ -79,7 +80,11 @@ namespace pcl
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
                                   bool random = false) 
         : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ ()
-      {}
+      {
+        model_name_ = "SampleConsensusModelSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
+      }
 
       /** \brief Constructor for base SampleConsensusModelSphere.
         * \param[in] cloud the input point cloud dataset
@@ -90,7 +95,11 @@ namespace pcl
                                   const std::vector<int> &indices,
                                   bool random = false) 
         : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
-      {}
+      {
+        model_name_ = "SampleConsensusModelSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
+      }
       
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelSphere () {}
@@ -102,6 +111,7 @@ namespace pcl
         SampleConsensusModel<PointT> (), tmp_inliers_ () 
       {
         *this = source;
+        model_name_ = "SampleConsensusModelSphere";
       }
 
       /** \brief Copy constructor.
@@ -154,7 +164,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the sphere coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the sphere model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the sphere model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
@@ -191,18 +201,17 @@ namespace pcl
       inline pcl::SacModel getModelType () const { return (SACMODEL_SPHERE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      inline bool 
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients)
       {
-        // Needs a valid model coefficients
-        if (model_coefficients.size () != 4)
-        {
-          PCL_ERROR ("[pcl::SampleConsensusModelSphere::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+        if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
           return (false);
-        }
 
         if (radius_min_ != -std::numeric_limits<double>::max() && model_coefficients[3] < radius_min_)
           return (false);

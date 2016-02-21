@@ -372,7 +372,7 @@ inline void
 template<typename real>
 inline pcl::BivariatePolynomialT<real>
   pcl::PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
-      std::vector<Eigen::Matrix<real, 3, 1> >& samplePoints, unsigned int polynomial_degree, bool& error) const
+      std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree, bool& error) const
 {
   pcl::BivariatePolynomialT<real> ret;
   error = bivariatePolynomialApproximation (samplePoints, polynomial_degree, ret);
@@ -384,7 +384,7 @@ inline pcl::BivariatePolynomialT<real>
 template<typename real>
 inline bool
   pcl::PolynomialCalculationsT<real>::bivariatePolynomialApproximation (
-      std::vector<Eigen::Matrix<real, 3, 1> >& samplePoints, unsigned int polynomial_degree,
+      std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >& samplePoints, unsigned int polynomial_degree,
       pcl::BivariatePolynomialT<real>& ret) const
 {
   //MEASURE_FUNCTION_TIME;
@@ -415,7 +415,7 @@ inline bool
   real tmpX, tmpY;
   real *tmpC = new real[parameters_size];
   real* tmpCEndPtr = &tmpC[parameters_size-1];
-  for (typename std::vector<Eigen::Matrix<real, 3, 1> >::const_iterator it=samplePoints.begin ();
+  for (typename std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >::const_iterator it=samplePoints.begin ();
        it!=samplePoints.end (); ++it)
   {
     currentX= (*it)[0]; currentY= (*it)[1]; currentZ= (*it)[2];
@@ -465,7 +465,7 @@ inline bool
   //unsigned int posInC;
   //real tmpX, tmpY;
   //DVector<real> tmpC (parameters_size);
-  //for (typename std::vector<Eigen::Matrix<real, 3, 1> >::const_iterator it=samplePoints.begin ();
+  //for (typename std::vector<Eigen::Matrix<real, 3, 1>, Eigen::aligned_allocator<Eigen::Matrix<real, 3, 1> > >::const_iterator it=samplePoints.begin ();
   //     it!=samplePoints.end (); ++it)
   //{
     //currentX= (*it)[0]; currentY= (*it)[1]; currentZ= (*it)[2];

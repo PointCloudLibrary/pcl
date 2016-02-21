@@ -348,14 +348,25 @@ namespace pcl
       virtual SacModel 
       getModelType () const = 0;
 
-      /** \brief Return the size of a sample from which a model is computed */
-      inline unsigned int 
-      getSampleSize () const 
-      { 
-        std::map<pcl::SacModel, unsigned int>::const_iterator it = SAC_SAMPLE_SIZE.find (getModelType ());
-        if (it == SAC_SAMPLE_SIZE.end ())
-          throw InvalidSACModelTypeException ("No sample size defined for given model type!\n");
-        return (it->second);
+      /** \brief Get a string representation of the name of this class. */
+      inline const std::string&
+      getClassName () const
+      {
+        return (model_name_);
+      }
+
+      /** \brief Return the size of a sample from which the model is computed. */
+      inline unsigned int
+      getSampleSize () const
+      {
+        return sample_size_;
+      }
+
+      /** \brief Return the number of coefficients in the model. */
+      inline unsigned int
+      getModelSize () const
+      {
+        return model_size_;
       }
 
       /** \brief Set the minimum and maximum allowable radius limits for the
@@ -414,8 +425,9 @@ namespace pcl
       computeVariance (const std::vector<double> &error_sqr_dists)
       {
         std::vector<double> dists (error_sqr_dists);
-        std::sort (dists.begin (), dists.end ());
-        double median_error_sqr = dists[dists.size () >> 1];
+        const size_t medIdx = dists.size () >> 1;
+        std::nth_element (dists.begin (), dists.begin () + medIdx, dists.end ());
+        double median_error_sqr = dists[medIdx];
         return (2.1981 * median_error_sqr);
       }
 
@@ -434,7 +446,8 @@ namespace pcl
         return (computeVariance (error_sqr_dists_));
       }
 
-		protected:
+    protected:
+
       /** \brief Fills a sample array with random samples from the indices_ vector
         * \param[out] sample the set of indices of target_ to analyze
         */
@@ -493,10 +506,22 @@ namespace pcl
       }
 
       /** \brief Check whether a model is valid given the user constraints.
+        *
+        * Default implementation verifies that the number of coefficients in the supplied model is as expected for this
+        * SAC model type. Specific SAC models should extend this function by checking the user constraints (if any).
+        *
         * \param[in] model_coefficients the set of model coefficients
         */
-      virtual inline bool
-      isModelValid (const Eigen::VectorXf &model_coefficients) = 0;
+      virtual bool
+      isModelValid (const Eigen::VectorXf &model_coefficients)
+      {
+        if (model_coefficients.size () != model_size_)
+        {
+          PCL_ERROR ("[pcl::%s::isModelValid] Invalid number of model coefficients given (%lu)!\n", getClassName ().c_str (), model_coefficients.size ());
+          return (false);
+        }
+        return (true);
+      }
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices. Pure virtual.
@@ -504,6 +529,9 @@ namespace pcl
         */
       virtual bool
       isSampleGood (const std::vector<int> &samples) const = 0;
+
+      /** \brief The model name. */
+      std::string model_name_;
 
       /** \brief A boost shared pointer to the point cloud data array. */
       PointCloudConstPtr input_;
@@ -539,6 +567,12 @@ namespace pcl
 
       /** \brief A vector holding the distances to the computed model. Used internally. */
       std::vector<double> error_sqr_dists_;
+
+      /** \brief The size of a sample from which the model is computed. Every subclass should initialize this appropriately. */
+      unsigned int sample_size_;
+
+      /** \brief The number of coefficients in the model. Every subclass should initialize this appropriately. */
+      unsigned int model_size_;
 
       /** \brief Boost-based random number generator. */
       inline int
@@ -629,7 +663,7 @@ namespace pcl
     typedef Eigen::Matrix<Scalar,InputsAtCompileTime,1> InputType;
     typedef Eigen::Matrix<Scalar,ValuesAtCompileTime,InputsAtCompileTime> JacobianType;
 
-    /** \brief Empty Construtor. */
+    /** \brief Empty Constructor. */
     Functor () : m_data_points_ (ValuesAtCompileTime) {}
 
     /** \brief Constructor

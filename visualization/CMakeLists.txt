@@ -14,7 +14,7 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk)
 
 if (ANDROID)
   set (build FALSE)
@@ -50,8 +50,6 @@ if(build)
         src/common/float_image_utils.cpp
         src/vtk/pcl_image_canvas_source_2d.cpp
         src/vtk/pcl_context_item.cpp
-        src/vtk/vtkVertexBufferObject.cxx
-        src/vtk/vtkVertexBufferObjectMapper.cxx
         src/vtk/vtkRenderWindowInteractorFix.cpp
         )
     if("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_LESS "5.6")
@@ -66,6 +64,13 @@ if(build)
             src/pcl_plotter.cpp
             )
     endif("${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}" VERSION_GREATER "5.6")
+
+    if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
+      list(APPEND srcs
+        "src/vtk/vtkVertexBufferObject.cxx"
+        "src/vtk/vtkVertexBufferObjectMapper.cxx"
+      )
+    endif()
 
     set(incs 
         "include/pcl/${SUBSYS_NAME}/eigen.h"
@@ -127,10 +132,15 @@ if(build)
     set(vtk_incs 
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_image_canvas_source_2d.h"
         "include/pcl/${SUBSYS_NAME}/vtk/pcl_context_item.h"
-        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
         "include/pcl/${SUBSYS_NAME}/vtk/vtkRenderWindowInteractorFix.h"
-        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
         )
+
+    if(VTK_RENDERING_BACKEND_OPENGL_VERSION VERSION_LESS 2)
+      list(APPEND vtk_incs
+        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObject.h"
+        "include/pcl/${SUBSYS_NAME}/vtk/vtkVertexBufferObjectMapper.h"
+      )
+    endif()
 
     # on apple, a workaround is used for the cocoa render window interactor
     if(APPLE)
@@ -153,12 +163,24 @@ if(build)
     endif()
 
     set(EXT_DEPS "")
-    if(OPENNI_FOUND)
-      list(APPEND EXT_DEPS openni-dev)
-    endif(OPENNI_FOUND)
-	if(OPENNI2_FOUND)
-      list(APPEND EXT_DEPS openni2-dev)
-    endif(OPENNI2_FOUND)
+    if(WITH_OPENNI)
+      list(APPEND EXT_DEPS libopenni)
+    endif()
+    if(WITH_OPENNI2)
+      list(APPEND EXT_DEPS libopenni2)
+    endif()
+    if(WITH_ENSENSO)
+      list(APPEND EXT_DEPS ensenso)
+    endif()
+    if(WITH_DAVIDSDK)
+      list(APPEND EXT_DEPS davidSDK)
+    endif()
+    if(WITH_DSSDK)
+      list(APPEND EXT_DEPS dssdk)
+    endif()
+    if(WITH_RSSDK)
+      list(APPEND EXT_DEPS rssdk)
+    endif()
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")
 

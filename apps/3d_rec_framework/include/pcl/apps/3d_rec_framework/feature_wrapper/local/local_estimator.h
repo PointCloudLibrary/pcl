@@ -9,7 +9,7 @@
 #define REC_FRAMEWORK_LOCAL_ESTIMATOR_H_
 
 #include <pcl/apps/3d_rec_framework/feature_wrapper/normal_estimator.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/surface/mls.h>
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/keypoints/sift_keypoint.h>
@@ -85,7 +85,7 @@ namespace pcl
         boost::shared_ptr<std::vector<std::vector<float> > > neighborhood_dist_;
 
         void
-        filterPlanar (PointInTPtr & input, pcl::PointCloud<int> & keypoints_cloud)
+        filterPlanar (PointInTPtr & input, PointInTPtr & keypoints_cloud)
         {
           pcl::PointCloud<int> filtered_keypoints;
           //create a search object
@@ -97,17 +97,17 @@ namespace pcl
           tree->setInputCloud (input);
 
           neighborhood_indices_.reset (new std::vector<std::vector<int> >);
-          neighborhood_indices_->resize (keypoints_cloud.points.size ());
+          neighborhood_indices_->resize (keypoints_cloud->points.size ());
           neighborhood_dist_.reset (new std::vector<std::vector<float> >);
-          neighborhood_dist_->resize (keypoints_cloud.points.size ());
+          neighborhood_dist_->resize (keypoints_cloud->points.size ());
 
-          filtered_keypoints.points.resize (keypoints_cloud.points.size ());
+          filtered_keypoints.points.resize (keypoints_cloud->points.size ());
           int good = 0;
 
-          for (size_t i = 0; i < keypoints_cloud.points.size (); i++)
+          for (size_t i = 0; i < keypoints_cloud->points.size (); i++)
           {
 
-            if (tree->radiusSearch (keypoints_cloud[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
+            if (tree->radiusSearch (keypoints_cloud->points[i], radius_, (*neighborhood_indices_)[good], (*neighborhood_dist_)[good]))
             {
 
               EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix;
@@ -128,7 +128,7 @@ namespace pcl
               if ((fabs (eigenValues[0] - eigenValues[1]) < 1.5e-4) || (eigsum != 0 && fabs (eigenValues[0] / eigsum) > 1.e-2))
               {
                 //region is not planar, add to filtered keypoint
-                keypoints_cloud.points[good] = keypoints_cloud.points[i];
+                keypoints_cloud->points[good] = keypoints_cloud->points[i];
                 good++;
               }
             }
@@ -136,7 +136,7 @@ namespace pcl
 
           neighborhood_indices_->resize (good);
           neighborhood_dist_->resize (good);
-          keypoints_cloud.points.resize (good);
+          keypoints_cloud->points.resize (good);
 
           neighborhood_indices_->clear ();
           neighborhood_dist_->clear ();
@@ -166,18 +166,10 @@ namespace pcl
           keypoint_extractor.setRadiusSearch (sampling_density_);
           keypoint_extractor.setInputCloud (input_);
 
-          pcl::PointCloud<int> keypoints_idxes;
-          keypoint_extractor.compute (keypoints_idxes);
+          keypoint_extractor.filter (*keypoints);
 
           if (filter_planar_)
-            filterPlanar (input_, keypoints_idxes);
-
-          std::vector<int> indices;
-          indices.resize (keypoints_idxes.points.size ());
-          for (size_t i = 0; i < indices.size (); i++)
-            indices[i] = keypoints_idxes.points[i];
-
-          pcl::copyPointCloud (*input_, indices, *keypoints);
+            filterPlanar (input_, keypoints);
         }
       };
 

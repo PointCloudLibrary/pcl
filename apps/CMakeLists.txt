@@ -2,25 +2,6 @@ set(SUBSYS_NAME apps)
 set(SUBSYS_DESC "Application examples/samples that show how PCL works")
 set(SUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search recognition ml stereo)
 
-# Find VTK
-if(NOT VTK_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "VTK was not found.")
-else(NOT VTK_FOUND)
-    set(DEFAULT TRUE)
-    set(REASON)
-    include("${VTK_USE_FILE}")
-endif(NOT VTK_FOUND)
-
-# OpenNI found?
-if(NOT OPENNI_FOUND)
-    set(DEFAULT FALSE)
-    set(REASON "OpenNI was not found.")
-else(NOT OPENNI_FOUND)
-    set(DEFAULT TRUE)
-    set(REASON)
-endif(NOT OPENNI_FOUND)
-
 set(DEFAULT FALSE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni vtk)
@@ -47,6 +28,12 @@ if(build)
   endif(LIBUSB_1_FOUND)
 
   if (VTK_FOUND)
+
+    include("${VTK_USE_FILE}")
+
+    set(incs "include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h")
+    set(srcs "src/render_views_tesselated_sphere.cpp")
+
     PCL_ADD_EXECUTABLE(pcl_ppf_object_recognition "${SUBSYS_NAME}" src/ppf_object_recognition.cpp)
     target_link_libraries(pcl_ppf_object_recognition pcl_common pcl_io pcl_filters pcl_features pcl_registration pcl_visualization pcl_sample_consensus pcl_segmentation)
 
@@ -100,7 +87,7 @@ if(build)
 
     endif (QT4_FOUND AND VTK_USE_QVTK)
 
-    if (OPENNI_FOUND AND BUILD_OPENNI)
+    if (WITH_OPENNI)
 
 #      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame "${SUBSYS_NAME}" src/openni_grab_frame.cpp)
 #      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
@@ -180,11 +167,6 @@ if(build)
 
       endif ()
 
-      set(incs
-        include/pcl/${SUBSYS_NAME}/render_views_tesselated_sphere.h
-        include/pcl/${SUBSYS_NAME}/timer.h)
-      set(srcs src/render_views_tesselated_sphere.cpp)
-
       if (QHULL_FOUND)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_3d_convex_hull "${SUBSYS_NAME}" src/openni_3d_convex_hull.cpp)
         target_link_libraries(pcl_openni_3d_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface)
@@ -195,10 +177,6 @@ if(build)
         PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_tracking "${SUBSYS_NAME}" src/openni_tracking.cpp)
         target_link_libraries(pcl_openni_tracking pcl_common pcl_io pcl_surface pcl_visualization pcl_filters pcl_features pcl_segmentation pcl_tracking pcl_search)
 
-        set(incs "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h" ${incs})
-        set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
-        set(srcs src/dominant_plane_segmentation.cpp ${srcs})
-
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_planar_convex_hull "${SUBSYS_NAME}" src/openni_planar_convex_hull.cpp)
       target_link_libraries(pcl_openni_planar_convex_hull pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_surface)
 
@@ -206,17 +184,6 @@ if(build)
       target_link_libraries(pcl_ni_linemod pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_surface pcl_search)
 
       endif() # QHULL_FOUND
-
-      # Install include files
-      PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
-      PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
-
-      set(LIB_NAME "pcl_${SUBSYS_NAME}")
-      PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${impl_incs} ${incs})
-      target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
-
-      PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "" "" "" "" "")
-
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_ni_agast "${SUBSYS_NAME}" src/ni_agast.cpp)
       target_link_libraries(pcl_ni_agast pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_sample_consensus pcl_features pcl_keypoints pcl_surface pcl_search)
@@ -232,7 +199,7 @@ if(build)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_klt "${SUBSYS_NAME}" src/openni_klt.cpp)
       target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
-    endif() # OPENNI_FOUND + BUILD_OPENNI
+    endif() # WITH_OPENNI
 
   endif() # VTK_FOUND
 
@@ -252,4 +219,23 @@ if(build)
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${subdir}")
   endforeach(subdir)
 
+  if(QHULL_FOUND)
+      set(incs
+        "include/pcl/${SUBSYS_NAME}/dominant_plane_segmentation.h"
+        "include/pcl/${SUBSYS_NAME}/timer.h"
+        ${incs}
+        )
+      set(impl_incs "include/pcl/${SUBSYS_NAME}/impl/dominant_plane_segmentation.hpp")
+      set(srcs "src/dominant_plane_segmentation.cpp" ${srcs})
+  endif()
+
+  set(LIB_NAME "pcl_${SUBSYS_NAME}")
+  PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${impl_incs} ${incs})
+  target_link_libraries("${LIB_NAME}" pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
+  PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "" "" "" "" "")
+  # Install include files
+  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}" ${incs})
+  PCL_ADD_INCLUDES("${SUBSYS_NAME}" "${SUBSYS_NAME}/impl" ${impl_incs})
+
 endif(build)
+

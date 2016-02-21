@@ -189,6 +189,13 @@ namespace pcl
     return (os);
   }
 
+  std::ostream&
+  operator << (std::ostream& os, const PointXYZLNormal& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " << p.label << " - " << p.normal[0] << "," << p.normal[1] << "," << p.normal[2] << " - " << p.curvature << ")";
+    return (os);
+  }
+
   std::ostream& 
   operator << (std::ostream& os, const PointWithRange& p)
   {
@@ -412,4 +419,14 @@ namespace pcl
     p.radius << " - " << p.confidence << " - " << p.curvature << ")";
     return (os);
   }
+
+  std::ostream& 
+  operator << (std::ostream& os, const PointDEM& p)
+  {
+    os << "(" << p.x << "," << p.y << "," << p.z << " - " 
+       << p.intensity << " - " << p.intensity_variance << " - " 
+       << p.height_variance << ")";
+    return (os);
+  }
+
 }

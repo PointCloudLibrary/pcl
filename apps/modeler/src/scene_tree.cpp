@@ -480,7 +480,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   std::set<RenderWindowItem*> previous_parents;
   for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
     selected_cloud_meshes_it != selected_cloud_meshes.end();
-    selected_cloud_meshes_it ++)
+    ++ selected_cloud_meshes_it)
   {
     CloudMeshItem* cloud_mesh_item = *selected_cloud_meshes_it;
     RenderWindowItem* render_window_item = dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent());
@@ -493,7 +493,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
   std::vector<CloudMeshItem*> cloud_mesh_items;
   for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
     selected_cloud_meshes_it != selected_cloud_meshes.end();
-    selected_cloud_meshes_it ++)
+    ++ selected_cloud_meshes_it)
   {
     CloudMeshItem* cloud_mesh_item = *selected_cloud_meshes_it;
     if (dynamic_cast<RenderWindowItem*>(cloud_mesh_item->parent()) == NULL)
@@ -515,7 +515,7 @@ pcl::modeler::SceneTree::dropEvent(QDropEvent * event)
 
   for (std::set<RenderWindowItem*>::iterator previous_parents_it = previous_parents.begin();
     previous_parents_it != previous_parents.end();
-    previous_parents_it ++)
+    ++ previous_parents_it)
   {
     (*previous_parents_it)->getRenderWindow()->updateAxes();
     (*previous_parents_it)->getRenderWindow()->render();
@@ -535,7 +535,7 @@ pcl::modeler::SceneTree::dropMimeData(QTreeWidgetItem * parent, int, const QMime
 
   for (QList<CloudMeshItem*>::iterator selected_cloud_meshes_it = selected_cloud_meshes.begin();
     selected_cloud_meshes_it != selected_cloud_meshes.end();
-    selected_cloud_meshes_it ++)
+    ++ selected_cloud_meshes_it)
   {
     CloudMeshItem* cloud_mesh_item_copy = new CloudMeshItem(render_window_item, *(*selected_cloud_meshes_it));
     render_window_item->addChild(cloud_mesh_item_copy);

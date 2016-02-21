@@ -459,6 +459,23 @@ namespace pcl
     return (transformPoint<PointT, float> (point, transform));
   }
 
+  /** \brief Transform a point with members x,y,z,normal_x,normal_y,normal_z
+    * \param[in] point the point to transform
+    * \param[out] transform the transformation to apply
+    * \return the transformed point
+    * \ingroup common
+    */
+  template <typename PointT, typename Scalar> inline PointT
+  transformPointWithNormal (const PointT &point, 
+                  const Eigen::Transform<Scalar, 3, Eigen::Affine> &transform);
+  
+  template <typename PointT> inline PointT
+  transformPointWithNormal (const PointT &point, 
+                  const Eigen::Affine3f &transform)
+  {
+    return (transformPointWithNormal<PointT, float> (point, transform));
+  }
+
   /** \brief Calculates the principal (PCA-based) alignment of the point cloud
     * \param[in] cloud the input point cloud
     * \param[out] transform the resultant transform

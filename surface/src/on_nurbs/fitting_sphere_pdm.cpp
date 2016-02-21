@@ -37,6 +37,7 @@
 
 #include <stdexcept>
 #include <pcl/surface/on_nurbs/fitting_sphere_pdm.h>
+#include <pcl/pcl_macros.h>
 
 using namespace pcl;
 using namespace on_nurbs;
@@ -161,7 +162,7 @@ FittingSphere::setInvMapParams (int in_max_steps, double in_accuracy)
 }
 
 ON_NurbsSurface
-FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector3d pole_axis)
+FittingSphere::initNurbsSphere (int order, NurbsDataSurface *data, Eigen::Vector3d)
 {
   Eigen::Vector3d mean = NurbsTools::computeMean (data->interior);
 

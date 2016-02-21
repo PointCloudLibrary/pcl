@@ -50,14 +50,26 @@
 /*@{*/
 namespace pcl
 {
-  /** \brief Compute the smallest angle between two vectors in the [ 0, PI ) interval in 3D.
+  /** \brief Compute the smallest angle between two 3D vectors in radians (default) or degree.
     * \param v1 the first 3D vector (represented as a \a Eigen::Vector4f)
     * \param v2 the second 3D vector (represented as a \a Eigen::Vector4f)
-    * \return the angle between v1 and v2
+    * \return the angle between v1 and v2 in radians or degrees
+    * \note Handles rounding error for parallel and anti-parallel vectors
     * \ingroup common
     */
   inline double 
-  getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2);
+  getAngle3D (const Eigen::Vector4f &v1, const Eigen::Vector4f &v2, const bool in_degree = false);
+
+  /** \brief Compute the smallest angle between two 3D vectors in radians (default) or degree.
+    * \param v1 the first 3D vector (represented as a \a Eigen::Vector3f)
+    * \param v2 the second 3D vector (represented as a \a Eigen::Vector3f)
+    * \param in_degree determine if angle should be in radians or degrees
+    * \return the angle between v1 and v2 in radians or degrees
+    * \ingroup common
+    */
+  inline double
+  getAngle3D (const Eigen::Vector3f &v1, const Eigen::Vector3f &v2, const bool in_degree = false);
+
 
   /** \brief Compute both the mean and the standard deviation of an array of values
     * \param values the array of values

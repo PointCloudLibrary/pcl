@@ -386,7 +386,7 @@ namespace pcl
          * \param[out] max_pt upper bound of voxel
          */
         inline void
-        getVoxelBounds (OctreeIteratorBase<OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt)
+        getVoxelBounds (const OctreeIteratorBase<OctreeT>& iterator, Eigen::Vector3f &min_pt, Eigen::Vector3f &max_pt) const
         {
           this->genVoxelBoundsFromOctreeKey (iterator.getCurrentOctreeKey (),
               iterator.getCurrentOctreeDepth (), min_pt, max_pt);

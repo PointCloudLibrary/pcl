@@ -109,7 +109,7 @@ pcl::visualization::ImageViewer::addMask (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addMask] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
@@ -117,15 +117,14 @@ pcl::visualization::ImageViewer::addMask (
   search.setInputCloud (image);
   std::vector<float> xy;
   xy.reserve (mask.size () * 2);
-  const float image_height_f = static_cast<float> (image->height);
   for (size_t i = 0; i < mask.size (); ++i)
   {
     pcl::PointXY p_projected;
     search.projectPoint (mask[i], p_projected);
 
     xy.push_back (p_projected.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
-    xy.push_back (image_height_f - p_projected.y);
+    #if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
+    xy.push_back (static_cast<float> (image->height) - p_projected.y);
     #else
     xy.push_back (p_projected.y);
     #endif
@@ -136,6 +135,7 @@ pcl::visualization::ImageViewer::addMask (
                      static_cast<unsigned char> (g*255.0), 
                      static_cast<unsigned char> (b*255.0));
   points->setOpacity (opacity);
+  points->set (xy);
   am_it->actor->GetScene ()->AddItem (points);
   return (true);
 }
@@ -167,13 +167,12 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addPlanarPolygon] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
   }
   
   // Construct a search object to get the camera parameters and fill points
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  const float image_height_f = static_cast<float> (image->height);
   std::vector<float> xy;
   xy.reserve ((polygon.getContour ().size () + 1) * 2);
   for (size_t i = 0; i < polygon.getContour ().size (); ++i)
@@ -181,8 +180,8 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
     pcl::PointXY p;
     search.projectPoint (polygon.getContour ()[i], p);
     xy.push_back (p.x);
-    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 10))
-    xy.push_back (image_height_f - p.y);
+    #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
+    xy.push_back (static_cast<float> (image->height) - p.y);
     #else
     xy.push_back (p.y);
     #endif
@@ -196,6 +195,7 @@ pcl::visualization::ImageViewer::addPlanarPolygon (
   poly->setColors (static_cast<unsigned char> (r * 255.0), 
                    static_cast<unsigned char> (g * 255.0), 
                    static_cast<unsigned char> (b * 255.0));
+  poly->setOpacity (opacity);
   poly->set (xy);
   am_it->actor->GetScene ()->AddItem (poly);
 
@@ -230,7 +230,7 @@ pcl::visualization::ImageViewer::addRectangle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
@@ -268,7 +268,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
+#if ((VTK_MAJOR_VERSION >= 6) || ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif
@@ -312,7 +312,7 @@ pcl::visualization::ImageViewer::addRectangle (
   if (am_it == layer_map_.end ())
   {
     PCL_DEBUG ("[pcl::visualization::ImageViewer::addRectangle] No layer with ID'=%s' found. Creating new one...\n", layer_id.c_str ());
-    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, true);
+    am_it = createLayer (layer_id, getSize ()[0] - 1, getSize ()[1] - 1, opacity, false);
   }
 
   // Construct a search object to get the camera parameters
@@ -333,7 +333,7 @@ pcl::visualization::ImageViewer::addRectangle (
     if (pp_2d[i].x > max_pt_2d.x) max_pt_2d.x = pp_2d[i].x;
     if (pp_2d[i].y > max_pt_2d.y) max_pt_2d.y = pp_2d[i].y;
   }
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 7))
+#if ((VTK_MAJOR_VERSION >= 6) ||((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 7)))
   min_pt_2d.y = float (image->height) - min_pt_2d.y;
   max_pt_2d.y = float (image->height) - max_pt_2d.y;
 #endif

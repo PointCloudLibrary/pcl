@@ -46,9 +46,11 @@ using namespace std;
 typedef PointCloud <PointXYZRGBA>      CloudXYZRGBA;
 typedef PointCloud <PointXYZRGB>       CloudXYZRGB;
 typedef PointCloud <PointXYZRGBNormal> CloudXYZRGBNormal;
+typedef PointCloud <PointXYZ>          CloudXYZ;
 
 PointXYZRGBA pt_xyz_rgba, pt_xyz_rgba2;
 PointXYZRGB pt_xyz_rgb;
+PointXYZ pt_xyz;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, concatenateFields)
@@ -337,6 +339,23 @@ TEST (PCL, CopyPointCloudWithIndicesAndRGBToRGBA)
   }
 }
 
+TEST (PCL, CopyPointCloudWithSameTypes)
+{
+  CloudXYZ cloud_in (5, 1, pt_xyz);
+  CloudXYZ cloud_in_empty;
+  CloudXYZ cloud_out;
+
+  pcl::copyPointCloud (cloud_in, cloud_out);
+
+  ASSERT_EQ (cloud_in.size (), cloud_out.size ());
+  for (size_t i = 0; i < cloud_out.size (); ++i)
+    EXPECT_XYZ_EQ (cloud_in[i], cloud_out[i]);
+
+  pcl::copyPointCloud (cloud_in_empty, cloud_out);
+
+  ASSERT_EQ (0, cloud_out.size ());
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
@@ -364,6 +383,10 @@ main (int argc, char** argv)
   pt_xyz_rgb.g = 10;
   pt_xyz_rgb.b = 0;
   pt_xyz_rgb.a = 255;
+
+  pt_xyz.x = 4;
+  pt_xyz.y = 1;
+  pt_xyz.z = 5;
 
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());

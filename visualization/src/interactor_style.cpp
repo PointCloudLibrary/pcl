@@ -64,7 +64,9 @@
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -99,6 +101,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::Initialize ()
 
   // Create the image filter and PNG writer objects
   wif_ = vtkSmartPointer<vtkWindowToImageFilter>::New ();
+  wif_->ReadFrontBufferOff ();
   snapshot_writer_ = vtkSmartPointer<vtkPNGWriter>::New ();
   snapshot_writer_->SetInputConnection (wif_->GetOutputPort ());
 
@@ -633,7 +636,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Geometry ?
     if (keymod)
     {
-      for (it = actors_->begin (); it != actors_->end (); ++it)
+      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         if (index >= static_cast<int> (act->geometry_handlers.size ()))
@@ -659,6 +662,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -667,6 +671,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
 #if VTK_MAJOR_VERSION < 6
@@ -682,7 +687,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     }
     else
     {
-      for (it = actors_->begin (); it != actors_->end (); ++it)
+      for (it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         CloudActor *act = &(*it).second;
         // Check for out of bounds
@@ -703,6 +708,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -713,6 +719,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);
@@ -785,7 +792,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     case 'l': case 'L':
     {
       // Iterate over the entire actors list and extract the geomotry/color handlers list
-      for (CloudActorMap::iterator it = actors_->begin (); it != actors_->end (); ++it)
+      for (CloudActorMap::iterator it = cloud_actors_->begin (); it != cloud_actors_->end (); ++it)
       {
         std::list<std::string> geometry_handlers_list, color_handlers_list;
         CloudActor *act = &(*it).second;
@@ -830,6 +837,24 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
       break;
     }
+
+    // Switch representation to wireframe (override default behavior)
+    case 'w': case 'W':
+    {
+      vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors ();
+      vtkCollectionSimpleIterator ait;
+      for (ac->InitTraversal (ait); vtkActor* actor = ac->GetNextActor (ait); )
+      {
+        for (actor->InitPathTraversal (); vtkAssemblyPath* path = actor->GetNextPath (); )
+        {
+          vtkSmartPointer<vtkActor> apart = reinterpret_cast <vtkActor*> (path->GetLastNode ()->GetViewProp ());
+          apart->GetProperty ()->SetRepresentationToWireframe ();
+          apart->GetProperty ()->SetLighting (false);
+        }
+      }
+      break;
+    }
+
     // Save a PNG snapshot with the current screen
     case 'j': case 'J':
     {
@@ -991,7 +1016,20 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         Interactor->Render ();
       }
       else
-        Superclass::OnKeyDown ();
+      {
+        Superclass::OnKeyDown();
+        vtkSmartPointer<vtkActorCollection> ac = CurrentRenderer->GetActors();
+        vtkCollectionSimpleIterator ait;
+        for (ac->InitTraversal(ait); vtkActor* actor = ac->GetNextActor(ait);)
+        {
+          for (actor->InitPathTraversal(); vtkAssemblyPath* path = actor->GetNextPath();)
+          {
+            vtkSmartPointer<vtkActor> apart = reinterpret_cast<vtkActor*>(path->GetLastNode()->GetViewProp());
+            apart->GetProperty()->SetRepresentationToSurface();
+            apart->GetProperty()->SetLighting(true);
+          }
+        }
+      }
       break;
     }
 
@@ -1025,27 +1063,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
     // Display a LUT actor on screen
     case 'u': case 'U':
     {
-      CloudActorMap::iterator it;
-      for (it = actors_->begin (); it != actors_->end (); ++it)
-      {
-        CloudActor *act = &(*it).second;
-
-        vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
-        lut_actor_->SetLookupTable (lut);
-        lut_actor_->Modified ();
-      }
-      if (!lut_enabled_)
-      {
-        CurrentRenderer->AddActor (lut_actor_);
-        lut_actor_->SetVisibility (true);
-        lut_enabled_ = true;
-      }
-      else
-      {
-        CurrentRenderer->RemoveActor (lut_actor_);
-        lut_enabled_ = false;
-      }
-      CurrentRenderer->Render ();
+      updateLookUpTableDisplay (true);
       break;
     }
 
@@ -1066,13 +1084,13 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
       vtkSmartPointer<vtkCamera> cam = CurrentRenderer->GetActiveCamera ();
       
-      static CloudActorMap::iterator it = actors_->begin ();
+      static CloudActorMap::iterator it = cloud_actors_->begin ();
       // it might be that some actors don't have a valid transformation set -> we skip them to avoid a seg fault.
       bool found_transformation = false;
-      for (unsigned idx = 0; idx < actors_->size (); ++idx, ++it)
+      for (unsigned idx = 0; idx < cloud_actors_->size (); ++idx, ++it)
       {
-        if (it == actors_->end ())
-          it = actors_->begin ();
+        if (it == cloud_actors_->end ())
+          it = cloud_actors_->begin ();
         
         const CloudActor& actor = it->second;
         if (actor.viewpoint_transformation_.GetPointer ())
@@ -1106,10 +1124,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
       }
 
       // go to the next actor for the next key-press event.
-      if (it != actors_->end ())
+      if (it != cloud_actors_->end ())
         ++it;
       else
-        it = actors_->begin ();
+        it = cloud_actors_->begin ();
       
       CurrentRenderer->SetActiveCamera (cam);
       CurrentRenderer->ResetCameraClippingRange ();
@@ -1153,6 +1171,135 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
 
   rens_->Render ();
   Interactor->Render ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+// Update the look up table displayed when 'u' is pressed
+void
+pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool add_lut)
+{
+  CloudActorMap::iterator am_it;
+  ShapeActorMap::iterator sm_it;
+  bool actor_found = false;
+
+  if (!lut_enabled_ && !add_lut)
+    return;
+
+  if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
+  {
+    am_it = cloud_actors_->find (lut_actor_id_);
+    if (am_it == cloud_actors_->end ())
+    {
+      sm_it = shape_actors_->find (lut_actor_id_);
+      if (sm_it == shape_actors_->end ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] Could not find any actor with id <%s>!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      // ShapeActor found
+      vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
+      vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+      if (!actor || !actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] id <%s> does not hold any color information!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      lut_actor_->SetLookupTable (actor->GetMapper ()->GetLookupTable ());
+      lut_actor_->Modified ();
+      actor_found = true;
+    }
+    else
+    {
+      // CloudActor
+      CloudActor *act = & (*am_it).second;
+      if (!act->actor->GetMapper ()->GetLookupTable () && !act->actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+      {
+        PCL_WARN ("[updateLookUpTableDisplay] id <%s> does not hold any color information!\n", lut_actor_id_.c_str ());
+        if (lut_enabled_)
+        {  // Remove LUT and exit
+          CurrentRenderer->RemoveActor (lut_actor_);
+          lut_enabled_ = false;
+        }
+        return;
+      }
+
+      vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
+      lut_actor_->SetLookupTable (lut);
+      lut_actor_->Modified ();
+      actor_found = true;
+    }
+  }
+  else  // lut_actor_id_ == "", the user did not specify which cloud/shape LUT should be displayed
+  // Circling through all clouds/shapes and displaying first LUT found
+  {
+    for (am_it = cloud_actors_->begin (); am_it != cloud_actors_->end (); ++am_it)
+    {
+      CloudActor *act = & (*am_it).second;
+      if (!act->actor->GetMapper ()->GetLookupTable ())
+        continue;
+
+      if (!act->actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        continue;
+
+      vtkScalarsToColors* lut = act->actor->GetMapper ()->GetLookupTable ();
+      lut_actor_->SetLookupTable (lut);
+      lut_actor_->Modified ();
+      actor_found = true;
+      break;
+    }
+
+    if (!actor_found)
+    {
+      for (sm_it = shape_actors_->begin (); sm_it != shape_actors_->end (); ++sm_it)
+      {
+        vtkSmartPointer<vtkProp> *act = & (*sm_it).second;
+        vtkSmartPointer<vtkActor> actor = vtkActor::SafeDownCast (*act);
+        if (!actor)
+          continue;
+
+        if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())  // Check if actor has scalars
+          continue;
+        lut_actor_->SetLookupTable (actor->GetMapper ()->GetLookupTable ());
+        lut_actor_->Modified ();
+        actor_found = true;
+        break;
+      }
+    }
+  }
+
+  if ( (!actor_found && lut_enabled_) || (lut_enabled_ && add_lut))  // Remove actor
+  {
+    CurrentRenderer->RemoveActor (lut_actor_);
+    lut_enabled_ = false;
+  }
+  else if (!lut_enabled_ && add_lut && actor_found)  // Add actor
+  {
+    CurrentRenderer->AddActor (lut_actor_);
+    lut_actor_->SetVisibility (true);
+    lut_enabled_ = true;
+  }
+  else if (lut_enabled_)  // Update actor (if displayed)
+  {
+    CurrentRenderer->RemoveActor (lut_actor_);
+    CurrentRenderer->AddActor (lut_actor_);
+  }
+  else
+    return;
+
+  CurrentRenderer->Render ();
+  return;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

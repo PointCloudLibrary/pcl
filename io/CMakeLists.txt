@@ -5,38 +5,30 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
 
 if(build)
-    ## OpenNI 2.x
-    OPTION(BUILD_OPENNI2 "Build the OpenNI 2 Grabber." OFF)
-    MARK_AS_ADVANCED(BUILD_OPENNI2)
-    if(NOT BUILD_OPENNI2)
-      # Set OPENNI2_FOUND to false locally to avoid building anything OpenNI 2 related
-      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI2
-      set(OPENNI2_FOUND FALSE)
-    endif()
-    if(OPENNI2_FOUND)
-      set(IMAGE_INCLUDES
-        include/pcl/io/image_metadata_wrapper.h
-        include/pcl/io/image.h
-        include/pcl/io/image_rgb24.h
-        include/pcl/io/image_yuv422.h
-        include/pcl/io/image_ir.h
-        include/pcl/io/image_depth.h
-      )
+    if(WITH_OPENNI2)
+        set(IMAGE_INCLUDES
+          include/pcl/io/image_metadata_wrapper.h
+          include/pcl/io/image.h
+          include/pcl/io/image_rgb24.h
+          include/pcl/io/image_yuv422.h
+          include/pcl/io/image_ir.h
+          include/pcl/io/image_depth.h
+        )
 
-      set(IMAGE_SOURCES
-        src/image_rgb24.cpp
-        src/image_yuv422.cpp
-        src/image_ir.cpp
-        src/image_depth.cpp
-      )
+        set(IMAGE_SOURCES
+          src/image_rgb24.cpp
+          src/image_yuv422.cpp
+          src/image_ir.cpp
+          src/image_depth.cpp
+        )
 
         set(OPENNI2_GRABBER_INCLUDES
             include/pcl/io/openni2_grabber.h
@@ -70,17 +62,9 @@ if(build)
         if(MSVC)
             file(COPY ${OPENNI2_REDIST_DIR} DESTINATION ${CMAKE_BINARY_DIR}/bin PATTERN *.*)
         endif(MSVC)
-    endif(OPENNI2_FOUND)
-
-    ## OpenNI 1.x
-    OPTION(BUILD_OPENNI "Build the OpenNI Grabber." ON)
-    MARK_AS_ADVANCED(BUILD_OPENNI)
-    if(NOT BUILD_OPENNI)
-      # Set OPENNI_FOUND to false locally to avoid building anything OpenNI related
-      # Remember that other modules (libraries) need to check explicitly for BUILD_OPENNI
-      set(OPENNI_FOUND FALSE)
     endif()
-    if(OPENNI_FOUND)
+
+    if(WITH_OPENNI)
         set(OPENNI_GRABBER_INCLUDES
             include/pcl/io/openni_grabber.h
             include/pcl/io/oni_grabber.h
@@ -120,12 +104,12 @@ if(build)
             src/oni_grabber.cpp
             ${IMAGE_SOURCES}
         )
-    endif(OPENNI_FOUND)
+    endif()
 
     source_group("Image Headers" FILES ${IMAGE_INCLUDES})
     source_group("Image Sources" FILES ${IMAGE_SOURCES})
 
-    if(FZAPI_FOUND)
+    if(WITH_FZAPI)
         set(FZAPI_GRABBER_INCLUDES
             include/pcl/io/fotonic_grabber.h
             )
@@ -135,16 +119,46 @@ if(build)
         set(FZAPI_GRABBER_SOURCES
             src/fotonic_grabber.cpp
             )
-    endif(FZAPI_FOUND)
+    endif()
 
-	if(PXCAPI_FOUND)
-		set(PXC_GRABBER_INCLUDES
-			include/pcl/io/pxc_grabber.h
-			)
-		set(PXC_GRABBER_SOURCES
-			src/pxc_grabber.cpp
-			)
-	endif(PXCAPI_FOUND)
+    if(WITH_ENSENSO)
+        set(ENSENSO_GRABBER_INCLUDES
+            include/pcl/io/ensenso_grabber.h
+            )
+        set(ENSENSO_GRABBER_SOURCES
+            src/ensenso_grabber.cpp
+            )
+    endif()
+
+    if(WITH_DAVIDSDK)
+        set(DAVIDSDK_GRABBER_INCLUDES
+            include/pcl/io/davidsdk_grabber.h
+            )
+        set(DAVIDSDK_GRABBER_SOURCES
+            src/davidsdk_grabber.cpp
+            )
+    endif()
+
+    if(WITH_DSSDK)
+        set(DSSDK_GRABBER_INCLUDES
+            include/pcl/io/depth_sense_grabber.h
+        )
+        set(DSSDK_GRABBER_SOURCES
+            src/depth_sense_grabber.cpp
+            src/depth_sense/depth_sense_grabber_impl.cpp
+            src/depth_sense/depth_sense_device_manager.cpp
+        )
+    endif()
+
+    if(WITH_RSSDK)
+        set(RSSDK_GRABBER_INCLUDES
+            include/pcl/io/real_sense_grabber.h
+        )
+        set(RSSDK_GRABBER_SOURCES
+            src/real_sense_grabber.cpp
+            src/real_sense/real_sense_device_manager.cpp
+        )
+    endif()
 
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
@@ -198,8 +212,10 @@ if(build)
         src/ifs_io.cpp
         src/image_grabber.cpp
         src/hdl_grabber.cpp
+        src/vlp_grabber.cpp
         src/robot_eye_grabber.cpp
         src/file_io.cpp
+        src/auto_io.cpp
         src/io_exception.cpp
         ${VTK_IO_SOURCE}
         ${OPENNI_GRABBER_SOURCES}
@@ -207,7 +223,10 @@ if(build)
         ${IMAGE_SOURCES}
         ${DINAST_GRABBER_SOURCES}
         ${FZAPI_GRABBER_SOURCES}
-        ${PXC_GRABBER_SOURCES}
+        ${ENSENSO_GRABBER_SOURCES}
+        ${DAVIDSDK_GRABBER_SOURCES}
+        ${DSSDK_GRABBER_SOURCES}
+        ${RSSDK_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -226,6 +245,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/debayer.h"
         "include/pcl/${SUBSYS_NAME}/file_io.h"
+        "include/pcl/${SUBSYS_NAME}/auto_io.h"
         "include/pcl/${SUBSYS_NAME}/lzf.h"
         "include/pcl/${SUBSYS_NAME}/lzf_image_io.h"
         "include/pcl/${SUBSYS_NAME}/io.h"
@@ -241,6 +261,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ifs_io.h"
         "include/pcl/${SUBSYS_NAME}/image_grabber.h"
         "include/pcl/${SUBSYS_NAME}/hdl_grabber.h"
+        "include/pcl/${SUBSYS_NAME}/vlp_grabber.h"
         "include/pcl/${SUBSYS_NAME}/robot_eye_grabber.h"
         "include/pcl/${SUBSYS_NAME}/point_cloud_image_extractors.h"
         "include/pcl/${SUBSYS_NAME}/io_exception.h"
@@ -250,7 +271,11 @@ if(build)
         ${IMAGE_INCLUDES}
         ${DINAST_GRABBER_INCLUDES}
         ${FZAPI_GRABBER_INCLUDES}
-        ${PXC_GRABBER_INCLUDES}
+        ${ENSENSO_GRABBER_INCLUDES}
+        ${DAVIDSDK_GRABBER_INCLUDES}
+        ${DSSDK_GRABBER_INCLUDES}
+        ${RSSDK_GRABBER_INCLUDES}
+        "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
         )
 
     set(compression_incs
@@ -265,15 +290,16 @@ if(build)
           include/pcl/compression/organized_pointcloud_conversion.h
           include/pcl/compression/libpng_wrapper.h
           )
-      if(OPENNI_FOUND OR OPENNI2_FOUND)
+      if(WITH_OPENNI OR WITH_OPENNI2)
         list(APPEND compression_incs
           include/pcl/compression/organized_pointcloud_compression.h
           )
-      endif(OPENNI_FOUND OR OPENNI2_FOUND)
+      endif()
     endif(PNG_FOUND)
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/auto_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/synchronized_queue.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/point_cloud_image_extractors.hpp"
@@ -281,11 +307,11 @@ if(build)
         include/pcl/compression/impl/octree_pointcloud_compression.hpp
         ${VTK_IO_INCLUDES_IMPL}
        )
-    if(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
+    if(PNG_FOUND AND (WITH_OPENNI OR WITH_OPENNI2))
      list(APPEND impl_incs
          include/pcl/compression/impl/organized_pointcloud_compression.hpp
         )
-    endif(PNG_FOUND AND (OPENNI_FOUND OR OPENNI2_FOUND) )
+    endif()
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
@@ -295,32 +321,43 @@ if(build)
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES} )
     if(PNG_FOUND)
-      target_link_libraries("${LIB_NAME}" "${PNG_LIBRARY}")
+      target_link_libraries("${LIB_NAME}" ${PNG_LIBRARIES})
     endif(PNG_FOUND)
 
     if(LIBUSB_1_FOUND)
       target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
     endif(LIBUSB_1_FOUND)
 
-    if(OPENNI2_FOUND)
+    if(WITH_OPENNI2)
       target_link_libraries(${LIB_NAME} ${OPENNI2_LIBRARIES})
-    endif(OPENNI2_FOUND)
+    endif()
 
-    if(OPENNI_FOUND)
+    if(WITH_OPENNI)
       target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
-    endif(OPENNI_FOUND)
+    endif()
 
-    if(FZAPI_FOUND)
+    if(WITH_FZAPI)
       target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
-	  if(WIN32)
-		target_link_libraries("${LIB_NAME}" Version.lib)
-  	  endif(WIN32)
-    endif(FZAPI_FOUND)
+      if(WIN32)
+        target_link_libraries("${LIB_NAME}" Version.lib)
+      endif(WIN32)
+    endif()
 
-	if(PXCAPI_FOUND)
-	  link_directories(${PXCAPI_LIB_DIRS})
-	  target_link_libraries("${LIB_NAME}" ${PXCAPI_LIBS})
-	endif(PXCAPI_FOUND)
+    if(WITH_ENSENSO)
+      target_link_libraries(${LIB_NAME} ${ENSENSO_LIBRARIES})
+    endif()
+
+    if(WITH_DAVIDSDK)
+      target_link_libraries(${LIB_NAME} ${DAVIDSDK_LIBRARIES})
+    endif()
+
+    if(WITH_DSSDK)
+      target_link_libraries(${LIB_NAME} ${DSSDK_LIBRARIES})
+    endif()
+
+    if(WITH_RSSDK)
+      target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
+    endif()
 
     if (PCAP_FOUND)
       target_link_libraries("${LIB_NAME}" ${PCAP_LIBRARIES})
@@ -328,12 +365,15 @@ if(build)
 
     set(EXT_DEPS eigen3)
 
-    if(OPENNI_FOUND)
-      list(APPEND EXT_DEPS openni-dev)
-    endif(OPENNI_FOUND)
-    if(OPENNI2_FOUND)
-      list(APPEND EXT_DEPS openni2-dev)
-    endif(OPENNI2_FOUND)
+    if(WITH_OPENNI)
+      list(APPEND EXT_DEPS libopenni)
+    endif()
+    if(WITH_OPENNI2)
+      list(APPEND EXT_DEPS libopenni2)
+    endif()
+    if(WITH_ENSENSO)
+      list(APPEND EXT_DEPS ensenso)
+    endif()
 
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")

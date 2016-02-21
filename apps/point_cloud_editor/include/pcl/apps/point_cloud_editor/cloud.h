@@ -348,7 +348,7 @@ class Cloud : public Statistics
     /// @param pts a vector used to store the points whose coordinates are
     /// transformed.
     void
-    getDisplaySpacePoints (std::vector<Point3D>& pts) const;
+    getDisplaySpacePoints (Point3DVector& pts) const;
 
     /// @brief Returns a const reference to the internal representation of this
     /// object.

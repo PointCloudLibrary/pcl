@@ -123,7 +123,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   compare_->setDistanceThreshold (static_cast<float> (distance_threshold_), true);
 
   // Set up the output
-  OrganizedConnectedComponentSegmentation<PointT,pcl::Label> connected_component (compare_);
+  OrganizedConnectedComponentSegmentation<PointT,PointLT> connected_component (compare_);
   connected_component.setInputCloud (input_);
   connected_component.segment (labels, label_indices);
 

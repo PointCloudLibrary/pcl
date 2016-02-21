@@ -78,7 +78,8 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
   range_condAND->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT, newLimitZ))); 
   
   // build the filter
-  pcl::ConditionalRemoval<PointT> condremAND (range_condAND, true);
+  pcl::ConditionalRemoval<PointT> condremAND (true);
+  condremAND.setCondition (range_condAND);
   condremAND.setInputCloud (world_);
   condremAND.setKeepOrganized (false);
   
@@ -104,7 +105,8 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
 	range_condOR->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT,  previous_origin_z )));
   
   // build the filter
-  pcl::ConditionalRemoval<PointT> condrem (range_condOR, true);
+  pcl::ConditionalRemoval<PointT> condrem (true);
+  condrem.setCondition (range_condOR);
   condrem.setInputCloud (newCube);
   condrem.setKeepOrganized (false);
   // apply filter
@@ -128,7 +130,7 @@ pcl::kinfuLS::WorldModel<PointT>::getExistingData(const double previous_origin_x
 
 template <typename PointT>
 void
-pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f> &transforms, double overlap)
+pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vector<typename WorldModel<PointT>::PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap)
 {
   
   if(world_->points.size () == 0)
@@ -209,7 +211,8 @@ pcl::kinfuLS::WorldModel<PointT>::getWorldAsCubes (const double size, std::vecto
 		range_cond->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT, origin.z + cubeSide)));
 
 		// build the filter
-		pcl::ConditionalRemoval<PointT> condrem (range_cond);
+		pcl::ConditionalRemoval<PointT> condrem;
+		condrem.setCondition (range_cond);
 		condrem.setInputCloud (world_);
 		condrem.setKeepOrganized(false);
 		// apply filter
@@ -313,7 +316,8 @@ pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const d
   range_cond_OR_x->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::GE,  previous_limit_z)));
   range_cond_OR_x->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT,  previous_origin_z )));
 
-  pcl::ConditionalRemoval<PointT> condrem_x (range_cond_OR_x, true);
+  pcl::ConditionalRemoval<PointT> condrem_x (true);
+  condrem_x.setCondition (range_cond_OR_x);
   condrem_x.setInputCloud (world_);
   condrem_x.setKeepOrganized (false);
   // apply filter
@@ -350,7 +354,8 @@ pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const d
   range_cond_OR_y->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::GE,  previous_limit_z)));
   range_cond_OR_y->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT,  previous_origin_z )));
 
-  pcl::ConditionalRemoval<PointT> condrem_y (range_cond_OR_y, true);
+  pcl::ConditionalRemoval<PointT> condrem_y (true);
+  condrem_y.setCondition (range_cond_OR_y);
   condrem_y.setInputCloud (world_);
   condrem_y.setKeepOrganized (false);
   // apply filter
@@ -386,7 +391,8 @@ pcl::kinfuLS::WorldModel<PointT>::setSliceAsNans (const double origin_x, const d
   range_cond_OR_z->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::GE,  upper_limit_z))); // filtered dimension
   range_cond_OR_z->addComparison (FieldComparisonConstPtr (new pcl::FieldComparison<PointT> ("z", pcl::ComparisonOps::LT,  lower_limit_z ))); // filtered dimension
 
-  pcl::ConditionalRemoval<PointT> condrem_z (range_cond_OR_z, true);
+  pcl::ConditionalRemoval<PointT> condrem_z (true);
+  condrem_z.setCondition (range_cond_OR_z);
   condrem_z.setInputCloud (world_);
   condrem_z.setKeepOrganized (false);
   // apply filter

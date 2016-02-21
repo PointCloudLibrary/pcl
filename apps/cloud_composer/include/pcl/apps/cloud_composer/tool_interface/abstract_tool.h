@@ -182,6 +182,7 @@ namespace pcl
         getToolName () const { return "MergeCloudTool";}
         
     };
+
   }
 }
 

@@ -48,6 +48,7 @@
 #endif
 #endif
 
+#include <vtkVersion.h>
 #include <vtkAppendPolyData.h>
 #include <vtkAssemblyPath.h>
 #include <vtkAxesActor.h>
@@ -157,7 +158,7 @@
 #endif
 #include <vtkSelection.h>
 
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>4)
 #include <vtkHardwareSelector.h>
 #else
 #include <vtkVisibleCellSelector.h>

@@ -45,6 +45,7 @@
 #include <vtkVectorText.h>
 #include <vtkAlgorithmOutput.h>
 #include <vtkFollower.h>
+#include <vtkMath.h>
 #include <vtkSphereSource.h>
 #include <vtkProperty2D.h>
 #include <vtkDataSetSurfaceFilter.h>
@@ -59,6 +60,7 @@
 #include <vtkAppendPolyData.h>
 #include <vtkTextProperty.h>
 #include <vtkLODActor.h>
+#include <vtkLineSource.h>
 
 #include <pcl/visualization/common/shapes.h>
 
@@ -80,16 +82,17 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudGeometryHandler<PointT> &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
-  //PointCloudColorHandlerRandom<PointT> color_handler (cloud);
+  if (pcl::traits::has_color<PointT>())
+  {
+    PointCloudColorHandlerRGBField<PointT> color_handler_rgb_field (cloud);
+    return (fromHandlersToScreen (geometry_handler, color_handler_rgb_field, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
+  }
   PointCloudColorHandlerCustom<PointT> color_handler (cloud, 255, 255, 255);
   return (fromHandlersToScreen (geometry_handler, color_handler, id, viewport, cloud->sensor_origin_, cloud->sensor_orientation_));
 }
@@ -101,13 +104,11 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const GeometryHandlerConstPtr &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
+    CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
     am_it->second.geometry_handlers.push_back (geometry_handler);
     return (true);
   }
@@ -124,12 +125,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudColorHandler<PointT> &color_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
 
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
@@ -192,12 +190,9 @@ pcl::visualization::PCLVisualizer::addPointCloud (
   const PointCloudGeometryHandler<PointT> &geometry_handler,
   const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloud] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloud] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     // Here we're just pushing the handlers onto the queue. If needed, something fancier could
     // be done such as checking if a specific handler already exists, etc.
     //cloud_actor_map_[id].geometry_handlers.push_back (geometry_handler);
@@ -452,11 +447,9 @@ pcl::visualization::PCLVisualizer::addPolygon (
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addLine] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addLine] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -479,11 +472,9 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, double
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -508,11 +499,9 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b, bool display_length, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -539,15 +528,13 @@ pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2, doubl
 ////////////////////////////////////////////////////////////////////////////////////////////
 template <typename P1, typename P2> bool
 pcl::visualization::PCLVisualizer::addArrow (const P1 &pt1, const P2 &pt2,
-					     double r_line, double g_line, double b_line,
-					     double r_text, double g_text, double b_text,
-					     const std::string &id, int viewport)
+                                            double r_line, double g_line, double b_line,
+                                            double r_text, double g_text, double b_text,
+                                            const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addArrow] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addArrow] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -581,11 +568,9 @@ pcl::visualization::PCLVisualizer::addLine (const P1 &pt1, const P2 &pt2, const 
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id, int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addSphere] A shape with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addSphere] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -630,20 +615,25 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
 template<typename PointT> bool
 pcl::visualization::PCLVisualizer::updateSphere (const PointT &center, double radius, double r, double g, double b, const std::string &id)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it == shape_actor_map_->end ())
+  if (!contains (id))
+  {
     return (false);
+  }
 
   //////////////////////////////////////////////////////////////////////////
   // Get the actor pointer
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
   vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second);
+  if (!actor)
+    return (false);
 #if VTK_MAJOR_VERSION < 6
   vtkAlgorithm *algo = actor->GetMapper ()->GetInput ()->GetProducerPort ()->GetProducer ();
 #else
   vtkAlgorithm *algo = actor->GetMapper ()->GetInputAlgorithm ();
 #endif
   vtkSphereSource *src = vtkSphereSource::SafeDownCast (algo);
+  if (!src)
+    return (false);
 
   src->SetCenter (double (center.x), double (center.y), double (center.z));
   src->SetRadius (radius);
@@ -672,11 +662,9 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (tid);
-  if (am_it != shape_actor_map_->end ())
+  if (contains (tid))
   {
-    pcl::console::print_warn (stderr, "[addText3d] A text with id <%s> already exists! Please choose a different id and retry.\n", tid.c_str ());
+    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -742,12 +730,9 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloudNormals] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloudNormals] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -817,7 +802,7 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     }
   }
 
-  data->SetArray (&pts[0], 2 * nr_normals * 3, 0);
+  data->SetArray (&pts[0], 2 * nr_normals * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -846,6 +831,133 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointNT> bool
+pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
+  const typename pcl::PointCloud<PointNT>::ConstPtr &cloud,
+  const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+  int level, float scale,
+  const std::string &id, int viewport)
+{
+  return (addPointCloudPrincipalCurvatures<PointNT, PointNT> (cloud, cloud, pcs, level, scale, id, viewport));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename PointNT> bool
+pcl::visualization::PCLVisualizer::addPointCloudPrincipalCurvatures (
+  const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
+  const typename pcl::PointCloud<PointNT>::ConstPtr &normals,
+  const pcl::PointCloud<pcl::PrincipalCurvatures>::ConstPtr &pcs,
+  int level, float scale,
+  const std::string &id, int viewport)
+{
+  if (pcs->points.size () != cloud->points.size () || normals->points.size () != cloud->points.size ())
+  {
+    pcl::console::print_error ("[addPointCloudPrincipalCurvatures] The number of points differs from the number of principal curvatures/normals!\n");
+    return (false);
+  }
+
+  if (contains (id))
+  {
+    PCL_WARN ("[addPointCloudPrincipalCurvatures] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkAppendPolyData> polydata_1 = vtkSmartPointer<vtkAppendPolyData>::New ();
+  vtkSmartPointer<vtkAppendPolyData> polydata_2 = vtkSmartPointer<vtkAppendPolyData>::New ();
+
+  // Setup two colors - one for each line
+  unsigned char green[3] = {0, 255, 0};
+  unsigned char blue[3] = {0, 0, 255};
+
+  // Setup the colors array
+  vtkSmartPointer<vtkUnsignedCharArray> line_1_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_1_colors->SetNumberOfComponents (3);
+  line_1_colors->SetName ("Colors");
+  vtkSmartPointer<vtkUnsignedCharArray> line_2_colors =vtkSmartPointer<vtkUnsignedCharArray>::New ();
+  line_2_colors->SetNumberOfComponents (3);
+  line_2_colors->SetName ("Colors");
+
+  // Create the first sets of lines
+  for (size_t i = 0; i < cloud->points.size (); i+=level)
+  {
+    PointT p = cloud->points[i];
+    p.x += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[0]) * scale;
+    p.y += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[1]) * scale;
+    p.z += (pcs->points[i].pc1 * pcs->points[i].principal_curvature[2]) * scale;
+
+    vtkSmartPointer<vtkLineSource> line_1 = vtkSmartPointer<vtkLineSource>::New ();
+    line_1->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_1->SetPoint2 (p.x, p.y, p.z);
+    line_1->Update ();
+#if VTK_MAJOR_VERSION < 6
+    polydata_1->AddInput (line_1->GetOutput ());
+#else
+    polydata_1->AddInputData (line_1->GetOutput ());
+#endif
+    line_1_colors->InsertNextTupleValue (green);
+  }
+  polydata_1->Update ();
+  vtkSmartPointer<vtkPolyData> line_1_data = polydata_1->GetOutput ();
+  line_1_data->GetCellData ()->SetScalars (line_1_colors);
+
+  // Create the second sets of lines
+  for (size_t i = 0; i < cloud->points.size (); i += level)
+  {
+    Eigen::Vector3f pc (pcs->points[i].principal_curvature[0],
+                        pcs->points[i].principal_curvature[1],
+                        pcs->points[i].principal_curvature[2]);
+    Eigen::Vector3f normal (normals->points[i].normal[0],
+                            normals->points[i].normal[1],
+                            normals->points[i].normal[2]);
+    Eigen::Vector3f pc_c = pc.cross (normal);
+
+    PointT p = cloud->points[i];
+    p.x += (pcs->points[i].pc2 * pc_c[0]) * scale;
+    p.y += (pcs->points[i].pc2 * pc_c[1]) * scale;
+    p.z += (pcs->points[i].pc2 * pc_c[2]) * scale;
+
+    vtkSmartPointer<vtkLineSource> line_2 = vtkSmartPointer<vtkLineSource>::New ();
+    line_2->SetPoint1 (cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    line_2->SetPoint2 (p.x, p.y, p.z);
+    line_2->Update ();
+#if VTK_MAJOR_VERSION < 6
+    polydata_2->AddInput (line_2->GetOutput ());
+#else
+    polydata_2->AddInputData (line_2->GetOutput ());
+#endif
+
+    line_2_colors->InsertNextTupleValue (blue);
+  }
+  polydata_2->Update ();
+  vtkSmartPointer<vtkPolyData> line_2_data = polydata_2->GetOutput ();
+  line_2_data->GetCellData ()->SetScalars (line_2_colors);
+
+  // Assemble the two sets of lines
+  vtkSmartPointer<vtkAppendPolyData> alldata = vtkSmartPointer<vtkAppendPolyData>::New ();
+#if VTK_MAJOR_VERSION < 6
+  alldata->AddInput (line_1_data);
+  alldata->AddInput (line_2_data);
+#else
+  alldata->AddInputData (line_1_data);
+  alldata->AddInputData (line_2_data);
+#endif
+
+  // Create an Actor
+  vtkSmartPointer<vtkLODActor> actor;
+  createActorFromVTKDataSet (alldata->GetOutput (), actor);
+  actor->GetMapper ()->SetScalarModeToUseCellData ();
+
+  // Add it to all renderers
+  addActorToRenderer (actor, viewport);
+
+  // Save the pointer/ID pair to the global actor map
+  CloudActor act;
+  act.actor = actor;
+  (*cloud_actor_map_)[id] = act;
+  return (true);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename GradientT> bool
 pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     const typename pcl::PointCloud<PointT>::ConstPtr &cloud,
@@ -858,12 +970,9 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     PCL_ERROR ("[addPointCloudGradients] The number of points differs from the number of gradients!\n");
     return (false);
   }
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    PCL_WARN ("[addPointCloudGradients] A PointCloud with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addPointCloudGradients] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -896,7 +1005,7 @@ pcl::visualization::PCLVisualizer::addPointCloudIntensityGradients (
     lines->InsertCellPoint(2*j+1);
   }
 
-  data->SetArray (&pts[0], 2 * nr_gradients * 3, 0);
+  data->SetArray (&pts[0], 2 * nr_gradients * 3, 0, vtkFloatArray::VTK_DATA_ARRAY_DELETE);
   points->SetData (data);
 
   vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
@@ -933,92 +1042,18 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   const std::string &id,
   int viewport)
 {
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  pcl::Correspondences corrs;
+  corrs.resize (correspondences.size ());
+
+  size_t index = 0;
+  for (pcl::Correspondences::iterator corrs_it (corrs.begin ()); corrs_it != corrs.end (); ++corrs_it)
   {
-    PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
-    return (false);
+    corrs_it->index_query = index;
+    corrs_it->index_match = correspondences[index];
+    index++;
   }
 
-  int n_corr = int (correspondences.size ());
-  vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
-
-  // Prepare colors
-  vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  line_colors->SetNumberOfComponents (3);
-  line_colors->SetName ("Colors");
-  line_colors->SetNumberOfTuples (n_corr);
-  unsigned char* colors = line_colors->GetPointer (0);
-  memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
-  pcl::RGB rgb;
-  // Will use random colors or RED by default
-  rgb.r = 255; rgb.g = rgb.b = 0;
-
-  // Prepare coordinates
-  vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
-  line_points->SetNumberOfPoints (2 * n_corr);
-
-  vtkSmartPointer<vtkIdTypeArray> line_cells_id = vtkSmartPointer<vtkIdTypeArray>::New ();
-  line_cells_id->SetNumberOfComponents (3);
-  line_cells_id->SetNumberOfTuples (n_corr);
-  vtkIdType *line_cell_id = line_cells_id->GetPointer (0);
-  vtkSmartPointer<vtkCellArray> line_cells = vtkSmartPointer<vtkCellArray>::New ();
-
-  vtkSmartPointer<vtkFloatArray> line_tcoords = vtkSmartPointer<vtkFloatArray>::New ();
-  line_tcoords->SetNumberOfComponents (1);
-  line_tcoords->SetNumberOfTuples (n_corr * 2);
-  line_tcoords->SetName ("Texture Coordinates");
-
-  double tc[3] = {0.0, 0.0, 0.0};
-
-  int j = 0, idx = 0;
-  // Draw lines between the best corresponding points
-  for (int i = 0; i < n_corr; ++i)
-  {
-    const PointT &p_src = source_points->points[i];
-    const PointT &p_tgt = target_points->points[correspondences[i]];
-
-    int id1 = j * 2 + 0, id2 = j * 2 + 1;
-    // Set the points
-    line_points->SetPoint (id1, p_src.x, p_src.y, p_src.z);
-    line_points->SetPoint (id2, p_tgt.x, p_tgt.y, p_tgt.z);
-    // Set the cell ID
-    *line_cell_id++ = 2;
-    *line_cell_id++ = id1;
-    *line_cell_id++ = id2;
-    // Set the texture coords
-    tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
-    tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
-
-    getRandomColors (rgb);
-    colors[idx+0] = rgb.r;
-    colors[idx+1] = rgb.g;
-    colors[idx+2] = rgb.b;
-  }
-  line_colors->SetNumberOfTuples (j);
-  line_cells_id->SetNumberOfTuples (j);
-  line_cells->SetCells (n_corr, line_cells_id);
-  line_points->SetNumberOfPoints (j*2);
-  line_tcoords->SetNumberOfTuples (j*2);
- 
-  // Fill in the lines
-  line_data->SetPoints (line_points);
-  line_data->SetLines (line_cells);
-  line_data->GetPointData ()->SetTCoords (line_tcoords);
-  line_data->GetCellData ()->SetScalars (line_colors);
-
-  // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (line_data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetOpacity (0.5);
-  addActorToRenderer (actor, viewport);
-
-  // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
-
-  return (true);
+  return (addCorrespondences<PointT> (source_points, target_points, corrs, id, viewport));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1029,7 +1064,8 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   const pcl::Correspondences &correspondences,
   int nth,
   const std::string &id,
-  int viewport)
+  int viewport,
+  bool overwrite)
 {
   if (correspondences.empty ())
   {
@@ -1039,13 +1075,16 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it != shape_actor_map_->end ())
+  if (am_it != shape_actor_map_->end () && overwrite == false)
   {
     PCL_WARN ("[addCorrespondences] A set of correspondences with id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
+  } else if (am_it == shape_actor_map_->end () && overwrite == true)
+  {
+    overwrite = false; // Correspondences doesn't exist, add them instead of updating them
   }
 
-  int n_corr = int (correspondences.size () / nth + 1);
+  int n_corr = int (correspondences.size () / nth);
   vtkSmartPointer<vtkPolyData> line_data = vtkSmartPointer<vtkPolyData>::New ();
 
   // Prepare colors
@@ -1053,11 +1092,6 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_colors->SetNumberOfComponents (3);
   line_colors->SetName ("Colors");
   line_colors->SetNumberOfTuples (n_corr);
-  unsigned char* colors = line_colors->GetPointer (0);
-  memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
-  pcl::RGB rgb;
-  // Will use random colors or RED by default
-  rgb.r = 255; rgb.g = rgb.b = 0;
 
   // Prepare coordinates
   vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
@@ -1076,12 +1110,28 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
 
   double tc[3] = {0.0, 0.0, 0.0};
 
-  int j = 0, idx = 0;
+  Eigen::Affine3f source_transformation;
+  source_transformation.linear () = source_points->sensor_orientation_.matrix ();
+  source_transformation.translation () = source_points->sensor_origin_.head (3);
+  Eigen::Affine3f target_transformation;
+  target_transformation.linear () = target_points->sensor_orientation_.matrix ();
+  target_transformation.translation () = target_points->sensor_origin_.head (3);
+
+  int j = 0;
   // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
+  for (size_t i = 0; i < correspondences.size (); i += nth, ++j)
   {
-    const PointT &p_src = source_points->points[correspondences[i].index_query];
-    const PointT &p_tgt = target_points->points[correspondences[i].index_match];
+    if (correspondences[i].index_match == -1)
+    {
+      PCL_WARN ("[addCorrespondences] No valid index_match for correspondence %d\n", i);
+      continue;
+    }
+
+    PointT p_src (source_points->points[correspondences[i].index_query]);
+    PointT p_tgt (target_points->points[correspondences[i].index_match]);
+
+    p_src.getVector3fMap () = source_transformation * p_src.getVector3fMap ();
+    p_tgt.getVector3fMap () = target_transformation * p_tgt.getVector3fMap ();
 
     int id1 = j * 2 + 0, id2 = j * 2 + 1;
     // Set the points
@@ -1095,10 +1145,11 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
     tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
     tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
 
-    getRandomColors (rgb);
-    colors[idx+0] = rgb.r;
-    colors[idx+1] = rgb.g;
-    colors[idx+2] = rgb.b;
+    float rgb[3];
+    rgb[0] = vtkMath::Random (32, 255); // min / max
+    rgb[1] = vtkMath::Random (32, 255);
+    rgb[2] = vtkMath::Random (32, 255);
+    line_colors->InsertTuple (i, rgb);
   }
   line_colors->SetNumberOfTuples (j);
   line_cells_id->SetNumberOfTuples (j);
@@ -1113,14 +1164,29 @@ pcl::visualization::PCLVisualizer::addCorrespondences (
   line_data->GetCellData ()->SetScalars (line_colors);
 
   // Create an Actor
-  vtkSmartPointer<vtkLODActor> actor;
-  createActorFromVTKDataSet (line_data, actor);
-  actor->GetProperty ()->SetRepresentationToWireframe ();
-  actor->GetProperty ()->SetOpacity (0.5);
-  addActorToRenderer (actor, viewport);
+  if (!overwrite)
+  {
+    vtkSmartPointer<vtkLODActor> actor;
+    createActorFromVTKDataSet (line_data, actor);
+    actor->GetProperty ()->SetRepresentationToWireframe ();
+    actor->GetProperty ()->SetOpacity (0.5);
+    addActorToRenderer (actor, viewport);
 
-  // Save the pointer/ID pair to the global actor map
-  (*shape_actor_map_)[id] = actor;
+    // Save the pointer/ID pair to the global actor map
+    (*shape_actor_map_)[id] = actor;
+  }
+  else
+  {
+    vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
+    if (!actor)
+      return (false);
+    // Update the mapper
+#if VTK_MAJOR_VERSION < 6
+    reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
+#else
+    reinterpret_cast<vtkPolyDataMapper*> (actor->GetMapper ())->SetInputData (line_data);
+#endif
+  }
 
   return (true);
 }
@@ -1132,96 +1198,10 @@ pcl::visualization::PCLVisualizer::updateCorrespondences (
   const typename pcl::PointCloud<PointT>::ConstPtr &target_points,
   const pcl::Correspondences &correspondences,
   int nth,
-  const std::string &id)
+  const std::string &id,
+  int viewport)
 {
-  if (correspondences.empty ())
-  {
-    PCL_DEBUG ("[updateCorrespondences] An empty set of correspondences given! Nothing to display.\n");
-    return (false);
-  }
-
-  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
-  if (am_it == shape_actor_map_->end ())
-    return (false);
-
-  vtkSmartPointer<vtkLODActor> actor = vtkLODActor::SafeDownCast (am_it->second);
-  vtkSmartPointer<vtkPolyData> line_data = reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->GetInput ();
-
-  int n_corr = int (correspondences.size () / nth + 1);
-
-  // Prepare colors
-  vtkSmartPointer<vtkUnsignedCharArray> line_colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  line_colors->SetNumberOfComponents (3);
-  line_colors->SetName ("Colors");
-  line_colors->SetNumberOfTuples (n_corr);
-  unsigned char* colors = line_colors->GetPointer (0);
-  memset (colors, 0, line_colors->GetNumberOfTuples () * line_colors->GetNumberOfComponents ());
-  pcl::RGB rgb;
-  // Will use random colors or RED by default
-  rgb.r = 255.0; rgb.g = rgb.b = 0.0;
-
-  // Prepare coordinates
-  vtkSmartPointer<vtkPoints> line_points = vtkSmartPointer<vtkPoints>::New ();
-  line_points->SetNumberOfPoints (2 * n_corr);
-
-  vtkSmartPointer<vtkIdTypeArray> line_cells_id = vtkSmartPointer<vtkIdTypeArray>::New ();
-  line_cells_id->SetNumberOfComponents (3);
-  line_cells_id->SetNumberOfTuples (n_corr);
-  vtkIdType *line_cell_id = line_cells_id->GetPointer (0);
-  vtkSmartPointer<vtkCellArray> line_cells = line_data->GetLines ();
-
-  vtkSmartPointer<vtkFloatArray> line_tcoords = vtkSmartPointer<vtkFloatArray>::New ();
-  line_tcoords->SetNumberOfComponents (1);
-  line_tcoords->SetNumberOfTuples (n_corr * 2);
-  line_tcoords->SetName ("Texture Coordinates");
-
-  double tc[3] = {0.0, 0.0, 0.0};
-
-  int j = 0, idx = 0;
-  // Draw lines between the best corresponding points
-  for (size_t i = 0; i < correspondences.size (); i += nth, idx = j * 3, ++j)
-  {
-    const PointT &p_src = source_points->points[correspondences[i].index_query];
-    const PointT &p_tgt = target_points->points[correspondences[i].index_match];
-
-    int id1 = j * 2 + 0, id2 = j * 2 + 1;
-    // Set the points
-    line_points->SetPoint (id1, p_src.x, p_src.y, p_src.z);
-    line_points->SetPoint (id2, p_tgt.x, p_tgt.y, p_tgt.z);
-    // Set the cell ID
-    *line_cell_id++ = 2;
-    *line_cell_id++ = id1;
-    *line_cell_id++ = id2;
-    // Set the texture coords
-    tc[0] = 0.; line_tcoords->SetTuple (id1, tc);
-    tc[0] = 1.; line_tcoords->SetTuple (id2, tc);
-
-    getRandomColors (rgb);
-    colors[idx+0] = rgb.r;
-    colors[idx+1] = rgb.g;
-    colors[idx+2] = rgb.b;
-  }
-  line_colors->SetNumberOfTuples (j);
-  line_cells_id->SetNumberOfTuples (j);
-  line_cells->SetCells (n_corr, line_cells_id);
-  line_points->SetNumberOfPoints (j*2);
-  line_tcoords->SetNumberOfTuples (j*2);
- 
-  // Fill in the lines
-  line_data->SetPoints (line_points);
-  line_data->SetLines (line_cells);
-  line_data->GetPointData ()->SetTCoords (line_tcoords);
-  line_data->GetCellData ()->SetScalars (line_colors);
-
-  // Update the mapper
-#if VTK_MAJOR_VERSION < 6
-  reinterpret_cast<vtkPolyDataMapper*>(actor->GetMapper ())->SetInput (line_data);
-#else
-  reinterpret_cast<vtkPolyDataMapper*> (actor->GetMapper ())->SetInputData (line_data);
-#endif
-
-  return (true);
+  return (addCorrespondences<PointT> (source_points, target_points, correspondences, nth, id, viewport, true));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1571,12 +1551,9 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   if (vertices.empty () || cloud->points.empty ())
     return (false);
 
-  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
-  if (am_it != cloud_actor_map_->end ())
+  if (contains (id))
   {
-    pcl::console::print_warn (stderr, 
-                                "[addPolygonMesh] A shape with id <%s> already exists! Please choose a different id and retry.\n",
-                                id.c_str ());
+    PCL_WARN ("[addPolygonMesh] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
     return (false);
   }
 
@@ -1757,7 +1734,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   vtkSmartPointer<vtkPolyData> polydata = static_cast<vtkPolyDataMapper*>(am_it->second.actor->GetMapper ())->GetInput ();
   if (!polydata)
     return (false);
-  vtkSmartPointer<vtkCellArray> cells = polydata->GetStrips ();
+  vtkSmartPointer<vtkCellArray> cells = polydata->GetPolys ();
   if (!cells)
     return (false);
   vtkSmartPointer<vtkPoints> points   = polydata->GetPoints ();
@@ -1797,6 +1774,8 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   // Update colors
   vtkUnsignedCharArray* colors = vtkUnsignedCharArray::SafeDownCast (polydata->GetPointData ()->GetScalars ());
+  if (!colors)
+    return (false);
   int rgb_idx = -1;
   std::vector<pcl::PCLPointField> fields;
   rgb_idx = pcl::getFieldIndex (*cloud, "rgb", fields);

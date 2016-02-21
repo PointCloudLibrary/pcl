@@ -141,7 +141,7 @@ pcl::features::ISMVoteList<PointT>::findStrongestPeaks (
   double SIGMA_DIST = in_sigma;// rule of thumb: 10% of the object radius
   const double FINAL_EPS = SIGMA_DIST / 100;// another heuristic
 
-  std::vector<Eigen::Vector3f> peaks (NUM_INIT_PTS);
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > peaks (NUM_INIT_PTS);
   std::vector<double> peak_densities (NUM_INIT_PTS);
   double max_density = -1.0;
   for (int i = 0; i < NUM_INIT_PTS; i++)
@@ -1288,7 +1288,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::computeKMe
   Eigen::MatrixXf centers (number_of_clusters, feature_dimension);
   Eigen::MatrixXf old_centers (number_of_clusters, feature_dimension);
   std::vector<int> counters (number_of_clusters);
-  std::vector<Eigen::Vector2f> boxes (feature_dimension);
+  std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > boxes (feature_dimension);
   Eigen::Vector2f* box = &boxes[0];
 
   double best_compactness = std::numeric_limits<double>::max ();
@@ -1504,7 +1504,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateCe
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <int FeatureSize, typename PointT, typename NormalT> void
-pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateRandomCenter (const std::vector<Eigen::Vector2f>& boxes,
+pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::generateRandomCenter (const std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >& boxes,
   Eigen::VectorXf& center)
 {
   size_t dimension = boxes.size ();

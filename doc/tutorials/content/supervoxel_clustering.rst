@@ -78,17 +78,17 @@ We start by defining convenience types in order not to clutter the code.
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 9-14
+   :lines: 12-17
 
 Then we load the input cloud based on the input argument
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 36-42
+   :lines: 39-45
 
 Next we check the input arguments and set default values. You can play with the various parameters to see how they affect the supervoxels, but briefly:
 
-- ``--NT`` Disables the single-view transform (this is necessary if you are loading a cloud constructed from more than one viewpoint)
+- ``--NT`` Disables the single-view transform (this is the default for unorganized clouds, only affects organized clouds)
 - ``-v`` Sets the voxel size, which determines the leaf size of the underlying octree structure (in meters)
 - ``-s`` Sets the seeding size, which determines how big the supervoxels will be (in meters)
 - ``-c`` Sets the weight for color - how much color will influence the shape of the supervoxels
@@ -97,17 +97,17 @@ Next we check the input arguments and set default values. You can play with the 
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 45-67
+   :lines: 48-70
 
 We are now ready to setup the supervoxel clustering. We use the class :pcl:`SupervoxelClustering <pcl::SupervoxelClustering>`, which implements the clustering process and give it the parameters.
 
 .. important::
 
-  You MUST set use_transform to false if you are using a cloud which doesn't have the camera at (0,0,0). The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your data is artificial, made from combining multiple clouds from cameras at different viewpoints, or doesn't have the camera at (0,0,0), the transform MUST be set to false. 
+  By default, the algorithm will use a special tranform compressing the depth in Z if your input cloud is organized (eg, from an RGBD sensor like the Kinect). You MUST set use_transform to false if you are using an organized cloud which doesn't have the camera at (0,0,0) and depth in positive Z. The transform is specifically designed to help improve Kinect data by increasing voxel bin size as distance from the camera increases. If your cloud is unorganized, this transform will not be used by default, but can be enabled by using setUseSingleCameraTransform(true). 
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 73-77
+   :lines: 76-82
 
 Then we initialize the data structure which will be used to extract the supervoxels, and run the algorithm. The data structure is a map from labels to shared pointers of :pcl:`Supervoxel <pcl::Supervoxel>` templated on the input point type. Supervoxels have the following fields:
 
@@ -118,31 +118,31 @@ Then we initialize the data structure which will be used to extract the supervox
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 79-83
+   :lines: 84-88
 
 We then load a viewer and use some of the getter functions of :pcl:`SupervoxelClustering <pcl::SupervoxelClustering>` to pull out clouds to display. ``voxel_centroid_cloud`` contains the voxel centroids coming out of the octree (basically the downsampled original cloud), and ``colored_voxel_cloud`` are the voxels colored according to their supervoxel labels (random colors). ``sv_normal_cloud`` contains a cloud of the supervoxel normals, but we don't display it here so that the graph is visible.
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 85-99
+   :lines: 90-104
 
 Finally, we extract the supervoxel adjacency list (in the form of a multimap of label adjacencies).
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 101-103
+   :lines: 106-108
 
 Then we iterate through the multimap, creating a point cloud of the centroids of each supervoxel's neighbors. 
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 105-120
+   :lines: 110-125
 
 Then we create a string label for the supervoxel graph we will draw and call ``addSupervoxelConnectionsToViewer``, a drawing helper function implemented later in the tutorial code. The details of ``addSupervoxelConnectionsToViewer`` are beyond the scope of this tutorial, but all it does is draw a star polygon mesh of the supervoxel centroid to all of its neighbors centroids. We need to do this like this because adding individual lines using the ``addLine`` functionality of ``pcl_visualizer`` is too slow for large numbers of lines.
 
 .. literalinclude:: sources/supervoxel_clustering/supervoxel_clustering.cpp
    :language: cpp
-   :lines: 121-127
+   :lines: 126-132
 
 This results in a supervoxel graph that looks like this for seed size of 0.1m (top) and 0.05m (middle). The bottom is the original cloud, given for reference.:
 
@@ -160,6 +160,6 @@ Create a ``CMakeLists.txt`` file with the following content (or download it :dow
 
 After you have made the executable, you can run it like so, assuming the pcd file is in the same folder as the executable::
 
-  $ ./supervoxel_clustering milk_cartoon_all_small_clorox.pcd
+  $ ./supervoxel_clustering milk_cartoon_all_small_clorox.pcd --NT
 
 Don't be afraid to play around with the parameters (especially the seed size, -s) to see what happens. The pcd file name should always be the first parameter!

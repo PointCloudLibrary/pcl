@@ -58,9 +58,11 @@ namespace pcl
   class SampleConsensusModelRegistration : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -82,6 +84,9 @@ namespace pcl
       {
         // Call our own setInputCloud
         setInputCloud (cloud);
+        model_name_ = "SampleConsensusModelRegistration";
+        sample_size_ = 3;
+        model_size_ = 16;
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration.
@@ -100,6 +105,9 @@ namespace pcl
       {
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
+        model_name_ = "SampleConsensusModelRegistration";
+        sample_size_ = 3;
+        model_size_ = 16;
       }
       
       /** \brief Empty destructor */
@@ -211,18 +219,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_REGISTRATION); }
 
     protected:
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      inline bool
-      isModelValid (const Eigen::VectorXf &model_coefficients)
-      {
-        // Needs a valid model coefficients
-        if (model_coefficients.size () != 16)
-          return (false);
-
-        return (true);
-      }
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.

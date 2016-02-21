@@ -313,31 +313,49 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.y, v3t.y (), 1e-4); EXPECT_NEAR (pt.y, v4t.y (), 1e-4);
   EXPECT_NEAR (pt.z, v3t.z (), 1e-4); EXPECT_NEAR (pt.z, v4t.z (), 1e-4);
 
+  PointNormal pn;
+  pn.getVector3fMap () = p.getVector3fMap ();
+  pn.getNormalVector3fMap () = Eigen::Vector3f (0.60f, 0.48f, 0.64f);
+  Eigen::Vector3f n3 = pn.getNormalVector3fMap ();
+  Eigen::Vector4f n4 = pn.getNormalVector4fMap ();
+
+  Eigen::Vector3f n3t (affine.rotation() * n3);
+  Eigen::Vector4f n4t (transformation * n4);
+
+  PointNormal pnt = pcl::transformPointWithNormal (pn, affine);
+
+  EXPECT_NEAR (pnt.x, v3t.x (), 1e-4); EXPECT_NEAR (pnt.x, v4t.x (), 1e-4);
+  EXPECT_NEAR (pnt.y, v3t.y (), 1e-4); EXPECT_NEAR (pnt.y, v4t.y (), 1e-4);
+  EXPECT_NEAR (pnt.z, v3t.z (), 1e-4); EXPECT_NEAR (pnt.z, v4t.z (), 1e-4);
+  EXPECT_NEAR (pnt.normal_x, n3t.x (), 1e-4); EXPECT_NEAR (pnt.normal_x, n4t.x (), 1e-4);
+  EXPECT_NEAR (pnt.normal_y, n3t.y (), 1e-4); EXPECT_NEAR (pnt.normal_y, n4t.y (), 1e-4);
+  EXPECT_NEAR (pnt.normal_z, n3t.z (), 1e-4); EXPECT_NEAR (pnt.normal_z, n4t.z (), 1e-4);
+
   PointCloud<PointXYZ> c, ct;
   c.push_back (p);
   pcl::transformPointCloud (c, ct, affine);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   pcl::transformPointCloud (c, ct, transformation);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   affine = transformation;
 
   std::vector<int> indices (1); indices[0] = 0;
 
   pcl::transformPointCloud (c, indices, ct, affine);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 
   pcl::transformPointCloud (c, indices, ct, transformation);
-  EXPECT_FLOAT_EQ (pt.x, ct[0].x); 
-  EXPECT_FLOAT_EQ (pt.y, ct[0].y); 
-  EXPECT_FLOAT_EQ (pt.z, ct[0].z); 
+  EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
+  EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
+  EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

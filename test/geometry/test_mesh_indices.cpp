@@ -132,7 +132,7 @@ TEST (TestMeshIndices, Streams)
   EdgeIndex     ei;
   FaceIndex     fi;
   std::istringstream iss ("1 2 3 4");
-  EXPECT_TRUE (iss >> vi >> hei >> ei >> fi);
+  iss >> vi >> hei >> ei >> fi;
 
   EXPECT_EQ (1, vi.get  ());
   EXPECT_EQ (2, hei.get ());

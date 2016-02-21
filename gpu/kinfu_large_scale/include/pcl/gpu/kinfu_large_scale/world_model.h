@@ -165,7 +165,7 @@ namespace pcl
           * \param[out] transforms a vector containing the xyz position of each cube in world coordinates.
           * \param[in] overlap optional overlap (in percent) between each cube (usefull to create overlapped meshes).
           */
-        void getWorldAsCubes (double size, std::vector<PointCloudPtr> &cubes, std::vector<Eigen::Vector3f> &transforms, double overlap = 0.0);
+        void getWorldAsCubes (double size, std::vector<PointCloudPtr> &cubes, std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &transforms, double overlap = 0.0);
         
         
       private:

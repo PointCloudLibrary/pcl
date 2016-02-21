@@ -4,6 +4,7 @@
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2009, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2015, Google, Inc.
  *
  *  All rights reserved.
  *
@@ -70,6 +71,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   //PointXYZ local_pt;
   Eigen::Vector3f local_pt (Eigen::Vector3f::Zero ());
 
+  bool transform_matrix_is_identity = transform_.matrix ().isIdentity ();
+  bool translation_is_zero = (translation_ != Eigen::Vector3f::Zero ());
+  bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
+
   for (size_t index = 0; index < indices_->size (); ++index)
   {
     // Get local point
@@ -84,10 +89,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       continue;
 
     // Transform point to world space
-    if (!(transform_.matrix().isIdentity()))
+    if (!transform_matrix_is_identity)
       local_pt = transform_ * local_pt;
 
-    if (translation_ != Eigen::Vector3f::Zero ())
+    if (translation_is_zero)
     {
       local_pt.x () = local_pt.x () - translation_ (0);
       local_pt.y () = local_pt.y () - translation_ (1);
@@ -95,7 +100,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     }
 
     // Transform point to local space of crop box
-    if (!(inverse_transform.matrix ().isIdentity ()))
+    if (!inverse_transform_matrix_is_identity)
       local_pt = inverse_transform * local_pt;
 
     // If outside the cropbox
@@ -156,6 +161,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
   //PointXYZ local_pt;
   Eigen::Vector3f local_pt (Eigen::Vector3f::Zero ());
 
+  bool transform_matrix_is_identity = transform_.matrix ().isIdentity ();
+  bool translation_is_zero = (translation_ != Eigen::Vector3f::Zero ());
+  bool inverse_transform_matrix_is_identity = inverse_transform.matrix ().isIdentity ();
+
   for (size_t index = 0; index < indices_->size (); index++)
   {
     // Get local point
@@ -164,10 +173,10 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     memcpy (&local_pt, &input_->data[offset], sizeof (float)*3);
 
     // Transform point to world space
-    if (!(transform_.matrix().isIdentity()))
+    if (!transform_matrix_is_identity)
       local_pt = transform_ * local_pt;
 
-    if (translation_ != Eigen::Vector3f::Zero ())
+    if (translation_is_zero)
     {
       local_pt.x () -= translation_ (0);
       local_pt.y () -= translation_ (1);
@@ -175,7 +184,7 @@ pcl::CropBox<pcl::PCLPointCloud2>::applyFilter (std::vector<int> &indices)
     }
 
     // Transform point to local space of crop box
-    if (!(inverse_transform.matrix().isIdentity()))
+    if (!(inverse_transform_matrix_is_identity))
       local_pt = inverse_transform * local_pt;
 
     // If outside the cropbox

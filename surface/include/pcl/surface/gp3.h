@@ -358,7 +358,7 @@ namespace pcl
       /** \brief Temporary variable to store a triangle (as a set of point indices) **/
       pcl::Vertices triangle_;
       /** \brief Temporary variable to store point coordinates **/
-      std::vector<Eigen::Vector3f> coords_;
+      std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > coords_;
 
       /** \brief A list of angles to neighbors **/
       std::vector<nnAngle> angles_;

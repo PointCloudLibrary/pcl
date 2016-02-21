@@ -102,7 +102,7 @@ namespace pcl
    * \author Martin Holzkothen, Michael Korn
    * \ingroup registration
    */
-  class GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>
+  class PCL_EXPORTS GeneralizedIterativeClosestPoint6D : public GeneralizedIterativeClosestPoint<PointXYZRGBA, PointXYZRGBA>
   {
     typedef PointXYZRGBA PointSource;
     typedef PointXYZRGBA PointTarget;

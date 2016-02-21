@@ -110,7 +110,6 @@ namespace pcl
 
       using Registration<PointSource, PointTarget, Scalar>::reg_name_;
       using Registration<PointSource, PointTarget, Scalar>::getClassName;
-      using Registration<PointSource, PointTarget, Scalar>::setInputSource;
       using Registration<PointSource, PointTarget, Scalar>::input_;
       using Registration<PointSource, PointTarget, Scalar>::indices_;
       using Registration<PointSource, PointTarget, Scalar>::target_;

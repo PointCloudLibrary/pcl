@@ -95,6 +95,7 @@ struct pcl::PCDGrabberBase::PCDGrabberImpl
   pcl::PCLPointCloud2 next_cloud_;
   Eigen::Vector4f origin_;
   Eigen::Quaternionf orientation_;
+  std::string next_file_name_;
   bool valid_;
 
   // TAR reading I/O
@@ -127,6 +128,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , next_cloud_ ()
   , origin_ ()
   , orientation_ ()
+  , next_file_name_ ()
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)
@@ -136,6 +138,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 {
   pcd_files_.push_back (pcd_path);
   pcd_iterator_ = pcd_files_.begin ();
+  next_file_name_ = *pcd_iterator_;
   readAhead ();
 }
 
@@ -151,6 +154,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
   , next_cloud_ ()
   , origin_ ()
   , orientation_ ()
+  , next_file_name_ ()
   , valid_ (false)
   , tar_fd_ (-1)
   , tar_offset_ (0)
@@ -160,6 +164,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::PCDGrabberImpl (pcl::PCDGrabberBase& grabbe
 {
   pcd_files_ = pcd_files;
   pcd_iterator_ = pcd_files_.begin ();
+  next_file_name_ = *pcd_iterator_;
   readAhead ();
 }
 
@@ -210,6 +215,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
         }
       }
 
+      next_file_name_ = *pcd_iterator_;
       if (++pcd_iterator_ == pcd_files_.end () && repeat_)
         pcd_iterator_ = pcd_files_.begin ();
     }
@@ -288,7 +294,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::trigger ()
 {
   boost::mutex::scoped_lock read_ahead_lock(read_ahead_mutex_);
   if (valid_)
-    grabber_.publish (next_cloud_,origin_,orientation_);
+    grabber_.publish (next_cloud_,origin_,orientation_, next_file_name_);
 
   // use remaining time, if there is time left!
   readAhead ();
@@ -387,7 +393,6 @@ pcl::PCDGrabberBase::PCDGrabberBase (const std::vector<std::string>& pcd_files, 
 ///////////////////////////////////////////////////////////////////////////////////////////
 pcl::PCDGrabberBase::~PCDGrabberBase () throw ()
 {
-  stop ();
   delete impl_;
 }
 

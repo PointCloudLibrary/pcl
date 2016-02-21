@@ -26,8 +26,7 @@ You will need to have Homebrew installed. If you do not already have a Homebrew 
 Using the formula
 =================
 
-The PCL formula is not in Homebrew official repositories yet, but it will be after 1.7.2.
-For now it resides at `Fran6co's repository <https://github.com/fran6co/homebrew-cv>`_ and can be tapped from there.
+The PCL formula is in the Homebrew official repositories.
 This will automatically install all necessary dependencies and provides options for controlling
 which parts of PCL are installed.
 
@@ -38,18 +37,16 @@ which parts of PCL are installed.
 
    #. Install Homebrew. See the Homebrew website for instructions.
    #. Execute ``brew update``.
-   #. Execute ``brew tap homebrew/versions``.
    #. Execute ``brew tap homebrew/science``.
-   #. Execute ``brew tap fran6co/cv``.
 
 To install the latest version using the formula, execute the following command::
 
-  $ brew install pcl --HEAD
+  $ brew install pcl
 
 You can specify options to control which parts of PCL are installed. For
 example, to build just the libraries without extra dependencies, execute the following command::
 
-  $ brew install pcl --HEAD --without-apps --without-tools --without-vtk --without-qvtk --without-qt
+  $ brew install pcl --without-apps --without-tools --without-vtk --without-qt
 
 For a full list of the available options, see the formula's help::
 

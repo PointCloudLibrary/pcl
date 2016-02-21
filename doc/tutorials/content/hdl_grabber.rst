@@ -11,7 +11,7 @@ plug-and-play.  Because the HDL devices are network based, however, there
 are a few gotchas on some platforms.
 
 The HDL Grabber supports the original HDL-64e as well as the HDL-32e.
-More information on those sensors can be found at `Velodyne's Web Site <http://velodynelidar.com/lidar/lidar.aspx>`_
+More information on those sensors can be found at `Velodyne's Web Site <http://www.velodynelidar.com/>`_
 
 Basic Network Setup
 -------------------
@@ -51,7 +51,7 @@ Many publically available Velodyne HDL packet captures use this PCAP file format
 recording and playback.  These PCAP files can be used with the HDL Grabber if PCL is compiled with
 PCAP support.
 
-Velodyne provides sample PCAP files on their `website <http://velodyne.com/lidar/doc/Sample%20sets/HDL-32/>`_
+Velodyne provides sample PCAP files on their `website <http://midas3.kitware.com/midas/community/29>`_
 
 Compiling the HDL Grabber with PCAP support
 -------------------------------------------

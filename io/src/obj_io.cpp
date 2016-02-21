@@ -312,7 +312,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
       {
         try
         {
-          materials_.back ().tex_d = boost::lexical_cast<float> (st[1]);
+          materials_.back ().tex_Ns = boost::lexical_cast<float> (st[1]);
         }
         catch (boost::bad_lexical_cast &)
         {
@@ -692,7 +692,7 @@ pcl::OBJReader::read (const std::string &file_name, pcl::TextureMesh &mesh,
   std::size_t f_idx = 0;
   std::string line;
   std::vector<std::string> st;
-  std::vector<Eigen::Vector2f> coordinates;
+  std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> > coordinates;
   try
   {
     while (!fs.eof ())

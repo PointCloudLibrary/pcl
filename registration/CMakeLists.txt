@@ -36,9 +36,11 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ia_ransac.h"
         "include/pcl/${SUBSYS_NAME}/icp.h"
         "include/pcl/${SUBSYS_NAME}/joint_icp.h"
+        "include/pcl/${SUBSYS_NAME}/incremental_registration.h"
         "include/pcl/${SUBSYS_NAME}/icp_nl.h"
         "include/pcl/${SUBSYS_NAME}/lum.h"
         "include/pcl/${SUBSYS_NAME}/elch.h"
+        "include/pcl/${SUBSYS_NAME}/meta_registration.h"
         "include/pcl/${SUBSYS_NAME}/ndt.h"
         "include/pcl/${SUBSYS_NAME}/ndt_2d.h"
         "include/pcl/${SUBSYS_NAME}/ppf_registration.h"
@@ -69,6 +71,10 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/distances.h"
         "include/pcl/${SUBSYS_NAME}/exceptions.h"
         "include/pcl/${SUBSYS_NAME}/sample_consensus_prerejective.h"
+        "include/pcl/${SUBSYS_NAME}/ia_fpcs.h"
+        "include/pcl/${SUBSYS_NAME}/ia_kfpcs.h"
+        "include/pcl/${SUBSYS_NAME}/matching_candidate.h"
+        "include/pcl/${SUBSYS_NAME}/transformation_estimation_3point.h"
         )
 
     set(impl_incs 
@@ -93,9 +99,11 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/ia_ransac.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/icp.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/joint_icp.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/incremental_registration.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/icp_nl.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/elch.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lum.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/meta_registration.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ndt.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ndt_2d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ppf_registration.hpp"
@@ -112,6 +120,9 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/transformation_validation_euclidean.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/gicp.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/sample_consensus_prerejective.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/ia_fpcs.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/ia_kfpcs.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_3point.hpp"
         )
 
     set(srcs

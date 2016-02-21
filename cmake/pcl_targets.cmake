@@ -110,10 +110,10 @@ macro(PCL_SUBSYS_DEPEND _var _name)
         if(SUBSYS_EXT_DEPS)
         foreach(_dep ${SUBSYS_EXT_DEPS})
             string(TOUPPER "${_dep}_found" EXT_DEP_FOUND)
-            if(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+            if(NOT ${EXT_DEP_FOUND} OR (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
                 set(${_var} FALSE)
                 PCL_SET_SUBSYS_STATUS(${_name} FALSE "Requires external library ${_dep}.")
-            endif(NOT ${EXT_DEP_FOUND} OR (NOT ("${EXT_DEP_FOUND}" STREQUAL "TRUE")))
+            endif(NOT ${EXT_DEP_FOUND} OR (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
         endforeach(_dep)
         endif(SUBSYS_EXT_DEPS)
     endif(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
@@ -199,22 +199,7 @@ macro(PCL_ADD_LIBRARY _name _component)
 	if(MSVC90 OR MSVC10)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
 	endif()
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
@@ -247,18 +232,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
-    if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
-    endif()
-    #
+
     set_target_properties(${_name} PROPERTIES
         VERSION ${PCL_VERSION}
         SOVERSION ${PCL_MAJOR_VERSION}
@@ -287,24 +261,12 @@ macro(PCL_ADD_EXECUTABLE _name _component)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -333,24 +295,12 @@ endif(APPLE AND VTK_USE_COCOA)
     else()
       target_link_libraries(${_name} ${Boost_LIBRARIES})
     endif()
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    elseif(__COMPILER_PATHSCALE)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -mp)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -380,20 +330,12 @@ macro(PCL_CUDA_ADD_EXECUTABLE _name _component)
     cuda_add_executable(${_name} ${ARGN})
     # must link explicitly against boost.
     target_link_libraries(${_name} ${Boost_LIBRARIES})
-    #
-    # Only link if needed
+
     if(WIN32 AND MSVC)
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF
-                                                DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
+      set_target_properties(${_name} PROPERTIES DEBUG_OUTPUT_NAME ${_name}${CMAKE_DEBUG_POSTFIX}
                                                 RELEASE_OUTPUT_NAME ${_name}${CMAKE_RELEASE_POSTFIX})
-    elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl)
-      endif()
-    else()
-      set_target_properties(${_name} PROPERTIES LINK_FLAGS -Wl,--as-needed)
     endif()
-    #
+
     if(USE_PROJECT_FOLDERS)
       set_target_properties(${_name} PROPERTIES FOLDER "Tools and demos")
     endif(USE_PROJECT_FOLDERS)
@@ -422,23 +364,14 @@ macro(PCL_ADD_TEST _name _exename)
     endif(NOT WIN32)
     #target_link_libraries(${_exename} ${GTEST_BOTH_LIBRARIES} ${PCL_ADD_TEST_LINK_WITH})
     target_link_libraries(${_exename} ${PCL_ADD_TEST_LINK_WITH} ${CLANG_LIBRARIES})
-    #
-    # Only link if needed
+
     if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-      if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl)
-      endif()
       target_link_libraries(${_exename} pthread)
     elseif(UNIX AND NOT ANDROID)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS -Wl,--as-needed)
       # GTest >= 1.5 requires pthread and CMake's 2.8.4 FindGTest is broken
       target_link_libraries(${_exename} pthread)
-    elseif(CMAKE_COMPILER_IS_GNUCXX AND MINGW)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS "-Wl,--allow-multiple-definition -Wl,--as-needed")
-    elseif(WIN32)
-      set_target_properties(${_exename} PROPERTIES LINK_FLAGS_RELEASE /OPT:REF)
     endif()
-    # 
+
     # must link explicitly against boost only on Windows
     target_link_libraries(${_exename} ${Boost_LIBRARIES})
     #
@@ -905,3 +838,27 @@ macro (PCL_ADD_DOC _subsys)
     endif(USE_PROJECT_FOLDERS)
   endif(DOXYGEN_FOUND)
 endmacro(PCL_ADD_DOC)
+
+###############################################################################
+# Add a dependency for a grabber
+# _name The dependency name.
+# _description The description text to display when dependency is not found.
+# This macro adds on option named "WITH_NAME", where NAME is the capitalized
+# dependency name. The user may use this option to control whether the
+# corresponding grabber should be built or not. Also an attempt to find a
+# package with the given name is made. If it is not successfull, then the
+# "WITH_NAME" option is coerced to FALSE.
+macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
+    string(TOUPPER ${_name} _name_capitalized)
+    option(WITH_${_name_capitalized} "${_description}" TRUE)
+    if(WITH_${_name_capitalized})
+      find_package(${_name})
+      if (NOT ${_name_capitalized}_FOUND)
+        set(WITH_${_name_capitalized} FALSE CACHE BOOL "${_description}" FORCE)
+        message(WARNING "${_description}: not building because ${_name} not found")
+      else()
+        set(HAVE_${_name_capitalized} TRUE)
+        include_directories(SYSTEM "${${_name_capitalized}_INCLUDE_DIRS}")
+      endif()
+    endif()
+endmacro(PCL_ADD_GRABBER_DEPENDENCY)

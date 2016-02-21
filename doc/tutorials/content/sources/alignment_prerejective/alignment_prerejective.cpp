@@ -83,11 +83,11 @@ main (int argc, char **argv)
   align.setSourceFeatures (object_features);
   align.setInputTarget (scene);
   align.setTargetFeatures (scene_features);
-  align.setMaximumIterations (10000); // Number of RANSAC iterations
+  align.setMaximumIterations (50000); // Number of RANSAC iterations
   align.setNumberOfSamples (3); // Number of points to sample for generating/prerejecting a pose
-  align.setCorrespondenceRandomness (2); // Number of nearest features to use
+  align.setCorrespondenceRandomness (5); // Number of nearest features to use
   align.setSimilarityThreshold (0.9f); // Polygonal edge length similarity threshold
-  align.setMaxCorrespondenceDistance (1.5f * leaf); // Inlier threshold
+  align.setMaxCorrespondenceDistance (2.5f * leaf); // Inlier threshold
   align.setInlierFraction (0.25f); // Required inlier fraction for accepting a pose hypothesis
   {
     pcl::ScopeTime t("Alignment");

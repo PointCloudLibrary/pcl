@@ -90,7 +90,7 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
   w = M.fullPivLu ().solve (d);
 
   std::vector<double> weights (2*N);
-  std::vector<Eigen::Vector3d> centers (2*N);
+  std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > centers (2*N);
   for (unsigned int i = 0; i < N; ++i)
   {
     centers[i] = Eigen::Vector3f (input_->points[i].getVector3fMap ()).cast<double> ();
@@ -110,7 +110,7 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
 
         double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());
-        for (std::vector<Eigen::Vector3d>::const_iterator c_it = centers.begin ();
+        for (std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> >::const_iterator c_it = centers.begin ();
              c_it != centers.end (); ++c_it, ++w_it)
           f += *w_it * kernel (*c_it, point);
 

@@ -258,23 +258,25 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   Eigen::Vector4f pt  = Eigen::Vector4f::Zero ();
 
   int centroid_size = 4;
-  if (downsample_all_data_)
-    centroid_size = static_cast<int> (input_->fields.size ());
-
   int rgba_index = -1;
 
-  // ---[ RGB special case
-  // if the data contains "rgba" or "rgb", add an extra field for r/g/b in centroid
-  for (int d = 0; d < centroid_size; ++d)
+  if (downsample_all_data_)
   {
-    if (input_->fields[d].name == std::string ("rgba") || input_->fields[d].name == std::string ("rgb"))
+    centroid_size = static_cast<int> (input_->fields.size ());
+    
+    // ---[ RGB special case 
+    // if the data contains "rgba" or "rgb", add an extra field for r/g/b in centroid
+    for (int d = 0; d < centroid_size; ++d)
     {
-      rgba_index = d;
-      centroid_size += 3;
-      break;
+      if (input_->fields[d].name == std::string ("rgba") || input_->fields[d].name == std::string ("rgb"))
+      {
+        rgba_index = d;
+        centroid_size += 4;
+        break;
+      }
     }
   }
-
+  
   // If we don't want to process the entire cloud, but rather filter points far away from the viewpoint first...
   if (!filter_field_name_.empty ())
   {
@@ -457,9 +459,10 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       {
         pcl::RGB rgb;
         memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
-        centroid[centroid_size-3] = rgb.r;
-        centroid[centroid_size-2] = rgb.g;
-        centroid[centroid_size-1] = rgb.b;
+        centroid[centroid_size-4] = rgb.r;
+        centroid[centroid_size-3] = rgb.g;
+        centroid[centroid_size-2] = rgb.b;
+        centroid[centroid_size-1] = rgb.a;
       }
       // Copy all the fields
       for (size_t d = 0; d < input_->fields.size (); ++d)
@@ -487,9 +490,10 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
         {
           pcl::RGB rgb;
           memcpy (&rgb, &input_->data[point_offset + input_->fields[rgba_index].offset], sizeof (RGB));
-          temporary[centroid_size-3] = rgb.r;
-          temporary[centroid_size-2] = rgb.g;
-          temporary[centroid_size-1] = rgb.b;
+          temporary[centroid_size-4] = rgb.r;
+          temporary[centroid_size-3] = rgb.g;
+          temporary[centroid_size-2] = rgb.b;
+          temporary[centroid_size-1] = rgb.a;
         }
         // Copy all the fields
         for (size_t d = 0; d < input_->fields.size (); ++d)
@@ -526,8 +530,8 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       // full extra r/g/b centroid field
       if (rgba_index >= 0) 
       {
-        float r = centroid[centroid_size-3], g = centroid[centroid_size-2], b = centroid[centroid_size-1];
-        int rgb = (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
+        float r = centroid[centroid_size-4], g = centroid[centroid_size-3], b = centroid[centroid_size-2], a = centroid[centroid_size-1];
+        int rgb = (static_cast<int> (a) << 24) | (static_cast<int> (r) << 16) | (static_cast<int> (g) << 8) | static_cast<int> (b);
         memcpy (&output.data[point_offset + output.fields[rgba_index].offset], &rgb, sizeof (float));
       }
     }

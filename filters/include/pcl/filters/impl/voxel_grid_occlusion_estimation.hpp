@@ -99,7 +99,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimation (int& out_state,
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimation (int& out_state,
-                                                                std::vector<Eigen::Vector3i>& out_ray,
+                                                                std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& out_ray,
                                                                 const Eigen::Vector3i& in_target_voxel)
 {
   if (!initialized_)
@@ -130,7 +130,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimation (int& out_state,
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimationAll (std::vector<Eigen::Vector3i>& occluded_voxels)
+pcl::VoxelGridOcclusionEstimation<PointT>::occlusionEstimationAll (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& occluded_voxels)
 {
   if (!initialized_)
   {
@@ -334,7 +334,7 @@ pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (const Eigen::Vector3i& 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
-pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector <Eigen::Vector3i>& out_ray,
+pcl::VoxelGridOcclusionEstimation<PointT>::rayTraversal (std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> >& out_ray,
                                                          const Eigen::Vector3i& target_voxel,
                                                          const Eigen::Vector4f& origin, 
                                                          const Eigen::Vector4f& direction,

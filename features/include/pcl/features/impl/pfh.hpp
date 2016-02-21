@@ -94,7 +94,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         key = std::pair<int, int> (p1, p2);
 
         // Check to see if we already estimated this pair in the global hashmap
-        std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<Eigen::Vector4f> >::iterator fm_it = feature_map_.find (key);
+        std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > >::iterator fm_it = feature_map_.find (key);
         if (fm_it != feature_map_.end ())
           pfh_tuple_ = fm_it->second;
         else
@@ -143,8 +143,8 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         // Check to see if we need to remove an element due to exceeding max_size
         if (key_list_.size () > max_cache_size_)
         {
-          // Remove the last element.
-          feature_map_.erase (key_list_.back ());
+          // Remove the oldest element.
+          feature_map_.erase (key_list_.front ());
           key_list_.pop ();
         }
       }

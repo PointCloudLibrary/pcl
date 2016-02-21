@@ -71,8 +71,8 @@ pcl::TimeTrigger::~TimeTrigger ()
 {
   boost::unique_lock<boost::mutex> lock (condition_mutex_);
   quit_ = true;
-  condition_.notify_all ();
-  lock.unlock ();
+  condition_.notify_all (); // notify all threads about updated quit_
+  lock.unlock (); // unlock, to join all threads (needs to be done after notify_all)
   
   timer_thread_.join ();
 }
@@ -81,7 +81,6 @@ pcl::TimeTrigger::~TimeTrigger ()
 boost::signals2::connection 
 pcl::TimeTrigger::registerCallback (const callback_type& callback)
 {
-  boost::unique_lock<boost::mutex> lock (condition_mutex_);
   return (callbacks_.connect (callback));
 }
 
@@ -123,19 +122,26 @@ pcl::TimeTrigger::stop ()
 void 
 pcl::TimeTrigger::thread_function ()
 {
-  static double time = 0;
-  while (!quit_)
+  double time = 0;
+  while (true)
   {
     time = getTime ();
     boost::unique_lock<boost::mutex> lock (condition_mutex_);
+    if(quit_)
+      break;
     if (!running_)
       condition_.wait (lock); // wait util start is called or destructor is called
     else
     {
       callbacks_();
       double rest = interval_ + time - getTime ();
+#if defined(BOOST_HAS_WINTHREADS) && (BOOST_VERSION < 105500)
+      //infinite timed_wait bug: https://svn.boost.org/trac/boost/ticket/9079
       if (rest > 0.0) // without a deadlock is possible, until notify() is called
         condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
+#else
+      condition_.timed_wait (lock, boost::posix_time::microseconds (static_cast<int64_t> ((rest * 1000000))));
+#endif
     }
   }
 }

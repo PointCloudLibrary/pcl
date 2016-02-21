@@ -492,6 +492,8 @@ shown point clouds when pressing a button or annotating certain locations on the
 rendering window with your mouse etc. A very simple example of such things
 is found in the ``interactionCustomizationVis`` method.
 
+.. note:: In Mac platforms and if using a VTK version prior to 7.0, the executable is required to be built as an Application Bundle, in order to have proper mouse and keyboard interaction support. For more instructions on how to do that, please consult the `Cocoa VTK Wiki <http://www.vtk.org/Wiki/Cocoa_VTK#Use_Application_Bundles>`_.
+
 In this part of the tutorial you will be shown how to catch mouse and keyboard
 events. By right clicking on the window, a 2D text will appear and you can
 erase all the text instances by pressing 'r'. The result should look something

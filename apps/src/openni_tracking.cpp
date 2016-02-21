@@ -449,7 +449,7 @@ public:
   }
 
   void addNormalToCloud (const CloudConstPtr &cloud,
-                         const pcl::PointCloud<pcl::Normal>::ConstPtr &normals,
+                         const pcl::PointCloud<pcl::Normal>::ConstPtr &,
                          RefCloud &result)
   {
     result.width = cloud->width;

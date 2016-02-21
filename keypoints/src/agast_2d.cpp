@@ -224,7 +224,7 @@ pcl::keypoints::agast::AbstractAgastDetector::applyNonMaxSuppression (
       }
     }
 
-    curr_corner++;
+    ++curr_corner;
   }
 
   // collecting maximum corners
@@ -392,11 +392,11 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        register int x, y;
-        register int width_b  = img_width - 3; //2, +1 due to faster test x>width_b
-        register int height_b = img_height - 2;
-        register int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11;
-        register int width;
+        int x, y;
+        int width_b  = img_width - 3; //2, +1 due to faster test x>width_b
+        int height_b = img_height - 2;
+        int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11;
+        int width;
 
         corners.resize (0);
 
@@ -426,9 +426,9 @@ namespace pcl
               break;
             else
             {
-              register const T1* const p = im + y * width + x;
-              register const T2 cb = *p + T2 (threshold);
-              register const T2 c_b = *p - T2 (threshold);
+              const T1* const p = im + y * width + x;
+              const T2 cb = *p + T2 (threshold);
+              const T2 c_b = *p - T2 (threshold);
               if (p[offset0] > cb)
                 if (p[offset2] > cb)
                 if (p[offset5] > cb)
@@ -1464,9 +1464,9 @@ namespace pcl
               break;    
             else
             {
-              register const T1* const p = im + y * width + x;
-              register const T2 cb = *p + T2 (threshold);
-              register const T2 c_b = *p - T2 (threshold);
+              const T1* const p = im + y * width + x;
+              const T2 cb = *p + T2 (threshold);
+              const T2 c_b = *p - T2 (threshold);
               if (p[offset0] > cb)
                 if (p[offset2] > cb)
                 if (p[offset5] > cb)
@@ -2486,23 +2486,23 @@ namespace pcl
         T2 bmax = T2 (im_bmax); // 255;
         int b_test = int ((bmax + bmin) / 2);
 
-        register int_fast16_t offset0  = s_offset0;
-        register int_fast16_t offset1  = s_offset1;
-        register int_fast16_t offset2  = s_offset2;
-        register int_fast16_t offset3  = s_offset3;
-        register int_fast16_t offset4  = s_offset4;
-        register int_fast16_t offset5  = s_offset5;
-        register int_fast16_t offset6  = s_offset6;
-        register int_fast16_t offset7  = s_offset7;
-        register int_fast16_t offset8  = s_offset8;
-        register int_fast16_t offset9  = s_offset9;
-        register int_fast16_t offset10 = s_offset10;
-        register int_fast16_t offset11 = s_offset11;
+        int_fast16_t offset0  = s_offset0;
+        int_fast16_t offset1  = s_offset1;
+        int_fast16_t offset2  = s_offset2;
+        int_fast16_t offset3  = s_offset3;
+        int_fast16_t offset4  = s_offset4;
+        int_fast16_t offset5  = s_offset5;
+        int_fast16_t offset6  = s_offset6;
+        int_fast16_t offset7  = s_offset7;
+        int_fast16_t offset8  = s_offset8;
+        int_fast16_t offset9  = s_offset9;
+        int_fast16_t offset10 = s_offset10;
+        int_fast16_t offset11 = s_offset11;
 
         while (1)
         {
-          register const T2 cb = *p + T2 (b_test);
-          register const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + T2 (b_test);
+          const T2 c_b = *p - T2 (b_test);
           if (p[offset0] > cb)
             if (p[offset5] > cb)
               if (p[offset2] < c_b)
@@ -8246,11 +8246,11 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        register int x, y;
-        register int xsize_b = int (img_width) - 2;
-        register int ysize_b = int (img_height) - 1;
-        register int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7;
-        register int width;
+        int x, y;
+        int xsize_b = int (img_width) - 2;
+        int ysize_b = int (img_height) - 1;
+        int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7;
+        int width;
 
         corners.resize (0);
 
@@ -8276,9 +8276,9 @@ namespace pcl
               break;
             else
             {
-              register const T1* const p = im + y * width + x;
-              register const T2 cb = *p + T2 (threshold);
-              register const T2 c_b = *p - T2 (threshold);
+              const T1* const p = im + y * width + x;
+              const T2 cb = *p + T2 (threshold);
+              const T2 c_b = *p - T2 (threshold);
               if (p[offset0] > cb)
                 if (p[offset2] > cb)
                 if (p[offset3] > cb)
@@ -8612,9 +8612,9 @@ namespace pcl
               break;
             else
             {
-              register const T1* const p = im + y * width + x;
-              register const T2 cb = *p + T2 (threshold);
-              register const T2 c_b = *p - T2 (threshold);
+              const T1* const p = im + y * width + x;
+              const T2 cb = *p + T2 (threshold);
+              const T2 c_b = *p - T2 (threshold);
               if (p[offset0] > cb)
                 if (p[offset2] > cb)
                 if (p[offset3] > cb)
@@ -9015,19 +9015,19 @@ namespace pcl
         T2 bmax = T2 (im_bmax);
         int b_test = int ((bmax + bmin) / 2);
 
-        register int_fast16_t offset0 = s_offset0;
-        register int_fast16_t offset1 = s_offset1;
-        register int_fast16_t offset2 = s_offset2;
-        register int_fast16_t offset3 = s_offset3;
-        register int_fast16_t offset4 = s_offset4;
-        register int_fast16_t offset5 = s_offset5;
-        register int_fast16_t offset6 = s_offset6;
-        register int_fast16_t offset7 = s_offset7;
+        int_fast16_t offset0 = s_offset0;
+        int_fast16_t offset1 = s_offset1;
+        int_fast16_t offset2 = s_offset2;
+        int_fast16_t offset3 = s_offset3;
+        int_fast16_t offset4 = s_offset4;
+        int_fast16_t offset5 = s_offset5;
+        int_fast16_t offset6 = s_offset6;
+        int_fast16_t offset7 = s_offset7;
 
         while (1)
         {
-          register const T2 cb = *p + T2 (b_test);
-          register const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + T2 (b_test);
+          const T2 c_b = *p - T2 (b_test);
           if (p[offset0] > cb)
             if (p[offset2] > cb)
               if (p[offset3] > cb)
@@ -9490,11 +9490,11 @@ namespace pcl
         int total = 0;
         int n_expected_corners = int (corners.capacity ());
         pcl::PointUV h;
-        register int x, y;
-        register int xsize_b = int (img_width) - 4;
-        register int ysize_b = int (img_height) - 3;
-        register int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11, offset12, offset13, offset14, offset15;
-        register int width;
+        int x, y;
+        int xsize_b = int (img_width) - 4;
+        int ysize_b = int (img_height) - 3;
+        int_fast16_t offset0, offset1, offset2, offset3, offset4, offset5, offset6, offset7, offset8, offset9, offset10, offset11, offset12, offset13, offset14, offset15;
+        int width;
 
         corners.resize (0);
 
@@ -9526,9 +9526,9 @@ namespace pcl
               break;
             else
             {
-              register const T1* const p = im + y * width + x;
-              register const T2 cb = *p + T2 (threshold);
-              register const T2 c_b = *p - T2 (threshold);
+              const T1* const p = im + y * width + x;
+              const T2 cb = *p + T2 (threshold);
+              const T2 c_b = *p - T2 (threshold);
               if (p[offset0] > cb)
                 if (p[offset2] > cb)
                 if (p[offset4] > cb)
@@ -11608,27 +11608,27 @@ namespace pcl
         T2 bmax = T2 (im_bmax);
         int b_test = int ((bmax + bmin) / 2);
 
-        register int_fast16_t offset0  = s_offset0;
-        register int_fast16_t offset1  = s_offset1;
-        register int_fast16_t offset2  = s_offset2;
-        register int_fast16_t offset3  = s_offset3;
-        register int_fast16_t offset4  = s_offset4;
-        register int_fast16_t offset5  = s_offset5;
-        register int_fast16_t offset6  = s_offset6;
-        register int_fast16_t offset7  = s_offset7;
-        register int_fast16_t offset8  = s_offset8;
-        register int_fast16_t offset9  = s_offset9;
-        register int_fast16_t offset10 = s_offset10;
-        register int_fast16_t offset11 = s_offset11;
-        register int_fast16_t offset12 = s_offset12;
-        register int_fast16_t offset13 = s_offset13;
-        register int_fast16_t offset14 = s_offset14;
-        register int_fast16_t offset15 = s_offset15;
+        int_fast16_t offset0  = s_offset0;
+        int_fast16_t offset1  = s_offset1;
+        int_fast16_t offset2  = s_offset2;
+        int_fast16_t offset3  = s_offset3;
+        int_fast16_t offset4  = s_offset4;
+        int_fast16_t offset5  = s_offset5;
+        int_fast16_t offset6  = s_offset6;
+        int_fast16_t offset7  = s_offset7;
+        int_fast16_t offset8  = s_offset8;
+        int_fast16_t offset9  = s_offset9;
+        int_fast16_t offset10 = s_offset10;
+        int_fast16_t offset11 = s_offset11;
+        int_fast16_t offset12 = s_offset12;
+        int_fast16_t offset13 = s_offset13;
+        int_fast16_t offset14 = s_offset14;
+        int_fast16_t offset15 = s_offset15;
 
         while (1)
         {
-          register const T2 cb = *p + T2 (b_test);
-          register const T2 c_b = *p - T2 (b_test);
+          const T2 cb = *p + T2 (b_test);
+          const T2 c_b = *p - T2 (b_test);
           if (p[offset0] > cb)
             if (p[offset2] > cb)
               if (p[offset4] > cb)

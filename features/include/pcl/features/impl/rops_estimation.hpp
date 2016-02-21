@@ -49,7 +49,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::ROPSEstimation () :
   number_of_rotations_ (3),
   support_radius_ (1.0f),
   sqr_support_radius_ (1.0f),
-  step_ (30.0f),
+  step_ (22.5f),
   triangles_ (0),
   triangles_of_the_point_ (0)
 {
@@ -191,11 +191,11 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 
     float norm = 0.0f;
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
-      norm += feature[i_dim];
-    if (abs (norm) < std::numeric_limits <float>::epsilon ())
-      norm = 1.0f / norm;
-    else
+      norm += std::abs (feature[i_dim]);
+    if (norm < std::numeric_limits <float>::epsilon ())
       norm = 1.0f;
+    else
+      norm = 1.0f / norm;
 
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
       output.points[i_point].histogram[i_dim] = feature[i_dim] * norm;
@@ -237,7 +237,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
 {
   const unsigned int number_of_triangles = static_cast <unsigned int> (local_triangles.size ());
 
-  std::vector <Eigen::Matrix3f> scatter_matrices (number_of_triangles);
+  std::vector<Eigen::Matrix3f, Eigen::aligned_allocator<Eigen::Matrix3f> > scatter_matrices (number_of_triangles);
   std::vector <float> triangle_area (number_of_triangles);
   std::vector <float> distance_weight (number_of_triangles);
 
@@ -278,7 +278,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     scatter_matrices[i_triangle] = coeff * curr_scatter_matrix;
   }
 
-  if (abs (total_area) < std::numeric_limits <float>::epsilon ())
+  if (std::abs (total_area) < std::numeric_limits <float>::epsilon ())
     total_area = 1.0f / total_area;
   else
     total_area = 1.0f;

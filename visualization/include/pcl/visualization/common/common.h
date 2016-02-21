@@ -91,6 +91,12 @@ namespace pcl
     PCL_EXPORTS float
     viewScreenArea (const Eigen::Vector3d &eye, const Eigen::Vector3d &min_bb, const Eigen::Vector3d &max_bb, const Eigen::Matrix4d &view_projection_matrix, int width, int height);
 
+    /** \brief Set of rendering properties
+     * \c PCL_VISUALIZER_POINT_SIZE: integer starting from 1
+     * \c PCL_VISUALIZER_OPACITY: Float going from 0.0 (transparent) to 1.0 (opaque)
+     * \c PCL_VISUALIZER_LINE_WIDTH: Integer starting from 1
+     * \c PCL_VISUALIZER_COLOR: 3 floats (R, G, B) going from 0.0 (dark) to 1.0 (light)
+     */
     enum RenderingProperties
     {
       PCL_VISUALIZER_POINT_SIZE,
@@ -100,7 +106,8 @@ namespace pcl
       PCL_VISUALIZER_COLOR,
       PCL_VISUALIZER_REPRESENTATION,
       PCL_VISUALIZER_IMMEDIATE_RENDERING,
-      PCL_VISUALIZER_SHADING
+      PCL_VISUALIZER_SHADING,
+      PCL_VISUALIZER_LUT
     };
 
     enum RenderingRepresentationProperties
@@ -115,6 +122,17 @@ namespace pcl
       PCL_VISUALIZER_SHADING_FLAT,
       PCL_VISUALIZER_SHADING_GOURAUD,
       PCL_VISUALIZER_SHADING_PHONG
+    };
+
+    /*! Look up table for color representation of vtkPolyDataMapper.\n
+     * See [mathworks colormap page](http://www.mathworks.com/help/matlab/ref/colormap.html#input_argument_name) for images representations of the LUTs */
+    enum LookUpTableRepresentationProperties
+    { //
+      PCL_VISUALIZER_LUT_JET,
+      PCL_VISUALIZER_LUT_JET_INVERSE,
+      PCL_VISUALIZER_LUT_HSV,
+      PCL_VISUALIZER_LUT_HSV_INVERSE,
+      PCL_VISUALIZER_LUT_GREY
     };
 
     //////////////////////////////////////////////////////////////////////////////////////////////

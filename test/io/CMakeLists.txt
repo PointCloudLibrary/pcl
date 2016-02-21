@@ -1,8 +1,7 @@
-if(OPENNI_FOUND)
-    PCL_ADD_TEST(io_io test_io
-                  FILES test_io.cpp
-                  LINK_WITH pcl_gtest pcl_io)
-endif(OPENNI_FOUND)
+PCL_ADD_TEST(io_io test_io
+              FILES test_io.cpp
+              LINK_WITH pcl_gtest pcl_io)
+
 PCL_ADD_TEST(io_iterators test_iterators
               FILES test_iterators.cpp
               LINK_WITH pcl_gtest pcl_io)
@@ -26,3 +25,8 @@ endif ()
 PCL_ADD_TEST(point_cloud_image_extractors test_point_cloud_image_extractors
              FILES test_point_cloud_image_extractors.cpp
              LINK_WITH pcl_gtest pcl_io)
+
+PCL_ADD_TEST(buffers test_buffers
+             FILES test_buffers.cpp
+             LINK_WITH pcl_gtest)
+

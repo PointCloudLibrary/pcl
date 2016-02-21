@@ -47,7 +47,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
 #include <pcl/visualization/pcl_plotter.h>
 #endif
 #include <pcl/visualization/point_picking_event.h>
@@ -107,6 +107,8 @@ printHelp (int, char **argv)
   print_info ("                     -ps X                    = point size ("); print_value ("1..64"); print_info (") \n");
   print_info ("                     -opaque X                = rendered point cloud opacity ("); print_value ("0..1"); print_info (")\n");
   print_info ("                     -shading X               = rendered surface shading ("); print_value ("'flat' (default), 'gouraud', 'phong'"); print_info (")\n");
+  print_info ("                     -position x,y,z          = absolute point cloud position in metres\n");
+  print_info ("                     -orientation r,p,y       = absolute point cloud orientation (roll, pitch, yaw) in radians\n");
 
   print_info ("                     -ax "); print_value ("n"); print_info ("                    = enable on-screen display of ");
   print_color (stdout, TT_BRIGHT, TT_RED, "X"); print_color (stdout, TT_BRIGHT, TT_GREEN, "Y"); print_color (stdout, TT_BRIGHT, TT_BLUE, "Z");
@@ -137,12 +139,14 @@ printHelp (int, char **argv)
   print_info ("\n");
   print_info ("                     -use_point_picking       = enable the usage of picking points on screen (default "); print_value ("disabled"); print_info (")\n");
   print_info ("\n");
+  print_info ("                     -optimal_label_colors    = maps existing labels to the optimal sequential glasbey colors, label_ids will not be mapped to fixed colors (default "); print_value ("disabled"); print_info (")\n");
+  print_info ("\n");
 
-  print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque} parameters; they will be automatically assigned to the right file)\n");
+  print_info ("\n(Note: for multiple .pcd files, provide multiple -{fc,ps,opaque,position,orientation} parameters; they will be automatically assigned to the right file)\n");
 }
 
 // Global visualizer object
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
 pcl::visualization::PCLPlotter ph_global;
 #endif
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
@@ -196,7 +200,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     if (!isMultiDimensionalFeatureField (cloud->fields[i]))
       continue;
     PCL_INFO ("Multidimensional field found: %s\n", cloud->fields[i].name.c_str ());
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
     ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, idx, ss.str ());
     ph_global.renderOnce ();
 #endif
@@ -246,6 +250,10 @@ main (int argc, char** argv)
   std::vector<double> fcolor_r, fcolor_b, fcolor_g;
   bool fcolorparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-fc", fcolor_r, fcolor_g, fcolor_b);
 
+  std::vector<double> pose_x, pose_y, pose_z, pose_roll, pose_pitch, pose_yaw;
+  bool poseparam = pcl::console::parse_multiple_3x_arguments (argc, argv, "-position", pose_x, pose_y, pose_z);
+  poseparam &= pcl::console::parse_multiple_3x_arguments (argc, argv, "-orientation", pose_roll, pose_pitch, pose_yaw);
+
   std::vector<int> psize;
   pcl::console::parse_multiple_arguments (argc, argv, "-ps", psize);
 
@@ -276,6 +284,10 @@ main (int argc, char** argv)
   bool use_pp   = pcl::console::find_switch (argc, argv, "-use_point_picking");
   if (use_pp) 
     print_highlight ("Point picking enabled.\n");
+
+  bool use_optimal_l_colors = pcl::console::find_switch (argc, argv, "-optimal_label_colors");
+  if (use_optimal_l_colors)
+    print_highlight ("Optimal glasbey colors are being assigned to existing labels.\nNote: No static mapping between label ids and colors\n");
 
   // If VBOs are not enabled, then try to use immediate rendering
   bool use_immediate_rendering = false;
@@ -326,7 +338,7 @@ main (int argc, char** argv)
       shadings.push_back ("flat");
 
   // Create the PCLVisualizer object
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
 #endif  
   // Using min_p, max_p to set the global Y min/max range for the histogram
@@ -422,6 +434,19 @@ main (int argc, char** argv)
     if (pcd.read (argv[p_file_indices.at (i)], *cloud, origin, orientation, version) < 0)
       return (-1);
 
+    // Calculate transform if available.
+    if (pose_x.size () > i && pose_y.size () > i && pose_z.size () > i &&
+        pose_roll.size () > i && pose_pitch.size () > i && pose_yaw.size () > i)
+    {
+      Eigen::Affine3f pose =
+        Eigen::Translation3f (Eigen::Vector3f (pose_x[i], pose_y[i], pose_z[i])) *
+        Eigen::AngleAxisf (pose_yaw[i],   Eigen::Vector3f::UnitZ ()) *
+        Eigen::AngleAxisf (pose_pitch[i], Eigen::Vector3f::UnitY ()) *
+        Eigen::AngleAxisf (pose_roll[i],  Eigen::Vector3f::UnitX ());
+      orientation = pose.rotation () * orientation;
+      origin.block<3, 1> (0, 0) = (pose * Eigen::Translation3f (origin.block<3, 1> (0, 0))).translation ();
+    }
+
     std::stringstream cloud_name;
 
     // ---[ Special check for 1-point multi-dimension histograms
@@ -429,13 +454,13 @@ main (int argc, char** argv)
     {
       cloud_name << argv[p_file_indices.at (i)];
 
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       if (!ph)
         ph.reset (new pcl::visualization::PCLPlotter);
 #endif
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       ph->addFeatureHistogram (*cloud, cloud->fields[0].name, cloud_name.str ());
 #endif
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
@@ -583,20 +608,26 @@ main (int argc, char** argv)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 1.0, 0.0, 0.0, cloud_name_normals_pc.str ());
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
       cloud_name_normals_pc << "-pc";
-      p->addPointCloudPrincipalCurvatures (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
+      p->addPointCloudPrincipalCurvatures<pcl::PointXYZ, pcl::Normal> (cloud_xyz, cloud_normals, cloud_pc, factor, pc_scale, cloud_name_normals_pc.str (), viewport);
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 3, cloud_name_normals_pc.str ());
     }
 
     // Add every dimension as a possible color
     if (!fcolorparam)
     {
-      int idx = 0;
+      int rgb_idx = 0;
+      int label_idx = 0;
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
         {
-          idx = f + 1;
+          rgb_idx = f + 1;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
+        }
+        else if (cloud->fields[f].name == "label")
+        {
+          label_idx = f + 1;
+          color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud, !use_optimal_l_colors));
         }
         else
         {
@@ -608,8 +639,8 @@ main (int argc, char** argv)
         //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
         p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
-      // Set RGB color handler as default
-      p->updateColorHandlerIndex (cloud_name.str (), idx);
+      // Set RGB color handler or label handler as default
+      p->updateColorHandlerIndex (cloud_name.str (), (rgb_idx ? rgb_idx : label_idx));
     }
 
     // Additionally, add normals as a handler
@@ -687,7 +718,7 @@ main (int argc, char** argv)
     bool stopped = false;
     do
     {
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       if (ph) ph->spinOnce ();
 #endif
 
@@ -717,7 +748,7 @@ main (int argc, char** argv)
   else
   {
     // If no images, continue
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
     if (ph)
     {
       //print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);

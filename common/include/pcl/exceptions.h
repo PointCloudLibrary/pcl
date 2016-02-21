@@ -51,7 +51,6 @@
 {                                                                           \
   std::ostringstream s;                                                     \
   s << message;                                                             \
-  s.flush ();                                                               \
   throw ExceptionName(s.str(), __FILE__, BOOST_CURRENT_FUNCTION, __LINE__); \
 }
 
@@ -67,28 +66,25 @@ namespace pcl
     public:
 
       PCLException (const std::string& error_description,
-                    const std::string& file_name = "",
-                    const std::string& function_name = "" ,
-                    unsigned line_number = 0) throw ()
-        : std::runtime_error (error_description)
+                    const char* file_name = NULL,
+                    const char* function_name = NULL,
+                    unsigned line_number = 0)
+        : std::runtime_error (createDetailedMessage (error_description,
+                                                     file_name,
+                                                     function_name,
+                                                     line_number))
         , file_name_ (file_name)
         , function_name_ (function_name)
-        , message_ (error_description)
-        , line_number_ (line_number) 
-      {
-        message_ = detailedMessage ();
-      }
-      
-      virtual ~PCLException () throw ()
+        , line_number_ (line_number)
       {}
       
-      const std::string&
+      const char*
       getFileName () const throw ()
       {
         return (file_name_);
       }
 
-      const std::string&
+      const char*
       getFunctionName () const throw ()
       {
         return (function_name_);
@@ -100,34 +96,37 @@ namespace pcl
         return (line_number_);
       }
 
-      std::string 
+      const char*
       detailedMessage () const throw ()
       {
-        std::stringstream sstream;
-        if (function_name_ != "")
-          sstream << function_name_ << " ";
+        return (what ());
+      }
+    
+
+    protected:
+      static std::string
+      createDetailedMessage (const std::string& error_description,
+                             const char* file_name,
+                             const char* function_name,
+                             unsigned line_number)
+      {
+        std::ostringstream sstream;
+        if (function_name != NULL)
+          sstream << function_name << " ";
         
-        if (file_name_ != "")
+        if (file_name != NULL)
         {
-          sstream << "in " << file_name_ << " ";
-          if (line_number_ != 0)
-            sstream << "@ " << line_number_ << " ";
+          sstream << "in " << file_name << " ";
+          if (line_number != 0)
+            sstream << "@ " << line_number << " ";
         }
-        sstream << ": " << what ();
+        sstream << ": " << error_description;
         
         return (sstream.str ());
       }
-
-      char const* 
-      what () const throw () 
-      {
-        return (message_.c_str ());
-      }
-
-    protected:
-      std::string file_name_;
-      std::string function_name_;
-      std::string message_;
+    
+      const char* file_name_;
+      const char* function_name_;
       unsigned line_number_;
   } ;
 
@@ -139,9 +138,9 @@ namespace pcl
     public:
 
       InvalidConversionException (const std::string& error_description,
-                                  const std::string& file_name = "",
-                                  const std::string& function_name = "" ,
-                                  unsigned line_number = 0) throw ()
+                                  const char* file_name = NULL,
+                                  const char* function_name = NULL,
+                                  unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -153,9 +152,9 @@ namespace pcl
     public:
 
       IsNotDenseException (const std::string& error_description,
-                           const std::string& file_name = "",
-                           const std::string& function_name = "" ,
-                           unsigned line_number = 0) throw ()
+                           const char* file_name = NULL,
+                           const char* function_name = NULL,
+                           unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -168,9 +167,9 @@ namespace pcl
     public:
 
       InvalidSACModelTypeException (const std::string& error_description,
-                                    const std::string& file_name = "",
-                                    const std::string& function_name = "" ,
-                                    unsigned line_number = 0) throw ()
+                                    const char* file_name = NULL,
+                                    const char* function_name = NULL,
+                                    unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -182,9 +181,9 @@ namespace pcl
     public:
 
       IOException (const std::string& error_description,
-                   const std::string& file_name = "",
-                   const std::string& function_name = "" ,
-                   unsigned line_number = 0) throw ()
+                   const char* file_name = NULL,
+                   const char* function_name = NULL,
+                   unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -196,9 +195,9 @@ namespace pcl
   {
     public:
       InitFailedException (const std::string& error_description = "",
-                           const std::string& file_name = "",
-                           const std::string& function_name = "" ,
-                           unsigned line_number = 0) throw ()
+                           const char* file_name = NULL,
+                           const char* function_name = NULL,
+                           unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -211,9 +210,9 @@ namespace pcl
     public:
     
       UnorganizedPointCloudException (const std::string& error_description,
-                                      const std::string& file_name = "",
-                                      const std::string& function_name = "" ,
-                                      unsigned line_number = 0) throw ()
+                                      const char* file_name = NULL,
+                                      const char* function_name = NULL,
+                                      unsigned line_number = 0)
         : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -225,9 +224,9 @@ namespace pcl
     public:
     
     KernelWidthTooSmallException (const std::string& error_description,
-                                  const std::string& file_name = "",
-                                  const std::string& function_name = "" ,
-                                  unsigned line_number = 0) throw ()
+                                  const char* file_name = NULL,
+                                  const char* function_name = NULL,
+                                  unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   } ;
 
@@ -235,9 +234,9 @@ namespace pcl
   {
     public:
     UnhandledPointTypeException (const std::string& error_description,
-                                 const std::string& file_name = "",
-                                 const std::string& function_name = "" ,
-                                 unsigned line_number = 0) throw ()
+                                 const char* file_name = NULL,
+                                 const char* function_name = NULL,
+                                 unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
@@ -245,9 +244,9 @@ namespace pcl
   {
     public:
     ComputeFailedException (const std::string& error_description,
-                            const std::string& file_name = "",
-                            const std::string& function_name = "" ,
-                            unsigned line_number = 0) throw ()
+                            const char* file_name = NULL,
+                            const char* function_name = NULL,
+                            unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 
@@ -258,9 +257,9 @@ namespace pcl
   {
     public:
     BadArgumentException (const std::string& error_description,
-                          const std::string& file_name = "",
-                          const std::string& function_name = "" ,
-                          unsigned line_number = 0) throw ()
+                          const char* file_name = NULL,
+                          const char* function_name = NULL,
+                          unsigned line_number = 0)
       : pcl::PCLException (error_description, file_name, function_name, line_number) { }
   };
 }

@@ -13,7 +13,7 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 
 # OpenNI found?
-if(NOT OPENNI_FOUND OR NOT BUILD_OPENNI)
+if(NOT WITH_OPENNI)
     set(DEFAULT AUTO_OFF)
     set(REASON "OpenNI was not found or was disabled by the user.")
 elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
@@ -88,13 +88,13 @@ if(build)
   PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSUBSYS_NAME}" ${srcs} ${impl_incs_pipeline} ${incs_utils} ${incs_fw} ${incs_fw_global} ${incs_fw_local} ${incc_tools_framework} ${incs_pipelines} ${incs_pc_source})
   target_link_libraries("${LIB_NAME}" pcl_apps pcl_common pcl_io pcl_filters pcl_visualization pcl_segmentation pcl_surface pcl_features pcl_sample_consensus pcl_search)
   
-  if(OPENNI_FOUND)
+  if(WITH_OPENNI)
     target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
     if(NOT WIN32)
       find_package(libusb-1.0 REQUIRED)
       target_link_libraries("${LIB_NAME}" ${LIBUSB_1_LIBRARIES})
     endif()
-  endif(OPENNI_FOUND)
+  endif()
       
   PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSUBSYS_NAME}" "${SUBSUBSYS_DESC}" "" "" "" "" "")
   

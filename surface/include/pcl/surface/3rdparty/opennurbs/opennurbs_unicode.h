@@ -29,7 +29,7 @@ struct ON_UnicodeErrorParameters
     1: The input parameters were invalid. 
        This error cannot be masked.
 
-    2: The ouput buffer was not large enough to hold the converted
+    2: The output buffer was not large enough to hold the converted
        string. As much conversion as possible is performed in this
        case and the error cannot be masked.
 

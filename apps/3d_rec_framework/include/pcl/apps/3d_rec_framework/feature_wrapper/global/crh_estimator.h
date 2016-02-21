@@ -43,7 +43,7 @@ namespace pcl
       void
       estimate (PointInTPtr & in, PointInTPtr & processed,
                 std::vector<pcl::PointCloud<FeatureT>, Eigen::aligned_allocator<pcl::PointCloud<FeatureT> > > & signatures,
-                std::vector<Eigen::Vector3f> & centroids)
+                std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > & centroids)
       {
 
         if (!feature_estimator_)

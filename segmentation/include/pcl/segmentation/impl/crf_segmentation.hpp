@@ -220,8 +220,8 @@ pcl::CrfSegmentation<PointT>::createDataVectorFromVoxelGrid ()
   //data_.reserve (dim_.x () * dim_.y () * dim_.z ());
 
 /*
-  std::vector<Eigen::Vector3i> data;
-  std::vector<Eigen::Vector3i> color;
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > data;
+  std::vector<Eigen::Vector3i, Eigen::aligned_allocator<Eigen::Vector3i> > color;
   // fill the data vector
   for (int kk = min_b.z (), k = 0; kk <= max_b.z (); kk++, k++)
   {

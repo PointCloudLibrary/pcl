@@ -496,6 +496,77 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Label field handler class for colors. Paints the points according to their
+      * labels, assigning a unique color from a predefined color lookup table to each label.
+      * \author Sergey Alexandrov
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerLabelField : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointT> > ConstPtr;
+
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const bool static_mapping = true)
+          : PointCloudColorHandler<PointT> ()
+        {
+          capable_ = false;
+          static_mapping_ = static_mapping;
+        }
+
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud,
+                                          const bool static_mapping = true)
+          : PointCloudColorHandler<PointT> (cloud)
+        {
+          setInputCloud (cloud);
+          static_mapping_ = static_mapping;
+        }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerLabelField () {}
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("label"); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and 
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
+
+      protected:
+        /** \brief Class getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerLabelField"); }
+
+      private:
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::field_idx_;
+        using PointCloudColorHandler<PointT>::fields_;
+        bool static_mapping_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Base Handler class for PointCloud colors.
       * \author Radu B. Rusu 
       * \ingroup visualization
@@ -824,6 +895,52 @@ namespace pcl
         virtual std::string
         getFieldName () const { return ("rgba"); }
     };
+
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Label field handler class for colors. Paints the points according to their
+      * labels, assigning a unique color from a predefined color lookup table to each label.
+      * \author Sergey Alexandrov
+      * \ingroup visualization
+      */
+    template <>
+    class PCL_EXPORTS PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> : public PointCloudColorHandler<pcl::PCLPointCloud2>
+    {
+      typedef PointCloudColorHandler<pcl::PCLPointCloud2>::PointCloud PointCloud;
+      typedef PointCloud::Ptr PointCloudPtr;
+      typedef PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerLabelField<PointCloud> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerLabelField<PointCloud> > ConstPtr;
+
+        /** \brief Constructor.
+          * \param[in] static_mapping Use a static colormapping from label_id to color (default true) */
+        PointCloudColorHandlerLabelField (const PointCloudConstPtr &cloud,
+                                          const bool static_mapping = true);
+
+        /** \brief Empty destructor */
+        virtual ~PointCloudColorHandlerLabelField () {}
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+      protected:
+        /** \brief Get the name of the class. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerLabelField"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("label"); }
+    private:
+        bool static_mapping_;
+    };
+
   }
 }
 

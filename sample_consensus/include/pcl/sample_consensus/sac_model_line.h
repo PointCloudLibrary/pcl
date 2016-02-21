@@ -63,9 +63,11 @@ namespace pcl
   class SampleConsensusModelLine : public SampleConsensusModel<PointT>
   {
     public:
+      using SampleConsensusModel<PointT>::model_name_;
       using SampleConsensusModel<PointT>::input_;
       using SampleConsensusModel<PointT>::indices_;
       using SampleConsensusModel<PointT>::error_sqr_dists_;
+      using SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -78,7 +80,12 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelLine (const PointCloudConstPtr &cloud, bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random) {};
+        : SampleConsensusModel<PointT> (cloud, random)
+      {
+        model_name_ = "SampleConsensusModelLine";
+        sample_size_ = 2;
+        model_size_ = 6;
+      }
 
       /** \brief Constructor for base SampleConsensusModelLine.
         * \param[in] cloud the input point cloud dataset
@@ -88,7 +95,12 @@ namespace pcl
       SampleConsensusModelLine (const PointCloudConstPtr &cloud, 
                                 const std::vector<int> &indices,
                                 bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random) {};
+        : SampleConsensusModel<PointT> (cloud, indices, random)
+      {
+        model_name_ = "SampleConsensusModelLine";
+        sample_size_ = 2;
+        model_size_ = 6;
+      }
       
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelLine () {}
@@ -132,7 +144,7 @@ namespace pcl
                            const double threshold);
 
       /** \brief Recompute the line coefficients using the given inlier set and return them to the user.
-        * @note: these are the coefficients of the line model after refinement (eg. after SVD)
+        * @note: these are the coefficients of the line model after refinement (e.g. after SVD)
         * \param[in] inliers the data inliers found as supporting the model
         * \param[in] model_coefficients the initial guess for the model coefficients
         * \param[out] optimized_coefficients the resultant recomputed coefficients after optimization
@@ -169,20 +181,8 @@ namespace pcl
       getModelType () const { return (SACMODEL_LINE); }
 
     protected:
-      /** \brief Check whether a model is valid given the user constraints.
-        * \param[in] model_coefficients the set of model coefficients
-        */
-      inline bool 
-      isModelValid (const Eigen::VectorXf &model_coefficients)
-      {
-        if (model_coefficients.size () != 6)
-        {
-          PCL_ERROR ("[pcl::SampleConsensusModelLine::selectWithinDistance] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
-          return (false);
-        }
-
-        return (true);
-      }
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
 
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.

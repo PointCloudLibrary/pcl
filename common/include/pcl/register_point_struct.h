@@ -51,6 +51,8 @@
   #pragma warning (disable: 4244)
 #endif
 
+//https://bugreports.qt-project.org/browse/QTBUG-22829
+#ifndef Q_MOC_RUN
 #include <pcl/pcl_macros.h>
 #include <pcl/point_traits.h>
 #include <boost/mpl/vector.hpp>
@@ -60,8 +62,6 @@
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/comparison.hpp>
 #include <boost/utility.hpp>
-//https://bugreports.qt-project.org/browse/QTBUG-22829
-#ifndef Q_MOC_RUN
 #include <boost/type_traits.hpp>
 #endif
 #include <stddef.h> //offsetof

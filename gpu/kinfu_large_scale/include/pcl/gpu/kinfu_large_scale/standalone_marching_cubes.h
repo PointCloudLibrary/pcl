@@ -102,7 +102,7 @@ namespace pcl
         * \param[in] tsdf_offsets Vector of the offsets for every pointcloud in TsdfClouds. This offset (in indices) indicates the position of the cloud with respect to the absolute origin of the world model
         */
       void
-      getMeshesFromTSDFVector (const std::vector<PointCloudPtr> &tsdf_clouds, const std::vector<Eigen::Vector3f> &tsdf_offsets);
+      getMeshesFromTSDFVector (const std::vector<PointCloudPtr> &tsdf_clouds, const std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > &tsdf_offsets);
       
       /** \brief Returns the associated Tsdf Volume buffer in GPU 
         * \return pointer to the Tsdf Volume buffer in GPU

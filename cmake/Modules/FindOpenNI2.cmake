@@ -35,9 +35,9 @@ if(NOT WIN32)
 endif(NOT WIN32)
 
 if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
-  pkg_check_modules(PC_OPENNI2 openni2-dev)
+  pkg_check_modules(PC_OPENNI2 libopenni2)
 else()
-  pkg_check_modules(PC_OPENNI2 QUIET openni2-dev)
+  pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
 endif()
 
 set(OPENNI2_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER})
