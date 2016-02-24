@@ -86,6 +86,8 @@ namespace pcl
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
 
+    typedef std::vector<MatchingCandidate, Eigen::aligned_allocator<MatchingCandidate> > MatchingCandidates;
+
     /** \brief Sorting of candidates based on fitness score value. */
     struct by_score
     {

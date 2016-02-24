@@ -69,7 +69,7 @@ namespace pcl
       typedef typename PointCloudTarget::iterator PointCloudTargetIterator;
 
       typedef pcl::registration::MatchingCandidate MatchingCandidate;
-      typedef std::vector <MatchingCandidate> MatchingCandidates;
+      typedef pcl::registration::MatchingCandidates MatchingCandidates;
       /** \endcond */
 
 
