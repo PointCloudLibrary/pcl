@@ -175,6 +175,15 @@ namespace pcl
       bool
       grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud);
 
+      /** @brief Capture a single pair of stereo images
+       * @param[out] images The pair of stereo images (left, right)
+       * @param[in] rectify Images are not rectified by default. Switch to true to get rectified images
+       * @return True if successful, false otherwise
+       * @warning A device must be opened and not running */
+      bool
+      grabSinglePairOfImages (boost::shared_ptr<PairOfImages> &images,
+                              const bool rectify = false);
+
       /** @brief Set up the Ensenso sensor and API to do 3D extrinsic calibration using the Ensenso 2D patterns
        * @param[in] grid_spacing
        * @return True if successful, false otherwise
@@ -442,7 +451,8 @@ namespace pcl
       /** @brief Boost point cloud signal */
       boost::signals2::signal<sig_cb_ensenso_point_cloud>* point_cloud_signal_;
 
-      /** @brief Boost images signal */
+      /** @brief Boost images signal.
+       * In the pair of images, the first is the left image, the second is the right image */
       boost::signals2::signal<sig_cb_ensenso_images>* images_signal_;
 
       /** @brief Boost images + point cloud signal */
@@ -485,7 +495,8 @@ namespace pcl
 
       /** @brief Continuously asks for images and or point clouds data from the device and publishes them if available.
        * PCL time stamps are filled for both the images and clouds grabbed (see @ref getPCLStamp)
-       * @note The cloud time stamp is the RAW image time stamp */
+       * @note The cloud time stamp is the RAW image time stamp
+       * @note If grabbing a pair of images, the first image is the left image, the second is the right image */
       void
       processGrabbing ();
   };

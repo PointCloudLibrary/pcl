@@ -342,12 +342,51 @@ pcl::EnsensoGrabber::grabSingleCloud (pcl::PointCloud<pcl::PointXYZ> &cloud)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
+pcl::EnsensoGrabber::grabSinglePairOfImages (boost::shared_ptr<PairOfImages> &images,
+                                             const bool rectify)
 {
-  if (!device_open_)
+  if (!device_open_ || running_)
     return (false);
 
-  if (running_)
+  try
+  {
+    NxLibCommand (cmdCapture).execute ();
+    double timestamp;
+    camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);
+    images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
+
+    int width, height, channels, bpe;
+    bool isFlt;
+
+    char item(itmRectified);
+    if (!rectify)
+      item = itmRaw;
+    else
+      NxLibCommand (cmdRectifyImages).execute ();
+
+    camera_[itmImages][item][itmLeft].getBinaryDataInfo (&width, &height, &channels, &bpe, &isFlt, 0);
+    images->first.width = images->second.width = width;
+    images->first.height = images->second.height = height;
+    images->first.data.resize (width * height * sizeof (float));
+    images->second.data.resize (width * height * sizeof (float));
+    images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+
+    camera_[itmImages][item][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
+    camera_[itmImages][item][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
+    return true;
+  }
+  catch (NxLibException &ex)
+  {
+    ensensoExceptionHandling (ex, "grabSinglePairOfImages");
+    return (false);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
+{
+  if (!device_open_ || running_)
     return (false);
 
   try
@@ -373,10 +412,7 @@ pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
 bool
 pcl::EnsensoGrabber::clearCalibrationPatternBuffer () const
 {
-  if (!device_open_)
-    return (false);
-
-  if (running_)
+  if (!device_open_ || runing_)
     return (false);
 
   try
@@ -395,10 +431,7 @@ pcl::EnsensoGrabber::clearCalibrationPatternBuffer () const
 int
 pcl::EnsensoGrabber::captureCalibrationPattern () const
 {
-  if (!device_open_)
-    return (-1);
-
-  if (running_)
+  if (!device_open_ || running_)
     return (-1);
 
   try
@@ -419,10 +452,7 @@ pcl::EnsensoGrabber::captureCalibrationPattern () const
 bool
 pcl::EnsensoGrabber::estimateCalibrationPatternPose (Eigen::Affine3d &pattern_pose) const
 {
-  if (!device_open_)
-    return (false);
-
-  if (running_)
+  if (!device_open_ || running_)
     return (false);
 
   try
