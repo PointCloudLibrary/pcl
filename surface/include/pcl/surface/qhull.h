@@ -43,32 +43,11 @@
 #ifndef PCL_QHULL_H
 #define PCL_QHULL_H
 
-#if defined __GNUC__
-#  pragma GCC system_header 
-#endif
-
-extern "C"
-{
-#ifdef HAVE_QHULL_2011
-#  include "libqhull/libqhull.h"
-#  include "libqhull/mem.h"
-#  include "libqhull/qset.h"
-#  include "libqhull/geom.h"
-#  include "libqhull/merge.h"
-#  include "libqhull/poly.h"
-#  include "libqhull/io.h"
-#  include "libqhull/stat.h"
-#else
-#  include "qhull/qhull.h"
-#  include "qhull/mem.h"
-#  include "qhull/qset.h"
-#  include "qhull/geom.h"
-#  include "qhull/merge.h"
-#  include "qhull/poly.h"
-#  include "qhull/io.h"
-#  include "qhull/stat.h"
-#endif
-}
+#include <libqhullcpp/Qhull.h>
+#include <libqhullcpp/QhullFacetList.h>
+#include <libqhullcpp/QhullVertexSet.h>
+#include <libqhullcpp/QhullRidge.h>
+#include <libqhullcpp/QhullError.h>
 
 #endif      // PCL_QHULL_H
 #endif
