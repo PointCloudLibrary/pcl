@@ -2,7 +2,7 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2010-2012, Willow Garage, Inc.
+*  Copyright (c) 2010-2011, Willow Garage, Inc.
 *  Copyright (c) 2012-, Open Perception, Inc.
 *
 *  All rights reserved.
@@ -34,16 +34,53 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
+*
 */
-#include <pcl/features/impl/flare.hpp>
 
-#ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-// Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(FLARELocalReferenceFrameEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal))((pcl::ReferenceFrame))((float)(int)(short)))
-#else
-PCL_INSTANTIATE_PRODUCT(FLARELocalReferenceFrameEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::ReferenceFrame))((float)(int)(short)))
+#ifndef PCL_FEATURES_IMPL_LRF_UTILS_H_
+#define PCL_FEATURES_IMPL_LRF_UTILS_H_
+
+
+#include <pcl/features/lrf_utils.h>
+
+
+
+template<typename PointNT> bool
+  pcl::normalDisambiguation (
+  pcl::PointCloud<PointNT> const &normal_cloud,
+  std::vector<int> const &normal_indices,
+  Eigen::Vector3f &normal)
+{
+  Eigen::Vector3f normal_mean;
+  normal_mean.setZero ();
+
+  bool at_least_one_valid_point = false;
+  for (size_t i = 0; i < normal_indices.size (); ++i)
+  {
+    const PointNT& curPt = normal_cloud[normal_indices[i]];
+
+    if(pcl::isFinite(curPt))
+    {
+      normal_mean += curPt.getNormalVector3fMap ();
+      at_least_one_valid_point = true;
+    }
+  }
+
+  if(!at_least_one_valid_point)
+    return false;
+
+  normal_mean.normalize ();
+
+  if (normal.dot (normal_mean) < 0)
+  {
+    normal = -normal;
+  }
+
+  return true;
+}
+
+
+#define PCL_INSTANTIATE_normalDisambiguation(NT) template PCL_EXPORTS bool pcl::normalDisambiguation<NT>( pcl::PointCloud<NT> const &normal_cloud, std::vector<int> const &normal_indices, Eigen::Vector3f &normal);
+
+
 #endif
-#endif    // PCL_NO_PRECOMPILE

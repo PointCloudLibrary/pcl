@@ -43,154 +43,10 @@
 #include <pcl/features/board.h>
 #include <utility>
 #include <pcl/common/transforms.h>
+#include <pcl/features/lrf_utils.h>
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::directedOrthogonalAxis (
-                                                                                               Eigen::Vector3f const &axis,
-                                                                                               Eigen::Vector3f const &axis_origin,
-                                                                                               Eigen::Vector3f const &point,
-                                                                                               Eigen::Vector3f &directed_ortho_axis)
-{
-  Eigen::Vector3f projection;
-  projectPointOnPlane (point, axis_origin, axis, projection);
-  directed_ortho_axis = projection - axis_origin;
 
-  directed_ortho_axis.normalize ();
 
-  // check if the computed x axis is orthogonal to the normal
-  //assert(areEquals((float)(directed_ortho_axis.dot(axis)), 0.0f, 1E-3f));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::projectPointOnPlane (
-                                                                                            Eigen::Vector3f const &point,
-                                                                                            Eigen::Vector3f const &origin_point,
-                                                                                            Eigen::Vector3f const &plane_normal,
-                                                                                            Eigen::Vector3f &projected_point)
-{
-  float t;
-  Eigen::Vector3f xo;
-
-  xo = point - origin_point;
-  t = plane_normal.dot (xo);
-
-  projected_point = point - (t * plane_normal);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> float
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::getAngleBetweenUnitVectors (
-                                                                                                   Eigen::Vector3f const &v1,
-                                                                                                   Eigen::Vector3f const &v2,
-                                                                                                   Eigen::Vector3f const &axis)
-{
-  Eigen::Vector3f angle_orientation;
-  angle_orientation = v1.cross (v2);
-  float angle_radians = acosf (std::max (-1.0f, std::min (1.0f, v1.dot (v2))));
-
-  angle_radians = angle_orientation.dot (axis) < 0.f ? (2 * static_cast<float> (M_PI) - angle_radians) : angle_radians;
-
-  return (angle_radians);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::randomOrthogonalAxis (
-                                                                                             Eigen::Vector3f const &axis,
-                                                                                             Eigen::Vector3f &rand_ortho_axis)
-{
-  if (!areEquals (axis.z (), 0.0f))
-  {
-    rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.z () = -(axis.x () * rand_ortho_axis.x () + axis.y () * rand_ortho_axis.y ()) / axis.z ();
-  }
-  else if (!areEquals (axis.y (), 0.0f))
-  {
-    rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.y () = -(axis.x () * rand_ortho_axis.x () + axis.z () * rand_ortho_axis.z ()) / axis.y ();
-  }
-  else if (!areEquals (axis.x (), 0.0f))
-  {
-    rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-    rand_ortho_axis.x () = -(axis.y () * rand_ortho_axis.y () + axis.z () * rand_ortho_axis.z ()) / axis.x ();
-  }
-
-  rand_ortho_axis.normalize ();
-
-  // check if the computed x axis is orthogonal to the normal
-  //assert(areEquals(rand_ortho_axis.dot(axis), 0.0f, 1E-6f));
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::planeFitting (
-                                                                                     Eigen::Matrix<float,
-                                                                                         Eigen::Dynamic, 3> const &points,
-                                                                                     Eigen::Vector3f &center,
-                                                                                     Eigen::Vector3f &norm)
-{
-  // -----------------------------------------------------
-  // Plane Fitting using Singular Value Decomposition (SVD)
-  // -----------------------------------------------------
-
-  int n_points = static_cast<int> (points.rows ());
-  if (n_points == 0)
-  {
-    return;
-  }
-
-  //find the center by averaging the points positions
-  center.setZero ();
-
-  for (int i = 0; i < n_points; ++i)
-  {
-    center += points.row (i);
-  }
-
-  center /= static_cast<float> (n_points);
-
-  //copy points - average (center)
-  Eigen::Matrix<float, Eigen::Dynamic, 3> A (n_points, 3); //PointData
-  for (int i = 0; i < n_points; ++i)
-  {
-    A (i, 0) = points (i, 0) - center.x ();
-    A (i, 1) = points (i, 1) - center.y ();
-    A (i, 2) = points (i, 2) - center.z ();
-  }
-
-  Eigen::JacobiSVD<Eigen::MatrixXf> svd (A, Eigen::ComputeFullV);
-  norm = svd.matrixV ().col (2);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template<typename PointInT, typename PointNT, typename PointOutT> void
-pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::normalDisambiguation (
-                                                                                             pcl::PointCloud<PointNT> const &normal_cloud,
-                                                                                             std::vector<int> const &normal_indices,
-                                                                                             Eigen::Vector3f &normal)
-{
-  Eigen::Vector3f normal_mean;
-  normal_mean.setZero ();
-
-  for (size_t i = 0; i < normal_indices.size (); ++i)
-  {
-    const PointNT& curPt = normal_cloud[normal_indices[i]];
-
-    normal_mean += curPt.getNormalVector3fMap ();
-  }
-
-  normal_mean.normalize ();
-
-  if (normal.dot (normal_mean) < 0)
-  {
-    normal = -normal;
-  }
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT> float
@@ -231,7 +87,13 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
   planeFitting (neigh_points_mat, centroid, fitted_normal);
 
   //disambiguate Z axis with normal mean
-  normalDisambiguation (*normals_, neighbours_indices, fitted_normal);
+  if (!normalDisambiguation<PointNT> (*normals_, neighbours_indices, fitted_normal))
+  {
+	  //all normals in the neighbourood are invalid
+	  //setting lrf to NaN
+	  lrf.setConstant (std::numeric_limits<float>::quiet_NaN ());
+	  return (std::numeric_limits<float>::max ());
+  }
 
   //setting LRF Z axis
   lrf.row (2).matrix () = fitted_normal;
@@ -303,8 +165,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     {
       //find angle with respect to random axis previously calculated
       Eigen::Vector3f indicating_normal_vect;
-      directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (),
-                              surface_->at (curr_neigh_idx).getVector3fMap (), indicating_normal_vect);
+      directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (), surface_->at (curr_neigh_idx).getVector3fMap (), indicating_normal_vect);
       float angle = getAngleBetweenUnitVectors (x_axis, indicating_normal_vect, fitted_normal);
 
       int check_margin_array_idx = std::min (static_cast<int> (floor (angle / max_boundary_angle)), check_margin_array_size_ - 1);
@@ -432,8 +293,7 @@ pcl::BOARDLocalReferenceFrameEstimation<PointInT, PointNT, PointOutT>::computePo
     }
 
     //find orthogonal axis directed to minNormalIndex point projection on plane with fittedNormal as axis
-    directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (),
-                            surface_->at (min_normal_index).getVector3fMap (), x_axis);
+    directedOrthogonalAxis (fitted_normal, input_->at (index).getVector3fMap (), surface_->at (min_normal_index).getVector3fMap (), x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
     lrf.row (0).matrix () = x_axis;

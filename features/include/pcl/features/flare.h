@@ -2,7 +2,8 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2016-, Open Perception, Inc.
+*  Copyright (c) 2010-2012, Willow Garage, Inc.
+*  Copyright (c) 2012-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -41,248 +42,254 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d_omp.h>
 
 
 namespace pcl
 {
-
   /** \brief FLARELocalReferenceFrameEstimation implements the Fast LocAl Reference framE algorithm
-    * for local reference frame estimation as described here:
-    *
-    *  - A. Petrelli, L. Di Stefano,
-    *    "A repeatable and efficient canonical reference for surface matching",
-    *    3DimPVT, 2012
-    *
-    * FLARE algorithm is deployed in ReLOC algorithm proposed in:
-    * 
-    * Petrelli A., Di Stefano L., "Pairwise registration by local orientation cues", Computer Graphics Forum, 2015.
-    *
-    * \author Alioscia Petrelli
-    * \ingroup features
-    */
+  * for local reference frame estimation as described here:
+  *
+  *  - A. Petrelli, L. Di Stefano,
+  *    "A repeatable and efficient canonical reference for surface matching",
+  *    3DimPVT, 2012
+  *
+  * FLARE algorithm is deployed in ReLOC algorithm proposed in:
+  * 
+  * Petrelli A., Di Stefano L., "Pairwise registration by local orientation cues", Computer Graphics Forum, 2015.
+  *
+  * \author Alioscia Petrelli
+  * \ingroup features
+  */
   template<typename PointInT, typename PointNT, typename PointOutT = ReferenceFrame, typename SignedDistanceT = float>
   class FLARELocalReferenceFrameEstimation : public FeatureFromNormals<PointInT, PointNT, PointOutT>
   {
-    protected:
-      using Feature<PointInT, PointOutT>::feature_name_;
-      using Feature<PointInT, PointOutT>::input_;
-      using Feature<PointInT, PointOutT>::indices_;
-      using Feature<PointInT, PointOutT>::surface_;
-      using Feature<PointInT, PointOutT>::tree_;
-      using Feature<PointInT, PointOutT>::search_parameter_;
-      using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
-      using Feature<PointInT, PointOutT>::fake_surface_;
-      using Feature<PointInT, PointOutT>::getClassName;
+  protected:
+    using Feature<PointInT, PointOutT>::feature_name_;
+    using Feature<PointInT, PointOutT>::input_;
+    using Feature<PointInT, PointOutT>::indices_;
+    using Feature<PointInT, PointOutT>::surface_;
+    using Feature<PointInT, PointOutT>::tree_;
+    using Feature<PointInT, PointOutT>::search_parameter_;
+    using FeatureFromNormals<PointInT, PointNT, PointOutT>::normals_;
+    using Feature<PointInT, PointOutT>::fake_surface_;
+    using Feature<PointInT, PointOutT>::getClassName;
 
-      using typename Feature<PointInT, PointOutT>::PointCloudIn;
-      using typename Feature<PointInT, PointOutT>::PointCloudOut;
+    typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
+    typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
-      using typename Feature<PointInT, PointOutT>::PointCloudInConstPtr;
+    typedef typename pcl::PointCloud<SignedDistanceT> PointCloudSignedDistance;
+    typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
 
-      using typename Feature<PointInT, PointOutT>::KdTreePtr;
+    typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
 
-      typedef typename pcl::PointCloud<SignedDistanceT> PointCloudSignedDistance;
-      typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
+    typedef boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
+    typedef boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
 
-      typedef boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
+    typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
-    public:
-      /** \brief Constructor. */
-      FLARELocalReferenceFrameEstimation () :
+
+
+  public:
+
+    /** \brief Constructor. */
+    FLARELocalReferenceFrameEstimation () :
         tangent_radius_ (0.0f),
-        margin_thresh_ (0.85f),
-        min_neighbors_for_normal_axis_ (6),
-        min_neighbors_for_tangent_axis_ (6),
-        sampled_surface_ (), 
-        sampled_tree_ (),
-        fake_sampled_surface_ (false)
-      {
-        feature_name_ = "FLARELocalReferenceFrameEstimation";
-      }
+          margin_thresh_ (0.85f),
+          min_neighbors_for_normal_axis_(6),
+          min_neighbors_for_tangent_axis_(6),
+          sampled_surface_(), 
+          sampled_tree_(),
+          fake_sampled_surface_(false)
+        {
+          feature_name_ = "FLARELocalReferenceFrameEstimation";
+        }
 
-      //Getters/Setters
+        /** \brief Empty destructor */
+        virtual ~FLARELocalReferenceFrameEstimation () {}
 
-      /** \brief Set the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
+        //Getters/Setters
+
+        /** \brief Set the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
         *
         * \param[in] radius The search radius for x axis.
         */
-      inline void
-      setTangentRadius (float radius)
-      {
-        tangent_radius_ = radius;
-      }
+        inline void
+          setTangentRadius (float radius)
+        {
+          tangent_radius_ = radius;
+        }
 
-      /** \brief Get the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
+        /** \brief Get the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
         *
         * \return The search radius for x axis.
         */
-      inline float
-      getTangentRadius () const
-      {
-        return (tangent_radius_);
-      }
+        inline float
+          getTangentRadius () const
+        {
+          return (tangent_radius_);
+        }
 
-      /** \brief Set the percentage of the search tangent radius after which a point is considered part of the support.
+        /** \brief Set the percentage of the search tangent radius after which a point is considered part of the support.
         *
         * \param[in] margin_thresh the percentage of the search tangent radius after which a point is considered part of the support.
         */
-      inline void
-      setMarginThresh (float margin_thresh)
-      {
-        margin_thresh_ = margin_thresh;
-      }
+        inline void
+          setMarginThresh (float margin_thresh)
+        {
+          margin_thresh_ = margin_thresh;
+        }
 
-      /** \brief Get the percentage of the search tangent radius after which a point is considered part of the support.
+        /** \brief Get the percentage of the search tangent radius after which a point is considered part of the support.
         *
         * \return The percentage of the search tangent radius after which a point is considered part of the support.
         */
-      inline float
-      getMarginThresh () const
-      {
-        return (margin_thresh_);
-      }
+        inline float
+          getMarginThresh () const
+        {
+          return (margin_thresh_);
+        }
 
 
-      /** \brief Set min number of neighbours required for the computation of Z axis.
+        /** \brief Set min number of neighbours required for the computation of Z axis.
         *
         * \param[in] min_neighbors_for_normal_axis min number of neighbours required for the computation of Z axis.
         */
-      inline void
-      setMinNeighboursForNormalAxis (int min_neighbors_for_normal_axis)
-      {
-        min_neighbors_for_normal_axis_ = min_neighbors_for_normal_axis;
-      }
+        inline void
+          setMinNeighboursForNormalAxis (int min_neighbors_for_normal_axis)
+        {
+          min_neighbors_for_normal_axis_ = min_neighbors_for_normal_axis;
+        }
 
-      /** \brief Get min number of neighbours required for the computation of Z axis.
+        /** \brief Get min number of neighbours required for the computation of Z axis.
         *
         * \return min number of neighbours required for the computation of Z axis.
         */
-      inline int
-      getMinNeighboursForNormalAxis () const
-      {
-        return (min_neighbors_for_normal_axis_);
-      }
+        inline int
+          getMinNeighboursForNormalAxis () const
+        {
+          return (min_neighbors_for_normal_axis_);
+        }
 
 
-      /** \brief Set min number of neighbours required for the computation of X axis.
+        /** \brief Set min number of neighbours required for the computation of X axis.
         *
         * \param[in] min_neighbors_for_tangent_axis min number of neighbours required for the computation of X axis.
         */
-      inline void
-      setMinNeighboursForTangentAxis (int min_neighbors_for_tangent_axis)
-      {
-        min_neighbors_for_tangent_axis_ = min_neighbors_for_tangent_axis;
-      }
+        inline void
+          setMinNeighboursForTangentAxis (int min_neighbors_for_tangent_axis)
+        {
+          min_neighbors_for_tangent_axis_ = min_neighbors_for_tangent_axis;
+        }
 
-      /** \brief Get min number of neighbours required for the computation of X axis.
+        /** \brief Get min number of neighbours required for the computation of X axis.
         *
         * \return min number of neighbours required for the computation of X axis.
         */
-      inline int
-      getMinNeighboursForTangentAxis () const
-      {
-        return (min_neighbors_for_tangent_axis_);
-      }
+        inline int
+          getMinNeighboursForTangentAxis () const
+        {
+          return (min_neighbors_for_tangent_axis_);
+        }
 
 
-      /** \brief Provide a pointer to the dataset used for the estimation of X axis.
+        /** \brief Provide a pointer to the dataset used for the estimation of X axis.
         * As the estimation of x axis is negligibly affected by surface downsampling,
         * this method lets to consider a downsampled version of surface_ in the estimation of x axis.  
         * This is optional, if this is not set, it will only use the data in the
         * surface_ cloud to estimate the x axis. 
         * \param[in] cloud a pointer to a PointCloud 
         */
-      inline void 
-      setSearchSampledSurface(const PointCloudInConstPtr &cloud)
-      {
-        sampled_surface_ = cloud;
-        fake_sampled_surface_ = false;
-      }
+        inline void 
+          setSearchSampledSurface(const PointCloudInConstPtr &cloud)
+        {
+          sampled_surface_ = cloud;
+          fake_sampled_surface_ = false;
+        }
 
-      /** \brief Get a pointer to the sampled_surface_ cloud dataset. */
-      inline const PointCloudInConstPtr& 
-      getSearchSampledSurface() const
-      {
-        return (sampled_surface_);
-      }
+        /** \brief Get a pointer to the sampled_surface_ cloud dataset. */
+        inline PointCloudInConstPtr 
+          getSearchSampledSurface() const
+        {
+          return (sampled_surface_);
+        }
 
-      /** \brief Provide a pointer to the search object linked to sampled_surface.
+        /** \brief Provide a pointer to the search object linked to sampled_surface.
         * \param[in] tree a pointer to the spatial search object linked to sampled_surface.
         */
-      inline void 
-      setSearchMethodForSampledSurface (const KdTreePtr &tree) { sampled_tree_ = tree; }
+        inline void 
+          setSearchMethodForSampledSurface (const KdTreePtr &tree) { sampled_tree_ = tree; }
 
-      /** \brief Get a pointer to the search method used for the extimation of x axis. */
-      inline const KdTreePtr&  
-      getSearchMethodForSampledSurface () const
-      {
-        return (sampled_tree_);
-      }
+        /** \brief Get a pointer to the search method used for the extimation of x axis. */
+        inline KdTreePtr 
+          getSearchMethodForSampledSurface () const
+        {
+          return (sampled_tree_);
+        }
 
-      /** \brief Get the signed distances of the highest points from the fitted planes. */
-      inline const std::vector<SignedDistanceT> & 
-      getSignedDistancesFromHighestPoints () const 
-      {
-        return (signed_distances_from_highest_points_);
-      }
+        /** \brief Get the signed distances of the highest points from the fitted planes. */
+        inline std::vector<SignedDistanceT> & 
+          getSignedDistancesFromHighestPoints () 
+        {
+          return (signed_distances_from_highest_points_);
+        }
 
-    protected:
-      /** \brief This method should get called before starting the actual computation. */
-      virtual bool
+  protected:
+    /** \brief This method should get called before starting the actual computation. */
+    virtual bool
       initCompute ();
 
-      /** \brief This method should get called after the actual computation is ended. */
-      virtual bool
+    /** \brief This method should get called after the actual computation is ended. */
+    virtual bool
       deinitCompute ();
 
-      /** \brief Estimate the LRF descriptor for a given point based on its spatial neighborhood of 3D points with normals
-        * \param[in] index the index of the point in input_
-        * \param[out] lrf the resultant local reference frame
-        * \return signed distance of the highest point from the fitted plane. Max if the lrf is not computable.
-        */
-      SignedDistanceT
-      computePointLRF (const int index, Eigen::Matrix3f &lrf);
+    /** \brief Estimate the LRF descriptor for a given point based on its spatial neighborhood of 3D points with normals
+    * \param[in] index the index of the point in input_
+    * \param[out] lrf the resultant local reference frame
+    * \return signed distance of the highest point from the fitted plane. Max if the lrf is not computable.
+    */
+    SignedDistanceT
+      computePointLRF (const int &index, Eigen::Matrix3f &lrf);
 
-      /** \brief Abstract feature estimation method.
-      * \param[out] output the resultant features
-      */
-      virtual void
+    /** \brief Abstract feature estimation method.
+    * \param[out] output the resultant features
+    */
+    virtual void
       computeFeature (PointCloudOut &output);
 
 
-    private:
-      /** \brief Radius used to find tangent axis. */
-      float tangent_radius_;
+  private:
+    /** \brief Radius used to find tangent axis. */
+    float tangent_radius_;
 
-      /** \brief Threshold that define if a support point is near the margins. */
-      float margin_thresh_; 
+    /** \brief Threshold that define if a support point is near the margins. */
+    float margin_thresh_; 
 
-      /** \brief Min number of neighbours required for the computation of Z axis. Otherwise, feature point normal is used. */
-      int min_neighbors_for_normal_axis_;
+    /** \brief Min number of neighbours required for the computation of Z axis. Otherwise, feature point normal is used. */
+    int min_neighbors_for_normal_axis_;
 
-      /** \brief Min number of neighbours required for the computation of X axis. Otherwise, a random X axis is set */
-      int min_neighbors_for_tangent_axis_;
+    /** \brief Min number of neighbours required for the computation of X axis. Otherwise, a random X axis is set */
+    int min_neighbors_for_tangent_axis_;
 
-      /** \brief An input point cloud describing the surface that is to be used
-        * for nearest neighbor searches for the estimation of X axis.
-        */
-      PointCloudInConstPtr sampled_surface_;
+    /** \brief An input point cloud describing the surface that is to be used
+    * for nearest neighbor searches for the estimation of X axis.
+    */
+    PointCloudInConstPtr sampled_surface_;
 
-      /** \brief A pointer to the spatial search object used for the estimation of X axis. */
-      KdTreePtr sampled_tree_;
+    /** \brief A pointer to the spatial search object used for the estimation of X axis. */
+    KdTreePtr sampled_tree_;
 
-      /** \brief Class for normal estimation. */
-      NormalEstimation<PointInT, PointNT> normal_estimation_;
+    /** \brief Class for normal estimation. */
+    NormalEstimation<PointInT, PointNT> normal_estimation_;
 
-      /** \brief Signed distances of the highest points from the fitted planes.*/
-      std::vector<SignedDistanceT> signed_distances_from_highest_points_;
+    /** \brief Signed distances of the highest points from the fitted planes.*/
+    std::vector<SignedDistanceT> signed_distances_from_highest_points_;
 
-      /** \brief If no sampled_surface_ is given, we use surface_ as the sampled surface. */
-      bool fake_sampled_surface_;
+    /** \brief If no sampled_surface_ is given, we use surface_ as the sampled surface. */
+    bool fake_sampled_surface_;
 
   };
+
 
 }
 

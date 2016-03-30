@@ -2,7 +2,8 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2016-, Open Perception, Inc.
+*  Copyright (c) 2010-2011, Willow Garage, Inc.
+*  Copyright (c) 2012-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -39,8 +40,12 @@
 #ifndef PCL_FEATURES_IMPL_FLARE_H_
 #define PCL_FEATURES_IMPL_FLARE_H_
 
+
 #include <pcl/features/flare.h>
-#include <pcl/common/geometry.h>
+#include <utility>
+#include <pcl/common/transforms.h>
+#include <pcl/features/lrf_utils.h>
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename SignedDistanceT> bool
@@ -52,7 +57,12 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     return (false);
   }
 
-  if (tangent_radius_ == 0.0f)
+  if(!sampled_surface_ && sampled_tree_)
+  {
+    PCL_WARN ("[pcl::%s::initCompute] sampled_surface_ is not set even if sampled_tree_ is already set. sampled_tree_ will be rebuilt from surface_. Use sampled_surface_.\n", getClassName ().c_str ());
+  }
+
+  if(tangent_radius_ == 0.0f)
   {
     PCL_ERROR ("[pcl::%s::initCompute] tangent_radius_ not set.\n", getClassName ().c_str ());
     return (false);
@@ -63,12 +73,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   {
     fake_sampled_surface_ = true;
     sampled_surface_ = surface_;
-
-    if (sampled_tree_)
-    {
-      PCL_WARN ("[pcl::%s::initCompute] sampled_surface_ is not set even if sampled_tree_ is already set.", getClassName ().c_str ());
-      PCL_WARN ("sampled_tree_ will be rebuilt from surface_. Use sampled_surface_.\n");
-    }
   }
 
   // Check if a space search locator was given for sampled_surface_
@@ -107,7 +111,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename SignedDistanceT> SignedDistanceT
-  pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computePointLRF (const int index,
+  pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computePointLRF (const int &index,
   Eigen::Matrix3f &lrf)
 {
   Eigen::Vector3f x_axis, y_axis;
@@ -122,7 +126,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   if (n_neighbours < min_neighbors_for_normal_axis_)
   {
-    if (!pcl::isFinite ((*normals_)[index]))
+    if(!pcl::isFinite ((*normals_)[index]))
     {
       //normal is invalid
       //setting lrf to NaN
@@ -131,15 +135,60 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     }
 
     //set z_axis as the normal of index point
-    fitted_normal = (*normals_)[index].getNormalVector3fMap ();
+    fitted_normal = (*normals_)[index].getNormalVector3fMap();
+
+    return (std::numeric_limits<SignedDistanceT>::max ());
   }
   else
   {
+    ////find centroid for plane fitting
+    //  Eigen::Vector3f centroid = Eigen::Vector3f::Zero();
+    //  Eigen::Vector3f mean_normal = Eigen::Vector3f::Zero();
+    //for(size_t ne = 0; ne < neighbours_indices.size(); ++ne)
+    //{
+    //    centroid += (*surface_)[ neighbours_indices[ne] ].getVector3fMap();
+    //    mean_normal += (*normals_)[ neighbours_indices[ne] ].getNormalVector3fMap();
+    //}
+    //  centroid /= (float)neighbours_indices.size();
+    //  mean_normal.normalize(); 
+
+
+    ////plane fitting
+    //  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero();
+    //  float temp;
+    //  Eigen::Vector3f no_centroid = Eigen::Vector3f::Zero();
+    //for(size_t ne = 0; ne < neighbours_indices.size(); ++ne)
+    //{
+    //    no_centroid = (*surface_)[ neighbours_indices[ne] ].getVector3fMap() - centroid;
+
+    //    covariance_matrix (0,0) += no_centroid.x() * no_centroid.x();
+    //    covariance_matrix (1,1) += no_centroid.y() * no_centroid.y();
+    //    covariance_matrix (2,2) = no_centroid.z() * no_centroid.z();
+
+    //    temp =  no_centroid.x() * no_centroid.y();
+    //    covariance_matrix (0,1) += temp;
+    //    covariance_matrix (1,0) += temp;
+    //    temp =  no_centroid.x() * no_centroid.z();
+    //    covariance_matrix (0,2) += temp;
+    //    covariance_matrix (2,0) += temp;
+    //    temp =  no_centroid.y() * no_centroid.z();
+    //    covariance_matrix (1,2) += temp;
+    //    covariance_matrix (2,1) += temp;
+    //  }
+
+    //EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
+    //EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
+    //pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
+
+    //fitted_normal.x() = eigen_vector [0];
+    //fitted_normal.y() = eigen_vector [1];
+    //fitted_normal.z() = eigen_vector [2];
+
     float plane_curvature;
-    normal_estimation_.computePointNormal (*surface_, neighbours_indices, fitted_normal (0), fitted_normal (1), fitted_normal (2), plane_curvature);
+    normal_estimation_.computePointNormal(*surface_, neighbours_indices, fitted_normal(0), fitted_normal(1), fitted_normal(2), plane_curvature);
 
     //disambiguate Z axis with normal mean
-    if (!pcl::flipNormalTowardsNormalsMean<PointNT> (*normals_, neighbours_indices, fitted_normal))
+    if (!normalDisambiguation<PointNT> (*normals_, neighbours_indices, fitted_normal) )
     {
       //all normals in the neighbourood are invalid
       //setting lrf to NaN
@@ -151,41 +200,41 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //setting LRF Z axis
   lrf.row (2).matrix () = fitted_normal;
 
+
   //find X axis
 
   //extract support points for Rx radius
-  n_neighbours = sampled_tree_->radiusSearch ((*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
+  n_neighbours = sampled_tree_->radiusSearch( (*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
 
   if (n_neighbours < min_neighbors_for_tangent_axis_)
   {
     //set X axis as a random axis
-    x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
+    randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
-
-    lrf.row (0).matrix () = x_axis;
-    lrf.row (1).matrix () = y_axis;
 
     return (std::numeric_limits<SignedDistanceT>::max ());
   }
 
   //find point with the largest signed distance from tangent plane
 
-  SignedDistanceT shape_score;
-  SignedDistanceT best_shape_score = -std::numeric_limits<SignedDistanceT>::max ();
-  int best_shape_index = -1;
+  SignedDistanceT shapeScore;
+  SignedDistanceT bestShapeScore = -std::numeric_limits<SignedDistanceT>::max();
+  int bestShapeIndex = -1;
 
   Eigen::Vector3f best_margin_point;
 
-  const float radius2 = tangent_radius_ * tangent_radius_;
-  const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
+  float radius2 = tangent_radius_ * tangent_radius_;
+
+  float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
+
 
   Vector3fMapConst feature_point = (*input_)[index].getVector3fMap ();
+
 
   for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
   {
     const int& curr_neigh_idx = neighbours_indices[curr_neigh];
     const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
-
     if (neigh_distance_sqr <= margin_distance2)
     {
       continue;
@@ -193,28 +242,29 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
     //point curr_neigh_idx is inside the ring between marginThresh and Radius
 
-    shape_score = fitted_normal.dot ((*sampled_surface_)[curr_neigh_idx].getVector3fMap ());
+    shapeScore =	(*sampled_surface_)[curr_neigh_idx].getVector3fMap()[0] * fitted_normal[0] +
+      (*sampled_surface_)[curr_neigh_idx].getVector3fMap()[1] * fitted_normal[1] +
+      (*sampled_surface_)[curr_neigh_idx].getVector3fMap()[2] * fitted_normal[2];
 
-    if (shape_score > best_shape_score)
+    if(shapeScore > bestShapeScore)
     {
-      best_shape_index = curr_neigh_idx;
-      best_shape_score = shape_score;
+      bestShapeIndex = curr_neigh_idx;
+      bestShapeScore = shapeScore;
     }
+
   } //for each neighbor
 
-  if (best_shape_index == -1)
+  if (bestShapeIndex == -1)
   {
-    x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
-    y_axis = fitted_normal.cross (x_axis);
 
-    lrf.row (0).matrix () = x_axis;
-    lrf.row (1).matrix () = y_axis;
+    randomOrthogonalAxis (fitted_normal, x_axis);
+    y_axis = fitted_normal.cross (x_axis);
 
     return (std::numeric_limits<SignedDistanceT>::max ());
   }
 
-  //find orthogonal axis directed to best_shape_index point projection on plane with fittedNormal as axis
-  x_axis = pcl::geometry::projectedAsUnitVector (sampled_surface_->at (best_shape_index).getVector3fMap (), feature_point, fitted_normal);
+  //find orthogonal axis directed to bestShapeIndex point projection on plane with fittedNormal as axis
+  directedOrthogonalAxis (fitted_normal, feature_point, sampled_surface_->at(bestShapeIndex).getVector3fMap(), x_axis);
 
   y_axis = fitted_normal.cross (x_axis);
 
@@ -222,8 +272,8 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   lrf.row (1).matrix () = y_axis;
   //z axis already set
 
-  best_shape_score -= fitted_normal.dot (feature_point);
-  return (best_shape_score);
+  bestShapeScore -= (fitted_normal[0]*feature_point[0] + fitted_normal[1]*feature_point[1] + fitted_normal[2]*feature_point[2]);
+  return (bestShapeScore);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,13 +283,14 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
-    PCL_ERROR (
-      "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch (0) and setRadiusSearch (radius) to use this class.\n",
-      getClassName ().c_str ());
+    PCL_ERROR(
+      "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
+      getClassName().c_str());
     return;
   }
 
-  signed_distances_from_highest_points_.resize (indices_->size ());
+  if(signed_distances_from_highest_points_.size () != indices_->size ())
+    signed_distances_from_highest_points_.resize (indices_->size ());
 
   for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
@@ -247,16 +298,20 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     PointOutT &rf = output[point_idx];
 
     signed_distances_from_highest_points_[point_idx] = computePointLRF ((*indices_)[point_idx], currentLrf);
-    if (signed_distances_from_highest_points_[point_idx] == std::numeric_limits<SignedDistanceT>::max ())
+    if(  signed_distances_from_highest_points_[point_idx] == std::numeric_limits<SignedDistanceT>::max () )
     {
       output.is_dense = false;
     }
 
-    rf.getXAxisVector3fMap () = currentLrf.row (0);
-    rf.getYAxisVector3fMap () = currentLrf.row (1);
-    rf.getZAxisVector3fMap () = currentLrf.row (2);
+    for (int d = 0; d < 3; ++d)
+    {
+      rf.x_axis[d] = currentLrf (0, d);
+      rf.y_axis[d] = currentLrf (1, d);
+      rf.z_axis[d] = currentLrf (2, d);
+    }
   }
 }
+
 
 #define PCL_INSTANTIATE_FLARELocalReferenceFrameEstimation(T,NT,OutT,SdT) template class PCL_EXPORTS pcl::FLARELocalReferenceFrameEstimation<T,NT,OutT,SdT>;
 

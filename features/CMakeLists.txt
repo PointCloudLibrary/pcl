@@ -15,7 +15,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/board.h"
-        "include/pcl/${SUBSYS_NAME}/flare.h"
+		"include/pcl/${SUBSYS_NAME}/flare.h"
         "include/pcl/${SUBSYS_NAME}/brisk_2d.h"
         "include/pcl/${SUBSYS_NAME}/cppf.h"
         "include/pcl/${SUBSYS_NAME}/cvfh.h"
@@ -33,6 +33,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/intensity_gradient.h"
         "include/pcl/${SUBSYS_NAME}/intensity_spin.h"
         "include/pcl/${SUBSYS_NAME}/linear_least_squares_normal.h"
+		"include/pcl/${SUBSYS_NAME}/lrf_utils.h"
         "include/pcl/${SUBSYS_NAME}/moment_invariants.h"
         "include/pcl/${SUBSYS_NAME}/moment_of_inertia_estimation.h"
         "include/pcl/${SUBSYS_NAME}/multiscale_feature_persistence.h"
@@ -68,7 +69,7 @@ if(build)
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/board.hpp"
-        "include/pcl/${SUBSYS_NAME}/impl/flare.hpp"
+		"include/pcl/${SUBSYS_NAME}/impl/flare.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/cppf.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp"
@@ -85,6 +86,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/intensity_gradient.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/intensity_spin.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/linear_least_squares_normal.hpp"
+		"include/pcl/${SUBSYS_NAME}/impl/lrf_utils.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/moment_invariants.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/moment_of_inertia_estimation.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/multiscale_feature_persistence.hpp"
@@ -118,7 +120,7 @@ if(build)
 
     set(srcs
         src/board.cpp
-        src/flare.cpp
+		src/flare.cpp
         src/brisk_2d.cpp
         src/boundary.cpp
         src/cppf.cpp
@@ -133,6 +135,7 @@ if(build)
         src/intensity_gradient.cpp
         src/intensity_spin.cpp
         src/linear_least_squares_normal.cpp
+		src/lrf_utils.cpp
         src/moment_invariants.cpp
         src/moment_of_inertia_estimation.cpp
         src/multiscale_feature_persistence.cpp
