@@ -1000,7 +1000,7 @@ pcl::PLYWriter::writeContentWithCameraASCII (int nr_points,
           fs << " ";
       }
     }
-    fs << std::endl;
+    fs << '\n';
   }
   // Append sensor information
   if (origin[3] != 0)
@@ -1151,7 +1151,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
     if (is_valid_line)
     {
       grids[i].push_back (valid_points);
-      fs << line.str () << std::endl;
+      fs << line.str () << '\n';
       ++valid_points;
     }
   }
@@ -1166,7 +1166,7 @@ pcl::PLYWriter::writeContentWithRangeGridASCII (int nr_points,
            it != grids [i].end ();
            ++it)
         fs << " " << *it;
-      fs << std::endl;
+      fs << '\n';
     }
   }
 
@@ -1580,7 +1580,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
       PCL_ERROR ("[pcl::io::savePLYFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
 
   // Write down faces
@@ -1590,7 +1590,7 @@ pcl::io::savePLYFile (const std::string &file_name, const pcl::PolygonMesh &mesh
     size_t j = 0;
     for (j = 0; j < mesh.polygons[i].vertices.size () - 1; ++j)
       fs << mesh.polygons[i].vertices[j] << " ";
-    fs << mesh.polygons[i].vertices[j] << std::endl;
+    fs << mesh.polygons[i].vertices[j] << '\n';
   }
 
   // Close file

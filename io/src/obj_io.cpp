@@ -1009,16 +1009,16 @@ pcl::io::saveOBJFile (const std::string &file_name,
     nr_faces += static_cast<unsigned> (tex_mesh.tex_polygons[m].size ());
 
   // Write the header information
-  fs << "####" << std::endl;
-  fs << "# OBJ dataFile simple version. File name: " << file_name << std::endl;
-  fs << "# Vertices: " << nr_points << std::endl;
-  fs << "# Faces: " <<nr_faces << std::endl;
-  fs << "# Material information:" << std::endl;
-  fs << "mtllib " << mtl_file_name_nopath << std::endl;
-  fs << "####" << std::endl;
+  fs << "####" << '\n';
+  fs << "# OBJ dataFile simple version. File name: " << file_name << '\n';
+  fs << "# Vertices: " << nr_points << '\n';
+  fs << "# Faces: " <<nr_faces << '\n';
+  fs << "# Material information:" << '\n';
+  fs << "mtllib " << mtl_file_name_nopath << '\n';
+  fs << "####" << '\n';
 
   // Write vertex coordinates
-  fs << "# Vertices" << std::endl;
+  fs << "# Vertices" << '\n';
   for (unsigned i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
@@ -1055,9 +1055,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
       PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
-  fs << "# "<< nr_points <<" vertices" << std::endl;
+  fs << "# "<< nr_points <<" vertices" << '\n';
 
   // Write vertex normals
   for (unsigned i = 0; i < nr_points; ++i)
@@ -1096,17 +1096,17 @@ pcl::io::saveOBJFile (const std::string &file_name,
       PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
   // Write vertex texture with "vt" (adding latter)
 
   for (unsigned m = 0; m < nr_meshes; ++m)
   {
-    fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  std::endl;
+    fs << "# " << tex_mesh.tex_coordinates[m].size() << " vertex textures in submesh " << m <<  '\n';
     for (size_t i = 0; i < tex_mesh.tex_coordinates[m].size (); ++i)
     {
       fs << "vt ";
-      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << std::endl;
+      fs <<  tex_mesh.tex_coordinates[m][i][0] << " " << tex_mesh.tex_coordinates[m][i][1] << '\n';
     }
   }
 
@@ -1117,9 +1117,9 @@ pcl::io::saveOBJFile (const std::string &file_name,
   {
     if (m > 0) f_idx += static_cast<unsigned> (tex_mesh.tex_polygons[m-1].size ());
 
-    fs << "# The material will be used for mesh " << m << std::endl;
-    fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << std::endl;
-    fs << "# Faces" << std::endl;
+    fs << "# The material will be used for mesh " << m << '\n';
+    fs << "usemtl " <<  tex_mesh.tex_materials[m].tex_name << '\n';
+    fs << "# Faces" << '\n';
 
     for (size_t i = 0; i < tex_mesh.tex_polygons[m].size(); ++i)
     {
@@ -1135,11 +1135,11 @@ pcl::io::saveOBJFile (const std::string &file_name,
            << "/" << tex_mesh.tex_polygons[m][i].vertices.size () * (i+f_idx) +j+1
            << "/" << idx; // vertex index in obj file format starting with 1
       }
-      fs << std::endl;
+      fs << '\n';
     }
-    fs << "# "<< tex_mesh.tex_polygons[m].size() << " faces in mesh " << m << std::endl;
+    fs << "# "<< tex_mesh.tex_polygons[m].size() << " faces in mesh " << m << '\n';
   }
-  fs << "# End of File";
+  fs << "# End of File" << std::flush;
 
   // Close obj file
   fs.close ();
@@ -1152,22 +1152,22 @@ pcl::io::saveOBJFile (const std::string &file_name,
   m_fs.open (mtl_file_name.c_str ());
 
   // default
-  m_fs << "#" << std::endl;
-  m_fs << "# Wavefront material file" << std::endl;
-  m_fs << "#" << std::endl;
+  m_fs << "#" << '\n';
+  m_fs << "# Wavefront material file" << '\n';
+  m_fs << "#" << '\n';
   for(unsigned m = 0; m < nr_meshes; ++m)
   {
-    m_fs << "newmtl " << tex_mesh.tex_materials[m].tex_name << std::endl;
-    m_fs << "Ka "<< tex_mesh.tex_materials[m].tex_Ka.r << " " << tex_mesh.tex_materials[m].tex_Ka.g << " " << tex_mesh.tex_materials[m].tex_Ka.b << std::endl; // defines the ambient color of the material to be (r,g,b).
-    m_fs << "Kd "<< tex_mesh.tex_materials[m].tex_Kd.r << " " << tex_mesh.tex_materials[m].tex_Kd.g << " " << tex_mesh.tex_materials[m].tex_Kd.b << std::endl; // defines the diffuse color of the material to be (r,g,b).
-    m_fs << "Ks "<< tex_mesh.tex_materials[m].tex_Ks.r << " " << tex_mesh.tex_materials[m].tex_Ks.g << " " << tex_mesh.tex_materials[m].tex_Ks.b << std::endl; // defines the specular color of the material to be (r,g,b). This color shows up in highlights.
-    m_fs << "d " << tex_mesh.tex_materials[m].tex_d << std::endl; // defines the transparency of the material to be alpha.
-    m_fs << "Ns "<< tex_mesh.tex_materials[m].tex_Ns  << std::endl; // defines the shininess of the material to be s.
-    m_fs << "illum "<< tex_mesh.tex_materials[m].tex_illum << std::endl; // denotes the illumination model used by the material.
+    m_fs << "newmtl " << tex_mesh.tex_materials[m].tex_name << '\n';
+    m_fs << "Ka "<< tex_mesh.tex_materials[m].tex_Ka.r << " " << tex_mesh.tex_materials[m].tex_Ka.g << " " << tex_mesh.tex_materials[m].tex_Ka.b << '\n'; // defines the ambient color of the material to be (r,g,b).
+    m_fs << "Kd "<< tex_mesh.tex_materials[m].tex_Kd.r << " " << tex_mesh.tex_materials[m].tex_Kd.g << " " << tex_mesh.tex_materials[m].tex_Kd.b << '\n'; // defines the diffuse color of the material to be (r,g,b).
+    m_fs << "Ks "<< tex_mesh.tex_materials[m].tex_Ks.r << " " << tex_mesh.tex_materials[m].tex_Ks.g << " " << tex_mesh.tex_materials[m].tex_Ks.b << '\n'; // defines the specular color of the material to be (r,g,b). This color shows up in highlights.
+    m_fs << "d " << tex_mesh.tex_materials[m].tex_d << '\n'; // defines the transparency of the material to be alpha.
+    m_fs << "Ns "<< tex_mesh.tex_materials[m].tex_Ns  << '\n'; // defines the shininess of the material to be s.
+    m_fs << "illum "<< tex_mesh.tex_materials[m].tex_illum << '\n'; // denotes the illumination model used by the material.
                                             // illum = 1 indicates a flat material with no specular highlights, so the value of Ks is not used.
                                             // illum = 2 denotes the presence of specular highlights, and so a specification for Ks is required.
-    m_fs << "map_Kd " << tex_mesh.tex_materials[m].tex_file << std::endl;
-    m_fs << "###" << std::endl;
+    m_fs << "map_Kd " << tex_mesh.tex_materials[m].tex_file << '\n';
+    m_fs << "###" << '\n';
   }
   m_fs.close ();
   return (0);
@@ -1198,16 +1198,16 @@ pcl::io::saveOBJFile (const std::string &file_name,
   int normal_index = getFieldIndex (mesh.cloud, "normal_x");
 
   // Write the header information
-  fs << "####" << std::endl;
-  fs << "# OBJ dataFile simple version. File name: " << file_name << std::endl;
-  fs << "# Vertices: " << nr_points << std::endl;
+  fs << "####" << '\n';
+  fs << "# OBJ dataFile simple version. File name: " << file_name << '\n';
+  fs << "# Vertices: " << nr_points << '\n';
   if (normal_index != -1)
-    fs << "# Vertices normals : " << nr_points << std::endl;
-  fs << "# Faces: " <<nr_faces << std::endl;
-  fs << "####" << std::endl;
+    fs << "# Vertices normals : " << nr_points << '\n';
+  fs << "# Faces: " <<nr_faces << '\n';
+  fs << "####" << '\n';
 
   // Write vertex coordinates
-  fs << "# List of Vertices, with (x,y,z) coordinates, w is optional." << std::endl;
+  fs << "# List of Vertices, with (x,y,z) coordinates, w is optional." << '\n';
   for (int i = 0; i < nr_points; ++i)
   {
     int xyz = 0;
@@ -1237,14 +1237,14 @@ pcl::io::saveOBJFile (const std::string &file_name,
       PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
 
-  fs << "# "<< nr_points <<" vertices" << std::endl;
+  fs << "# "<< nr_points <<" vertices" << '\n';
 
   if(normal_index != -1)
   {
-    fs << "# Normals in (x,y,z) form; normals might not be unit." <<  std::endl;
+    fs << "# Normals in (x,y,z) form; normals might not be unit." <<  '\n';
     // Write vertex normals
     for (int i = 0; i < nr_points; ++i)
     {
@@ -1275,13 +1275,13 @@ pcl::io::saveOBJFile (const std::string &file_name,
         PCL_ERROR ("[pcl::io::saveOBJFile] Input point cloud has no normals!\n");
         return (-2);
       }
-      fs << std::endl;
+      fs << '\n';
     }
 
-    fs << "# "<< nr_points <<" vertices normals" << std::endl;
+    fs << "# "<< nr_points <<" vertices normals" << '\n';
   }
 
-  fs << "# Face Definitions" << std::endl;
+  fs << "# Face Definitions" << '\n';
   // Write down faces
   if(normal_index == -1)
   {
@@ -1291,7 +1291,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
       size_t j = 0;
       for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << " ";
-      fs << mesh.polygons[i].vertices[j] + 1 << std::endl;
+      fs << mesh.polygons[i].vertices[j] + 1 << '\n';
     }
   }
   else
@@ -1302,7 +1302,7 @@ pcl::io::saveOBJFile (const std::string &file_name,
       size_t j = 0;
       for (; j < mesh.polygons[i].vertices.size () - 1; ++j)
         fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << " ";
-      fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << std::endl;
+      fs << mesh.polygons[i].vertices[j] + 1 << "//" << mesh.polygons[i].vertices[j] + 1 << '\n';
     }
   }
   fs << "# End of File" << std::endl;
