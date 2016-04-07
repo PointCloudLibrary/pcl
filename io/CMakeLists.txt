@@ -130,7 +130,7 @@ if(build)
             )
     endif()
 
-    if(WITH_DAVIDSDK)
+    if(WITH_DAVIDSDK AND VTK_FOUND) # VTK is mandatory for OBJ/PLY/STL input/output
         set(DAVIDSDK_GRABBER_INCLUDES
             include/pcl/io/davidsdk_grabber.h
             )
