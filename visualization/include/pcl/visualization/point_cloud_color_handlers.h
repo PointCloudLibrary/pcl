@@ -248,6 +248,65 @@ namespace pcl
     };
 
     //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief Handler for predefined user colors. Each point is colored using 
+      * an individual RGB color value provided by the user.
+      * \author Aleksandrs Ecins
+      * \ingroup visualization
+      */
+    template <typename PointT>
+    class PointCloudColorHandlerCustomIndividual : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerCustom<PointT> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerCustom<PointT> > ConstPtr;
+        
+        /** \brief Constructor. */
+        PointCloudColorHandlerCustomIndividual (const PointCloudConstPtr &cloud,
+                                                std::vector<pcl::RGB> &rgb_values)
+          : rgb_values_ (rgb_values)
+        {
+          setInputCloud (cloud);
+        }
+
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerCustomIndividual () {};
+
+        /** \brief Abstract getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerCustomIndividual"); }
+
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return (""); }
+
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and 
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);        
+        
+      protected:
+        // Members derived from the base class
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+
+        /** \brief Internal R, G, B holding the values given by the user. */
+        std::vector<pcl::RGB> rgb_values_;
+    };
+
+    //////////////////////////////////////////////////////////////////////////////////////
     /** \brief RGB handler class for colors. Uses the data present in the "rgb" or "rgba"
       * fields as the color at each point.
       * \author Radu B. Rusu 
