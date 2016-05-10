@@ -58,7 +58,7 @@ printHelp (int, char **argv)
   print_info ("  where options are:\n");
   print_info ("           -trans dx,dy,dz           = the translation (default: "); 
   print_value ("%0.1f, %0.1f, %0.1f", 0, 0, 0); print_info (")\n");
-  print_info ("           -quat w,x,y,z             = rotation as quaternion\n"); 
+  print_info ("           -quat x,y,z,w             = rotation as quaternion\n");
   print_info ("           -axisangle ax,ay,az,theta = rotation in axis-angle form\n"); 
   print_info ("           -scale x,y,z              = scale each dimension with these values\n"); 
   print_info ("           -matrix v1,v2,...,v8,v9   = a 3x3 affine transform\n");
