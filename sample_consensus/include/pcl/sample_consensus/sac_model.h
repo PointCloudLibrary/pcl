@@ -257,6 +257,25 @@ namespace pcl
                             const double threshold,
                             std::vector<int> &inliers) = 0;
 
+      /** \brief Select all the points which respect the given model
+        * coefficients as inliers.
+        *
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from
+        * the outliers
+        * \param[in] normal_threshold maximum admissible angular deviation in radians for distinguishing
+        * the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
+        */
+      virtual void
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
+                            const double UNUSED(normal_threshold),
+                            std::vector<int> &inliers)
+      {
+          selectWithinDistance (model_coefficients, threshold, inliers);
+      }
+
       /** \brief Count all the points which respect the given model
         * coefficients as inliers. Pure virtual.
         * 
@@ -269,6 +288,25 @@ namespace pcl
       virtual int
       countWithinDistance (const Eigen::VectorXf &model_coefficients, 
                            const double threshold) = 0;
+
+      /** \brief Count all the points which respect the given model
+        * coefficients as inliers.
+        *
+        * \param[in] model_coefficients the coefficients of a model that we need to
+        * compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for
+        * determining the inliers from the outliers
+        * \param[in] normal_threshold maximum admissible angular deviation in radians
+        * for distinguishing the inliers from the outliers
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold,
+                           const double UNUSED(normal_threshold))
+      {
+          return countWithinDistance (model_coefficients, threshold);
+      }
 
       /** \brief Create a new point cloud with inliers projected onto the model. Pure virtual.
         * \param[in] inliers the data inliers that we want to project on the model
@@ -296,6 +334,25 @@ namespace pcl
       doSamplesVerifyModel (const std::set<int> &indices, 
                             const Eigen::VectorXf &model_coefficients, 
                             const double threshold) = 0;
+
+      /** \brief Verify whether a subset of indices verifies a given set of
+        * model coefficients.
+        *
+        * \param[in] indices the data indices that need to be tested against the model
+        * \param[in] model_coefficients the set of model coefficients
+        * \param[in] threshold a maximum admissible distance threshold for
+        * determining the inliers from the outliers
+        * \param[in] normal_threshold maximum admissible angular deviation in radians for
+        * distinguishing the inliers from the outliers
+        */
+      virtual bool
+      doSamplesVerifyModel (const std::set<int> &indices,
+                            const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
+                            const double UNUSED(normal_threshold))
+      {
+          return doSamplesVerifyModel (indices, model_coefficients, threshold);
+      }
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message

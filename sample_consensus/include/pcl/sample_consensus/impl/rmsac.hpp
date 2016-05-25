@@ -92,7 +92,10 @@ pcl::RandomizedMEstimatorSampleConsensus<PointT>::computeModel (int debug_verbos
     // Get X random samples which satisfy the model criterion
     this->getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
 
-    if (!sac_model_->doSamplesVerifyModel (indices_subset, model_coefficients, threshold_))
+    if (!sac_model_->doSamplesVerifyModel (indices_subset,
+                                           model_coefficients,
+                                           threshold_,
+                                           normal_threshold_))
     {
       // Unfortunately we cannot "continue" after the first iteration, because k might not be set, while iterations gets incremented
       if (k != 1.0)

@@ -89,7 +89,10 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     // RRANSAC addon: verify a random fraction of the data
     // Get X random samples which satisfy the model criterion
     this->getRandomSamples (sac_model_->getIndices (), fraction_nr_points, indices_subset);
-    if (!sac_model_->doSamplesVerifyModel (indices_subset, model_coefficients, threshold_))
+    if (!sac_model_->doSamplesVerifyModel (indices_subset,
+                                           model_coefficients,
+                                           threshold_,
+                                           normal_threshold_))
     {
       // Unfortunately we cannot "continue" after the first iteration, because k might not be set, while iterations gets incremented
       if (k > 1.0)
@@ -100,7 +103,9 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
     }
 
     // Select the inliers that are within threshold_ from the model
-    n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_);
+    n_inliers_count = sac_model_->countWithinDistance (model_coefficients,
+                                                       threshold_,
+                                                       normal_threshold_);
 
     // Better match ?
     if (n_inliers_count > n_best_inliers_count)
@@ -141,7 +146,10 @@ pcl::RandomizedRandomSampleConsensus<PointT>::computeModel (int debug_verbosity_
   }
 
   // Get the set of inliers that correspond to the best model found so far
-  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
+  sac_model_->selectWithinDistance (model_coefficients_,
+                                    threshold_,
+                                    normal_threshold_,
+                                    inliers_);
   return (true);
 }
 

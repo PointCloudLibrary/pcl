@@ -140,7 +140,10 @@ pcl::ProgressiveSampleConsensus<PointT>::computeModel (int debug_verbosity_level
 
     // Select the inliers that are within threshold_ from the model
     inliers.clear ();
-    sac_model_->selectWithinDistance (model_coefficients, threshold_, inliers);
+    sac_model_->selectWithinDistance (model_coefficients,
+                                      threshold_,
+                                      normal_threshold_,
+                                      inliers);
 
     size_t I_N = inliers.size ();
 
