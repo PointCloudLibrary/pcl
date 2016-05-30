@@ -187,7 +187,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+    const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold, std::vector<int> &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -206,6 +206,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
 
   float apexdotdir = apex.dot (axis_dir);
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -238,7 +239,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
 
     double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
     
-    if (distance < threshold)
+    if (distance < threshold && (!use_normal_threshold || d_normal < normal_threshold))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers[nr_p] = (*indices_)[i];
@@ -253,7 +254,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold)
 {
 
   // Check if the model is valid given the user constraints
@@ -268,6 +269,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
 
   float apexdotdir = apex.dot (axis_dir);
   float dirdotdir = 1.0f / axis_dir.dot (axis_dir);
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
   // Iterate through the 3d points and calculate the distances from them to the cone
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -298,7 +300,8 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
     double d_normal = fabs (getAngle3D (n, cone_normal));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    const double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
+    if (distance < threshold && (!use_normal_threshold || d_normal < normal_threshold))
       nr_p++;
   }
   return (nr_p);

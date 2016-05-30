@@ -146,10 +146,20 @@ namespace pcl
       getDistanceThreshold () { return (threshold_); }
 
       /** \brief Set the normal deviation threshold.
+        *
+        * Setting a non-finite value or a value below zero disables inlier
+        * rejection based no their angular deviation.
+        *
         * \param[in] threshold Angular distance threshold in radians.
         */
       inline void
-      setNormalThreshold (double threshold) { normal_threshold_ = threshold; }
+      setNormalThreshold (double threshold)
+      {
+          if (pcl_isfinite (threshold) && threshold >= 0.0)
+            normal_threshold_ = threshold;
+          else
+            normal_threshold_ = std::numeric_limits<double>::quiet_NaN ();
+      }
 
       /** \brief Get the normal deviation threshold, as set by the user. */
       inline double

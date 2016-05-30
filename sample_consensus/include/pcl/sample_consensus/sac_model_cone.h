@@ -217,20 +217,57 @@ namespace pcl
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         * \param[out] inliers the resultant model inliers
         */
+      void
+      selectWithinDistance (const Eigen::VectorXf &model_coefficients,
+                            const double threshold,
+                            std::vector<int> &inliers)
+      {
+          selectWithinDistance (model_coefficients,
+                                threshold,
+                                std::numeric_limits<double>::quiet_NaN (),
+                                inliers);
+      }
+
+      /** \brief Select all the points which respect the given model coefficients as inliers.
+        * \param[in] model_coefficients the coefficients of a cone model that we need to compute distances to
+        * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] normal_threshold Maximum admissible angular deviation in radians for distinguishing
+        * the inliers from the outliers
+        * \param[out] inliers the resultant model inliers
+        */
       void 
       selectWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                            const double threshold, 
+                            const double threshold,
+                            const double normal_threshold,
                             std::vector<int> &inliers);
 
-      /** \brief Count all the points which respect the given model coefficients as inliers. 
-        * 
+      /** \brief Count all the points which respect the given model coefficients as inliers.
+        *
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
         * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold)
+      {
+          return countWithinDistance (model_coefficients,
+                                      threshold,
+                                      std::numeric_limits<double>::quiet_NaN ());
+      }
+
+      /** \brief Count all the points which respect the given model coefficients as inliers.
+        *
+        * \param[in] model_coefficients the coefficients of a model that we need to compute distances to
+        * \param[in] threshold maximum admissible distance threshold for determining the inliers from the outliers
+        * \param[in] normal_threshold Maximum admissible angular deviation in radians for
+        * distinguishing the inliers from the outliers.
+        * \return the resultant number of inliers
+        */
+      virtual int
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold,
+                           const double normal_threshold);
 
 
       /** \brief Recompute the cone coefficients using the given inlier set and return them to the user.

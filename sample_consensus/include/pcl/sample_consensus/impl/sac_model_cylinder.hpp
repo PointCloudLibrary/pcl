@@ -172,7 +172,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::getDistancesToModel (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold, std::vector<int> &inliers)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -189,6 +189,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   float ptdotdir = line_pt.dot (line_dir);
   float dirdotdir = 1.0f / line_dir.dot (line_dir);
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -209,7 +210,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
     double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid); 
-    if (distance < threshold)
+    if (distance < threshold && (!use_normal_threshold || (d_normal < normal_threshold)))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers[nr_p] = (*indices_)[i];
@@ -224,7 +225,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold)
 {
   // Check if the model is valid given the user constraints
   if (!isModelValid (model_coefficients))
@@ -236,6 +237,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
   Eigen::Vector4f line_dir (model_coefficients[3], model_coefficients[4], model_coefficients[5], 0);
   float ptdotdir = line_pt.dot (line_dir);
   float dirdotdir = 1.0f / line_dir.dot (line_dir);
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
   // Iterate through the 3d points and calculate the distances from them to the sphere
   for (size_t i = 0; i < indices_->size (); ++i)
   {
@@ -255,7 +257,8 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::countWithinDistance (
     double d_normal = fabs (getAngle3D (n, dir));
     d_normal = (std::min) (d_normal, M_PI - d_normal);
 
-    if (fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid) < threshold)
+    double distance = fabs (normal_distance_weight_ * d_normal + (1 - normal_distance_weight_) * d_euclid);
+    if (distance < threshold && (!use_normal_threshold || (d_normal < normal_threshold)))
       nr_p++;
   }
   return (nr_p);
