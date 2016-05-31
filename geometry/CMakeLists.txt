@@ -28,10 +28,12 @@ if(build)
       "include/pcl/${SUBSYS_NAME}/polygon_operations.h"
       "include/pcl/${SUBSYS_NAME}/quad_mesh.h"
       "include/pcl/${SUBSYS_NAME}/triangle_mesh.h"
+	  "include/pcl/${SUBSYS_NAME}/hough_space_3d.h"
      )
 
   set(impl_incs
       "include/pcl/${SUBSYS_NAME}/impl/polygon_operations.hpp"
+	  "include/pcl/${SUBSYS_NAME}/impl/hough_space_3d.hpp"
      )
 
 #  set(srcs
