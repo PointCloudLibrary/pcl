@@ -65,7 +65,7 @@ namespace pcl
       typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
 
       // using PCLBase<PointSource>::initCompute;
-      using PCLBase<PointSource>::deinitCompute;
+      // using PCLBase<PointSource>::deinitCompute;
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
@@ -423,8 +423,12 @@ namespace pcl
       getClassName () const { return (reg_name_); }
         
       /** \brief Internal computation initalization. */
-      bool
+      virtual bool
       initCompute ();
+
+      /** \brief Internal computation deinitalization. */
+      virtual bool
+      deinitCompute ();
 
       /** \brief Internal computation when reciprocal lookup is needed */
       bool
