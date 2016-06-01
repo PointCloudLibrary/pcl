@@ -19,6 +19,7 @@ if(build)
         src/susan.cpp
         src/iss_3d.cpp
         src/brisk_2d.cpp
+		src/flat_keypoint.cpp
         )
     set(incs
         "include/pcl/${SUBSYS_NAME}/keypoint.h"
@@ -33,6 +34,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/susan.h"
         "include/pcl/${SUBSYS_NAME}/iss_3d.h"
         "include/pcl/${SUBSYS_NAME}/brisk_2d.h"
+		"include/pcl/${SUBSYS_NAME}/flat_keypoint.h"
         )
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp"
@@ -45,6 +47,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/susan.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/iss_3d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp"
+		"include/pcl/${SUBSYS_NAME}/impl/flat_keypoint.hpp"
         )
     
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
