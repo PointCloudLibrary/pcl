@@ -95,11 +95,10 @@ namespace pcl
     /** \brief Save point cloud to a binary file when available else to ASCII.
       * \param[in] file_name the output file name
       * \param[in] cloud the point cloud
-      * \param[in] precision float precision when saving to ASCII files
       * \ingroup io
       */
     template<typename PointT> int
-    save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud, unsigned precision = 5);
+    save (const std::string& file_name, const pcl::PointCloud<PointT>& cloud);
 
     /** \brief Saves a TextureMesh to a binary file when available else to ASCII.
       * \param[in] file_name the name of the file to write to disk
