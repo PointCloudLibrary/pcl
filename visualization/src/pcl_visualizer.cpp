@@ -1738,38 +1738,8 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
       vtkSmartPointer<vtkLookupTable> table = vtkSmartPointer<vtkLookupTable>::New ();
+      getColormapLUT (static_cast<LookUpTableRepresentationProperties>(value), table);
       table->SetRange (range[0], range[1]);
-
-      switch (int (value))
-      {
-        case PCL_VISUALIZER_LUT_JET:
-          table->SetHueRange (0, 0.667);
-          table->SetSaturationRange (1, 1);
-          table->SetAlphaRange (1, 1);
-          break;
-        case PCL_VISUALIZER_LUT_JET_INVERSE:
-          table->SetHueRange (0.667, 0);
-          table->SetSaturationRange (1, 1);
-          table->SetAlphaRange (1, 1);
-          break;
-        case PCL_VISUALIZER_LUT_HSV:
-          table->SetHueRange (0, 1);
-          table->SetSaturationRange (1, 1);
-          table->SetAlphaRange (1, 1);
-          break;
-        case PCL_VISUALIZER_LUT_HSV_INVERSE:
-          table->SetHueRange (1, 0);
-          table->SetSaturationRange (1, 1);
-          table->SetAlphaRange (1, 1);
-          break;
-        case PCL_VISUALIZER_LUT_GREY:
-          table->SetValueRange (0, 1);
-          table->SetHueRange (0, 0);
-          table->SetSaturationRange (0, 0);
-          table->SetAlphaRange (1, 1);
-          break;
-      }
-      table->Build ();
       actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
       break;
