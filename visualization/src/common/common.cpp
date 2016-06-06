@@ -37,6 +37,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/visualization/common/common.h>
+#include <pcl/console/print.h>
 #include <stdlib.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -355,6 +356,91 @@ pcl::visualization::viewScreenArea (
   }
 
   return (fabsf (float (sum * 0.5f)));
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::getColormapLUT (LookUpTableRepresentationProperties colormap_type, vtkSmartPointer<vtkLookupTable> &table)
+{
+  table = vtkSmartPointer<vtkLookupTable>::New ();
+  switch (colormap_type)
+  {
+    case PCL_VISUALIZER_LUT_JET:
+    {
+      table->SetHueRange (0, 0.667);
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      break;
+    }
+      
+    case PCL_VISUALIZER_LUT_JET_INVERSE:
+    {
+      table->SetHueRange (0.667, 0);
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      break;
+    }
+      
+    case PCL_VISUALIZER_LUT_HSV:
+    {
+      table->SetHueRange (0, 1);
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      break;
+    }
+      
+    case PCL_VISUALIZER_LUT_HSV_INVERSE:
+    {
+      table->SetHueRange (1, 0);
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      break;
+    }
+      
+    case PCL_VISUALIZER_LUT_GREY:
+    {
+      table->SetValueRange (0, 1);
+      table->SetHueRange (0, 0);
+      table->SetSaturationRange (0, 0);
+      table->SetAlphaRange (1, 1);
+      break;
+    }
+      
+    case PCL_VISUALIZER_LUT_BLUE2RED:
+    {
+      table->SetSaturationRange (1, 1);
+      table->SetAlphaRange (1, 1);
+      table->SetNumberOfTableValues (256);
+
+      double red[3]   = {1.0, 0.0, 0.0};
+      double white[3] = {1.0, 1.0, 1.0};
+      double blue[3]  = {0.0, 0.0, 1.0};
+      
+      for (size_t i = 0; i < 128; i++)
+      {
+        double weight = static_cast<double>(i) / 128.0;
+        table->SetTableValue  ( i,
+                                white[0] * weight + blue[0] * (1 - weight),
+                                white[1] * weight + blue[1] * (1 - weight),
+                                white[2] * weight + blue[2] * (1 - weight)  );
+      }
+      
+      for (size_t i = 128; i < 256; i++)
+      {
+        double weight = (static_cast<double>(i) -128.0) / 128.0;
+        table->SetTableValue  ( i,
+                                red[0] * weight + white[0] * (1 - weight),
+                                red[1] * weight + white[1] * (1 - weight),
+                                red[2] * weight + white[2] * (1 - weight)  );
+      }
+      break;
+    } 
+    default:
+      PCL_WARN ("[pcl::visualization::getColormapLUT] Requested colormap type does not exist!\n");
+      return false;
+  }
+  table->Build ();
+  return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
