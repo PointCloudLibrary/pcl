@@ -98,6 +98,7 @@
 
 #include <pcl/visualization/common/shapes.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/visualization/common/common.h>
 #include <pcl/common/time.h>
 #include <boost/uuid/sha1.hpp>
 #include <boost/filesystem.hpp>
@@ -1420,6 +1421,30 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     {
       actor->GetProperty ()->SetLineWidth (float (value));
       actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_LUT:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      // Get range limits from existing LUT
+      double *range;
+      range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
+      
+      actor->GetMapper ()->ScalarVisibilityOn ();
+      actor->GetMapper ()->SetScalarRange (range[0], range[1]);
+      vtkSmartPointer<vtkLookupTable> table;
+      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(value), table))
+        break;
+      table->SetRange (range[0], range[1]);
+      actor->GetMapper ()->SetLookupTable (table);
+      style_->updateLookUpTableDisplay (false);
       break;
     }
     default:
