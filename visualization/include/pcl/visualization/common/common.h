@@ -105,6 +105,7 @@ namespace pcl
       PCL_VISUALIZER_IMMEDIATE_RENDERING,
       PCL_VISUALIZER_SHADING,
       PCL_VISUALIZER_LUT,                   /**< colormap type \ref pcl::visualization::LookUpTableRepresentationProperties */
+      PCL_VISUALIZER_LUT_RANGE              /**< two doubles (min and max) or \ref pcl::visualization::LookUpTableRepresentationProperties::PCL_VISUALIZER_LUT_RANGE_AUTO */
     };
 
     enum RenderingRepresentationProperties
@@ -130,6 +131,7 @@ namespace pcl
       PCL_VISUALIZER_LUT_HSV_INVERSE,   /**< Inverse HSV colormap */
       PCL_VISUALIZER_LUT_GREY,          /**< Grey colormap (black to white) */
       PCL_VISUALIZER_LUT_BLUE2RED,      /**< Blue to red colormap (blue to white to red) */
+      PCL_VISUALIZER_LUT_RANGE_AUTO     /**< Set LUT range to min and max values of the data */
     };
 
     /** \brief Generate a lookup table for a colormap.
