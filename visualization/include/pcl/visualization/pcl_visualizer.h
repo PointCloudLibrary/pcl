@@ -1148,6 +1148,18 @@ namespace pcl
         setPointCloudRenderingProperties (int property, double val1, double val2, double val3,
                                           const std::string &id = "cloud", int viewport = 0);
 
+        /** \brief Set the rendering properties of a PointCloud (2x values - e.g., LUT minmax values)
+          * \param[in] property the property type
+          * \param[in] val1 the first value to be set
+          * \param[in] val2 the second value to be set
+          * \param[in] id the point cloud object id (default: cloud)
+          * \param[in] viewport the view port where the Point Cloud's rendering properties should be modified (default: all)
+          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
+          */
+        bool
+        setPointCloudRenderingProperties (int property, double val1, double val2,
+                                          const std::string &id = "cloud", int viewport = 0);
+        
        /** \brief Set the rendering properties of a PointCloud
          * \param[in] property the property type
          * \param[in] value the value to be set
