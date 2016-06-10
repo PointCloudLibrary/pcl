@@ -431,6 +431,79 @@ namespace pcl
         std::string field_name_;
     };
 
+    //////////////////////////////////////////////////////////////////////////////////////
+    /** \brief External data handler class for colors. Uses user provided 1D data 
+      * array to color each point using a min-max lookup table.
+      * \author Aleksandrs Ecins
+      * \ingroup visualization
+      */
+    template <typename PointT, typename Scalar>
+    class PointCloudColorHandlerCustomData : public PointCloudColorHandler<PointT>
+    {
+      typedef typename PointCloudColorHandler<PointT>::PointCloud PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      public:
+        typedef boost::shared_ptr<PointCloudColorHandlerCustomData<PointT, Scalar> > Ptr;
+        typedef boost::shared_ptr<const PointCloudColorHandlerCustomData<PointT, Scalar> > ConstPtr;
+
+        /** \brief Constructor from Eigen::VectorXd. */
+        PointCloudColorHandlerCustomData (const PointCloudConstPtr &cloud,
+                                          const Eigen::Matrix<Scalar, Eigen::Dynamic, 1> &data)
+          : data_ (data)
+        {
+          setInputCloud (cloud);
+        }
+                
+        /** \brief Constructor from std::vector. */
+        PointCloudColorHandlerCustomData (const PointCloudConstPtr &cloud,
+                                          const std::vector<Scalar> &data)
+        {
+          data_.resize (data.size ());
+          for (size_t i = 0; i < data.size (); i++)
+            data_[i] = data[i];
+          setInputCloud (cloud);
+        }
+        
+        /** \brief Destructor. */
+        virtual ~PointCloudColorHandlerCustomData () {}
+
+        /** \brief Get the data vector used. */
+        virtual Eigen::Matrix<Scalar, Eigen::Dynamic, 1>getData () const { return (data_); }        
+        
+        /** \brief Obtain the actual color for the input dataset as vtk scalars.
+          * \param[out] scalars the output scalars containing the color for the dataset
+          * \return true if the operation was successful (the handler is capable and 
+          * the input cloud was given as a valid pointer), false otherwise
+          */
+        virtual bool
+        getColor (vtkSmartPointer<vtkDataArray> &scalars) const;
+
+        /** \brief Set the input cloud to be used.
+          * \param[in] cloud the input cloud to be used by the handler
+          */
+        virtual void
+        setInputCloud (const PointCloudConstPtr &cloud);
+
+      protected:
+        /** \brief Class getName method. */
+        virtual std::string
+        getName () const { return ("PointCloudColorHandlerCustomData"); }
+        
+        /** \brief Get the name of the field used. */
+        virtual std::string
+        getFieldName () const { return ("generic_data"); }
+        
+
+      private:
+        using PointCloudColorHandler<PointT>::cloud_;
+        using PointCloudColorHandler<PointT>::capable_;
+        using PointCloudColorHandler<PointT>::fields_;
+        
+        /** \brief Vector containing the data used for colouring. */        
+        Eigen::Matrix<Scalar, Eigen::Dynamic, 1> data_;
+    };
 
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief RGBA handler class for colors. Uses the data present in the "rgba" field as

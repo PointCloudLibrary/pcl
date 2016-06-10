@@ -438,6 +438,77 @@ pcl::visualization::PointCloudColorHandlerGenericField<PointT>::getColor (vtkSma
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Scalar> void
+pcl::visualization::PointCloudColorHandlerCustomData<PointT, Scalar>::setInputCloud (
+    const PointCloudConstPtr &cloud)
+{
+  PointCloudColorHandler<PointT>::setInputCloud (cloud);
+  
+  if (cloud_->points.size () == data_.size ())
+    capable_ = true;
+  else
+    capable_ = false;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT, typename Scalar> bool
+pcl::visualization::PointCloudColorHandlerCustomData<PointT, Scalar>::getColor (vtkSmartPointer<vtkDataArray> &scalars) const
+{
+  if (!capable_ || !cloud_)
+    return (false);
+
+  if (!scalars)
+    scalars = vtkSmartPointer<vtkFloatArray>::New ();
+  scalars->SetNumberOfComponents (1);
+
+  vtkIdType nr_points = cloud_->points.size ();
+  reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetNumberOfTuples (nr_points);
+
+  typedef typename pcl::traits::fieldList<PointT>::type FieldList;
+
+  float* colors = new float[nr_points];
+  float generic_data;
+
+  int j = 0;
+  // If XYZ present, check if the points are invalid
+  int x_idx = -1;
+  for (size_t d = 0; d < fields_.size (); ++d)
+    if (fields_[d].name == "x")
+      x_idx = static_cast<int> (d);
+
+  if (x_idx != -1)
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      // Copy the value at the specified field
+      if (!pcl_isfinite (cloud_->points[cp].x) || !pcl_isfinite (cloud_->points[cp].y) || !pcl_isfinite (cloud_->points[cp].z))
+        continue;
+
+      generic_data = static_cast<float> (data_[j]);
+      colors[j] = generic_data;
+      j++;
+    }
+  }
+  else
+  {
+    // Color every point
+    for (vtkIdType cp = 0; cp < nr_points; ++cp)
+    {
+      generic_data = static_cast<float> (data_[j]);
+
+      if (!pcl_isfinite (generic_data))
+        continue;
+
+      colors[j] = generic_data;
+      j++;
+    }
+  }
+  reinterpret_cast<vtkFloatArray*>(&(*scalars))->SetArray (colors, j, 0);
+  return (true);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::visualization::PointCloudColorHandlerRGBAField<PointT>::setInputCloud (
     const PointCloudConstPtr &cloud)
