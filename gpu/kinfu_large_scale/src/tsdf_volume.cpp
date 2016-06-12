@@ -360,7 +360,7 @@ pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZ
   int sy = header_.resolution(1);
   int sz = header_.resolution(2);
 
-  const int step = 2;
+  const int step = 1;
   const int cloud_size = static_cast<int> (header_.getVolumeSize() / (step*step*step));
 
   cloud->clear();
