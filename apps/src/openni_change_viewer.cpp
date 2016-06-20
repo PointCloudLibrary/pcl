@@ -39,7 +39,7 @@
 #include <pcl/io/openni_grabber.h>
 #include <pcl/io/openni_grabber.h>
 #include <pcl/visualization/cloud_viewer.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_pointcloud_changedetector.h>
 #include <pcl/filters/extract_indices.h>
 
 #include <pcl/console/parse.h>

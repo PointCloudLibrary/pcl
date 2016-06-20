@@ -39,8 +39,6 @@
 #ifndef PCL_OCTREE_2BUF_BASE_HPP
 #define PCL_OCTREE_2BUF_BASE_HPP
 
-#include <pcl/octree/octree2buf_base.h>
-
 namespace pcl
 {
   namespace octree

@@ -39,6 +39,7 @@
 #define PCL_SEGMENTATION_IMPL_LCCP_SEGMENTATION_HPP_
 
 #include <pcl/segmentation/lccp_segmentation.h>
+#include <pcl/common/common.h>
 
 
 //////////////////////////////////////////////////////////

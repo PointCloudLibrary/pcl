@@ -40,11 +40,7 @@
 #ifndef PCL_OCTREE_VOXELCENTROID_H
 #define PCL_OCTREE_VOXELCENTROID_H
 
-#include "octree_pointcloud.h"
-
-#include <pcl/common/point_operators.h>
-#include <pcl/point_types.h>
-#include <pcl/register_point_struct.h>
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {

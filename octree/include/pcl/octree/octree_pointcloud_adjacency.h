@@ -40,10 +40,8 @@
 #ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 #define PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 
-#include <pcl/console/print.h>
-#include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
-#include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
 #include <set>
