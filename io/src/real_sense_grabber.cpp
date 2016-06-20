@@ -103,13 +103,13 @@ pcl::RealSenseGrabber::Mode::Mode (unsigned int f, unsigned int dw, unsigned int
 }
 
 bool
-operator== (const pcl::RealSenseGrabber::Mode& m1, const pcl::RealSenseGrabber::Mode& m2)
+pcl::RealSenseGrabber::Mode::operator== (const pcl::RealSenseGrabber::Mode& m) const
 {
-  return (m1.fps == m2.fps &&
-          m1.depth_width == m2.depth_width &&
-          m1.depth_height == m2.depth_height &&
-          m1.color_width == m2.color_width &&
-          m1.color_height == m2.color_height);
+  return (this->fps == m.fps &&
+          this->depth_width == m.depth_width &&
+          this->depth_height == m.depth_height &&
+          this->color_width == m.color_width &&
+          this->color_height == m.color_height);
 }
 
 pcl::RealSenseGrabber::RealSenseGrabber (const std::string& device_id, const Mode& mode, bool strict)
