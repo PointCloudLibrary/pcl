@@ -247,9 +247,8 @@ namespace pcl
 
 }
 
-//#ifdef PCL_NO_PRECOMPILE
+// Note: Do not precompile this octree type because it is typically used with custom leaf containers.
 #include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
-//#endif
 
 #endif // PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 

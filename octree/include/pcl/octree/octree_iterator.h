@@ -619,5 +619,10 @@ namespace pcl
   }
 }
 
+/*
+ * Note: Since octree iterators depend on octrees, don't precompile them.
+ */
+#include <pcl/octree/impl/octree_iterator.hpp>
+
 #endif
 

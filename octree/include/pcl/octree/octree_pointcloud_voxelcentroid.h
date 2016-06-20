@@ -232,6 +232,7 @@ namespace pcl
   }
 }
 
+// Note: Don't precompile this octree type to speed up compilation. It's probably rarely used.
 #include <pcl/octree/impl/octree_pointcloud_voxelcentroid.hpp>
 
 #endif
