@@ -920,7 +920,9 @@ namespace pcl
   }
 }
 
-//#include "impl/octree2buf_base.hpp"
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree2buf_base.hpp>
+#endif
 
 #endif
 

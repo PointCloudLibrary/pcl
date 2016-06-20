@@ -594,7 +594,9 @@ namespace pcl
   }
 }
 
-//#include "impl/octree_base.hpp"
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree_base.hpp>
+#endif
 
 #endif
 

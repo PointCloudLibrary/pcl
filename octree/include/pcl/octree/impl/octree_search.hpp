@@ -864,4 +864,6 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
   return (voxel_count);
 }
 
+#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
+
 #endif    // PCL_OCTREE_SEARCH_IMPL_H_
