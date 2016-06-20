@@ -39,13 +39,12 @@
 #ifndef PCL_OCTREE_TREE_BASE_H
 #define PCL_OCTREE_TREE_BASE_H
 
-#include <cstddef>
 #include <vector>
 
-#include "octree_nodes.h"
-#include "octree_container.h"
-#include "octree_key.h"
-#include "octree_iterator.h"
+#include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_container.h>
+#include <pcl/octree/octree_key.h>
+#include <pcl/octree/octree_iterator.h>
 
 namespace pcl
 {

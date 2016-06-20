@@ -39,11 +39,10 @@
 #ifndef PCL_OCTREE_POINTCLOUD_HPP_
 #define PCL_OCTREE_POINTCLOUD_HPP_
 
-#include <vector>
 #include <assert.h>
 
 #include <pcl/common/common.h>
-
+#include <pcl/octree/impl/octree_base.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT>

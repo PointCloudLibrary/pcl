@@ -82,6 +82,7 @@ PCL_INSTANTIATE(OctreePointCloudSingleBufferWithEmptyLeaf, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudPointVector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudChangeDetector, PCL_XYZ_POINT_TYPES)
 // PCL_INSTANTIATE(OctreePointCloudVoxelCentroid, PCL_XYZ_POINT_TYPES)
+// PCL_INSTANTIATE(OctreePointCloudAdjacency, PCL_XYZ_POINT_TYPES)
 
 #endif    // PCL_NO_PRECOMPILE
 
