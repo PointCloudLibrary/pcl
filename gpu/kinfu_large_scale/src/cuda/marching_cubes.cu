@@ -98,29 +98,53 @@ namespace pcl
         }
 
         __device__ __forceinline__ int
-        computeCubeIndex (int x, int y, int z, float f[8]) const
+        computeCubeIndex (int x, int y, int z, float f[8], bool estimate_back = false) const
         {
+          if (x + 1 == VOLUME_X || y + 1 == VOLUME_Y || z + 1 == VOLUME_Z ) {return 0;}
           int weight;
-          readTsdf (x,     y,     z,     f[0], weight); if (weight == 0) return 0;
-          readTsdf (x + 1, y,     z,     f[1], weight); if (weight == 0) return 0;
-          readTsdf (x + 1, y + 1, z,     f[2], weight); if (weight == 0) return 0;
-          readTsdf (x,     y + 1, z,     f[3], weight); if (weight == 0) return 0;
-          readTsdf (x,     y,     z + 1, f[4], weight); if (weight == 0) return 0;
-          readTsdf (x + 1, y,     z + 1, f[5], weight); if (weight == 0) return 0;
-          readTsdf (x + 1, y + 1, z + 1, f[6], weight); if (weight == 0) return 0;
-          readTsdf (x,     y + 1, z + 1, f[7], weight); if (weight == 0) return 0;
-
+          // printf ("%d %d %d\n", x, y, z);
+          if (estimate_back) {
+            readTsdf (x,     y,     z,     f[0], weight);
+            readTsdf (x + 1, y,     z,     f[1], weight);
+            readTsdf (x + 1, y + 1, z,     f[2], weight);
+            readTsdf (x,     y + 1, z,     f[3], weight);
+            readTsdf (x,     y,     z + 1, f[4], weight);
+            readTsdf (x + 1, y,     z + 1, f[5], weight);
+            readTsdf (x + 1, y + 1, z + 1, f[6], weight);
+            readTsdf (x,     y + 1, z + 1, f[7], weight);
+          }
+          else {
+            readTsdf (x,     y,     z,     f[0], weight); if (weight == 0) return 0;
+            readTsdf (x + 1, y,     z,     f[1], weight); if (weight == 0) return 0;
+            readTsdf (x + 1, y + 1, z,     f[2], weight); if (weight == 0) return 0;
+            readTsdf (x,     y + 1, z,     f[3], weight); if (weight == 0) return 0;
+            readTsdf (x,     y,     z + 1, f[4], weight); if (weight == 0) return 0;
+            readTsdf (x + 1, y,     z + 1, f[5], weight); if (weight == 0) return 0;
+            readTsdf (x + 1, y + 1, z + 1, f[6], weight); if (weight == 0) return 0;
+            readTsdf (x,     y + 1, z + 1, f[7], weight); if (weight == 0) return 0;
+          }
           // calculate flag indicating if each vertex is inside or outside isosurface
           int cubeindex;
-          cubeindex = int(f[0] < isoValue());
-          cubeindex += int(f[1] < isoValue()) * 2;
-          cubeindex += int(f[2] < isoValue()) * 4;
-          cubeindex += int(f[3] < isoValue()) * 8;
-          cubeindex += int(f[4] < isoValue()) * 16;
-          cubeindex += int(f[5] < isoValue()) * 32;
-          cubeindex += int(f[6] < isoValue()) * 64;
-          cubeindex += int(f[7] < isoValue()) * 128;
-
+          if (estimate_back) {
+            cubeindex = int(f[0] <= isoValue());
+            cubeindex += int(f[1] <= isoValue()) * 2;
+            cubeindex += int(f[2] <= isoValue()) * 4;
+            cubeindex += int(f[3] <= isoValue()) * 8;
+            cubeindex += int(f[4] <= isoValue()) * 16;
+            cubeindex += int(f[5] <= isoValue()) * 32;
+            cubeindex += int(f[6] <= isoValue()) * 64;
+            cubeindex += int(f[7] <= isoValue()) * 128;
+          }
+          else{
+            cubeindex = int(f[0] < isoValue());
+            cubeindex += int(f[1] < isoValue()) * 2;
+            cubeindex += int(f[2] < isoValue()) * 4;
+            cubeindex += int(f[3] < isoValue()) * 8;
+            cubeindex += int(f[4] < isoValue()) * 16;
+            cubeindex += int(f[5] < isoValue()) * 32;
+            cubeindex += int(f[6] < isoValue()) * 64;
+            cubeindex += int(f[7] < isoValue()) * 128;
+          }
           return cubeindex;
         }
       };
@@ -139,6 +163,7 @@ namespace pcl
         mutable int* voxels_indeces;
         mutable int* vetexes_number;
         int max_size;
+        bool estimate_back;
 
         __device__ __forceinline__ void
         operator () () const
@@ -161,7 +186,7 @@ namespace pcl
             if (x + 1 < VOLUME_X && y + 1 < VOLUME_Y)
             {
               float field[8];
-              int cubeindex = computeCubeIndex (x, y, z, field);
+              int cubeindex = computeCubeIndex (x, y, z, field, estimate_back);
 
               // read number of vertices from texture
               numVerts = (cubeindex == 0 || cubeindex == 255) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
@@ -214,7 +239,7 @@ namespace pcl
       __global__ void getOccupiedVoxelsKernel (const OccupiedVoxels ov) { ov (); }
 
       int
-      getOccupiedVoxels (const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels)
+      getOccupiedVoxels (const PtrStep<short2>& volume, DeviceArray2D<int>& occupied_voxels, bool estimate_back)
       {
         OccupiedVoxels ov;
         ov.volume = volume;
@@ -222,7 +247,7 @@ namespace pcl
         ov.voxels_indeces = occupied_voxels.ptr (0);
         ov.vetexes_number = occupied_voxels.ptr (1);
         ov.max_size = occupied_voxels.cols ();
-
+        ov.estimate_back = estimate_back;
         dim3 block (OccupiedVoxels::CTA_SIZE_X, OccupiedVoxels::CTA_SIZE_Y);
         dim3 grid (divUp (VOLUME_X, block.x), divUp (VOLUME_Y, block.y));
 
@@ -275,6 +300,7 @@ namespace pcl
         const int* vertex_ofssets;
         int voxels_count;
         float3 cell_size;
+        bool estimate_back;
 
         mutable PointType *output;
 
@@ -317,7 +343,7 @@ namespace pcl
           int x = (voxel - z * VOLUME_X * VOLUME_Y) - y * VOLUME_X;
 
           float f[8];
-          int cubeindex = computeCubeIndex (x, y, z, f);
+          int cubeindex = computeCubeIndex (x, y, z, f, estimate_back);
 
           // calculate cell vertex positions
           float3 v[8];
@@ -348,7 +374,6 @@ namespace pcl
           vertlist[11][tid] = vertex_interp (v[3], v[7], f[3], f[7]);
           __syncthreads ();
 
-          // output triangle vertices
           int numVerts = tex1Dfetch (numVertsTex, cubeindex);
 
           for (int i = 0; i < numVerts; i += 3)
@@ -362,6 +387,10 @@ namespace pcl
             store_point (output, index + 0, vertlist[v1][tid]);
             store_point (output, index + 1, vertlist[v2][tid]);
             store_point (output, index + 2, vertlist[v3][tid]);
+
+            // store_point (output, 0, vertlist[0][tid]);
+            // store_point (output, 1, vertlist[0][tid]);
+            // store_point (output, 2, vertlist[0][tid]);
           }
         }
 
@@ -374,7 +403,7 @@ namespace pcl
       trianglesGeneratorKernel (const TrianglesGenerator tg) {tg (); }
 
       void
-      generateTriangles (const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output)
+      generateTriangles (const PtrStep<short2>& volume, const DeviceArray2D<int>& occupied_voxels, const float3& volume_size, DeviceArray<PointType>& output, bool estimate_back)
       {
         TrianglesGenerator tg;
 
@@ -386,7 +415,10 @@ namespace pcl
         tg.cell_size.y = volume_size.y / VOLUME_Y;
         tg.cell_size.z = volume_size.z / VOLUME_Z;
         tg.output = output;
-
+        tg.estimate_back = estimate_back;
+        if (estimate_back) {
+          printf ("estimating back\n");
+        }
         dim3 block (TrianglesGenerator::CTA_SIZE);
         dim3 grid (divUp (tg.voxels_count, block.x));
 

@@ -63,7 +63,7 @@ namespace pcl
         enum
         { 
           POINTS_PER_TRIANGLE = 3,
-          DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * POINTS_PER_TRIANGLE * 2     
+          DEFAULT_TRIANGLES_BUFFER_SIZE = 2 * 1000 * 1000 * POINTS_PER_TRIANGLE * 10     
         };
       
         /** \brief Point type. */
@@ -84,7 +84,7 @@ namespace pcl
             * \return Array with triangles. Each 3 consequent poits belond to a single triangle. The returned array points to 'triangles_buffer' data.
             */
         DeviceArray<PointType> 
-        run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer);
+        run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer, bool estimate_back=0);
 
       private:             
         /** \brief Edge table for marching cubes  */
