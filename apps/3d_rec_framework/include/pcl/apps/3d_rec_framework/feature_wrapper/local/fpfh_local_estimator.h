@@ -50,15 +50,15 @@ namespace pcl
           normal_estimator_->estimate (in, processed, normals);
 
           this->computeKeypoints(processed, keypoints, normals);
-          std::cout << " " << normals->points.size() << " " << processed->points.size() << std::endl;
+          std::cout << " " << normals->size() << " " << processed->size() << std::endl;
 
-          if (keypoints->points.size () == 0)
+          if (keypoints->size () == 0)
           {
             PCL_WARN("FPFHLocalEstimation :: No keypoints were found\n");
             return false;
           }
 
-          assert (processed->points.size () == normals->points.size ());
+          assert (processed->size () == normals->size ());
 
           //compute signatures
           typedef typename pcl::FPFHEstimation<PointInT, pcl::Normal, pcl::FPFHSignature33> FPFHEstimator;
@@ -73,14 +73,14 @@ namespace pcl
           fpfh_estimate.setRadiusSearch (support_radius_);
           fpfh_estimate.compute (*fpfhs);
 
-          signatures->resize (fpfhs->points.size ());
-          signatures->width = static_cast<int> (fpfhs->points.size ());
+          signatures->resize (fpfhs->size ());
+          signatures->width = static_cast<int> (fpfhs->size ());
           signatures->height = 1;
 
           int size_feat = 33;
-          for (size_t k = 0; k < fpfhs->points.size (); k++)
+          for (size_t k = 0; k < fpfhs->size (); k++)
             for (int i = 0; i < size_feat; i++)
-              signatures->points[k].histogram[i] = fpfhs->points[k].histogram[i];
+              (*signatures)[k].histogram[i] = (*fpfhs)[k].histogram[i];
 
           return true;
 

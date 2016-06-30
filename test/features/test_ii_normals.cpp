@@ -354,15 +354,15 @@ TEST (PCL, NormalEstimation)
   PointCloud<Normal> output;
   n.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
-    EXPECT_NEAR (fabs (output.points[i].normal_x),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_y),   0, 1e-2);
-    EXPECT_NEAR (fabs (output.points[i].normal_z), 1.0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_x),   0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_y),   0, 1e-2);
+    EXPECT_NEAR (fabs (output[i].normal_z), 1.0, 1e-2);
   }
 }
 
@@ -374,7 +374,7 @@ TEST (PCL, IINormalEstimationCovariance)
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -402,7 +402,7 @@ TEST (PCL, IINormalEstimationAverage3DGradient)
   ne.setNormalEstimationMethod (ne.AVERAGE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -434,7 +434,7 @@ TEST (PCL, IINormalEstimationAverageDepthChange)
   ne.setNormalEstimationMethod (ne.AVERAGE_DEPTH_CHANGE);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -466,7 +466,7 @@ TEST (PCL, IINormalEstimationSimple3DGradient)
   ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), cloud.points.size ());
+  EXPECT_EQ (output.size (), cloud.size ());
   EXPECT_EQ (output.width, cloud.width);
   EXPECT_EQ (output.height, cloud.height);
 
@@ -495,13 +495,13 @@ TEST (PCL, IINormalEstimationSimple3DGradientUnorganized)
 {
   PointCloud<Normal> output;
   cloud.height = 1;
-  cloud.points.resize (cloud.height * cloud.width);
+  cloud.resize (cloud.height * cloud.width);
   ne.setInputCloud (cloud.makeShared ());
   ne.setRectSize (3, 3);
   ne.setNormalEstimationMethod (ne.SIMPLE_3D_GRADIENT);
   ne.compute (output);
 
-  EXPECT_EQ (output.points.size (), 0);
+  EXPECT_EQ (output.size (), 0);
   EXPECT_EQ (output.width, 0);
   EXPECT_EQ (output.height, 0);
 }
@@ -512,7 +512,7 @@ main (int argc, char** argv)
 {
   cloud.width = 640;
   cloud.height = 480;
-  cloud.points.resize (cloud.width * cloud.height);
+  cloud.resize (cloud.width * cloud.height);
   cloud.is_dense = true;
   for (size_t v = 0; v < cloud.height; ++v)
   {

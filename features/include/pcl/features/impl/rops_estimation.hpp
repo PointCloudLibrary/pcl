@@ -134,7 +134,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
 {
   if (triangles_.size () == 0)
   {
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -143,19 +143,19 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
   //feature size = number_of_rotations * number_of_axis_to_rotate_around * number_of_projections * number_of_central_moments
   unsigned int feature_size = number_of_rotations_ * 3 * 3 * 5;
   unsigned int number_of_points = static_cast <unsigned int> (indices_->size ());
-  output.points.resize (number_of_points, PointOutT ());
+  output.resize (number_of_points, PointOutT ());
 
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     std::set <unsigned int> local_triangles;
     std::vector <int> local_points;
-    getLocalSurface (input_->points[(*indices_)[i_point]], local_triangles, local_points);
+    getLocalSurface ((*input_)[(*indices_)[i_point]], local_triangles, local_points);
 
     Eigen::Matrix3f lrf_matrix;
-    computeLRF (input_->points[(*indices_)[i_point]], local_triangles, lrf_matrix);
+    computeLRF ((*input_)[(*indices_)[i_point]], local_triangles, lrf_matrix);
 
     PointCloudIn transformed_cloud;
-    transformCloud (input_->points[(*indices_)[i_point]], lrf_matrix, local_points, transformed_cloud);
+    transformCloud ((*input_)[(*indices_)[i_point]], lrf_matrix, local_points, transformed_cloud);
 
     PointInT axis[3];
     axis[0].x = 1.0f; axis[0].y = 0.0f; axis[0].z = 0.0f;
@@ -198,7 +198,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeFeature (PointCloudOut &output
       norm = 1.0f / norm;
 
     for (unsigned int i_dim = 0; i_dim < feature_size; i_dim++)
-      output.points[i_point].histogram[i_dim] = feature[i_dim] * norm;
+      output[i_point].histogram[i_dim] = feature[i_dim] * norm;
   }
 }
 
@@ -212,7 +212,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::buildListOfPointsTriangles ()
 
   std::vector <unsigned int> dummy;
   dummy.reserve (100);
-  triangles_of_the_point_.resize (surface_->points. size (), dummy);
+  triangles_of_the_point_.resize (surface_->size (), dummy);
 
   for (unsigned int i_triangle = 0; i_triangle < number_of_triangles; i_triangle++)
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
@@ -255,9 +255,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
     {
       const unsigned int index = triangles_[*it].vertices[i_vertex];
-      pt[i_vertex] (0) = surface_->points[index].x;
-      pt[i_vertex] (1) = surface_->points[index].y;
-      pt[i_vertex] (2) = surface_->points[index].z;
+      pt[i_vertex] (0) = (*surface_)[index].x;
+      pt[i_vertex] (1) = (*surface_)[index].y;
+      pt[i_vertex] (2) = (*surface_)[index].z;
     }
 
     const float curr_area = ((pt[1] - pt[0]).cross (pt[2] - pt[0])).norm ();
@@ -305,9 +305,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::computeLRF (const PointInT& point, co
     for (unsigned int i_vertex = 0; i_vertex < 3; i_vertex++)
     {
       const unsigned int index = triangles_[*it].vertices[i_vertex];
-      pt[i_vertex] (0) = surface_->points[index].x;
-      pt[i_vertex] (1) = surface_->points[index].y;
-      pt[i_vertex] (2) = surface_->points[index].z;
+      pt[i_vertex] (0) = (*surface_)[index].x;
+      pt[i_vertex] (1) = (*surface_)[index].y;
+      pt[i_vertex] (2) = (*surface_)[index].z;
     }
 
     float factor1 = 0.0f;
@@ -381,14 +381,14 @@ template <typename PointInT, typename PointOutT> void
 pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point, const Eigen::Matrix3f& matrix, const std::vector <int>& local_points, PointCloudIn& transformed_cloud) const
 {
   const unsigned int number_of_points = static_cast <unsigned int> (local_points.size ());
-  transformed_cloud.points.resize (number_of_points, PointInT ());
+  transformed_cloud.resize (number_of_points, PointInT ());
 
   for (unsigned int i = 0; i < number_of_points; i++)
   {
     Eigen::Vector3f transformed_point (
-      surface_->points[local_points[i]].x - point.x,
-      surface_->points[local_points[i]].y - point.y,
-      surface_->points[local_points[i]].z - point.z);
+      (*surface_)[local_points[i]].x - point.x,
+      (*surface_)[local_points[i]].y - point.y,
+      (*surface_)[local_points[i]].z - point.z);
 
     transformed_point = matrix * transformed_point;
 
@@ -396,7 +396,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::transformCloud (const PointInT& point
     new_point.x = transformed_point (0);
     new_point.y = transformed_point (1);
     new_point.z = transformed_point (2);
-    transformed_cloud.points[i] = new_point;
+    transformed_cloud[i] = new_point;
   }
 }
 
@@ -415,12 +415,12 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
                      (1 - cosine) * y * x + sine * z,    cosine + (1 - cosine) * y * y,      (1 - cosine) * y * z - sine * x,
                      (1 - cosine) * z * x - sine * y,    (1 - cosine) * z * y + sine * x,    cosine + (1 - cosine) * z * z;
 
-  const unsigned int number_of_points = static_cast <unsigned int> (cloud.points.size ());
+  const unsigned int number_of_points = static_cast <unsigned int> (cloud.size ());
 
   rotated_cloud.header = cloud.header;
   rotated_cloud.width = number_of_points;
   rotated_cloud.height = 1;
-  rotated_cloud.points.resize (number_of_points, PointInT ());
+  rotated_cloud.resize (number_of_points, PointInT ());
 
   min (0) = std::numeric_limits <float>::max ();
   min (1) = std::numeric_limits <float>::max ();
@@ -432,16 +432,16 @@ pcl::ROPSEstimation <PointInT, PointOutT>::rotateCloud (const PointInT& axis, co
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     Eigen::Vector3f point (
-      cloud.points[i_point].x,
-      cloud.points[i_point].y,
-      cloud.points[i_point].z);
+      cloud[i_point].x,
+      cloud[i_point].y,
+      cloud[i_point].z);
 
     point = rotation_matrix * point;
     PointInT rotated_point;
     rotated_point.x = point (0);
     rotated_point.y = point (1);
     rotated_point.z = point (2);
-    rotated_cloud.points[i_point] = rotated_point;
+    rotated_cloud[i_point] = rotated_point;
 
     if (min (0) > rotated_point.x) min (0) = rotated_point.x;
     if (min (1) > rotated_point.y) min (1) = rotated_point.y;
@@ -459,7 +459,7 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
 {
   matrix.setZero ();
 
-  const unsigned int number_of_points = static_cast <unsigned int> (cloud.points.size ());
+  const unsigned int number_of_points = static_cast <unsigned int> (cloud.size ());
 
   const unsigned int coord[3][2] = {
     {0, 1},
@@ -472,9 +472,9 @@ pcl::ROPSEstimation <PointInT, PointOutT>::getDistributionMatrix (const unsigned
   for (unsigned int i_point = 0; i_point < number_of_points; i_point++)
   {
     Eigen::Vector3f point (
-      cloud.points[i_point].x,
-      cloud.points[i_point].y,
-      cloud.points[i_point].z);
+      cloud[i_point].x,
+      cloud[i_point].y,
+      cloud[i_point].z);
 
     const float u_length = point (coord[projection][0]) - min[coord[projection][0]];
     const float v_length = point (coord[projection][1]) - min[coord[projection][1]];

@@ -105,7 +105,7 @@ points in the input dataset.
      // Compute the features
      vfh.compute (*vfhs);
 
-     // vfhs->points.size () should be of size 1*
+     // vfhs->size () should be of size 1*
    }
 
 Visualizing VFH signatures

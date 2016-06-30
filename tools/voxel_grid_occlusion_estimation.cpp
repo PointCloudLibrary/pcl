@@ -93,11 +93,11 @@ getVoxelActors (pcl::PointCloud<pcl::PointXYZ>& voxelCenters,
   size_t i;
   double s = voxelSideLen/2.0;
   
-  for (i = 0; i < voxelCenters.points.size (); i++)
+  for (i = 0; i < voxelCenters.size (); i++)
   {
-    double x = voxelCenters.points[i].x;
-    double y = voxelCenters.points[i].y;
-    double z = voxelCenters.points[i].z;
+    double x = voxelCenters[i].x;
+    double y = voxelCenters[i].y;
+    double z = voxelCenters[i].z;
     
 #if VTK_MAJOR_VERSION < 6
     treeWireframe->AddInput (getCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
@@ -222,11 +222,8 @@ int main (int argc, char** argv)
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", (int)occluded_voxels.size ()); print_info (" occluded voxels]\n");
   
-  CloudT::Ptr occ_centroids (new CloudT);
-  occ_centroids->width = static_cast<int> (occluded_voxels.size ());
-  occ_centroids->height = 1;
+  CloudT::Ptr occ_centroids (new CloudT (occluded_voxels.size ()));
   occ_centroids->is_dense = false;
-  occ_centroids->points.resize (occluded_voxels.size ());
   for (size_t i = 0; i < occluded_voxels.size (); ++i)
   {
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (occluded_voxels[i]);
@@ -234,27 +231,24 @@ int main (int argc, char** argv)
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    occ_centroids->points[i] = point;
+    (*occ_centroids)[i] = point;
   }
 
-  CloudT::Ptr cloud_centroids (new CloudT);
-  cloud_centroids->width = static_cast<int> (input_cloud->points.size ());
-  cloud_centroids->height = 1;
+  CloudT::Ptr cloud_centroids (new CloudT (input_cloud->size ()));
   cloud_centroids->is_dense = false;
-  cloud_centroids->points.resize (input_cloud->points.size ());
 
-  for (size_t i = 0; i < input_cloud->points.size (); ++i)
+  for (size_t i = 0; i < input_cloud->size (); ++i)
   {
-    float x = input_cloud->points[i].x;
-    float y = input_cloud->points[i].y;
-    float z = input_cloud->points[i].z;
+    float x = (*input_cloud)[i].x;
+    float y = (*input_cloud)[i].y;
+    float z = (*input_cloud)[i].z;
     Eigen::Vector3i c = vg.getGridCoordinates (x, y, z);
     Eigen::Vector4f xyz = vg.getCentroidCoordinate (c);
     PointT point;
     point.x = xyz[0];
     point.y = xyz[1];
     point.z = xyz[2];
-    cloud_centroids->points[i] = point;
+    (*cloud_centroids)[i] = point;
   }
 
   // visualization

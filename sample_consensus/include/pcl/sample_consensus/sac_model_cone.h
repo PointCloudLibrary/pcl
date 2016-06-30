@@ -347,9 +347,9 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[(*model_->tmp_inliers_)[i]].x,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].y,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
+            Eigen::Vector4f pt ((*model_->input_)[(*model_->tmp_inliers_)[i]].x,
+                                (*model_->input_)[(*model_->tmp_inliers_)[i]].y,
+                                (*model_->input_)[(*model_->tmp_inliers_)[i]].z, 0);
 
             // Calculate the point's projection on the cone axis
             float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;

@@ -477,7 +477,6 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
 
   // Create a test cloud
   pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
-  src->height = 1;
   src->is_dense = true;
   for (float x = -5.0f; x <= 5.0f; x += 0.5f)
     for (float y = -5.0f; y <= 5.0f; y += 0.5f)
@@ -498,9 +497,8 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
       ny /= magnitude;
       nz /= magnitude;
 
-      src->points.push_back (p);
+      src->push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -611,7 +609,6 @@ TEST (PCL, TransformationEstimationPointToPlane)
 
   // Create a test cloud
   pcl::PointCloud<pcl::PointNormal>::Ptr src (new pcl::PointCloud<pcl::PointNormal>);
-  src->height = 1;
   src->is_dense = true;
   for (float x = -5.0f; x <= 5.0f; x += 0.5f)
     for (float y = -5.0f; y <= 5.0f; y += 0.5f)
@@ -632,9 +629,8 @@ TEST (PCL, TransformationEstimationPointToPlane)
       ny /= magnitude;
       nz /= magnitude;
 
-      src->points.push_back (p);
+      src->push_back (p);
     }
-  src->width = static_cast<uint32_t> (src->points.size ());
 
   // Create a test matrix
   Eigen::Matrix4f ground_truth_tform = Eigen::Matrix4f::Identity ();
@@ -693,9 +689,9 @@ main (int argc, char** argv)
   return (RUN_ALL_TESTS ());
 
   // Tranpose the cloud_model
-  /*for (size_t i = 0; i < cloud_model.points.size (); ++i)
+  /*for (size_t i = 0; i < cloud_model.size (); ++i)
   {
-  //  cloud_model.points[i].z += 1;
+  //  cloud_model[i].z += 1;
   }*/
 }
 /* ]--- */

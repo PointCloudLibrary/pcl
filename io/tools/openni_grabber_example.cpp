@@ -57,7 +57,7 @@ class SimpleOpenNIProcessor
       if (++count == 30)
       {
         double now = pcl::getTime ();
-        std::cout << "distance of center pixel :" << cloud->points [(cloud->width >> 1) * (cloud->height + 1)].z << " mm. Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
+        std::cout << "distance of center pixel :" << (*cloud)[(cloud->width >> 1) * (cloud->height + 1)].z << " mm. Average framerate: " << double(count)/double(now - last) << " Hz" <<  std::endl;
         count = 0;
         last = now;
       }

@@ -63,7 +63,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::setPointsToTrack (cons
     pcl::PointCloud<pcl::PointUV>::Ptr p (new pcl::PointCloud<pcl::PointUV>);
     p->reserve (keypoints_nbr_);
     for (std::size_t i = 0; i < keypoints_nbr_; ++i)
-      p->push_back (keypoints->points[i]);
+      p->push_back ((*keypoints)[i]);
     keypoints_ = p;
   }
 
@@ -185,15 +185,15 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::derivatives (const Flo
   float *row1 = new float [src.width + 2];
   float *trow0 = row0; ++trow0;
   float *trow1 = row1; ++trow1;
-  const float* src_ptr = &(src.points[0]);
+  const float* src_ptr = &(src[0]);
 
   for (int y = 0; y < height; y++)
   {
     const float* srow0 = src_ptr + (y > 0 ? y-1 : height > 1 ? 1 : 0) * width;
     const float* srow1 = src_ptr + y * width;
     const float* srow2 = src_ptr + (y < height-1 ? y+1 : height > 1 ? height-2 : 0) * width;
-    float* grad_x_row = &(grad_x.points[y * width]);
-    float* grad_y_row = &(grad_y.points[y * width]);
+    float* grad_x_row = &(grad_x[y * width]);
+    float* grad_y_row = &(grad_y[y * width]);
 
     // do vertical convolution
     for (int x = 0; x < width; x++)
@@ -346,7 +346,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::computePyramids (const
 #pragma omp parallel for num_threads (threads_)
 #endif
   for (int i = 0; i < static_cast<int> (input->size ()); ++i)
-    tmp->points[i] = intensity_ (input->points[i]);
+    (*tmp)[i] = intensity_ ((*input)[i]);
   previous = tmp;
 
   FloatImagePtr img (new FloatImage (previous->width + 2*track_width_,
@@ -416,9 +416,9 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::spatialGradient (const
 
   for (int y = 0; y < track_height_; y++)
   {
-    const float* img_ptr = &(img.points[0]) + (y + location[1])*step + location[0];
-    const float* grad_x_ptr = &(grad_x.points[0]) + (y + location[1])*step + location[0];
-    const float* grad_y_ptr = &(grad_y.points[0]) + (y + location[1])*step + location[0];
+    const float* img_ptr = &(img[0]) + (y + location[1])*step + location[0];
+    const float* grad_x_ptr = &(grad_x[0]) + (y + location[1])*step + location[0];
+    const float* grad_y_ptr = &(grad_y[0]) + (y + location[1])*step + location[0];
 
     float* win_ptr = win.data () + y*win.cols ();
     float* grad_x_win_ptr = grad_x_win.data () + y*grad_x_win.cols ();
@@ -454,7 +454,7 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::mismatchVector (const 
   b.setZero ();
   for (int y = 0; y < track_height_; y++)
   {
-    const float* next_ptr = &(next.points[0]) + (y + location[1])*step + location[0];
+    const float* next_ptr = &(next[0]) + (y + location[1])*step + location[0];
     const float* prev_ptr = prev.data () + y*prev.cols ();
     const float* prev_grad_x_ptr = prev_grad_x.data () + y*prev_grad_x.cols ();
     const float* prev_grad_y_ptr = prev_grad_y.data () + y*prev_grad_y.cols ();
@@ -497,8 +497,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
     float ratio (1./(1 << level));
     for (int ptidx = 0; ptidx < nb_points; ptidx++)
     {
-      Eigen::Array2f prev_pt (prev_keypoints->points[ptidx].u * ratio,
-                              prev_keypoints->points[ptidx].v * ratio);
+      Eigen::Array2f prev_pt ((*prev_keypoints)[ptidx].u * ratio,
+                              (*prev_keypoints)[ptidx].v * ratio);
       Eigen::Array2f next_pt;
       if (level == nb_levels_ -1)
         next_pt = prev_pt;
@@ -609,10 +609,10 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         // add points pair to compute transformation
         inext_point[0] = floor (next_pts[ptidx][0]);
         inext_point[1] = floor (next_pts[ptidx][1]);
-        iprev_point[0] = floor (prev_keypoints->points[ptidx].u);
-        iprev_point[1] = floor (prev_keypoints->points[ptidx].v);
-        const PointInT& prev_pt = prev_input->points[iprev_point[1]*prev_input->width + iprev_point[0]];
-        const PointInT& next_pt = input->points[inext_pt[1]*input->width + inext_pt[0]];
+        iprev_point[0] = floor ((*prev_keypoints)[ptidx].u);
+        iprev_point[1] = floor ((*prev_keypoints)[ptidx].v);
+        const PointInT& prev_pt = (*prev_input)[iprev_point[1]*prev_input->width + iprev_point[0]];
+        const PointInT& next_pt = (*input)[inext_pt[1]*input->width + inext_pt[0]];
         transformation_computer.add (prev_pt.getVector3fMap (), next_pt.getVector3fMap (), 1.0);
       }
     }

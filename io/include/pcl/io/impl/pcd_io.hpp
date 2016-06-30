@@ -116,7 +116,7 @@ pcl::PCDWriter::generateHeader (const pcl::PointCloud<PointT> &cloud, const int 
   if (nr_points != std::numeric_limits<int>::max ())
     oss << "POINTS " << nr_points << "\n";
   else
-    oss << "POINTS " << cloud.points.size () << "\n";
+    oss << "POINTS " << cloud.size () << "\n";
 
   return (oss.str ());
 }
@@ -175,7 +175,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   }
   fields.resize (nri);
   
-  data_size = cloud.points.size () * fsize;
+  data_size = cloud.size () * fsize;
 
   // Prepare the map
 #if _WIN32
@@ -221,12 +221,12 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
 
   // Copy the data
   char *out = &map[0] + data_idx;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     int nrj = 0;
     for (size_t j = 0; j < fields.size (); ++j)
     {
-      memcpy (out, reinterpret_cast<const char*> (&cloud.points[i]) + fields[j].offset, fields_sizes[nrj]);
+      memcpy (out, reinterpret_cast<const char*> (&cloud[i]) + fields[j].offset, fields_sizes[nrj]);
       out += fields_sizes[nrj++];
     }
   }
@@ -264,7 +264,7 @@ template <typename PointT> int
 pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, 
                                        const pcl::PointCloud<PointT> &cloud)
 {
-  if (cloud.points.empty ())
+  if (cloud.empty ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!");
     return (-1);
@@ -316,7 +316,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   fields.resize (nri);
  
   // Compute the size of data
-  data_size = cloud.points.size () * fsize;
+  data_size = cloud.size () * fsize;
 
   //////////////////////////////////////////////////////////////////////
   // Empty array holding only the valid data
@@ -338,15 +338,15 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
   for (size_t i = 0; i < pters.size (); ++i)
   {
     pters[i] = &only_valid_data[toff];
-    toff += fields_sizes[i] * static_cast<int> (cloud.points.size ());
+    toff += fields_sizes[i] * static_cast<int> (cloud.size ());
   }
   
   // Go over all the points, and copy the data in the appropriate places
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     for (size_t j = 0; j < fields.size (); ++j)
     {
-      memcpy (pters[j], reinterpret_cast<const char*> (&cloud.points[i]) + fields[j].offset, fields_sizes[j]);
+      memcpy (pters[j], reinterpret_cast<const char*> (&cloud[i]) + fields[j].offset, fields_sizes[j]);
       // Increment the pointer
       pters[j] += fields_sizes[j];
     }
@@ -466,7 +466,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
     return (-1);
   }
 
-  if (cloud.width * cloud.height != cloud.points.size ())
+  if (cloud.width * cloud.height != cloud.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
@@ -498,7 +498,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
   stream.precision (precision);
   stream.imbue (std::locale::classic ());
   // Iterate through the points
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
     for (size_t d = 0; d < fields.size (); ++d)
     {
@@ -517,7 +517,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::INT8:
           {
             int8_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -527,7 +527,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::UINT8:
           {
             uint8_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -537,7 +537,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::INT16:
           {
             int16_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -547,7 +547,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::UINT16:
           {
             uint16_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -557,7 +557,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::INT32:
           {
             int32_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -567,7 +567,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::UINT32:
           {
             uint32_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -577,7 +577,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::FLOAT32:
           {
             float value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (float), sizeof (float));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (float), sizeof (float));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -587,7 +587,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PointCloud<
           case pcl::PCLPointField::FLOAT64:
           {
             double value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[i]) + fields[d].offset + c * sizeof (double), sizeof (double));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[i]) + fields[d].offset + c * sizeof (double), sizeof (double));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -621,7 +621,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
                              const pcl::PointCloud<PointT> &cloud, 
                              const std::vector<int> &indices)
 {
-  if (cloud.points.empty () || indices.empty ())
+  if (cloud.empty () || indices.empty ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Input point cloud has no data or empty indices given!");
     return (-1);
@@ -720,7 +720,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     int nrj = 0;
     for (size_t j = 0; j < fields.size (); ++j)
     {
-      memcpy (out, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[j].offset, fields_sizes[nrj]);
+      memcpy (out, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[j].offset, fields_sizes[nrj]);
       out += fields_sizes[nrj++];
     }
   }
@@ -761,13 +761,13 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
                             const std::vector<int> &indices,
                             const int precision)
 {
-  if (cloud.points.empty () || indices.empty ())
+  if (cloud.empty () || indices.empty ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Input point cloud has no data or empty indices given!");
     return (-1);
   }
 
-  if (cloud.width * cloud.height != cloud.points.size ())
+  if (cloud.width * cloud.height != cloud.size ())
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeASCII] Number of points different than width * height!");
     return (-1);
@@ -818,7 +818,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::INT8:
           {
             int8_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (int8_t), sizeof (int8_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -828,7 +828,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::UINT8:
           {
             uint8_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (uint8_t), sizeof (uint8_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -838,7 +838,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::INT16:
           {
             int16_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (int16_t), sizeof (int16_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -848,7 +848,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::UINT16:
           {
             uint16_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (uint16_t), sizeof (uint16_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -858,7 +858,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::INT32:
           {
             int32_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (int32_t), sizeof (int32_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -868,7 +868,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::UINT32:
           {
             uint32_t value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (uint32_t), sizeof (uint32_t));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -878,7 +878,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::FLOAT32:
           {
             float value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (float), sizeof (float));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (float), sizeof (float));
             if (pcl_isnan (value))
               stream << "nan";
             else
@@ -888,7 +888,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name,
           case pcl::PCLPointField::FLOAT64:
           {
             double value;
-            memcpy (&value, reinterpret_cast<const char*> (&cloud.points[indices[i]]) + fields[d].offset + c * sizeof (double), sizeof (double));
+            memcpy (&value, reinterpret_cast<const char*> (&cloud[indices[i]]) + fields[d].offset + c * sizeof (double), sizeof (double));
             if (pcl_isnan (value))
               stream << "nan";
             else

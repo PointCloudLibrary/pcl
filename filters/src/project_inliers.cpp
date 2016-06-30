@@ -102,9 +102,9 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     // Copy the projected points
     for (size_t i = 0; i < indices_->size (); ++i)
     {
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[x_idx].offset], &cloud_out.points[(*indices_)[i]].x, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[y_idx].offset], &cloud_out.points[(*indices_)[i]].y, sizeof (float));
-      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[z_idx].offset], &cloud_out.points[(*indices_)[i]].z, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+      memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
     }
   }
   else
@@ -146,9 +146,9 @@ pcl::ProjectInliers<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
       for (size_t i = 0; i < indices_->size (); ++i)
       {
         memcpy (&output.data[i * output.point_step], &input_->data[(*indices_)[i] * input_->point_step], output.point_step);
-        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset], &cloud_out.points[(*indices_)[i]].x, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset], &cloud_out.points[(*indices_)[i]].y, sizeof (float));
-        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset], &cloud_out.points[(*indices_)[i]].z, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[x_idx].offset], &cloud_out[(*indices_)[i]].x, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[y_idx].offset], &cloud_out[(*indices_)[i]].y, sizeof (float));
+        memcpy (&output.data[i * output.point_step + output.fields[z_idx].offset], &cloud_out[(*indices_)[i]].z, sizeof (float));
       }
     }
   }

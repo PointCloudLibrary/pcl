@@ -50,8 +50,8 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computePairFeatures (
     const pcl::PointCloud<PointInT> &cloud, const pcl::PointCloud<PointNT> &normals,
     int p_idx, int q_idx, float &f1, float &f2, float &f3, float &f4)
 {
-  pcl::computePairFeatures (cloud.points[p_idx].getVector4fMap (), normals.points[p_idx].getNormalVector4fMap (),
-      cloud.points[q_idx].getVector4fMap (), normals.points[q_idx].getNormalVector4fMap (),
+  pcl::computePairFeatures (cloud[p_idx].getVector4fMap (), normals[p_idx].getNormalVector4fMap (),
+      cloud[q_idx].getVector4fMap (), normals[q_idx].getNormalVector4fMap (),
       f1, f2, f3, f4);
   return (true);
 }
@@ -180,12 +180,12 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeSPFHSignatures (std::v
   std::vector<float> nn_dists (k_);
 
   std::set<int> spfh_indices;
-  spfh_hist_lookup.resize (surface_->points.size ());
+  spfh_hist_lookup.resize (surface_->size ());
 
   // Build a list of (unique) indices for which we will need to compute SPFH signatures
   // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
   if (surface_ != input_ ||
-      indices_->size () != surface_->points.size ())
+      indices_->size () != surface_->size ())
   { 
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
@@ -251,7 +251,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
       if (this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
         for (int d = 0; d < fpfh_histogram_.size (); ++d)
-          output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
     
         output.is_dense = false;
         continue;
@@ -267,7 +267,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
       // ...and copy it into the output cloud
       for (int d = 0; d < fpfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = fpfh_histogram_[d];
+        output[idx].histogram[d] = fpfh_histogram_[d];
     }
   }
   else
@@ -279,7 +279,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
           this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
       {
         for (int d = 0; d < fpfh_histogram_.size (); ++d)
-          output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+          output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
     
         output.is_dense = false;
         continue;
@@ -295,7 +295,7 @@ pcl::FPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
 
       // ...and copy it into the output cloud
       for (int d = 0; d < fpfh_histogram_.size (); ++d)
-        output.points[idx].histogram[d] = fpfh_histogram_[d];
+        output[idx].histogram[d] = fpfh_histogram_[d];
     }
   }
 }

@@ -161,9 +161,9 @@ namespace pcl
           for (size_t kk = 0; kk < correspondences.size (); kk++)
           {
             pcl::PointXYZ p;
-            p.getVector4fMap () = oh.correspondences_pointcloud->points[correspondences[kk].index_query].getVector4fMap ();
+            p.getVector4fMap () = (*oh.correspondences_pointcloud)[correspondences[kk].index_query].getVector4fMap ();
             pcl::PointXYZ p_scene;
-            p_scene.getVector4fMap () = keypoints_pointcloud->points[correspondences[kk].index_match].getVector4fMap ();
+            p_scene.getVector4fMap () = (*keypoints_pointcloud)[correspondences[kk].index_match].getVector4fMap ();
 
             std::stringstream line_name;
             line_name << "line_" << kk;

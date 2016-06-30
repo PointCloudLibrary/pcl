@@ -198,7 +198,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
 {
   bin_distance_shape.resize (indices.size ());
 
-  const PointRFT& current_frame = frames_->points[index];
+  const PointRFT& current_frame = (*frames_)[index];
   //if (!pcl_isfinite (current_frame.rf[0]) || !pcl_isfinite (current_frame.rf[4]) || !pcl_isfinite (current_frame.rf[11]))
     //return;
 
@@ -208,7 +208,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::createBinDistan
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
     // check NaN normal
-    const Eigen::Vector4f& normal_vec = normals_->points[indices[i_idx]].getNormalVector4fMap ();
+    const Eigen::Vector4f& normal_vec = (*normals_)[indices[i_idx]].getNormalVector4fMap ();
     if (!pcl_isfinite (normal_vec[0]) ||
         !pcl_isfinite (normal_vec[1]) ||
         !pcl_isfinite (normal_vec[2]))
@@ -272,7 +272,7 @@ pcl::SHOTEstimationBase<PointInT, PointNT, PointOutT, PointRFT>::interpolateSing
     if (!pcl_isfinite(binDistance[i_idx]))
       continue;
 
-    Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
+    Eigen::Vector4f delta = (*surface_)[indices[i_idx]].getVector4fMap () - central_point;
     delta[3] = 0;
 
     // Compute the Euclidean norm
@@ -451,7 +451,7 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::interpolateDou
     if (!pcl_isfinite(binDistanceShape[i_idx]))
       continue;
 
-    Eigen::Vector4f delta = surface_->points[indices[i_idx]].getVector4fMap () - central_point;
+    Eigen::Vector4f delta = (*surface_)[indices[i_idx]].getVector4fMap () - central_point;
     delta[3] = 0;
 
     // Compute the Euclidean norm
@@ -673,12 +673,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
   {
     binDistanceColor.resize (nNeighbors);
 
-    //unsigned char redRef = input_->points[(*indices_)[index]].rgba >> 16 & 0xFF;
-    //unsigned char greenRef = input_->points[(*indices_)[index]].rgba >> 8& 0xFF;
-    //unsigned char blueRef = input_->points[(*indices_)[index]].rgba & 0xFF;
-    unsigned char redRef = input_->points[(*indices_)[index]].r;
-    unsigned char greenRef = input_->points[(*indices_)[index]].g;
-    unsigned char blueRef = input_->points[(*indices_)[index]].b;
+    //unsigned char redRef = (*input_)[(*indices_)[index]].rgba >> 16 & 0xFF;
+    //unsigned char greenRef = (*input_)[(*indices_)[index]].rgba >> 8& 0xFF;
+    //unsigned char blueRef = (*input_)[(*indices_)[index]].rgba & 0xFF;
+    unsigned char redRef = (*input_)[(*indices_)[index]].r;
+    unsigned char greenRef = (*input_)[(*indices_)[index]].g;
+    unsigned char blueRef = (*input_)[(*indices_)[index]].b;
 
     float LRef, aRef, bRef;
 
@@ -689,12 +689,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computePointSH
 
     for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
     {
-      //unsigned char red = surface_->points[indices[i_idx]].rgba >> 16 & 0xFF;
-      //unsigned char green = surface_->points[indices[i_idx]].rgba >> 8 & 0xFF;
-      //unsigned char blue = surface_->points[indices[i_idx]].rgba & 0xFF;
-      unsigned char red = surface_->points[indices[i_idx]].r;
-      unsigned char green = surface_->points[indices[i_idx]].g;
-      unsigned char blue = surface_->points[indices[i_idx]].b;
+      //unsigned char red = (*surface_)[indices[i_idx]].rgba >> 16 & 0xFF;
+      //unsigned char green = (*surface_)[indices[i_idx]].rgba >> 8 & 0xFF;
+      //unsigned char blue = (*surface_)[indices[i_idx]].rgba & 0xFF;
+      unsigned char red = (*surface_)[indices[i_idx]].r;
+      unsigned char green = (*surface_)[indices[i_idx]].g;
+      unsigned char blue = (*surface_)[indices[i_idx]].b;
 
       float L, a, b;
 
@@ -800,9 +800,9 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
     {
       // Copy into the resultant cloud
       for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -813,12 +813,12 @@ pcl::SHOTEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature (pcl
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }
@@ -872,9 +872,9 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
     {
       // Copy into the resultant cloud
       for (int d = 0; d < descLength_; ++d)
-        output.points[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].descriptor[d] = std::numeric_limits<float>::quiet_NaN ();
       for (int d = 0; d < 9; ++d)
-        output.points[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].rf[d] = std::numeric_limits<float>::quiet_NaN ();
 
       output.is_dense = false;
       continue;
@@ -885,12 +885,12 @@ pcl::SHOTColorEstimation<PointInT, PointNT, PointOutT, PointRFT>::computeFeature
 
     // Copy into the resultant cloud
     for (int d = 0; d < descLength_; ++d)
-      output.points[idx].descriptor[d] = shot_[d];
+      output[idx].descriptor[d] = shot_[d];
     for (int d = 0; d < 3; ++d)
     {
-      output.points[idx].rf[d + 0] = frames_->points[idx].x_axis[d];
-      output.points[idx].rf[d + 3] = frames_->points[idx].y_axis[d];
-      output.points[idx].rf[d + 6] = frames_->points[idx].z_axis[d];
+      output[idx].rf[d + 0] = (*frames_)[idx].x_axis[d];
+      output[idx].rf[d + 3] = (*frames_)[idx].y_axis[d];
+      output[idx].rf[d + 6] = (*frames_)[idx].z_axis[d];
     }
   }
 }

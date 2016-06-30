@@ -99,7 +99,7 @@ namespace pcl_cuda
         output.points.resize (nr_points - output.points.begin ());
 
         //std::cerr << "[applyFilterAOS]: ";
-        //std::cerr << input_->points.size () << " " << output.points.size () << std::endl;
+        //std::cerr << input_->points.size () << " " << output.size () << std::endl;
       }
   };
  

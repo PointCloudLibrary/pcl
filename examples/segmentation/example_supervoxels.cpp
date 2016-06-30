@@ -100,9 +100,6 @@ main (int argc, char ** argv)
   if (depth_file_specified)
     pcl::console::parse (argc, argv, "-d", depth_path);
   
-  PointCloudT::Ptr cloud = boost::make_shared < PointCloudT >();
-  NormalCloudT::Ptr input_normals = boost::make_shared < NormalCloudT > ();
-  
   bool pcd_file_specified = pcl::console::find_switch (argc, argv, "-p");
   std::string pcd_path;
   if (!depth_file_specified || !rgb_file_specified)
@@ -148,7 +145,9 @@ main (int argc, char ** argv)
   
   float normal_importance = 1.0f;
   pcl::console::parse (argc, argv, "-n", normal_importance);
-  
+
+  PointCloudT::Ptr cloud;
+  NormalCloudT::Ptr input_normals = boost::make_shared < NormalCloudT > ();
   if (!pcd_file_specified)
   {
     //Read the images
@@ -194,12 +193,9 @@ main (int argc, char ** argv)
       std::cout << "Depth Image is of size "<<depth_dims[0] << " by "<<depth_dims[1];
       return (1);
     }
- 
-    cloud->points.reserve (depth_dims[0] * depth_dims[1]);
-    cloud->width = depth_dims[0];
-    cloud->height = depth_dims[1];
+
+    cloud = boost::make_shared < PointCloudT > (depth_dims[0], depth_dims[1]);
     cloud->is_dense = false;
-    
     
     // Fill in image data
     int centerX = static_cast<int>(cloud->width / 2.0);
@@ -212,11 +208,11 @@ main (int argc, char ** argv)
     depth_pixel = static_cast<unsigned short*>(depth_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
     color_pixel = static_cast<unsigned char*> (rgb_image->GetScalarPointer (depth_dims[0]-1,depth_dims[1]-1,0));
     
-    for (size_t y=0; y<cloud->height; ++y)
+    for (size_t y=0, i=0; y<cloud->height; ++y)
     {
-      for (size_t x=0; x<cloud->width; ++x, --depth_pixel, color_pixel-=3)
+      for (size_t x=0; x<cloud->width; ++x, ++i, --depth_pixel, color_pixel-=3)
       {
-        PointT new_point;
+        PointT& new_point = (*cloud)[i];
         //  uint8_t* p_i = &(cloud_blob->data[y * cloud_blob->row_step + x * cloud_blob->point_step]);
         float depth = static_cast<float>(*depth_pixel) * scale;
         if (depth == 0.0f)
@@ -232,7 +228,6 @@ main (int argc, char ** argv)
         
         uint32_t rgb = static_cast<uint32_t>(color_pixel[0]) << 16 |  static_cast<uint32_t>(color_pixel[1]) << 8 |  static_cast<uint32_t>(color_pixel[2]);
         new_point.rgb = *reinterpret_cast<float*> (&rgb);
-        cloud->points.push_back (new_point);
         
       }
     }
@@ -246,6 +241,7 @@ main (int argc, char ** argv)
       PCL_ERROR ("ERROR: Could not read input point cloud %s.\n", pcd_path.c_str ());
       return (3);
     }
+    cloud = boost::make_shared < PointCloudT > ();
     pcl::fromPCLPointCloud2 (input_pointcloud2, *cloud);
     if (!ignore_provided_normals)
     {
@@ -404,7 +400,7 @@ main (int argc, char ** argv)
         {
           viewer->removePointCloud (ss.str ());
           viewer->addPointCloudNormals<PointT,Normal> ((sv_itr->second)->voxels_,(sv_itr->second)->normals_,10,0.02f,ss.str ());
-        //  std::cout << (sv_itr->second)->normals_->points[0]<<"\n";
+        //  std::cout << (sv_itr->second)->(*normals_)[0]<<"\n";
           
         }
           

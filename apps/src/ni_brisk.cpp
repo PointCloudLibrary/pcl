@@ -182,11 +182,11 @@ class BRISKDemo
       size_t j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        PointT pt = bilinearInterpolation (cloud, keypoints->points[i].x, keypoints->points[i].y);
+        PointT pt = bilinearInterpolation (cloud, (*keypoints)[i].x, (*keypoints)[i].y);
 
-        keypoints3d.points[j].x = pt.x;
-        keypoints3d.points[j].y = pt.y;
-        keypoints3d.points[j].z = pt.z;
+        keypoints3d[j].x = pt.x;
+        keypoints3d[j].y = pt.y;
+        keypoints3d[j].z = pt.z;
         ++j;
       }
 
@@ -251,8 +251,8 @@ class BRISKDemo
           image_viewer_.removeLayer (getStrBool (keypts));
           for (size_t i = 0; i < keypoints->size (); ++i)
           {
-            int u = int (keypoints->points[i].x);
-            int v = int (keypoints->points[i].y);
+            int u = int ((*keypoints)[i].x);
+            int v = int ((*keypoints)[i].y);
             image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
           }
           keypts = !keypts;

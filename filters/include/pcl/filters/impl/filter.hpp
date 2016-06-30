@@ -51,10 +51,10 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.resize (cloud_in.size ());
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
   size_t j = 0;
 
   // If the data is dense, we don't need to check for NaN
@@ -62,25 +62,25 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   {
     // Simply copy the data
     cloud_out = cloud_in;
-    for (j = 0; j < cloud_out.points.size (); ++j)
+    for (j = 0; j < cloud_out.size (); ++j)
       index[j] = static_cast<int>(j);
   }
   else
   {
-    for (size_t i = 0; i < cloud_in.points.size (); ++i)
+    for (size_t i = 0; i < cloud_in.size (); ++i)
     {
-      if (!pcl_isfinite (cloud_in.points[i].x) || 
-          !pcl_isfinite (cloud_in.points[i].y) || 
-          !pcl_isfinite (cloud_in.points[i].z))
+      if (!pcl_isfinite (cloud_in[i].x) ||
+          !pcl_isfinite (cloud_in[i].y) ||
+          !pcl_isfinite (cloud_in[i].z))
         continue;
-      cloud_out.points[j] = cloud_in.points[i];
+      cloud_out[j] = cloud_in[i];
       index[j] = static_cast<int>(i);
       j++;
     }
-    if (j != cloud_in.points.size ())
+    if (j != cloud_in.size ())
     {
       // Resize to the correct size
-      cloud_out.points.resize (j);
+      cloud_out.resize (j);
       index.resize (j);
     }
 
@@ -102,26 +102,26 @@ pcl::removeNaNNormalsFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
   if (&cloud_in != &cloud_out)
   {
     cloud_out.header = cloud_in.header;
-    cloud_out.points.resize (cloud_in.points.size ());
+    cloud_out.resize (cloud_in.size ());
   }
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
   size_t j = 0;
 
-  for (size_t i = 0; i < cloud_in.points.size (); ++i)
+  for (size_t i = 0; i < cloud_in.size (); ++i)
   {
-    if (!pcl_isfinite (cloud_in.points[i].normal_x) || 
-        !pcl_isfinite (cloud_in.points[i].normal_y) || 
-        !pcl_isfinite (cloud_in.points[i].normal_z))
+    if (!pcl_isfinite (cloud_in[i].normal_x) ||
+        !pcl_isfinite (cloud_in[i].normal_y) ||
+        !pcl_isfinite (cloud_in[i].normal_z))
       continue;
-    cloud_out.points[j] = cloud_in.points[i];
+    cloud_out[j] = cloud_in[i];
     index[j] = static_cast<int>(i);
     j++;
   }
-  if (j != cloud_in.points.size ())
+  if (j != cloud_in.size ())
   {
     // Resize to the correct size
-    cloud_out.points.resize (j);
+    cloud_out.resize (j);
     index.resize (j);
   }
 

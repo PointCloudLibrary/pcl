@@ -206,9 +206,9 @@ testResultValidity (const typename PointCloud<PointT>::ConstPtr point_cloud, con
     else if (!nan_mask [*iIt])
     {
 #if DEBUG_OUT
-      cerr << name << ": result contains an invalid point: " << *iIt << " = NaN (" << point_cloud->points [*iIt].x << " , " 
-                                                                                   << point_cloud->points [*iIt].y << " , " 
-                                                                                   << point_cloud->points [*iIt].z << ")\n";
+      cerr << name << ": result contains an invalid point: " << *iIt << " = NaN (" << (*point_cloud)[*iIt].x << " , "
+                                                                                   << (*point_cloud)[*iIt].y << " , "
+                                                                                   << (*point_cloud)[*iIt].z << ")\n";
 #endif
       validness = false;
       break;
@@ -297,7 +297,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
   #pragma omp parallel for
   for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
-    if (!isFinite (point_cloud->points [pIdx]))
+    if (!isFinite ((*point_cloud)[pIdx]))
       nan_mask [pIdx] = false;
   }
   
@@ -318,7 +318,7 @@ testKNNSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<search:
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < int (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->nearestKSearch (point_cloud->points[*qIt], knn, indices [sIdx], distances [sIdx]);
+        search_methods [sIdx]->nearestKSearch ((*point_cloud)[*qIt], knn, indices [sIdx], distances [sIdx]);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -367,7 +367,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
   #pragma omp parallel for
   for (int pIdx = 0; pIdx < int (point_cloud->size ()); ++pIdx)
   {
-    if (!isFinite (point_cloud->points [pIdx]))
+    if (!isFinite ((*point_cloud)[pIdx]))
       nan_mask [pIdx] = false;
   }
   
@@ -389,7 +389,7 @@ testRadiusSearch (typename PointCloud<PointT>::ConstPtr point_cloud, vector<sear
       #pragma omp parallel for
       for (int sIdx = 0; sIdx < static_cast<int> (search_methods.size ()); ++sIdx)
       {
-        search_methods [sIdx]->radiusSearch (point_cloud->points[*qIt], radius, indices [sIdx], distances [sIdx], 0);
+        search_methods [sIdx]->radiusSearch ((*point_cloud)[*qIt], radius, indices [sIdx], distances [sIdx], 0);
         passed [sIdx] = passed [sIdx] && testUniqueness (indices [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testOrder (distances [sIdx], search_methods [sIdx]->getName ());
         passed [sIdx] = passed [sIdx] && testResultValidity<PointT>(point_cloud, indices_mask, nan_mask, indices [sIdx], input_indices, search_methods [sIdx]->getName ());
@@ -459,7 +459,7 @@ TEST (PCL, unorganized_grid_cloud_Complete_Radius)
   
   unsigned skip = static_cast<unsigned> (unorganized_grid_cloud->size ()) / query_count;
   for (unsigned idx = 0; idx < unorganized_grid_cloud->size () && query_indices.size () < query_count; ++idx)
-     if ((rand () % skip) == 0 && isFinite (unorganized_grid_cloud->points [idx]))
+     if ((rand () % skip) == 0 && isFinite ((*unorganized_grid_cloud)[idx]))
        query_indices.push_back (idx);
   
   testRadiusSearch (unorganized_grid_cloud, unorganized_search_methods, query_indices);
@@ -529,7 +529,7 @@ void createQueryIndices (std::vector<int>& query_indices, PointCloud<PointXYZ>::
   
   unsigned skip = static_cast<unsigned> (point_cloud->size ()) / query_count;
   for (unsigned idx = 0; idx < point_cloud->size () && query_indices.size () < query_count; ++idx)
-     if ((rand () % skip) == 0 && isFinite (point_cloud->points [idx]))
+     if ((rand () % skip) == 0 && isFinite ((*point_cloud)[idx]))
        query_indices.push_back (idx);
 }
 
@@ -585,12 +585,12 @@ main (int argc, char** argv)
     point.y = rand_float ();
     point.z = rand_float ();
 
-    unorganized_dense_cloud->points [pIdx] = point;
+    (*unorganized_dense_cloud)[pIdx] = point;
     
     if (rand_uint () == 0)
-      unorganized_sparse_cloud->points [pIdx].x = unorganized_sparse_cloud->points [pIdx].y = unorganized_sparse_cloud->points [pIdx].z = std::numeric_limits<float>::quiet_NaN ();
+      (*unorganized_sparse_cloud)[pIdx].x = (*unorganized_sparse_cloud)[pIdx].y = (*unorganized_sparse_cloud)[pIdx].z = std::numeric_limits<float>::quiet_NaN ();
     else
-      unorganized_sparse_cloud->points [pIdx] = point;
+      (*unorganized_sparse_cloud)[pIdx] = point;
   }
   
   unorganized_grid_cloud->reserve (1000);

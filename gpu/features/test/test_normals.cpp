@@ -58,7 +58,7 @@ using namespace pcl::gpu;
 TEST(PCL_FeaturesGPU, normals_lowlevel)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
+    cout << "Cloud size: " << source.cloud->size() << endl;
     cout << "Radius: " << source.radius << endl;
     cout << "K: " << source.k << endl;
 
@@ -88,7 +88,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = source.normals->points[i];
+        Normal n = source.(*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];               
@@ -107,7 +107,7 @@ TEST(PCL_FeaturesGPU, normals_lowlevel)
 TEST(PCL_FeaturesGPU, normals_highlevel_1)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
+    cout << "Cloud size: " << source.cloud->size() << endl;
     cout << "Radius: " << source.radius << endl;
     cout << "Max_elems: " <<  source.max_elements << endl;
 
@@ -152,7 +152,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
 
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
@@ -171,7 +171,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_1)
 TEST(PCL_FeaturesGPU, normals_highlevel_2)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
+    cout << "Cloud size: " << source.cloud->size() << endl;
     cout << "Radius: " << source.radius << endl;
     cout << "Max_elems: " <<  source.max_elements << endl;    
 
@@ -217,7 +217,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
 
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];                        
@@ -236,7 +236,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_2)
 TEST(PCL_FeaturesGPU, normals_highlevel_3)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
+    cout << "Cloud size: " << source.cloud->size() << endl;
     cout << "Radius: " << source.radius << endl;
     cout << "Max_elems: " <<  source.max_elements << endl;
 
@@ -282,7 +282,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];
@@ -310,7 +310,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_3)
 TEST(PCL_FeaturesGPU, normals_highlevel_4)
 {       
     DataSource source;
-    cout << "Cloud size: " << source.cloud->points.size() << endl;
+    cout << "Cloud size: " << source.cloud->size() << endl;
     cout << "Radius: " << source.radius << endl;
     cout << "Max_elems: " <<  source.max_elements << endl;
     
@@ -356,7 +356,7 @@ TEST(PCL_FeaturesGPU, normals_highlevel_4)
 
    for(size_t i = 0; i < downloaded.size(); ++i)
     {
-        Normal n = normals->points[i];
+        Normal n = (*normals)[i];
 
         PointXYZ xyz = downloaded[i];
         float curvature = xyz.data[3];

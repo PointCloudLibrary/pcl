@@ -57,7 +57,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getInputCloud ()
 template <typename PointSource, typename PointTarget, typename Scalar> inline void
 pcl::Registration<PointSource, PointTarget, Scalar>::setInputTarget (const PointCloudTargetConstPtr &cloud)
 {
-  if (cloud->points.empty ())
+  if (cloud->empty ())
   {
     PCL_ERROR ("[pcl::%s::setInputTarget] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
     return;
@@ -143,10 +143,10 @@ pcl::Registration<PointSource, PointTarget, Scalar>::getFitnessScore (double max
 
   // For each point in the source dataset
   int nr = 0;
-  for (size_t i = 0; i < input_transformed.points.size (); ++i)
+  for (size_t i = 0; i < input_transformed.size (); ++i)
   {
     // Find its nearest neighbor in the target
-    tree_->nearestKSearch (input_transformed.points[i], 1, nn_indices, nn_dists);
+    tree_->nearestKSearch (input_transformed[i], 1, nn_indices, nn_dists);
     
     // Deal with occlusions (incomplete targets)
     if (nn_dists[0] <= max_range)
@@ -179,12 +179,12 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
     return;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  if (output.size () != indices_->size ())
+    output.resize (indices_->size ());
   // Copy the header
   output.header   = input_->header;
   // Check if the output will be computed for all points or only a subset
-  if (indices_->size () != input_->points.size ())
+  if (indices_->size () != input_->size ())
   {
     output.width    = static_cast<uint32_t> (indices_->size ());
     output.height   = 1;
@@ -198,7 +198,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
 
   // Copy the point data to output
   for (size_t i = 0; i < indices_->size (); ++i)
-    output.points[i] = input_->points[(*indices_)[i]];
+    output[i] = (*input_)[(*indices_)[i]];
 
   // Set the internal point representation of choice unless otherwise noted
   if (point_representation_ && !force_no_recompute_) 
@@ -211,7 +211,7 @@ pcl::Registration<PointSource, PointTarget, Scalar>::align (PointCloudSource &ou
   // Right before we estimate the transformation, we set all the point.data[3] values to 1 to aid the rigid 
   // transformation
   for (size_t i = 0; i < indices_->size (); ++i)
-    output.points[i].data[3] = 1.0;
+    output[i].data[3] = 1.0;
 
   computeTransformation (output, guess);
 

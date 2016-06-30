@@ -34,7 +34,7 @@ subsampleAndCalculateNormals (PointCloud<PointXYZ>::Ptr &cloud,
   normal_estimation_filter.setRadiusSearch (normal_estimation_search_radius);
   normal_estimation_filter.compute (*cloud_subsampled_normals);
 
-  cerr << "Before -> After subsampling: " << cloud->points.size () << " -> " << cloud_subsampled->points.size () << endl;
+  cerr << "Before -> After subsampling: " << cloud->size () << " -> " << cloud_subsampled->size () << endl;
 }
 
 
@@ -79,7 +79,7 @@ main (int argc, char **argv)
   ppf_estimator.setInputNormals (cloud_subsampled_with_normals_b);
   ppf_estimator.compute (*ppf_signature_b);
 
-  PCL_INFO ("Feature cloud sizes: %u , %u\n", ppf_signature_a->points.size (), ppf_signature_b->points.size ());
+  PCL_INFO ("Feature cloud sizes: %u , %u\n", ppf_signature_a->size (), ppf_signature_b->size ());
 
   PCL_INFO ("Finished calculating the features ...\n");
   vector<pair<float, float> > dim_range_input, dim_range_target;

@@ -220,12 +220,27 @@ namespace pcl
           points[i] = pc.points[indices[i]];
       }
 
+      /** \brief Allocate constructor from point vector
+        * \param[in] points_ the vector of points
+        */
+      PointCloud (const std::vector<PointT> &points_)
+          : header ()
+          , points (points_)
+          , width (points_.size ())
+          , height (1)
+          , is_dense (true)
+          , sensor_origin_ (Eigen::Vector4f::Zero ())
+          , sensor_orientation_ (Eigen::Quaternionf::Identity ())
+          , mapping_ ()
+      {
+      }
+
       /** \brief Allocate constructor from point cloud subset
         * \param[in] width_ the cloud width
         * \param[in] height_ the cloud height
         * \param[in] value_ default value
         */
-      PointCloud (uint32_t width_, uint32_t height_, const PointT& value_ = PointT ())
+      PointCloud (uint32_t width_, uint32_t height_ = 1, const PointT& value_ = PointT ())
         : header ()
         , points (width_ * height_, value_)
         , width (width_)
@@ -444,9 +459,9 @@ namespace pcl
       /** \brief Resize the cloud
         * \param[in] n the new cloud size
         */
-      inline void resize (size_t n) 
+      inline void resize (size_t n, const PointT& value = PointT())
       { 
-        points.resize (n);
+        points.resize (n, value);
         if (width * height != n)
         {
           width = static_cast<uint32_t> (n);

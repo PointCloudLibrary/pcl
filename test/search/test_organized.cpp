@@ -84,7 +84,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
   unsigned int test_id;
 
   // instantiate point cloud
-  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
+  PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (128, 32));
 
   size_t i;
 
@@ -114,26 +114,21 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
     K = (rand () % 10)+1;
 
     // generate point cloud
-    cloudIn->width = 128;
-    cloudIn->height = 32;
-    cloudIn->points.clear();
-    cloudIn->points.reserve (cloudIn->width * cloudIn->height);
-
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;
 
-    for (ypos = -centerY; ypos < centerY; ypos++)
-      for (xpos = -centerX; xpos < centerX; xpos++)
+    for (ypos = -centerY, i = 0; ypos < centerY; ypos++)
+      for (xpos = -centerX; xpos < centerX; xpos++, i++)
       {
         z = 15.0 * (double (rand ()) / double (RAND_MAX+1.0))+20;
         y = double (ypos * oneOverFocalLength * z);
         x = double (xpos * oneOverFocalLength * z);
 
-        cloudIn->points.push_back (PointXYZ (float (x), float (y), float (z)));
+        (*cloudIn) [i] = PointXYZ (float (x), float (y), float (z));
       }
 
     unsigned int searchIdx = rand()%(cloudIn->width * cloudIn->height);
-    const PointXYZ& searchPoint = cloudIn->points[searchIdx];
+    const PointXYZ& searchPoint = (*cloudIn)[searchIdx];
 
     k_indices.clear();
     k_sqr_distances.clear();
@@ -152,13 +147,13 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Nearest_K_Neighbour_Search)
 
 
     // push all points and their distance to the search point into a priority queue - bruteforce approach.
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
-      pointDist = ((cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x) +
-             /*+*/ (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y) +
-                   (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+      pointDist = (((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x) +
+             /*+*/ ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y) +
+                   ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
 
-      prioPointQueueEntry pointEntry (cloudIn->points[i], pointDist, int (i));
+      prioPointQueueEntry pointEntry ((*cloudIn)[i], pointDist, int (i));
 
       pointCandidates.push (pointEntry);
     }
@@ -220,12 +215,7 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
   for (test_id = 0; test_id < test_runs; test_id++)
   {
     // generate point cloud
-    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> ());
-
-    cloudIn->width = 640;
-    cloudIn->height = 480;
-    cloudIn->points.clear();
-    cloudIn->points.resize (cloudIn->width * cloudIn->height);
+    PointCloud<PointXYZ>::Ptr cloudIn (new PointCloud<PointXYZ> (640, 480));
 
     centerX = cloudIn->width>>1;
     centerY = cloudIn->height>>1;
@@ -238,12 +228,12 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
         y = ypos*oneOverFocalLength*z;
         x = xpos*oneOverFocalLength*z;
 
-        cloudIn->points[idx++]= PointXYZ (float (x), float (y), float (z));
+        (*cloudIn)[idx++]= PointXYZ (float (x), float (y), float (z));
       }
 
     unsigned int randomIdx = rand()%(cloudIn->width * cloudIn->height);
 
-    const PointXYZ& searchPoint = cloudIn->points[randomIdx];
+    const PointXYZ& searchPoint = (*cloudIn)[randomIdx];
 
     double pointDist;
     double searchRadius = 1.0 * (double (rand ()) / double (RAND_MAX));
@@ -257,12 +247,12 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     vector<int> cloudSearchBruteforce;
     cloudSearchBruteforce.clear();
 
-    for (i = 0; i < cloudIn->points.size (); i++)
+    for (i = 0; i < cloudIn->size (); i++)
     {
       pointDist = sqrt (
-                        (cloudIn->points[i].x - searchPoint.x) * (cloudIn->points[i].x - searchPoint.x)
-                      + (cloudIn->points[i].y - searchPoint.y) * (cloudIn->points[i].y - searchPoint.y)
-                      + (cloudIn->points[i].z - searchPoint.z) * (cloudIn->points[i].z - searchPoint.z));
+                        ((*cloudIn)[i].x - searchPoint.x) * ((*cloudIn)[i].x - searchPoint.x)
+                      + ((*cloudIn)[i].y - searchPoint.y) * ((*cloudIn)[i].y - searchPoint.y)
+                      + ((*cloudIn)[i].z - searchPoint.z) * ((*cloudIn)[i].z - searchPoint.z));
 
       if (pointDist <= searchRadius)
       {
@@ -288,9 +278,9 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     while (current != cloudNWRSearch.end())
     {
       pointDist = sqrt (
-          (cloudIn->points[*current].x-searchPoint.x) * (cloudIn->points[*current].x-searchPoint.x) +
-          (cloudIn->points[*current].y-searchPoint.y) * (cloudIn->points[*current].y-searchPoint.y) +
-          (cloudIn->points[*current].z-searchPoint.z) * (cloudIn->points[*current].z-searchPoint.z)
+          ((*cloudIn)[*current].x-searchPoint.x) * ((*cloudIn)[*current].x-searchPoint.x) +
+          ((*cloudIn)[*current].y-searchPoint.y) * ((*cloudIn)[*current].y-searchPoint.y) +
+          ((*cloudIn)[*current].z-searchPoint.z) * ((*cloudIn)[*current].z-searchPoint.z)
       );
 
       ASSERT_EQ ( (pointDist<=searchRadius) , true);
@@ -305,9 +295,9 @@ TEST (PCL, Organized_Neighbor_Pointcloud_Neighbours_Within_Radius_Search)
     {
 
       pointDist = sqrt (
-          (cloudIn->points[*current].x-searchPoint.x) * (cloudIn->points[*current].x-searchPoint.x) +
-          (cloudIn->points[*current].y-searchPoint.y) * (cloudIn->points[*current].y-searchPoint.y) +
-          (cloudIn->points[*current].z-searchPoint.z) * (cloudIn->points[*current].z-searchPoint.z)
+          ((*cloudIn)[*current].x-searchPoint.x) * ((*cloudIn)[*current].x-searchPoint.x) +
+          ((*cloudIn)[*current].y-searchPoint.y) * ((*cloudIn)[*current].y-searchPoint.y) +
+          ((*cloudIn)[*current].z-searchPoint.z) * ((*cloudIn)[*current].z-searchPoint.z)
       );
 
       ASSERT_EQ ( (pointDist<=searchRadius) , true);

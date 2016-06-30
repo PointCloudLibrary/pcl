@@ -112,7 +112,7 @@ pcl::gpu::people::OrganizedPlaneDetector::process(const PointCloud<PointTC>::Con
   {
     for(int idx = 0; idx < inlier_indices[plane].indices.size(); idx++)                               // iterate over all the indices in that plane
     {
-      P_l_host_.points[inlier_indices[plane].indices[idx]].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
+      P_l_host_[inlier_indices[plane].indices[idx]].probs[pcl::gpu::people::Background] = 1.f;   // set background at max
     }
   }
 }
@@ -124,11 +124,11 @@ pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers(int rows, int cols)
   PCL_DEBUG("[pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers] : (D) : Called\n");
 
   // Create histogram on host
-  P_l_host_.points.resize(rows*cols);
+  P_l_host_.resize(rows*cols);
   P_l_host_.width = cols;
   P_l_host_.height = rows;
 
-  P_l_host_prev_.points.resize(rows*cols);
+  P_l_host_prev_.resize(rows*cols);
   P_l_host_prev_.width = cols;
   P_l_host_prev_.height = rows;
 
@@ -140,11 +140,11 @@ pcl::gpu::people::OrganizedPlaneDetector::allocate_buffers(int rows, int cols)
 void
 pcl::gpu::people::OrganizedPlaneDetector::emptyHostLabelProbability(HostLabelProbability& histogram)
 {
-  for(int hist = 0; hist < histogram.points.size(); hist++)
+  for(int hist = 0; hist < histogram.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      histogram.points[hist].probs[label] = 0.f;
+      histogram[hist].probs[label] = 0.f;
     }
   }
 }
@@ -153,16 +153,16 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability(HostLabelProbability& src,
                                                                    HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(int hist = 0; hist < src.points.size(); hist++)
+  for(int hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      dst.points[hist].probs[label] = src.points[hist].probs[label];
+      dst[hist].probs[label] = src[hist].probs[label];
     }
   }
   return 1;
@@ -172,17 +172,17 @@ int
 pcl::gpu::people::OrganizedPlaneDetector::copyAndClearHostLabelProbability(HostLabelProbability& src,
                                                                            HostLabelProbability& dst)
 {
-  if(src.points.size() != dst.points.size())
+  if(src.size() != dst.size())
   {
     PCL_ERROR("[pcl::gpu::people::OrganizedPlaneDetector::copyHostLabelProbability] : (E) : Sizes don't match\n");
     return -1;
   }
-  for(int hist = 0; hist < src.points.size(); hist++)
+  for(int hist = 0; hist < src.size(); hist++)
   {
     for(int label = 0; label < pcl::gpu::people::NUM_LABELS; label++)
     {
-      dst.points[hist].probs[label] = src.points[hist].probs[label];
-      src.points[hist].probs[label] = 0.f;
+      dst[hist].probs[label] = src[hist].probs[label];
+      src[hist].probs[label] = 0.f;
     }
   }
   return 1;

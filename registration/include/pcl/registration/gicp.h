@@ -135,7 +135,7 @@ namespace pcl
       setInputSource (const PointCloudSourceConstPtr &cloud)
       {
 
-        if (cloud->points.empty ())
+        if (cloud->empty ())
         {
           PCL_ERROR ("[pcl::%s::setInputSource] Invalid or empty point cloud dataset given!\n", getClassName ().c_str ());
           return;

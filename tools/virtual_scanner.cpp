@@ -365,7 +365,7 @@ main (int argc, char** argv)
             pt.z = static_cast<float> (-right[2]*x[1] + up[2]*x[2] + viewray[2]*x[0] + eye[2]);
             pt.vp_x = pt.vp_y = pt.vp_z = 0.0f;
           }
-          cloud.points.push_back (pt);
+          cloud.push_back (pt);
         }
         else
           if (organized)
@@ -375,20 +375,20 @@ main (int argc, char** argv)
             pt.vp_x = static_cast<float> (eye[0]);
             pt.vp_y = static_cast<float> (eye[1]);
             pt.vp_z = static_cast<float> (eye[2]);
-            cloud.points.push_back (pt);
+            cloud.push_back (pt);
           }
       } // Horizontal
     } // Vertical
 
     // Noisify each point in the dataset
     // \note: we might decide to noisify along the ray later
-    for (size_t cp = 0; cp < cloud.points.size (); ++cp)
+    for (size_t cp = 0; cp < cloud.size (); ++cp)
     {
       // Add noise ?
       switch (noise_model)
       {
         // Gaussian
-        case 1: { cloud.points[cp].x += gaussian_rng (); cloud.points[cp].y += gaussian_rng (); cloud.points[cp].z += gaussian_rng (); break; }
+        case 1: { cloud[cp].x += gaussian_rng (); cloud[cp].y += gaussian_rng (); cloud[cp].z += gaussian_rng (); break; }
       }
     }
 
@@ -424,14 +424,9 @@ main (int argc, char** argv)
       cloud.height = 1 + static_cast<uint32_t> ((vert_end - vert_start) / sp.vert_res);
       cloud.width = 1 + static_cast<uint32_t> ((hor_end - hor_start) / sp.hor_res);
     }
-    else
-    {
-      cloud.width = static_cast<uint32_t> (cloud.points.size ());
-      cloud.height = 1;
-    }
 
     pcl::PCDWriter writer;
-    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.points.size (), cloud.width, cloud.height, fname.c_str ());
+    PCL_INFO ("Wrote %lu points (%d x %d) to %s\n", cloud.size (), cloud.width, cloud.height, fname.c_str ());
     writer.writeBinaryCompressed (fname.c_str (), cloud);
   } // sphere
   return (0);

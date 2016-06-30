@@ -105,31 +105,25 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
   }
 
   // Now let's create the clouds
-  PointCloud<RGB>          pc_image;
-  PointCloud<Intensity>    pc_depth;
-  PointCloud<PointXYZRGBA> pc_xyzrgba;
-
-  pc_image.width = pc_depth.width = pc_xyzrgba.width = rgb_dimensions[0];
-  pc_image.height = pc_depth.height = pc_xyzrgba.height = rgb_dimensions[1];
+  PointCloud<RGB>          pc_image (rgb_dimensions[0], rgb_dimensions[1]);
+  PointCloud<Intensity>    pc_depth (rgb_dimensions[0], rgb_dimensions[1]);
+  PointCloud<PointXYZRGBA> pc_xyzrgba (rgb_dimensions[0], rgb_dimensions[1]);
 
   float constant = 1.0f / focal_length;
   float bad_point = std::numeric_limits<float>::quiet_NaN ();
 
-  for(int v = 0; v < rgb_dimensions[1]; v++)
+  for(int v = 0, i = 0; v < rgb_dimensions[1]; v++)
   {
-    for(int u = 0; u < rgb_dimensions[0]; u++)
+    for(int u = 0; u < rgb_dimensions[0]; u++, i++)
     {
-      RGB           color_point;
-      Intensity     depth_point;
-      PointXYZRGBA  xyzrgba_point;
+      RGB&           color_point = pc_image[i];
+      Intensity&     depth_point = pc_depth[i];
+      PointXYZRGBA&  xyzrgba_point = pc_xyzrgba[i];
 
       color_point.r = xyzrgba_point.r = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,0));
       color_point.g = xyzrgba_point.g = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,1));
       color_point.b = xyzrgba_point.b = static_cast<uint8_t> (rgb_data->GetScalarComponentAsFloat(u,v,0,2));
       xyzrgba_point.a = 0;
-
-      pc_image.points.push_back(color_point);
-      pc_depth.points.push_back(depth_point);
 
       float d =  depth_data->GetScalarComponentAsFloat(u,v,0,0);
       depth_point.intensity = d;
@@ -144,7 +138,6 @@ void processAndSave( vtkSmartPointer<vtkImageData>  depth_data,
       {
         xyzrgba_point.z = xyzrgba_point.x = xyzrgba_point.y = bad_point;
       }
-      pc_xyzrgba.points.push_back(xyzrgba_point);
 
     } // for u
   } // for v

@@ -63,7 +63,7 @@ main (int, char **argv)
     std::cout<<"Couldn't read the file "<<argv[1]<<std::endl;
     return (-1);
   }
-  std::cout << "Loaded pcd file " << argv[1] << " with " << cloud_ptr->points.size () << std::endl;
+  std::cout << "Loaded pcd file " << argv[1] << " with " << cloud_ptr->size () << std::endl;
 
   // Normal estimation
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -94,14 +94,12 @@ main (int, char **argv)
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster (new pcl::PointCloud<pcl::PointXYZ> (it->indices.size ()));
+    int i = 0;
     for (std::vector<int>::const_iterator pit = it->indices.begin (); pit != it->indices.end (); ++pit)
-      cloud_cluster->points.push_back (cloud_ptr->points[*pit]); 
-    cloud_cluster->width = static_cast<uint32_t> (cloud_cluster->points.size ());
-    cloud_cluster->height = 1;
-    cloud_cluster->is_dense = true;
+      (*cloud_cluster) [i++] = (*cloud_ptr)[*pit];
 
-    std::cout << "PointCloud representing the Cluster using xyzn: " << cloud_cluster->points.size () << " data points." << std::endl;
+    std::cout << "PointCloud representing the Cluster using xyzn: " << cloud_cluster->size () << " data points." << std::endl;
     std::stringstream ss;
     ss << "./cloud_cluster_" << j << ".pcd";
     writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 

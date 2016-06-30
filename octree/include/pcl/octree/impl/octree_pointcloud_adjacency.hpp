@@ -59,7 +59,7 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
   
   for (size_t i = 0; i < input_->size (); ++i)
   {
-    PointT temp (input_->points[i]);
+    PointT temp ((*input_)[i]);
     if (transform_func_) //Search for point with 
       transform_func_ (temp);
     if (!pcl::isFinite (temp)) //Check to make sure transform didn't make point not finite
@@ -135,9 +135,9 @@ pcl::octree::OctreePointCloudAdjacency<PointT, LeafContainerT, BranchContainerT>
 {
   OctreeKey key;
   
-  assert (pointIdx_arg < static_cast<int> (this->input_->points.size ()));
+  assert (pointIdx_arg < static_cast<int> (this->input_->size ()));
   
-  const PointT& point = this->input_->points[pointIdx_arg];
+  const PointT& point = (*this->input_)[pointIdx_arg];
   if (!pcl::isFinite (point))
     return;
    

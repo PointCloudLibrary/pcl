@@ -95,17 +95,15 @@ namespace pcl
           cumulativeAreas[i] = totalArea;
         }
 
-        cloud_out.points.resize (n_samples);
-        cloud_out.width = static_cast<int> (n_samples);
-        cloud_out.height = 1;
+        cloud_out.resize (n_samples);
 
         for (i = 0; i < n_samples; i++)
         {
           Eigen::Vector4f p (0.f, 0.f, 0.f, 0.f);
           randPSurface (polydata, &cumulativeAreas, totalArea, p);
-          cloud_out.points[i].x = static_cast<float> (p[0]);
-          cloud_out.points[i].y = static_cast<float> (p[1]);
-          cloud_out.points[i].z = static_cast<float> (p[2]);
+          cloud_out[i].x = static_cast<float> (p[0]);
+          cloud_out[i].y = static_cast<float> (p[1]);
+          cloud_out[i].z = static_cast<float> (p[2]);
         }
       }
 
@@ -146,18 +144,16 @@ namespace pcl
     getVerticesAsPointCloud (vtkSmartPointer<vtkPolyData> polydata, pcl::PointCloud<pcl::PointXYZ> & cloud_out)
     {
       vtkPoints *points = polydata->GetPoints ();
-      cloud_out.points.resize (points->GetNumberOfPoints ());
-      cloud_out.width = static_cast<int> (cloud_out.points.size ());
-      cloud_out.height = 1;
+      cloud_out.resize (points->GetNumberOfPoints ());
       cloud_out.is_dense = false;
 
       for (int i = 0; i < points->GetNumberOfPoints (); i++)
       {
         double p[3];
         points->GetPoint (i, p);
-        cloud_out.points[i].x = static_cast<float> (p[0]);
-        cloud_out.points[i].y = static_cast<float> (p[1]);
-        cloud_out.points[i].z = static_cast<float> (p[2]);
+        cloud_out[i].x = static_cast<float> (p[0]);
+        cloud_out[i].y = static_cast<float> (p[1]);
+        cloud_out[i].z = static_cast<float> (p[2]);
       }
     }
   }

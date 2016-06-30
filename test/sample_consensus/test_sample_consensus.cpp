@@ -80,13 +80,12 @@ TEST (SampleConsensus, Base)
 TEST (SampleConsensus, InfiniteLoop)
 {
   const unsigned point_count = 100;
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (point_count);
+  PointCloud<PointXYZ> cloud (point_count);
   for (unsigned idx = 0; idx < point_count; ++idx)
   {
-    cloud.points[idx].x = static_cast<float> (idx);
-    cloud.points[idx].y = 0.0;
-    cloud.points[idx].z = 0.0;
+    cloud[idx].x = static_cast<float> (idx);
+    cloud[idx].y = 0.0;
+    cloud[idx].z = 0.0;
   }
 
   boost::posix_time::time_duration delay (0, 0, 1, 0);

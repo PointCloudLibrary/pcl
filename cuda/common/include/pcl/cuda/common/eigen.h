@@ -525,7 +525,7 @@ namespace pcl
     {
     public:
       OrganizedRadiusSearch (const CloudPtr &input, float focalLength, float sqr_radius)
-        : points_(thrust::raw_pointer_cast (&input->points[0]))
+        : points_(thrust::raw_pointer_cast (&(*input)[0]))
         , focalLength_(focalLength)
         , width_ (input->width)
         , height_ (input->height)

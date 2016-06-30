@@ -144,9 +144,9 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           descr_model.view_id = view_id;
           descr_model.descriptor_id = descriptor_id;
 
-          int size_feat = sizeof(signature->points[0].histogram) / sizeof(float);
+          int size_feat = sizeof((*signature)[0].histogram) / sizeof(float);
           descr_model.descr.resize (size_feat);
-          memcpy (&descr_model.descr[0], &signature->points[0].histogram[0], size_feat * sizeof(float));
+          memcpy (&descr_model.descr[0], &(*signature)[0].histogram[0], size_feat * sizeof(float));
 
           if (use_single_categories_)
           {
@@ -266,7 +266,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             std::cout << "Using category:" << categories_to_be_searched_[c] << std::endl;
             for (size_t idx = 0; idx < signatures.size (); idx++)
             {
-              /*float* hist = signatures[idx].points[0].histogram;
+              /*float* hist = signatures[idx][0].histogram;
                std::vector<float> std_hist (hist, hist + getHistogramLength (dummy));
                flann_model histogram ("", std_hist);
                flann::Matrix<int> indices;
@@ -278,8 +278,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
                assert (it != category_to_vectors_indices_.end ());
                nearestKSearch (single_categories_index_[it->second], histogram, nmodels_, indices, distances);*/
 
-              float* hist = signatures[idx].points[0].histogram;
-              int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+              float* hist = signatures[idx][0].histogram;
+              int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
               std::vector<float> std_hist (hist, hist + size_feat);
               //ModelT empty;
 
@@ -316,8 +316,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           for (size_t idx = 0; idx < signatures.size (); idx++)
           {
 
-            float* hist = signatures[idx].points[0].histogram;
-            int size_feat = sizeof(signatures[idx].points[0].histogram) / sizeof(float);
+            float* hist = signatures[idx][0].histogram;
+            int size_feat = sizeof(signatures[idx][0].histogram) / sizeof(float);
             std::vector<float> std_hist (hist, hist + size_feat);
             //ModelT empty;
 
@@ -649,7 +649,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
           PointInTPtr processed (new pcl::PointCloud<PointInT>);
           PointInTPtr view = models->at (i).views_->at (v);
 
-          if (view->points.size () == 0)
+          if (view->size () == 0)
             PCL_WARN("View has no points!!!\n");
 
           if (noisify_)
@@ -662,8 +662,8 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
             boost::normal_distribution<> nd (0.0, noise_std);
             boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
             // Noisify each point in the dataset
-            for (size_t cp = 0; cp < view->points.size (); ++cp)
-              view->points[cp].z += static_cast<float> (var_nor ());
+            for (size_t cp = 0; cp < view->size (); ++cp)
+              (*view)[cp].z += static_cast<float> (var_nor ());
 
           }
 

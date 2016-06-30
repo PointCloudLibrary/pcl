@@ -103,13 +103,13 @@ pcl::io::saveRgbPNGFile (const std::string& file_name, const unsigned char *rgb_
 void
 pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned char>& cloud)
 {
-  saveCharPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
+  saveCharPNGFile(file_name, &cloud[0], cloud.width, cloud.height, 1);
 }
 
 void
 pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<unsigned short>& cloud)
 {
-  saveShortPNGFile(file_name, &cloud.points[0], cloud.width, cloud.height, 1);
+  saveShortPNGFile(file_name, &cloud[0], cloud.width, cloud.height, 1);
 }
 
 void
@@ -137,9 +137,9 @@ void
 pcl::io::savePNGFile (const std::string& file_name, const pcl::PointCloud<pcl::PointXYZL>& cloud)
 {
 	std::vector<unsigned short> data(cloud.width * cloud.height);
-	for (size_t i = 0; i < cloud.points.size (); ++i)
+	for (size_t i = 0; i < cloud.size (); ++i)
 	{
-		data[i] = static_cast<unsigned short> (cloud.points[i].label);      
+		data[i] = static_cast<unsigned short> (cloud[i].label);
 	}
 	saveShortPNGFile(file_name, &data[0], cloud.width, cloud.height,1);
 }

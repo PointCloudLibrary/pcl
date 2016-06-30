@@ -273,7 +273,7 @@ class OpenNIViewer
           {
             if (points_status_->indices[i] < 0)
               continue;
-            const pcl::PointUV &uv = keypoints_->points[i];
+            const pcl::PointUV &uv = (*keypoints_)[i];
             markers.push_back (uv.u);
             markers.push_back (uv.v);
           }

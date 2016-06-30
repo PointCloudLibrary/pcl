@@ -65,7 +65,7 @@ class OpenNIChangeViewer
     void 
     cloud_cb_ (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr &cloud)
     {
-      std::cerr << cloud->points.size() << " -- ";
+      std::cerr << cloud->size() << " -- ";
 
       // assign point cloud to octree
       octree->setInputCloud (cloud);
@@ -87,23 +87,19 @@ class OpenNIChangeViewer
       {
         case REDDIFF_MODE:
           filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (*cloud));
-          filtered_cloud->points.reserve(newPointIdxVector->size());
-
           for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
-            filtered_cloud->points[*it].rgba = 255<<16;
+            (*filtered_cloud)[*it].rgba = 255<<16;
 
           if (!viewer.wasStopped())
             viewer.showCloud (filtered_cloud);
 
           break;
         case ONLYDIFF_MODE:
-          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA>);
+          filtered_cloud.reset (new pcl::PointCloud<pcl::PointXYZRGBA> (newPointIdxVector->size()));
 
-          filtered_cloud->points.reserve(newPointIdxVector->size());
-
+          int i=0;
           for (std::vector<int>::iterator it = newPointIdxVector->begin (); it != newPointIdxVector->end (); ++it)
-            filtered_cloud->points.push_back(cloud->points[*it]);
-
+            (*filtered_cloud)[i++] = filtered_point = (*cloud)[*it];
 
           if (!viewer.wasStopped())
             viewer.showCloud (filtered_cloud);

@@ -50,13 +50,13 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
                             PointIndices                                          &indices_out,
                             float                                                 delta_hue)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
@@ -75,7 +75,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
     seed_queue.push_back (i);
 
     PointXYZRGB  p;
-    p = cloud.points[i];
+    p = cloud[i];
     PointXYZHSV h;
     PointXYZRGBtoXYZHSV(p, h);
 
@@ -97,7 +97,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
           continue;
 
         PointXYZRGB  p_l;
-        p_l = cloud.points[nn_indices[j]];
+        p_l = cloud[nn_indices[j]];
         PointXYZHSV h_l;
         PointXYZRGBtoXYZHSV(p_l, h_l);
 
@@ -126,13 +126,13 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
                             PointIndices                                            &indices_out,
                             float                                                   delta_hue)
 {
-  if (tree->getInputCloud ()->points.size () != cloud.points.size ())
+  if (tree->getInputCloud ()->size () != cloud.size ())
   {
-    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->points.size (), cloud.points.size ());
+    PCL_ERROR ("[pcl::seededHueSegmentation] Tree built for a different point cloud dataset (%lu) than the input cloud (%lu)!\n", tree->getInputCloud ()->size (), cloud.size ());
     return;
   }
   // Create a bool vector of processed point indices, and initialize it to false
-  std::vector<bool> processed (cloud.points.size (), false);
+  std::vector<bool> processed (cloud.size (), false);
 
   std::vector<int> nn_indices;
   std::vector<float> nn_distances;
@@ -151,7 +151,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
     seed_queue.push_back (i);
 
     PointXYZRGB  p;
-    p = cloud.points[i];
+    p = cloud[i];
     PointXYZHSV h;
     PointXYZRGBtoXYZHSV(p, h);
 
@@ -172,7 +172,7 @@ pcl::seededHueSegmentation (const PointCloud<PointXYZRGB>                       
           continue;
 
         PointXYZRGB  p_l;
-        p_l = cloud.points[nn_indices[j]];
+        p_l = cloud[nn_indices[j]];
         PointXYZHSV h_l;
         PointXYZRGBtoXYZHSV(p_l, h_l);
 
@@ -199,7 +199,7 @@ void
 pcl::SeededHueSegmentation::segment (PointIndices &indices_in, PointIndices &indices_out)
 {
   if (!initCompute () || 
-      (input_ != 0   && input_->points.empty ()) ||
+      (input_ != 0   && input_->empty ()) ||
       (indices_ != 0 && indices_->empty ()))
   {
     indices_out.indices.clear ();

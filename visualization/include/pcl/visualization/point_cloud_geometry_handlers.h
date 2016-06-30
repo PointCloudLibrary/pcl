@@ -278,15 +278,15 @@ namespace pcl
           if (!points)
             points = vtkSmartPointer<vtkPoints>::New ();
           points->SetDataTypeToFloat ();
-          points->SetNumberOfPoints (cloud_->points.size ());
+          points->SetNumberOfPoints (cloud_->size ());
 
           float data;
           // Add all points
           double p[3];
-          for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->points.size ()); ++i)
+          for (vtkIdType i = 0; i < static_cast<vtkIdType> (cloud_->size ()); ++i)
           {
             // Copy the value at the specified field
-            const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud_->points[i]);
+            const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&(*cloud_)[i]);
             memcpy (&data, pt_data + fields_[field_x_idx_].offset, sizeof (float));
             p[0] = data;
 

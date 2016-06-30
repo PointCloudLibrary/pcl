@@ -36,11 +36,11 @@ namespace pcl
           std::vector<int> src_indices;
 
           float sum_distances = 0.0;
-          std::vector<float> avg_distances (input->points.size ());
+          std::vector<float> avg_distances (input->size ());
           // Iterate through the source data set
-          for (size_t i = 0; i < input->points.size (); ++i)
+          for (size_t i = 0; i < input->size (); ++i)
           {
-            tree->nearestKSearch (input->points[i], 9, nn_indices, nn_distances);
+            tree->nearestKSearch ((*input)[i], 9, nn_indices, nn_distances);
 
             float avg_dist_neighbours = 0.0;
             for (size_t j = 1; j < nn_indices.size (); j++)
@@ -138,7 +138,7 @@ namespace pcl
             out = in;
           }
 
-          if (out->points.size () == 0)
+          if (out->size () == 0)
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, wont be able to compute normals!\n");
             return;
@@ -168,7 +168,7 @@ namespace pcl
 
           }
 
-          if (out->points.size () == 0)
+          if (out->size () == 0)
           {
             PCL_WARN("NORMAL estimator: Cloud has no points after removing outliers...!\n");
             return;
@@ -205,23 +205,21 @@ namespace pcl
             {
               pcl::ScopeTime t ("check nans...");
               int j = 0;
-              for (size_t i = 0; i < out->points.size (); ++i)
+              for (size_t i = 0; i < out->size (); ++i)
               {
-                if (!pcl_isfinite (out->points[i].x) || !pcl_isfinite (out->points[i].y) || !pcl_isfinite (out->points[i].z))
+                if (!pcl_isfinite ((*out)[i].x) || !pcl_isfinite ((*out)[i].y) || !pcl_isfinite ((*out)[i].z))
                   continue;
 
-                out->points[j] = out->points[i];
+                (*out)[j] = (*out)[i];
                 j++;
               }
 
-              if (j != static_cast<int> (out->points.size ()))
+              if (j != static_cast<int> (out->size ()))
               {
                 PCL_ERROR("Contain nans...");
               }
 
-              out->points.resize (j);
-              out->width = j;
-              out->height = 1;
+              out->resize (j);
             }
 
             typedef typename pcl::NormalEstimation<PointInT, pcl::Normal> NormalEstimator_;
@@ -242,39 +240,34 @@ namespace pcl
           {
             pcl::ScopeTime t ("check nans...");
             int j = 0;
-            for (size_t i = 0; i < normals->points.size (); ++i)
+            for (size_t i = 0; i < normals->size (); ++i)
             {
-              if (!pcl_isfinite (normals->points[i].normal_x) || !pcl_isfinite (normals->points[i].normal_y)
-                  || !pcl_isfinite (normals->points[i].normal_z))
+              if (!pcl_isfinite ((*normals)[i].normal_x) || !pcl_isfinite ((*normals)[i].normal_y)
+                  || !pcl_isfinite ((*normals)[i].normal_z))
                 continue;
 
-              normals->points[j] = normals->points[i];
-              out->points[j] = out->points[i];
+              (*normals)[j] = (*normals)[i];
+              (*out)[j] = (*out)[i];
               j++;
             }
 
-            normals->points.resize (j);
-            normals->width = j;
-            normals->height = 1;
-
-            out->points.resize (j);
-            out->width = j;
-            out->height = 1;
+            normals->resize (j);
+            out->resize (j);
           }
           else
           {
             //is is organized, we set the xyz points to NaN
             pcl::ScopeTime t ("check nans organized...");
             bool NaNs = false;
-            for (size_t i = 0; i < normals->points.size (); ++i)
+            for (size_t i = 0; i < normals->size (); ++i)
             {
-              if (pcl_isfinite (normals->points[i].normal_x) && pcl_isfinite (normals->points[i].normal_y)
-                  && pcl_isfinite (normals->points[i].normal_z))
+              if (pcl_isfinite ((*normals)[i].normal_x) && pcl_isfinite ((*normals)[i].normal_y)
+                  && pcl_isfinite ((*normals)[i].normal_z))
                 continue;
 
               NaNs = true;
 
-              out->points[i].x = out->points[i].y = out->points[i].z = std::numeric_limits<float>::quiet_NaN ();
+              (*out)[i].x = (*out)[i].y = (*out)[i].z = std::numeric_limits<float>::quiet_NaN ();
             }
 
             if (NaNs)
@@ -284,12 +277,12 @@ namespace pcl
             }
           }
 
-          /*for (size_t i = 0; i < out->points.size (); i++)
+          /*for (size_t i = 0; i < out->size (); i++)
           {
             int r, g, b;
-            r = static_cast<int> (out->points[i].r);
-            g = static_cast<int> (out->points[i].g);
-            b = static_cast<int> (out->points[i].b);
+            r = static_cast<int> ((*out)[i].r);
+            g = static_cast<int> ((*out)[i].g);
+            b = static_cast<int> ((*out)[i].b);
             std::cout << "in normal estimator:" << r << " " << g << " " << b << std::endl;
           }*/
         }

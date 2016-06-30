@@ -51,7 +51,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   {
     for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+      PointT& point = cloud [yIdx * cloud.width + xIdx];
       point.x = float(xIdx);
       point.y = float(yIdx);
       point.z = 0.0f;
@@ -105,7 +105,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   unsigned yIdx = y_start;
   for (unsigned idx = 0; idx < dmax; ++idx, xIdx += x_step, yIdx += y_step)
   {
-    PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+    PointT& point = cloud [yIdx * cloud.width + xIdx];
     EXPECT_EQ (point.z, 1.0f);
     point.z = 0.0;
   }
@@ -115,7 +115,7 @@ void checkSimpleLine8 (unsigned x_start, unsigned y_start, unsigned x_end, unsig
     for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
       //std::cout << "testing  point: " << xIdx << " , " << yIdx << std::endl;
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+      PointT& point = cloud [yIdx * cloud.width + xIdx];
 //      if (point.z != 0.0f)
 //        std::cout << "point.z != 0.0f at: " << xIdx << " , " << yIdx << std::endl;
       EXPECT_EQ (point.z, 0.0f);
@@ -132,7 +132,7 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   {
     for (unsigned xIdx = 0; xIdx < cloud.width; ++xIdx)
     {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+      PointT& point = cloud [yIdx * cloud.width + xIdx];
       point.x = float(xIdx);
       point.y = float(yIdx);
       point.z = 0.0f;
@@ -178,7 +178,7 @@ void checkGeneralLine (unsigned x_start, unsigned y_start, unsigned x_end, unsig
   {
     for (int xIdx = 0; xIdx < int(cloud.width); ++xIdx)
     {
-      PointT& point = cloud.points [yIdx * cloud.width + xIdx];
+      PointT& point = cloud [yIdx * cloud.width + xIdx];
       if (point.z != 0)
       {
         // point need to be close to line

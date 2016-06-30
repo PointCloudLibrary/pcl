@@ -256,8 +256,8 @@ namespace pcl
       (void)res;
       assert (res == 0);
       
-      for (size_t i=0; i < cloud->points.size (); i++)
-        dst.push_back (cloud->points[i]);
+      for (size_t i=0; i < cloud->size (); i++)
+        dst.push_back ((*cloud)[i]);
       
     }
     ////////////////////////////////////////////////////////////////////////////////
@@ -479,24 +479,15 @@ namespace pcl
         (void)res;
         assert (res == 0);
       }
-      // Otherwise create the point cloud which will be saved to the pcd file for the first time
-      else 
-      {
-        tmp_cloud->width = static_cast<uint32_t> (count + writebuff_.size ());
-        tmp_cloud->height = 1;
-      }            
 
       for (size_t i = 0; i < src.size (); i++)
-        tmp_cloud->points.push_back (src[i]);
+        tmp_cloud->push_back (src[i]);
       
       // If there are any points in the write cache writebuff_, a different write cache than this one, concatenate
       for (size_t i = 0; i < writebuff_.size (); i++)
       {
-        tmp_cloud->points.push_back (writebuff_[i]);
+        tmp_cloud->push_back (writebuff_[i]);
       }
-
-      //assume unorganized point cloud
-      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
             
       //save and close
       PCDWriter writer;
@@ -639,27 +630,19 @@ namespace pcl
         (void)res; 
         assert (res == 0);
       }
-      else //otherwise create the pcd file
-      {
-        tmp_cloud->width = static_cast<uint32_t> (count) + static_cast<uint32_t> (writebuff_.size ());
-        tmp_cloud->height = 1;
-      }            
 
       // Add any points in the cache
       for (size_t i = 0; i < writebuff_.size (); i++)
       {
-        tmp_cloud->points.push_back (writebuff_ [i]);
+        tmp_cloud->push_back (writebuff_ [i]);
       }
 
       //add the new points passed with this function
       for (size_t i = 0; i < count; i++)
       {
-        tmp_cloud->points.push_back (*(start + i));
+        tmp_cloud->push_back (*(start + i));
       }
 
-      tmp_cloud->width = static_cast<uint32_t> (tmp_cloud->points.size ());
-      tmp_cloud->height = 1;
-            
       //save and close
       PCDWriter writer;
 

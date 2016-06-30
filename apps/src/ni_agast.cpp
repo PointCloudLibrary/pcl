@@ -208,7 +208,7 @@ class AGASTDemo
         const CloudConstPtr &cloud,
         const PointCloud<KeyPointT>::Ptr &keypoints, PointCloud<PointT> &keypoints3d)
     {
-      if (!cloud || !keypoints || cloud->points.empty () || keypoints->points.empty ())
+      if (!cloud || !keypoints || cloud->empty () || keypoints->empty ())
         return;
 
       keypoints3d.resize (keypoints->size ());
@@ -219,14 +219,14 @@ class AGASTDemo
       size_t j = 0;
       for (size_t i = 0; i < keypoints->size (); ++i)
       {
-        const PointT &pt = (*cloud)(static_cast<long unsigned int> (keypoints->points[i].u), 
-                                    static_cast<long unsigned int> (keypoints->points[i].v));
+        const PointT &pt = (*cloud)(static_cast<long unsigned int> ((*keypoints)[i].u),
+                                    static_cast<long unsigned int> ((*keypoints)[i].v));
         if (!pcl_isfinite (pt.x) || !pcl_isfinite (pt.y) || !pcl_isfinite (pt.z))
           continue;
 
-        keypoints3d.points[j].x = pt.x;
-        keypoints3d.points[j].y = pt.y;
-        keypoints3d.points[j].z = pt.z;
+        keypoints3d[j].x = pt.x;
+        keypoints3d[j].y = pt.y;
+        keypoints3d[j].z = pt.z;
         ++j;
       }
 
@@ -294,8 +294,8 @@ class AGASTDemo
             image_viewer_.removeLayer (getStrBool (keypts));
             for (size_t i = 0; i < keypoints->size (); ++i)
             {
-              int u = int (keypoints->points[i].u);
-              int v = int (keypoints->points[i].v);
+              int u = int ((*keypoints)[i].u);
+              int v = int ((*keypoints)[i].v);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
             }
             keypts = !keypts;

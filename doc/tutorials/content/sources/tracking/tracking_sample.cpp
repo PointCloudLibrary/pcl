@@ -80,15 +80,14 @@ drawParticles (pcl::visualization::PCLVisualizer& viz)
   if (particles && new_cloud_)
     {
       //Set pointCloud with particle's points
-      pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-      for (size_t i = 0; i < particles->points.size (); i++)
+      pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> (particles->size ()));
+      for (size_t i = 0; i < particles->size (); i++)
 	{
-	  pcl::PointXYZ point;
+	  pcl::PointXYZ &point = (*particle_cloud) [i];
           
-	  point.x = particles->points[i].x;
-	  point.y = particles->points[i].y;
-	  point.z = particles->points[i].z;
-	  particle_cloud->points.push_back (point);
+	  point.x = (*particles)[i].x;
+	  point.y = (*particles)[i].y;
+	  point.z = (*particles)[i].z;
 	}
 
       //Draw red particles 

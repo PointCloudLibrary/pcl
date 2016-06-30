@@ -12,7 +12,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 #pragma omp parallel for num_threads(threads_)
 #endif
     for (int i = 0; i < particle_num_; i++)
-      this->computeTransformedPointCloudWithoutNormal (particles_->points[i], *transed_reference_vector_[i]);
+      this->computeTransformedPointCloudWithoutNormal ((*particles_)[i], *transed_reference_vector_[i]);
     
     PointCloudInPtr coherence_input (new PointCloudIn);
     this->cropInputPointCloud (input_, *coherence_input);
@@ -31,7 +31,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
         for (int i = 0; i < particle_num_; i++)
         {
           IndicesPtr indices;   // dummy
-          coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+          coherence_->compute (transed_reference_vector_[i], indices, (*particles_)[i].weight);
         }
       }
       else
@@ -48,7 +48,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
       for (int i = 0; i < particle_num_; i++)
       {
         IndicesPtr indices;     // dummy
-        coherence_->compute (transed_reference_vector_[i], indices, particles_->points[i].weight);
+        coherence_->compute (transed_reference_vector_[i], indices, (*particles_)[i].weight);
       }
     }
   }
@@ -64,7 +64,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 #endif
     for (int i = 0; i < particle_num_; i++)
     {
-      this->computeTransformedPointCloudWithNormal (particles_->points[i], *indices_list[i], *transed_reference_vector_[i]);
+      this->computeTransformedPointCloudWithNormal ((*particles_)[i], *indices_list[i], *transed_reference_vector_[i]);
     }
     
     PointCloudInPtr coherence_input (new PointCloudIn);
@@ -77,7 +77,7 @@ pcl::tracking::ParticleFilterOMPTracker<PointInT, StateT>::weight ()
 #endif
     for (int i = 0; i < particle_num_; i++)
     {
-      coherence_->compute (transed_reference_vector_[i], indices_list[i], particles_->points[i].weight);
+      coherence_->compute (transed_reference_vector_[i], indices_list[i], (*particles_)[i].weight);
     }
   }
   

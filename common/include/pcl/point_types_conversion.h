@@ -246,13 +246,13 @@ namespace pcl
   PointCloudRGBtoI (const PointCloud<RGB>&  in,
                     PointCloud<Intensity>&  out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      Intensity& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -264,13 +264,13 @@ namespace pcl
   PointCloudRGBtoI (const PointCloud<RGB>&    in,
                     PointCloud<Intensity8u>&  out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity8u p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      Intensity8u& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -282,13 +282,13 @@ namespace pcl
   PointCloudRGBtoI (const PointCloud<RGB>&     in,
                     PointCloud<Intensity32u>&  out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      Intensity32u p;
-      PointRGBtoI (in.points[i], p);
-      out.points.push_back (p);
+      Intensity32u& p = out[i];
+      PointRGBtoI (in[i], p);
     }
   }
 
@@ -300,13 +300,13 @@ namespace pcl
   PointCloudXYZRGBtoXYZHSV (const PointCloud<PointXYZRGB>& in,
                             PointCloud<PointXYZHSV>&       out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZHSV p;
-      PointXYZRGBtoXYZHSV (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZHSV& p = out[i];
+      PointXYZRGBtoXYZHSV (in[i], p);
     }
   }
 
@@ -318,13 +318,13 @@ namespace pcl
   PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
                              PointCloud<PointXYZHSV>&        out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZHSV p;
-      PointXYZRGBAtoXYZHSV (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZHSV& p = out[i];
+      PointXYZRGBAtoXYZHSV (in[i], p);
     }
   }
 
@@ -336,13 +336,13 @@ namespace pcl
   PointCloudXYZRGBtoXYZI (const PointCloud<PointXYZRGB>& in,
                           PointCloud<PointXYZI>&         out)
   {
+    out.resize (in.size ());
     out.width   = in.width;
     out.height  = in.height;
-    for (size_t i = 0; i < in.points.size (); i++)
+    for (size_t i = 0; i < in.size (); i++)
     {
-      PointXYZI p;
-      PointXYZRGBtoXYZI (in.points[i], p);
-      out.points.push_back (p);
+      PointXYZI& p = out[i];
+      PointXYZRGBtoXYZI (in[i], p);
     }
   }
 
@@ -363,11 +363,13 @@ namespace pcl
     size_t height_ = depth.height;
     float constant_ = 1.0f / focal;
 
-    for (size_t v = 0; v < height_; v++)
+    out.resize (width_ * height_);
+
+    for (size_t v = 0, i = 0; v < height_; v++)
     {
-      for (size_t u = 0; u < width_; u++)
+      for (size_t u = 0; u < width_; u++, i++)
       {
-        PointXYZRGBA pt;
+        PointXYZRGBA& pt = out[i];
         pt.a = 0;
         float depth_ = depth.at (u, v).intensity;
 
@@ -384,8 +386,6 @@ namespace pcl
         pt.r = image.at (u, v).r;
         pt.g = image.at (u, v).g;
         pt.b = image.at (u, v).b;
-
-        out.points.push_back (pt);
       }
     }
     out.width = width_;

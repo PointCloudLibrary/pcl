@@ -20,8 +20,6 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
   unsigned char grn [6] = {  0, 255,   0, 255,   0, 255};
   unsigned char blu [6] = {  0,   0, 255,   0, 255, 255};
 
-  pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT>);
-
   for (size_t i = 0; i < regions.size (); i++)
   {
     Eigen::Vector3f centroid = regions[i].getCentroid ();
@@ -32,8 +30,8 @@ displayPlanarRegions (std::vector<pcl::PlanarRegion<PointT>, Eigen::aligned_allo
                                        centroid[2] + (0.5f * model[2]));
     sprintf (name, "normal_%d", unsigned (i));
     viewer->addArrow (pt2, pt1, 1.0, 0, 0, false, name);
-    
-    contour->points = regions[i].getContour ();
+
+    pcl::PointCloud<PointT>::Ptr contour (new pcl::PointCloud<PointT> (regions[i].getContour ()));
     sprintf (name, "plane_%02d", int (i));
     pcl::visualization::PointCloudColorHandlerCustom <PointT> color (contour, red[i%6], grn[i%6], blu[i%6]);
     if(!viewer->updatePointCloud(contour, color, name))
@@ -66,19 +64,19 @@ void
 displayCurvature (pcl::PointCloud<PointT>& cloud, pcl::PointCloud<pcl::Normal>& normals, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> curvature_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (size_t i  = 0; i < cloud.size (); i++)
   {
-    if (normals.points[i].curvature < 0.04)
+    if (normals[i].curvature < 0.04)
     {
-      curvature_cloud.points[i].r = 0;
-      curvature_cloud.points[i].g = 255;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 0;
+      curvature_cloud[i].g = 255;
+      curvature_cloud[i].b = 0;
     }
     else
     {
-      curvature_cloud.points[i].r = 255;
-      curvature_cloud.points[i].g = 0;
-      curvature_cloud.points[i].b = 0;
+      curvature_cloud[i].r = 255;
+      curvature_cloud[i].g = 0;
+      curvature_cloud[i].b = 0;
     }
   }
   
@@ -91,19 +89,19 @@ void
 displayDistanceMap (pcl::PointCloud<PointT>& cloud, float* distance_map, boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer)
 {
   pcl::PointCloud<pcl::PointXYZRGBA> distance_map_cloud = cloud;
-  for (size_t i  = 0; i < cloud.points.size (); i++)
+  for (size_t i  = 0; i < cloud.size (); i++)
   {
     if (distance_map[i] < 5.0)
     {
-      distance_map_cloud.points[i].r = 255;
-      distance_map_cloud.points[i].g = 0;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 255;
+      distance_map_cloud[i].g = 0;
+      distance_map_cloud[i].b = 0;
     }
     else
     {
-      distance_map_cloud.points[i].r = 0;
-      distance_map_cloud.points[i].g = 255;
-      distance_map_cloud.points[i].b = 0;
+      distance_map_cloud[i].r = 0;
+      distance_map_cloud[i].g = 255;
+      distance_map_cloud[i].b = 0;
     }
   }
   
@@ -135,16 +133,15 @@ bool
 compareClusterToRegion (pcl::PlanarRegion<PointT>& region, pcl::PointCloud<PointT>& cluster)
 {
   Eigen::Vector4f model = region.getCoefficients ();
-  pcl::PointCloud<PointT> poly;
-  poly.points = region.getContour ();
+  pcl::PointCloud<PointT> poly (egion.getContour ());
   
-  for (size_t i = 0; i < cluster.points.size (); i++)
+  for (size_t i = 0; i < cluster.size (); i++)
   {
-    double ptp_dist = fabs (model[0] * cluster.points[i].x +
-                            model[1] * cluster.points[i].y +
-                            model[2] * cluster.points[i].z +
+    double ptp_dist = fabs (model[0] * cluster[i].x +
+                            model[1] * cluster[i].y +
+                            model[2] * cluster[i].z +
                             model[3]);
-    bool in_poly = pcl::isPointIn2DPolygon<PointT> (cluster.points[i], poly);
+    bool in_poly = pcl::isPointIn2DPolygon<PointT> (cluster[i], poly);
     if (in_poly && ptp_dist < 0.02)
       return true;
   }

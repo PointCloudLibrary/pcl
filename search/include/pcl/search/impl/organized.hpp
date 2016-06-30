@@ -70,8 +70,8 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   this->getProjectedRadiusSearchBox (query, static_cast<float> (squared_radius), left, right, top, bottom);
 
   // iterate over search box
-  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->points.size ()))
-    max_nn = static_cast<unsigned int> (input_->points.size ());
+  if (max_nn == 0 || max_nn >= static_cast<unsigned int> (input_->size ()))
+    max_nn = static_cast<unsigned int> (input_->size ());
 
   k_indices.reserve (max_nn);
   k_sqr_distances.reserve (max_nn);
@@ -85,14 +85,14 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   {
     for (; idx < xEnd; ++idx)
     {
-      if (!mask_[idx] || !isFinite (input_->points[idx]))
+      if (!mask_[idx] || !isFinite ((*input_)[idx]))
         continue;
 
-      float dist_x = input_->points[idx].x - query.x;
-      float dist_y = input_->points[idx].y - query.y;
-      float dist_z = input_->points[idx].z - query.z;
+      float dist_x = (*input_)[idx].x - query.x;
+      float dist_y = (*input_)[idx].y - query.y;
+      float dist_z = (*input_)[idx].z - query.z;
       squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
-      //squared_distance = (input_->points[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
+      //squared_distance = ((*input_)[idx].getVector3fMap () - query.getVector3fMap ()).squaredNorm ();
       if (squared_distance <= squared_radius)
       {
         k_indices.push_back (idx);

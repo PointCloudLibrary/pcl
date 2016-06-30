@@ -46,27 +46,27 @@ pcl::removeNaNFromPointCloud (const pcl::PointCloud<PointT> &cloud_in,
                               std::vector<int> &index)
 {
   // Reserve enough space for the indices
-  index.resize (cloud_in.points.size ());
+  index.resize (cloud_in.size ());
   int j = 0;
 
   // If the data is dense, we don't need to check for NaN
   if (cloud_in.is_dense)
   {
-    for (j = 0; j < static_cast<int> (cloud_in.points.size ()); ++j)
+    for (j = 0; j < static_cast<int> (cloud_in.size ()); ++j)
       index[j] = j;
   }
   else
   {
-    for (int i = 0; i < static_cast<int> (cloud_in.points.size ()); ++i)
+    for (int i = 0; i < static_cast<int> (cloud_in.size ()); ++i)
     {
-      if (!pcl_isfinite (cloud_in.points[i].x) || 
-          !pcl_isfinite (cloud_in.points[i].y) || 
-          !pcl_isfinite (cloud_in.points[i].z))
+      if (!pcl_isfinite (cloud_in[i].x) ||
+          !pcl_isfinite (cloud_in[i].y) ||
+          !pcl_isfinite (cloud_in[i].z))
         continue;
       index[j] = i;
       j++;
     }
-    if (j != static_cast<int> (cloud_in.points.size ()))
+    if (j != static_cast<int> (cloud_in.size ()))
     {
       // Resize to the correct size
       index.resize (j);

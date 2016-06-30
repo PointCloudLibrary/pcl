@@ -81,13 +81,13 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::filter (typename pcl::Poin
   cx = static_cast<float> (cx_) / 2.f - 0.5f;
   cy = static_cast<float> (cy_) / 2.f - 0.5f;
 
-  indices_to_keep.resize (model->points.size ());
+  indices_to_keep.resize (model->size ());
   int keep = 0;
-  for (size_t i = 0; i < model->points.size (); i++)
+  for (size_t i = 0; i < model->size (); i++)
   {
-    float x = model->points[i].x;
-    float y = model->points[i].y;
-    float z = model->points[i].z;
+    float x = (*model)[i].x;
+    float y = (*model)[i].y;
+    float z = (*model)[i].z;
     int u = static_cast<int> (f_ * x / z + cx);
     int v = static_cast<int> (f_ * y / z + cy);
 
@@ -122,15 +122,15 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
     max_u = max_v = std::numeric_limits<float>::max () * -1;
     min_u = min_v = std::numeric_limits<float>::max ();
 
-    for (size_t i = 0; i < scene->points.size (); i++)
+    for (size_t i = 0; i < scene->size (); i++)
     {
-      float b_x = scene->points[i].x / scene->points[i].z;
+      float b_x = (*scene)[i].x / (*scene)[i].z;
       if (b_x > max_u)
         max_u = b_x;
       if (b_x < min_u)
         min_u = b_x;
 
-      float b_y = scene->points[i].y / scene->points[i].z;
+      float b_y = (*scene)[i].y / (*scene)[i].z;
       if (b_y > max_v)
         max_v = b_y;
       if (b_y < min_v)
@@ -145,11 +145,11 @@ pcl::occlusion_reasoning::ZBuffering<ModelT, SceneT>::computeDepthMap (typename 
   for (int i = 0; i < (cx_ * cy_); i++)
     depth_[i] = std::numeric_limits<float>::quiet_NaN ();
 
-  for (size_t i = 0; i < scene->points.size (); i++)
+  for (size_t i = 0; i < scene->size (); i++)
   {
-    float x = scene->points[i].x;
-    float y = scene->points[i].y;
-    float z = scene->points[i].z;
+    float x = (*scene)[i].x;
+    float y = (*scene)[i].y;
+    float z = (*scene)[i].z;
     int u = static_cast<int> (f_ * x / z + cx);
     int v = static_cast<int> (f_ * y / z + cy);
 

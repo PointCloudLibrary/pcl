@@ -63,7 +63,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   for (int d = 0; d < hsize; ++d)
   {
     xy[0] = d;
-    xy[1] = cloud.points[0].histogram[d];
+    xy[1] = cloud[0].histogram[d];
     xy_array->SetTuple (d, xy);
   }
   RenWinInteract renwinint;
@@ -85,7 +85,7 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
     const int index, 
     const std::string &id, int win_width, int win_height)
 {
-  if (index < 0 || index >= cloud.points.size ())
+  if (index < 0 || index >= cloud.size ())
   {
     PCL_ERROR ("[addFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -117,9 +117,9 @@ pcl::visualization::PCLHistogramVisualizer::addFeatureHistogram (
   for (uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
-    //xy[1] = cloud.points[index].histogram[d];
+    //xy[1] = cloud[index].histogram[d];
     float data;
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
     xy[1] = data;
     xy_array->SetTuple (d, xy);
   }
@@ -157,7 +157,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   for (int d = 0; d < hsize; ++d)
   {
     xy[0] = d;
-    xy[1] = cloud.points[0].histogram[d];
+    xy[1] = cloud[0].histogram[d];
     xy_array->SetTuple (d, xy);
   }
   reCreateActor (xy_array, renwinupd, hsize);
@@ -170,7 +170,7 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
     const pcl::PointCloud<PointT> &cloud, const std::string &field_name, const int index, 
     const std::string &id)
 {
-  if (index < 0 || index >= cloud.points.size ())
+  if (index < 0 || index >= cloud.size ())
   {
     PCL_ERROR ("[updateFeatureHistogram] Invalid point index (%d) given!\n", index);
     return (false);
@@ -203,9 +203,9 @@ pcl::visualization::PCLHistogramVisualizer::updateFeatureHistogram (
   for (uint32_t d = 0; d < fields[field_idx].count; ++d)
   {
     xy[0] = d;
-    //xy[1] = cloud.points[index].histogram[d];
+    //xy[1] = cloud[index].histogram[d];
     float data;
-    memcpy (&data, reinterpret_cast<const char*> (&cloud.points[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
+    memcpy (&data, reinterpret_cast<const char*> (&cloud[index]) + fields[field_idx].offset + d * sizeof (float), sizeof (float));
     xy[1] = data;
     xy_array->SetTuple (d, xy);
   }

@@ -53,19 +53,18 @@ typedef SampleConsensusModelParallelLine<PointXYZ>::Ptr SampleConsensusModelPara
 TEST (SampleConsensusModelLine, RANSAC)
 {
   // Use a custom point cloud for these tests until we need something better
-  PointCloud<PointXYZ> cloud;
-  cloud.points.resize (10);
+  PointCloud<PointXYZ> cloud (10);
 
-  cloud.points[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
-  cloud.points[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;
-  cloud.points[2].getVector3fMap () <<  7.0f,  8.00f,  9.00f;
-  cloud.points[3].getVector3fMap () << 10.0f, 11.00f, 12.00f;
-  cloud.points[4].getVector3fMap () << 13.0f, 14.00f, 15.00f;
-  cloud.points[5].getVector3fMap () << 16.0f, 17.00f, 18.00f;
-  cloud.points[6].getVector3fMap () << 19.0f, 20.00f, 21.00f;
-  cloud.points[7].getVector3fMap () << 22.0f, 23.00f, 24.00f;
-  cloud.points[8].getVector3fMap () << -5.0f,  1.57f,  0.75f;
-  cloud.points[9].getVector3fMap () <<  4.0f,  2.00f,  3.00f;
+  cloud[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
+  cloud[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;
+  cloud[2].getVector3fMap () <<  7.0f,  8.00f,  9.00f;
+  cloud[3].getVector3fMap () << 10.0f, 11.00f, 12.00f;
+  cloud[4].getVector3fMap () << 13.0f, 14.00f, 15.00f;
+  cloud[5].getVector3fMap () << 16.0f, 17.00f, 18.00f;
+  cloud[6].getVector3fMap () << 19.0f, 20.00f, 21.00f;
+  cloud[7].getVector3fMap () << 22.0f, 23.00f, 24.00f;
+  cloud[8].getVector3fMap () << -5.0f,  1.57f,  0.75f;
+  cloud[9].getVector3fMap () <<  4.0f,  2.00f,  3.00f;
 
   // Create a shared line model pointer directly
   SampleConsensusModelLinePtr model (new SampleConsensusModelLine<PointXYZ> (cloud.makeShared ()));
@@ -101,9 +100,9 @@ TEST (SampleConsensusModelLine, RANSAC)
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff_refined, proj_points);
 
-  EXPECT_XYZ_NEAR (PointXYZ ( 7.0,  8.0,  9.0), proj_points.points[2], 1e-4);
-  EXPECT_XYZ_NEAR (PointXYZ (10.0, 11.0, 12.0), proj_points.points[3], 1e-4);
-  EXPECT_XYZ_NEAR (PointXYZ (16.0, 17.0, 18.0), proj_points.points[5], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ ( 7.0,  8.0,  9.0), proj_points[2], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (10.0, 11.0, 12.0), proj_points[3], 1e-4);
+  EXPECT_XYZ_NEAR (PointXYZ (16.0, 17.0, 18.0), proj_points[5], 1e-4);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,24 +111,24 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   PointCloud<PointXYZ> cloud (16, 1);
 
   // Line 1
-  cloud.points[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
-  cloud.points[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;
-  cloud.points[2].getVector3fMap () <<  7.0f,  8.00f,  9.00f;
-  cloud.points[3].getVector3fMap () << 10.0f, 11.00f, 12.00f;
-  cloud.points[4].getVector3fMap () << 13.0f, 14.00f, 15.00f;
-  cloud.points[5].getVector3fMap () << 16.0f, 17.00f, 18.00f;
-  cloud.points[6].getVector3fMap () << 19.0f, 20.00f, 21.00f;
-  cloud.points[7].getVector3fMap () << 22.0f, 23.00f, 24.00f;
+  cloud[0].getVector3fMap () <<  1.0f,  2.00f,  3.00f;
+  cloud[1].getVector3fMap () <<  4.0f,  5.00f,  6.00f;
+  cloud[2].getVector3fMap () <<  7.0f,  8.00f,  9.00f;
+  cloud[3].getVector3fMap () << 10.0f, 11.00f, 12.00f;
+  cloud[4].getVector3fMap () << 13.0f, 14.00f, 15.00f;
+  cloud[5].getVector3fMap () << 16.0f, 17.00f, 18.00f;
+  cloud[6].getVector3fMap () << 19.0f, 20.00f, 21.00f;
+  cloud[7].getVector3fMap () << 22.0f, 23.00f, 24.00f;
   // Random points
-  cloud.points[8].getVector3fMap () << -5.0f,  1.57f,  0.75f;
-  cloud.points[9].getVector3fMap () <<  4.0f,  2.00f,  3.00f;
+  cloud[8].getVector3fMap () << -5.0f,  1.57f,  0.75f;
+  cloud[9].getVector3fMap () <<  4.0f,  2.00f,  3.00f;
   // Line 2 (parallel to the Z axis)
-  cloud.points[10].getVector3fMap () << -1.00f,  5.00f,  0.0f;
-  cloud.points[11].getVector3fMap () << -1.05f,  5.01f,  1.0f;
-  cloud.points[12].getVector3fMap () << -1.01f,  5.05f,  2.0f;
-  cloud.points[13].getVector3fMap () << -1.05f,  5.01f,  3.0f;
-  cloud.points[14].getVector3fMap () << -1.01f,  5.05f,  4.0f;
-  cloud.points[15].getVector3fMap () << -1.05f,  5.01f,  5.0f;
+  cloud[10].getVector3fMap () << -1.00f,  5.00f,  0.0f;
+  cloud[11].getVector3fMap () << -1.05f,  5.01f,  1.0f;
+  cloud[12].getVector3fMap () << -1.01f,  5.05f,  2.0f;
+  cloud[13].getVector3fMap () << -1.05f,  5.01f,  3.0f;
+  cloud[14].getVector3fMap () << -1.01f,  5.05f,  4.0f;
+  cloud[15].getVector3fMap () << -1.05f,  5.01f,  5.0f;
 
   // Create a shared line model pointer directly
   SampleConsensusModelParallelLinePtr model (new SampleConsensusModelParallelLine<PointXYZ> (cloud.makeShared ()));
@@ -162,8 +161,8 @@ TEST (SampleConsensusModelParallelLine, RANSAC)
   PointCloud<PointXYZ> proj_points;
   model->projectPoints (inliers, coeff, proj_points);
 
-  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 3.0), proj_points.points[13], 0.1);
-  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 4.0), proj_points.points[14], 0.1);
+  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 3.0), proj_points[13], 0.1);
+  EXPECT_XYZ_NEAR (PointXYZ (-1.05, 5.05, 4.0), proj_points[14], 0.1);
 }
 
 int

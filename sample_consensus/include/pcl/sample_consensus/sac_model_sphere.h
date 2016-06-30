@@ -258,9 +258,9 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the sphere and the datapoint X_i
-            cen_t[0] = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
-            cen_t[1] = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
-            cen_t[2] = model_->input_->points[(*model_->tmp_inliers_)[i]].z - x[2];
+            cen_t[0] = (*model_->input_)[(*model_->tmp_inliers_)[i]].x - x[0];
+            cen_t[1] = (*model_->input_)[(*model_->tmp_inliers_)[i]].y - x[1];
+            cen_t[2] = (*model_->input_)[(*model_->tmp_inliers_)[i]].z - x[2];
             
             // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
             fvec[i] = sqrtf (cen_t.dot (cen_t)) - x[3];

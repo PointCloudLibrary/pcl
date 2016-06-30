@@ -18,7 +18,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
 
     PCL_DEBUG("RGB Triangle mesh: ");
     PCL_DEBUG("Mesh polygons: %ld", plg->polygons.size ());
-    PCL_DEBUG("Mesh points: %ld", newcloud.points.size ());
+    PCL_DEBUG("Mesh points: %ld", newcloud.size ());
 
     Eigen::Vector4f tmp;
     for(size_t i=0; i< plg->polygons.size (); ++i)
@@ -27,11 +27,11 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
       for(size_t j = 0; j < apoly_in.vertices.size (); ++j)
       { // each point
         uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+        tmp = newcloud[pt].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),
-                                    Eigen::Vector3f (newcloud.points[pt].r/255.0f,
-                                                     newcloud.points[pt].g/255.0f,
-                                                     newcloud.points[pt].b/255.0f)));
+                                    Eigen::Vector3f (newcloud[pt].r/255.0f,
+                                                     newcloud[pt].g/255.0f,
+                                                     newcloud[pt].b/255.0f)));
         indices.push_back (indices.size ());
       }
     }
@@ -47,7 +47,7 @@ pcl::simulation::TriangleMeshModel::TriangleMeshModel (pcl::PolygonMesh::Ptr plg
       for(size_t j=0; j< apoly_in.vertices.size (); j++)
       { // each point
         uint32_t pt = apoly_in.vertices[j];
-        tmp = newcloud.points[pt].getVector4fMap();
+        tmp = newcloud[pt].getVector4fMap();
         vertices.push_back (Vertex (Eigen::Vector3f (tmp (0), tmp (1), tmp (2)),
                                     Eigen::Vector3f (1.0, 1.0, 1.0)));
         indices.push_back (indices.size ());
@@ -135,15 +135,15 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
       for(size_t j=0; j< apoly_in.vertices.size (); j++)
       { // each point
 	uint32_t pt = apoly_in.vertices[j];
-	tmp = newcloud.points[pt].getVector4fMap ();
+	tmp = newcloud[pt].getVector4fMap ();
 	// x,y,z
 	apoly.vertices_[3*j + 0] = tmp (0);
 	apoly.vertices_[3*j + 1] = tmp (1);
 	apoly.vertices_[3*j + 2] = tmp (2);
 	// r,g,b: input is ints 0->255, opengl wants floats 0->1
-	apoly.colors_[4*j + 0] = newcloud.points[pt].r/255.0f; // Red
-	apoly.colors_[4*j + 1] = newcloud.points[pt].g/255.0f; // Green
-	apoly.colors_[4*j + 2] = newcloud.points[pt].b/255.0f; // Blue
+	apoly.colors_[4*j + 0] = newcloud[pt].r/255.0f; // Red
+	apoly.colors_[4*j + 1] = newcloud[pt].g/255.0f; // Green
+	apoly.colors_[4*j + 2] = newcloud[pt].b/255.0f; // Blue
 	apoly.colors_[4*j + 3] = 1.0f; // transparancy? unnecessary?
       }
       polygons.push_back (apoly);
@@ -165,7 +165,7 @@ pcl::simulation::PolygonMeshModel::PolygonMeshModel (GLenum mode, pcl::PolygonMe
       for(size_t j=0; j< apoly_in.vertices.size (); j++)
       { // each point
 	uint32_t pt = apoly_in.vertices[j];
-	tmp = newcloud.points[pt].getVector4fMap ();
+	tmp = newcloud[pt].getVector4fMap ();
 	// x,y,z
 	apoly.vertices_[3*j + 0] = tmp (0);
 	apoly.vertices_[3*j + 1] = tmp (1);
@@ -212,19 +212,19 @@ pcl::simulation::PolygonMeshModel::draw ()
 
 pcl::simulation::PointCloudModel::PointCloudModel (GLenum mode, pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc) : mode_ (mode)
 {
-  nvertices_ = pc->points.size ();
+  nvertices_ = pc->size ();
   vertices_ = new float[3*nvertices_];
   colors_ = new float[4*nvertices_];
 
-  for (size_t i = 0; i < pc->points.size (); ++i)
+  for (size_t i = 0; i < pc->size (); ++i)
   {
-    vertices_[3*i + 0] = pc->points[i].x;
-    vertices_[3*i + 1] = pc->points[i].y;
-    vertices_[3*i + 2] = pc->points[i].z;
+    vertices_[3*i + 0] = (*pc)[i].x;
+    vertices_[3*i + 1] = (*pc)[i].y;
+    vertices_[3*i + 2] = (*pc)[i].z;
 
-    colors_[4*i + 0] = pc->points[i].r / 255.0f;
-    colors_[4*i + 1] = pc->points[i].g / 255.0f;
-    colors_[4*i + 2] = pc->points[i].b / 255.0f;
+    colors_[4*i + 0] = (*pc)[i].r / 255.0f;
+    colors_[4*i + 1] = (*pc)[i].g / 255.0f;
+    colors_[4*i + 2] = (*pc)[i].b / 255.0f;
     colors_[4*i + 3] = 1.0;
   }
 }

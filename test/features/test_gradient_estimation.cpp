@@ -51,7 +51,6 @@ TEST (PCL, IntensityGradientEstimation)
 {
   // Create a test cloud
   PointCloud<PointXYZI> cloud_xyzi;
-  cloud_xyzi.height = 1;
   cloud_xyzi.is_dense = true;
   for (float x = -5.0f; x <= 5.0f; x += 0.1f)
   {
@@ -63,10 +62,9 @@ TEST (PCL, IntensityGradientEstimation)
       p.z = 0.1f * powf (x, 2.0f) + 0.5f * y + 1.0f;
       p.intensity = 0.1f * powf (x, 3.0f) + 0.2f * powf (y, 2.0f) + 1.0f * p.z + 20000.0f;
 
-      cloud_xyzi.points.push_back (p);
+      cloud_xyzi.push_back (p);
     }
   }
-  cloud_xyzi.width = static_cast<uint32_t> (cloud_xyzi.points.size ());
   PointCloud<PointXYZI>::ConstPtr cloud_ptr = cloud_xyzi.makeShared ();
 
   // Estimate surface normals
@@ -89,12 +87,12 @@ TEST (PCL, IntensityGradientEstimation)
   grad_est.compute (gradient);
 
   // Compare to gradient estimates to actual values
-  for (size_t i = 0; i < cloud_ptr->points.size (); ++i)
+  for (size_t i = 0; i < cloud_ptr->size (); ++i)
   {
-    const PointXYZI &p = cloud_ptr->points[i];
+    const PointXYZI &p = (*cloud_ptr)[i];
 
     // A pointer to the estimated gradient values
-    const float * g_est = gradient.points[i].gradient;
+    const float * g_est = gradient[i].gradient;
 
     // Compute the surface normal analytically.
     float nx = -0.2f * p.x;

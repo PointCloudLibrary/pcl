@@ -289,13 +289,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
       for (int y = 0; y < 4; y++)
         backToRealScale_eigen (x, y) = float (backToRealScale->GetMatrix ()->GetElement (x, y));
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    cloud->points.resize (resolution_ * resolution_);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
 
     if (gen_organized_)
     {
-      cloud->width = resolution_;
-      cloud->height = resolution_;
+      cloud.reset (new pcl::PointCloud<pcl::PointXYZ> (resolution_, resolution_));
       cloud->is_dense = false;
 
       double coords[3];
@@ -329,8 +327,7 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
     }
     else
     {
-      cloud->width = resolution_ * resolution_;
-      cloud->height = 1;
+      cloud.reset (new pcl::PointCloud<pcl::PointXYZ> (resolution_ * resolution_));
 
       double coords[3];
       float * depth = new float[resolution_ * resolution_];
@@ -347,19 +344,18 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
           worldPicker->Pick (x, y, value, renderer);
           worldPicker->GetPickPosition (coords);
-          cloud->points[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
-          cloud->points[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
-          cloud->points[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
-          cloud->points[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
-                      * cloud->points[count_valid_depth_pixels].getVector4fMap ();
+          (*cloud)[count_valid_depth_pixels].x = static_cast<float> (coords[0]);
+          (*cloud)[count_valid_depth_pixels].y = static_cast<float> (coords[1]);
+          (*cloud)[count_valid_depth_pixels].z = static_cast<float> (coords[2]);
+          (*cloud)[count_valid_depth_pixels].getVector4fMap () = backToRealScale_eigen
+                      * (*cloud)[count_valid_depth_pixels].getVector4fMap ();
           count_valid_depth_pixels++;
         }
       }
 
       delete[] depth;
 
-      cloud->points.resize (count_valid_depth_pixels);
-      cloud->width = count_valid_depth_pixels;
+      cloud->resize (count_valid_depth_pixels);
     }
 
     if(compute_entropy_) {
@@ -459,11 +455,11 @@ pcl::apps::RenderViewsTesselatedSphere::generateViews() {
 
     //NOTE: vtk view coordinate system is different than the standard camera coordinates (z forward, y down, x right)
     //thus, the fliping in y and z
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (size_t i = 0; i < cloud->size (); i++)
     {
-      cloud->points[i].getVector4fMap () = trans_view * cloud->points[i].getVector4fMap ();
-      cloud->points[i].y *= -1.0f;
-      cloud->points[i].z *= -1.0f;
+      (*cloud)[i].getVector4fMap () = trans_view * (*cloud)[i].getVector4fMap ();
+      (*cloud)[i].y *= -1.0f;
+      (*cloud)[i].z *= -1.0f;
     }
 
     renderer->RemoveActor (actor_view);

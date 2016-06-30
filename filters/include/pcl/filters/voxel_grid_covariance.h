@@ -449,9 +449,9 @@ namespace pcl
       nearestKSearch (const PointCloud &cloud, int index, int k,
                       std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances)
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (nearestKSearch (cloud.points[index], k, k_leaves, k_sqr_distances));
+        return (nearestKSearch (cloud[index], k, k_leaves, k_sqr_distances));
       }
 
 
@@ -505,9 +505,9 @@ namespace pcl
                     std::vector<LeafConstPtr> &k_leaves, std::vector<float> &k_sqr_distances,
                     unsigned int max_nn = 0)
       {
-        if (index >= static_cast<int> (cloud.points.size ()) || index < 0)
+        if (index >= static_cast<int> (cloud.size ()) || index < 0)
           return (0);
-        return (radiusSearch (cloud.points[index], radius, k_leaves, k_sqr_distances, max_nn));
+        return (radiusSearch (cloud[index], radius, k_leaves, k_sqr_distances, max_nn));
       }
 
     protected:

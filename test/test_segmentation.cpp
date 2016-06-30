@@ -140,8 +140,8 @@ TEST (RegionGrowingTest, SegmentWithDifferentNormalAndCloudSize)
   rg.setInputCloud (another_cloud_);
   rg.setInputNormals (normals_);
 
-  int first_cloud_size = static_cast<int> (cloud_->points.size ());
-  int second_cloud_size = static_cast<int> (another_cloud_->points.size ());
+  int first_cloud_size = static_cast<int> (cloud_->size ());
+  int second_cloud_size = static_cast<int> (another_cloud_->size ());
   ASSERT_NE (first_cloud_size, second_cloud_size);
 
   std::vector <pcl::PointIndices> clusters;
@@ -223,7 +223,7 @@ TEST (MinCutSegmentationTest, Segment)
   neighbor_number = 14;
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
 
   mcSeg.setForegroundPoints (foreground_points);
   mcSeg.setInputCloud (another_cloud_);
@@ -285,7 +285,7 @@ TEST (MinCutSegmentationTest, SegmentWithWrongParameters)
   object_center.y = -64.73f;
   object_center.z = -6.18f;
   pcl::PointCloud<pcl::PointXYZ>::Ptr foreground_points(new pcl::PointCloud<pcl::PointXYZ> ());
-  foreground_points->points.push_back (object_center);
+  foreground_points->push_back (object_center);
   mcSeg.setForegroundPoints (foreground_points);
 
   unsigned int prev_neighbor_number = mcSeg.getNumberOfNeighbours ();
@@ -350,32 +350,31 @@ TEST (SegmentDifferences, Segmentation)
   PointCloud<PointXYZ> output;
   sd.segment (output);
 
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 0);
+  EXPECT_EQ (static_cast<int> (output.size ()), 0);
   
   // Set a different target
   sd.setTargetCloud (cloud_t_);
   sd.segment (output);
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 126);
+  EXPECT_EQ (static_cast<int> (output.size ()), 126);
   //savePCDFile ("./test/0-t.pcd", output);
 
   // Reverse
   sd.setInputCloud (cloud_t_);
   sd.setTargetCloud (cloud_);
   sd.segment (output);
-  EXPECT_EQ (static_cast<int> (output.points.size ()), 127);
+  EXPECT_EQ (static_cast<int> (output.size ()), 127);
   //savePCDFile ("./test/t-0.pcd", output);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (ExtractPolygonalPrism, Segmentation)
 {
-  PointCloud<PointXYZ>::Ptr hull (new PointCloud<PointXYZ>);
-  hull->points.resize (5);
+  PointCloud<PointXYZ>::Ptr hull (new PointCloud<PointXYZ> (5));
 
-  for (size_t i = 0; i < hull->points.size (); ++i)
+  for (size_t i = 0; i < hull->size (); ++i)
   {
-    hull->points[i].x = hull->points[i].y = static_cast<float> (i);
-    hull->points[i].z = 0.0f;
+    (*hull)[i].x = (*hull)[i].y = static_cast<float> (i);
+    (*hull)[i].z = 0.0f;
   }
 
   ExtractPolygonalPrismData<PointXYZ> ex;
@@ -423,8 +422,8 @@ main (int argc, char** argv)
 
   // Tranpose the cloud
   cloud_t = cloud;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
-    cloud_t.points[i].x += 0.01f;
+  for (size_t i = 0; i < cloud.size (); ++i)
+    cloud_t[i].x += 0.01f;
 
   cloud_   = cloud.makeShared ();
   cloud_t_ = cloud_t.makeShared ();

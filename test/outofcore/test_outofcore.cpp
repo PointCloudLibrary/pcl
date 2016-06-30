@@ -521,29 +521,23 @@ TEST_F (OutofcoreTest, Outofcore_PointcloudConstructor)
   const Eigen::Vector3d max (1024, 1024, 1024);
 
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-  
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
   
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 1024), 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 1024),
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
-    
-    test_cloud->points.push_back (tmp);
   }
 
-  EXPECT_EQ (numPts, test_cloud->points.size ());
+  EXPECT_EQ (numPts, test_cloud->size ());
   
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
   pcl_cloud.addPointCloud (test_cloud);
   
-  EXPECT_EQ (test_cloud->points.size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
+  EXPECT_EQ (test_cloud->size (), pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ()));
   
   cleanUpFilesystem ();
 }
@@ -555,19 +549,14 @@ TEST_F (OutofcoreTest, Outofcore_PointsOnBoundaries)
   const Eigen::Vector3d min (-1,-1,-1);
   const Eigen::Vector3d max (1,1,1);
   
-  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-  cloud->width = 8;
-  cloud->height =1;
-  cloud->reserve (8);
+  pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> (8));
   
   for (int i=0; i<8; i++)
   {
-    PointT tmp;
+    PointT &tmp = (*cloud) [i];
     tmp.x = static_cast<float> (pow (-1.0, i)) * 1.0f;
     tmp.y = static_cast<float> (pow (-1.0, i+1)) * 1.0f;
     tmp.z = static_cast<float> (pow (-1.0, 3*i)) * 1.0f;
-    
-    cloud->points.push_back (tmp);
   }
 
   octree_disk octree (4, min, max, outofcore_path, "ECEF");
@@ -602,39 +591,27 @@ TEST_F (OutofcoreTest, Outofcore_MultiplePointClouds)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
-
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
-
-  second_cloud->width = numPts;
-  second_cloud->height = 1;
-  second_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> (numPts));
   
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 1024), 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 1024),
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
-    
-    test_cloud->points.push_back (tmp);
   }
 
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 1024), 
+    (*second_cloud) [i] = PointT (static_cast<float> (i % 1024),
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
-    
-    second_cloud->points.push_back (tmp);
   }
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
 
-  ASSERT_EQ (test_cloud->points.size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
+  ASSERT_EQ (test_cloud->size (), pcl_cloud.addPointCloud (test_cloud)) << "Points lost when adding the first cloud to the tree\n";
 
   ASSERT_EQ (numPts, pcl_cloud.getNumPointsAtDepth (pcl_cloud.getDepth ())) << "Book keeping of number of points at query depth does not match number of points inserted to the leaves\n";
 
@@ -665,34 +642,22 @@ TEST_F (OutofcoreTest, Outofcore_PointCloudInput_LOD)
   const Eigen::Vector3d max (1024,1024,1024);
   
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
-
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
-
-  second_cloud->width = numPts;
-  second_cloud->height = 1;
-  second_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> (numPts));
   
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 1024), 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 1024),
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
-    
-    test_cloud->points.push_back (tmp);
   }
 
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 1024), 
+    (*second_cloud) [i] = PointT (static_cast<float> (i % 1024),
                  static_cast<float> (i % 1024), 
                  static_cast<float> (i % 1024));
-    
-    second_cloud->points.push_back (tmp);
   }
 
   octree_disk pcl_cloud (4, min, max, outofcore_path, "ECEF");
@@ -714,20 +679,14 @@ TEST_F (OutofcoreTest, PointCloud2_Constructors)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
 
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 200) - 99 , 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 200) - 99 ,
                  static_cast<float> (i % 200) - 99, 
                  static_cast<float> (i % 200) - 99);
-    
-    test_cloud->points.push_back (tmp);
   }
 
   boost::shared_ptr<pcl::PCLPointCloud2> point_cloud (new pcl::PCLPointCloud2 ());
@@ -749,14 +708,10 @@ TEST_F (OutofcoreTest, PointCloud2_Insertion)
   const Eigen::Vector3d min (-11, -11, -11);
   const Eigen::Vector3d max (11,11,11);
 
-  pcl::PointCloud<pcl::PointXYZ> point_cloud;
-
-  point_cloud.points.reserve (numPts);
-  point_cloud.width = static_cast<uint32_t> (numPts);
-  point_cloud.height = 1;
+  pcl::PointCloud<pcl::PointXYZ> point_cloud (numPts);
 
   for (size_t i=0; i < numPts; i++)
-    point_cloud.points.push_back (PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10)));
+    point_cloud [i] = PointT (static_cast<float>(rand () % 10), static_cast<float>(rand () % 10), static_cast<float>(rand () % 10));
 
 
   pcl::PCLPointCloud2::Ptr input_cloud (new pcl::PCLPointCloud2 ());
@@ -783,34 +738,22 @@ TEST_F (OutofcoreTest, PointCloud2_MultiplePointCloud)
   const Eigen::Vector3d max (100.1, 100.1, 100.1);
 
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr first_cloud (new pcl::PointCloud<PointT> ());
-  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> ());
-
-  first_cloud->width = numPts;
-  first_cloud->height = 1;
-  first_cloud->reserve (numPts);
-
-  second_cloud->width = numPts;
-  second_cloud->height = 1;
-  second_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr first_cloud (new pcl::PointCloud<PointT> (numPts));
+  pcl::PointCloud<PointT>::Ptr second_cloud (new pcl::PointCloud<PointT> (numPts));
   
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 50), 
+    (*first_cloud) [i] = PointT (static_cast<float> (i % 50),
                 static_cast<float> (i % 50),
                  static_cast<float> (i % 50));
-    
-    first_cloud->points.push_back (tmp);
   }
 
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 50), 
+    (*second_cloud) [i] = PointT (static_cast<float> (i % 50),
                  static_cast<float> (i % 50), 
                  static_cast<float> (i % 50));
-    
-    second_cloud->points.push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr first_cloud_ptr (new pcl::PCLPointCloud2 ());
@@ -845,20 +788,14 @@ TEST_F (OutofcoreTest, PointCloud2_QueryBoundingBox)
   const boost::uint64_t depth = 2;
 
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
 
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 50) - 50 , 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 50) - 50 ,
                  static_cast<float> (i % 50) - 50, 
                  static_cast<float> (i % 50) - 50);
-    
-    test_cloud->points.push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());
@@ -897,20 +834,14 @@ TEST_F (OutofcoreTest, PointCloud2_Query)
   const boost::uint64_t depth = 2;
   
   //create a point cloud
-  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> ());
-
-  test_cloud->width = numPts;
-  test_cloud->height = 1;
-  test_cloud->reserve (numPts);
+  pcl::PointCloud<PointT>::Ptr test_cloud (new pcl::PointCloud<PointT> (numPts));
 
   //generate some random points
   for (size_t i=0; i < numPts; i++)
   {
-    PointT tmp (static_cast<float> (i % 50) - 50 , 
+    (*test_cloud) [i] = PointT (static_cast<float> (i % 50) - 50 ,
                  static_cast<float> (i % 50) - 50, 
                  static_cast<float> (i % 50) - 50);
-    
-    test_cloud->points.push_back (tmp);
   }
 
   pcl::PCLPointCloud2::Ptr dst_blob (new pcl::PCLPointCloud2 ());

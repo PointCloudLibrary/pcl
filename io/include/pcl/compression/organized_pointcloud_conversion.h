@@ -103,7 +103,7 @@ namespace pcl
       {
         size_t cloud_size, i;
 
-        cloud_size = cloud_arg.points.size ();
+        cloud_size = cloud_arg.size ();
 
         // Clear image data
         disparityData_arg.clear ();
@@ -113,7 +113,7 @@ namespace pcl
         for (i = 0; i < cloud_size; ++i)
         {
           // Get point from cloud
-          const PointT& point = cloud_arg.points[i];
+          const PointT& point = cloud_arg[i];
 
           if (pcl::isFinite (point))
           {
@@ -156,8 +156,8 @@ namespace pcl
         assert(disparityData_arg.size()==cloud_size);
 
         // Reset point cloud
-        cloud_arg.points.clear ();
-        cloud_arg.points.reserve (cloud_size);
+        cloud_arg.clear ();
+        cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
         cloud_arg.width = static_cast<uint32_t> (width_arg);
@@ -175,7 +175,7 @@ namespace pcl
         for (y = -centerY; y < +centerY; ++y)
           for (x = -centerX; x < +centerX; ++x)
           {
-            PointT newPoint;
+            PointT& newPoint = cloud_arg[i];
             const uint16_t& pixel_disparity = disparityData_arg[i];
             ++i;
 
@@ -195,8 +195,6 @@ namespace pcl
               // Generate bad point
               newPoint.x = newPoint.y = newPoint.z = bad_point;
             }
-
-            cloud_arg.points.push_back (newPoint);
           }
 
       }
@@ -225,8 +223,8 @@ namespace pcl
         assert(depthData_arg.size()==cloud_size);
 
         // Reset point cloud
-        cloud_arg.points.clear ();
-        cloud_arg.points.reserve (cloud_size);
+        cloud_arg.clear ();
+        cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
         cloud_arg.width = static_cast<uint32_t> (width_arg);
@@ -244,7 +242,7 @@ namespace pcl
         for (y = -centerY; y < +centerY; ++y)
           for (x = -centerX; x < +centerX; ++x)
           {
-            PointT newPoint;
+            PointT& newPoint = cloud_arg[i];
             const float& pixel_depth = depthData_arg[i];
             ++i;
 
@@ -264,8 +262,6 @@ namespace pcl
               // Generate bad point
               newPoint.x = newPoint.y = newPoint.z = bad_point;
             }
-
-            cloud_arg.points.push_back (newPoint);
           }
 
       }
@@ -298,7 +294,7 @@ namespace pcl
       {
         size_t cloud_size, i;
 
-        cloud_size = cloud_arg.points.size ();
+        cloud_size = cloud_arg.size ();
 
         // Reset output vectors
         disparityData_arg.clear ();
@@ -317,7 +313,7 @@ namespace pcl
 
         for (i = 0; i < cloud_size; ++i)
         {
-          const PointT& point = cloud_arg.points[i];
+          const PointT& point = cloud_arg[i];
 
           if (pcl::isFinite (point))
           {
@@ -410,8 +406,8 @@ namespace pcl
         int x, y, centerX, centerY;
 
         // Reset point cloud
-        cloud_arg.points.clear();
-        cloud_arg.points.reserve(cloud_size);
+        cloud_arg.clear();
+        cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
         cloud_arg.width = static_cast<uint32_t>(width_arg);
@@ -429,7 +425,7 @@ namespace pcl
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-            PointT newPoint;
+            PointT& newPoint = cloud_arg[i];
 
             const uint16_t& pixel_disparity = disparityData_arg[i];
 
@@ -483,8 +479,6 @@ namespace pcl
               newPoint.rgb = 0.0f;
             }
 
-            // Add point to cloud
-            cloud_arg.points.push_back(newPoint);
             // Increment point iterator
             ++i;
         }
@@ -528,8 +522,8 @@ namespace pcl
         int x, y, centerX, centerY;
 
         // Reset point cloud
-        cloud_arg.points.clear();
-        cloud_arg.points.reserve(cloud_size);
+        cloud_arg.clear();
+        cloud_arg.resize (cloud_size);
 
         // Define point cloud parameters
         cloud_arg.width = static_cast<uint32_t>(width_arg);
@@ -547,7 +541,7 @@ namespace pcl
         for (y=-centerY; y<+centerY; ++y )
           for (x=-centerX; x<+centerX; ++x )
           {
-            PointT newPoint;
+            PointT& newPoint = cloud_arg[i];
 
             const float& pixel_depth = depthData_arg[i];
 
@@ -601,8 +595,6 @@ namespace pcl
               newPoint.rgb = 0.0f;
             }
 
-            // Add point to cloud
-            cloud_arg.points.push_back(newPoint);
             // Increment point iterator
             ++i;
         }

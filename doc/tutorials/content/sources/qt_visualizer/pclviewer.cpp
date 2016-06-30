@@ -9,9 +9,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   this->setWindowTitle ("PCL viewer");
 
   // Setup the cloud pointer
-  cloud.reset (new PointCloudT);
-  // The number of points in the cloud
-  cloud->points.resize (200);
+  cloud.reset (new PointCloudT (200));
 
   // The default color
   red   = 128;
@@ -19,15 +17,15 @@ PCLViewer::PCLViewer (QWidget *parent) :
   blue  = 128;
 
   // Fill the cloud with some points
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
 
-    cloud->points[i].r = red;
-    cloud->points[i].g = green;
-    cloud->points[i].b = blue;
+    (*cloud)[i].r = red;
+    (*cloud)[i].g = green;
+    (*cloud)[i].b = blue;
   }
 
   // Set up the QVTK window
@@ -64,9 +62,9 @@ PCLViewer::randomButtonPressed ()
   // Set the new color
   for (size_t i = 0; i < cloud->size(); i++)
   {
-    cloud->points[i].r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    cloud->points[i].g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
-    cloud->points[i].b = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    (*cloud)[i].r = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    (*cloud)[i].g = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
+    (*cloud)[i].b = 255 *(1024 * rand () / (RAND_MAX + 1.0f));
   }
 
   viewer->updatePointCloud (cloud, "cloud");
@@ -79,9 +77,9 @@ PCLViewer::RGBsliderReleased ()
   // Set the new color
   for (size_t i = 0; i < cloud->size (); i++)
   {
-    cloud->points[i].r = red;
-    cloud->points[i].g = green;
-    cloud->points[i].b = blue;
+    (*cloud)[i].r = red;
+    (*cloud)[i].g = green;
+    (*cloud)[i].b = blue;
   }
   viewer->updatePointCloud (cloud, "cloud");
   ui->qvtkWidget->update ();

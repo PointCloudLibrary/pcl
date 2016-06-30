@@ -515,15 +515,11 @@ pcl::io::OpenNI2Grabber::irDepthImageCallback (const IRImage::Ptr &ir_image,
 pcl::PointCloud<pcl::PointXYZ>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_image)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud <pcl::PointXYZ> (depth_width_, depth_height_));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   float constant_x = 1.0f / device_->getDepthFocalLength ();
   float constant_y = 1.0f / device_->getDepthFocalLength ();
@@ -565,7 +561,7 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
   {
     for (int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
         depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -593,16 +589,12 @@ pcl::io::OpenNI2Grabber::convertToXYZPointCloud (const DepthImage::Ptr& depth_im
 template <typename PointT> typename pcl::PointCloud<PointT>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, const DepthImage::Ptr &depth_image)
 {
-  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT>);
+  boost::shared_ptr<pcl::PointCloud<PointT> > cloud (new pcl::PointCloud<PointT> (std::max (image_width_, depth_width_), std::max (image_height_, depth_height_)));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = std::max (image_height_, depth_height_);
-  cloud->width = std::max (image_width_, depth_width_);
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
   // Generate default camera parameters
   float fx = device_->getDepthFocalLength (); // Horizontal focal length
@@ -655,7 +647,10 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
     pt.x = pt.y = pt.z = bad_point;
     pt.b = pt.g = pt.r = 0;
     pt.a = 255; // point has no color info -> alpha = max => transparent 
-    cloud->points.assign (cloud->points.size (), pt);
+    for (int i = 0; i < cloud->size(); i++)
+    {
+      (*cloud)[i] = pt;
+    }
   }
 
   // fill in XYZ values
@@ -668,7 +663,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (int u = 0; u < depth_width_; ++u, ++value_idx, point_idx += step)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
 
@@ -701,7 +696,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
   {
     for (unsigned xIdx = 0; xIdx < image_width_; ++xIdx, point_idx += step, value_idx += 3)
     {
-      PointT& pt = cloud->points[point_idx];
+      PointT& pt = (*cloud)[point_idx];
 
       color.Red   = rgb_buffer[value_idx];
       color.Green = rgb_buffer[value_idx + 1];
@@ -720,16 +715,12 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 pcl::PointCloud<pcl::PointXYZI>::Ptr
 pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, const DepthImage::Ptr &depth_image)
 {
-  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > ());
+  boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > cloud (new pcl::PointCloud<pcl::PointXYZI > (depth_width_, depth_height_));
 
   cloud->header.seq = depth_image->getFrameID ();
   cloud->header.stamp = depth_image->getTimestamp ();
   cloud->header.frame_id = rgb_frame_id_;
-  cloud->height = depth_height_;
-  cloud->width = depth_width_;
   cloud->is_dense = false;
-
-  cloud->points.resize (cloud->height * cloud->width);
 
 
   float fx = device_->getDepthFocalLength (); // Horizontal focal length
@@ -780,7 +771,7 @@ pcl::io::OpenNI2Grabber::convertToXYZIPointCloud (const IRImage::Ptr &ir_image, 
   {
     for (int u = 0; u < depth_width_; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||

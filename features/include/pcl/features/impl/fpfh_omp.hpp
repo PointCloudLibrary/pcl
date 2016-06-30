@@ -48,12 +48,12 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   std::vector<int> spfh_indices_vec;
-  std::vector<int> spfh_hist_lookup (surface_->points.size ());
+  std::vector<int> spfh_hist_lookup (surface_->size ());
 
   // Build a list of (unique) indices for which we will need to compute SPFH signatures
   // (We need an SPFH signature for every point that is a neighbor of any point in input_[indices_])
   if (surface_ != input_ ||
-      indices_->size () != surface_->points.size ())
+      indices_->size () != surface_->size ())
   { 
     std::vector<int> nn_indices (k_); // \note These resizes are irrelevant for a radiusSearch ().
     std::vector<float> nn_dists (k_); 
@@ -125,7 +125,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
         this->searchForNeighbors ((*indices_)[idx], search_parameter_, nn_indices, nn_dists) == 0)
     {
       for (int d = 0; d < nr_bins; ++d)
-        output.points[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
+        output[idx].histogram[d] = std::numeric_limits<float>::quiet_NaN ();
   
       output.is_dense = false;
       continue;
@@ -143,7 +143,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
 
     // ...and copy it into the output cloud
     for (int d = 0; d < nr_bins; ++d)
-      output.points[idx].histogram[d] = fpfh_histogram[d];
+      output[idx].histogram[d] = fpfh_histogram[d];
   }
 
 }

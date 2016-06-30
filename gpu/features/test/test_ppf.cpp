@@ -65,8 +65,8 @@ TEST(PCL_FeaturesGPU, ppf)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
 
@@ -104,7 +104,7 @@ TEST(PCL_FeaturesGPU, ppf)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFSignature& gpu = downloaded[i];
-        PPFSignature& cpu = ppfs.points[i];        
+        PPFSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -124,8 +124,8 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     source.generateIndices();
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
 
@@ -153,22 +153,19 @@ TEST(PCL_FeaturesGPU, ppfrgb)
 
     pcl::PPFRGBEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
+    for(size_t i = 0; i < source.cloud->size(); ++i)
     {
-        const PointXYZ& p = source.cloud->points[i];        
+        const PointXYZ& p = (*source.cloud)[i];
+        PointXYZRGB& o = (*cloud_XYZRGB)[i];
+
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
         int b = (color >> 16) & 0xFF;
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
+        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
-    cloud_XYZRGB->height = 1;
 
 
     fe.setInputCloud (cloud_XYZRGB);
@@ -181,7 +178,7 @@ TEST(PCL_FeaturesGPU, ppfrgb)
     for(size_t i = 207025; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);
@@ -212,8 +209,8 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
     //////////////////////////////////////////////////////////////////////////////////////////////  
@@ -243,22 +240,19 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
 
     pcl::PPFRGBRegionEstimation<PointXYZRGB, Normal, PPFRGBSignature> fe;
     
-    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB>());
-    cloud_XYZRGB->points.clear();
-    for(size_t i = 0; i < source.cloud->points.size(); ++i)               
+    PointCloud<PointXYZRGB>::Ptr cloud_XYZRGB(new PointCloud<PointXYZRGB> (source.cloud->size ()));
+    for(size_t i = 0; i < source.cloud->size(); ++i)
     {
-        const PointXYZ& p = source.cloud->points[i];        
+        const PointXYZ& p = (*source.cloud)[i];
+        PointXYZRGB& o = (*cloud_XYZRGB)[i];
+
         int color = *(int*)&p.data[3];
         int r =  color        & 0xFF;
         int g = (color >>  8) & 0xFF;
         int b = (color >> 16) & 0xFF;
 
-        PointXYZRGB o;
-        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;        
-        cloud_XYZRGB->points.push_back(o);
+        o.x = p.x; o.y = p.y; o.z = p.z; o.r = r; o.g = g; o.b = b;
     }
-    cloud_XYZRGB->width = cloud_XYZRGB->points.size();
-    cloud_XYZRGB->height = 1;
 
 
     fe.setInputCloud (cloud_XYZRGB);
@@ -272,7 +266,7 @@ TEST(PCL_FeaturesGPU, ppfrgb_region)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PPFRGBSignature& gpu = downloaded[i];
-        PPFRGBSignature& cpu = ppfs.points[i];        
+        PPFRGBSignature& cpu = ppfs[i];
 
         ASSERT_NEAR(gpu.f1, cpu.f1, 0.01f);
         ASSERT_NEAR(gpu.f2, cpu.f2, 0.01f);

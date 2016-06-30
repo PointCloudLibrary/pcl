@@ -47,19 +47,19 @@ template <typename PointT> vtkSmartPointer<vtkDataSet>
 pcl::visualization::createPolygon (const typename pcl::PointCloud<PointT>::ConstPtr &cloud)
 {
   vtkSmartPointer<vtkUnstructuredGrid> poly_grid;
-  if (cloud->points.empty ())
+  if (cloud->empty ())
     return (poly_grid);
 
   vtkSmartPointer<vtkPoints> poly_points = vtkSmartPointer<vtkPoints>::New ();
   vtkSmartPointer<vtkPolygon> polygon    = vtkSmartPointer<vtkPolygon>::New ();
 
-  poly_points->SetNumberOfPoints (cloud->points.size ());
-  polygon->GetPointIds ()->SetNumberOfIds (cloud->points.size ());
+  poly_points->SetNumberOfPoints (cloud->size ());
+  polygon->GetPointIds ()->SetNumberOfIds (cloud->size ());
 
   size_t i;
-  for (i = 0; i < cloud->points.size (); ++i)
+  for (i = 0; i < cloud->size (); ++i)
   {
-    poly_points->SetPoint (i, cloud->points[i].x, cloud->points[i].y, cloud->points[i].z);
+    poly_points->SetPoint (i, (*cloud)[i].x, (*cloud)[i].y, (*cloud)[i].z);
     polygon->GetPointIds ()->SetId (i, i);
   }
 

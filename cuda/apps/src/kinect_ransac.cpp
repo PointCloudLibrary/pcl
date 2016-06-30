@@ -65,16 +65,16 @@ class SimpleKinectTool
       pcl::ScopeTime ttt ("all");
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       PointCloudAOS<Host> data_host;
-      data_host.points.resize (cloud->points.size());
-      for (size_t i = 0; i < cloud->points.size (); ++i)
+      data_host.points.resize (cloud->size());
+      for (size_t i = 0; i < cloud->size (); ++i)
       {
         PointXYZRGB pt;
-        pt.x = cloud->points[i].x;
-        pt.y = cloud->points[i].y;
-        pt.z = cloud->points[i].z;
+        pt.x = (*cloud)[i].x;
+        pt.y = (*cloud)[i].y;
+        pt.z = (*cloud)[i].z;
         // Pack RGB into a float
-        pt.rgb = *(float*)(&cloud->points[i].rgb);
-        data_host.points[i] = pt;
+        pt.rgb = *(float*)(&(*cloud)[i].rgb);
+        data_host[i] = pt;
       }
       data_host.width = cloud->width;
       data_host.height = cloud->height;

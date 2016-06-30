@@ -9,31 +9,28 @@
 int
  main (int argc, char** argv)
 {
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ> (15));
 
   // Fill in the cloud data
-  cloud->width  = 15;
-  cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
 
   // Generate the data
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1.0;
+    (*cloud)[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1.0;
   }
 
   // Set a few outliers
-  cloud->points[0].z = 2.0;
-  cloud->points[3].z = -2.0;
-  cloud->points[6].z = 4.0;
+  (*cloud)[0].z = 2.0;
+  (*cloud)[3].z = -2.0;
+  (*cloud)[6].z = 4.0;
 
-  std::cerr << "Point cloud data: " << cloud->points.size () << " points" << std::endl;
-  for (size_t i = 0; i < cloud->points.size (); ++i)
-    std::cerr << "    " << cloud->points[i].x << " "
-                        << cloud->points[i].y << " "
-                        << cloud->points[i].z << std::endl;
+  std::cerr << "Point cloud data: " << cloud->size () << " points" << std::endl;
+  for (size_t i = 0; i < cloud->size (); ++i)
+    std::cerr << "    " << (*cloud)[i].x << " "
+                        << (*cloud)[i].y << " "
+                        << (*cloud)[i].z << std::endl;
 
   pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
@@ -62,9 +59,9 @@ int
 
   std::cerr << "Model inliers: " << inliers->indices.size () << std::endl;
   for (size_t i = 0; i < inliers->indices.size (); ++i)
-    std::cerr << inliers->indices[i] << "    " << cloud->points[inliers->indices[i]].x << " "
-                                               << cloud->points[inliers->indices[i]].y << " "
-                                               << cloud->points[inliers->indices[i]].z << std::endl;
+    std::cerr << inliers->indices[i] << "    " << (*cloud)[inliers->indices[i]].x << " "
+                                               << (*cloud)[inliers->indices[i]].y << " "
+                                               << (*cloud)[inliers->indices[i]].z << std::endl;
 
   return (0);
 }

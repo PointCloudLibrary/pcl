@@ -61,8 +61,8 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     
     source.estimateNormals();
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
 
@@ -96,7 +96,7 @@ TEST(PCL_FeaturesGPU, PrincipalCurvatures)
     for(size_t i = 0; i < downloaded.size(); ++i)
     {
         PrincipalCurvatures& gpu = downloaded[i];
-        PrincipalCurvatures& cpu = pc.points[i];        
+        PrincipalCurvatures& cpu = pc[i];
 
         ASSERT_NEAR(gpu.principal_curvature_x, cpu.principal_curvature_x, 0.01f);
         ASSERT_NEAR(gpu.principal_curvature_y, cpu.principal_curvature_y, 0.01f);

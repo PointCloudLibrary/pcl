@@ -65,26 +65,23 @@ search::KdTree<PointNormal>::Ptr tree4;
 TEST (PCL, Organized)
 {
   //construct dataset
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> ());
-  cloud_organized->width = 5;
-  cloud_organized->height = 10;
-  cloud_organized->points.resize (cloud_organized->width * cloud_organized->height);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_organized (new pcl::PointCloud<pcl::PointXYZ> (5, 10));
 
   int npoints = 0;
   for (size_t i = 0; i < cloud_organized->height; i++)
   {
     for (size_t j = 0; j < cloud_organized->width; j++)
     {
-      cloud_organized->points[npoints].x = static_cast<float> (i);
-      cloud_organized->points[npoints].y = static_cast<float> (j);
-      cloud_organized->points[npoints].z = static_cast<float> (cloud_organized->points.size ()); // to avoid shadowing
+      (*cloud_organized)[npoints].x = static_cast<float> (i);
+      (*cloud_organized)[npoints].y = static_cast<float> (j);
+      (*cloud_organized)[npoints].z = static_cast<float> (cloud_organized->size ()); // to avoid shadowing
       npoints++;
     }
   }
   int nan_idx = cloud_organized->width*cloud_organized->height - 2*cloud_organized->width + 1;
-  cloud_organized->points[nan_idx].x = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].y = numeric_limits<float>::quiet_NaN ();
-  cloud_organized->points[nan_idx].z = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].x = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].y = numeric_limits<float>::quiet_NaN ();
+  (*cloud_organized)[nan_idx].z = numeric_limits<float>::quiet_NaN ();
   
   // Init objects
   PolygonMesh triangles;

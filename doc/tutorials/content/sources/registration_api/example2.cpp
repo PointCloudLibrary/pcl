@@ -139,13 +139,13 @@ computeTransformation (const PointCloud<PointXYZ>::Ptr &src,
                             keypoints_tgt (new PointCloud<PointXYZ>);
 
   estimateKeypoints (src, tgt, *keypoints_src, *keypoints_tgt);
-  print_info ("Found %lu and %lu keypoints for the source and target datasets.\n", keypoints_src->points.size (), keypoints_tgt->points.size ());
+  print_info ("Found %lu and %lu keypoints for the source and target datasets.\n", keypoints_src->size (), keypoints_tgt->size ());
 
   // Compute normals for all points keypoint
   PointCloud<Normal>::Ptr normals_src (new PointCloud<Normal>), 
                           normals_tgt (new PointCloud<Normal>);
   estimateNormals (src, tgt, *normals_src, *normals_tgt);
-  print_info ("Estimated %lu and %lu normals for the source and target datasets.\n", normals_src->points.size (), normals_tgt->points.size ());
+  print_info ("Estimated %lu and %lu normals for the source and target datasets.\n", normals_src->size (), normals_tgt->size ());
 
   // Compute FPFH features at each keypoint
   PointCloud<FPFHSignature33>::Ptr fpfhs_src (new PointCloud<FPFHSignature33>), 

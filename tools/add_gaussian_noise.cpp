@@ -85,22 +85,19 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   PointCloud<PointXYZ>::Ptr xyz_cloud (new pcl::PointCloud<PointXYZ> ());
   fromPCLPointCloud2 (*input, *xyz_cloud);
 
-  PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> ());
-  xyz_cloud_filtered->points.resize (xyz_cloud->points.size ());
+  PointCloud<PointXYZ>::Ptr xyz_cloud_filtered (new PointCloud<PointXYZ> (xyz_cloud->width, xyz_cloud->height));
   xyz_cloud_filtered->header = xyz_cloud->header;
-  xyz_cloud_filtered->width = xyz_cloud->width;
-  xyz_cloud_filtered->height = xyz_cloud->height;
 
 
   boost::mt19937 rng; rng.seed (static_cast<unsigned int> (time (0)));
   boost::normal_distribution<> nd (0, standard_deviation);
   boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
 
-  for (size_t point_i = 0; point_i < xyz_cloud->points.size (); ++point_i)
+  for (size_t point_i = 0; point_i < xyz_cloud->size (); ++point_i)
   {
-    xyz_cloud_filtered->points[point_i].x = xyz_cloud->points[point_i].x + static_cast<float> (var_nor ());
-    xyz_cloud_filtered->points[point_i].y = xyz_cloud->points[point_i].y + static_cast<float> (var_nor ());
-    xyz_cloud_filtered->points[point_i].z = xyz_cloud->points[point_i].z + static_cast<float> (var_nor ());
+    (*xyz_cloud_filtered)[point_i].x = (*xyz_cloud)[point_i].x + static_cast<float> (var_nor ());
+    (*xyz_cloud_filtered)[point_i].y = (*xyz_cloud)[point_i].y + static_cast<float> (var_nor ());
+    (*xyz_cloud_filtered)[point_i].z = (*xyz_cloud)[point_i].z + static_cast<float> (var_nor ());
   }
 
   pcl::PCLPointCloud2 input_xyz_filtered;

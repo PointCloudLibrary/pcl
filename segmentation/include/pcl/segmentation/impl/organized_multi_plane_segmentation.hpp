@@ -52,10 +52,10 @@ projectToPlaneFromViewpoint (pcl::PointCloud<PointT>& cloud, Eigen::Vector4f& no
 {
   Eigen::Vector3f norm (normal[0], normal[1], normal[2]); //(region.coefficients_[0], region.coefficients_[1], region.coefficients_[2]); 
   pcl::PointCloud<PointT> projected_cloud;
-  projected_cloud.resize (cloud.points.size ());
-  for (size_t i = 0; i < cloud.points.size (); i++)
+  projected_cloud.resize (cloud.size ());
+  for (size_t i = 0; i < cloud.size (); i++)
   {
-    Eigen::Vector3f pt (cloud.points[i].x, cloud.points[i].y, cloud.points[i].z);
+    Eigen::Vector3f pt (cloud[i].x, cloud[i].y, cloud[i].z);
     //Eigen::Vector3f intersection = (vp, pt, norm, centroid);
     float u = norm.dot ((centroid - vp)) / norm.dot ((pt - vp));
     Eigen::Vector3f intersection (vp + u * (pt - vp));
@@ -92,11 +92,11 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
     return;
 
   // Check that we got the same number of points and normals
-  if (static_cast<int> (normals_->points.size ()) != static_cast<int> (input_->points.size ()))
+  if (static_cast<int> (normals_->size ()) != static_cast<int> (input_->size ()))
   {
     PCL_ERROR ("[pcl::%s::segment] Number of points in input cloud (%lu) and normal cloud (%lu) do not match!\n",
-               getClassName ().c_str (), input_->points.size (),
-               normals_->points.size ());
+               getClassName ().c_str (), input_->size (),
+               normals_->size ());
     return;
   }
 
@@ -109,10 +109,10 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   }
 
   // Calculate range part of planes' hessian normal form
-  std::vector<float> plane_d (input_->points.size ());
+  std::vector<float> plane_d (input_->size ());
   
   for (unsigned int i = 0; i < input_->size (); ++i)
-    plane_d[i] = input_->points[i].getVector3fMap ().dot (normals_->points[i].getNormalVector3fMap ());
+    plane_d[i] = (*input_)[i].getVector3fMap ().dot ((*normals_)[i].getNormalVector3fMap ());
   
   // Make a comparator
   //PlaneCoefficientComparator<PointT,PointNT> plane_comparator (plane_d);
@@ -203,9 +203,9 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segment (std::ve
   {
     boundary_cloud.resize (0);
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[0], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
@@ -242,9 +242,9 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
     
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
@@ -286,9 +286,9 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
     boundary_cloud.resize (0);
     int max_inlier_idx = static_cast<int> (inlier_indices[i].indices.size ()) - 1;
     pcl::OrganizedConnectedComponentSegmentation<PointT,PointLT>::findLabeledRegionBoundary (inlier_indices[i].indices[max_inlier_idx], labels, boundary_indices[i]);
-    boundary_cloud.points.resize (boundary_indices[i].indices.size ());
+    boundary_cloud.resize (boundary_indices[i].indices.size ());
     for (unsigned j = 0; j < boundary_indices[i].indices.size (); j++)
-      boundary_cloud.points[j] = input_->points[boundary_indices[i].indices[j]];
+      boundary_cloud[j] = (*input_)[boundary_indices[i].indices[j]];
 
     Eigen::Vector3f centroid = Eigen::Vector3f (centroids[i][0],centroids[i][1],centroids[i][2]);
     Eigen::Vector4f model = Eigen::Vector4f (model_coefficients[i].values[0],
@@ -297,7 +297,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::segmentAndRefine
                                              model_coefficients[i].values[3]);
 
     Eigen::Vector3f vp (0.0, 0.0, 0.0);
-    if (project_points_ && boundary_cloud.points.size () > 0)
+    if (project_points_ && boundary_cloud.size () > 0)
       boundary_cloud = projectToPlaneFromViewpoint (boundary_cloud, model, centroid, vp);
 
     regions[i] = PlanarRegion<PointT> (centroid,
@@ -355,7 +355,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx+1))
       {
         //test1 = true;
-        labels->points[current_row+colIdx+1].label = current_label;
+        (*labels)[current_row+colIdx+1].label = current_label;
         label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
       }
@@ -367,7 +367,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       //Check down
       if (refinement_compare_->compare (current_row+colIdx, next_row+colIdx))
       {
-        labels->points[next_row+colIdx].label = current_label;
+        (*labels)[next_row+colIdx].label = current_label;
         label_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
       }
@@ -390,7 +390,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       //Check left
       if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx-1))
       {
-        labels->points[current_row+colIdx-1].label = current_label;
+        (*labels)[current_row+colIdx-1].label = current_label;
         label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
       }
@@ -401,7 +401,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       //Check up
       if (refinement_compare_->compare (current_row+colIdx, prev_row+colIdx))
       {
-        labels->points[prev_row+colIdx].label = current_label;
+        (*labels)[prev_row+colIdx].label = current_label;
         label_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
       }

@@ -492,7 +492,7 @@ pcl::ColorModality<PointInT>::computeDistanceMap (const MaskMap & input,
   output.resize (width, height);
 
   // compute distance map
-  //float *distance_map = new float[input_->points.size ()];
+  //float *distance_map = new float[input_->size ()];
   const unsigned char * mask_map = input.getData ();
   float * distance_map = output.getData ();
   for (size_t index = 0; index < width*height; ++index)

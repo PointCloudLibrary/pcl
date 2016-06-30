@@ -290,7 +290,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
       int y = index/range_image.width,
           x = index - y*range_image.width;
       
-      const BorderTraits& border_traits = border_descriptions.points[index].traits;
+      const BorderTraits& border_traits = border_descriptions[index].traits;
       if (border_traits[BORDER_TRAIT__SHADOW_BORDER] || border_traits[BORDER_TRAIT__VEIL_POINT])
         continue;
       
@@ -323,7 +323,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
         int index2 = neighbors_to_check[neighbors_to_check_idx];
         if (!range_image.isValid (index2))
           continue;
-        const BorderTraits& border_traits2 = border_descriptions.points[index2].traits;
+        const BorderTraits& border_traits2 = border_descriptions[index2].traits;
         if (border_traits2[BORDER_TRAIT__SHADOW_BORDER] || border_traits2[BORDER_TRAIT__VEIL_POINT])
           continue;
         int y2 = index2/range_image.width,
@@ -455,7 +455,7 @@ NarfKeypoint::calculateSparseInterestImage ()
     interest_image_[index] = 0.0f;
     if (!range_image.isValid (index))
       continue;
-    const BorderTraits& border_traits = border_descriptions.points[index].traits;
+    const BorderTraits& border_traits = border_descriptions[index].traits;
     if (border_traits[BORDER_TRAIT__SHADOW_BORDER] || border_traits[BORDER_TRAIT__VEIL_POINT])
       continue;
     interest_image_[index] = 2.0f;
@@ -506,7 +506,7 @@ NarfKeypoint::calculateSparseInterestImage ()
       int index2 = neighbors_to_check[neighbors_to_check_idx];
       if (!range_image.isValid (index2))
         continue;
-      const BorderTraits& border_traits2 = border_descriptions.points[index2].traits;
+      const BorderTraits& border_traits2 = border_descriptions[index2].traits;
       if (border_traits2[BORDER_TRAIT__SHADOW_BORDER] || border_traits2[BORDER_TRAIT__VEIL_POINT])
         continue;
       int y2 = index2/range_image.width,
@@ -781,7 +781,7 @@ NarfKeypoint::calculateInterestPoints ()
             if (invalid_beams[i] || !range_image.isValid (x2, y2))
               continue;
             int index2 = y2*width + x2;
-            const BorderTraits& neighbor_border_traits = border_descriptions.points[index2].traits;
+            const BorderTraits& neighbor_border_traits = border_descriptions[index2].traits;
             if (neighbor_border_traits[BORDER_TRAIT__SHADOW_BORDER] || neighbor_border_traits[BORDER_TRAIT__VEIL_POINT])
             {
               invalid_beams[i] = true;
@@ -843,9 +843,9 @@ NarfKeypoint::calculateInterestPoints ()
     const InterestPoint& interest_point = tmp_interest_points[int_point_idx];
     
     bool better_point_too_close = false;
-    for (size_t int_point_idx2=0; int_point_idx2<interest_points_->points.size (); ++int_point_idx2)
+    for (size_t int_point_idx2=0; int_point_idx2<interest_points_->size (); ++int_point_idx2)
     {
-      const InterestPoint& interest_point2 = interest_points_->points[int_point_idx2];
+      const InterestPoint& interest_point2 = (*interest_points_)[int_point_idx2];
       float distance_squared = (interest_point.getVector3fMap ()-interest_point2.getVector3fMap ()).squaredNorm ();
       if (distance_squared < min_distance_squared)
       {
@@ -855,15 +855,13 @@ NarfKeypoint::calculateInterestPoints ()
     }
     if (better_point_too_close)
       continue;
-    interest_points_->points.push_back (interest_point);
+    interest_points_->push_back (interest_point);
     int image_x, image_y;
     //std::cout << interest_point.x<<","<<interest_point.y<<","<<interest_point.z<<", "<<std::flush;
     range_image.getImagePoint (interest_point.getVector3fMap (), image_x, image_y);
     if (range_image.isValid (image_x, image_y))
       is_interest_point_image_[image_y*width + image_x] = true;
   }
-  interest_points_->width = static_cast<uint32_t> (interest_points_->points.size ());
-  interest_points_->height = 1;
   interest_points_->is_dense = true;
 }
 
@@ -876,7 +874,7 @@ NarfKeypoint::getRangeImage ()
 void 
 NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
 {
-  output.points.clear ();
+  output.clear ();
   
   if (indices_)
   {
@@ -910,7 +908,7 @@ NarfKeypoint::detectKeypoints (NarfKeypoint::PointCloudOut& output)
   {
     if (!is_interest_point_image_[index])
       continue;
-    output.points.push_back (index);
+    output.push_back (index);
   }
 }
 

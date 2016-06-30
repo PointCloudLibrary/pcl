@@ -149,7 +149,7 @@ namespace pcl
         */
       bool saveTrainingFeatures(std::string file_name, std::string labels_file_name)
       {
-        if (labels_.size () == training_features_->points.size ())
+        if (labels_.size () == training_features_->size ())
         {
           if (pcl::io::savePCDFile (file_name.c_str (), *training_features_) != 0)
             return false;
@@ -169,13 +169,13 @@ namespace pcl
         */
       bool addTrainingFeatures (const FeatureCloudPtr training_features, const std::vector<std::string> &labels)
       {
-        if (labels.size () == training_features->points.size ())
+        if (labels.size () == training_features->size ())
         {
           labels_.insert (labels_.end (), labels.begin (), labels.end ());
-          training_features_->points.insert (training_features_->points.end (), training_features->points.begin (), training_features->points.end ());
+          training_features_->insert (training_features_->end (), training_features->begin (), training_features->end ());
           training_features_->header = training_features->header;
           training_features_->height = 1;
-          training_features_->width  = static_cast<uint32_t> (training_features_->points.size ());
+          training_features_->width  = static_cast<uint32_t> (training_features_->size ());
           training_features_->is_dense &= training_features->is_dense;
           training_features_->sensor_origin_ = training_features->sensor_origin_;
           training_features_->sensor_orientation_ = training_features->sensor_orientation_;
@@ -249,7 +249,7 @@ namespace pcl
         // compute gaussian parameter producing the desired minimum score (around 50 for the default values)
         float gaussian_param = - static_cast<float> (radius / log (min_score));
         // TODO accept result to be filled in by reference
-        return classifier_.classify(vfhs->points.at (0), radius, gaussian_param);
+        return classifier_.classify(vfhs->at (0), radius, gaussian_param);
       }
 
       /** \brief Extract the VFH feature describing the given point cloud.

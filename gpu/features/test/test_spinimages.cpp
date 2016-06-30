@@ -69,8 +69,8 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 
 	const int min_beighbours = 15;
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
     //uploading data to GPU
     pcl::gpu::VFHEstimation::PointCloud cloud_gpu;
@@ -127,7 +127,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -158,8 +158,8 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 
 	const int min_beighbours = 15;
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU
@@ -217,7 +217,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -248,8 +248,8 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 
 	const int min_beighbours = 15;
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU
@@ -307,7 +307,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         
@@ -338,8 +338,8 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 
 	const int min_beighbours = 15;
                    
-    vector<PointXYZ> normals_for_gpu(source.normals->points.size());    
-    std::transform(source.normals->points.begin(), source.normals->points.end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());        
+    vector<PointXYZ> normals_for_gpu(source.normals->size());
+    std::transform(source.normals->begin(), source.normals->end(), normals_for_gpu.begin(), DataSource::Normal2PointXYZ());
     
 
     //uploading data to GPU
@@ -397,7 +397,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 			continue;  
 
         SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SpinImage& cpu = (*spin_images)[i];
         
         size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
         

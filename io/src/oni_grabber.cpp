@@ -345,7 +345,7 @@ ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::Depth
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize (cloud->height * cloud->width);
+  cloud->resize (cloud->height * cloud->width);
 
   register float constant = 1.0f / device_->getDepthFocalLength (depth_width_);
 
@@ -380,7 +380,7 @@ ONIGrabber::convertToXYZPointCloud(const boost::shared_ptr<openni_wrapper::Depth
   {
     for (register int u = -centerX; u < centerX; ++u, ++depth_idx)
     {
-      pcl::PointXYZ& pt = cloud->points[depth_idx];
+      pcl::PointXYZ& pt = (*cloud)[depth_idx];
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
           depth_map[depth_idx] == depth_image->getNoSampleValue () ||
@@ -414,7 +414,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   register int centerX = (cloud->width >> 1);
@@ -456,7 +456,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr ONIGrabber::convertToXYZRGBPointCloud (
   {
     for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
     {
-      pcl::PointXYZRGB& pt = cloud->points[depth_idx];
+      pcl::PointXYZRGB& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
@@ -498,7 +498,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   register int centerX = (cloud->width >> 1);
@@ -540,7 +540,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr ONIGrabber::convertToXYZRGBAPointCloud (
   {
     for (register int u = -centerX; u < centerX; ++u, color_idx += 3, ++depth_idx)
     {
-      pcl::PointXYZRGBA& pt = cloud->points[depth_idx];
+      pcl::PointXYZRGBA& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||
@@ -577,7 +577,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const b
   cloud->width = depth_width_;
   cloud->is_dense = false;
 
-  cloud->points.resize(cloud->height * cloud->width);
+  cloud->resize(cloud->height * cloud->width);
 
   float constant = 1.0f / device_->getImageFocalLength(cloud->width);
   register int centerX = (cloud->width >> 1);
@@ -613,7 +613,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr ONIGrabber::convertToXYZIPointCloud(const b
   {
     for (register int u = -centerX; u < centerX; ++u, ++depth_idx)
     {
-      pcl::PointXYZI& pt = cloud->points[depth_idx];
+      pcl::PointXYZI& pt = (*cloud)[depth_idx];
       /// @todo Different values for these cases
       // Check for invalid measurements
       if (depth_map[depth_idx] == 0 ||

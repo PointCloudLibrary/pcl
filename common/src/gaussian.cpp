@@ -145,7 +145,7 @@ pcl::GaussianKernel::convolveRows (const pcl::PointCloud<float>& input,
     {
       output.width = input.width;
       output.height = input.height;
-      output.points.resize (input.height * input.width);
+      output.resize (input.height * input.width);
     }
     input_ = &input;
   }

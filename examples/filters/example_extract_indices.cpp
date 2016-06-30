@@ -58,7 +58,7 @@ main (int, char**)
     cloud->push_back (p);
   }
 
-  std::cout << "Cloud has " << cloud->points.size () << " points." << std::endl;
+  std::cout << "Cloud has " << cloud->size () << " points." << std::endl;
 
   pcl::PointIndices indices;
   indices.indices.push_back (0);
@@ -70,6 +70,6 @@ main (int, char**)
   pcl::PointCloud<pcl::PointXYZ>::Ptr output (new pcl::PointCloud<pcl::PointXYZ>);
   extract_indices.filter (*output);
 
-  std::cout << "Output has " << output->points.size () << " points." << std::endl;
+  std::cout << "Output has " << output->size () << " points." << std::endl;
   return (0);
 }

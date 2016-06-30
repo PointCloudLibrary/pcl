@@ -57,11 +57,11 @@ pcl::visualization::ImageViewer::convertRGBCloudToUChar (
     boost::shared_array<unsigned char> &data)
 {
   int j = 0;
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
-    data[j++] = cloud.points[i].r;
-    data[j++] = cloud.points[i].g;
-    data[j++] = cloud.points[i].b;
+    data[j++] = cloud[i].r;
+    data[j++] = cloud[i].g;
+    data[j++] = cloud[i].b;
   }
 }
 
@@ -318,9 +318,9 @@ pcl::visualization::ImageViewer::addRectangle (
   // Construct a search object to get the camera parameters
   pcl::search::OrganizedNeighbor<T> search;
   search.setInputCloud (image);
-  std::vector<pcl::PointXY> pp_2d (mask.points.size ());
-  for (size_t i = 0; i < mask.points.size (); ++i)
-    search.projectPoint (mask.points[i], pp_2d[i]);
+  std::vector<pcl::PointXY> pp_2d (mask.size ());
+  for (size_t i = 0; i < mask.size (); ++i)
+    search.projectPoint (mask[i], pp_2d[i]);
 
   pcl::PointXY min_pt_2d, max_pt_2d;
   min_pt_2d.x = min_pt_2d.y = std::numeric_limits<float>::max ();

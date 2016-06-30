@@ -156,8 +156,8 @@ class SUSANDemo
             image_viewer_.removeLayer (getStrBool (keypts));
             for (size_t i = 0; i < keypoints->size (); ++i)
             {
-              int u = int (keypoints->points[i].label % cloud->width);
-              int v = cloud->height - int (keypoints->points[i].label / cloud->width);
+              int u = int ((*keypoints)[i].label % cloud->width);
+              int v = cloud->height - int ((*keypoints)[i].label / cloud->width);
               image_viewer_.markPoint (u, v, visualization::red_color, visualization::blue_color, 10, getStrBool (!keypts));
             }
             keypts = !keypts;

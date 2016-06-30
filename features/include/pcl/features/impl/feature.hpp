@@ -99,7 +99,7 @@ pcl::Feature<PointInT, PointOutT>::initCompute ()
   }
 
   // If the dataset is empty, just return
-  if (input_->points.empty ())
+  if (input_->empty ())
   {
     PCL_ERROR ("[pcl::%s::compute] input_ is empty!\n", getClassName ().c_str ());
     // Cleanup
@@ -190,8 +190,7 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
 {
   if (!initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -199,12 +198,12 @@ pcl::Feature<PointInT, PointOutT>::compute (PointCloudOut &output)
   output.header = input_->header;
 
   // Resize the output dataset
-  if (output.points.size () != indices_->size ())
-    output.points.resize (indices_->size ());
+  if (output.size () != indices_->size ())
+    output.resize (indices_->size ());
 
   // Check if the output will be computed for all points or only a subset
   // If the input width or height are not set, set output width as size
-  if (indices_->size () != input_->points.size () || input_->width * input_->height == 0)
+  if (indices_->size () != input_->size () || input_->width * input_->height == 0)
   {
     output.width = static_cast<uint32_t> (indices_->size ());
     output.height = 1;
@@ -243,11 +242,11 @@ pcl::FeatureFromNormals<PointInT, PointNT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] ", getClassName ().c_str ());
-    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->points.size ());
-    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->points.size ());
+    PCL_ERROR ("The number of points in the input dataset (%u) differs from ", surface_->size ());
+    PCL_ERROR ("the number of points in the dataset containing the normals (%u)!\n", normals_->size ());
     Feature<PointInT, PointOutT>::deinitCompute ();
     return (false);
   }
@@ -276,7 +275,7 @@ pcl::FeatureFromLabels<PointInT, PointLT, PointOutT>::initCompute ()
   }
 
   // Check if the size of normals is the same as the size of the surface
-  if (labels_->points.size () != surface_->points.size ())
+  if (labels_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::initCompute] The number of points in the input dataset differs from the number of points in the dataset containing the labels!\n", getClassName ().c_str ());
     Feature<PointInT, PointOutT>::deinitCompute ();
@@ -313,7 +312,7 @@ pcl::FeatureWithLocalReferenceFrames<PointInT, PointRFT>::initLocalReferenceFram
   }
 
   // Check if the size of frames is the same as the size of the input cloud
-  if (frames_->points.size () != indices_size)
+  if (frames_->size () != indices_size)
   {
     if (!lrf_estimation)
     {

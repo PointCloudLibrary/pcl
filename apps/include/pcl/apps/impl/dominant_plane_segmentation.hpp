@@ -87,10 +87,10 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane ()
   pass_.setInputCloud (input_);
   pass_.filter (*cloud_filtered_);
 
-  if (int (cloud_filtered_->points.size ()) < k_)
+  if (int (cloud_filtered_->size ()) < k_)
   {
     PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-        cloud_filtered_->points.size ());
+        cloud_filtered_->size ());
     return;
   }
 
@@ -139,7 +139,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane ()
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap ();
+  vp -= (*table_hull)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -149,7 +149,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_table_plane ()
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (table_hull->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*table_hull)[0].getVector4fMap ()));
   }
 
   //Set table_coeffs
@@ -217,10 +217,10 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   pass_.setInputCloud (input_);
   pass_.filter (*cloud_filtered_);
 
-  if (int (cloud_filtered_->points.size ()) < k_)
+  if (int (cloud_filtered_->size ()) < k_)
   {
     PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-        cloud_filtered_->points.size ());
+        cloud_filtered_->size ());
     return;
   }
 
@@ -269,7 +269,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap ();
+  vp -= (*table_hull)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -279,7 +279,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (table_hull->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*table_hull)[0].getVector4fMap ()));
   }
 
   //Set table_coeffs
@@ -297,20 +297,17 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_fast (std::vector<Cloud
   extract_object_indices.filter (*cloud_objects_);
 
   //create new binary pointcloud with intensity values (0 and 1), 0 for non-object pixels and 1 otherwise
-  pcl::PointCloud<pcl::PointXYZI>::Ptr binary_cloud (new pcl::PointCloud<pcl::PointXYZI>);
+  pcl::PointCloud<pcl::PointXYZI>::Ptr binary_cloud (new pcl::PointCloud<pcl::PointXYZI> (input_->width, input_->height));
 
   {
-    binary_cloud->width = input_->width;
-    binary_cloud->height = input_->height;
-    binary_cloud->points.resize (input_->points.size ());
     binary_cloud->is_dense = input_->is_dense;
 
     size_t idx;
     for (size_t i = 0; i < cloud_object_indices.indices.size (); ++i)
     {
       idx = cloud_object_indices.indices[i];
-      binary_cloud->points[idx].getVector4fMap () = input_->points[idx].getVector4fMap ();
-      binary_cloud->points[idx].intensity = 1.0;
+      (*binary_cloud)[idx].getVector4fMap () = (*input_)[idx].getVector4fMap ();
+      (*binary_cloud)[idx].intensity = 1.0;
     }
   }
 
@@ -588,10 +585,10 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   pass_.setInputCloud (input_);
   pass_.filter (*cloud_filtered_);
 
-  if (int (cloud_filtered_->points.size ()) < k_)
+  if (int (cloud_filtered_->size ()) < k_)
   {
     PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-        cloud_filtered_->points.size ());
+        cloud_filtered_->size ());
     return;
   }
 
@@ -602,13 +599,13 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   grid_.filter (*cloud_downsampled_);
 
   PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering (%f -> %f): %lu out of %lu\n",
-      min_z_bounds_, max_z_bounds_, cloud_downsampled_->points.size (), input_->points.size ());
+      min_z_bounds_, max_z_bounds_, cloud_downsampled_->size (), input_->size ());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
   n3d_.compute (*cloud_normals_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->points.size ());
+  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->size ());
 
   // ---[ Perform segmentation
   seg_.setInputCloud (cloud_downsampled_);
@@ -645,7 +642,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap ();
+  vp -= (*table_hull)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -655,7 +652,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (table_hull->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*table_hull)[0].getVector4fMap ()));
   }
 
   //Set table_coeffs
@@ -672,7 +669,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute (std::vector<CloudPtr> 
   extract_object_indices.setIndices (boost::make_shared<const pcl::PointIndices> (cloud_object_indices));
   extract_object_indices.filter (*cloud_objects_);
 
-  if (cloud_objects_->points.size () == 0)
+  if (cloud_objects_->size () == 0)
     return;
 
   //down_.reset(new Cloud(*cloud_downsampled_));
@@ -751,10 +748,10 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   pass_.setInputCloud (input_);
   pass_.filter (*cloud_filtered_);
 
-  if (int (cloud_filtered_->points.size ()) < k_)
+  if (int (cloud_filtered_->size ()) < k_)
   {
     PCL_WARN ("[DominantPlaneSegmentation] Filtering returned %lu points! Aborting.",
-        cloud_filtered_->points.size ());
+        cloud_filtered_->size ());
     return;
   }
 
@@ -765,13 +762,13 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   grid_.filter (*cloud_downsampled_);
 
   PCL_INFO ("[DominantPlaneSegmentation] Number of points left after filtering&downsampling (%f -> %f): %lu out of %lu\n",
-      min_z_bounds_, max_z_bounds_, cloud_downsampled_->points.size (), input_->points.size ());
+      min_z_bounds_, max_z_bounds_, cloud_downsampled_->size (), input_->size ());
 
   // ---[ Estimate the point normals
   n3d_.setInputCloud (cloud_downsampled_);
   n3d_.compute (*cloud_normals_);
 
-  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->points.size ());
+  PCL_INFO ("[DominantPlaneSegmentation] %lu normals estimated. \n", cloud_normals_->size ());
 
   // ---[ Perform segmentation
   seg_.setInputCloud (cloud_downsampled_);
@@ -808,7 +805,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   // Need to flip the plane normal towards the viewpoint
   Eigen::Vector4f vp (0, 0, 0, 0);
   // See if we need to flip any plane normals
-  vp -= table_hull->points[0].getVector4fMap ();
+  vp -= (*table_hull)[0].getVector4fMap ();
   vp[3] = 0;
   // Dot product between the (viewpoint - point) and the plane normal
   float cos_theta = vp.dot (model_coefficients);
@@ -818,7 +815,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
     model_coefficients *= -1;
     model_coefficients[3] = 0;
     // Hessian form (D = nc . p_plane (centroid here) + p)
-    model_coefficients[3] = -1 * (model_coefficients.dot (table_hull->points[0].getVector4fMap ()));
+    model_coefficients[3] = -1 * (model_coefficients.dot ((*table_hull)[0].getVector4fMap ()));
   }
 
   //Set table_coeffs
@@ -835,7 +832,7 @@ pcl::apps::DominantPlaneSegmentation<PointType>::compute_full (std::vector<Cloud
   extract_object_indices.setIndices (boost::make_shared<const pcl::PointIndices> (cloud_object_indices));
   extract_object_indices.filter (*cloud_objects_);
 
-  if (cloud_objects_->points.size () == 0)
+  if (cloud_objects_->size () == 0)
     return;
 
   // ---[ Split the objects into Euclidean clusters

@@ -55,8 +55,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
 {
   if (!Feature<PointInT, PointOutT>::initCompute ())
   {
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   // Copy the header
@@ -66,9 +65,8 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::compute (PointCloudOut &outp
   // Important! We should only allocate precisely how many elements we will need, otherwise
   // we risk at pre-allocating too much memory which could lead to bad_alloc 
   // (see http://dev.pointclouds.org/issues/657)
-  output.width = output.height = 1;
   output.is_dense = input_->is_dense;
-  output.points.resize (1);
+  output.resize (1);
 
   // Perform the actual feature computation
   computeFeature (output);
@@ -128,10 +126,8 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOu
   computeDistanceHistogram (distances, gfpfh_histogram);
 
   output.clear ();
-  output.width = 1;
-  output.height = 1;
-  output.points.resize (1);
-  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output.points[0].histogram);
+  output.resize (1);
+  std::copy (gfpfh_histogram.begin (), gfpfh_histogram.end (), output[0].histogram);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -255,7 +251,7 @@ pcl::GFPFHEstimation<PointInT, PointNT, PointOutT>::getDominantLabel (const std:
   std::vector<uint32_t> counts (getNumberOfClasses () + 1, 0);
   for (size_t i = 0; i < indices.size (); ++i)
   {
-    uint32_t label = labels_->points[indices[i]].label;
+    uint32_t label = (*labels_)[indices[i]].label;
     counts[label] += 1;
   }
 

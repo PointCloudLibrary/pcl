@@ -264,7 +264,7 @@ RangeImage::cropImage (int borderSize, int top, int right, int bottom, int left)
         currentPoint = unobserved_point;
         continue;
       }
-      currentPoint = oldRangeImage.points[oldY*oldRangeImage.width + oldX];
+      currentPoint = oldRangeImage[oldY*oldRangeImage.width + oldX];
     }
   }
 }
@@ -354,14 +354,14 @@ RangeImage::setUnseenToMaxRange ()
 void 
 RangeImage::getHalfImage (RangeImage& half_image) const
 {
+  half_image.clear ();
   half_image.setAngularResolution (2.0f*angular_resolution_x_, 2.0f*angular_resolution_y_);
   half_image.image_offset_x_ = image_offset_x_/2;
   half_image.image_offset_y_ = image_offset_y_/2;
   half_image.width  = width/2;
   half_image.height = height/2;
   half_image.is_dense = is_dense;
-  half_image.points.clear ();
-  half_image.points.resize (half_image.width*half_image.height);
+  half_image.resize (half_image.width*half_image.height);
   
   int src_start_x = 2*half_image.image_offset_x_ - image_offset_x_,
       src_start_y = 2*half_image.image_offset_y_ - image_offset_y_;
@@ -397,6 +397,7 @@ void
 RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offset_y, int sub_image_width,
                          int sub_image_height, int combine_pixels, RangeImage& sub_image) const
 {
+  sub_image.clear ();
   sub_image.setAngularResolution (static_cast<float> (combine_pixels)*angular_resolution_x_,
                                   static_cast<float> (combine_pixels)*angular_resolution_y_);
   sub_image.image_offset_x_ = sub_image_image_offset_x;
@@ -404,8 +405,7 @@ RangeImage::getSubImage (int sub_image_image_offset_x, int sub_image_image_offse
   sub_image.width = sub_image_width;
   sub_image.height = sub_image_height;
   sub_image.is_dense = is_dense;
-  sub_image.points.clear ();
-  sub_image.points.resize (sub_image.width*sub_image.height);
+  sub_image.resize (sub_image.width*sub_image.height);
   
   int src_start_x = combine_pixels*sub_image.image_offset_x_ - image_offset_x_,
       src_start_y = combine_pixels*sub_image.image_offset_y_ - image_offset_y_;
@@ -859,10 +859,9 @@ RangeImage::extractFarRanges (const pcl::PCLPointCloud2& point_cloud_data,
       PointWithViewpoint point;
       point.x=distance; point.y=y; point.z=z;
       point.vp_x=vp_x; point.vp_y=vp_y; point.vp_z=vp_z;
-      far_ranges.points.push_back (point);
+      far_ranges.push_back (point);
     }
   }
-  far_ranges.width= static_cast<uint32_t> (far_ranges.points.size ());  far_ranges.height = 1;
   far_ranges.is_dense = false;
 }
 

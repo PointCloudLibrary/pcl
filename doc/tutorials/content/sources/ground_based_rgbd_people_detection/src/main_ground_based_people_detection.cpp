@@ -99,7 +99,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
     return;
   PointT current_point;
   event.getPoint(current_point.x, current_point.y, current_point.z);
-  data->clicked_points_3d->points.push_back(current_point);
+  data->clicked_points_3d->push_back(current_point);
   // Draw clicked points in red:
   pcl::visualization::PointCloudColorHandlerCustom<PointT> red (data->clicked_points_3d, 255, 0, 0);
   data->viewerPtr->removePointCloud("clicked_points");
@@ -167,7 +167,7 @@ int main (int argc, char** argv)
   Eigen::VectorXf ground_coeffs;
   ground_coeffs.resize(4);
   std::vector<int> clicked_points_indices;
-  for (unsigned int i = 0; i < clicked_points_3d->points.size(); i++)
+  for (unsigned int i = 0; i < clicked_points_3d->size(); i++)
     clicked_points_indices.push_back(i);
   pcl::SampleConsensusModelPlane<PointT> model_plane(clicked_points_3d);
   model_plane.computeModelCoefficients(clicked_points_indices,ground_coeffs);

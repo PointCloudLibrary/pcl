@@ -75,10 +75,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
   PoseWithVotesList voted_poses;
   std::vector <std::vector <unsigned int> > accumulator_array;
-  accumulator_array.resize (input_->points.size ());
+  accumulator_array.resize (input_->size ());
 
   size_t aux_size = static_cast<size_t> (floor (2 * M_PI / search_method_->getAngleDiscretizationStep ()));
-  for (size_t i = 0; i < input_->points.size (); ++i)
+  for (size_t i = 0; i < input_->size (); ++i)
   {
     std::vector<unsigned int> aux (aux_size);
     accumulator_array[i] = aux;
@@ -87,10 +87,10 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
 
   // Consider every <scene_reference_point_sampling_rate>-th point as the reference point => fix s_r
   float f1, f2, f3, f4;
-  for (size_t scene_reference_index = 0; scene_reference_index < target_->points.size (); scene_reference_index += scene_reference_point_sampling_rate_)
+  for (size_t scene_reference_index = 0; scene_reference_index < target_->size (); scene_reference_index += scene_reference_point_sampling_rate_)
   {
-    Eigen::Vector3f scene_reference_point = target_->points[scene_reference_index].getVector3fMap (),
-        scene_reference_normal = target_->points[scene_reference_index].getNormalVector3fMap ();
+    Eigen::Vector3f scene_reference_point = (*target_)[scene_reference_index].getVector3fMap (),
+        scene_reference_normal = (*target_)[scene_reference_index].getNormalVector3fMap ();
 
     float rotation_angle_sg = acosf (scene_reference_normal.dot (Eigen::Vector3f::UnitX ()));
     bool parallel_to_x_sg = (scene_reference_normal.y() == 0.0f && scene_reference_normal.z() == 0.0f);
@@ -101,28 +101,28 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
     // For every other point in the scene => now have pair (s_r, s_i) fixed
     std::vector<int> indices;
     std::vector<float> distances;
-    scene_search_tree_->radiusSearch (target_->points[scene_reference_index],
+    scene_search_tree_->radiusSearch ((*target_)[scene_reference_index],
                                      search_method_->getModelDiameter () /2,
                                      indices,
                                      distances);
     for(size_t i = 0; i < indices.size (); ++i)
-//    for(size_t i = 0; i < target_->points.size (); ++i)
+//    for(size_t i = 0; i < target_->size (); ++i)
     {
       //size_t scene_point_index = i;
       size_t scene_point_index = indices[i];
       if (scene_reference_index != scene_point_index)
       {
-        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures (target_->points[scene_reference_index].getVector4fMap (),
-                                        target_->points[scene_reference_index].getNormalVector4fMap (),
-                                        target_->points[scene_point_index].getVector4fMap (),
-                                        target_->points[scene_point_index].getNormalVector4fMap (),
+        if (/*pcl::computePPFPairFeature*/pcl::computePairFeatures ((*target_)[scene_reference_index].getVector4fMap (),
+                                        (*target_)[scene_reference_index].getNormalVector4fMap (),
+                                        (*target_)[scene_point_index].getVector4fMap (),
+                                        (*target_)[scene_point_index].getNormalVector4fMap (),
                                         f1, f2, f3, f4))
         {
           std::vector<std::pair<size_t, size_t> > nearest_indices;
           search_method_->nearestNeighborSearch (f1, f2, f3, f4, nearest_indices);
 
           // Compute alpha_s angle
-          Eigen::Vector3f scene_point = target_->points[scene_point_index].getVector3fMap ();
+          Eigen::Vector3f scene_point = (*target_)[scene_point_index].getVector3fMap ();
 
           Eigen::Vector3f scene_point_transformed = transform_sg * scene_point;
           float alpha_s = atan2f ( -scene_point_transformed(2), scene_point_transformed(1));
@@ -161,8 +161,8 @@ pcl::PPFRegistration<PointSource, PointTarget>::computeTransformation (PointClou
         accumulator_array[i][j] = 0;
       }
 
-    Eigen::Vector3f model_reference_point = input_->points[max_votes_i].getVector3fMap (),
-        model_reference_normal = input_->points[max_votes_i].getNormalVector3fMap ();
+    Eigen::Vector3f model_reference_point = (*input_)[max_votes_i].getVector3fMap (),
+        model_reference_normal = (*input_)[max_votes_i].getNormalVector3fMap ();
     float rotation_angle_mg = acosf (model_reference_normal.dot (Eigen::Vector3f::UnitX ()));
     bool parallel_to_x_mg = (model_reference_normal.y() == 0.0f && model_reference_normal.z() == 0.0f);
     Eigen::Vector3f rotation_axis_mg = (parallel_to_x_mg)?(Eigen::Vector3f::UnitY ()):(model_reference_normal.cross (Eigen::Vector3f::UnitX ()). normalized());

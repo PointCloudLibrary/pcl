@@ -59,14 +59,14 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
   std::vector<float> k_sqr_distances;
 
   tree_->setInputCloud (input_);
-  output.points.resize (indices_->size ());
+  output.resize (indices_->size ());
 
   for (size_t index_i = 0; index_i < indices_->size (); ++index_i)
   {
     size_t point_i = (*indices_)[index_i];
     Eigen::MatrixXf s_matrix (N_, M_);
 
-    Eigen::Vector4f center_point = input_->points[point_i].getVector4fMap ();
+    Eigen::Vector4f center_point = (*input_)[point_i].getVector4fMap ();
 
     for (size_t k = 0; k < N_; ++k)
     {
@@ -74,7 +74,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
 
       for (size_t l = 0; l < M_; ++l)
       {
-        Eigen::Vector4f normal = normals_->points[point_i].getNormalVector4fMap ();
+        Eigen::Vector4f normal = (*normals_)[point_i].getNormalVector4fMap ();
         Eigen::Vector4f normal_u = Eigen::Vector4f::Zero ();
         Eigen::Vector4f normal_v = Eigen::Vector4f::Zero ();
 
@@ -129,11 +129,11 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
         {
           if (k_sqr_distances[nn_i] < 1e-7f)
           {
-            average_normal = normals_->points[k_indices[nn_i]].getNormalVector4fMap ();
+            average_normal = (*normals_)[k_indices[nn_i]].getNormalVector4fMap ();
             average_normalization_factor = 1.0f;
             break;
           }
-          average_normal += normals_->points[k_indices[nn_i]].getNormalVector4fMap () / k_sqr_distances[nn_i];
+          average_normal += (*normals_)[k_indices[nn_i]].getNormalVector4fMap () / k_sqr_distances[nn_i];
           average_normalization_factor += 1.0f / k_sqr_distances[nn_i];
         }
         average_normal /= average_normalization_factor;
@@ -179,7 +179,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
       for (size_t j = 0; j < M_prime_; ++j)
         feature_point.values[i*M_prime_ + j] = final_matrix (i, j);
 
-    output.points[index_i] = feature_point;
+    output[index_i] = feature_point;
   }
 }
 

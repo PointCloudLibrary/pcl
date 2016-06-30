@@ -82,7 +82,7 @@ pcl::BriskKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointClo
   pcl::copyPointCloud<pcl::PointWithScale, PointOutT> (output_temp, output);
 
   // we do not change the denseness
-  output.width = int (output.points.size ());
+  output.width = int (output.size ());
   output.height = 1;
   output.is_dense = false;      // set to false to be sure
 

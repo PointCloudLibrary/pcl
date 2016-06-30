@@ -74,28 +74,28 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::select
     const PointCloudSource &cloud, int nr_samples, float min_sample_distance, 
     std::vector<int> &sample_indices)
 {
-  if (nr_samples > static_cast<int> (cloud.points.size ()))
+  if (nr_samples > static_cast<int> (cloud.size ()))
   {
     PCL_ERROR ("[pcl::%s::selectSamples] ", getClassName ().c_str ());
     PCL_ERROR ("The number of samples (%d) must not be greater than the number of points (%lu)!\n",
-               nr_samples, cloud.points.size ());
+               nr_samples, cloud.size ());
     return;
   }
 
   // Iteratively draw random samples until nr_samples is reached
   int iterations_without_a_sample = 0;
-  int max_iterations_without_a_sample = static_cast<int> (3 * cloud.points.size ());
+  int max_iterations_without_a_sample = static_cast<int> (3 * cloud.size ());
   sample_indices.clear ();
   while (static_cast<int> (sample_indices.size ()) < nr_samples)
   {
     // Choose a sample at random
-    int sample_index = getRandomIndex (static_cast<int> (cloud.points.size ()));
+    int sample_index = getRandomIndex (static_cast<int> (cloud.size ()));
 
     // Check to see if the sample is 1) unique and 2) far away from the other samples
     bool valid_sample = true;
     for (size_t i = 0; i < sample_indices.size (); ++i)
     {
-      float distance_between_samples = euclideanDistance (cloud.points[sample_index], cloud.points[sample_indices[i]]);
+      float distance_between_samples = euclideanDistance (cloud[sample_index], cloud[sample_indices[i]]);
 
       if (sample_index == sample_indices[i] || distance_between_samples < min_sample_distance)
       {
@@ -139,7 +139,7 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::findSi
   corresponding_indices.resize (sample_indices.size ());
   for (size_t i = 0; i < sample_indices.size (); ++i)
   {
-    // Find the k features nearest to input_features.points[sample_indices[i]]
+    // Find the k features nearest to input_features[sample_indices[i]]
     feature_tree_->nearestKSearch (input_features, sample_indices[i], k_correspondences_, nn_indices, nn_distances);
 
     // Select one at random and add it to corresponding_indices
@@ -159,9 +159,9 @@ pcl::SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::comput
   const ErrorFunctor & compute_error = *error_functor_;
   float error = 0;
 
-  for (int i = 0; i < static_cast<int> (cloud.points.size ()); ++i)
+  for (int i = 0; i < static_cast<int> (cloud.size ()); ++i)
   {
-    // Find the distance between cloud.points[i] and its nearest neighbor in the target point cloud
+    // Find the distance between cloud[i] and its nearest neighbor in the target point cloud
     tree_->nearestKSearch (cloud, i, 1, nn_index, nn_distance);
 
     // Compute the error

@@ -378,9 +378,9 @@ Narf::extractForInterestPoints (const RangeImage& range_image, const PointCloud<
 {
   # pragma omp parallel for num_threads(max_no_of_threads) default(shared) schedule(dynamic, 10)
   //!!! nizar 20110408 : for OpenMP sake on MSVC this must be kept signed
-  for (int interest_point_idx = 0; interest_point_idx < int (interest_points.points.size ()); ++interest_point_idx)
+  for (int interest_point_idx = 0; interest_point_idx < int (interest_points.size ()); ++interest_point_idx)
   {
-    const InterestPoint& interest_point = interest_points.points[interest_point_idx];
+    const InterestPoint& interest_point = interest_points[interest_point_idx];
     Vector3fMapConst point = interest_point.getVector3fMap ();
     
     Narf* feature = new Narf;
@@ -636,23 +636,21 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
 {
   //std::cout << __PRETTY_FUNCTION__ << " called.\n";
   
-  output.points.clear();
+  output.clear();
   
   if (range_image_==NULL)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": RangeImage is not set. Sorry, the NARF descriptor calculation works on range images, not on normal point clouds."
               << " Use setRangeImage(...).\n\n";
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   if (parameters_.support_size <= 0.0f)
   {
     std::cerr << __PRETTY_FUNCTION__
               << ": support size is not set. Use getParameters().support_size = ...\n\n";
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
   std::vector<Narf*> feature_list;
@@ -679,10 +677,10 @@ NarfDescriptor::computeFeature(NarfDescriptor::PointCloudOut& output)
   }
   
   // Copy to NARF36 struct
-  output.points.resize(feature_list.size());
+  output.resize(feature_list.size());
   for (unsigned int i=0; i<feature_list.size(); ++i)
   {
-    feature_list[i]->copyToNarf36(output.points[i]);
+    feature_list[i]->copyToNarf36(output[i]);
   }
   
   // Cleanup

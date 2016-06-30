@@ -50,19 +50,19 @@ toPCL (const PointCloudAOS<Host> &input,
                  const thrust::host_vector<float4> &normals,
                  pcl::PointCloud<pcl::PointXYZRGBNormal> &output)
 {
-  output.points.resize (input.points.size ());
+  output.resize (input.points.size ());
   for (size_t i = 0; i < input.points.size (); ++i)
   {
-    output.points[i].x = input.points[i].x;
-    output.points[i].y = input.points[i].y;
-    output.points[i].z = input.points[i].z;
+    output[i].x = input[i].x;
+    output[i].y = input[i].y;
+    output[i].z = input[i].z;
     // Pack RGB into a float
-    output.points[i].rgb = *(float*)(&input.points[i].rgb);
+    output[i].rgb = *(float*)(&input[i].rgb);
 
-    output.points[i].normal_x  = normals[i].x;
-    output.points[i].normal_y  = normals[i].y;
-    output.points[i].normal_z  = normals[i].z;
-    output.points[i].curvature = normals[i].w;
+    output[i].normal_x  = normals[i].x;
+    output[i].normal_y  = normals[i].y;
+    output[i].normal_z  = normals[i].z;
+    output[i].curvature = normals[i].w;
   }
 
   output.width    = input.width;
@@ -80,19 +80,19 @@ toPCL (const PointCloudAOS<Device> &d_input,
   input << d_input;
   thrust::host_vector<float4> normals = d_normals;
 
-  output.points.resize (input.points.size ());
+  output.resize (input.points.size ());
   for (size_t i = 0; i < input.points.size (); ++i)
   {
-    output.points[i].x = input.points[i].x;
-    output.points[i].y = input.points[i].y;
-    output.points[i].z = input.points[i].z;
+    output[i].x = input[i].x;
+    output[i].y = input[i].y;
+    output[i].z = input[i].z;
     // Pack RGB into a float
-    output.points[i].rgb = *(float*)(&input.points[i].rgb);
+    output[i].rgb = *(float*)(&input[i].rgb);
 
-    output.points[i].normal_x  = normals[i].x;
-    output.points[i].normal_y  = normals[i].y;
-    output.points[i].normal_z  = normals[i].z;
-    output.points[i].curvature = normals[i].w;
+    output[i].normal_x  = normals[i].x;
+    output[i].normal_y  = normals[i].y;
+    output[i].normal_z  = normals[i].z;
+    output[i].curvature = normals[i].w;
   }
   output.width    = input.width;
   output.height   = input.height;
@@ -104,25 +104,25 @@ void
 toPCL (const PointCloudAOS<Host> &input, 
                  pcl::PointCloud<pcl::PointXYZRGB> &output)
 {
-  output.points.resize (input.points.size ());
+  output.resize (input.points.size ());
   for (size_t i = 0; i < input.points.size (); ++i)
   {
-    output.points[i].x = input.points[i].x;
-    output.points[i].y = input.points[i].y;
-    output.points[i].z = input.points[i].z;
+    output[i].x = input[i].x;
+    output[i].y = input[i].y;
+    output[i].z = input[i].z;
     // Pack RGB into a float
-    output.points[i].rgb = *(float*)(&input.points[i].rgb);
+    output[i].rgb = *(float*)(&input[i].rgb);
   }
 
   output.width    = input.width;
   output.height   = input.height;
   output.is_dense = input.is_dense;
 
-/*  for (size_t i = 0; i < output.points.size (); ++i)
+/*  for (size_t i = 0; i < output.size (); ++i)
   std::cerr << 
-    output.points[i].x << " " <<
-    output.points[i].y << " " <<
-    output.points[i].z << " " << std::endl;*/
+    output[i].x << " " <<
+    output[i].y << " " <<
+    output[i].z << " " << std::endl;*/
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -133,25 +133,25 @@ toPCL (const PointCloudAOS<Device> &input,
   PointCloudAOS<Host> cloud;
   cloud << input;
 
-  output.points.resize (cloud.points.size ());
+  output.resize (cloud.points.size ());
   for (size_t i = 0; i < cloud.points.size (); ++i)
   {
-    output.points[i].x = cloud.points[i].x;
-    output.points[i].y = cloud.points[i].y;
-    output.points[i].z = cloud.points[i].z;
+    output[i].x = cloud[i].x;
+    output[i].y = cloud[i].y;
+    output[i].z = cloud[i].z;
     // Pack RGB into a float
-    output.points[i].rgb = *(float*)(&cloud.points[i].rgb);
+    output[i].rgb = *(float*)(&cloud[i].rgb);
   }
 
   output.width    = cloud.width;
   output.height   = cloud.height;
   output.is_dense = cloud.is_dense;
 
-/*  for (size_t i = 0; i < output.points.size (); ++i)
+/*  for (size_t i = 0; i < output.size (); ++i)
   std::cerr << 
-    output.points[i].x << " " <<
-    output.points[i].y << " " <<
-    output.points[i].z << " " << std::endl;*/
+    output[i].x << " " <<
+    output[i].y << " " <<
+    output[i].z << " " << std::endl;*/
 }
 
 } // namespace

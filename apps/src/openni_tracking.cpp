@@ -216,15 +216,14 @@ public:
     {
       if (visualize_particles_)
       {
-        pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> ());
-        for (size_t i = 0; i < particles->points.size (); i++)
+        pcl::PointCloud<pcl::PointXYZ>::Ptr particle_cloud (new pcl::PointCloud<pcl::PointXYZ> (particles->size ()));
+        for (size_t i = 0; i < particles->size (); i++)
         {
-          pcl::PointXYZ point;
+          pcl::PointXYZ &point = (*particle_cloud) [i];
           
-          point.x = particles->points[i].x;
-          point.y = particles->points[i].y;
-          point.z = particles->points[i].z;
-          particle_cloud->points.push_back (point);
+          point.x = (*particles)[i].x;
+          point.y = (*particles)[i].y;
+          point.z = (*particles)[i].z;
         }
         
         {
@@ -299,11 +298,11 @@ public:
         
         // draw some texts
         viz.removeShape ("N");
-        viz.addText ((boost::format ("number of Reference PointClouds: %d") % tracker_->getReferenceCloud ()->points.size ()).str (),
+        viz.addText ((boost::format ("number of Reference PointClouds: %d") % tracker_->getReferenceCloud ()->size ()).str (),
                      10, 20, 20, 1.0, 1.0, 1.0, "N");
         
         viz.removeShape ("M");
-        viz.addText ((boost::format ("number of Measured PointClouds:  %d") % cloud_pass_downsampled_->points.size ()).str (),
+        viz.addText ((boost::format ("number of Measured PointClouds:  %d") % cloud_pass_downsampled_->size ()).str (),
                      10, 40, 20, 1.0, 1.0, 1.0, "M");
         
         viz.removeShape ("tracking");
@@ -319,7 +318,7 @@ public:
                      10, 100, 20, 1.0, 1.0, 1.0, "computation");
 
         viz.removeShape ("particles");
-        viz.addText ((boost::format ("particles:     %d") % tracker_->getParticles ()->points.size ()).str (),
+        viz.addText ((boost::format ("particles:     %d") % tracker_->getParticles ()->size ()).str (),
                      10, 120, 20, 1.0, 1.0, 1.0, "particles");
         
       }
@@ -454,18 +453,18 @@ public:
   {
     result.width = cloud->width;
     result.height = cloud->height;
+    result.resize (cloud->size ());
     result.is_dense = cloud->is_dense;
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (size_t i = 0; i < cloud->size (); i++)
     {
-      RefPointType point;
-      point.x = cloud->points[i].x;
-      point.y = cloud->points[i].y;
-      point.z = cloud->points[i].z;
-      point.rgba = cloud->points[i].rgba;
-      // point.normal[0] = normals->points[i].normal[0];
-      // point.normal[1] = normals->points[i].normal[1];
-      // point.normal[2] = normals->points[i].normal[2];
-      result.points.push_back (point);
+      RefPointType &point = result [i];
+      point.x = (*cloud)[i].x;
+      point.y = (*cloud)[i].y;
+      point.z = (*cloud)[i].z;
+      point.rgba = (*cloud)[i].rgba;
+      // point.normal[0] = (*normals)[i].normal[0];
+      // point.normal[1] = (*normals)[i].normal[1];
+      // point.normal[2] = (*normals)[i].normal[2];
     }
   }
 
@@ -491,19 +490,19 @@ public:
   void removeZeroPoints (const CloudConstPtr &cloud,
                          Cloud &result)
   {
-    for (size_t i = 0; i < cloud->points.size (); i++)
+    for (size_t i = 0; i < cloud->size (); i++)
     {
-      PointType point = cloud->points[i];
+      PointType point = (*cloud)[i];
       if (!(fabs(point.x) < 0.01 &&
             fabs(point.y) < 0.01 &&
             fabs(point.z) < 0.01) &&
           !pcl_isnan(point.x) &&
           !pcl_isnan(point.y) &&
           !pcl_isnan(point.z))
-        result.points.push_back(point);
+        result.push_back(point);
     }
 
-    result.width = static_cast<pcl::uint32_t> (result.points.size ());
+    result.width = static_cast<pcl::uint32_t> (result.size ());
     result.height = 1;
     result.is_dense = true;
   }
@@ -514,14 +513,12 @@ public:
                               Cloud &result)
   {
     pcl::PointIndices segmented_indices = cluster_indices[segment_index];
+    result.resize (segmented_indices.indices.size ());
+    result.is_dense = true;
     for (size_t i = 0; i < segmented_indices.indices.size (); i++)
     {
-      PointType point = cloud->points[segmented_indices.indices[i]];
-      result.points.push_back (point);
+      result [i] = (*cloud)[segmented_indices.indices[i]];
     }
-    result.width = pcl::uint32_t (result.points.size ());
-    result.height = 1;
-    result.is_dense = true;
   }
   
   void
@@ -620,7 +617,7 @@ public:
           tracker_->setReferenceCloud (transed_ref_downsampled);
           tracker_->setTrans (trans);
           reference_ = transed_ref;
-          tracker_->setMinIndices (int (ref_cloud->points.size ()) / 2);
+          tracker_->setMinIndices (int (ref_cloud->size ()) / 2);
         }
         else
         {

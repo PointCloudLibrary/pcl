@@ -244,7 +244,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
   {    
     std::sort (indices_->begin (), indices_->end (), 
                boost::bind (&HarrisKeypoint2D::greaterIntensityAtIndices, this, _1, _2));
-    float threshold = threshold_ * response_->points[indices_->front ()].intensity;
+    float threshold = threshold_ * (*response_)[indices_->front ()].intensity;
     output.clear ();
     output.reserve (response_->size());
     std::vector<bool> occupency_map (response_->size (), false);    
@@ -258,7 +258,7 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::detectKeypoints (PointCl
     for (int i = 0; i < occupency_map_size; ++i)
     {
       int idx = indices_->at (i);
-      const PointOutT& point_out = response_->points [idx];
+      const PointOutT& point_out = (*response_)[idx];
       if (occupency_map[idx] || point_out.intensity < threshold || !isFinite (point_out))
         continue;
         
@@ -302,8 +302,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseHarris (PointClo
 #endif
   for (int index = 0; index < output_size; ++index)
   {
-    PointOutT& out_point = output.points [index];
-    const PointInT &in_point = (*input_).points [index];
+    PointOutT& out_point = output [index];
+    const PointInT &in_point = (*input_) [index];
     out_point.intensity = 0;
     out_point.x = in_point.x;
     out_point.y = in_point.y;
@@ -338,8 +338,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseNoble (PointClou
 #endif
   for (int index = 0; index < output_size; ++index)
   {
-    PointOutT &out_point = output.points [index];
-    const PointInT &in_point = input_->points [index];
+    PointOutT &out_point = output [index];
+    const PointInT &in_point = (*input_) [index];
     out_point.x = in_point.x;
     out_point.y = in_point.y;
     out_point.z = in_point.z;
@@ -374,8 +374,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseLowe (PointCloud
 #endif
   for (int index = 0; index < output_size; ++index)      
   {
-    PointOutT &out_point = output.points [index];
-    const PointInT &in_point = input_->points [index];
+    PointOutT &out_point = output [index];
+    const PointInT &in_point = (*input_) [index];
     out_point.x = in_point.x;
     out_point.y = in_point.y;
     out_point.z = in_point.z;
@@ -410,8 +410,8 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 #endif
   for (int index = 0; index < output_size; ++index)
   {
-    PointOutT &out_point = output.points [index];
-    const PointInT &in_point = input_->points [index];
+    PointOutT &out_point = output [index];
+    const PointInT &in_point = (*input_) [index];
     out_point.x = in_point.x;
     out_point.y = in_point.y;
     out_point.z = in_point.z;
@@ -457,12 +457,12 @@ pcl::HarrisKeypoint2D<PointInT, PointOutT, IntensityT>::responseTomasi (PointClo
 //       tree_->radiusSearch (corner, search_radius_, nn_indices, nn_dists);
 //       for (std::vector<int>::const_iterator iIt = nn_indices.begin(); iIt != nn_indices.end(); ++iIt)
 //       {
-//         if (!pcl_isfinite (normals_->points[*iIt].normal_x))
+//         if (!pcl_isfinite ((*normals_)[*iIt].normal_x))
 //           continue;
 
-//         nnT = normals_->points[*iIt].getNormalVector3fMap () * normals_->points[*iIt].getNormalVector3fMap ().transpose();
+//         nnT = (*normals_)[*iIt].getNormalVector3fMap () * (*normals_)[*iIt].getNormalVector3fMap ().transpose();
 //         NNT += nnT;
-//         NNTp += nnT * surface_->points[*iIt].getVector3fMap ();
+//         NNTp += nnT * (*surface_)[*iIt].getVector3fMap ();
 //       }
 //       if (invert3x3SymMatrix (NNT, NNTInv) != 0)
 //         corners[cIdx].getVector3fMap () = NNTInv * NNTp;

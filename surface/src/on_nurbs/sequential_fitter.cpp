@@ -199,7 +199,7 @@ SequentialFitter::is_back_facing (const Eigen::Vector3d &v0, const Eigen::Vector
 void
 SequentialFitter::setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_cloud)
 {
-  if (pcl_cloud.get () == 0 || pcl_cloud->points.size () == 0)
+  if (pcl_cloud.get () == 0 || pcl_cloud->size () == 0)
     throw std::runtime_error ("[SequentialFitter::setInputCloud] Error: Empty or invalid pcl-point-cloud.\n");
 
   m_cloud = pcl_cloud;
@@ -209,7 +209,7 @@ SequentialFitter::setInputCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr &pcl_clo
 void
 SequentialFitter::setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == 0 || m_cloud->size () == 0)
     throw std::runtime_error ("[SequentialFitter::setBoundary] Error: Empty or invalid pcl-point-cloud.\n");
 
   this->m_boundary_indices = pcl_cloud_indexes;
@@ -220,7 +220,7 @@ SequentialFitter::setBoundary (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 void
 SequentialFitter::setInterior (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == 0 || m_cloud->size () == 0)
     throw std::runtime_error ("[SequentialFitter::setIndices] Error: Empty or invalid pcl-point-cloud.\n");
 
   this->m_interior_indices = pcl_cloud_indexes;
@@ -231,7 +231,7 @@ SequentialFitter::setInterior (pcl::PointIndices::Ptr &pcl_cloud_indexes)
 void
 SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_demand)
 {
-  if (m_cloud.get () == 0 || m_cloud->points.size () == 0)
+  if (m_cloud.get () == 0 || m_cloud->size () == 0)
     throw std::runtime_error ("[SequentialFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
   if (corners->indices.size () < 4)

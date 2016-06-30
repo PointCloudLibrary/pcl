@@ -160,7 +160,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
   }
 
   // Get origin point
-  Vector3fMapConst origin = input_->points[(*indices_)[index]].getVector3fMap ();
+  Vector3fMapConst origin = (*input_)[(*indices_)[index]].getVector3fMap ();
   // Get origin normal
   // Use pre-computed normals
   normal = normals[minIndex].getNormalVector3fMap ();
@@ -190,7 +190,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
     if (pcl::utils::equal (nn_dists[ne], 0.0f))
 		  continue;
     // Get neighbours coordinates
-    Eigen::Vector3f neighbour = surface_->points[nn_indices[ne]].getVector3fMap ();
+    Eigen::Vector3f neighbour = (*surface_)[nn_indices[ne]].getVector3fMap ();
 
     /// ----- Compute current neighbour polar coordinates -----
     /// Get distance between the neighbour and the origin

@@ -52,17 +52,15 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
                                                 std::vector<int> &indices)
 {
   // Iterate through the points and copy the data in a pcl::PointCloud
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-  cloud.height = 1; cloud.width = static_cast<uint32_t> (src->GetNumberOfPoints ());
+  pcl::PointCloud<pcl::PointXYZ> cloud (src->GetNumberOfPoints ());
   cloud.is_dense = false;
-  cloud.points.resize (cloud.width * cloud.height);
   for (int i = 0; i < src->GetNumberOfPoints (); i++)
   {
     double p[3];
     src->GetPoint (i, p);
-    cloud.points[i].x = static_cast<float> (p[0]); 
-    cloud.points[i].y = static_cast<float> (p[1]); 
-    cloud.points[i].z = static_cast<float> (p[2]);
+    cloud[i].x = static_cast<float> (p[0]);
+    cloud[i].y = static_cast<float> (p[1]);
+    cloud[i].z = static_cast<float> (p[2]);
   }
 
   // Compute a kd-tree for tgt
@@ -73,9 +71,9 @@ pcl::visualization::getCorrespondingPointCloud (vtkPolyData *src,
   std::vector<int> nn_indices (1);
   std::vector<float> nn_dists (1);
   // For each point on screen, find its correspondent in the target
-  for (size_t i = 0; i < cloud.points.size (); ++i)
+  for (size_t i = 0; i < cloud.size (); ++i)
   {
-    kdtree.nearestKSearch (cloud.points[i], 1, nn_indices, nn_dists);
+    kdtree.nearestKSearch (cloud[i], 1, nn_indices, nn_dists);
     indices.push_back (nn_indices[0]);
   }
   // Sort and remove duplicate indices

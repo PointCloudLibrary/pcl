@@ -55,15 +55,13 @@ namespace pcl
   template <int N> void
   getFeaturePointCloud (const std::vector<Eigen::MatrixXf, Eigen::aligned_allocator<Eigen::MatrixXf> > &histograms2D, PointCloud<Histogram<N> > &histogramsPC)
   {
-    histogramsPC.points.resize (histograms2D.size ());
-    histogramsPC.width    = histograms2D.size ();
-    histogramsPC.height   = 1;
+    histogramsPC.resize (histograms2D.size ());
     histogramsPC.is_dense = true;
 
     const int rows  = histograms2D.at(0).rows();
     const int cols = histograms2D.at(0).cols();
 
-    typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.points.begin ();
+    typename PointCloud<Histogram<N> >::VectorType::iterator it = histogramsPC.begin ();
     BOOST_FOREACH (Eigen::MatrixXf h, histograms2D)
     {
       Eigen::Map<Eigen::MatrixXf> histogram (&(it->histogram[0]), rows, cols);

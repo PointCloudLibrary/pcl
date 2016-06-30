@@ -158,7 +158,7 @@ RangeImage::createFromPointCloudWithKnownSize (const PointCloudType& point_cloud
 {
   //MEASURE_FUNCTION_TIME;
   
-  //std::cout << "Starting to create range image from "<<point_cloud.points.size ()<<" points.\n";
+  //std::cout << "Starting to create range image from "<<point_cloud.size ()<<" points.\n";
   
   // If the sensor pose is inside of the sphere we have to calculate the image the normal way
   if ((point_cloud_center-sensor_pose.translation()).norm() <= point_cloud_radius) {
@@ -230,7 +230,6 @@ template <typename PointCloudType> void
 RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, float min_range, int& top, int& right, int& bottom, int& left)
 {
   typedef typename PointCloudType::PointType PointType2;
-  const typename pcl::PointCloud<PointType2>::VectorType &points2 = point_cloud.points;
   
   unsigned int size = width*height;
   int* counters = new int[size];
@@ -240,7 +239,7 @@ RangeImage::doZBuffer (const PointCloudType& point_cloud, float noise_level, flo
   
   float x_real, y_real, range_of_current_point;
   int x, y;
-  for (typename pcl::PointCloud<PointType2>::VectorType::const_iterator it=points2.begin (); it!=points2.end (); ++it)
+  for (typename pcl::PointCloud<PointType2>::const_iterator it=point_cloud.begin (); it!=point_cloud.end (); ++it)
   {
     if (!isFinite (*it))  // Check for NAN etc
       continue;
@@ -1126,9 +1125,9 @@ RangeImage::getAverageViewPoint (const PointCloudTypeWithViewpoints& point_cloud
 {
   Eigen::Vector3f average_viewpoint (0,0,0);
   int point_counter = 0;
-  for (unsigned int point_idx=0; point_idx<point_cloud.points.size (); ++point_idx)
+  for (unsigned int point_idx=0; point_idx<point_cloud.size (); ++point_idx)
   {
-    const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud.points[point_idx];
+    const typename PointCloudTypeWithViewpoints::PointType& point = point_cloud[point_idx];
     if (!pcl_isfinite (point.vp_x) || !pcl_isfinite (point.vp_y) || !pcl_isfinite (point.vp_z))
       continue;
     average_viewpoint[0] += point.vp_x;
@@ -1222,7 +1221,7 @@ template <typename PointCloudType> void
 RangeImage::integrateFarRanges (const PointCloudType& far_ranges)
 {
   float x_real, y_real, range_of_current_point;
-  for (typename PointCloudType::const_iterator it  = far_ranges.points.begin (); it != far_ranges.points.end (); ++it)
+  for (typename PointCloudType::const_iterator it  = far_ranges.begin (); it != far_ranges.end (); ++it)
   {
     //if (!isFinite (*it))  // Check for NAN etc
       //continue;

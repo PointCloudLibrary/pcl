@@ -81,35 +81,29 @@ main (int argc, char** argv)
   std::vector<pcl::ISMPeak, Eigen::aligned_allocator<pcl::ISMPeak> > strongest_peaks;
   vote_list->findStrongestPeaks (strongest_peaks, testing_class, radius, sigma);
 
-  pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
-  colored_cloud->height = 0;
-  colored_cloud->width = 1;
+  pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud (new pcl::PointCloud<pcl::PointXYZRGB> (testing_cloud->size () + strongest_peaks.size ()));
 
-  pcl::PointXYZRGB point;
-  point.r = 255;
-  point.g = 255;
-  point.b = 255;
-
-  for (size_t i_point = 0; i_point < testing_cloud->points.size (); i_point++)
+  for (size_t i_point = 0; i_point < testing_cloud->size (); i_point++)
   {
-    point.x = testing_cloud->points[i_point].x;
-    point.y = testing_cloud->points[i_point].y;
-    point.z = testing_cloud->points[i_point].z;
-    colored_cloud->points.push_back (point);
+    pcl::PointXYZRGB &point = (*colored_cloud) [i_point];
+    point.r = 255;
+    point.g = 255;
+    point.b = 255;
+    point.x = (*testing_cloud)[i_point].x;
+    point.y = (*testing_cloud)[i_point].y;
+    point.z = (*testing_cloud)[i_point].z;
   }
-  colored_cloud->height += testing_cloud->points.size ();
 
-  point.r = 255;
-  point.g = 0;
-  point.b = 0;
-  for (size_t i_vote = 0; i_vote < strongest_peaks.size (); i_vote++)
+  for (size_t i_vote = testing_cloud->size (); i_vote < colored_cloud.size (); i_vote++)
   {
+    pcl::PointXYZRGB &point = (*colored_cloud) [i_vote];
+    point.r = 255;
+    point.g = 0;
+    point.b = 0;
     point.x = strongest_peaks[i_vote].x;
     point.y = strongest_peaks[i_vote].y;
     point.z = strongest_peaks[i_vote].z;
-    colored_cloud->points.push_back (point);
   }
-  colored_cloud->height += strongest_peaks.size ();
 
   pcl::visualization::CloudViewer viewer ("Result viewer");
   viewer.showCloud (colored_cloud);

@@ -55,16 +55,14 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   if (!normals_)
   {
     PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing normals was given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
-  if (normals_->points.size () != surface_->points.size ())
+  if (normals_->size () != surface_->size ())
   {
     PCL_ERROR ("[pcl::%s::computeFeature] The number of points in the input dataset differs from the number of points in the dataset containing the normals!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -83,13 +81,12 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   Eigen::Affine3f transformPC (Eigen::AngleAxisf (static_cast<float> (rotation), axis));
 
-  pcl::PointCloud<pcl::PointNormal> grid;
-  grid.points.resize (indices_->size ());
+  pcl::PointCloud<pcl::PointNormal> grid (indices_->size ());
 
   for (size_t i = 0; i < indices_->size (); i++)
   {
-    grid.points[i].getVector4fMap () = surface_->points[(*indices_)[i]].getVector4fMap ();
-    grid.points[i].getNormalVector4fMap () = normals_->points[(*indices_)[i]].getNormalVector4fMap ();
+    grid[i].getVector4fMap () = (*surface_)[(*indices_)[i]].getVector4fMap ();
+    grid[i].getNormalVector4fMap () = (*normals_)[(*indices_)[i]].getNormalVector4fMap ();
   }
 
   pcl::transformPointCloudWithNormals (grid, grid, transformPC);
@@ -101,10 +98,10 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
 
   float sum_w = 0, w = 0;
   int bin = 0;
-  for (size_t i = 0; i < grid.points.size (); ++i)
+  for (size_t i = 0; i < grid.size (); ++i)
   {
-    bin = static_cast<int> ((((atan2 (grid.points[i].normal_y, grid.points[i].normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
-    w = sqrtf (grid.points[i].normal_y * grid.points[i].normal_y + grid.points[i].normal_x * grid.points[i].normal_x);
+    bin = static_cast<int> ((((atan2 (grid[i].normal_y, grid[i].normal_x) + M_PI) * 180 / M_PI) / bin_angle)) % nbins;
+    w = sqrtf (grid[i].normal_y * grid[i].normal_y + grid[i].normal_x * grid[i].normal_x);
     sum_w += w;
     spatial_data[bin] += w;
   }
@@ -116,18 +113,17 @@ pcl::CRHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut 
   kiss_fftr_cfg mycfg = kiss_fftr_alloc (nbins, 0, NULL, NULL);
   kiss_fftr (mycfg, spatial_data, freq_data);
 
-  output.points.resize (1);
-  output.width = output.height = 1;
+  output.resize (1);
 
-  output.points[0].histogram[0] = freq_data[0].r / freq_data[0].r; //dc
+  output[0].histogram[0] = freq_data[0].r / freq_data[0].r; //dc
   int k = 1;
   for (int i = 1; i < (nbins / 2); i++, k += 2)
   {
-    output.points[0].histogram[k] = freq_data[i].r / freq_data[0].r;
-    output.points[0].histogram[k + 1] = freq_data[i].i / freq_data[0].r;
+    output[0].histogram[k] = freq_data[i].r / freq_data[0].r;
+    output[0].histogram[k + 1] = freq_data[i].i / freq_data[0].r;
   }
 
-  output.points[0].histogram[nbins - 1] = freq_data[nbins / 2].r / freq_data[0].r; //nyquist
+  output[0].histogram[nbins - 1] = freq_data[nbins / 2].r / freq_data[0].r; //nyquist
 
   delete[] spatial_data;
   delete[] freq_data;

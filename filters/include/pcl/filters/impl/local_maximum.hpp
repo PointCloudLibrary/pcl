@@ -55,8 +55,7 @@ pcl::LocalMaximum<PointT>::applyFilter (PointCloud &output)
   if (!input_)
   {
     PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
-    output.width = output.height = 0;
-    output.points.clear ();
+    output.clear ();
     return;
   }
 
@@ -110,7 +109,7 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
   // cylinder)
   for (int iii = 0; iii < static_cast<int> (indices_->size ()); ++iii)
   {
-    if (!isFinite (input_->points[(*indices_)[iii]]))
+    if (!isFinite ((*input_)[(*indices_)[iii]]))
     {
       continue;
     }
@@ -129,7 +128,7 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
     // Perform the radius search in the projected cloud
     std::vector<int> radius_indices;
     std::vector<float> radius_dists;
-    PointT p = cloud_projected->points[(*indices_)[iii]];
+    PointT p = (*cloud_projected)[(*indices_)[iii]];
     if (searcher_->radiusSearch (p, radius_, radius_indices, radius_dists) == 0)
     {
       PCL_WARN ("[pcl::%s::applyFilter] Searching for neighbors within radius %f failed.\n", getClassName ().c_str (), radius_);
@@ -143,10 +142,10 @@ pcl::LocalMaximum<PointT>::applyFilterIndices (std::vector<int> &indices)
     }
 
     // Check to see if a neighbor is higher than the query point
-    float query_z = input_->points[(*indices_)[iii]].z;
+    float query_z = (*input_)[(*indices_)[iii]].z;
     for (size_t k = 1; k < radius_indices.size (); ++k)  // k = 1 is the first neighbor
     {
-      if (input_->points[radius_indices[k]].z > query_z)
+      if ((*input_)[radius_indices[k]].z > query_z)
       {
         // Query point is not the local max, no need to check others
         point_is_max[(*indices_)[iii]] = false;

@@ -149,7 +149,7 @@ namespace pcl
       inline bool
       greaterCornernessAtIndices (int a, int b) const
       {
-        return (response_->points [a] > response_->points [b]);
+        return ((*response_)[a] > (*response_)[b]);
       }
 
       /// computation method

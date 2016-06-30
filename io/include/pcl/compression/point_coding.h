@@ -145,7 +145,7 @@ namespace pcl
 
             // retrieve point from cloud
             const int& idx = indexVector_arg[i];
-            const PointT& idxPoint = inputCloud_arg->points[idx];
+            const PointT& idxPoint = (*inputCloud_arg)[idx];
 
             // differentially encode point coordinates and truncate overflow
             diffX = static_cast<unsigned char> (max (-127, min<int>(127, static_cast<int> ((idxPoint.x - referencePoint_arg[0])  / pointCompressionResolution_))));
@@ -185,7 +185,7 @@ namespace pcl
             const unsigned char& diffZ = static_cast<unsigned char> (*(pointDiffDataVectorIterator_++));
 
             // retrieve point from point cloud
-            PointT& point = outputCloud_arg->points[beginIdx_arg + i];
+            PointT& point = (*outputCloud_arg)[beginIdx_arg + i];
 
             // decode point position
             point.x = static_cast<float> (referencePoint_arg[0] + diffX * pointCompressionResolution_);

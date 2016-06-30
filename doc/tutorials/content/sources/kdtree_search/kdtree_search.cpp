@@ -10,18 +10,15 @@ main (int argc, char** argv)
 {
   srand (time (NULL));
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> (1000));
 
   // Generate pointcloud data
-  cloud->width = 1000;
-  cloud->height = 1;
-  cloud->points.resize (cloud->width * cloud->height);
 
-  for (size_t i = 0; i < cloud->points.size (); ++i)
+  for (size_t i = 0; i < cloud->size (); ++i)
   {
-    cloud->points[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
-    cloud->points[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].x = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].y = 1024.0f * rand () / (RAND_MAX + 1.0f);
+    (*cloud)[i].z = 1024.0f * rand () / (RAND_MAX + 1.0f);
   }
 
   pcl::KdTreeFLANN<pcl::PointXYZ> kdtree;
@@ -49,9 +46,9 @@ main (int argc, char** argv)
   if ( kdtree.nearestKSearch (searchPoint, K, pointIdxNKNSearch, pointNKNSquaredDistance) > 0 )
   {
     for (size_t i = 0; i < pointIdxNKNSearch.size (); ++i)
-      std::cout << "    "  <<   cloud->points[ pointIdxNKNSearch[i] ].x 
-                << " " << cloud->points[ pointIdxNKNSearch[i] ].y 
-                << " " << cloud->points[ pointIdxNKNSearch[i] ].z 
+      std::cout << "    "  <<   (*cloud)[ pointIdxNKNSearch[i] ].x
+                << " " << (*cloud)[ pointIdxNKNSearch[i] ].y
+                << " " << (*cloud)[ pointIdxNKNSearch[i] ].z
                 << " (squared distance: " << pointNKNSquaredDistance[i] << ")" << std::endl;
   }
 
@@ -71,9 +68,9 @@ main (int argc, char** argv)
   if ( kdtree.radiusSearch (searchPoint, radius, pointIdxRadiusSearch, pointRadiusSquaredDistance) > 0 )
   {
     for (size_t i = 0; i < pointIdxRadiusSearch.size (); ++i)
-      std::cout << "    "  <<   cloud->points[ pointIdxRadiusSearch[i] ].x 
-                << " " << cloud->points[ pointIdxRadiusSearch[i] ].y 
-                << " " << cloud->points[ pointIdxRadiusSearch[i] ].z 
+      std::cout << "    "  <<   (*cloud)[ pointIdxRadiusSearch[i] ].x
+                << " " << (*cloud)[ pointIdxRadiusSearch[i] ].y
+                << " " << (*cloud)[ pointIdxRadiusSearch[i] ].z
                 << " (squared distance: " << pointRadiusSquaredDistance[i] << ")" << std::endl;
   }
 
