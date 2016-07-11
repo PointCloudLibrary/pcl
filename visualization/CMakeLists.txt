@@ -14,7 +14,7 @@ else(NOT VTK_FOUND)
 endif(NOT VTK_FOUND)
 
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk)
+PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS vtk OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk librealsense)
 
 if (ANDROID)
   set (build FALSE)
@@ -180,6 +180,9 @@ if(build)
     endif()
     if(WITH_RSSDK)
       list(APPEND EXT_DEPS rssdk)
+    endif()
+    if(WITH_LIBREALSENSE)
+      list(APPEND EXT_DEPS librealsense)
     endif()
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}"
       "${SUBSYS_DEPS}" "${EXT_DEPS}" "" "" "")

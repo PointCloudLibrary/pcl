@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2015-, Open Perception, Inc.
+ *  Copyright (c) 2016, Intel Corporation
  *
  *  All rights reserved.
  *
