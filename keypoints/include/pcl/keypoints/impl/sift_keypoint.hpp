@@ -136,7 +136,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     tree_->setInputCloud (cloud);
 
     // Detect keypoints for the current scale
-    detectKeypointsForOctave (*cloud, *tree_, scale, nr_scales_per_octave_, output);
+    detectKeypointsForOctave (*cloud, *tree_, scale, nr_scales_per_octave_, output, *keypoints_indices_);
 
     // Increase the scale by another octave
     scale *= 2;
@@ -155,7 +155,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
 template <typename PointInT, typename PointOutT> void 
 pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
     const PointCloudIn &input, KdTree &tree, float base_scale, int nr_scales_per_octave, 
-    PointCloudOut &output)
+    PointCloudOut &output, pcl::PointIndices &indices)
 {
   // Compute the difference of Gaussians (DoG) scale space
   std::vector<float> scales (nr_scales_per_octave + 3);
@@ -171,6 +171,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
   findScaleSpaceExtrema (input, tree, diff_of_gauss, extrema_indices, extrema_scales);
 
   output.points.reserve (output.points.size () + extrema_indices.size ());
+  indices.indices.reserve (indices.indices.size () + extrema_indices.size ());
   // Save scale?
   if (scale_idx_ != -1)
   {
@@ -186,6 +187,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       memcpy (reinterpret_cast<char*> (&keypoint) + out_fields_[scale_idx_].offset,
               &scales[extrema_scales[i_keypoint]], sizeof (float));
       output.points.push_back (keypoint); 
+      indices.indices.push_back (keypoint_index);
     }
   }
   else
@@ -201,6 +203,7 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypointsForOctave (
       keypoint.z = input.points[keypoint_index].z;
 
       output.points.push_back (keypoint); 
+      indices.indices.push_back (keypoint_index);
     }
   }
 }

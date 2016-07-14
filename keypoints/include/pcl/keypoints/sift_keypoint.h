@@ -107,6 +107,7 @@ namespace pcl
       using Keypoint<PointInT, PointOutT>::surface_;
       using Keypoint<PointInT, PointOutT>::tree_;
       using Keypoint<PointInT, PointOutT>::initCompute;    
+      using Keypoint<PointInT, PointOutT>::keypoints_indices_;
 
       /** \brief Empty constructor. */
       SIFTKeypoint () : min_scale_ (0.0), nr_octaves_ (0), nr_scales_per_octave_ (0), 
@@ -114,6 +115,7 @@ namespace pcl
         out_fields_ (), getFieldValue_ ()
       {
         name_ = "SIFTKeypoint";
+        keypoints_indices_ = PointIndices::Ptr(new pcl::PointIndices ());
       }
 
       /** \brief Specify the range of scales over which to search for keypoints
@@ -152,7 +154,7 @@ namespace pcl
       void 
       detectKeypointsForOctave (const PointCloudIn &input, KdTree &tree, 
                                 float base_scale, int nr_scales_per_octave, 
-                                PointCloudOut &output);
+                                PointCloudOut &output, PointIndices &indices);
 
       /** \brief Compute the difference-of-Gaussian (DoG) scale space for the given input and scales
         * \param input the point cloud for which the DoG scale space will be computed
