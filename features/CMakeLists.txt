@@ -25,6 +25,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/fpfh.h"
         "include/pcl/${SUBSYS_NAME}/fpfh_omp.h"
         "include/pcl/${SUBSYS_NAME}/from_meshes.h"
+        "include/pcl/${SUBSYS_NAME}/gasd.h"
         "include/pcl/${SUBSYS_NAME}/gfpfh.h"
         "include/pcl/${SUBSYS_NAME}/integral_image2D.h"
         "include/pcl/${SUBSYS_NAME}/integral_image_normal.h"
@@ -75,6 +76,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/feature.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/fpfh.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/fpfh_omp.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/gasd.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/gfpfh.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/integral_image2D.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/integral_image_normal.hpp"
@@ -122,6 +124,7 @@ if(build)
         src/crh.cpp
         src/don.cpp
         src/fpfh.cpp
+        src/gasd.cpp
         src/gfpfh.cpp
         src/integral_image_normal.cpp
         src/intensity_gradient.cpp
