@@ -375,6 +375,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::compute (pcl::PointCloud
 template <typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::PointCloud<PointLT>& labels, PointCloudNPtr& normals)
 {
+  PCLTimer tim;
+
   // setup coordinate images
   pcl::Intensity zero_intensity;
   zero_intensity.intensity = 0.f;
@@ -387,21 +389,36 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::extractEdges (pcl::Point
   pcl::PointCloud<pcl::Intensity>::Ptr z_dy(new pcl::PointCloud<pcl::Intensity>);
   prepareImages(x_image, y_image, z_image, x_dx, y_dy, z_dx, z_dy);
 
+  std::cout << "1: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
+
   // intermediate edge data structure for computing depth and surface discontinuities
   pcl::Intensity8u zero_intensity_8u;
   zero_intensity_8u.intensity = (uint8_t)0;
   pcl::PointCloud<pcl::Intensity8u>::Ptr edge(new pcl::PointCloud<pcl::Intensity8u>(labels.width, labels.height, zero_intensity_8u));
 
+  std::cout << "2: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
+
   // depth discontinuities
   if (detecting_edge_types_ & EDGELABEL_OCCLUDING)
     computeDepthDiscontinuities(edge, z_image, z_dx, z_dy, labels);
+
+  std::cout << "3: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
 
   // surface discontinuities
   if (detecting_edge_types_ & EDGELABEL_HIGH_CURVATURE)
     computeSurfaceDiscontinuities(edge, x_dx, y_dy, z_image, z_dx, z_dy, normals);
 
+  std::cout << "4: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
+
   // copy edge data into point cloud labels
   setLabels(edge, labels);
+
+  std::cout << "5: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -439,6 +456,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages(pcl::Point
                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
                                                                       pcl::PointCloud<pcl::Intensity>::Ptr& z_dy)
 {
+  PCLTimer tim;
   for (unsigned int v = 0; v < input_->height; ++v)
   {
     const size_t point_index = v * input_->width;
@@ -467,6 +485,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages(pcl::Point
       ++point;
     }
   }
+  std::cout << "f1: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
 
   // Sobel and smoothing
   pcl::Convolution<pcl::Intensity> convolution;
@@ -482,6 +502,9 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages(pcl::Point
   convolution.setInputCloud(z_image);
   convolution.filter(*z_dy);
 
+  std::cout << "f2: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
+
   if (edge_detection_config_.noise_reduction_mode == EdgeDetectionConfig::GAUSSIAN)
   {
     pcl::PointCloud<pcl::Intensity>::Ptr temp(new pcl::PointCloud<pcl::Intensity>);
@@ -493,6 +516,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages(pcl::Point
     convolution.setInputCloud(temp);
     convolution.filter(*z_dy);
   }
+  std::cout << "f3: " << tim.getElapsedTimeInMilliSec() << std::endl;
+  tim.start();
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -551,6 +576,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
                                                                                       const pcl::PointCloud<pcl::Intensity>::Ptr& z_dx, const pcl::PointCloud<pcl::Intensity>::Ptr& z_dy,
                                                                                       PointCloudNPtr& normals)
 {
+  PCLTimer tim;
   // surface discontinuities
   const int min_line_width = edge_detection_config_.min_scan_line_width;
   const int max_line_width = edge_detection_config_.max_scan_line_width;
@@ -565,7 +591,10 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
   computeIntegralImageX(x_dx, x_dx_integral_x, z_dx, z_dx_integral_x);
   pcl::PointCloud<pcl::PointXY>::Ptr distance_map_horizontal(new pcl::PointCloud<pcl::PointXY>);
   computeEdgeDistanceMapHorizontal(edge, distance_map_horizontal);
-#ifdef USE_OMP
+  std::cout << "surface1: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
+  tim.start();
+#ifdef _OPENMP__ // todo: activate via _OPENMP
+  std::cout << "PCL: OpenMP activated" << std::endl;
 #pragma omp parallel for //num_threads(2)
 #endif
   for (int v = max_line_width+1; v < max_v; ++v)
@@ -636,6 +665,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       }
     }
   }
+  std::cout << "surfaceX: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
+  tim.start();
 
   // y direction scan lines
   pcl::PointCloud<pcl::Intensity>::Ptr y_dy_t(new pcl::PointCloud<pcl::Intensity>);
@@ -647,9 +678,11 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
   computeIntegralImageX(y_dy_t, y_dy_integral_y, z_dy_t, z_dy_integral_y);
   pcl::PointCloud<pcl::PointXY>::Ptr distance_map_vertical(new pcl::PointCloud<pcl::PointXY>);
   computeEdgeDistanceMapVertical(edge, distance_map_vertical);
+  std::cout << "surface2: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
+  tim.start();
   const int max_uy = z_dy_t->width - max_line_width - 2;
   const int max_vy = z_dy_t->height - max_line_width - 2;
-#ifdef USE_OMP
+#ifdef _OPENMP__
 #pragma omp parallel for //num_threads(2)
 #endif
   for (int v = max_line_width+1; v < max_vy; ++v)   // this is the original u coordinate, but the y-data structures are transposed for memory access efficiency
@@ -720,6 +753,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       }
     }
   }
+  std::cout << "surfaceY: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
+  tim.start();
 
   // close 45 degree edges with an additional edge pixel for better neighborhood selection during normal estimation
   for (int v = max_line_width; v < edge->height - max_line_width; ++v)
@@ -738,6 +773,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       }
     }
   }
+  std::cout << "surface_refine: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
+  tim.start();
 
   // optionally: compute edge-aware normals exploiting the already computed structures
   if (normals != 0)
@@ -751,7 +788,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
     normals->width = input_->width;
     const int width = normals->width;
     const float bad_point = std::numeric_limits<float>::quiet_NaN();
-#ifdef USE_OMP
+#ifdef _OPENMP__
 #pragma omp parallel for //num_threads(2)
 #endif
     for (int v = max_line_width+1; v < max_v; ++v)
@@ -807,6 +844,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       }
     }
   }
+  std::cout << "surface_normals: " << tim.getElapsedTimeInMilliSec() << "ms" << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -881,25 +919,44 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapHo
   distance_map->resize(edge->height*edge->width);
   distance_map->width = edge->width;
   distance_map->height = edge->height;
+  // in the following loop, the pointer access is almost 3 times faster than the ->at(u,v) operator (which is left as commentary in the code for readability)
   for (int v=0; v<edge->height; ++v)
   {
     // distance to next edge left of query pixel
-    distance_map->at(0,v).x = 0;
+    //distance_map->at(0,v).x = 0;
+    pcl::PointXY* d_ptr = &(distance_map->at(0,v));
+    d_ptr->x = 0.f;
+    d_ptr++;
+    pcl::Intensity8u* e_ptr = &(edge->at(1,v));
     for (int u=1; u<edge->width; ++u)
     {
-      if (edge->at(u,v).intensity != 0)
-        distance_map->at(u,v).x = 0;
+      //if (edge->at(u,v).intensity != 0)
+      if (e_ptr->intensity != 0)
+        //distance_map->at(u,v).x = 0;
+        d_ptr->x = 0.f;
       else
-        distance_map->at(u,v).x = distance_map->at(u-1,v).x + 1;
+        //distance_map->at(u,v).x = distance_map->at(u-1,v).x + 1;
+        d_ptr->x = (d_ptr-1)->x + 1;
+      ++d_ptr;
+      ++e_ptr;
     }
     // distance to next edge right of query pixel
-    distance_map->at(edge->width-1,v).y = 0;
+    //distance_map->at(edge->width-1,v).y = 0;
+    d_ptr = &(distance_map->at(edge->width-1,v));
+    d_ptr->y = 0.f;
+    --d_ptr;
+    e_ptr = &(edge->at(edge->width-2,v));
     for (int u=edge->width-2; u>=0; --u)
     {
-      if (edge->at(u,v).intensity != 0)
-        distance_map->at(u,v).y = 0;
+      //if (edge->at(u,v).intensity != 0)
+      if (e_ptr->intensity != 0)
+        //distance_map->at(u,v).y = 0;
+        d_ptr->y = 0.f;
       else
-        distance_map->at(u,v).y = distance_map->at(u+1,v).y + 1;
+        //distance_map->at(u,v).y = distance_map->at(u+1,v).y + 1;
+        d_ptr->y = (d_ptr+1)->y + 1;
+      --d_ptr;
+      --e_ptr;
     }
   }
 }
@@ -911,32 +968,88 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapVe
   distance_map->resize(edge->height * edge->width);
   distance_map->width = edge->width;
   distance_map->height = edge->height;
+
   // distance to next edge above query pixel
+  pcl::PointXY* d_ptr = &(distance_map->at(0, 0));
   for (int u = 0; u < edge->width; ++u)
-    distance_map->at(u, 0).x = 0;
+  {
+    //distance_map->at(u, 0).x = 0;
+    d_ptr->x = 0.f;
+    ++d_ptr;
+  }
   for (int v = 1; v < edge->height; ++v)
   {
+    pcl::Intensity8u* e_ptr = &(edge->at(0,v));
+    d_ptr = &(distance_map->at(0, v));
+    pcl::PointXY* d_prev_ptr = d_ptr - distance_map->width;
     for (int u = 0; u < edge->width; ++u)
     {
-      if (edge->at(u, v).intensity != 0)
-        distance_map->at(u, v).x = 0;
+      //if (edge->at(u, v).intensity != 0)
+      if (e_ptr->intensity != 0)
+        //distance_map->at(u, v).x = 0;
+        d_ptr->x = 0.f;
       else
-        distance_map->at(u, v).x = distance_map->at(u, v - 1).x + 1;
+        //distance_map->at(u, v).x = distance_map->at(u, v - 1).x + 1;
+        d_ptr->x = d_prev_ptr->x + 1;
+      ++e_ptr;
+      ++d_ptr;
+      ++d_prev_ptr;
     }
   }
   // distance to next edge below query pixel
+  d_ptr = &(distance_map->at(0, edge->height - 1));
   for (int u = 0; u < edge->width; ++u)
-    distance_map->at(u, edge->height - 1).y = 0;
+  {
+    //distance_map->at(u, edge->height - 1).y = 0;
+    d_ptr->y = 0.f;
+    ++d_ptr;
+  }
   for (int v = edge->height - 2; v >= 0; --v)
   {
+    pcl::Intensity8u* e_ptr = &(edge->at(0,v));
+    d_ptr = &(distance_map->at(0, v));
+    pcl::PointXY* d_prev_ptr = d_ptr + distance_map->width;
     for (int u = 0; u < edge->width; ++u)
     {
-      if (edge->at(u, v).intensity != 0)
-        distance_map->at(u, v).y = 0;
+      //if (edge->at(u, v).intensity != 0)
+      if (e_ptr->intensity != 0)
+        //distance_map->at(u, v).y = 0;
+        d_ptr->y = 0.f;
       else
-        distance_map->at(u, v).y = distance_map->at(u, v + 1).y + 1;
+        //distance_map->at(u, v).y = distance_map->at(u, v + 1).y + 1;
+        d_ptr->y = d_prev_ptr->y + 1;
+      ++d_ptr;
+      ++e_ptr;
     }
   }
+
+//  this is the version without pointers, which is around 4 times slower than with pointers
+//  // distance to next edge above query pixel
+//  for (int u = 0; u < edge->width; ++u)
+//    distance_map->at(u, 0).x = 0;
+//  for (int v = 1; v < edge->height; ++v)
+//  {
+//    for (int u = 0; u < edge->width; ++u)
+//    {
+//      if (edge->at(u, v).intensity != 0)
+//        distance_map->at(u, v).x = 0;
+//      else
+//        distance_map->at(u, v).x = distance_map->at(u, v - 1).x + 1;
+//    }
+//  }
+//  // distance to next edge below query pixel
+//  for (int u = 0; u < edge->width; ++u)
+//    distance_map->at(u, edge->height - 1).y = 0;
+//  for (int v = edge->height - 2; v >= 0; --v)
+//  {
+//    for (int u = 0; u < edge->width; ++u)
+//    {
+//      if (edge->at(u, v).intensity != 0)
+//        distance_map->at(u, v).y = 0;
+//      else
+//        distance_map->at(u, v).y = distance_map->at(u, v + 1).y + 1;
+//    }
+//  }
 }
 
 //////////////////////////////////////////////////////////////////////////////

@@ -114,7 +114,7 @@ namespace pcl
       }
 
     protected:
-      /** \brief Computes the normal for the complete cloud. 
+      /** \brief Computes the normals for the complete cloud.
         * \param[out] output the resultant normals
         */
       void 
