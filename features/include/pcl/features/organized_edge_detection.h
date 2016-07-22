@@ -753,6 +753,13 @@ namespace pcl
                     pcl::PointCloud<pcl::Intensity>::Ptr& x_dx, pcl::PointCloud<pcl::Intensity>::Ptr& y_dy, pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
                     pcl::PointCloud<pcl::Intensity>::Ptr& z_dy);
 
+      /** \brief Filters a single channel point cloud with a separable image filter of kernel size 3x3.
+        * \param[in] v1 The parameters v1, v2, v3 define the vertical components of the separable filter, e.g. 0.125, 0.25, 0.125 for a Sobel filter in x-direction.
+        * \param[in] h1 The parameters h1, h2, h3 define the horizontal components of the separable filter, e.g. -1, 0, 1 for a Sobel filter in x-direction.
+        * */
+      void
+      filterSeparable33(pcl::PointCloud<pcl::Intensity>::Ptr& image, pcl::PointCloud<pcl::Intensity>::Ptr& result, const float v1, const float v2, const float v3, const float h1, const float h2, const float h3);
+
       /** \brief Computes depth discontinuities in a fast way or copies edge detections from labels into edge (depending on use_fast_depth_discontinuity_mode_ setting) */
       void
       computeDepthDiscontinuities(pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, const pcl::PointCloud<pcl::Intensity>::Ptr& z_image,
@@ -775,11 +782,11 @@ namespace pcl
 
       /** \brief Computes the horizontal distance to the next edge pixel left (.x) and right (.y) of the query point */
       void
-      computeEdgeDistanceMapHorizontal(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map);
+      computeEdgeDistanceMapHorizontal(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, std::vector< std::pair<int,int> >& distance_map);
 
       /** \brief Computes the vertical distance to the next edge pixel above (.x) and below (.y) of the query point */
       void
-      computeEdgeDistanceMapVertical(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, pcl::PointCloud<pcl::PointXY>::Ptr& distance_map);
+      computeEdgeDistanceMapVertical(const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge, std::vector< std::pair<int,int> >& distance_map);
 
       /** \brief Adapts the scan line around the query pixel (u,v) to edges closer than scan_line_length1 (left or above) or scan_line_length2 (right or below).
        * \param[in/out] scan_line_length1 Scan line length left or above query pixel (u,v).
@@ -791,7 +798,7 @@ namespace pcl
        * \return Returns whether the total scan line length exceeds min_line_width.
        */
       bool
-      adaptScanLine(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map, const int u, const int v, const int min_scan_line_length);
+      adaptScanLine(int& scan_line_length_1, int& scan_line_length_2, const std::pair<int,int>& distance_to_edge, const int min_scan_line_length);
 
       /** \brief Adapts the scan line around the query pixel (u,v) to edges closer than scan_line_length1 (left or above) or scan_line_length2 (right or below). This is a
        * special implementation for normal computation.
@@ -804,9 +811,9 @@ namespace pcl
        * \return Returns whether the total scan line length exceeds min_line_width.
        */
       bool
-      adaptScanLineNormal(int& scan_line_length_1, int& scan_line_length_2, const pcl::PointCloud<pcl::PointXY>::Ptr& distance_map, const int u, const int v, const int min_scan_line_length);
+      adaptScanLineNormal(int& scan_line_length_1, int& scan_line_length_2, const std::pair<int,int>& distance_to_edge, const int min_scan_line_length);
 
-      /** \brief Transposes a point cloud image */
+      /** \brief Transposes a single channel image point cloud */
       void
       transposeImage(const pcl::PointCloud<pcl::Intensity>::Ptr& src, pcl::PointCloud<pcl::Intensity>::Ptr& dst);
 
