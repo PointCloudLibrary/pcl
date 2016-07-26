@@ -563,63 +563,67 @@ namespace pcl
     enum NoiseReductionMode { NONE, GAUSSIAN };   //, BILATERAL }; bilateral not yet implemented
 
     /** \brief Noise suppression mode on differentiated images */
-    NoiseReductionMode noise_reduction_mode;
+    NoiseReductionMode noise_reduction_mode_;
 
     /** \brief Kernel size of noise reduction filter, usually 3, 5 or 7 */
-    int noise_reduction_kernel_size;
+    int noise_reduction_kernel_size_;
 
     /** \brief Threshold for depth dependent depth edge (step) verification, corresponds to minimum depth step in [m] at 1m distance (default ~ 0.01 - 0.02) */
-    float depth_step_factor;
+    float depth_step_factor_;
 
     /** \brief Minimum angle of surrounding surfaces around a surface discontinuity (edge), in [deg] */
-    double min_detectable_edge_angle;
+    double min_detectable_edge_angle_;
 
     /** \brief Use fixed width scan line at certain depth (false) or adapt scan line width to surrounding edges, i.e. not crossing edges (true, default). If set to false no surface edge will be computed when the scan line crosses depth edges. If true, the scan line is adapted close to depth edges which yields more accurate results (though at little lower speed). */
-    bool use_adaptive_scan_line;
+    bool use_adaptive_scan_line_;
 
     /** \brief Minimum scan line width used for surface slope approximation, in [pixels] (typically around 5pix) */
-    int min_scan_line_width;
+    int min_scan_line_width_;
 
     /** \brief Maximum scan line width used for surface slope approximation, in [pixels] (typically between 20 and 40pix) */
-    int max_scan_line_width;
+    int max_scan_line_width_;
 
-    /** \brief Scan_line_width is the length of the scan line left and right of the query pixel at 2m distance (using linear model with scan line width at 0.5m of 5 pixels) */
-    int scan_line_width_at_2m;
+    /** \brief scan_line_width_at_2m_ is the length of the scan line left and right of the query pixel at 2m distance (using linear model with scan line width at 0.5m of min_scan_line_width_ pixels) */
+    int scan_line_width_at_2m_;
 
-    /** \brief Computed value from scan_line_width_at_2m (slope in linear model) */
-    double scan_line_model_m;
+    /** \brief Computed value from scan_line_width_at_2m_ (slope in linear model) */
+    double scan_line_model_m_;
 
-    /** \brief Computed value from scan_line_width_at_2m (offset in linear model) */
-    double scan_line_model_n;
+    /** \brief Computed value from scan_line_width_at_2m_ (offset in linear model) */
+    double scan_line_model_n_;
 
     /** \brief Standard constructor with default parameters */
     EdgeDetectionConfig()
     {
-      noise_reduction_mode = GAUSSIAN;
-      noise_reduction_kernel_size = 3;
-      depth_step_factor = 0.01f;
-      min_detectable_edge_angle = 45;
-      use_adaptive_scan_line = true;
-      min_scan_line_width = 5;
-      max_scan_line_width = 20;
-      scan_line_width_at_2m = 15;
-      scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
-      scan_line_model_m = 10 - 2*scan_line_model_n;
+      noise_reduction_mode_ = GAUSSIAN;
+      noise_reduction_kernel_size_ = 3;
+      depth_step_factor_ = 0.01f;
+      min_detectable_edge_angle_ = 45;
+      use_adaptive_scan_line_ = true;
+      min_scan_line_width_ = 5;
+      max_scan_line_width_ = 20;
+      scan_line_width_at_2m_ = 15;
+      updateScanLineModel();
     }
 
     /** \brief Constructor with user defined parameters */
-    EdgeDetectionConfig(const NoiseReductionMode noise_reduction_mode_, const int noise_reduction_kernel_size_, const float depth_step_factor_, const double min_detectable_edge_angle_, const bool use_adaptive_scan_line_, const int min_scan_line_width_, const int max_scan_line_width_, const int scan_line_width_at_2m_)
+    EdgeDetectionConfig(const NoiseReductionMode noise_reduction_mode, const int noise_reduction_kernel_size, const float depth_step_factor, const double min_detectable_edge_angle, const bool use_adaptive_scan_line, const int min_scan_line_width, const int max_scan_line_width, const int scan_line_width_at_2m)
     {
-      noise_reduction_mode = noise_reduction_mode_;
-      noise_reduction_kernel_size = noise_reduction_kernel_size_;
-      depth_step_factor = depth_step_factor_;
-      min_detectable_edge_angle = min_detectable_edge_angle_;
-      use_adaptive_scan_line = use_adaptive_scan_line_;
-      min_scan_line_width = min_scan_line_width_;
-      max_scan_line_width = max_scan_line_width_;
-      scan_line_width_at_2m = scan_line_width_at_2m_;
-      scan_line_model_n = (20.-scan_line_width_at_2m)/(double)3.0;
-      scan_line_model_m = 10 - 2*scan_line_model_n;
+      noise_reduction_mode_ = noise_reduction_mode;
+      noise_reduction_kernel_size_ = noise_reduction_kernel_size;
+      depth_step_factor_ = depth_step_factor;
+      min_detectable_edge_angle_ = min_detectable_edge_angle;
+      use_adaptive_scan_line_ = use_adaptive_scan_line;
+      min_scan_line_width_ = min_scan_line_width;
+      max_scan_line_width_ = max_scan_line_width;
+      scan_line_width_at_2m_ = scan_line_width_at_2m;
+      updateScanLineModel();
+    }
+
+    void updateScanLineModel()
+    {
+      scan_line_model_n_ = (4.*min_scan_line_width_-scan_line_width_at_2m_)/(double)3.0;
+      scan_line_model_m_ = 2*(min_scan_line_width_-scan_line_model_n_);
     }
   };
 
@@ -725,6 +729,7 @@ namespace pcl
       setEdgeDetectionConfig (const EdgeDetectionConfig edge_detection_config)
       {
         edge_detection_config_ = edge_detection_config;
+        edge_detection_config_.updateScanLineModel();
         updateKernels();
       }
 
@@ -753,12 +758,20 @@ namespace pcl
                     pcl::PointCloud<pcl::Intensity>::Ptr& x_dx, pcl::PointCloud<pcl::Intensity>::Ptr& y_dy, pcl::PointCloud<pcl::Intensity>::Ptr& z_dx,
                     pcl::PointCloud<pcl::Intensity>::Ptr& z_dy);
 
-      /** \brief Filters a single channel point cloud with a separable image filter of kernel size 3x3.
+      /** \brief Filters a single channel point cloud with a separable image filter of kernel size 3x3. Pixels beyond the image border are assumed to be zero.
         * \param[in] v1 The parameters v1, v2, v3 define the vertical components of the separable filter, e.g. 0.125, 0.25, 0.125 for a Sobel filter in x-direction.
         * \param[in] h1 The parameters h1, h2, h3 define the horizontal components of the separable filter, e.g. -1, 0, 1 for a Sobel filter in x-direction.
         * */
       void
       filterSeparable33(pcl::PointCloud<pcl::Intensity>::Ptr& image, pcl::PointCloud<pcl::Intensity>::Ptr& result, const float v1, const float v2, const float v3, const float h1, const float h2, const float h3);
+
+      /** \brief Filters a single channel point cloud with a separable image filter of arbitrary kernel size. Pixels beyond the image border are assumed to be zero.
+        * \param[in] vertical_coefficients The parameters v1, v2, v3 define the vertical components of the separable filter, e.g. 0.125, 0.25, 0.125 for a Sobel filter in x-direction.
+        * \param[in] horizontal_coefficients The parameters h1, h2, h3 define the horizontal components of the separable filter, e.g. -1, 0, 1 for a Sobel filter in x-direction.
+        * */
+      void
+      filterSeparable(pcl::PointCloud<pcl::Intensity>::Ptr& image, pcl::PointCloud<pcl::Intensity>::Ptr& result, const std::vector<float> vertical_coefficients, const std::vector<float> horizontal_coefficients);
+
 
       /** \brief Computes depth discontinuities in a fast way or copies edge detections from labels into edge (depending on use_fast_depth_discontinuity_mode_ setting) */
       void
