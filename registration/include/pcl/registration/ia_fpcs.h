@@ -94,7 +94,7 @@ namespace pcl
       typedef typename Normals::ConstPtr NormalsConstPtr;
 
       typedef pcl::registration::MatchingCandidate MatchingCandidate;
-      typedef std::vector <MatchingCandidate> MatchingCandidates;
+      typedef pcl::registration::MatchingCandidates MatchingCandidates;
       /** \endcond */
 
 

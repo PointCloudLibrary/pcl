@@ -44,6 +44,7 @@
 #ifndef __CUDACC__
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
+#include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>

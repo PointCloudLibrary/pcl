@@ -142,8 +142,12 @@ pcl::SIFTKeypoint<PointInT, PointOutT>::detectKeypoints (PointCloudOut &output)
     scale *= 2;
   }
 
+  // Set final properties
   output.height = 1;
   output.width = static_cast<uint32_t> (output.points.size ());
+  output.header = input_->header;
+  output.sensor_origin_ = input_->sensor_origin_;
+  output.sensor_orientation_ = input_->sensor_orientation_;
 }
 
 

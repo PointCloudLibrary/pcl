@@ -559,9 +559,19 @@ inline bool pcl::io::ply::ply_parser::parse_scalar_property (format_type format,
   typedef ScalarType scalar_type;
   if (format == ascii_format)
   {
-    scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+    std::string value_s;
+    scalar_type value;
     char space = ' ';
-    istream >> value;
+    istream >> value_s;
+    try
+    {
+      value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
+    }
+    catch (boost::bad_lexical_cast &)
+    {
+      value = std::numeric_limits<scalar_type>::quiet_NaN ();
+    }
+
     if (!istream.eof ())
       istream >> space >> std::ws;
     if (!istream || !isspace (space))
@@ -625,9 +635,19 @@ inline bool pcl::io::ply::ply_parser::parse_list_property (format_type format, s
     }
     for (std::size_t index = 0; index < size; ++index)
     {
-      scalar_type value = std::numeric_limits<scalar_type>::quiet_NaN ();
+      std::string value_s;
+      scalar_type value;
       char space = ' ';
-      istream >> value;
+      istream >> value_s;
+      try
+      {
+        value = static_cast<scalar_type> (boost::lexical_cast<typename pcl::io::ply::type_traits<scalar_type>::parse_type> (value_s));
+      }
+      catch (boost::bad_lexical_cast &)
+      {
+        value = std::numeric_limits<scalar_type>::quiet_NaN ();
+      }
+
       if (!istream.eof ())
       {
         istream >> space >> std::ws;

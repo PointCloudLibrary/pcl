@@ -153,10 +153,10 @@ if (BUILD_tools)
   PCL_ADD_EXECUTABLE(pcl_grid_min "${SUBSYS_NAME}" grid_min.cpp)
   target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
 
-  if(BUILD_OPENNI AND OPENNI_FOUND)
+  if(WITH_OPENNI)
     PCL_ADD_EXECUTABLE(pcl_oni2pcd "${SUBSYS_NAME}" oni2pcd.cpp)
     target_link_libraries(pcl_oni2pcd pcl_common pcl_io)
-  endif(BUILD_OPENNI AND OPENNI_FOUND)
+  endif()
 
   if (QHULL_FOUND)
     PCL_ADD_EXECUTABLE(pcl_crop_to_hull "${SUBSYS_NAME}" crop_to_hull.cpp)
@@ -202,6 +202,9 @@ if (BUILD_tools)
 
       PCL_ADD_EXECUTABLE(pcl_obj2pcd "${SUBSYS_NAME}" obj2pcd.cpp)
       target_link_libraries(pcl_obj2pcd pcl_common pcl_io)
+
+      PCL_ADD_EXECUTABLE(pcl_obj2ply "${SUBSYS_NAME}" obj2ply.cpp)
+      target_link_libraries(pcl_obj2ply pcl_common pcl_io)
 
       PCL_ADD_EXECUTABLE(pcl_vtk2pcd "${SUBSYS_NAME}" vtk2pcd.cpp)
       target_link_libraries(pcl_vtk2pcd pcl_common pcl_io)
@@ -249,10 +252,10 @@ if (BUILD_tools)
         PCL_ADD_EXECUTABLE (pcl_voxel_grid_occlusion_estimation "${SUBSYS_NAME}" voxel_grid_occlusion_estimation.cpp)
         target_link_libraries (pcl_voxel_grid_occlusion_estimation pcl_common pcl_io pcl_filters pcl_visualization)
         
-        if(BUILD_OPENNI AND OPENNI_FOUND)
+        if(WITH_OPENNI)
           PCL_ADD_EXECUTABLE(pcl_openni_save_image "${SUBSYS_NAME}" openni_save_image.cpp)
           target_link_libraries(pcl_openni_save_image pcl_common pcl_io pcl_visualization)  
-        endif(BUILD_OPENNI AND OPENNI_FOUND)
+        endif()
       endif(BUILD_visualization)
   endif(NOT VTK_FOUND)
 

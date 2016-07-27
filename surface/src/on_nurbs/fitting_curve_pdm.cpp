@@ -36,6 +36,7 @@
  */
 
 #include <pcl/surface/on_nurbs/fitting_curve_pdm.h>
+#include <pcl/pcl_macros.h>
 #include <stdexcept>
 
 using namespace pcl;

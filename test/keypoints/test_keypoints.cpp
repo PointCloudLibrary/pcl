@@ -81,6 +81,15 @@ TEST (PCL, SIFTKeypoint)
   ASSERT_EQ (keypoints.width, keypoints.points.size ());
   ASSERT_EQ (keypoints.height, 1);
   EXPECT_EQ (keypoints.points.size (), static_cast<size_t> (169));
+  EXPECT_EQ (keypoints.header, cloud_xyzi->header);
+  EXPECT_EQ (keypoints.sensor_origin_ (0), cloud_xyzi->sensor_origin_ (0));
+  EXPECT_EQ (keypoints.sensor_origin_ (1), cloud_xyzi->sensor_origin_ (1));
+  EXPECT_EQ (keypoints.sensor_origin_ (2), cloud_xyzi->sensor_origin_ (2));
+  EXPECT_EQ (keypoints.sensor_origin_ (3), cloud_xyzi->sensor_origin_ (3));
+  EXPECT_EQ (keypoints.sensor_orientation_.w (), cloud_xyzi->sensor_orientation_.w ());
+  EXPECT_EQ (keypoints.sensor_orientation_.x (), cloud_xyzi->sensor_orientation_.x ());
+  EXPECT_EQ (keypoints.sensor_orientation_.y (), cloud_xyzi->sensor_orientation_.y ());
+  EXPECT_EQ (keypoints.sensor_orientation_.z (), cloud_xyzi->sensor_orientation_.z ());
 
   // Change the values and re-compute
   sift_detector.setScales (0.05f, 5, 3);

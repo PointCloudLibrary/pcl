@@ -97,6 +97,8 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelNormalSphere.
@@ -111,6 +113,8 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
       {
         model_name_ = "SampleConsensusModelNormalSphere";
+        sample_size_ = 4;
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -150,10 +154,13 @@ namespace pcl
     	EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
   };

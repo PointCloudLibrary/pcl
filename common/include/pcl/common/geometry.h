@@ -59,7 +59,7 @@ namespace pcl
     template <typename PointT> inline float 
     distance (const PointT& p1, const PointT& p2)
     {
-      Eigen::Vector3f diff = p1 -p2;
+      Eigen::Vector3f diff = p1.getVector3fMap () - p2.getVector3fMap ();
       return (diff.norm ());
     }
 
@@ -67,7 +67,7 @@ namespace pcl
     template<typename PointT> inline float 
     squaredDistance (const PointT& p1, const PointT& p2)
     {
-      Eigen::Vector3f diff = p1 -p2;
+      Eigen::Vector3f diff = p1.getVector3fMap () - p2.getVector3fMap ();
       return (diff.squaredNorm ());
     }
 

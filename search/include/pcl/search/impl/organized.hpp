@@ -77,7 +77,7 @@ pcl::search::OrganizedNeighbor<PointT>::radiusSearch (const               PointT
   k_sqr_distances.reserve (max_nn);
 
   unsigned yEnd  = (bottom + 1) * input_->width + right + 1;
-  register unsigned idx  = top * input_->width + left;
+  unsigned idx  = top * input_->width + left;
   unsigned skip = input_->width - right + left - 1;
   unsigned xEnd = idx - left + right + 1;
 

@@ -51,7 +51,7 @@ pcl::MeshSmoothingLaplacianVTK::performProcessing (pcl::PolygonMesh &output)
   VTKUtils::convertToVTK (*input_mesh_, vtk_polygons_);
 
   // Apply the VTK algorithm
-  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmoothPolyDataFilter::New ();
+  vtkSmartPointer<vtkSmoothPolyDataFilter> vtk_smoother = vtkSmartPointer<vtkSmoothPolyDataFilter>::New ();
 #if VTK_MAJOR_VERSION < 6
   vtk_smoother->SetInput (vtk_polygons_);
 #else

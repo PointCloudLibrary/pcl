@@ -44,7 +44,7 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/shot_omp.h>
 #include <pcl/features/board.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/kdtree/kdtree_flann.h>
@@ -135,7 +135,7 @@ TEST (PCL, Hough3DGrouping)
 
   //Assertions
   EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,17 +189,14 @@ main (int argc, char** argv)
   norm_est.compute (*scene_normals_);
 
   //Downsampling
-  PointCloud<int> sampled_indices;
   UniformSampling<PointType> uniform_sampling;
   uniform_sampling.setInputCloud (model_);
   uniform_sampling.setRadiusSearch (0.005);
-  uniform_sampling.compute (sampled_indices);
-  copyPointCloud (*model_, sampled_indices.points, *model_downsampled_);
+  uniform_sampling.filter (*model_downsampled_);
 
   uniform_sampling.setInputCloud (scene_);
   uniform_sampling.setRadiusSearch (0.02);
-  uniform_sampling.compute (sampled_indices);
-  copyPointCloud (*scene_, sampled_indices.points, *scene_downsampled_);
+  uniform_sampling.filter (*scene_downsampled_);
 
   //Descriptor
   SHOTEstimationOMP<PointType, NormalType, DescriptorType> descr_est;

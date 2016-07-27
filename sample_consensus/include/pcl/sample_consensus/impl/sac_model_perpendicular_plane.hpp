@@ -89,12 +89,8 @@ pcl::SampleConsensusModelPerpendicularPlane<PointT>::getDistancesToModel (
 template <typename PointT> bool
 pcl::SampleConsensusModelPerpendicularPlane<PointT>::isModelValid (const Eigen::VectorXf &model_coefficients)
 {
-  // Needs a valid model coefficients
-  if (model_coefficients.size () != 4)
-  {
-    PCL_ERROR ("[pcl::SampleConsensusModelPerpendicularPlane::isModelValid] Invalid number of model coefficients given (%lu)!\n", model_coefficients.size ());
+  if (!SampleConsensusModel<PointT>::isModelValid (model_coefficients))
     return (false);
-  }
 
   // Check against template, if given
   if (eps_angle_ > 0.0)

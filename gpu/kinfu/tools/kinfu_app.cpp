@@ -819,7 +819,7 @@ struct KinFuApp
         scene_cloud_view_.showMesh(kinfu_, integrate_colors_);
     }
      
-    if (has_image)
+    if (viz_ && has_image)
     {
       Eigen::Affine3f viewer_pose = getViewerPose(*scene_cloud_view_.cloud_viewer_);
       image_view_.showScene (kinfu_, rgb24, registration_, independent_camera_ ? &viewer_pose : 0);
@@ -828,7 +828,7 @@ struct KinFuApp
     if (current_frame_cloud_view_)
       current_frame_cloud_view_->show (kinfu_);    
       
-    if (!independent_camera_)
+    if (viz_ && !independent_camera_)
       setViewerPose (*scene_cloud_view_.cloud_viewer_, kinfu_.getCameraPose());
   }
   

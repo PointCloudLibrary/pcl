@@ -87,7 +87,7 @@ if(build)
 
     endif (QT4_FOUND AND VTK_USE_QVTK)
 
-    if (OPENNI_FOUND AND BUILD_OPENNI)
+    if (WITH_OPENNI)
 
 #      PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_grab_frame "${SUBSYS_NAME}" src/openni_grab_frame.cpp)
 #      target_link_libraries(pcl_openni_grab_frame pcl_common pcl_io pcl_visualization)
@@ -199,7 +199,7 @@ if(build)
 
       PCL_ADD_EXECUTABLE_OPT_BUNDLE(pcl_openni_klt "${SUBSYS_NAME}" src/openni_klt.cpp)
       target_link_libraries(pcl_openni_klt pcl_common pcl_io pcl_visualization pcl_tracking)
-    endif() # OPENNI_FOUND + BUILD_OPENNI
+    endif() # WITH_OPENNI
 
   endif() # VTK_FOUND
 

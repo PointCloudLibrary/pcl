@@ -157,8 +157,10 @@ namespace pcl
         void 
         setRendererCollection (vtkSmartPointer<vtkRendererCollection> &rens) { rens_ = rens; }
 
-        /** \brief Pass a pointer to the actor map
-          * \param[in] use_vbos
+        /** \brief Use Vertex Buffer Objects renderers.
+          * This is an optimization for the obsolete OpenGL backend. Modern OpenGL2 backend (VTK ≥ 6.3) uses vertex
+          * buffer objects by default, transparently for the user.
+          * \param[in] use_vbos set to true to use VBOs
           */
         inline void
         setUseVbos (const bool use_vbos) { use_vbos_ = use_vbos; }
@@ -282,7 +284,7 @@ namespace pcl
         /** \brief The maximum resizeable window width/height. */
         int max_win_height_, max_win_width_;
 
-        /** \brief The maximum resizeable window width/height. */
+        /** \brief Boolean that holds whether or not to use the vtkVertexBufferObjectMapper*/
         bool use_vbos_;
 
         /** \brief Set to true if the grid actor is enabled. */

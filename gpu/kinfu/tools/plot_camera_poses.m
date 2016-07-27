@@ -65,6 +65,7 @@ for n=1:3
   a=r*p(n,:)';
   plot3([t(1),t(1)+a(1)], [t(2),t(2)+a(2)], [t(3),t(3)+a(3)], 'color', c{n});
 end
+end
 
 function R=q2rot(q)
 % conversion code from http://en.wikipedia.org/wiki/Rotation_matrix%Quaternion	
@@ -83,9 +84,9 @@ function octave_axis_equal(h)
 % workaround for axis auto not working in 3d
 % tanks http://octave.1599824.n4.nabble.com/axis-equal-help-tp1636701p1636702.html
 figure(h);
-xl = get (gca, "xlim");
-yl = get (gca, "ylim");
-zl = get (gca, "zlim");
+xl = get (gca, 'xlim');
+yl = get (gca, 'ylim');
+zl = get (gca, 'zlim');
 span = max ([diff(xl), diff(yl), diff(zl)]);
 xlim (mean (xl) + span*[-0.5, 0.5])
 ylim (mean (yl) + span*[-0.5, 0.5])

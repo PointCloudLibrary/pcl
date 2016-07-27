@@ -541,7 +541,7 @@ namespace pcl
           if ( indices[i].empty () )
             continue;
 
-          if ( children_[i] == false )
+          if (children_[i] == 0)
           {
             createChild (i);
           }
@@ -796,7 +796,7 @@ namespace pcl
         if(indices[i].empty ())
           continue;
 
-        if( children_[i] == false )
+        if (children_[i] == 0)
         {
           assert (i < 8);
           createChild (i);

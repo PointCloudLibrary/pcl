@@ -132,14 +132,15 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
   float max_dist = -FLT_MAX;
   int max_idx = -1;
   float dist;
+  const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
     for (size_t i = 0; i < cloud.points.size (); ++i)
     {
-      pcl::Vector4fMapConst pt = cloud.points[i].getVector4fMap ();
-      dist = (pivot_pt - pt).norm ();
+      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
+      dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
         max_idx = int (i);
@@ -155,8 +156,8 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const Eigen::Vector4f
       // Check if the point is invalid
       if (!pcl_isfinite (cloud.points[i].x) || !pcl_isfinite (cloud.points[i].y) || !pcl_isfinite (cloud.points[i].z))
         continue;
-      pcl::Vector4fMapConst pt = cloud.points[i].getVector4fMap ();
-      dist = (pivot_pt - pt).norm ();
+      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
+      dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
         max_idx = int (i);
@@ -179,14 +180,15 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
   float max_dist = -FLT_MAX;
   int max_idx = -1;
   float dist;
+  const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
 
   // If the data is dense, we don't need to check for NaN
   if (cloud.is_dense)
   {
     for (size_t i = 0; i < indices.size (); ++i)
     {
-      pcl::Vector4fMapConst pt = cloud.points[indices[i]].getVector4fMap ();
-      dist = (pivot_pt - pt).norm ();
+      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
+      dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
         max_idx = static_cast<int> (i);
@@ -205,8 +207,8 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
           !pcl_isfinite (cloud.points[indices[i]].z))
         continue;
 
-      pcl::Vector4fMapConst pt = cloud.points[indices[i]].getVector4fMap ();
-      dist = (pivot_pt - pt).norm ();
+      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
+      dist = (pivot_pt3 - pt).norm ();
       if (dist > max_dist)
       {
         max_idx = static_cast<int> (i);
@@ -216,7 +218,7 @@ pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int
   }
 
   if(max_idx != -1)
-    max_pt = cloud.points[max_idx].getVector4fMap ();
+    max_pt = cloud.points[indices[max_idx]].getVector4fMap ();
   else
     max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
 }

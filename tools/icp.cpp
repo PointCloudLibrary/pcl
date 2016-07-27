@@ -42,7 +42,7 @@
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
 #include <pcl/registration/icp_nl.h>
-#include <pcl/registration/incremental_icp.h>
+#include <pcl/registration/incremental_registration.h>
 
 #include <string>
 #include <iostream>
@@ -87,8 +87,8 @@ main (int argc, char **argv)
   icp->setMaxCorrespondenceDistance (dist);
   icp->setRANSACOutlierRejectionThreshold (rans);
 
-  pcl::registration::IncrementalICP<PointType> iicp;
-  iicp.setICP (icp);
+  pcl::registration::IncrementalRegistration<PointType> iicp;
+  iicp.setRegistration (icp);
 
   for (size_t i = 0; i < pcd_indices.size (); i++)
   {

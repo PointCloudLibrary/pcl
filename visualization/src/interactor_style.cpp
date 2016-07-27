@@ -64,7 +64,9 @@
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -660,6 +662,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -668,6 +671,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
 #if VTK_MAJOR_VERSION < 6
@@ -704,6 +708,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -714,6 +719,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);
@@ -1176,6 +1182,9 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
   ShapeActorMap::iterator sm_it;
   bool actor_found = false;
 
+  if (!lut_enabled_ && !add_lut)
+    return;
+
   if (lut_actor_id_ != "")  // Search if provided actor id is in CloudActorMap or ShapeActorMap
   {
     am_it = cloud_actors_->find (lut_actor_id_);
@@ -1270,15 +1279,12 @@ pcl::visualization::PCLVisualizerInteractorStyle::updateLookUpTableDisplay (bool
     }
   }
 
-  if (!actor_found)
-    PCL_WARN ("[updateLookUpTableDisplay] No actor was found with LUT information!\n");
-
-  if (!actor_found || (lut_enabled_ && add_lut))  // Remove actor
+  if ( (!actor_found && lut_enabled_) || (lut_enabled_ && add_lut))  // Remove actor
   {
     CurrentRenderer->RemoveActor (lut_actor_);
     lut_enabled_ = false;
   }
-  else if (!lut_enabled_ && add_lut)  // Add actor
+  else if (!lut_enabled_ && add_lut && actor_found)  // Add actor
   {
     CurrentRenderer->AddActor (lut_actor_);
     lut_actor_->SetVisibility (true);
