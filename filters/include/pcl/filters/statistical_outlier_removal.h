@@ -274,6 +274,14 @@ namespace pcl
 
       virtual void
       applyFilter (PCLPointCloud2 &output) override;
+
+      /**
+       * \brief Compute the statistical values used in both applyFilter methods.
+       *
+       * This method tries to avoid duplicate code.
+       */
+      virtual void
+      generateStatistics (double& mean, double& variance, double& stddev, std::vector<float>& distances);
   };
 }
 

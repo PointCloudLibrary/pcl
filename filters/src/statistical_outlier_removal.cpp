@@ -63,70 +63,16 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
     output.data.clear ();
     return;
   }
-  output.is_dense = true;
 
-  // Send the input dataset to the spatial locator
-  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
-  pcl::fromPCLPointCloud2 (*input_, *cloud);
-
-  // Initialize the spatial locator
-  if (!tree_)
-  {
-    if (cloud->isOrganized ())
-      tree_.reset (new pcl::search::OrganizedNeighbor<pcl::PointXYZ> ());
-    else
-      tree_.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
-  }
-
-  tree_->setInputCloud (cloud);
-
-  // Allocate enough space to hold the results
-  std::vector<int> nn_indices (mean_k_);
-  std::vector<float> nn_dists (mean_k_);
-
-  std::vector<float> distances (indices_->size ());
-  int valid_distances = 0;
-  // Go over all the points and calculate the mean or smallest distance
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
-  {
-    if (!pcl_isfinite (cloud->points[(*indices_)[cp]].x) || 
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].y) ||
-        !pcl_isfinite (cloud->points[(*indices_)[cp]].z))
-    {
-      distances[cp] = 0;
-      continue;
-    }
-
-    if (tree_->nearestKSearch ((*indices_)[cp], mean_k_, nn_indices, nn_dists) == 0)
-    {
-      distances[cp] = 0;
-      PCL_WARN ("[pcl::%s::applyFilter] Searching for the closest %d neighbors failed.\n", getClassName ().c_str (), mean_k_);
-      continue;
-    }
-
-    // Minimum distance (if mean_k_ == 2) or mean distance
-    double dist_sum = 0;
-    for (int j = 1; j < mean_k_; ++j)
-      dist_sum += sqrt (nn_dists[j]);
-    distances[cp] = static_cast<float> (dist_sum / (mean_k_ - 1));
-    valid_distances++;
-  }
-
-  // Estimate the mean and the standard deviation of the distance vector
-  double sum = 0, sq_sum = 0;
-  for (size_t i = 0; i < distances.size (); ++i)
-  {
-    sum += distances[i];
-    sq_sum += distances[i] * distances[i];
-  }
-  double mean = sum / static_cast<double>(valid_distances);
-  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
-  double stddev = sqrt (variance);
-  //getMeanStd (distances, mean, stddev);
-
-  double distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
+  double mean;
+  double variance;
+  double stddev;
+  vector<float> distances;
+  generateStatistics (mean, variance, stddev, distances);
+  double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
 
   // Copy the common fields
+  output.is_dense = input_->is_dense;
   output.is_bigendian = input_->is_bigendian;
   output.point_step = input_->point_step;
   if (keep_organized_)
@@ -189,7 +135,6 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2
   removed_indices_->resize (nr_removed_p);
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& indices)
@@ -208,6 +153,43 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& i
     indices.clear();
     return;
   }
+
+  double mean;
+  double variance;
+  double stddev;
+  vector<float> distances;
+  generateStatistics(mean, variance, stddev, distances);
+  double const distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
+
+  // Second pass: Classify the points on the computed distance threshold
+  size_t nr_p = 0, nr_removed_p = 0;
+  for (size_t cp = 0; cp < indices_->size (); ++cp)
+  {
+    // Points having a too high average distance are outliers and are passed to removed indices
+    // Unless negative was set, then it's the opposite condition
+    if ((!negative_ && distances[cp] > distance_threshold) || (negative_ && distances[cp] <= distance_threshold))
+    {
+      if (extract_removed_indices_)
+        (*removed_indices_)[nr_removed_p++] = (*indices_)[cp];
+      continue;
+    }
+
+    // Otherwise it was a normal point for output (inlier)
+    indices[nr_p++] = (*indices_)[cp];
+  }
+
+  // Resize the output arrays
+  indices.resize (nr_p);
+  removed_indices_->resize (nr_p);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+void
+pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::generateStatistics (double& mean,
+                                                                         double& variance,
+                                                                         double& stddev,
+                                                                         std::vector<float>& distances)
+{
   // Send the input dataset to the spatial locator
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::fromPCLPointCloud2 (*input_, *cloud);
@@ -227,7 +209,7 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& i
   std::vector<int> nn_indices (mean_k_);
   std::vector<float> nn_dists (mean_k_);
 
-  std::vector<float> distances (indices_->size ());
+  distances.resize (indices_->size ());
   int valid_distances = 0;
   // Go over all the points and calculate the mean or smallest distance
   for (size_t cp = 0; cp < indices_->size (); ++cp)
@@ -262,34 +244,12 @@ pcl::StatisticalOutlierRemoval<pcl::PCLPointCloud2>::applyFilter (vector<int>& i
     sum += distances[i];
     sq_sum += distances[i] * distances[i];
   }
-  double mean = sum / static_cast<double>(valid_distances);
-  double variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
-  double stddev = sqrt (variance);
-  //getMeanStd (distances, mean, stddev);
 
-  double distance_threshold = mean + std_mul_ * stddev; // a distance that is bigger than this signals an outlier
-
-  // Second pass: Classify the points on the computed distance threshold
-  size_t nr_p = 0, nr_removed_p = 0;
-  for (size_t cp = 0; cp < indices_->size (); ++cp)
-  {
-    // Points having a too high average distance are outliers and are passed to removed indices
-    // Unless negative was set, then it's the opposite condition
-    if ((!negative_ && distances[cp] > distance_threshold) || (negative_ && distances[cp] <= distance_threshold))
-    {
-      if (extract_removed_indices_)
-        (*removed_indices_)[nr_removed_p++] = (*indices_)[cp];
-      continue;
-    }
-
-    // Otherwise it was a normal point for output (inlier)
-    indices[nr_p++] = (*indices_)[cp];
-  }
-
-  // Resize the output arrays
-  indices.resize (nr_p);
-  removed_indices_->resize (nr_p);
+  mean = sum / static_cast<double>(valid_distances);
+  variance = (sq_sum - sum * sum / static_cast<double>(valid_distances)) / (static_cast<double>(valid_distances) - 1);
+  stddev = sqrt (variance);
 }
+
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/impl/instantiate.hpp>
