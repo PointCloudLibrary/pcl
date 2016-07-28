@@ -270,10 +270,10 @@ namespace pcl
       KdTreePtr tree_;
 
       virtual void
-      applyFilter (std::vector<int> &indices) override;
+      applyFilter (std::vector<int> &indices);
 
       virtual void
-      applyFilter (PCLPointCloud2 &output) override;
+      applyFilter (PCLPointCloud2 &output);
 
       /**
        * \brief Compute the statistical values used in both applyFilter methods.
