@@ -778,7 +778,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       if (edge_detection_config_.use_adaptive_scan_line_ == true)
         edge_hit = !adaptScanLine(scan_line_width_left, scan_line_width_right, distance_map_horizontal[point_index], min_line_width);
       else
-        edge_hit = (distance_map_horizontal[point_index].first < scan_line_width_left || distance_map_horizontal[point_index].second < scan_line_width_right); // do not compute surface edges if a depth discontinuity is on the scan line
+        edge_hit = (distance_map_horizontal[point_index].first <= scan_line_width_left+2 || distance_map_horizontal[point_index].second <= scan_line_width_right); // do not compute surface edges if a depth discontinuity is on the scan line
       if (edge_hit == true)
       {
         // not enough support for solid slope estimation
@@ -868,7 +868,7 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
       if (edge_detection_config_.use_adaptive_scan_line_ == true)
         edge_hit = !adaptScanLine(scan_line_height_upper, scan_line_height_lower, distance_map_vertical[point_index], min_line_width);
       else
-        edge_hit = (distance_map_vertical[point_index].first < scan_line_height_upper || distance_map_vertical[point_index].second < scan_line_height_lower); // do not compute surface edges if a depth discontinuity is on the scan line
+        edge_hit = (distance_map_vertical[point_index].first <= scan_line_height_upper+2 || distance_map_vertical[point_index].second <= scan_line_height_lower); // do not compute surface edges if a depth discontinuity is on the scan line
       if (edge_hit == true)
       {
         // not enough support for solid slope estimation
@@ -982,8 +982,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
           edge_hit = !adaptScanLineNormal(scan_line_width_left, scan_line_width_right, distance_map_horizontal[point_index], min_line_width) ||
                      !adaptScanLineNormal(scan_line_height_upper, scan_line_height_lower, distance_map_vertical[point_index], min_line_width);
         else
-          edge_hit = distance_map_horizontal[point_index].first < scan_line_width_left || distance_map_horizontal[point_index].second < scan_line_width_right ||
-                     distance_map_vertical[point_index].first < scan_line_height_upper || distance_map_vertical[point_index].second < scan_line_height_lower; // do not compute surface edges if a depth discontinuity is on the scan line
+          edge_hit = distance_map_horizontal[point_index].first <= scan_line_width_left+2 || distance_map_horizontal[point_index].second <= scan_line_width_right ||
+                     distance_map_vertical[point_index].first <= scan_line_height_upper+2 || distance_map_vertical[point_index].second <= scan_line_height_lower; // do not compute surface edges if a depth discontinuity is on the scan line
         if (edge_hit == true)
         {
           // not enough support for solid normal estimation

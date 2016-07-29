@@ -42,6 +42,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
+// todo: remove
 class PCLTimer
 {
 public:
@@ -687,7 +688,7 @@ namespace pcl
       /** \brief Perform the 3D edge detection (edges from depth discontinuities and high curvature regions) and assign point indices for each edge label
         * \param[out] labels a PointCloud of edge labels
         * \param[out] label_indices a vector of PointIndices corresponding to each edge label (only if return_label_indices_ is true)
-        * \param[out] normals point cloud of efficiently computed normals to each point (optional output, if a NULL pointer is provided, no normal computations and no overhead will occur)
+        * \param[out] normals (Optional) point cloud of efficiently computed normals to each point (optional output, if a NULL pointer is provided, no normal computations and no overhead will occur). Normal computation is very efficient and edge-aware, i.e. the support regions for normal estimation do not extend over detected edges.
         */
       void
       compute (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices, PointCloudNPtr& normals = 0);
@@ -711,10 +712,10 @@ namespace pcl
       setUseFastDepthDiscontinuityMode (const bool use_fast_depth_discontinuity_mode)
       {
         use_fast_depth_discontinuity_mode_ = use_fast_depth_discontinuity_mode;
-        if (use_fast_depth_discontinuity_mode == false)
-          this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
-        else
-          this->setEdgeType (EDGELABEL_OCCLUDING | EDGELABEL_HIGH_CURVATURE);
+        int edge_type = this->getEdgeType() | (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
+        if (use_fast_depth_discontinuity_mode == true)
+          edge_type -= (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDED);
+        this->setEdgeType(edge_type);
       }
 
       /** \brief Get the flag for computing depth discontinuities in a faster way which does not distinguish between EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, or EDGELABEL_OCCLUDED but just sets depth edges to EDGELABEL_OCCLUDING */
@@ -726,7 +727,7 @@ namespace pcl
 
       /** \brief Set the structure comprising all edge detection parameters */
       inline void
-      setEdgeDetectionConfig (const EdgeDetectionConfig edge_detection_config)
+      setEdgeDetectionConfig (const EdgeDetectionConfig& edge_detection_config)
       {
         edge_detection_config_ = edge_detection_config;
         edge_detection_config_.updateScanLineModel();
@@ -874,17 +875,19 @@ namespace pcl
     typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
     public:
-      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::input_;
-      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::indices_;
-      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::initCompute;
-      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::deinitCompute;
-      using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::detecting_edge_types_;
+      using OrganizedEdgeBase<PointT, PointLT>::input_;
+      using OrganizedEdgeBase<PointT, PointLT>::indices_;
+      using OrganizedEdgeBase<PointT, PointLT>::initCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::deinitCompute;
+      using OrganizedEdgeBase<PointT, PointLT>::detecting_edge_types_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::gaussian_kernel_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::sobel_kernel_x_3x3_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::sobel_kernel_y_3x3_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::return_label_indices_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::use_fast_depth_discontinuity_mode_;
       using OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::edge_detection_config_;
+      using OrganizedEdgeFromRGB<PointT, PointLT>::th_rgb_canny_low_;
+      using OrganizedEdgeFromRGB<PointT, PointLT>::th_rgb_canny_high_;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_NAN_BOUNDARY;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDING;
       using OrganizedEdgeBase<PointT, PointLT>::EDGELABEL_OCCLUDED;
@@ -893,7 +896,8 @@ namespace pcl
 
       /** \brief Constructor for OrganizedEdgeFromRGBPoints */
       OrganizedEdgeFromRGBPoints ()
-        : OrganizedEdgeFromRGB<PointT, PointLT> ()
+        : OrganizedEdgeBase<PointT, PointLT> ()
+        , OrganizedEdgeFromRGB<PointT, PointLT> ()
         , OrganizedEdgeFromPoints<PointT, PointNT, PointLT> ()
       {
         this->setEdgeType (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_RGB_CANNY | EDGELABEL_HIGH_CURVATURE);
