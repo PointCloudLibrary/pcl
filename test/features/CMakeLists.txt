@@ -89,3 +89,7 @@ PCL_ADD_TEST(feature_rops_estimation test_rops_estimation
              FILES test_rops_estimation.cpp
              LINK_WITH pcl_gtest pcl_io pcl_features
              ARGUMENTS "${PCL_SOURCE_DIR}/test/rops_cloud.pcd" "${PCL_SOURCE_DIR}/test/rops_indices.txt" "${PCL_SOURCE_DIR}/test/rops_triangles.txt")
+PCL_ADD_TEST(feature_organized_edge_detection test_organized_edge_detection
+             FILES test_organized_edge_detection.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_features pcl_common
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/organized_edge_1.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_2.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_3.pcd")

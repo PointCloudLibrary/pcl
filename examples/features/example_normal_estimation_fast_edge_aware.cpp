@@ -41,6 +41,7 @@
 
 #include <pcl/common/time.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <pcl/features/normal_3d_fast_edge_aware.h>
 

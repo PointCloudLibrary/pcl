@@ -714,7 +714,7 @@ namespace pcl
         use_fast_depth_discontinuity_mode_ = use_fast_depth_discontinuity_mode;
         int edge_type = this->getEdgeType() | (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDING | EDGELABEL_OCCLUDED | EDGELABEL_HIGH_CURVATURE);
         if (use_fast_depth_discontinuity_mode == true)
-          edge_type -= (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDED);
+          edge_type -= (EDGELABEL_NAN_BOUNDARY | EDGELABEL_OCCLUDED);   // remove unused labels from the list
         this->setEdgeType(edge_type);
       }
 
