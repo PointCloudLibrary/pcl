@@ -1200,7 +1200,19 @@ namespace pcl
         setShapeRenderingProperties (int property, double value,
                                      const std::string &id, int viewport = 0);
 
-        /** \brief Set the rendering properties of a shape (3x values - e.g., RGB)
+        /** \brief Set the rendering properties of a shape (2x values - e.g., LUT minmax values)
+          * \param[in] property the property type
+          * \param[in] val1 the first value to be set
+          * \param[in] val2 the second value to be set
+          * \param[in] id the shape object id
+          * \param[in] viewport the view port where the shape's properties should be modified (default: all)
+          * \note When using \ref addPolygonMesh you you should use \ref setPointCloudRenderingProperties
+          */
+         bool
+         setShapeRenderingProperties (int property, double val1, double val2,
+                                      const std::string &id, int viewport = 0);
+
+         /** \brief Set the rendering properties of a shape (3x values - e.g., RGB)
           * \param[in] property the property type
           * \param[in] val1 the first value to be set
           * \param[in] val2 the second value to be set
