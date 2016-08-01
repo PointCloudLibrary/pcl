@@ -1619,6 +1619,58 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
 pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
+    int property, double val1, double val2, const std::string &id, int)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+
+  if (am_it == shape_actor_map_->end ())
+  {
+    pcl::console::print_error ("[setShapeRenderingProperties] Could not find any shape with id <%s>!\n", id.c_str ());
+    return (false);
+  }
+  // Get the actor pointer
+  vtkActor* actor = vtkActor::SafeDownCast (am_it->second);
+  if (!actor)
+    return (false);
+
+  switch (property)
+  {
+    case PCL_VISUALIZER_LUT_RANGE:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      // Check that range values are correct
+      if (val1 >= val2)
+      {
+        PCL_WARN ("[setShapeRenderingProperties] Range max must be greater than range min!\n");
+        return (false);
+      }
+      
+      // Update LUT
+      actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
+      actor->GetMapper()->UseLookupTableScalarRangeOn ();
+      style_->updateLookUpTableDisplay (false);
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
+  }
+  return (true);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
     int property, double value, const std::string &id, int)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
@@ -1740,17 +1792,45 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
         break;
 
-      double range[2];
-      actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+      
+      // Get range limits from existing LUT
+      double *range;
+      range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
+      
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
-      vtkSmartPointer<vtkLookupTable> table = vtkSmartPointer<vtkLookupTable>::New ();
-      getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table);
+      vtkSmartPointer<vtkLookupTable> table;
+      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
+        break;
       table->SetRange (range[0], range[1]);
       actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
-      break;
     }
+    case PCL_VISUALIZER_LUT_RANGE:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      switch (int(value))
+      {
+        case PCL_VISUALIZER_LUT_RANGE_AUTO:
+          double range[2];
+          actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+          actor->GetMapper ()->GetLookupTable ()->SetRange (range[0], range[1]);
+          actor->GetMapper ()->UseLookupTableScalarRangeOn ();
+          style_->updateLookUpTableDisplay (false);
+          break;
+      }
+      break;
+    }    
     default:
     {
       pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
