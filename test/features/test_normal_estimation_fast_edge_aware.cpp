@@ -142,7 +142,6 @@ class Evaluation
       gt_normals->header = gt_point_cloud->header;
       gt_normals->height = gt_point_cloud->height;
       gt_normals->width = gt_point_cloud->width;
-      //gt_normals->is_dense = true;
       for (int v = 1; v < gt_point_cloud->height - 1; ++v)
       {
         for (int u = 1; u < gt_point_cloud->width - 1; ++u)
@@ -240,7 +239,6 @@ class Evaluation
       number_good_normals = 0;
       normal_error = 0.;
       normal_error_deg = 0.;
-      //normals->is_dense = true;
       for (int v = padding; v < gt_point_cloud->height - padding; ++v)
       {
         for (int u = padding; u < gt_point_cloud->width - padding; ++u)

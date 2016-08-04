@@ -72,7 +72,6 @@ main (int argc,
   }
   std::cout << "points: " << cloud->points.size () << std::endl;
 
-
   // 2. set up parameters for 3d edge detection
   pcl::EdgeDetectionConfig cfg (pcl::EdgeDetectionConfig::GAUSSIAN, 3, 0.01f, 40., true, 5, 30, 15);
   // alternatively, all these properties can be set individually as follows
@@ -86,15 +85,14 @@ main (int argc,
 //  cfg.scan_line_width_at_2m_ = 15;
 //  cfg.updateScanLineModel();  // do not forget to run this command after updating the scan line model parameters
 
-
   // 3a. compute normals in an efficient and edge-aware fashion
   pcl::StopWatch timer;
   pcl::PointCloud<pcl::Normal>::Ptr normals_edge_aware = pcl::PointCloud<pcl::Normal>::Ptr (new pcl::PointCloud<pcl::Normal>);
   pcl::FastEdgeAwareNormalEstimation<pcl::PointXYZRGB, pcl::Normal> fast_edge_aware_normal_estimation;
-  fast_edge_aware_normal_estimation.setEdgeDetectionConfig(cfg);
-  fast_edge_aware_normal_estimation.setInputCloud(cloud);
-  fast_edge_aware_normal_estimation.compute(*normals_edge_aware);
-  std::cout << "Edge detection and normal estimation completed after " << timer.getTime() << "ms." << std::endl;
+  fast_edge_aware_normal_estimation.setEdgeDetectionConfig (cfg);
+  fast_edge_aware_normal_estimation.setInputCloud (cloud);
+  fast_edge_aware_normal_estimation.compute (*normals_edge_aware);
+  std::cout << "Edge detection and normal estimation completed after " << timer.getTime () << "ms." << std::endl;
 
 //  // 3b. ALTERNATIVELY, you may compute 3d surface and depth edges and estimate normals at the same time with these commands (see also example_organized_edge_detection.cpp)
 //  pcl::PointCloud<pcl::Label> edge_labels;
@@ -106,12 +104,11 @@ main (int argc,
 //  edge_detection.setUseFastDepthDiscontinuityMode (true);  // use a specific fast implementation for estimating depth edges, otherwise we can use the standard method of OrganizedEdgeBase
 //  edge_detection.compute (edge_labels, label_indices, normals_edge_aware);
 
-
   // 4. save pcd with computed normals
   pcl::PointCloud<pcl::PointXYZRGBNormal> result;
-  pcl::concatenateFields(*cloud, *normals_edge_aware, result);
+  pcl::concatenateFields (*cloud, *normals_edge_aware, result);
   std::string pcd_filename = filename + "_normals.pcd";
-  pcl::io::savePCDFileBinaryCompressed(pcd_filename, result);
+  pcl::io::savePCDFileBinaryCompressed (pcd_filename, result);
   std::cout << "Saved pcd file with normals to: " << pcd_filename << std::endl;
 
   return 0;

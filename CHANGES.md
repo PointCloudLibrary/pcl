@@ -1,6 +1,6 @@
 # ChangeList
 
-## *= 1.8.0 (27.07.2016) =*
+## *= 1.8.0 (04.08.2016) =*
 
 * Added missing `Eigen::aligned_allocator` in vectors and maps that contain
   vectorizable Eigen where appropriate

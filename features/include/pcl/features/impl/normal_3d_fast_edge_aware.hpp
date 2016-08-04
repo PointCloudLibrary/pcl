@@ -50,7 +50,8 @@ pcl::FastEdgeAwareNormalEstimation<PointInT, PointOutT>::~FastEdgeAwareNormalEst
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointOutT>
-void void_delete(pcl::PointCloud<PointOutT>*)
+void
+void_delete (pcl::PointCloud<PointOutT>*)
 {
   return;
 }
@@ -61,11 +62,10 @@ pcl::FastEdgeAwareNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
 {
   pcl::PointCloud<pcl::Label> labels;
   std::vector<pcl::PointIndices> label_indices;
-  boost::shared_ptr< pcl::PointCloud<PointOutT> > normals(&output, void_delete<PointOutT>);
-  edge_detection_.compute(labels, label_indices, normals);
+  boost::shared_ptr<pcl::PointCloud<PointOutT> > normals (&output, void_delete<PointOutT>);
+  edge_detection_.compute (labels, label_indices, normals);
 }
 
 #define PCL_INSTANTIATE_FastEdgeAwareNormalEstimation(T,NT) template class PCL_EXPORTS pcl::FastEdgeAwareNormalEstimation<T,NT>;
 
 #endif  // PCL_NORMAL_3D_FAST_EDGE_AWARE_HPP_
-

@@ -97,43 +97,43 @@ main (int argc,
   edge_detection.setReturnLabelIndices (false);  // if we do not need the label indices vector filled, computations are slightly faster
   edge_detection.setUseFastDepthDiscontinuityMode (true);  // use a specific fast implementation for estimating depth edges, otherwise we can use the standard method of OrganizedEdgeBase
   edge_detection.compute (edge_labels, label_indices, normals_edge_aware);
-  std::cout << "Edge detection and normal estimation completed after " << timer.getTime() << "ms." << std::endl;
+  std::cout << "Edge detection and normal estimation completed after " << timer.getTime () << "ms." << std::endl;
 
   // 4. save a png with the edges drawn in
   int blue = 255;                                                       // EDGELABEL_OCCLUDING
-  int green = ((int)255) << 8;                                          // EDGELABEL_HIGH_CURVATURE
-  int blue_nan = ((int)32) << 8 | ((int)64);                            // EDGELABEL_NAN_BOUNDARY
-  int blue_occluded = ((int)64) << 16 | ((int)128) << 8 | ((int)255);   // EDGELABEL_OCCLUDED
-  int yellow = ((int)255) << 16 | ((int)255) << 8 | ((int)0);           // EDGELABEL_RGB_CANNY
-  pcl::PointCloud<pcl::Label>::const_iterator it_labels = edge_labels.begin();
-  pcl::PointCloud<pcl::PointXYZRGB>::iterator it_cloud = cloud->begin();
-  for (int v=0; v<edge_labels.height; ++v)
-    for (int u=0; u<edge_labels.width; ++u, ++it_labels, ++it_cloud)
+  int green = ((int) 255) << 8;                                          // EDGELABEL_HIGH_CURVATURE
+  int blue_nan = ((int) 32) << 8 | ((int) 64);                            // EDGELABEL_NAN_BOUNDARY
+  int blue_occluded = ((int) 64) << 16 | ((int) 128) << 8 | ((int) 255);   // EDGELABEL_OCCLUDED
+  int yellow = ((int) 255) << 16 | ((int) 255) << 8 | ((int) 0);           // EDGELABEL_RGB_CANNY
+  pcl::PointCloud<pcl::Label>::const_iterator it_labels = edge_labels.begin ();
+  pcl::PointCloud<pcl::PointXYZRGB>::iterator it_cloud = cloud->begin ();
+  for (int v = 0; v < edge_labels.height; ++v)
+    for (int u = 0; u < edge_labels.width; ++u, ++it_labels, ++it_cloud)
     {
-      int temp = it_cloud->r; // correct wrong assignment of red and blue in the original data
+      int temp = it_cloud->r;  // correct wrong assignment of red and blue in the original data
       it_cloud->r = it_cloud->b;
       it_cloud->b = temp;
       // draw edges with their respective color coding into the image
       if (it_labels->label == edge_detection.EDGELABEL_OCCLUDING)
-        it_cloud->rgb = *((float*)&blue);
+        it_cloud->rgb = * ((float*) &blue);
       else if (it_labels->label == edge_detection.EDGELABEL_HIGH_CURVATURE)
-        it_cloud->rgb = *((float*)&green);
+        it_cloud->rgb = * ((float*) &green);
       else if (it_labels->label == edge_detection.EDGELABEL_NAN_BOUNDARY)
-        it_cloud->rgb = *((float*)&blue_nan);
+        it_cloud->rgb = * ((float*) &blue_nan);
       else if (it_labels->label == edge_detection.EDGELABEL_OCCLUDED)
-        it_cloud->rgb = *((float*)&blue_occluded);
+        it_cloud->rgb = * ((float*) &blue_occluded);
       else if (it_labels->label == edge_detection.EDGELABEL_RGB_CANNY)
-        it_cloud->rgb = *((float*)&yellow);
+        it_cloud->rgb = * ((float*) &yellow);
     }
   std::string png_filename = filename + "_edges.png";
-  pcl::io::savePNGFile(png_filename, *cloud, "rgb");
+  pcl::io::savePNGFile (png_filename, *cloud, "rgb");
   std::cout << "Saved edge image to: " << png_filename << std::endl;
 
   // 5. save pcd with computed normals
   pcl::PointCloud<pcl::PointXYZRGBNormal> result;
-  pcl::concatenateFields(*cloud, *normals_edge_aware, result);
+  pcl::concatenateFields (*cloud, *normals_edge_aware, result);
   std::string pcd_filename = filename + "_edges_normals.pcd";
-  pcl::io::savePCDFileBinaryCompressed(pcd_filename, result);
+  pcl::io::savePCDFileBinaryCompressed (pcd_filename, result);
   std::cout << "Saved pcd file with edges and normals to: " << pcd_filename << std::endl;
 
   return 0;
