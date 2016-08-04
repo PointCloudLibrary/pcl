@@ -93,3 +93,7 @@ PCL_ADD_TEST(feature_organized_edge_detection test_organized_edge_detection
              FILES test_organized_edge_detection.cpp
              LINK_WITH pcl_gtest pcl_io pcl_features pcl_common
              ARGUMENTS "${PCL_SOURCE_DIR}/test/organized_edge_1.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_2.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_3.pcd")
+PCL_ADD_TEST(feature_normal_estimation_fast_edge_aware test_normal_estimation_fast_edge_aware
+             FILES test_normal_estimation_fast_edge_aware.cpp
+             LINK_WITH pcl_gtest pcl_io pcl_features pcl_common
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/organized_edge_1.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_2.pcd" "${PCL_SOURCE_DIR}/test/organized_edge_3.pcd")
