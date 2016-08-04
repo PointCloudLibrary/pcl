@@ -101,7 +101,7 @@
 * Added new functions for 3d surface and depth edge detection directly from
   organized point clouds without previous normal computation. The algorithm
   comes with a very fast and edge aware normal estimation function.
-  [[]]()
+  [[#1672]](https://github.com/PointCloudLibrary/pcl/pull/1672)
 
 ### `libpcl_filters:`
 
