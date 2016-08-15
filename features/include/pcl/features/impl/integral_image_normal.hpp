@@ -883,11 +883,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
             continue;
           }
 
-          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);
+          float smoothing = (std::min)(distanceMap[index], normal_smoothing_size_ + static_cast<float>(depth)/10.0f);  // weired constant, pointcloud unit dependent
 
-          if (smoothing > 2.0f)
+          int smoothingint = static_cast<int> (smoothing);
+          int smoothingint_2 = static_cast<int> (smoothing) / 2;
+          if (smoothing > 2.0f && ri >= smoothingint_2 && ci >= smoothingint_2 && (ri - smoothingint_2 + smoothingint - 1 < (input_->height)) &&  (ci - smoothingint_2 + smoothingint - 1 < (input_->width)))
           {
-            setRectSize (static_cast<int> (smoothing), static_cast<int> (smoothing));
+            setRectSize (smoothingint, smoothingint);
             computePointNormal (ci, ri, index, output [index]);
           }
           else
