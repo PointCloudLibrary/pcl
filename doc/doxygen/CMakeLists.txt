@@ -50,5 +50,8 @@ if(DOXYGEN_FOUND)
             PATTERN "*.md5" EXCLUDE
             PATTERN "*.map" EXCLUDE
             PATTERN "*.chm" EXCLUDE)
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/pointcloudlibrary_logo.png"
+            DESTINATION "${DOC_INSTALL_DIR}/html"
+            COMPONENT doc)
   endif(DOCUMENTATION_HTML_HELP STREQUAL YES)
 endif(DOXYGEN_FOUND)
