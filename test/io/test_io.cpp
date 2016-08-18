@@ -724,18 +724,21 @@ TEST (PCL, PCDReaderWriter)
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
 {
   PointCloud<PointXYZRGB> cloud;
+  cloud.points.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
   for (size_t r_i = 0; r_i < 256; r_i += 5)
     for (size_t g_i = 0; g_i < 256; g_i += 5)
       for (size_t b_i = 0; b_i < 256; b_i += 5)
-      {
-        PointXYZRGB p;
-        p.r = static_cast<unsigned char> (r_i);
-        p.g = static_cast<unsigned char> (g_i);
-        p.b = static_cast<unsigned char> (b_i);
-        p.x = p.y = p.z = 0.f;
+          for (size_t a_i = 0; a_i < 256; a_i += 10)
+          {
+            PointXYZRGB p;
+            p.r = static_cast<unsigned char> (r_i);
+            p.g = static_cast<unsigned char> (g_i);
+            p.b = static_cast<unsigned char> (b_i);
+            p.a = static_cast<unsigned char> (a_i);
+            p.x = p.y = p.z = 0.f;
 
-        cloud.push_back (p);
-      }
+            cloud.push_back (p);
+          }
   cloud.height = 1;
   cloud.width = uint32_t (cloud.size ());
   cloud.is_dense = true;
