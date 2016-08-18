@@ -177,7 +177,7 @@ unsigned int text_id = 0;
 void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
                             void* viewer_void)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  pcl::visualization::PCLVisualizer *viewer = static_cast<pcl::visualization::PCLVisualizer *> (viewer_void);
   if (event.getKeySym () == "r" && event.keyDown ())
   {
     std::cout << "r was pressed => removing all text" << std::endl;
@@ -195,7 +195,7 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event,
 void mouseEventOccurred (const pcl::visualization::MouseEvent &event,
                          void* viewer_void)
 {
-  boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = *static_cast<boost::shared_ptr<pcl::visualization::PCLVisualizer> *> (viewer_void);
+  pcl::visualization::PCLVisualizer *viewer = static_cast<pcl::visualization::PCLVisualizer *> (viewer_void);
   if (event.getButton () == pcl::visualization::MouseEvent::LeftButton &&
       event.getType () == pcl::visualization::MouseEvent::MouseButtonRelease)
   {
@@ -213,8 +213,8 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> interactionCustomizationVis
   viewer->setBackgroundColor (0, 0, 0);
   viewer->addCoordinateSystem (1.0);
 
-  viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)&viewer);
-  viewer->registerMouseCallback (mouseEventOccurred, (void*)&viewer);
+  viewer->registerKeyboardCallback (keyboardEventOccurred, (void*)viewer.get ());
+  viewer->registerMouseCallback (mouseEventOccurred, (void*)viewer.get ());
 
   return (viewer);
 }
