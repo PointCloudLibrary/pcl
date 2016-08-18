@@ -375,8 +375,6 @@ log2f (float x)
 
 #if defined(__APPLE__) || defined(_WIN64) || GLIBC_MALLOC_ALIGNED || FREEBSD_MALLOC_ALIGNED
   #define MALLOC_ALIGNED 1
-#else
-  #define MALLOC_ALIGNED 0
 #endif
 
 inline void*
