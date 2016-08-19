@@ -131,6 +131,9 @@ Select2DTool::isInSelectBox (const Point3D& pt,
   float max_x = std::max(final_x_, origin_x_)/(viewport[2]*0.5) - 1.0;
   float max_y = (viewport[3] - std::min(origin_y_, final_y_))/(viewport[3]*0.5) - 1.0;
   float min_y = (viewport[3] - std::max(origin_y_, final_y_))/(viewport[3]*0.5) - 1.0;
+  // Ignore the points behind the camera
+  if (w < 0)
+    return (false);
   // Check the left and right sides
   if ((x < min_x) || (x > max_x))
     return (false);
