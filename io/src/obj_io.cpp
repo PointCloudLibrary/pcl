@@ -224,15 +224,15 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         }
         else
         {
-          pcl::TexMaterial::RGB &rgb = materials_.back ().tex_Ka;
+          pcl::TexMaterial::RGB *rgb = &materials_.back ().tex_Ka;
           if (st[0] == "Kd")
-            rgb = materials_.back ().tex_Kd;
+            rgb = &materials_.back ().tex_Kd;
           else if (st[0] == "Ks")
-            rgb = materials_.back ().tex_Ks;
+            rgb = &materials_.back ().tex_Ks;
 
           if (st[1] == "xyz")
           {
-            if (fillRGBfromXYZ (st, rgb))
+            if (fillRGBfromXYZ (st, *rgb))
             {
               PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
                          line.c_str ());
@@ -243,7 +243,7 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
           }
           else
           {
-            if (fillRGBfromRGB (st, rgb))
+            if (fillRGBfromRGB (st, *rgb))
             {
               PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to RGB values",
                          line.c_str ());
@@ -273,37 +273,22 @@ pcl::MTLReader::read (const std::string& mtl_file_path)
         continue;
       }
 
-      if (st[0] == "d")
+      if (st[0] == "d" || st[0] == "Tr")
       {
-        if (st.size () > 2)
+        bool reverse = (st[0] == "Tr");
+        try
         {
-          try
-          {
-            materials_.back ().tex_d = boost::lexical_cast<float> (st[2]);
-          }
-          catch (boost::bad_lexical_cast &)
-          {
-            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to transparency value",
-                       line.c_str ());
-            mtl_file.close ();
-            materials_.clear ();
-            return (-1);
-          }
+          materials_.back ().tex_d = boost::lexical_cast<float> (st[st.size () > 2 ? 2:1]);
+          if (reverse)
+            materials_.back ().tex_d = 1.f - materials_.back ().tex_d;
         }
-        else
+        catch (boost::bad_lexical_cast &)
         {
-          try
-          {
-            materials_.back ().tex_d = boost::lexical_cast<float> (st[1]);
-          }
-          catch (boost::bad_lexical_cast &)
-          {
-            PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to transparency value",
-                       line.c_str ());
-            mtl_file.close ();
-            materials_.clear ();
-            return (-1);
-          }
+          PCL_ERROR ("[pcl::MTLReader::read] Could not convert %s to transparency value",
+                     line.c_str ());
+          mtl_file.close ();
+          materials_.clear ();
+          return (-1);
         }
         continue;
       }
