@@ -229,8 +229,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
 
   // Get the width and height of the image - assume the calibrated centers are at the center of the image
   Eigen::Vector2i window_size;
-  window_size[0] = static_cast<int> (intrinsics (0, 2));
-  window_size[1] = static_cast<int> (intrinsics (1, 2));
+  window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
+  window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
   // Compute the vertical field of view based on the focal length and image heigh
   double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
