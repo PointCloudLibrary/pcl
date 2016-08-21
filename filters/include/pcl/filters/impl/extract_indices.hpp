@@ -58,7 +58,15 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
   for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
-    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[(*removed_indices_)[rii]]);
+    int pt_index = (*removed_indices_)[rii];
+    if (pt_index >= input_->points.size ())
+    {
+      PCL_ERROR ("[pcl::%s::filterDirectly] The index exceeds the size of the input. Do nothing.\n",
+                 getClassName ().c_str ());
+      *cloud = *input_;
+      return;
+    }
+    uint8_t* pt_data = reinterpret_cast<uint8_t*> (&cloud->points[pt_index]);
     for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
       memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
   }
@@ -83,7 +91,15 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
     {
-      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[(*removed_indices_)[rii]]);
+      int pt_index = (*removed_indices_)[rii];
+      if (pt_index >= input_->points.size ())
+      {
+        PCL_ERROR ("[pcl::%s::applyFilter] The index exceeds the size of the input. Do nothing.\n",
+                   getClassName ().c_str ());
+        output = *input_;
+        return;
+      }
+      uint8_t* pt_data = reinterpret_cast<uint8_t*> (&output.points[pt_index]);
       for (int fi = 0; fi < static_cast<int> (fields.size ()); ++fi)  // fi = field iterator
         memcpy (pt_data + fields[fi].offset, &user_filter_value_, sizeof (float));
     }
