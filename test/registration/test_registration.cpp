@@ -490,7 +490,6 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   copyPointCloud (cloud_target, *tgt);
   PointCloud<PointT> output;
 
-
   GeneralizedIterativeClosestPoint<PointT, PointT> reg;
   reg.setInputSource (src);
   reg.setInputTarget (tgt);
@@ -500,7 +499,7 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
   // Register
   reg.align (output);
   EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
-  EXPECT_LT (reg.getFitnessScore (), 0.001);
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
 
   // Check again, for all possible caching schemes
   for (int iter = 0; iter < 4; iter++)
@@ -523,6 +522,19 @@ TEST (PCL, GeneralizedIterativeClosestPoint)
     EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
     EXPECT_LT (reg.getFitnessScore (), 0.001);
   }
+
+  // Test guess matrix
+  Eigen::Isometry3f transform = Eigen::Isometry3f (Eigen::AngleAxisf (0.25 * M_PI, Eigen::Vector3f::UnitX ())
+                                                 * Eigen::AngleAxisf (0.50 * M_PI, Eigen::Vector3f::UnitY ())
+                                                 * Eigen::AngleAxisf (0.33 * M_PI, Eigen::Vector3f::UnitZ ()));
+  transform.translation () = Eigen::Vector3f (20.0, -8.0, 1.0);
+  PointCloud<PointT>::Ptr transformed_tgt (new PointCloud<PointT>);
+  pcl::transformPointCloud (*tgt, *transformed_tgt, transform.matrix ()); // transformed_tgt is now a copy of tgt with a transformation matrix applied
+  reg.setInputSource (src);
+  reg.setInputTarget (transformed_tgt);
+  reg.align (output, transform.matrix ());
+  EXPECT_EQ (int (output.points.size ()), int (cloud_source.points.size ()));
+  EXPECT_LT (reg.getFitnessScore (), 0.0001);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
