@@ -650,7 +650,8 @@ pcl::simulation::RangeLikelihood::computeScores (float* reference,
 void
 pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRGB>::Ptr pc,
   bool make_global,
-  const Eigen::Isometry3d & pose)
+  const Eigen::Isometry3d & pose,
+  bool organized)
 {
   // TODO: check if this works for for rows/cols >1  and for width&height != 640x480
   // i.e. multiple tiled images
@@ -660,7 +661,7 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
   //pc->width    = camera_width_;
   //pc->height   = camera_height_;
 
-  pc->is_dense = false;
+  pc->is_dense = true;
   pc->points.resize (pc->width*pc->height);
 
   int points_added = 0;
@@ -680,8 +681,12 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
     for (int x = 0; x < col_width_ ; ++x)  // camera_width_
     {
       // Find XYZ from normalized 0->1 mapped disparity
-      int idx = points_added; // y*camera_width_ + x;
+      int idx;
+      if (organized) idx = y*col_width_ + x;
+      else idx = points_added; // y*camera_width_ + x;
+
       float d = depth_buffer_[y*camera_width_ + x] ;
+
       if (d < 1.0) // only add points with depth buffer less than max (20m) range
       {
         float z = zf*zn/((zf-zn)*(d - zf/(zf-zn)));
@@ -696,17 +701,29 @@ pcl::simulation::RangeLikelihood::getPointCloud (pcl::PointCloud<pcl::PointXYZRG
         pc->points[idx].x = (static_cast<float> (x)-camera_cx_) * z * (-camera_fx_reciprocal_);
         pc->points[idx].y = (static_cast<float> (y)-camera_cy_) * z * (-camera_fy_reciprocal_);
 
-	int rgb_idx = y*col_width_ + x;  //camera_width_
+        int rgb_idx = y*col_width_ + x;  //camera_width_
         pc->points[idx].b = color_buffer[rgb_idx*3+2]; // blue
         pc->points[idx].g = color_buffer[rgb_idx*3+1]; // green
         pc->points[idx].r = color_buffer[rgb_idx*3]; // red
         points_added++;
       }
+      else if (organized)
+      {
+        pc->is_dense = false;
+        pc->points[idx].z = std::numeric_limits<float>::quiet_NaN ();
+        pc->points[idx].x = std::numeric_limits<float>::quiet_NaN ();
+        pc->points[idx].y = std::numeric_limits<float>::quiet_NaN ();
+        pc->points[idx].rgba = 0;
+      }
     }
   }
-  pc->width    = 1;
-  pc->height   = points_added;
-  pc->points.resize (points_added);
+
+  if (!organized)
+  {
+    pc->width    = 1;
+    pc->height   = points_added;
+    pc->points.resize (points_added);
+  }
 
   if (make_global)
   {
