@@ -298,6 +298,7 @@ if(build)
     endif(PNG_FOUND)
 
     set(impl_incs
+        "include/pcl/${SUBSYS_NAME}/impl/ascii_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/auto_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"
