@@ -38,6 +38,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
@@ -541,14 +542,14 @@ TEST (PCL, GetMaxDistance)
   // No indices specified
   max_exp_pt = cloud[0].getVector4fMap ();
   getMaxDistance (cloud, pivot_pt, max_pt);
-  EXPECT_EQ (max_exp_pt, max_pt);
+  test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 
   // Specifying indices
   std::vector<int> idx (2);
   idx[0] = 1; idx[1] = 2;
   max_exp_pt = cloud[2].getVector4fMap ();
   getMaxDistance (cloud, idx, pivot_pt, max_pt);
-  EXPECT_EQ (max_exp_pt, max_pt);
+  test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 }
 
 /* ---[ */
