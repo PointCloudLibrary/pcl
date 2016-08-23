@@ -83,7 +83,7 @@ function test ()
         -DPCL_NO_PRECOMPILE=ON \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make tests -j2
 }
 
 function doc ()
