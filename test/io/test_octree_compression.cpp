@@ -61,7 +61,8 @@ TEST (PCL, OctreeDeCompressionRandomPointXYZRGBA)
 
     // iterate over all pre-defined compression profiles
   for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-    compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
+    compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile)
+  {
     // instantiate point cloud compression encoder/decoder
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* pointcloud_encoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>((pcl::io::compression_Profiles_e) compression_profile, false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>* pointcloud_decoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGBA>();
@@ -160,24 +161,25 @@ TEST(PCL, OctreeDeCompressionFile)
 {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr input_cloud_ptr (new pcl::PointCloud<pcl::PointXYZRGB>);
     
-  // load point cloud from file, when present
-  if (pcd_file == NULL) return;
-    int rv = pcl::io::loadPCDFile(pcd_file, *input_cloud_ptr);
-    float voxel_sizes[] = { 0.1, 0.01 };
+  // load point cloud from file
+  int rv = pcl::io::loadPCDFile(pcd_file, *input_cloud_ptr);
+  float voxel_sizes[] = { 0.1, 0.01 };
     
-    EXPECT_EQ(rv, 0) << " loadPCDFile " << pcd_file;
-    EXPECT_GT((int) input_cloud_ptr->width , 0) << "invalid point cloud width from " << pcd_file;
-    EXPECT_GT((int) input_cloud_ptr->height, 0) << "invalid point cloud heigth from " << pcd_file;
+  EXPECT_EQ(rv, 0) << " loadPCDFile " << pcd_file;
+  EXPECT_GT((int) input_cloud_ptr->width , 0) << "invalid point cloud width from " << pcd_file;
+  EXPECT_GT((int) input_cloud_ptr->height, 0) << "invalid point cloud heigth from " << pcd_file;
 
-    // iterate over compression profiles
-    for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
-         compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile) {
+  // iterate over all predefined compression profiles
+  for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;
+       compression_profile != pcl::io::COMPRESSION_PROFILE_COUNT; ++compression_profile)
+  {
     // instantiate point cloud compression encoder/decoder
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>* PointCloudEncoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>((pcl::io::compression_Profiles_e) compression_profile, false);
     pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>* PointCloudDecoder = new pcl::io::OctreePointCloudCompression<pcl::PointXYZRGB>();
  
     // iterate over various voxel sizes
-    for (int i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++) {
+    for (int i = 0; i < sizeof(voxel_sizes)/sizeof(voxel_sizes[0]); i++)
+    {
       pcl::octree::OctreePointCloud<pcl::PointXYZRGB> octree(voxel_sizes[i]);
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr octree_out(new pcl::PointCloud<pcl::PointXYZRGB>());
       octree.setInputCloud((*input_cloud_ptr).makeShared());
@@ -186,8 +188,10 @@ TEST(PCL, OctreeDeCompressionFile)
       std::stringstream compressedData;
       PointCloudEncoder->encodePointCloud(octree.getInputCloud(), compressedData);
       PointCloudDecoder->decodePointCloud(compressedData, octree_out);
+      // test if the decompressed point cloud is not empty
       EXPECT_GT((int)octree_out->width, 0) << "decoded PointCloud width <= 0";
       EXPECT_GT((int)octree_out->height, 0) << " decoded PointCloud height <= 0 ";
+      // no more quick tests are feasible, since the compression is lossy.
       total_runs++;
     }
     delete PointCloudDecoder;
@@ -200,9 +204,12 @@ int
 main (int argc, char** argv)
 {
   testing::InitGoogleTest (&argc, argv);
-  if (argc > 1) {
-    pcd_file = argv[1];
+  if (argc < 2)
+  {
+    std::cerr << "No test file given. Please add the path to 'milk_color.pcd' to run this test." << std::endl;
+    return (-1);
   }
+  pcd_file = argv[1];
   return (RUN_ALL_TESTS ());
   std::cerr << "Finished " << total_runs << " runs." << std::endl;
 }
