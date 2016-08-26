@@ -127,7 +127,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
     for (int j = 0; j < HDL_LASER_PER_FIRING; j++)
     {
       double current_azimuth = firing_data.rotationalPosition;
-      if (j > VLP_MAX_NUM_LASERS)
+      if (j >= VLP_MAX_NUM_LASERS)
       {
         current_azimuth += interpolated_azimuth_delta;
       }
