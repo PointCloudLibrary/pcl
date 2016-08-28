@@ -68,6 +68,8 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
   float hist_incr = 100.0f / static_cast<float> (indices.size () * (indices.size () - 1) / 2);
 
   std::pair<int, int> key;
+  bool key_found = false;
+
   // Iterate over all the points in the neighborhood
   for (size_t i_idx = 0; i_idx < indices.size (); ++i_idx)
   {
@@ -96,13 +98,18 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
         // Check to see if we already estimated this pair in the global hashmap
         std::map<std::pair<int, int>, Eigen::Vector4f, std::less<std::pair<int, int> >, Eigen::aligned_allocator<std::pair<const std::pair<int, int>, Eigen::Vector4f> > >::iterator fm_it = feature_map_.find (key);
         if (fm_it != feature_map_.end ())
+        {
           pfh_tuple_ = fm_it->second;
+          key_found = true;
+        }
         else
         {
           // Compute the pair NNi to NNj
           if (!computePairFeatures (cloud, normals, indices[i_idx], indices[j_idx],
                                     pfh_tuple_[0], pfh_tuple_[1], pfh_tuple_[2], pfh_tuple_[3]))
             continue;
+
+          key_found = false;
         }
       }
       else
@@ -133,7 +140,7 @@ pcl::PFHEstimation<PointInT, PointNT, PointOutT>::computePointPFHSignature (
       }
       pfh_histogram[h_index] += hist_incr;
 
-      if (use_cache_)
+      if (use_cache_ && !key_found)
       {
         // Save the value in the hashmap
         feature_map_[key] = pfh_tuple_;
