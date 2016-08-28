@@ -49,6 +49,7 @@
 #include <pcl/common/centroid.h>
 
 using namespace pcl;
+using pcl::test::EXPECT_EQ_VECTORS;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, compute3DCentroidFloat)
@@ -288,23 +289,39 @@ TEST (PCL, compute3DCentroidCloudIterator)
   indices [2] = 6;
   indices [3] = 7;
 
-  ConstCloudIterator<PointXYZ> it (cloud, indices);
+  // Test finite data
+  {
+    ConstCloudIterator<PointXYZ> it (cloud, indices);
   
-  EXPECT_EQ (compute3DCentroid (it, centroid_f), 4);
+    EXPECT_EQ (compute3DCentroid (it, centroid_f), 4);
 
-  EXPECT_EQ (centroid_f[0], 0.0f);
-  EXPECT_EQ (centroid_f[1], 1.0f);
-  EXPECT_EQ (centroid_f[2], 0.0f);
-  EXPECT_EQ (centroid_f[3], 1.0f);
-  
-  Eigen::Vector4d centroid_d;
-  it.reset ();
-  EXPECT_EQ (compute3DCentroid (it, centroid_d), 4);
+    EXPECT_EQ (centroid_f[0], 0.0f);
+    EXPECT_EQ (centroid_f[1], 1.0f);
+    EXPECT_EQ (centroid_f[2], 0.0f);
+    EXPECT_EQ (centroid_f[3], 1.0f);
 
-  EXPECT_EQ (centroid_d[0], 0.0);
-  EXPECT_EQ (centroid_d[1], 1.0);
-  EXPECT_EQ (centroid_d[2], 0.0);
-  EXPECT_EQ (centroid_d[3], 1.0);
+    Eigen::Vector4d centroid_d;
+    it.reset ();
+    EXPECT_EQ (compute3DCentroid (it, centroid_d), 4);
+
+    EXPECT_EQ (centroid_d[0], 0.0);
+    EXPECT_EQ (centroid_d[1], 1.0);
+    EXPECT_EQ (centroid_d[2], 0.0);
+    EXPECT_EQ (centroid_d[3], 1.0);
+  }
+
+  // Test for non-finite data
+  {
+    point.getVector3fMap() << std::numeric_limits<float>::quiet_NaN (),
+                              std::numeric_limits<float>::quiet_NaN (),
+                              std::numeric_limits<float>::quiet_NaN ();
+    cloud.push_back (point);
+    cloud.is_dense = false;
+    ConstCloudIterator<PointXYZ> it (cloud);
+
+    EXPECT_EQ (8, compute3DCentroid (it, centroid_f));
+    EXPECT_EQ_VECTORS (Eigen::Vector4f (0.f, 0.f, 0.f, 1.f), centroid_f);
+  }
 }
 
 
