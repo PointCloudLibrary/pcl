@@ -40,7 +40,7 @@
 #include <cmath>
 #include <string>
 
-#ifdef WIN32
+#ifdef _WIN32
 # define NOMINMAX
 # define WIN32_LEAN_AND_MEAN
 # include <Windows.h>
@@ -112,7 +112,7 @@ if (1) {\
 inline double 
   pcl::cuda::getTime ()
 {
-#ifdef WIN32
+#ifdef _WIN32
   LARGE_INTEGER frequency;
   LARGE_INTEGER timer_tick;
   QueryPerformanceFrequency(&frequency);

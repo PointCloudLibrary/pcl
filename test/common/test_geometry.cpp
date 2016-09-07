@@ -3,7 +3,6 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,21 +33,44 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
+ * $Id$
+ *
  */
 
-#include <pcl/features/impl/normal_3d.hpp>
-#include <pcl/features/impl/normal_3d_omp.hpp>
-
-#ifndef PCL_NO_PRECOMPILE
+#include <gtest/gtest.h>
+#include <pcl/common/geometry.h>
 #include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-// Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(NormalEstimation, ((pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
-  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, ((pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
-#else
-  PCL_INSTANTIATE_PRODUCT(NormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-#endif
-#endif    // PCL_NO_PRECOMPILE
 
+using namespace pcl;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class XYZPointTypesTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM(PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+TYPED_TEST_CASE(XYZPointTypesTest, XYZPointTypes);
+
+TYPED_TEST(XYZPointTypesTest, Distance)
+{
+  TypeParam p1, p2;
+  p1.x = 3; p1.y = 4; p1.z = 5;
+  p2.y = 1; p2.x = 1; p2.z = 1.5;
+  double distance = geometry::distance (p1, p2);
+  EXPECT_NEAR (distance, 5.024938, 1e-4);
+}
+
+TYPED_TEST(XYZPointTypesTest, SquaredDistance)
+{
+  TypeParam p1, p2;
+  p1.x = 3; p1.y = 4; p1.z = 5;
+  p2.y = 1; p2.x = 1; p2.z = 1.5;
+  double distance = geometry::squaredDistance (p1, p2);
+  EXPECT_NEAR (distance, 25.25, 1e-4);
+}
+
+/* ---[ */
+int
+main (int argc, char** argv)
+{
+  testing::InitGoogleTest (&argc, argv);
+  return (RUN_ALL_TESTS ());
+}
+/* ]--- */

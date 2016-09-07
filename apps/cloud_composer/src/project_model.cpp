@@ -274,7 +274,7 @@ pcl::cloud_composer::ProjectModel::insertNewCloudFromRGBandDepth ()
     return;
   }
   qDebug () << "Images loaded, making cloud";
-  PointCloud<PointXYZRGB>::Ptr cloud = boost::make_shared <PointCloud<PointXYZRGB> >();
+  PointCloud<PointXYZRGB>::Ptr cloud = boost::shared_ptr<PointCloud<PointXYZRGB> > (new PointCloud<PointXYZRGB>);
   cloud->points.reserve (depth_dims[0] * depth_dims[1]);
   cloud->width = depth_dims[0];
   cloud->height = depth_dims[1];

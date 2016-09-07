@@ -27,14 +27,18 @@ if(RSSDK_DIR)
   # Libraries
   set(RSSDK_RELEASE_NAME libpxc.lib)
   set(RSSDK_DEBUG_NAME libpxc_d.lib)
+  set(RSSDK_SUFFIX Win32)
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(RSSDK_SUFFIX x64)
+  endif()
   find_library(RSSDK_LIBRARY
                NAMES ${RSSDK_RELEASE_NAME}
                PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
-               PATH_SUFFIXES x64 Win32)
+               PATH_SUFFIXES ${RSSDK_SUFFIX})
   find_library(RSSDK_LIBRARY_DEBUG
                NAMES ${RSSDK_DEBUG_NAME} ${RSSDK_RELEASE_NAME}
                PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
-               PATH_SUFFIXES x64 Win32)
+               PATH_SUFFIXES ${RSSDK_SUFFIX})
   if(NOT RSSDK_LIBRARY_DEBUG)
     set(RSSDK_LIBRARY_DEBUG ${RSSDK_LIBRARY})
   endif()

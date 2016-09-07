@@ -79,6 +79,17 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
+# Compiler identification
+# Define a variable CMAKE_COMPILER_IS_X where X is the compiler short name.
+# Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  set(CMAKE_COMPILER_IS_CLANG 1)
+elseif(__COMPILER_PATHSCALE)
+  set(CMAKE_COMPILER_IS_PATHSCALE 1)
+elseif(MSVC)
+  set(CMAKE_COMPILER_IS_MSVC 1)
+endif()
+
 include("${PCL_SOURCE_DIR}/cmake/pcl_verbosity.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_targets.cmake")
 include("${PCL_SOURCE_DIR}/cmake/pcl_options.cmake")
@@ -133,9 +144,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
   endif()
 endif()
 
-if(MSVC)
-  SET(CMAKE_COMPILER_IS_MSVC 1)
-  add_definitions ("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj")
+if(CMAKE_COMPILER_IS_MSVC)
+  add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
   if("${CMAKE_CXX_FLAGS}" STREQUAL " /DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /EHsc /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
 
@@ -158,8 +168,7 @@ if(MSVC)
   endif()
 endif()
 
-if (__COMPILER_PATHSCALE)
-  SET(CMAKE_COMPILER_IS_PATHSCALE 1)
+if(CMAKE_COMPILER_IS_PATHSCALE)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
     SET(CMAKE_CXX_FLAGS "-Wno-uninitialized -zerouv -pthread -mp")
   endif()
@@ -168,8 +177,7 @@ if (__COMPILER_PATHSCALE)
   endif()
 endif()
 
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  SET(CMAKE_COMPILER_IS_CLANG 1)
+if(CMAKE_COMPILER_IS_CLANG)
   if("${CMAKE_C_FLAGS}" STREQUAL "")
     SET(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
@@ -232,7 +240,7 @@ ENDIF("${is_system_dir}" STREQUAL "-1")
 
 ### ---[ Find universal dependencies
 # the gcc-4.2.1 coming with MacOS X is not compatible with the OpenMP pragmas we use, so disabling OpenMP for it
-if((NOT APPLE) OR (NOT CMAKE_COMPILER_IS_GNUCXX) OR (GCC_VERSION VERSION_GREATER 4.2.1) OR (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+if((NOT APPLE) OR (NOT CMAKE_COMPILER_IS_GNUCXX) OR (GCC_VERSION VERSION_GREATER 4.2.1) OR (CMAKE_COMPILER_IS_CLANG))
   find_package(OpenMP)
 endif()
 if(OPENMP_FOUND)
@@ -353,7 +361,12 @@ option(WITH_VTK "Build VTK-Visualizations" TRUE)
 if(WITH_VTK AND NOT ANDROID)
   find_package(VTK)
   if(VTK_FOUND)
-    message(STATUS "VTK_MAJOR_VERSION ${VTK_MAJOR_VERSION}")
+    if(NOT DEFINED VTK_RENDERING_BACKEND)
+      # On old VTK versions this variable does not exist. In this case it is
+      # safe to assume OpenGL backend
+      set(VTK_RENDERING_BACKEND "OpenGL")
+    endif()
+    message(STATUS "VTK_MAJOR_VERSION ${VTK_MAJOR_VERSION}, rendering backend: ${VTK_RENDERING_BACKEND}")
     if (PCL_SHARED_LIBS OR
         (NOT (PCL_SHARED_LIBS) AND NOT (VTK_BUILD_SHARED_LIBS)))
       set(VTK_FOUND TRUE)
@@ -369,6 +382,11 @@ if(WITH_VTK AND NOT ANDROID)
           option (VTK_USE_COCOA "Use Cocoa for VTK render windows" ON)
           MARK_AS_ADVANCED (VTK_USE_COCOA)
       endif (APPLE)
+      if(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL")
+        set(VTK_RENDERING_BACKEND_OPENGL_VERSION "1")
+      elseif(${VTK_RENDERING_BACKEND} STREQUAL "OpenGL2")
+        set(VTK_RENDERING_BACKEND_OPENGL_VERSION "2")
+      endif()
       set(HAVE_VTK ON)
     else ()
       set(VTK_FOUND OFF)

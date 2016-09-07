@@ -822,6 +822,11 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
   actor->SetMapper (mapper);
 
+  // Use cloud view point info
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
+  convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
+  actor->SetUserMatrix (transformation);
+
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
 

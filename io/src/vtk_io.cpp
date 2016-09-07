@@ -63,7 +63,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   unsigned int point_size = static_cast<unsigned int> (triangles.cloud.data.size () / nr_points);
 
   // Write the header information
-  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << std::endl;
+  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';
 
   // Iterate through the points
   for (unsigned int i = 0; i < nr_points; ++i)
@@ -93,13 +93,13 @@ pcl::io::saveVTKFile (const std::string &file_name,
       PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
 
   // Write vertices
-  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << std::endl;
+  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << '\n';
   for (unsigned int i = 0; i < nr_points; ++i)
-    fs << "1 " << i << std::endl;
+    fs << "1 " << i << '\n';
 
   // Write polygons
   // compute the correct number of values:
@@ -107,14 +107,14 @@ pcl::io::saveVTKFile (const std::string &file_name,
   size_t correct_number = triangle_size;
   for (size_t i = 0; i < triangle_size; ++i)
     correct_number += triangles.polygons[i].vertices.size ();
-  fs << "\nPOLYGONS " << triangle_size << " " << correct_number << std::endl;
+  fs << "\nPOLYGONS " << triangle_size << " " << correct_number << '\n';
   for (size_t i = 0; i < triangle_size; ++i)
   {
     fs << triangles.polygons[i].vertices.size () << " ";
     size_t j = 0;
     for (j = 0; j < triangles.polygons[i].vertices.size () - 1; ++j)
       fs << triangles.polygons[i].vertices[j] << " ";
-    fs << triangles.polygons[i].vertices[j] << std::endl;
+    fs << triangles.polygons[i].vertices[j] << '\n';
   }
 
   // Write RGB values
@@ -137,7 +137,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
         int b = color.b;
         fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f << " " << static_cast<float> (b) / 255.0f;
       }
-      fs << std::endl;
+      fs << '\n';
     }
   }
 
@@ -166,7 +166,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
   unsigned int point_size = static_cast<unsigned int> (cloud.data.size () / nr_points);
 
   // Write the header information
-  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << std::endl;
+  fs << "# vtk DataFile Version 3.0\nvtk output\nASCII\nDATASET POLYDATA\nPOINTS " << nr_points << " float" << '\n';
 
   // Iterate through the points
   for (unsigned int i = 0; i < nr_points; ++i)
@@ -196,13 +196,13 @@ pcl::io::saveVTKFile (const std::string &file_name,
       PCL_ERROR ("[pcl::io::saveVTKFile] Input point cloud has no XYZ data!\n");
       return (-2);
     }
-    fs << std::endl;
+    fs << '\n';
   }
 
   // Write vertices
-  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << std::endl;
+  fs << "\nVERTICES " << nr_points << " " << 2*nr_points << '\n';
   for (unsigned int i = 0; i < nr_points; ++i)
-    fs << "1 " << i << std::endl;
+    fs << "1 " << i << '\n';
 
   // Write RGB values
   int field_index = getFieldIndex (cloud, "rgb");
@@ -224,7 +224,7 @@ pcl::io::saveVTKFile (const std::string &file_name,
         int b = color.b;
         fs << static_cast<float> (r) / 255.0f << " " << static_cast<float> (g) / 255.0f << " " << static_cast<float> (b) / 255.0f;
       }
-      fs << std::endl;
+      fs << '\n';
     }
   }
 

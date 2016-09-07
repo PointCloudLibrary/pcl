@@ -89,12 +89,11 @@ pcl::planeWithPlaneIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   plane_a_norm.normalize ();
   plane_b_norm.normalize ();
 
-  // Test if planes are parallel (test_cos == 1)
+  // Test if planes are parallel
   double test_cos = plane_a_norm.dot (plane_b_norm);
-  double upper_limit = 1 + angular_tolerance;
-  double lower_limit = 1 - angular_tolerance;
+  double tolerance_cos = 1 - sin (fabs (angular_tolerance));
 
-  if ((test_cos > lower_limit) && (test_cos < upper_limit))
+  if (fabs (test_cos) > tolerance_cos)
   {
       PCL_DEBUG ("Plane A and Plane B are parallel.\n");
       return (false);
