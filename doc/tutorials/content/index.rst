@@ -946,6 +946,22 @@ Registration
 
      .. |re_6| image:: images/alignment_prerejective_1.png
                :height: 100px
+			   
+  * :ref:`ReLOC`
+
+     ======  ======
+     |re_8|  Title: **ReLOC: Pairwise registration by local orientation cues**
+
+             Author: *Alioscia Petrelli*
+
+             Compatibility: >= PCL 1.9
+
+             This tutorial shows how to apply ReLOC algorithm for estimating the rigid transformation that aligns two point clouds.
+
+     ======  ======
+
+     .. |re_8| image:: images/registration/ReLOC.png
+               :height: 100px			   
 
 
 .. _sample_consensus:
