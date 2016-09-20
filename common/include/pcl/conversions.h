@@ -254,7 +254,11 @@ namespace pcl
     // Fill point cloud binary data (padding and all)
     size_t data_size = sizeof (PointT) * cloud.points.size ();
     msg.data.resize (data_size);
-    memcpy (&msg.data[0], &cloud.points[0], data_size);
+    if (data_size)
+    {
+      //data[0] and points[0] only available for data_size > 0.
+      memcpy(&msg.data[0], &cloud.points[0], data_size);
+    }
 
     // Fill fields metadata
     msg.fields.clear ();
