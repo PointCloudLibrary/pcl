@@ -461,6 +461,11 @@ endif(CPACK_GENERATOR)
 include("${PCL_SOURCE_DIR}/cmake/dep_graph.cmake")
 MAKE_DEP_GRAPH()
 
+# A workaround for python-pcl. pkg-config needs dummy ensenso.pc to return 
+# flags for pcl properly
+configure_file("${PCL_SOURCE_DIR}/cmake/ensenso.pc.in"
+               "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig/ensenso.pc")
+
 ### ---[ Finish up
 PCL_WRITE_STATUS_REPORT()
 PCL_RESET_MAPS()
