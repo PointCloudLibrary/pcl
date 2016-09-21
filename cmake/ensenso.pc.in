@@ -1,0 +1,4 @@
+Name: ensenso-dummy
+Description: Dummy .pc. pkg-config needs dummy ensenso.pc to return flags for pcl properly
+Version: 0
+Requires: 
