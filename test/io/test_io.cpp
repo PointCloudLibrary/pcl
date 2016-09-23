@@ -794,7 +794,7 @@ TEST (PCL, ASCIIReader)
   afile.close();
 
   ASCIIReader reader;
-  reader.setInputFields( pcl::PointXYZI() );
+  reader.setInputFields<pcl::PointXYZI> ();
 
   EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
