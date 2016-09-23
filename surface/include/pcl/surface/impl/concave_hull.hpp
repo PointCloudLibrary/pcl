@@ -129,9 +129,10 @@ pcl::ConcaveHull<PointInT>::reconstruct (PointCloud &output, std::vector<pcl::Ve
 template <typename PointInT> void
 pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std::vector<pcl::Vertices> &polygons)
 {
-  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
   Eigen::Vector4d xyz_centroid;
-  computeMeanAndCovarianceMatrix (*input_, *indices_, covariance_matrix, xyz_centroid);
+  compute3DCentroid (*input_, *indices_, xyz_centroid);
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  computeCovarianceMatrixNormalized (*input_, *indices_, xyz_centroid, covariance_matrix);
 
   // Check if the covariance matrix is finite or not.
   for (int i = 0; i < 3; ++i)
@@ -150,7 +151,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   if (dim_ == 0)
   {
     PCL_DEBUG ("[pcl::%s] WARNING: Input dimension not specified.  Automatically determining input dimension.\n", getClassName ().c_str ());
-    if (eigen_values[0] / eigen_values[2] < 1.0e-3)
+    if (std::abs (eigen_values[0]) < std::numeric_limits<double>::epsilon () || std::abs (eigen_values[0] / eigen_values[2]) < 1.0e-3)
       dim_ = 2;
     else
       dim_ = 3;
