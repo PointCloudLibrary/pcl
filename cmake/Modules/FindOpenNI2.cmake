@@ -30,7 +30,7 @@ if(NOT WIN32)
     message(STATUS "OpenNI 2 disabled because libusb-1.0 not found.")
     return()
   else()
-    include_directories(SYSTEM ${USB_10_INCLUDE_DIR})
+    include_directories(${USB_10_INCLUDE_DIR})
   endif()
 endif(NOT WIN32)
 

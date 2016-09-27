@@ -17,7 +17,7 @@ PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS
 if(build)
 
     find_package(Gtest REQUIRED)
-    include_directories(SYSTEM ${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
+    include_directories(${GTEST_INCLUDE_DIRS} ${GTEST_SRC_DIR})
 
     add_library(pcl_gtest STATIC ${GTEST_SRC_DIR}/src/gtest-all.cc)
 	
