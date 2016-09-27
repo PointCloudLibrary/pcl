@@ -97,6 +97,18 @@ namespace pcl
       probA = NULL;
       probB = NULL;
     }
+
+    /** \brief check for the validity of the model,
+     *         l represents the number of support vectors,
+     *         without SVs the model is not condiered as not valid
+     *  \return true if SMV has a valid model
+     */
+    bool isValid( ){
+        if (this->l > 0 )
+            return true;
+        else
+            return false;
+    }
   };
 
   /** \brief The structure initialize a single feature value for the classification using SVM (Support Vector Machines).
@@ -124,9 +136,24 @@ namespace pcl
     }
   };
 
+  /** \brief The structure stores the test report of the SVM classifier.
+   *  easy to use during the training/classification procedures
+   */
+  struct SVMtestReport{
+      int correctPredictionsIdx; // store the number of correct predictions after a classification test
+      double MSE;  //Mean squared error (regression) - only for NU_SVR and EPSILON_SVR
+      double SCC;  //Squared correlation coefficient (regression) - only for NU_SVR and EPSILON_SVR
+      double accuracy; // accuracy in percentage
+      int totalSamples; // number of tested samples
+
+      SVMtestReport () : correctPredictionsIdx(0), MSE(0.0), SCC(0.0), accuracy(0.0), totalSamples(0)
+      {
+      }
+  };
+
   /** \brief Base class for SVM SVM (Support Vector Machines).
    */
-  class SVM
+  class PCL_EXPORTS SVM
   {
     protected:
       std::vector<SVMData> training_set_; // Basic training set
@@ -214,17 +241,38 @@ namespace pcl
         free (labels_);
       };
 
-      /** \brief Save the classifier model in an extern file (in svmlight format). */
-      void saveClassifierModel (const char *filename)
+      /** \brief Return the current training parameters. */
+      SVMParam
+      getParameters ()
+      {
+        return param_;
+      }
+
+      /** \brief Return the result of the training. */
+      SVMModel
+      getClassifierModel ()
+      {
+        return model_;
+      }
+
+      /** \brief Save the classifier model in an extern file (in svmlight format).
+          \return false if fails. */
+      bool saveClassifierModel (const char *filename)
       {
         // exit if model has no data
         if (model_.l == 0)
-          return;
+        {
+          fprintf (stderr, "model has no data to save in %s\n", filename);
+          return 0;
+        }
 
         if (svm_save_model (filename, &model_))
         {
           fprintf (stderr, "can't save model to file %s\n", filename);
-          exit (1);
+          return 0; //exit (1);
+        }
+        else {
+            return 1;
         }
       };
   };
@@ -233,7 +281,7 @@ namespace pcl
    * It creates a model for the classifier from a labelled input dataset. 
    * OPTIONAL: pcl::SVMParam has to be given as input to vary the default training method and parameters.
    */
-  class SVMTrain : public SVM
+  class PCL_EXPORTS SVMTrain : public SVM
   {
     protected:
       using SVM::labelled_training_set_;
@@ -281,20 +329,6 @@ namespace pcl
         param_ = param;
       }
 
-      /** \brief Return the current training parameters. */
-      SVMParam
-      getParameters ()
-      {
-        return param_;
-      }
-
-      /** \brief Return the result of the training. */
-      SVMModel
-      getClassifierModel ()
-      {
-        return model_;
-      }
-
       /** \brief It adds/store the training set with labelled data. */
       void
       setInputTrainingSet (std::vector<SVMData> training_set)
@@ -329,6 +363,14 @@ namespace pcl
         return SVM::loadProblem (filename, prob_);
       };
 
+      /** \brief Adapt the input prob_ (in svmlight format) to training_set (as vector of SVMData) .*/
+      void
+      adaptProbToInput ( )
+      {
+        adaptLibSVMToInput (training_set_, prob_);
+      };
+
+
       /** \brief Set to 1 for debugging info. */
       void
       setDebugMode (bool in)
@@ -361,7 +403,7 @@ namespace pcl
   /** \brief SVM (Support Vector Machines) classification of a dataset. 
    * It can be used both for testing a classifier model and for classify of new data.
    */
-  class SVMClassify : public SVM
+  class PCL_EXPORTS SVMClassify : public SVM
   {
     protected:
       using SVM::labelled_training_set_;
@@ -377,7 +419,9 @@ namespace pcl
       bool model_extern_copied_; // Set to 0 if the model is loaded from an extern file.
       bool predict_probability_; // Set to 1 to predict probabilities.
       std::vector< std::vector<double> > prediction_; // It stores the resulting prediction.
-      
+
+      SVMtestReport testClassReport_; // test reports
+
       /** \brief It scales the input dataset using the model information. */
       void scaleProblem (svm_problem &input, svm_scaling scaling);
       
@@ -395,7 +439,13 @@ namespace pcl
           svm_free_model_content (&model_);
       }
 
-      /** \brief It adds/store the training set with labelled data. */
+      /** \brief It adds/store the training set with labelled data.
+        * \brief It adds/store the training set with/without labelled data.
+        *
+        * \note this will actually work also with not labelled data
+        *       so the function should be setInputSet as it can be used
+        *       for training of for classifying
+        */
       void
       setInputTrainingSet (std::vector<SVMData> training_set)
       {
@@ -438,6 +488,9 @@ namespace pcl
         out.clear ();
         out.insert (out.begin(), prediction_.begin(), prediction_.end());
       }
+
+      /** \brief Get the result of the classification test . */
+      SVMtestReport getClassificationTestReport() {return testClassReport_;}
 
       /** \brief Save the classification result in an extern file. */
       void
@@ -491,6 +544,15 @@ namespace pcl
         SVM::adaptLibSVMToInput (training_set_, prob_);
         return out;
       };
+
+      /** \brief Check if the training set is labelled.
+       *  Usefull to perform the classificationTest
+       * \return true if the dataset is labelled */
+      bool
+      hasLabelledTrainingSet()
+      {
+          return labelled_training_set_;
+      }
 
       /** \brief Set whether the classification has to be done with the probability estimate.
        * (the classifier model has to support it). */
