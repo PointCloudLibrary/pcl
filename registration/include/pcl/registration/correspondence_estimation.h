@@ -213,7 +213,7 @@ namespace pcl
           * recomputed, regardless of calls to setInputTarget. Only use if you are 
           * confident that the tree will be set correctly.
           */
-        inline void
+        virtual void
         setSearchMethodTarget (const KdTreePtr &tree, 
                                bool force_no_recompute = false) 
         { 
@@ -241,7 +241,7 @@ namespace pcl
           * recomputed, regardless of calls to setInputSource. Only use if you are 
           * extremely confident that the tree will be set correctly.
           */
-        inline void
+        virtual void
         setSearchMethodSource (const KdTreeReciprocalPtr &tree, 
                                bool force_no_recompute = false) 
         { 
