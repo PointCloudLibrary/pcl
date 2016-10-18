@@ -55,6 +55,10 @@ pcl::registration::CorrespondenceLookupTable<PointT>::computeLookupTableBounds (
     maximum_bounds_ (i) += lookup_table_margin_ (i);
   }
 
+  number_cells_x_ = std::max ((size_t)(((maximum_bounds_ (0) - minimum_bounds_ (0)) * cell_resolution_inverse_) + 0.5), (size_t)1);
+  number_cells_y_ = std::max ((size_t)(((maximum_bounds_ (1) - minimum_bounds_ (1)) * cell_resolution_inverse_) + 0.5), (size_t)1);
+  number_cells_z_ = std::max ((size_t)(((maximum_bounds_ (2) - minimum_bounds_ (2)) * cell_resolution_inverse_) + 0.5), (size_t)1);
+
   return true;
 }
 
@@ -67,17 +71,11 @@ pcl::registration::CorrespondenceLookupTable<PointT>::initLookupTable (const typ
     return false;
 
   search_tree_ = tree;
-
-  number_cells_x_ = std::max ((size_t)(((maximum_bounds_ (0) - minimum_bounds_ (0)) * cell_resolution_inverse_) + 0.5), (size_t)1);
-  number_cells_y_ = std::max ((size_t)(((maximum_bounds_ (1) - minimum_bounds_ (1)) * cell_resolution_inverse_) + 0.5), (size_t)1);
-  number_cells_z_ = std::max ((size_t)(((maximum_bounds_ (2) - minimum_bounds_ (2)) * cell_resolution_inverse_) + 0.5), (size_t)1);
   size_t number_cells = number_cells_z_ * number_cells_y_ * number_cells_x_;
-
   lookup_table_.resize (number_cells);
 
   std::vector<int> index (1);
   std::vector<float> distance (1);
-
   int correspondence_number = 0;
   PointT query_point;
   query_point.z = minimum_bounds_(2);
@@ -88,9 +86,9 @@ pcl::registration::CorrespondenceLookupTable<PointT>::initLookupTable (const typ
       query_point.x = minimum_bounds_(0);
       for (size_t x = 0; x < number_cells_x_; ++x) {
         search_tree_->nearestKSearch (query_point, 1, index, distance);
-        pcl::registration::CorrespondenceLookupTableCell& corr = lookup_table_[correspondence_number++];
-        corr.closest_point_index = index[0];
-        corr.distance_to_closest_point = distance[0];
+        pcl::registration::CorrespondenceLookupTableCell& correspondence = lookup_table_[correspondence_number++];
+        correspondence.closest_point_index = index[0];
+        correspondence.distance_squared_to_closest_point = distance[0];
         query_point.x += cell_resolution_;
       }
       query_point.y += cell_resolution_;
@@ -127,13 +125,13 @@ pcl::registration::CorrespondenceLookupTable<PointT>::getCorrespondence (const P
     std::vector<float> distance (1);
     search_tree_->nearestKSearch (query_point, 1, index, distance);
     correspondance.closest_point_index = index[0];
-    correspondance.distance_to_closest_point = distance[0];
+    correspondance.distance_squared_to_closest_point = distance[0];
     ++number_of_queries_on_search_tree_;
   }
   else
   	return false;
 
-  if (correspondance.distance_to_closest_point <= maximum_correspondence_distance_squared)
+  if (correspondance.distance_squared_to_closest_point <= maximum_correspondence_distance_squared)
     return true;
   else
     return false;
@@ -187,7 +185,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
         pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
         correspondence.index_query = *input_index;
         correspondence.index_match = correspondence_cell.closest_point_index;
-        correspondence.distance = correspondence_cell.distance_to_closest_point;
+        correspondence.distance = correspondence_cell.distance_squared_to_closest_point;
       }
     }
   }
@@ -202,7 +200,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
       	pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
         correspondence.index_query = *input_index;
         correspondence.index_match = correspondence_cell.closest_point_index;
-        correspondence.distance = correspondence_cell.distance_to_closest_point;
+        correspondence.distance = correspondence_cell.distance_squared_to_closest_point;
       }
     }
   }
@@ -243,7 +241,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
       	pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
         correspondence.index_query = *input_index;
         correspondence.index_match = correspondence_cell.closest_point_index;
-        correspondence.distance = correspondence_cell.distance_to_closest_point;
+        correspondence.distance = correspondence_cell.distance_squared_to_closest_point;
       }
     }
   }
@@ -263,7 +261,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
          pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
           correspondence.index_query = *input_index;
           correspondence.index_match = correspondence_cell.closest_point_index;
-          correspondence.distance = correspondence_cell.distance_to_closest_point;
+          correspondence.distance = correspondence_cell.distance_squared_to_closest_point;
         }
       }
     }

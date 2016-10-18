@@ -59,28 +59,28 @@ namespace pcl
   namespace registration
   {
     /** \brief @b CorrespondenceLookupTableCell represents a match between
-      * a CorrespondenceLookupTable cell and the closest point in the reference point cloud
+      * a CorrespondenceLookupTable cell and the closest point in the reference point cloud.
       *
       * \author Carlos M. Costa
       * \ingroup registration
       */
     struct CorrespondenceLookupTableCell
     {
-      /** \brief Index of the closest point in the reference point cloud */
+      /** \brief Index of the closest point in the reference point cloud. */
       int closest_point_index;
 
-      /** \brief Distance to the closest point */
-      float distance_to_closest_point;
+      /** \brief Squared distance to the closest point. */
+      float distance_squared_to_closest_point;
 
       /** \brief Empty constructor.
-        * Sets \ref closest_point_index to 0, \ref distance_to_closest_point to FLT_MAX.
+        * Sets \ref closest_point_index to -1, \ref distance_to_closest_point to FLT_MAX.
         */
       inline CorrespondenceLookupTableCell ()
-      : closest_point_index (0), distance_to_closest_point (std::numeric_limits<float>::max ()) {}
+      : closest_point_index (-1), distance_squared_to_closest_point (std::numeric_limits<float>::max ()) {}
 
       /** \brief Constructor. */
       inline CorrespondenceLookupTableCell (int index, float distance)
-      : closest_point_index (index), distance_to_closest_point(distance) {}
+      : closest_point_index (index), distance_squared_to_closest_point(distance) {}
 
       /** \brief Empty destructor. */
       virtual ~CorrespondenceLookupTableCell () {}
@@ -89,7 +89,7 @@ namespace pcl
     /** \brief @b LookupTable provides fast correspondence estimation
       * by pre-computing the closest point for each cell within a uniform volume grid.
       * It is recommended for 2D point cloud registration or 3D point cloud registration of
-      * small volumes (it requires more memory than kd-trees but it is much faster).
+      * small volumes (it requires more memory than k-d trees but it is much faster).
       *
       * \author Carlos M. Costa
       * \ingroup registration
@@ -113,18 +113,18 @@ namespace pcl
         virtual ~CorrespondenceLookupTable () {}
 
         /** \brief Set the lookup table cell resolution.
-          * \param[in] cell_resolution is the lookup table cell size
+          * \param[in] cell_resolution is the lookup table cell size.
           */
         inline void
         setCellResolution (double cell_resolution) { cell_resolution_ = cell_resolution; cell_resolution_inverse_ = 1.0 / cell_resolution_; }
 
-        /** \brief Get the lookup table cell size */
+        /** \brief Get the lookup table cell size. */
         inline double
         getCellResolution () { return (cell_resolution_); }
 
         /** \brief Set the lookup table margin (in x, y and z axis).
           * \param[in] lookup_table_margin is the extra space that will be filled with extra cells around the data bounding box
-          * in order to have pre-computed correspondences available when registering point clouds that are not aligned
+          * in order to have pre-computed correspondences available when registering point clouds that are not aligned.
           */
         inline void
         setLookupTableMargin (Eigen::Vector4f lookup_table_margin) { lookup_table_margin_ = lookup_table_margin; }
@@ -141,45 +141,65 @@ namespace pcl
         inline Eigen::Vector4f
         getMaximumBounds () { return (maximum_bounds_); }
 
-        /** \brief Gets the number of queries performed on the lookup table */
+        /** \brief Get the number of cells in the X axis. */
+        inline size_t
+        getNumberOfCellsXAxis () { return (number_cells_x_); }
+
+        /** \brief Get the number of cells in the Y axis. */
+        inline size_t
+        getNumberOfCellsYAxis () { return (number_cells_y_); }
+
+        /** \brief Get the number of cells in the Z axis. */
+        inline size_t
+        getNumberOfCellsZAxis () { return (number_cells_z_); }
+
+        /** \brief Get a reference to the lookup table. */
+        inline std::vector<pcl::registration::CorrespondenceLookupTableCell>&
+        getLookupTable () { return (lookup_table_); }
+
+        /** \brief Get the search tree. */
+        inline typename pcl::search::Search<PointT>::Ptr
+        getSearchTree () { return (search_tree_); }
+
+        /** \brief Gets the number of queries performed on the lookup table. */
         inline size_t
         getNumberOfQueriesOnLookupTable () { return (number_of_queries_on_lookup_table_); }
 
-        /** \brief Resets the number of queries performed on the lookup table */
+        /** \brief Resets the number of queries performed on the lookup table. */
         inline void
         resetNumberOfQueriesOnLookupTable () { number_of_queries_on_lookup_table_ = 0; }
 
-        /** \brief Gets the number of queries performed on the lookup table */
+        /** \brief Gets the number of queries performed on the lookup table. */
         inline size_t
         getNumberOfQueriesOnSearchTree () { return (number_of_queries_on_search_tree_); }
 
-        /** \brief Resets the number of queries performed on the lookup table */
+        /** \brief Resets the number of queries performed on the lookup table. */
         inline void
         resetNumberOfQueriesOnSearchTree () { number_of_queries_on_search_tree_ = 0; }
 
         /**
           * \brief Computes the lookup table minimum and maximum bounds with the additional margin that was set previously.
-          * @param pointcloud Point cloud with the data
-          * @return True if the computed bounds are valid
+          * @param[in] pointcloud Point cloud with the data.
+          * @return True if the computed bounds are valid.
           */
         virtual bool
         computeLookupTableBounds (const pcl::PointCloud<PointT>& pointcloud);
 
         /**
           * \brief Initialize the lookup table using the provided tree.
-          * @param tree Search tree with the point data
-          * @return True if the lookup table was initialized successfully
+          * @param[in] tree Search tree with the point data.
+          * @return True if the lookup table was initialized successfully.
           */
         virtual bool
         initLookupTable (const typename pcl::search::Search<PointT>::Ptr& tree);
 
         /**
          * Gets the pre-computed correspondence associated with the provided query point.
-         * @param query_point Coordinates of the query point
-         * @param maximum_correspondence_distance_squared The maximum distance squared that a valid correspondence can have
-         * @param correspondence The correspondence found for the provided query point. If the query point is outside the pre-computed cells,
-         * the search tree will be used for finding the correspondence
-         * @return True if it was found a valid correspondence
+         * @param[in] query_point Coordinates of the query point.
+         * @param[in] maximum_correspondence_distance_squared The maximum distance squared that a valid correspondence can have.
+         * @param[out] correspondence The correspondence found for the provided query point. If the query point is outside the pre-computed cells,
+         * the search tree will be used for finding the correspondence.
+         * @return True if it was found a valid correspondence.
          */
         bool
         getCorrespondence (const PointT& query_point, double maximum_correspondence_distance_squared, pcl::registration::CorrespondenceLookupTableCell& correspondance);
@@ -215,10 +235,10 @@ namespace pcl
         /** \brief Number of cells in the z dimension. */
         size_t number_cells_z_;
 
-        /** \brief Number of queries performed on the lookup table */
+        /** \brief Number of queries performed on the lookup table. */
         size_t number_of_queries_on_lookup_table_;
 
-        /** \brief Number of queries performed on the search tree (because they were outside the lookup table bounds) */
+        /** \brief Number of queries performed on the search tree (because they were outside the lookup table bounds). */
         size_t number_of_queries_on_search_tree_;
     };
 
@@ -318,25 +338,24 @@ namespace pcl
         }
 
         /** \brief Determine the correspondences between input and target cloud.
-          * \param[out] correspondences The found correspondences (index of query point, index of target point, distance)
-          * \param[in] max_distance Maximum allowed distance between correspondences
+          * \param[out] correspondences The found correspondences (index of query point, index of target point, distance).
+          * \param[in] max_distance Maximum allowed distance between correspondences.
           */
         virtual void
         determineCorrespondences (pcl::Correspondences &correspondences,
                                   double max_distance = std::numeric_limits<double>::max ());
 
         /** \brief Determine the reciprocal correspondences between input and target cloud.
-          * A correspondence is considered reciprocal if the Src_i -> Tgt_i
-          * correspondence is the same as Tgt_i -> Src_i.
+          * A correspondence is considered reciprocal if the Src_i -> Tgt_i correspondence is the same as Tgt_i -> Src_i.
           *
-          * \param[out] correspondences The found correspondences (index of query and target point, distance)
-          * \param[in] max_distance Maximum allowed distance between correspondences
+          * \param[out] correspondences The found correspondences (index of query and target point, distance).
+          * \param[in] max_distance Maximum allowed distance between correspondences.
           */
         virtual void
         determineReciprocalCorrespondences (pcl::Correspondences &correspondences,
                                             double max_distance = std::numeric_limits<double>::max ());
 
-        /** \brief Clone and cast to CorrespondenceEstimationBase */
+        /** \brief Clone and cast to CorrespondenceEstimationBase. */
         virtual boost::shared_ptr< CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> >
         clone () const
         {
