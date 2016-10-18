@@ -50,9 +50,10 @@ pcl::registration::CorrespondenceLookupTable<PointT>::computeLookupTableBounds (
     return false;
 
   pcl::getMinMax3D (pointcloud, minimum_bounds_, maximum_bounds_);
+  double half_cell_resolution = cell_resolution_ * 0.5;
   for (size_t i = 0; i < 3; ++i) {
-    minimum_bounds_ (i) -= lookup_table_margin_ (i);
-    maximum_bounds_ (i) += lookup_table_margin_ (i);
+    minimum_bounds_ (i) -= (lookup_table_margin_ (i) + half_cell_resolution);
+    maximum_bounds_ (i) += (lookup_table_margin_ (i) + half_cell_resolution);
   }
 
   number_cells_x_ = std::max ((size_t)(((maximum_bounds_ (0) - minimum_bounds_ (0)) * cell_resolution_inverse_) + 0.5), (size_t)1);
