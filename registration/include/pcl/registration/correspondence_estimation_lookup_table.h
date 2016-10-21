@@ -45,6 +45,8 @@
 #include <string>
 #include <vector>
 
+#include <Eigen/Core>
+
 #include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
 #include <pcl/common/common.h>
@@ -106,6 +108,8 @@ namespace pcl
           , number_cells_x_ (0)
           , number_cells_y_ (0)
           , number_cells_z_ (0)
+          , use_search_tree_when_query_point_is_outside_lookup_table_ (true)
+          , compute_distance_from_query_point_to_closest_point_ (false)
           , number_of_queries_on_lookup_table_ (0)
           , number_of_queries_on_search_tree_ (0) {}
 
@@ -161,6 +165,26 @@ namespace pcl
         inline typename pcl::search::Search<PointT>::Ptr
         getSearchTree () { return (search_tree_); }
 
+        /** \brief Set if the search tree shall be used as a fall back strategy when the query points are outside of the lookup table bounds.
+          * \param[in] use_search_tree_when_query_point_is_outside_lookup_table True for using the search tree as a fall back strategy when the query points are outside the lookup table bounds.
+          */
+        inline void
+        setUseSearchTreeWhenQueryPointIsOutsideLookupTable (bool use_search_tree_when_query_point_is_outside_lookup_table) { use_search_tree_when_query_point_is_outside_lookup_table_ = use_search_tree_when_query_point_is_outside_lookup_table; }
+
+        /** \brief Check if the search tree will be used as a fall back strategy when the query points are outside of the lookup table bounds. */
+        inline bool
+        getUseSearchTreeWhenQueryPointIsOutsideLookupTable () { return (use_search_tree_when_query_point_is_outside_lookup_table_); }
+
+        /** \brief Set if the distance between query and closest point should be computed.
+          * \param[in] compute_distance_from_query_point_to_closest_point True for computing the distance between query point and the closest point. False for using the distance between the centroids of the cells associated with the query and closest point.
+          */
+        inline void
+        setComputeDistanceFromQueryPointToClosestPoint (bool compute_distance_from_query_point_to_closest_point) { compute_distance_from_query_point_to_closest_point_ = compute_distance_from_query_point_to_closest_point; }
+
+        /** \brief Check if the distance between query and closest point will be computed. */
+        inline bool
+        getComputeDistanceFromQueryPointToClosestPoint () { return (compute_distance_from_query_point_to_closest_point_); }
+
         /** \brief Gets the number of queries performed on the lookup table. */
         inline size_t
         getNumberOfQueriesOnLookupTable () { return (number_of_queries_on_lookup_table_); }
@@ -194,6 +218,82 @@ namespace pcl
         initLookupTable (const typename pcl::search::Search<PointT>::Ptr& tree);
 
         /**
+         * Gets the correspondence cell index associated with the query_point.
+         * @param[in] query_point Coordinates of the query point.
+         * @param[out] correspondence_index The computed index of the lookup table cell.
+         * @param[out] correspondence_index_components The computed index [x,y,z] components.
+         * @return True if the index is valid. False if the query point was outside of the lookup table bounds.
+         */
+        bool
+        computeCorrespondenceCellIndex (const PointT& query_point, size_t& correspondence_index, Eigen::Vector3i& correspondence_index_components);
+
+        /**
+         * Computes the correspondence cell centroid from the lookup table cell index components (retrieved with @see computeCorrespondenceCellIndex).
+         * @return The centroid of the correspondence cell.
+         */
+        Eigen::Vector3f
+        computeCorrespondenceCellCentroid (const Eigen::Vector3i& correspondence_index_components);
+
+        /**
+         * Computes the squared distance between two points.
+         * @param a First point.
+         * @param b Second point.
+         * @return The Euclidean squared distance between the two points.
+         */
+        float
+        computeSquaredDistance (const Eigen::Vector3f& a, const Eigen::Vector3f& b)
+        {
+          return ((a - b).squaredNorm ());
+        }
+
+        /**
+         * Computes the squared distance between two points.
+         * @param a First point.
+         * @param b Second point.
+         * @return The Euclidean squared distance between the two points.
+         */
+        float
+        computeSquaredDistance (const PointT& a, const PointT& b)
+        {
+          float dx = a.x - b.x;
+          float dy = a.y - b.y;
+          float dz = a.z - b.z;
+          return (dx * dx + dy * dy + dz * dz);
+        }
+
+        /**
+         * Computes the squared distance between the query point and the cell centroid.
+         * @param query_point Query point.
+         * @param centroid Cell centroid.
+         * @return The Euclidean squared distance between the two points.
+         */
+        float
+        computeSquaredDistanceToCentroid (const PointT& query_point, Eigen::Vector3f centroid)
+        {
+          float dx = query_point.x - centroid (0);
+          float dy = query_point.y - centroid (1);
+          float dz = query_point.z - centroid (2);
+          return (dx * dx + dy * dy + dz * dz);
+        }
+
+        /**
+         * Retrieves the point associated to a given cell by using the index of the point cloud that was used to initialize the lookup table.
+         * @param[in] index Index of the point to retrieve.
+         * @param[out] point Point retrieved.
+         * @return True if the index was valid and the point was retrieved.
+         */
+        bool
+        getCellPoint (size_t index, PointT& point)
+        {
+          if (pointcloud_ && index < pointcloud_->size ())
+          {
+            point = (*pointcloud_)[index];
+            return (true);
+          }
+          return (false);
+        }
+
+        /**
          * Gets the pre-computed correspondence associated with the provided query point.
          * @param[in] query_point Coordinates of the query point.
          * @param[in] maximum_correspondence_distance_squared The maximum distance squared that a valid correspondence can have.
@@ -204,12 +304,26 @@ namespace pcl
         bool
         getCorrespondence (const PointT& query_point, double maximum_correspondence_distance_squared, pcl::registration::CorrespondenceLookupTableCell& correspondance);
 
+        /**
+         * Gets the pre-computed correspondence using a valid index computed with @see computeCorrespondenceCellIndex.
+         * @param correspondence_index The index of the lookup table cell.
+         * @return Reference to the correspondence on the provided index.
+         */
+        pcl::registration::CorrespondenceLookupTableCell&
+        getCorrespondence (size_t& correspondence_index)
+        {
+          return (lookup_table_[correspondence_index]);
+        }
+
       protected:
         /** \brief 3 Dimensional array containing the pre-computed correspondences. */
         std::vector<pcl::registration::CorrespondenceLookupTableCell> lookup_table_;
 
         /** \brief Search tree associated with the lookup table. */
         typename pcl::search::Search<PointT>::Ptr search_tree_;
+
+        /** \brief Point cloud associated with the lookup table. */
+        typename pcl::PointCloud<PointT>::Ptr pointcloud_;
 
         /** \brief Resolution of the lookup table. */
         double cell_resolution_;
@@ -234,6 +348,13 @@ namespace pcl
 
         /** \brief Number of cells in the z dimension. */
         size_t number_cells_z_;
+
+        /** \brief If true, the search tree will be used as a fall back strategy when the query points are outside of the lookup table bounds. */
+        bool use_search_tree_when_query_point_is_outside_lookup_table_;
+
+        /** \brief The lookup table stores the distance between the cell centroids.
+         * If it is required accurate distance estimation, this flag should be set to true for computing the distance between each query point and its correspondence. */
+        bool compute_distance_from_query_point_to_closest_point_;
 
         /** \brief Number of queries performed on the lookup table. */
         size_t number_of_queries_on_lookup_table_;
