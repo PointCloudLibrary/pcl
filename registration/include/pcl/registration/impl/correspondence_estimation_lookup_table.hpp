@@ -49,16 +49,20 @@ pcl::registration::CorrespondenceLookupTable<PointT>::computeLookupTableBounds (
   if (pointcloud.size () < 2)
     return (false);
 
-  pcl::getMinMax3D (pointcloud, minimum_bounds_, maximum_bounds_);
-  double half_cell_resolution = cell_resolution_ * 0.5;
-  for (size_t i = 0; i < 3; ++i) {
-    minimum_bounds_ (i) -= (lookup_table_margin_ (i) + half_cell_resolution);
-    maximum_bounds_ (i) += (lookup_table_margin_ (i) + half_cell_resolution);
+  Eigen::Vector4f min_pt;
+  Eigen::Vector4f max_pt;
+  pcl::getMinMax3D (pointcloud, min_pt, max_pt);
+  float half_cell_resolution = cell_resolution_ * 0.5;
+  for (size_t i = 0; i < 3; ++i)
+  {
+    minimum_bounds_ (i) = min_pt (i) - (lookup_table_margin_ (i) + half_cell_resolution);
+    maximum_bounds_ (i) = max_pt (i) + (lookup_table_margin_ (i) + half_cell_resolution);
   }
 
-  number_cells_x_ = std::max ((size_t)(((maximum_bounds_ (0) - minimum_bounds_ (0)) * cell_resolution_inverse_) + 0.5), (size_t)1);
-  number_cells_y_ = std::max ((size_t)(((maximum_bounds_ (1) - minimum_bounds_ (1)) * cell_resolution_inverse_) + 0.5), (size_t)1);
-  number_cells_z_ = std::max ((size_t)(((maximum_bounds_ (2) - minimum_bounds_ (2)) * cell_resolution_inverse_) + 0.5), (size_t)1);
+  number_cells_x_ = std::max ((size_t)(std::ceil ((maximum_bounds_ (0) - minimum_bounds_ (0)) * cell_resolution_inverse_)), (size_t)1);
+  number_cells_y_ = std::max ((size_t)(std::ceil ((maximum_bounds_ (1) - minimum_bounds_ (1)) * cell_resolution_inverse_)), (size_t)1);
+  number_cells_z_ = std::max ((size_t)(std::ceil ((maximum_bounds_ (2) - minimum_bounds_ (2)) * cell_resolution_inverse_)), (size_t)1);
+  number_cells_xy_slice_ = number_cells_x_ * number_cells_y_;
 
   return (true);
 }
@@ -66,7 +70,7 @@ pcl::registration::CorrespondenceLookupTable<PointT>::computeLookupTableBounds (
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT>
 bool
-pcl::registration::CorrespondenceLookupTable<PointT>::initLookupTable (const typename pcl::search::Search<PointT>::Ptr& tree)
+pcl::registration::CorrespondenceLookupTable<PointT>::initLookupTable (typename pcl::search::Search<PointT>::ConstPtr tree)
 {
   if (!computeLookupTableBounds (*(tree->getInputCloud ())))
     return (false);
@@ -80,14 +84,18 @@ pcl::registration::CorrespondenceLookupTable<PointT>::initLookupTable (const typ
   std::vector<int> index (1);
   std::vector<float> distance (1);
   int correspondence_number = 0;
+  float half_cell_resolution = cell_resolution_ * 0.5;
   PointT query_point;
-  query_point.z = minimum_bounds_(2);
+  query_point.z = minimum_bounds_(2) + half_cell_resolution;
 
-  for (size_t z = 0; z < number_cells_z_; ++z) {
-    query_point.y = minimum_bounds_(1);
-    for (size_t y = 0; y < number_cells_y_; ++y) {
-      query_point.x = minimum_bounds_(0);
-      for (size_t x = 0; x < number_cells_x_; ++x) {
+  for (size_t z = 0; z < number_cells_z_; ++z)
+  {
+    query_point.y = minimum_bounds_(1) + half_cell_resolution;
+    for (size_t y = 0; y < number_cells_y_; ++y)
+    {
+      query_point.x = minimum_bounds_(0) + half_cell_resolution;
+      for (size_t x = 0; x < number_cells_x_; ++x)
+      {
         search_tree_->nearestKSearch (query_point, 1, index, distance);
         pcl::registration::CorrespondenceLookupTableCell& correspondence = lookup_table_[correspondence_number++];
         correspondence.closest_point_index = index[0];
@@ -109,14 +117,14 @@ template <typename PointT>
 bool
 pcl::registration::CorrespondenceLookupTable<PointT>::computeCorrespondenceCellIndex (const PointT& query_point, size_t& correspondence_index, Eigen::Vector3i& correspondence_index_components)
 {
-  correspondence_index_components (0) = (int)(((query_point.x - minimum_bounds_ (0)) * cell_resolution_inverse_) + 0.5);
-  correspondence_index_components (1) = (int)(((query_point.y - minimum_bounds_ (1)) * cell_resolution_inverse_) + 0.5);
-  correspondence_index_components (2) = (int)(((query_point.z - minimum_bounds_ (2)) * cell_resolution_inverse_) + 0.5);
+  correspondence_index_components (0) = (int)((query_point.x - minimum_bounds_ (0)) * cell_resolution_inverse_);
+  correspondence_index_components (1) = (int)((query_point.y - minimum_bounds_ (1)) * cell_resolution_inverse_);
+  correspondence_index_components (2) = (int)((query_point.z - minimum_bounds_ (2)) * cell_resolution_inverse_);
 
-  size_t index = correspondence_index_components (0) + correspondence_index_components (1) * number_cells_x_ + correspondence_index_components (2) * number_cells_x_ * number_cells_y_;
-  if (correspondence_index_components (0) >= 0 && correspondence_index_components (0) < (int)number_cells_x_ &&
-      correspondence_index_components (1) >= 0 && correspondence_index_components (1) < (int)number_cells_y_ &&
-      correspondence_index_components (2) >= 0 && correspondence_index_components (2) < (int)number_cells_z_ &&
+  size_t index = correspondence_index_components (0) + correspondence_index_components (1) * number_cells_x_ + correspondence_index_components (2) * number_cells_xy_slice_;
+  if (correspondence_index_components (0) >= 0 && (size_t)correspondence_index_components (0) < number_cells_x_ &&
+      correspondence_index_components (1) >= 0 && (size_t)correspondence_index_components (1) < number_cells_y_ &&
+      correspondence_index_components (2) >= 0 && (size_t)correspondence_index_components (2) < number_cells_z_ &&
       index < lookup_table_.size())
   {
     correspondence_index = index;
@@ -131,8 +139,8 @@ Eigen::Vector3f
 pcl::registration::CorrespondenceLookupTable<PointT>::computeCorrespondenceCellCentroid (const Eigen::Vector3i& correspondence_index_components)
 {
   return (Eigen::Vector3f (minimum_bounds_ (0) + correspondence_index_components (0) * cell_resolution_,
-                          minimum_bounds_ (1) + correspondence_index_components (1) * cell_resolution_,
-                          minimum_bounds_ (2) + correspondence_index_components (2) * cell_resolution_));
+                           minimum_bounds_ (1) + correspondence_index_components (1) * cell_resolution_,
+                           minimum_bounds_ (2) + correspondence_index_components (2) * cell_resolution_));
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -232,7 +240,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
       copyPoint (input_->points[*input_index], pt);
       if (target_correspondences_lookup_table_.getCorrespondence(input_->points[*input_index], max_distance_squared, correspondence_cell))
       {
-      	pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
+        pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
         correspondence.index_query = *input_index;
         correspondence.index_match = correspondence_cell.closest_point_index;
         correspondence.distance = correspondence_cell.distance_squared_to_closest_point;
@@ -273,7 +281,7 @@ pcl::registration::CorrespondenceEstimationLookupTable<PointSource, PointTarget,
           source_correspondences_lookup_table_.getCorrespondence(target_->points[correspondence_cell.closest_point_index], max_distance_squared, reciprocal_correspondence_cell) &&
           *input_index == reciprocal_correspondence_cell.closest_point_index)
       {
-      	pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
+        pcl::Correspondence& correspondence = correspondences[number_valid_correspondences++];
         correspondence.index_query = *input_index;
         correspondence.index_match = correspondence_cell.closest_point_index;
         correspondence.distance = correspondence_cell.distance_squared_to_closest_point;

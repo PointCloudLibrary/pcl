@@ -42,13 +42,14 @@
 #define PCL_REGISTRATION_CORRESPONDENCE_ESTIMATION_LOOKUP_TABLE_H_
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 #include <vector>
 
 #include <Eigen/Core>
 
-#include <pcl/pcl_macros.h>
 #include <pcl/pcl_base.h>
+#include <pcl/pcl_macros.h>
 #include <pcl/common/common.h>
 #include <pcl/common/transforms.h>
 #include <pcl/search/search.h>
@@ -75,10 +76,10 @@ namespace pcl
       float distance_squared_to_closest_point;
 
       /** \brief Empty constructor.
-        * Sets \ref closest_point_index to -1, \ref distance_to_closest_point to FLT_MAX.
+        * Sets \ref closest_point_index to -1, \ref distance_to_closest_point to -FLT_MAX.
         */
       inline CorrespondenceLookupTableCell ()
-      : closest_point_index (-1), distance_squared_to_closest_point (std::numeric_limits<float>::max ()) {}
+      : closest_point_index (-1), distance_squared_to_closest_point (-std::numeric_limits<float>::max ()) {}
 
       /** \brief Constructor. */
       inline CorrespondenceLookupTableCell (int index, float distance)
@@ -104,10 +105,11 @@ namespace pcl
         CorrespondenceLookupTable ()
           : cell_resolution_ (0.01)
           , cell_resolution_inverse_ (100.0)
-          , lookup_table_margin_ (1.0, 1.0, 1.0, 0.0)
+          , lookup_table_margin_ (1.0, 1.0, 1.0)
           , number_cells_x_ (0)
           , number_cells_y_ (0)
           , number_cells_z_ (0)
+          , number_cells_xy_slice_ (0)
           , use_search_tree_when_query_point_is_outside_lookup_table_ (true)
           , compute_distance_from_query_point_to_closest_point_ (false)
           , number_of_queries_on_lookup_table_ (0)
@@ -120,10 +122,10 @@ namespace pcl
           * \param[in] cell_resolution is the lookup table cell size.
           */
         inline void
-        setCellResolution (double cell_resolution) { cell_resolution_ = cell_resolution; cell_resolution_inverse_ = 1.0 / cell_resolution_; }
+        setCellResolution (float cell_resolution) { cell_resolution_ = cell_resolution; cell_resolution_inverse_ = 1.0 / cell_resolution_; }
 
         /** \brief Get the lookup table cell size. */
-        inline double
+        inline float
         getCellResolution () { return (cell_resolution_); }
 
         /** \brief Set the lookup table margin (in x, y and z axis).
@@ -131,18 +133,18 @@ namespace pcl
           * in order to have pre-computed correspondences available when registering point clouds that are not aligned.
           */
         inline void
-        setLookupTableMargin (Eigen::Vector4f lookup_table_margin) { lookup_table_margin_ = lookup_table_margin; }
+        setLookupTableMargin (Eigen::Vector3f lookup_table_margin) { lookup_table_margin_ = lookup_table_margin; }
 
         /** \brief Gets the lookup table margin. */
-        inline Eigen::Vector4f
+        inline Eigen::Vector3f
         getLookupTableMargin () { return (lookup_table_margin_); }
 
         /** \brief Gets the lookup table minimum bounds. */
-        inline Eigen::Vector4f
+        inline Eigen::Vector3f
         getMinimumBounds () { return (minimum_bounds_); }
 
         /** \brief Gets the lookup table maximum bounds. */
-        inline Eigen::Vector4f
+        inline Eigen::Vector3f
         getMaximumBounds () { return (maximum_bounds_); }
 
         /** \brief Get the number of cells in the X axis. */
@@ -215,7 +217,7 @@ namespace pcl
           * @return True if the lookup table was initialized successfully.
           */
         virtual bool
-        initLookupTable (const typename pcl::search::Search<PointT>::Ptr& tree);
+        initLookupTable (typename pcl::search::Search<PointT>::ConstPtr tree);
 
         /**
          * Gets the correspondence cell index associated with the query_point.
@@ -310,9 +312,22 @@ namespace pcl
          * @return Reference to the correspondence on the provided index.
          */
         pcl::registration::CorrespondenceLookupTableCell&
-        getCorrespondence (size_t& correspondence_index)
+        getCorrespondence (size_t correspondence_index)
         {
           return (lookup_table_[correspondence_index]);
+        }
+
+        /**
+         * Gets the pre-computed correspondence associated with the provided coordinates.
+         * @param x x-axis cell coordinate
+         * @param y y-axis cell coordinate
+         * @param z z-axis cell coordinate
+         * @return Reference to the correspondence.
+         */
+        pcl::registration::CorrespondenceLookupTableCell&
+        getCorrespondence (size_t x, size_t y, size_t z)
+        {
+          return (lookup_table_[x + y * number_cells_x_ + z * number_cells_xy_slice_]);
         }
 
       protected:
@@ -320,25 +335,25 @@ namespace pcl
         std::vector<pcl::registration::CorrespondenceLookupTableCell> lookup_table_;
 
         /** \brief Search tree associated with the lookup table. */
-        typename pcl::search::Search<PointT>::Ptr search_tree_;
+        typename pcl::search::Search<PointT>::ConstPtr search_tree_;
 
         /** \brief Point cloud associated with the lookup table. */
-        typename pcl::PointCloud<PointT>::Ptr pointcloud_;
+        typename pcl::PointCloud<PointT>::ConstPtr pointcloud_;
 
         /** \brief Resolution of the lookup table. */
-        double cell_resolution_;
+        float cell_resolution_;
 
         /** \brief Inverse of the resolution of the lookup table. */
-        double cell_resolution_inverse_;
+        float cell_resolution_inverse_;
 
         /** \brief Margin added to the data bounding box in order to create extra cells in the lookup table surrounding the point cloud data. */
-        Eigen::Vector4f lookup_table_margin_;
+        Eigen::Vector3f lookup_table_margin_;
 
         /** \brief Lookup table minimum bounds. */
-        Eigen::Vector4f minimum_bounds_;
+        Eigen::Vector3f minimum_bounds_;
 
         /** \brief Lookup table maximum bounds. */
-        Eigen::Vector4f maximum_bounds_;
+        Eigen::Vector3f maximum_bounds_;
 
         /** \brief Number of cells in the x dimension. */
         size_t number_cells_x_;
@@ -348,6 +363,9 @@ namespace pcl
 
         /** \brief Number of cells in the z dimension. */
         size_t number_cells_z_;
+
+        /** \brief Precomputed number of cells for each XY plane / slice */
+        size_t number_cells_xy_slice_;
 
         /** \brief If true, the search tree will be used as a fall back strategy when the query points are outside of the lookup table bounds. */
         bool use_search_tree_when_query_point_is_outside_lookup_table_;
