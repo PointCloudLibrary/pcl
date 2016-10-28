@@ -138,7 +138,6 @@ namespace pcl
 
         // prepare for next frame
         this->switchBuffers ();
-        i_frame_ = false;
 
         // reset object count
         object_count_ = 0;
@@ -165,6 +164,8 @@ namespace pcl
           PCL_INFO ("Total compression percentage: %f%%\n", (bytes_per_XYZ + bytes_per_color) / (sizeof (int) + 3.0f * sizeof (float)) * 100.0f);
           PCL_INFO ("Compression ratio: %f\n\n", static_cast<float> (sizeof (int) + 3.0f * sizeof (float)) / static_cast<float> (bytes_per_XYZ + bytes_per_color));
         }
+        
+        i_frame_ = false;
       } else {
         if (b_show_statistics_)
         PCL_INFO ("Info: Dropping empty point cloud\n");
