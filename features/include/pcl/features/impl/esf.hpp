@@ -110,7 +110,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     if (s * (s-a) * (s-b) * (s-c) <= 0.001f)
     {
         nn_idx--;
-        coninue;
+        continue;
     }
 
     v21.normalize ();
