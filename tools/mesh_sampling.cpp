@@ -152,6 +152,8 @@ printHelp (int, char **argv)
               "                     -leaf_size X  = the XYZ leaf size for the VoxelGrid -- for data reduction (default: ");
   print_value ("%f", default_leaf_size);
   print_info (" m)\n");
+  print_info (
+              "                     -no_vis_result = flag to stop visualizing the generated pcd\n");
 }
 
 /* ---[ */
@@ -172,6 +174,7 @@ main (int argc, char **argv)
   parse_argument (argc, argv, "-n_samples", SAMPLE_POINTS_);
   float leaf_size = default_leaf_size;
   parse_argument (argc, argv, "-leaf_size", leaf_size);
+  bool vis_result = ! find_switch (argc, argv, "-no_vis_result");
 
   // Parse the command line arguments for .ply and PCD files
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
@@ -218,7 +221,6 @@ main (int argc, char **argv)
   polydata1 = triangleMapper->GetInput();
 
   bool INTER_VIS = false;
-  bool VIS = true;
 
   if (INTER_VIS)
   {
@@ -246,7 +248,7 @@ main (int argc, char **argv)
   pcl::PointCloud<pcl::PointXYZ>::Ptr res(new pcl::PointCloud<pcl::PointXYZ>);
   grid_.filter (*res);
 
-  if (VIS)
+  if (vis_result)
   {
     visualization::PCLVisualizer vis3 ("VOXELIZED SAMPLES CLOUD");
     vis3.addPointCloud (res);
