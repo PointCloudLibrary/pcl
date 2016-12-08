@@ -495,7 +495,7 @@ pcl::PLYReader::objInfoCallback (const std::string& line)
   boost::split (st, line, boost::is_any_of (std::string ( "\t ")), boost::token_compress_on);
   assert (st[0].substr (0, 8) == "obj_info");
   {
-    assert (st.size () == 3);
+    if (st.size() >= 3)
     {
       if (st[1] == "num_cols")
         cloudWidthCallback (atoi (st[2].c_str ()));
