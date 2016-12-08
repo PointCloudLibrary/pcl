@@ -457,9 +457,21 @@ namespace pcl
           PCL_ERROR ("[pcl::%s::setInputTrainingSet] Classifier model not loaded!\n", getClassName ().c_str ());
           return;
         }
-        
+
+        // just a check if we have labels
+        if (training_set.at(0).label<=1 && training_set.at(0).label>=-1)
+        {
+            labelled_training_set_=true;
+           PCL_WARN ("[pcl::%s::setInputTrainingSet] Training data has labels!\n", getClassName ().c_str ());
+        }
+        else
+        {
+            PCL_ERROR ("[pcl::%s::setInputTrainingSet] Training data has NO labels!\n", getClassName ().c_str ());
+        }
+
         training_set_.insert (training_set_.end(), training_set.begin(), training_set.end());
         SVM::adaptInputToLibSVM (training_set_, prob_);
+
       }
 
       /** \brief Return the current training set. */
@@ -475,6 +487,7 @@ namespace pcl
       {
         training_set_.clear();
       }
+
 
       /** \brief Read in a classifier model (in svmlight format). 
        * \return false if fails. */
