@@ -24,7 +24,7 @@ Explanation
 
 In the beginning we do command line parsing, read a point cloud from disc (or
 create it if not provided), create a range image and visualize it. All of these
-steps are already covered in the previous tutorial Range image visualization.
+steps are already covered in the previous tutorial `Range image visualization <http://www.pointclouds.org/documentation/tutorials/range_image_visualization.php#range-image-visualization>`_ .
 
 The interesting part begins here:
 
