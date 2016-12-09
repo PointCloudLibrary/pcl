@@ -139,27 +139,27 @@ extern "C"
   };
 
   struct svm_model *svm_train (const struct svm_problem *prob, const struct svm_parameter *param);
-  void svm_cross_validation (const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
+  SVMLIB_EXPORTS void svm_cross_validation (const struct svm_problem *prob, const struct svm_parameter *param, int nr_fold, double *target);
 
   SVMLIB_EXPORTS int svm_save_model (const char *model_file_name, const struct svm_model *model);
 
   struct svm_model *svm_load_model (const char *model_file_name);
 
-  int svm_get_svm_type (const struct svm_model *model);
+  SVMLIB_EXPORTS int svm_get_svm_type (const struct svm_model *model);
   SVMLIB_EXPORTS int svm_get_nr_class (const struct svm_model *model);
   SVMLIB_EXPORTS void svm_get_labels (const struct svm_model *model, int *label);
-  double svm_get_svr_probability (const struct svm_model *model);
+  SVMLIB_EXPORTS double svm_get_svr_probability (const struct svm_model *model);
 
-  double svm_predict_values (const struct svm_model *model, const struct svm_node *x, double* dec_values);
-  double svm_predict (const struct svm_model *model, const struct svm_node *x);
-  double svm_predict_probability (const struct svm_model *model, const struct svm_node *x, double* prob_estimates);
+  SVMLIB_EXPORTS double svm_predict_values (const struct svm_model *model, const struct svm_node *x, double* dec_values);
+  SVMLIB_EXPORTS double svm_predict (const struct svm_model *model, const struct svm_node *x);
+  SVMLIB_EXPORTS double svm_predict_probability (const struct svm_model *model, const struct svm_node *x, double* prob_estimates);
 
   SVMLIB_EXPORTS void svm_free_model_content (struct svm_model *model_ptr);
   SVMLIB_EXPORTS void svm_free_and_destroy_model (struct svm_model **model_ptr_ptr);
   SVMLIB_EXPORTS void svm_destroy_param (struct svm_parameter *param);
 
-  const char *svm_check_parameter (const struct svm_problem *prob, const struct svm_parameter *param);
-  int svm_check_probability_model (const struct svm_model *model);
+  SVMLIB_EXPORTS const char *svm_check_parameter (const struct svm_problem *prob, const struct svm_parameter *param);
+  SVMLIB_EXPORTS int svm_check_probability_model (const struct svm_model *model);
 
   SVMLIB_EXPORTS void svm_set_print_string_function (void (*print_func) (const char *));
 
