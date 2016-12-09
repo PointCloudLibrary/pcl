@@ -681,9 +681,10 @@ pcl::SVMClassify::classificationTest ()
     testClassReport_.accuracy = double (correct) / total*100.0;
     testClassReport_.correctPredictionsIdx = correct;
     testClassReport_.totalSamples = total;
-    pcl::console::print_info (" - Accuracy (classification) = ");
-    pcl::console::print_value ("%g%% (%d/%d)\n",
-           testClassReport_.accuracy, correct, total);
+    // No print stuff here, get the value instead
+    // pcl::console::print_info (" - Accuracy (classification) = ");
+    // pcl::console::print_value ("%g%% (%d/%d)\n",
+    //                           testClassReport_.accuracy, correct, total);
 
 
 
