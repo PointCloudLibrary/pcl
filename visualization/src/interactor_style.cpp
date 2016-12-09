@@ -189,6 +189,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (const st
   bool ret;
 
   fs.open (file.c_str ());
+  if (!fs.is_open ())
+  {
+    return (false);
+  }
   while (!fs.eof ())
   {
     getline (fs, line);
