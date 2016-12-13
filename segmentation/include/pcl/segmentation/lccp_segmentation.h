@@ -142,7 +142,7 @@ namespace pcl
       /** \brief Get map<Supervoxel_ID, Segment_ID>
        *  \param[out] supervoxel_segment_map_arg The output container. On error the map is empty. */
       inline void
-      getSupervoxelToSegmentMap (std::map<uint32_t, uint32_t> supervoxel_segment_map_arg) const
+      getSupervoxelToSegmentMap (std::map<uint32_t, uint32_t>& supervoxel_segment_map_arg) const
       {
         if (grouping_data_valid_)
         {
