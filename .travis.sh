@@ -90,8 +90,7 @@ function doc ()
 {
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
-  # Add installed doxygen to path and install sphinx
-  export PATH=$DOXYGEN_DIR/bin:$PATH
+  # Install sphinx
   pip install --user sphinx pyparsing==2.1.9 sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
