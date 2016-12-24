@@ -9,9 +9,10 @@ PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}"
 PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS ${OPT_DEPS})
 
 if (build)
+	include_directories(${VTK_INCLUDE_DIRS})
   PCL_ADD_TEST (outofcore_test test_outofcore
                 FILES test_outofcore.cpp
-                LINK_WITH pcl_gtest pcl_common pcl_io pcl_filters pcl_outofcore
+                LINK_WITH pcl_gtest pcl_common pcl_io pcl_filters pcl_outofcore pcl_visualization
                 #ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd"
                 )
 endif (build)
