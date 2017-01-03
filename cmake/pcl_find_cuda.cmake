@@ -43,7 +43,9 @@ if(CUDA_FOUND)
 	
 	# Find a complete list for CUDA compute capabilities at http://developer.nvidia.com/cuda-gpus
 
-        if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.5")
+        if(NOT ${CUDA_VERSION_STRING} VERSION_LESS "8.0")
+                set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2 6.0 6.1")
+        elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.5")
                 set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0 5.2")
         elseif(NOT ${CUDA_VERSION_STRING} VERSION_LESS "6.0")
                 set(__cuda_arch_bin "2.0 2.1(2.0) 3.0 3.5 5.0")
