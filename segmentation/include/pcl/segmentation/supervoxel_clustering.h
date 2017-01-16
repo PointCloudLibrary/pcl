@@ -48,12 +48,9 @@
 #include <pcl/octree/octree.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/search/search.h>
+#include <pcl/filters/voxel_grid.h>
+#include <pcl/common/distances.h>
 #include <pcl/segmentation/boost.h>
-
-
-
-//DEBUG TODO REMOVE
-#include <pcl/common/time.h>
 
 
 namespace pcl
@@ -358,7 +355,7 @@ namespace pcl
 
       /** \brief This performs the superpixel evolution */
       void
-      expandSupervoxels (int depth);
+      expandSupervoxels ();
 
       /** \brief This sets the data of the voxels in the tree */
       void 
@@ -450,7 +447,7 @@ namespace pcl
           void
           removeAllLeaves ();
 
-          void 
+          void
           expand ();
 
           void 
@@ -530,8 +527,6 @@ namespace pcl
       typedef boost::ptr_list<SupervoxelHelper> HelperListT;
       HelperListT supervoxel_helpers_;
 
-      //TODO DEBUG REMOVE
-      StopWatch timer_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
