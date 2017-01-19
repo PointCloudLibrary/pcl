@@ -98,10 +98,10 @@ randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, dou
   if (calcNormal)
   {
     // OBJ: Vertices are stored in a counter-clockwise order by default
-    Eigen::Vector3f v1 = Eigen::Vector3f(A[0], A[1], A[2]) - Eigen::Vector3f(C[0], C[1], C[2]);
-    Eigen::Vector3f v2 = Eigen::Vector3f(B[0], B[1], B[2]) - Eigen::Vector3f(C[0], C[1], C[2]);
-    n = v1.cross(v2);
-    n.normalize();
+    Eigen::Vector3f v1 = Eigen::Vector3f (A[0], A[1], A[2]) - Eigen::Vector3f (C[0], C[1], C[2]);
+    Eigen::Vector3f v2 = Eigen::Vector3f (B[0], B[1], B[2]) - Eigen::Vector3f (C[0], C[1], C[2]);
+    n = v1.cross (v2);
+    n.normalize ();
   }
   randomPointTriangle (float (A[0]), float (A[1]), float (A[2]),
                        float (B[0]), float (B[1]), float (B[2]),
@@ -191,7 +191,7 @@ main (int argc, char **argv)
   float leaf_size = default_leaf_size;
   parse_argument (argc, argv, "-leaf_size", leaf_size);
   bool vis_result = ! find_switch (argc, argv, "-no_vis_result");
-  const bool write_normals = find_switch(argc, argv, "-write_normals");
+  const bool write_normals = find_switch (argc, argv, "-write_normals");
 
   // Parse the command line arguments for .ply and PCD files
   std::vector<int> pcd_file_indices = parse_file_extension_argument (argc, argv, ".pcd");
@@ -234,8 +234,8 @@ main (int argc, char **argv)
 
   vtkSmartPointer<vtkPolyDataMapper> triangleMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   triangleMapper->SetInputConnection (triangleFilter->GetOutputPort ());
-  triangleMapper->Update();
-  polydata1 = triangleMapper->GetInput();
+  triangleMapper->Update ();
+  polydata1 = triangleMapper->GetInput ();
 
   bool INTER_VIS = false;
 
@@ -244,7 +244,7 @@ main (int argc, char **argv)
     visualization::PCLVisualizer vis;
     vis.addModelFromPolyData (polydata1, "mesh1", 0);
     vis.setRepresentationToSurfaceForAllActors ();
-    vis.spin();
+    vis.spin ();
   }
 
   pcl::PointCloud<pcl::PointNormal>::Ptr cloud_1 (new pcl::PointCloud<pcl::PointNormal>);
@@ -264,26 +264,27 @@ main (int argc, char **argv)
   grid_.setInputCloud (cloud_1);
   grid_.setLeafSize (leaf_size, leaf_size, leaf_size);
 
-  pcl::PointCloud<pcl::PointNormal>::Ptr res(new pcl::PointCloud<pcl::PointNormal>);
-  grid_.filter (*res);
+  pcl::PointCloud<pcl::PointNormal>::Ptr voxel_cloud (new pcl::PointCloud<pcl::PointNormal>);
+  grid_.filter (*voxel_cloud);
 
   if (vis_result)
   {
     visualization::PCLVisualizer vis3 ("VOXELIZED SAMPLES CLOUD");
-    vis3.addPointCloud<pcl::PointNormal> (res);
+    vis3.addPointCloud<pcl::PointNormal> (voxel_cloud);
     if (write_normals)
-      vis3.addPointCloudNormals<pcl::PointNormal> (res, 1, 0.02f, "cloud_normals");
+      vis3.addPointCloudNormals<pcl::PointNormal> (voxel_cloud, 1, 0.02f, "cloud_normals");
     vis3.spin ();
   }
 
-  if(!write_normals)
+  if (!write_normals)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::copyPointCloud(*cloud_1, *cloud_xyz);
-    savePCDFileASCII(argv[pcd_file_indices[0]], *cloud_xyz);
+    // Strip uninitialized normals from cloud:
+    pcl::copyPointCloud (*voxel_cloud, *cloud_xyz);
+    savePCDFileASCII (argv[pcd_file_indices[0]], *cloud_xyz);
   }
   else
   {
-    savePCDFileASCII(argv[pcd_file_indices[0]], *res);
+    savePCDFileASCII (argv[pcd_file_indices[0]], *voxel_cloud);
   }
 }
