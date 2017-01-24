@@ -685,7 +685,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
