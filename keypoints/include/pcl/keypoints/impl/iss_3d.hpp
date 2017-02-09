@@ -459,6 +459,7 @@ pcl::ISSKeypoint3D<PointInT, PointOutT, NormalT>::detectKeypoints (PointCloudOut
   delete[] prg_mem;
   delete[] prg_local_mem;
   delete[] feat_max;
+  delete[] omp_mem;
 }
 
 #define PCL_INSTANTIATE_ISSKeypoint3D(T,U,N) template class PCL_EXPORTS pcl::ISSKeypoint3D<T,U,N>;
