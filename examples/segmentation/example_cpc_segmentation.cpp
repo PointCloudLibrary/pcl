@@ -205,7 +205,7 @@ CPCSegmentation Parameters: \n\
   /// -----------------------------------|  Preparations  |-----------------------------------
 
   bool sv_output_specified = pcl::console::find_switch (argc, argv, "-so");
-  bool show_visualization = (! pcl::console::find_switch (argc, argv, "-novis"));
+  bool show_visualization = (!pcl::console::find_switch (argc, argv, "-novis"));
   bool ignore_provided_normals = pcl::console::find_switch (argc, argv, "-nonormals");
   bool add_label_field = pcl::console::find_switch (argc, argv, "-add");
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");

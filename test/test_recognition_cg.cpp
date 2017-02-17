@@ -135,7 +135,7 @@ TEST (PCL, Hough3DGrouping)
 
   //Assertions
   EXPECT_EQ (rototranslations.size (), 1);
-  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-4);
+  EXPECT_LT (computeRmsE (model_, scene_, rototranslations[0]), 1E-2);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1086,7 +1086,7 @@ Segmentation
 
              Author: *Jeremie Papon*
 
-             Compatibility: >= PCL 1.7
+             Compatibility: >= PCL 1.8
 
              In this tutorial, we show to break a pointcloud into the mid-level supervoxel representation.
      ======  ======

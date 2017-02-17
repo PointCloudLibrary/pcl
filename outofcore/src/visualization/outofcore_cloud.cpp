@@ -21,7 +21,10 @@
 
 // PCL - visualziation
 #include <pcl/visualization/common/common.h>
+
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 // VTK
 #include <vtkVersion.h>
@@ -251,11 +254,18 @@ OutofcoreCloud::render (vtkRenderer* renderer)
         {
 
           vtkSmartPointer<vtkActor> cloud_actor = vtkSmartPointer<vtkActor>::New ();
-          vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
-
           CloudDataCacheItem *cloud_data_cache_item = &cloud_data_cache.get(pcd_file);
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
+          vtkSmartPointer<vtkVertexBufferObjectMapper> mapper = vtkSmartPointer<vtkVertexBufferObjectMapper>::New ();
           mapper->SetInput (cloud_data_cache_item->item);
+#else
+          vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New ();
+          // Usually we choose between SetInput and SetInputData based on VTK version. But OpenGL ≥ 2 automatically
+          // means VTK version is ≥ 6.3
+          mapper->SetInputData (cloud_data_cache_item->item);
+#endif
+
           cloud_actor->SetMapper (mapper);
           cloud_actor->GetProperty ()->SetColor (0.0, 0.0, 1.0);
           cloud_actor->GetProperty ()->SetPointSize (1);

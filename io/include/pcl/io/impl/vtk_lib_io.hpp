@@ -61,6 +61,13 @@
 #include <vtkStructuredGrid.h>
 #include <vtkVertexGlyphFilter.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
 pcl::io::vtkPolyDataToPointCloud (vtkPolyData* const polydata, pcl::PointCloud<PointT>& cloud)
@@ -502,6 +509,12 @@ pcl::io::pointCloudTovtkStructuredGrid (const pcl::PointCloud<PointT>& cloud, vt
     structured_grid->GetPointData ()->AddArray (colors);
   }
 }
+
+#ifdef vtkGenericDataArray_h
+#undef SetTupleValue
+#undef InsertNextTupleValue
+#undef GetTupleValue
+#endif
 
 #endif  //#ifndef PCL_IO_VTK_IO_H_
 

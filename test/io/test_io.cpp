@@ -43,6 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
+#include <pcl/io/auto_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
@@ -724,18 +725,21 @@ TEST (PCL, PCDReaderWriter)
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
 {
   PointCloud<PointXYZRGB> cloud;
+  cloud.points.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
   for (size_t r_i = 0; r_i < 256; r_i += 5)
     for (size_t g_i = 0; g_i < 256; g_i += 5)
       for (size_t b_i = 0; b_i < 256; b_i += 5)
-      {
-        PointXYZRGB p;
-        p.r = static_cast<unsigned char> (r_i);
-        p.g = static_cast<unsigned char> (g_i);
-        p.b = static_cast<unsigned char> (b_i);
-        p.x = p.y = p.z = 0.f;
+          for (size_t a_i = 0; a_i < 256; a_i += 10)
+          {
+            PointXYZRGB p;
+            p.r = static_cast<unsigned char> (r_i);
+            p.g = static_cast<unsigned char> (g_i);
+            p.b = static_cast<unsigned char> (b_i);
+            p.a = static_cast<unsigned char> (a_i);
+            p.x = p.y = p.z = 0.f;
 
-        cloud.push_back (p);
-      }
+            cloud.push_back (p);
+          }
   cloud.height = 1;
   cloud.width = uint32_t (cloud.size ());
   cloud.is_dense = true;
@@ -790,7 +794,7 @@ TEST (PCL, ASCIIReader)
   afile.close();
 
   ASCIIReader reader;
-  reader.setInputFields( pcl::PointXYZI() );
+  reader.setInputFields<pcl::PointXYZI> ();
 
   EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
@@ -1363,6 +1367,43 @@ TEST (PCL, Locale)
   {
   }
 #endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class AutoIOTest : public testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)> PCLXyzNormalPointTypes;
+TYPED_TEST_CASE (AutoIOTest, PCLXyzNormalPointTypes);
+TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
+{
+  PointCloud<TypeParam> cloud;
+  PointCloud<TypeParam> cloud_pcd;
+  PointCloud<TypeParam> cloud_ply;
+  PointCloud<TypeParam> cloud_ifs;
+
+  cloud.width  = 10;
+  cloud.height = 5;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  save ("test_autoio.pcd", cloud);
+  save ("test_autoio.ply", cloud);
+  save ("test_autoio.ifs", cloud);
+
+  load ("test_autoio.pcd", cloud_pcd);
+  EXPECT_EQ (cloud_pcd.width * cloud_pcd.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_pcd.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ply", cloud_ply);
+  EXPECT_EQ (cloud_ply.width * cloud_ply.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ply.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ifs", cloud_ifs);
+  EXPECT_EQ (cloud_ifs.width * cloud_ifs.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ifs.is_dense, cloud.is_dense);
+
+  remove ("test_autoio.pcd");
+  remove ("test_autoio.ply");
+  remove ("test_autoio.ifs");
 }
 
 /* ---[ */

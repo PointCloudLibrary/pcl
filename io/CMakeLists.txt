@@ -130,7 +130,7 @@ if(build)
             )
     endif()
 
-    if(WITH_DAVIDSDK)
+    if(WITH_DAVIDSDK AND VTK_FOUND) # VTK is mandatory for OBJ/PLY/STL input/output
         set(DAVIDSDK_GRABBER_INCLUDES
             include/pcl/io/davidsdk_grabber.h
             )
@@ -298,6 +298,7 @@ if(build)
     endif(PNG_FOUND)
 
     set(impl_incs
+        "include/pcl/${SUBSYS_NAME}/impl/ascii_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/pcd_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/auto_io.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/lzf_image_io.hpp"

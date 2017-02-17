@@ -205,6 +205,7 @@ namespace pcl
         virtual ~DataContainerInterface () {}
         virtual double getCorrespondenceScore (int index) = 0;
         virtual double getCorrespondenceScore (const pcl::Correspondence &) = 0;
+        virtual double getCorrespondenceScoreFromNormals (const pcl::Correspondence &) = 0;
      };
 
     /** @b DataContainer is a container for the input and target point clouds and implements the interface 

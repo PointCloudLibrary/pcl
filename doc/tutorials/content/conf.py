@@ -6,8 +6,8 @@ import sys, os
 # -- General configuration -----------------------------------------------------
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.pngmath', 'sphinxcontrib.doxylink.doxylink']
-pngmath_dvipng_args = ['-gamma 1.5', '-D 110', '-bg Transparent']
+extensions = ['sphinx.ext.imgmath', 'sphinxcontrib.doxylink.doxylink']
+imgmath_dvipng_args = ['-gamma', '1.5', '-D', '110', '-bg', 'Transparent']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -84,7 +84,7 @@ html_theme_path = ['.']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = None
+# html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = 'Home'
@@ -129,8 +129,8 @@ html_sidebars = {
 }
 html_show_copyright = False
 html_show_sphinx = False
-html_add_permalinks = None
-needs_sphinx = 1.0
+html_add_permalinks = u''
+needs_sphinx = u'1.1'
 file_insertion_enabled = True
 raw_enabled = True
 

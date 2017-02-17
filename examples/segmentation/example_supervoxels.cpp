@@ -100,7 +100,7 @@ main (int argc, char ** argv)
   if (depth_file_specified)
     pcl::console::parse (argc, argv, "-d", depth_path);
   
-  PointCloudT::Ptr cloud = boost::make_shared < PointCloudT >();
+  PointCloudT::Ptr cloud = boost::shared_ptr<PointCloudT> (new PointCloudT);
   NormalCloudT::Ptr input_normals = boost::make_shared < NormalCloudT > ();
   
   bool pcd_file_specified = pcl::console::find_switch (argc, argv, "-p");

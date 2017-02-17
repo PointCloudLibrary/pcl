@@ -64,7 +64,9 @@
 #include <vtkPointPicker.h>
 #include <vtkAreaPicker.h>
 
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
 #include <pcl/visualization/vtk/vtkVertexBufferObjectMapper.h>
+#endif
 
 #define ORIENT_MODE 0
 #define SELECT_MODE 1
@@ -187,6 +189,10 @@ pcl::visualization::PCLVisualizerInteractorStyle::loadCameraParameters (const st
   bool ret;
 
   fs.open (file.c_str ());
+  if (!fs.is_open ())
+  {
+    return (false);
+  }
   while (!fs.eof ())
   {
     getline (fs, line);
@@ -227,8 +233,8 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
 
   // Get the width and height of the image - assume the calibrated centers are at the center of the image
   Eigen::Vector2i window_size;
-  window_size[0] = static_cast<int> (intrinsics (0, 2));
-  window_size[1] = static_cast<int> (intrinsics (1, 2));
+  window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
+  window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
   // Compute the vertical field of view based on the focal length and image heigh
   double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
@@ -660,6 +666,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         data->SetPoints (points);
         data->SetVerts (vertices);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -668,6 +675,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
 #if VTK_MAJOR_VERSION < 6
@@ -704,6 +712,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
         vtkPolyData *data = static_cast<vtkPolyData*>(act->actor->GetMapper ()->GetInput ());
         data->GetPointData ()->SetScalars (scalars);
         // Modify the mapper
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
         if (use_vbos_)
         {
           vtkVertexBufferObjectMapper* mapper = static_cast<vtkVertexBufferObjectMapper*>(act->actor->GetMapper ());
@@ -714,6 +723,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::OnKeyDown ()
           act->actor->SetMapper (mapper);
         }
         else
+#endif
         {
           vtkPolyDataMapper* mapper = static_cast<vtkPolyDataMapper*>(act->actor->GetMapper ());
           mapper->SetScalarRange (minmax);

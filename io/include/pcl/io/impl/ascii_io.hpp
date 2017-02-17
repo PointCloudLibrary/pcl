@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -36,19 +35,25 @@
  *
  */
 
-#include <pcl/features/impl/normal_3d.hpp>
-#include <pcl/features/impl/normal_3d_omp.hpp>
+#ifndef PCL_IO_ASCII_IO_HPP_
+#define PCL_IO_ASCII_IO_HPP_
 
-#ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-// Instantiations of specific point types
-#ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(NormalEstimation, ((pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
-  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, ((pcl::PointSurfel)(pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)(pcl::PointNormal))((pcl::Normal)(pcl::PointNormal)(pcl::PointXYZRGBNormal)))
-#else
-  PCL_INSTANTIATE_PRODUCT(NormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-  PCL_INSTANTIATE_PRODUCT(NormalEstimationOMP, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
-#endif
-#endif    // PCL_NO_PRECOMPILE
+template<typename PointT> void
+pcl::ASCIIReader::setInputFields ()
+{
+  pcl::getFields<PointT> (fields_);
 
+  // Remove empty fields and adjust offset
+  int offset =0;
+  for (std::vector<pcl::PCLPointField>::iterator field_iter = fields_.begin ();
+       field_iter != fields_.end (); field_iter++)
+  {
+    if (field_iter->name == "_") 
+      field_iter = fields_.erase (field_iter);
+    field_iter->offset = offset;
+    offset += typeSize (field_iter->datatype);
+  }
+}
+
+
+#endif    //PCL_IO_ASCII_IO_HPP_

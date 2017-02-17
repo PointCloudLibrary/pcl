@@ -356,7 +356,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       {
         //test1 = true;
         labels->points[current_row+colIdx+1].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
+        label_indices[current_label].indices.push_back (current_row+colIdx+1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx+1);
       }
       
@@ -368,7 +368,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, next_row+colIdx))
       {
         labels->points[next_row+colIdx].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
+        label_indices[current_label].indices.push_back (next_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (next_row+colIdx);
       }
 
@@ -391,7 +391,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, current_row+colIdx-1))
       {
         labels->points[current_row+colIdx-1].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
+        label_indices[current_label].indices.push_back (current_row+colIdx-1);
         inlier_indices[label_to_model[current_label]].indices.push_back (current_row+colIdx-1);
       }
       
@@ -402,7 +402,7 @@ pcl::OrganizedMultiPlaneSegmentation<PointT, PointNT, PointLT>::refine (std::vec
       if (refinement_compare_->compare (current_row+colIdx, prev_row+colIdx))
       {
         labels->points[prev_row+colIdx].label = current_label;
-        label_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
+        label_indices[current_label].indices.push_back (prev_row+colIdx);
         inlier_indices[label_to_model[current_label]].indices.push_back (prev_row+colIdx);
       }
     }//col

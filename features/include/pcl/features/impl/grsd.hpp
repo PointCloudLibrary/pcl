@@ -88,9 +88,6 @@ pcl::GRSDEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut
   rsd.setSearchSurface (input_);
   rsd.setInputNormals (normals_);
   rsd.setRadiusSearch (std::max (search_radius_, std::sqrt (3.0) * width_ / 2));
-//  pcl::KdTree<PointInT>::Ptr tree = boost::make_shared<pcl::KdTreeFLANN<PointInT> >();
-//  tree->setInputCloud(input_);
-//  rsd.setSearchMethod(tree);
   rsd.compute (*radii);
   
   // Save the type of each point
