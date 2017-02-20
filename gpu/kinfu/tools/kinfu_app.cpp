@@ -388,7 +388,7 @@ struct ImageView
     int cols;
     view_device_.download (view_host_, cols);
     if (viz_)
-        viewerScene_->showRGBImage (reinterpret_cast<unsigned char*> (&view_host_[0]), view_device_.cols (), view_device_.rows ());    
+        viewerScene_->showRGBImage (reinterpret_cast<unsigned char*> (&view_host_[0]), view_device_.cols (), view_device_.rows (), "rgb_image");    
 
     //viewerColor_.showRGBImage ((unsigned char*)&rgb24.data, rgb24.cols, rgb24.rows);
 
@@ -406,7 +406,7 @@ struct ImageView
   showDepth (const PtrStepSz<const unsigned short>& depth) 
   { 
      if (viz_)
-       viewerDepth_->showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true); 
+       viewerDepth_->showShortImage (depth.data, depth.cols, depth.rows, 0, 5000, true, "short_image"); 
   }
   
   void
@@ -420,7 +420,7 @@ struct ImageView
     generated_depth_.download(data, c);
 
     if (viz_)
-        viewerDepth_->showShortImage (&data[0], generated_depth_.cols(), generated_depth_.rows(), 0, 5000, true);
+        viewerDepth_->showShortImage (&data[0], generated_depth_.cols(), generated_depth_.rows(), 0, 5000, true, "short_image");
   }
 
   void

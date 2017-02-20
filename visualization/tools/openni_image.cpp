@@ -509,7 +509,8 @@ class Viewer
 
             image_viewer_->addRGBImage (reinterpret_cast<unsigned char*> (&rgb_data[0]), 
                                         frame->image->getWidth (),
-                                        frame->image->getHeight ());
+                                        frame->image->getHeight (),
+                                        "rgb_image");
           }
 
           if (frame->depth_image)
@@ -524,7 +525,8 @@ class Viewer
 
             depth_image_viewer_->addRGBImage (data, 
                                               frame->depth_image->getWidth (),
-                                              frame->depth_image->getHeight ());
+                                              frame->depth_image->getHeight (),
+                                              "rgb_image");
             if (!depth_image_cld_init_)
             {
               depth_image_viewer_->setPosition (frame->depth_image->getWidth (), 0);

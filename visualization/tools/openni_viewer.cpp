@@ -241,9 +241,9 @@ class OpenNIViewer
           }
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
-            image_viewer_->addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            image_viewer_->addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight (), "rgb_image");
           else
-            image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
+            image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight (), "rgb_image");
           image_viewer_->spinOnce ();
         }
         
