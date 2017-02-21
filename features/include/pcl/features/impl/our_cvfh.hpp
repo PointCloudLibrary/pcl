@@ -497,6 +497,13 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
         }
 
         int h_index = (d <= 0) ? 0 : std::ceil (size_hists * (d / distance_normalization_factor)) - 1;
+        /* from http://www.pcl-users.org/OUR-CVFH-problem-td4028436.html
+           h_index will be 13 when d is computed on the farthest away point.
+
+          adding the following after computing h_index fixes the problem:
+        */
+        if(h_index > 12)
+          h_index = 12;
         for (int j = 0; j < num_hists; j++)
           quadrants[j][h_index] += hist_incr * weights[j];
 
