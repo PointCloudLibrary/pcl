@@ -50,6 +50,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
+#include <vtkProp.h>
 #include <vtkProp3D.h>
 #include <vtkProp3DCollection.h>
 #include <vtkActor.h>
@@ -58,7 +59,6 @@
 #include <vtkPolyData.h>
 #include <vtkIdTypeArray.h>
 #include <vtkExtractGeometry.h>
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned long eventid, void*)
@@ -67,7 +67,6 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
   vtkRenderWindowInteractor* iren = reinterpret_cast<pcl::visualization::PCLVisualizerInteractorStyle*>(caller)->GetInteractor ();
   if (style->CurrentMode == 0)
   {
-    //vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New() ;
     if ((eventid == vtkCommand::LeftButtonPressEvent) && (iren->GetShiftKey () > 0))
     {
       float x = 0, y = 0, z = 0;
@@ -75,7 +74,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       // Create a PointPickingEvent if a point was selected
       if (idx != -1)
       {
-        PointPickingEvent event (idx, x, y, z, actor_);
+        PointPickingEvent event (idx, x, y, z, prop_);
         style->point_picking_signal_ (event);
       }
     }
@@ -89,8 +88,7 @@ pcl::visualization::PointPickingCallback::Execute (vtkObject *caller, unsigned l
       else
         idx = performSinglePick (iren, x, y, z);
       // Create a PointPickingEvent
-      //std::cout<< "druhe zjisteni actor: " << actor <<std::endl;
-      PointPickingEvent event (idx_, idx, x_, y_, z_, x, y, z, actor_);
+      PointPickingEvent event (idx_, idx, x_, y_, z_, x, y, z, prop_);
       style->point_picking_signal_ (event);
     }
     // Call the parent's class mouse events
@@ -140,6 +138,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (vtkRenderWindowInte
   vtkRenderer *ren = iren->FindPokedRenderer (mouse_x, mouse_y);
   point_picker->Pick (mouse_x, mouse_y, 0.0, ren);
   actor_ = point_picker->GetActor();
+  prop_ = point_picker->GetProp3D();
 
   return (static_cast<int> (point_picker->GetPointId ()));
 }
@@ -172,6 +171,7 @@ pcl::visualization::PointPickingCallback::performSinglePick (
     point_picker->GetDataSet ()->GetPoint (idx, p);
     x = float (p[0]); y = float (p[1]); z = float (p[2]);
     actor_ = point_picker->GetActor();
+    prop_ = point_picker->GetProp3D();
   }
   return (idx);
 }
