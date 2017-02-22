@@ -44,6 +44,7 @@
 
 #include <vtkCommand.h>
 #include <vtkActor.h>
+#include <vtkProp3D.h>
 #include <vtkActorCollection.h>
 #include <vtkSmartPointer.h>
 class vtkRenderWindowInteractor;
@@ -82,6 +83,7 @@ namespace pcl
         int idx_;
         bool pick_first_;
         vtkActor* actor_;
+        vtkProp3D* prop_;
 
 
      };
@@ -90,12 +92,12 @@ namespace pcl
     class PCL_EXPORTS PointPickingEvent
     {
       public:
-        PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ (), actor_() {}
-        PointPickingEvent (int idx, float x, float y, float z, vtkActor* actor) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), actor_(actor)
+        PointPickingEvent (int idx) : idx_ (idx), idx2_ (-1), x_ (), y_ (), z_ (), x2_ (), y2_ (), z2_ (), prop_() {}
+        PointPickingEvent (int idx, float x, float y, float z, vtkProp3D* prop) : idx_ (idx), idx2_ (-1), x_ (x), y_ (y), z_ (z), x2_ (), y2_ (), z2_ (), prop_(prop)
          {}
 
-        PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2, vtkActor* actor) :
-          idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2), actor_(actor)
+        PointPickingEvent (int idx1, int idx2, float x1, float y1, float z1, float x2, float y2, float z2, vtkProp3D* prop) :
+          idx_ (idx1), idx2_ (idx2), x_ (x1), y_ (y1), z_ (z1), x2_ (x2), y2_ (y2), z2_ (z2), prop_(prop)
         {}
 
         /** \brief Obtain the ID of a point that the user just clicked on.
@@ -160,13 +162,14 @@ namespace pcl
           index_2 = idx2_;
           return (true);
         }
-        /** \brief return vtkactor of selected cloud.
-          * \return vtkActor, for selected point return its vtkactor.
+        /** \brief return vtkProp of selected cloud.
+          * \return vtkProp, for selected point return its vtkProp.
           */
-        inline vtkActor*
-        getPointActor () const
+
+        inline vtkProp3D*
+        getProp () const
         {
-          return (actor_);
+          return (prop_);
         }
 
       private:
@@ -174,7 +177,8 @@ namespace pcl
 
         float x_, y_, z_;
         float x2_, y2_, z2_;
-        vtkActor* actor_;
+        vtkProp3D *prop_;
+
     };
   } //namespace visualization
 } //namespace pcl
