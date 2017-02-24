@@ -268,7 +268,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
       {
         copy_back_counter = 0;
 
-        for (size_t mem_index = 0; mem_index < mem_size; mem_index += 16)
+        for (size_t mem_index = 0; mem_index < mem_size_mod_16_base; mem_index += 16)
         {
           score_sums[mem_index+0]  = static_cast<unsigned short> (score_sums[mem_index+0]  + tmp_score_sums[mem_index+0]);
           score_sums[mem_index+1]  = static_cast<unsigned short> (score_sums[mem_index+1]  + tmp_score_sums[mem_index+1]);
@@ -584,7 +584,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
       {
         copy_back_counter = 0;
 
-        for (size_t mem_index = 0; mem_index < mem_size; mem_index += 16)
+        for (size_t mem_index = 0; mem_index < mem_size_mod_16_base; mem_index += 16)
         {
           score_sums[mem_index+0]  = static_cast<unsigned short> (score_sums[mem_index+0]  + tmp_score_sums[mem_index+0]);
           score_sums[mem_index+1]  = static_cast<unsigned short> (score_sums[mem_index+1]  + tmp_score_sums[mem_index+1]);
@@ -1058,7 +1058,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         {
           copy_back_counter = 0;
 
-          for (size_t mem_index = 0; mem_index < mem_size; mem_index += 16)
+          for (size_t mem_index = 0; mem_index < mem_size_mod_16_base; mem_index += 16)
           {
             score_sums[mem_index+0]  = static_cast<unsigned short> (score_sums[mem_index+0]  + tmp_score_sums[mem_index+0]);
             score_sums[mem_index+1]  = static_cast<unsigned short> (score_sums[mem_index+1]  + tmp_score_sums[mem_index+1]);
