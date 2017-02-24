@@ -354,7 +354,12 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
 
     detections.push_back (detection);
 
+#ifdef __SSE2__
+    aligned_free (score_sums);
+    aligned_free (tmp_score_sums);
+#else
     delete[] score_sums;
+#endif
   }
 
   // release data
@@ -1272,7 +1277,13 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         }
       }
 
-      delete[] score_sums;
+#ifdef __SSE2__
+    aligned_free (score_sums);
+    aligned_free (tmp_score_sums);
+#else
+    delete[] score_sums;
+#endif
+
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       delete[] score_sums_1;
       delete[] score_sums_2;
