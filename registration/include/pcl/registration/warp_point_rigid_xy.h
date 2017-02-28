@@ -83,7 +83,7 @@ namespace pcl
           trans = Matrix4::Zero ();
           trans (3, 3) = 1;
 
-          // Copy the rotation and translation components
+          // Copy the translation components
           trans.block (0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], 0, 1.0);
 
           // Set rotation to the identity matrix
