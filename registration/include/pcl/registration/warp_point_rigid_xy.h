@@ -82,7 +82,6 @@ namespace pcl
 
           trans = Matrix4::Zero ();
           trans (3, 3) = 1;
-          trans (2, 2) = 1; // Rotation around the Z-axis
 
           // Copy the rotation and translation components
           trans.block (0, 3, 4, 1) = Eigen::Matrix<Scalar, 4, 1> (p[0], p[1], 0, 1.0);
