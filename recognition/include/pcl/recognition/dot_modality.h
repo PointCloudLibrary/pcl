@@ -35,8 +35,8 @@
  *
  */
 
-#ifndef PCL_FEATURES_QUANTIZABLE_MODALITY
-#define PCL_FEATURES_QUANTIZABLE_MODALITY
+#ifndef PCL_FEATURES_DOT_MODALITY
+#define PCL_FEATURES_DOT_MODALITY
 
 #include <vector>
 #include <pcl/pcl_macros.h>
