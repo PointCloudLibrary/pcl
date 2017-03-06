@@ -838,6 +838,11 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
 }
 
 #include <time.h>
+static size_t getTickCount() {
+struct timespec tp;
+clock_gettime(CLOCK_MONOTONIC, &tp);
+return (size_t)tp.tv_sec*1000000000 + tp.tv_nsec;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
@@ -854,7 +859,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   std::vector<EnergyMaps> modality_energy_maps_2;
   std::vector<EnergyMaps> modality_energy_maps_3;
 #endif
-  clock_t start = clock();
+  double start = getTickCount();
 
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
@@ -918,8 +923,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("1 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
-  start = clock();
+  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
   // create linearized maps
   const size_t step_size = 8;
   std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
@@ -1007,8 +1012,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
-  printf("2 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
-  start = clock();
+  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 
   // compute scores for templates
   const size_t width = modality_energy_maps[0].getWidth ();
@@ -1300,8 +1305,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     }
   }
 
-  printf("3 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
-  start = clock();
+  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 
   // release data
   for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
@@ -1322,8 +1327,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
-  printf("4 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
-  start = clock();
+  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

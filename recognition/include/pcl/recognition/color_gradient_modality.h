@@ -202,8 +202,6 @@ namespace pcl
       virtual void
       processInputDataFromFiltered ();
 
-    protected:
-
       /** \brief Computes the Gaussian kernel used for smoothing. 
         * \param[in] kernel_size the size of the Gaussian kernel. 
         * \param[in] sigma the sigma.
@@ -230,6 +228,8 @@ namespace pcl
       /** \brief Filters the quantized gradients. */
       void
       filterQuantizedColorGradients ();
+
+    protected:
 
       /** \brief Erodes a mask.
         * \param[in] mask_in the mask which will be eroded.
@@ -882,7 +882,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
 
   const float pi = tanf (1.0f) * 2.0f;
 
-  //#pragma omp parallel for
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     int col_index = 1;
@@ -913,15 +912,15 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 0));
       __sqr_mag01 = _mm256_add_epi32(__sqr_mag01, _mm256_mul_epi32(__temp, __temp));
 
-      int32_t sqr_mag4[16] __attribute__((aligned(32)));
-      _mm256_store_si256((__m256i*) sqr_mag4, __sqr_mag01);
+      float sqr_mag4[16] __attribute__((aligned(32)));
+      _mm256_store_ps(sqr_mag4, _mm256_sqrt_ps(_mm256_cvtepi32_ps(__sqr_mag01)));
 
       __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dx, 1));
       __sqr_mag01 = _mm256_mul_epi32(__temp, __temp);
       __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 1));
       __sqr_mag01 = _mm256_add_epi32(__sqr_mag01, _mm256_mul_epi32(__temp, __temp));
 
-      _mm256_store_si256((__m256i*) (&sqr_mag4[8]), __sqr_mag01);
+      _mm256_store_ps(&sqr_mag4[8], _mm256_sqrt_ps(_mm256_cvtepi32_ps(__sqr_mag01)));
 
       //__m128i __pixel01_sqr_mag = _mm256_extractf128_si256(__sqr_mag, 0);
       //__m128i __pixel23_sqr_mag = _mm256_extractf128_si256(__sqr_mag, 1);
@@ -999,7 +998,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
 
           size_t id = 4 * pixelId + max_channel;
           GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
-          gradient.magnitude = sqrtf(static_cast<float>(sqr_mag4[id]));
+          gradient.magnitude = sqr_mag4[id];
           gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
           gradient.x = static_cast<float> (col_index);
           gradient.y = static_cast<float> (row_index);
@@ -1119,6 +1118,7 @@ quantizeColorGradients ()
 
   //float min_angle = std::numeric_limits<float>::max ();
   //float max_angle = -std::numeric_limits<float>::max ();
+  #pragma omp parallel for
   for (size_t row_index = 0; row_index < height; ++row_index)
   {
     for (size_t col_index = 0; col_index < width; ++col_index)
@@ -1167,6 +1167,7 @@ filterQuantizedColorGradients ()
   filtered_quantized_color_gradients_.resize (width, height);
 
   // filter data
+  #pragma omp parallel for
   for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
     for (size_t col_index = 1; col_index < width-1; ++col_index)
