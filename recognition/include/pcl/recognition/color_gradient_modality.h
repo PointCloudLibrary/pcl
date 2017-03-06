@@ -341,12 +341,21 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
   }
 }
 
+#include <time.h>
+static size_t getTickCount() {
+struct timespec tp;
+clock_gettime(CLOCK_MONOTONIC, &tp);
+return (size_t)tp.tv_sec*1000000000 + tp.tv_nsec;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
 pcl::ColorGradientModality<PointInT>::
 processInputData ()
 {
+  double start = getTickCount();
+
   // compute gaussian kernel values
   const size_t kernel_size = 7;
   std::vector<float> kernel_values;
@@ -358,6 +367,9 @@ processInputData ()
 	//gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
 	//gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
   gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
+
+  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 
   pcl::PointCloud<pcl::RGB>::Ptr rgb_input_ (new pcl::PointCloud<pcl::RGB>());
   
@@ -378,25 +390,43 @@ processInputData ()
     }
   }
 
+  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
+
 	convolution.setInputCloud (rgb_input_);
 	convolution.setKernel (gaussian_kernel);
 
   convolution.convolve (*smoothed_input_);
 
+  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
+
   // extract color gradients
   computeMaxColorGradientsSobel (smoothed_input_);
+
+  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 
   // quantize gradients
   quantizeColorGradients ();
 
+  printf("5 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
+
   // filter quantized gradients to get only dominants one + thresholding
   filterQuantizedColorGradients ();
+
+  printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 
   // spread filtered quantized gradients
   //spreadFilteredQunatizedColorGradients ();
   pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_color_gradients_,
                                          spreaded_filtered_quantized_color_gradients_, 
                                          spreading_size_);
+
+  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+  start = getTickCount();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -835,6 +865,8 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
   return;
 }
 
+#include <omp.h>
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
@@ -849,9 +881,135 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   color_gradients_.height = height;
 
   const float pi = tanf (1.0f) * 2.0f;
+
+  //#pragma omp parallel for
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
-    for (int col_index = 1; col_index < width-1; ++col_index)
+    int col_index = 1;
+#if __AVX2__
+    for (; col_index <= width - 1 - 4; col_index += 4)
+    {
+      // Although each channel is 8 bits, 16 bits are needed to prevent overflow
+      __m256i __7 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index-1)*width + (col_index-1)]));
+      __m256i __8 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index-1)*width + (col_index)]));
+      __m256i __9 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index-1)*width + (col_index+1)]));
+
+      __m256i __dy = _mm256_add_epi16(_mm256_add_epi16(__7, _mm256_slli_epi16(__8, 1)), __9);
+      __m256i __1 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index+1)*width + (col_index-1)]));
+      __m256i __2 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index+1)*width + (col_index)]));
+      __m256i __3 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index+1)*width + (col_index+1)]));
+
+      __dy = _mm256_sub_epi16(__dy,
+                              _mm256_add_epi16(_mm256_add_epi16(__1, _mm256_slli_epi16(__2, 1)), __3));
+
+      __m256i __4 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index)*width + (col_index-1)]));
+      __m256i __6 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index)*width + (col_index+1)]));
+      __m256i __dx = _mm256_sub_epi16(_mm256_add_epi16(_mm256_add_epi16(__9, _mm256_slli_epi16(__6, 1)), __3),
+                                      _mm256_add_epi16(_mm256_add_epi16(__7, _mm256_slli_epi16(__4, 1)), __1));
+      
+
+      __m256i __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dx, 0));
+      __m256i __sqr_mag01 = _mm256_mul_epi32(__temp, __temp);
+      __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 0));
+      __sqr_mag01 = _mm256_add_epi32(__sqr_mag01, _mm256_mul_epi32(__temp, __temp));
+
+      int32_t sqr_mag4[16] __attribute__((aligned(32)));
+      _mm256_store_si256((__m256i*) sqr_mag4, __sqr_mag01);
+
+      __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dx, 1));
+      __sqr_mag01 = _mm256_mul_epi32(__temp, __temp);
+      __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 1));
+      __sqr_mag01 = _mm256_add_epi32(__sqr_mag01, _mm256_mul_epi32(__temp, __temp));
+
+      _mm256_store_si256((__m256i*) (&sqr_mag4[8]), __sqr_mag01);
+
+      //__m128i __pixel01_sqr_mag = _mm256_extractf128_si256(__sqr_mag, 0);
+      //__m128i __pixel23_sqr_mag = _mm256_extractf128_si256(__sqr_mag, 1);
+
+      // TODO: Make this portable
+      int16_t dx4[16] __attribute__((aligned(32)));
+      int16_t dy4[16] __attribute__((aligned(32)));
+      
+      _mm256_store_si256((__m256i*) dx4, __dx);
+      _mm256_store_si256((__m256i*) dy4, __dy);
+
+      // // test
+      // const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].r);
+      // const int g7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].g);
+      // const int b7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].b);
+      // const int r8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].r);
+      // const int g8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].g);
+      // const int b8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].b);
+      // const int r9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].r);
+      // const int g9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].g);
+      // const int b9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].b);
+      // const int r4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].r);
+      // const int g4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].g);
+      // const int b4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].b);
+      // const int r6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].r);
+      // const int g6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].g);
+      // const int b6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].b);
+      // const int r1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].r);
+      // const int g1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].g);
+      // const int b1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].b);
+      // const int r2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].r);
+      // const int g2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].g);
+      // const int b2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].b);
+      // const int r3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].r);
+      // const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
+      // const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
+
+      // const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
+      // const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
+      // const int g_dx = g9 + 2*g6 + g3 - (g7 + 2*g4 + g1);
+      // const int g_dy = g1 + 2*g2 + g3 - (g7 + 2*g8 + g9);
+      // const int b_dx = b9 + 2*b6 + b3 - (b7 + 2*b4 + b1);
+      // const int b_dy = b1 + 2*b2 + b3 - (b7 + 2*b8 + b9);
+
+      // const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
+      // const int sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
+      // const int sqr_mag_b = b_dx*b_dx + b_dy*b_dy;
+
+      // if (r_dx != 0) {
+      //   int16_t buf[16] __attribute__((aligned(32)));
+      // _mm256_store_si256((__m256i*) buf, __1);
+      // printf("%d %d %d %d %d %d %d %d\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+      // _mm256_store_si256((__m256i*) buf, __2);
+      // printf("%d %d %d %d %d %d %d %d\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+
+      //   printf("dx %d %d %d\n", r_dx, g_dx, b_dx);
+      //   printf("dy %d %d %d\n", r_dy, g_dy, b_dy);
+      //   printf("sqr %d %d %d\n", sqr_mag_r, sqr_mag_g, sqr_mag_b);
+
+      //   printf("dx %d %d %d %d\n", dx4[0], dx4[1], dx4[2], dx4[3]);
+      //   printf("dy %d %d %d %d\n", dy4[0], dy4[1], dy4[2], dy4[3]);
+      //   printf("sqr %d %d %d %d\n", sqr_mag4[0], sqr_mag4[1], sqr_mag4[2], sqr_mag4[3]);
+      //   std::exit(-1);
+      // }
+
+
+
+      for (size_t pixelId = 0; pixelId < 4; ++pixelId) {
+          uint8_t max_channel;
+          if (sqr_mag4[4 * pixelId + 0] > sqr_mag4[4 * pixelId + 1] && sqr_mag4[4 * pixelId] > sqr_mag4[4 * pixelId + 2]) {
+            max_channel = 0;
+          } else {
+            max_channel = sqr_mag4[4 * pixelId + 1] > sqr_mag4[4 * pixelId + 2] ? 1 : 2;
+          }
+
+          size_t id = 4 * pixelId + max_channel;
+          GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
+          gradient.magnitude = sqrtf(static_cast<float>(sqr_mag4[id]));
+          gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
+          gradient.x = static_cast<float> (col_index);
+          gradient.y = static_cast<float> (row_index);
+
+          assert(gradient.angle >= -180 &&
+                 gradient.angle <=  180);
+      }
+    }
+#endif
+    for (; col_index < width-1; ++col_index)
     {
       const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].r);
       const int g7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].g);
@@ -878,29 +1036,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
       const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
 
-      //const int r_tmp1 = - r7 + r3;
-      //const int r_tmp2 = - r1 + r9;
-      //const int g_tmp1 = - g7 + g3;
-      //const int g_tmp2 = - g1 + g9;
-      //const int b_tmp1 = - b7 + b3;
-      //const int b_tmp2 = - b1 + b9;
-      ////const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
-      ////const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
-      //const int r_dx = r_tmp1 + r_tmp2 - (r4<<2) + (r6<<2);
-      //const int r_dy = r_tmp1 - r_tmp2 - (r8<<2) + (r2<<2);
-      //const int g_dx = g_tmp1 + g_tmp2 - (g4<<2) + (g6<<2);
-      //const int g_dy = g_tmp1 - g_tmp2 - (g8<<2) + (g2<<2);
-      //const int b_dx = b_tmp1 + b_tmp2 - (b4<<2) + (b6<<2);
-      //const int b_dy = b_tmp1 - b_tmp2 - (b8<<2) + (b2<<2);
-
-      //const int r_tmp1 = - r7 + r3;
-      //const int r_tmp2 = - r1 + r9;
-      //const int g_tmp1 = - g7 + g3;
-      //const int g_tmp2 = - g1 + g9;
-      //const int b_tmp1 = - b7 + b3;
-      //const int b_tmp2 = - b1 + b9;
-      //const int gx = - r7 - (r4<<2) - r1 + r3 + (r6<<2) + r9;
-      //const int gy = - r7 - (r8<<2) - r9 + r1 + (r2<<2) + r3;
       const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
       const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
       const int g_dx = g9 + 2*g6 + g3 - (g7 + 2*g4 + g1);

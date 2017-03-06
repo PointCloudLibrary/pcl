@@ -837,6 +837,7 @@ pcl::LINEMOD::detectTemplates (const std::vector<QuantizableModality*> & modalit
   }
 }
 
+#include <time.h>
 //////////////////////////////////////////////////////////////////////////////////////////////
 void
 pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
@@ -853,6 +854,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   std::vector<EnergyMaps> modality_energy_maps_2;
   std::vector<EnergyMaps> modality_energy_maps_3;
 #endif
+  clock_t start = clock();
+
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
@@ -915,6 +918,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
   }
 
+  printf("1 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
+  start = clock();
   // create linearized maps
   const size_t step_size = 8;
   std::vector<std::vector<LinearizedMaps> > modality_linearized_maps;
@@ -1001,6 +1006,9 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     modality_linearized_maps_3.push_back (linearized_maps_3);
 #endif
   }
+
+  printf("2 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
+  start = clock();
 
   // compute scores for templates
   const size_t width = modality_energy_maps[0].getWidth ();
@@ -1292,6 +1300,9 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     }
   }
 
+  printf("3 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
+  start = clock();
+
   // release data
   for (size_t modality_index = 0; modality_index < modality_linearized_maps.size (); ++modality_index)
   {
@@ -1311,6 +1322,8 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
 #endif
     }
   }
+  printf("4 %f\n", 1000.0*(clock()-start)/CLOCKS_PER_SEC);
+  start = clock();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
