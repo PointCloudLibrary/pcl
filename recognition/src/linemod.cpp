@@ -889,15 +889,17 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       //memset (energy_maps[bin_index], 0, width*height);
 
       const unsigned char base_bit = static_cast<unsigned char> (0x1);
-      unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
-      unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
-      unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
-      unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
+      const unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
+      const unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
+      const unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
+      const unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
+      unsigned char *energy_map_bin = energy_maps (bin_index);
+
       for (size_t index = 0; index < width*height; ++index)
       {
+#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
         if ((val0 & quantized_data[index]) != 0)
           ++energy_maps (bin_index, index);
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
         if ((val1 & quantized_data[index]) != 0)
           ++energy_maps_1 (bin_index, index);
         if ((val2 & quantized_data[index]) != 0)
@@ -905,12 +907,10 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         if ((val3 & quantized_data[index]) != 0)
           ++energy_maps_3 (bin_index, index);
 #else
-        if ((val1 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
-        if ((val2 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
-        if ((val3 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
+        energy_map_bin[index] += ((val0 & quantized_data[index]) != 0) +
+                                 ((val1 & quantized_data[index]) != 0) +
+                                 ((val2 & quantized_data[index]) != 0) +
+                                 ((val3 & quantized_data[index]) != 0);
 #endif
       }
     }
