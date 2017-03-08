@@ -39,6 +39,10 @@
 #include <cstddef>
 #include <string.h>
 
+#if __AVX2__
+#include <immintrin.h>
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 pcl::QuantizableModality::QuantizableModality ()
 {
@@ -98,10 +102,22 @@ spreadQuantizedMap (const QuantizedMap & input_map, QuantizedMap & output_map, c
 
   for (size_t row_index = 0; row_index < height-spreading_size-1; ++row_index)
   {
-    for (size_t col_index = 0; col_index < width-spreading_size-1; ++col_index)
+    size_t col_index = 0;
+#if __AVX2__
+    for (; col_index < width-spreading_size - 1 - 32; col_index += 32) {
+      __m256i __value = _mm256_setzero_si256();
+      const unsigned char * data_ptr = &(input_map (col_index, row_index));
+      for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, ++data_ptr)
+      {
+        __value = _mm256_or_si256(__value, _mm256_loadu_si256((__m256i*) data_ptr));
+      }
+      _mm256_storeu_si256((__m256i*) &tmp_map(col_index + half_spreading_size, row_index), __value);
+    }
+#endif
+    for (; col_index < width-spreading_size-1; ++col_index)
     {
       unsigned char value = 0;
-      const unsigned char * data_ptr = &(input_map (col_index, row_index));
+      const unsigned char * data_ptr = &(input_map (col_index, row_index));;
       for (size_t spreading_index = 0; spreading_index < spreading_size; ++spreading_index, ++data_ptr)
       {
         value |= *data_ptr;
