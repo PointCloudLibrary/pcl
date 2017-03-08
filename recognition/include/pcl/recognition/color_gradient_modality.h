@@ -831,8 +831,6 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_r);
         gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
@@ -841,8 +839,6 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_g);
         gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
@@ -851,8 +847,6 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
         GradientXY gradient;
         gradient.magnitude = sqrt (sqr_mag_b);
         gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index+1, row_index+1) = gradient;
       }
@@ -906,7 +900,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       __m256i __dx = _mm256_sub_epi16(_mm256_add_epi16(_mm256_add_epi16(__9, _mm256_slli_epi16(__6, 1)), __3),
                                       _mm256_add_epi16(_mm256_add_epi16(__7, _mm256_slli_epi16(__4, 1)), __1));
       
-
       __m256i __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dx, 0));
       __m256i __sqr_mag01 = _mm256_mul_epi32(__temp, __temp);
       __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 0));
@@ -932,62 +925,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       _mm256_store_si256((__m256i*) dx4, __dx);
       _mm256_store_si256((__m256i*) dy4, __dy);
 
-      // // test
-      // const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].r);
-      // const int g7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].g);
-      // const int b7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1)].b);
-      // const int r8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].r);
-      // const int g8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].g);
-      // const int b8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index)].b);
-      // const int r9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].r);
-      // const int g9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].g);
-      // const int b9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1)].b);
-      // const int r4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].r);
-      // const int g4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].g);
-      // const int b4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1)].b);
-      // const int r6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].r);
-      // const int g6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].g);
-      // const int b6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1)].b);
-      // const int r1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].r);
-      // const int g1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].g);
-      // const int b1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1)].b);
-      // const int r2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].r);
-      // const int g2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].g);
-      // const int b2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index)].b);
-      // const int r3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].r);
-      // const int g3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].g);
-      // const int b3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1)].b);
-
-      // const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
-      // const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
-      // const int g_dx = g9 + 2*g6 + g3 - (g7 + 2*g4 + g1);
-      // const int g_dy = g1 + 2*g2 + g3 - (g7 + 2*g8 + g9);
-      // const int b_dx = b9 + 2*b6 + b3 - (b7 + 2*b4 + b1);
-      // const int b_dy = b1 + 2*b2 + b3 - (b7 + 2*b8 + b9);
-
-      // const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
-      // const int sqr_mag_g = g_dx*g_dx + g_dy*g_dy;
-      // const int sqr_mag_b = b_dx*b_dx + b_dy*b_dy;
-
-      // if (r_dx != 0) {
-      //   int16_t buf[16] __attribute__((aligned(32)));
-      // _mm256_store_si256((__m256i*) buf, __1);
-      // printf("%d %d %d %d %d %d %d %d\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-      // _mm256_store_si256((__m256i*) buf, __2);
-      // printf("%d %d %d %d %d %d %d %d\n", buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
-
-      //   printf("dx %d %d %d\n", r_dx, g_dx, b_dx);
-      //   printf("dy %d %d %d\n", r_dy, g_dy, b_dy);
-      //   printf("sqr %d %d %d\n", sqr_mag_r, sqr_mag_g, sqr_mag_b);
-
-      //   printf("dx %d %d %d %d\n", dx4[0], dx4[1], dx4[2], dx4[3]);
-      //   printf("dy %d %d %d %d\n", dy4[0], dy4[1], dy4[2], dy4[3]);
-      //   printf("sqr %d %d %d %d\n", sqr_mag4[0], sqr_mag4[1], sqr_mag4[2], sqr_mag4[3]);
-      //   std::exit(-1);
-      // }
-
-
-
       for (size_t pixelId = 0; pixelId < 4; ++pixelId) {
           uint8_t max_channel;
           if (sqr_mag4[4 * pixelId + 0] > sqr_mag4[4 * pixelId + 1] && sqr_mag4[4 * pixelId] > sqr_mag4[4 * pixelId + 2]) {
@@ -1000,8 +937,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
           GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
           gradient.magnitude = sqr_mag4[id];
           gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
-          gradient.x = static_cast<float> (col_index);
-          gradient.y = static_cast<float> (row_index);
 
           assert(gradient.angle >= -180 &&
                  gradient.angle <=  180);
@@ -1053,8 +988,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
         gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index, row_index) = gradient;
       }
@@ -1065,8 +998,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
         gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index, row_index) = gradient;
       }
@@ -1077,8 +1008,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
         gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.x = static_cast<float> (col_index);
-        gradient.y = static_cast<float> (row_index);
 
         color_gradients_ (col_index, row_index) = gradient;
       }
