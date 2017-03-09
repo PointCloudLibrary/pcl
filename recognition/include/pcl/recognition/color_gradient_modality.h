@@ -1293,38 +1293,50 @@ filterQuantizedColorGradients ()
   filtered_quantized_color_gradients_.resize (width, height);
 
   // filter data
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
     for (size_t col_index = 1; col_index < width-1; ++col_index)
     {
       unsigned char histogram[9] = {0,0,0,0,0,0,0,0,0};
 
-      {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-        ++histogram[data_ptr[0]];
-        ++histogram[data_ptr[1]];
-        ++histogram[data_ptr[2]];
-      }
-      {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-        ++histogram[data_ptr[0]];
-        ++histogram[data_ptr[1]];
-        ++histogram[data_ptr[2]];
-      }
-      {
-        const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
-        assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-        ++histogram[data_ptr[0]];
-        ++histogram[data_ptr[1]];
-        ++histogram[data_ptr[2]];
-      }
+      const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      data_ptr += width;
+      ++histogram[data_ptr[0]];
+      ++histogram[data_ptr[1]];
+      ++histogram[data_ptr[2]];
+      // {
+      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
+      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+      //   ++histogram[data_ptr[0]];
+      //   ++histogram[data_ptr[1]];
+      //   ++histogram[data_ptr[2]];
+      // }
+      // {
+      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
+      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+      //   ++histogram[data_ptr[0]];
+      //   ++histogram[data_ptr[1]];
+      //   ++histogram[data_ptr[2]];
+      // }
+      // {
+      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
+      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
+      //   ++histogram[data_ptr[0]];
+      //   ++histogram[data_ptr[1]];
+      //   ++histogram[data_ptr[2]];
+      // }
+
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;
-
       // for (int i = 0; i < 8; ++i)
       // {
       //   if (max_hist_value < histogram[i+1])
@@ -1333,7 +1345,12 @@ filterQuantizedColorGradients ()
       //     max_hist_value = histogram[i+1]
       //   }
       // }
-      // Unrolled for performance optimization:
+      // __m128i __hist = _mm_castpd_si128(_mm_load1_pd((const double*) &histogram[1]));
+      // __m128i __max = _mm_max_epi8(__hist, _mm_alignr_epi8(__hist, __hist, 4));
+      // __max = _mm_max_epi8(__max, _mm_alignr_epi8(__max, __max, 2));
+      // __max = _mm_max_epi8(__max, _mm_alignr_epi8(__max, __max, 1));
+      // int max_index = __builtin_ctz(_mm_movemask_epi8(_mm_cmpeq_epi8(__hist, __max)));
+
       if (max_hist_value < histogram[1]) {max_hist_index = 0; max_hist_value = histogram[1];}
       if (max_hist_value < histogram[2]) {max_hist_index = 1; max_hist_value = histogram[2];}
       if (max_hist_value < histogram[3]) {max_hist_index = 2; max_hist_value = histogram[3];}
@@ -1347,6 +1364,9 @@ filterQuantizedColorGradients ()
         filtered_quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (0x1 << max_hist_index);
       else
         filtered_quantized_color_gradients_ (col_index, row_index) = 0;
+
+      // filtered_quantized_color_gradients_(col_index, row_index) = histogram[max_index + 1] >= 5 ?
+      //   static_cast<unsigned char> (0x1 << max_index) : 0;
 
     }
   }

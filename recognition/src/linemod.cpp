@@ -981,12 +981,13 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
           // copy data from energy maps
           const size_t lin_width = width/step_size;
           const size_t lin_height = height/step_size;
+
           for (size_t row_index = 0; row_index < lin_height; ++row_index)
           {
+            const size_t tmp_row_index = row_index*step_size + map_row;
             for (size_t col_index = 0; col_index < lin_width; ++col_index)
             {
               const size_t tmp_col_index = col_index*step_size + map_col;
-              const size_t tmp_row_index = row_index*step_size + map_row;
 
               linearized_map[row_index*lin_width + col_index] = energy_map[tmp_row_index*width + tmp_col_index];
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
