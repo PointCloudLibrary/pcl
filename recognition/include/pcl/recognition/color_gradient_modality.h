@@ -65,19 +65,22 @@ namespace pcl
       struct Candidate
       {
         /** \brief The gradient. */
-        GradientXY gradient;
+        //GradientXY gradient;
     
+        float angle;
+        float magnitude;
+
         /** \brief The x-position. */
-        int x;
+        float x;
         /** \brief The y-position. */
-        int y;	
+        float y;
     
         /** \brief Operator for comparing to candidates (by magnitude of the gradient).
           * \param[in] rhs the candidate to compare with.
           */
         bool operator< (const Candidate & rhs) const
         {
-          return (gradient.magnitude > rhs.gradient.magnitude);
+          return (magnitude > rhs.magnitude);
         }
       };
 
@@ -451,12 +454,14 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
   const size_t width = mask.getWidth ();
   const size_t height = mask.getHeight ();
   
-  std::list<Candidate> list1;
-  std::list<Candidate> list2;
-
+  std::vector<Candidate> list1;
+  std::vector<Candidate> list2;
+  list2.reserve(nr_features);
 
   if (feature_selection_method_ == DISTANCE_MAGNITUDE_SCORE)
   {
+    double start = getTickCount();
+
     for (size_t row_index = 0; row_index < height; ++row_index)
     {
       for (size_t col_index = 0; col_index < width; ++col_index)
@@ -468,9 +473,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
           {
             Candidate candidate;
-            candidate.gradient = gradient;
-            candidate.x = static_cast<int> (col_index);
-            candidate.y = static_cast<int> (row_index);
+            candidate.magnitude = gradient.magnitude;
+            candidate.x = static_cast<float> (col_index);
+            candidate.y = static_cast<float> (row_index);
 
             list1.push_back (candidate);
           }
@@ -478,25 +483,31 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       }
     }
 
-    list1.sort();
+    //list1.sort();
+    std::sort(list1.begin(), list1.end());
+
+    printf("size %d\n", list1.size());
+
+    printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+    start = getTickCount();
 
     if (variable_feature_nr_)
     {
-      list2.push_back (*(list1.begin ()));
+      list2.push_back (list1[0]);
       //while (list2.size () != nr_features)
       bool feature_selection_finished = false;
       while (!feature_selection_finished)
       {
         float best_score = 0.0f;
-        typename std::list<Candidate>::iterator best_iter = list1.end ();
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        uint32_t best_index = std::numeric_limits<uint32_t>::max();
+        for (size_t id1 = 0; id1 < list1.size(); ++id1)
         {
           // find smallest distance
           float smallest_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          for (size_t id2 = 0; id2 < list2.size(); ++id2)
           {
-            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
-            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
+            const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
+            const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
 
             const float distance = dx*dx + dy*dy;
 
@@ -506,28 +517,30 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             }
           }
 
-          const float score = smallest_distance * iter1->gradient.magnitude;
+          const float score = smallest_distance * list1[id1].magnitude;
 
           if (score > best_score)
           {
             best_score = score;
-            best_iter = iter1;
+            best_index = id1;
           }
         }
 
 
         float min_min_sqr_distance = std::numeric_limits<float>::max ();
         float max_min_sqr_distance = 0;
-        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        for (size_t id2 = 0; id2 < list2.size(); ++id2)
         {
           float min_sqr_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
+          //for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
+          for (size_t id3 = 0; id3 < list2.size(); ++id3)
           {
-            if (iter2 == iter3)
+            if (id2 == id3)
               continue;
 
-            const float dx = static_cast<float> (iter2->x) - static_cast<float> (iter3->x);
-            const float dy = static_cast<float> (iter2->y) - static_cast<float> (iter3->y);
+            const float dx = static_cast<float> (list2[id2].x) - static_cast<float> (list2[id3].x);
+            const float dy = static_cast<float> (list2[id2].y) - static_cast<float> (list2[id3].y);
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -542,8 +555,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
           // check current feature
           {
-            const float dx = static_cast<float> (iter2->x) - static_cast<float> (best_iter->x);
-            const float dy = static_cast<float> (iter2->y) - static_cast<float> (best_iter->y);
+            const float dx = static_cast<float> (list2[id2].x) - static_cast<float> (list1[best_index].x);
+            const float dy = static_cast<float> (list2[id2].x) - static_cast<float> (list1[best_index].y);
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -561,7 +574,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           //std::cerr << min_sqr_distance << ", " << min_min_sqr_distance << ", " << max_min_sqr_distance << std::endl;
         }
 
-        if (best_iter != list1.end ())
+        if (best_index != std::numeric_limits<uint32_t>::max())
         {
           //std::cerr << "feature_index: " << list2.size () << std::endl;
           //std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
@@ -573,7 +586,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             break;
           }
 
-          list2.push_back (*best_iter);
+          list2.push_back(list1[best_index]);
         }
       } 
     }
@@ -581,33 +594,181 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     {
       if (list1.size () <= nr_features)
       {
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        //for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        for (size_t id1 = 0; id1 < list1.size(); ++id1)
         {
           QuantizedMultiModFeature feature;
-          
-          feature.x = iter1->x;
-          feature.y = iter1->y;
+          const Candidate &c = list1[id1];
+
+          feature.x = c.x;
+          feature.y = c.y;
           feature.modality_index = modality_index;
-          feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+          feature.quantized_value = filtered_quantized_color_gradients_ (c.x, c.y);
 
           features.push_back (feature);
         }
         return;
       }
+      printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+      start = getTickCount();
 
-      list2.push_back (*(list1.begin ()));
+      list2.push_back (list1[0]);
+      printf("2.1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+      start = getTickCount();
+      printf("size before%zu\n", list2.size());
+      std::vector<float> list1_smallest_dist(list1.size(), std::numeric_limits<float>::max());
       while (list2.size () != nr_features)
       {
         float best_score = 0.0f;
-        typename std::list<Candidate>::iterator best_iter = list1.end ();
-        for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+        //typename std::list<Candidate>::iterator best_iter = list1.end ();
+        uint32_t best_index = std::numeric_limits<uint32_t>::max();
+
+#if 1 // Fixing n^2 algorithm
+        const size_t id2 = list2.size() - 1; // list2.size() is always >= 1
+        size_t id1 = 0;
+
+#if 0//__AVX2__
+        uint32_t best_index8[8] __attribute__((aligned(32)));
+        float best_score8[8] __attribute__((aligned(32)));
+
+        // TODO remove
+        assert(sizeof(Candidate) == 4 * sizeof(float));
+
+        const __m256 __list2_xy = _mm256_set_ps(
+          list2[id2].y, list2[id2].x,
+          list2[id2].y, list2[id2].x,
+          list2[id2].y, list2[id2].x,
+          list2[id2].y, list2[id2].x);
+
+        __m256i __best_index8 = _mm256_set1_epi32(best_index);
+        __m256 __best_score8 = _mm256_set1_ps(best_score);
+        for (; id1 <= list1.size() - 8; id1+=8)
+        {
+          __m256 __list1_c01 = _mm256_loadu_ps((const float*) &list1[id1]); // Loading 2 candidates at a time
+          __m256 __list1_c23 = _mm256_loadu_ps((const float*) &list1[id1 + 2]);
+          __m256 __list1_c45 = _mm256_loadu_ps((const float*) &list1[id1 + 4]);
+          __m256 __list1_c67 = _mm256_loadu_ps((const float*) &list1[id1 + 6]);
+
+          __m256 __magnitude_8 = _mm256_shuffle_ps(
+              _mm256_shuffle_ps(__list1_c01, __list1_c23, (1 << 6) + (1 << 4) + (1 << 2) + 1),
+              _mm256_shuffle_ps(__list1_c45, __list1_c67, (1 << 6) + (1 << 4) + (1 << 2) + 1),
+              (2 << 6) + (0 << 4) + (2 << 2) + 0);
+          
+          // _mm256_store_ps(best_score8, __magnitude_8);
+          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+          // printf("%f %f %f %f %f %f %f %f\n", 
+          //   list1[0].magnitude,
+          //   list1[1].magnitude,
+          //   list1[2].magnitude,
+          //   list1[3].magnitude,
+          //   list1[4].magnitude,
+          //   list1[5].magnitude,
+          //   list1[6].magnitude,
+          //   list1[7].magnitude);
+
+          __m256 __list1_xy_0123 = _mm256_shuffle_ps(__list1_c01, __list1_c23, (3 << 6) + (2 << 4) + (3 << 2) + 2);
+          __m256 __list1_xy_4567 = _mm256_shuffle_ps(__list1_c45, __list1_c67, (3 << 6) + (2 << 4) + (3 << 2) + 2);
+
+          // _mm256_store_ps(best_score8, __list1_c01);
+          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+          // _mm256_store_ps(best_score8, __list1_c23);
+          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+
+          __m256 __xy_sqr_0213 = _mm256_sub_ps(__list1_xy_0123, __list2_xy);
+          __xy_sqr_0213 = _mm256_mul_ps(__xy_sqr_0213, __xy_sqr_0213);
+          __m256 __xy_sqr_4657 = _mm256_sub_ps(__list1_xy_4567, __list2_xy);
+          __xy_sqr_4657 = _mm256_mul_ps(__xy_sqr_4657, __xy_sqr_4657);
+
+          // Order: 0 4 1 5 2 6 3 7
+          __m256 __dist_8 = _mm256_hadd_ps(__xy_sqr_0213, __xy_sqr_4657);
+
+          // _mm256_store_ps(best_score8, __dist_8);
+          // // _mm256_store_ps(best_score8, __xy_sqr_0213);
+          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+          // // printf("%f %f %f %f %f %f %f %f\n", 
+          // //   (list1[0].x - list2[id2].x),
+          // //   (list1[0].y - list2[id2].y),
+          // //   (list1[1].x - list2[id2].x),
+          // //   (list1[1].y - list2[id2].y),
+          // //   (list1[2].x - list2[id2].x),
+          // //   (list1[2].y - list2[id2].y),
+          // //   (list1[3].x - list2[id2].x),
+          // //   (list1[3].y - list2[id2].y));
+          // printf("%f %f %f %f %f %f %f %f\n", 
+          //   (list1[0].x - list2[id2].x) * (list1[0].x - list2[id2].x) + (list1[0].y - list2[id2].y) * (list1[0].y - list2[id2].y),
+          //   (list1[1].x - list2[id2].x) * (list1[1].x - list2[id2].x) + (list1[1].y - list2[id2].y) * (list1[1].y - list2[id2].y),
+          //   (list1[2].x - list2[id2].x) * (list1[2].x - list2[id2].x) + (list1[2].y - list2[id2].y) * (list1[2].y - list2[id2].y),
+          //   (list1[3].x - list2[id2].x) * (list1[3].x - list2[id2].x) + (list1[3].y - list2[id2].y) * (list1[3].y - list2[id2].y),
+          //   (list1[4].x - list2[id2].x) * (list1[4].x - list2[id2].x) + (list1[4].y - list2[id2].y) * (list1[4].y - list2[id2].y),
+          //   (list1[5].x - list2[id2].x) * (list1[5].x - list2[id2].x) + (list1[5].y - list2[id2].y) * (list1[5].y - list2[id2].y),
+          //   (list1[6].x - list2[id2].x) * (list1[6].x - list2[id2].x) + (list1[6].y - list2[id2].y) * (list1[6].y - list2[id2].y),
+          //   (list1[7].x - list2[id2].x) * (list1[7].x - list2[id2].x) + (list1[7].y - list2[id2].y) * (list1[7].y - list2[id2].y));
+          // std::exit(-1);
+
+          __m256 __smallest_distance8 = _mm256_loadu_ps(&list1_smallest_dist[id1]);
+          __m256 __update_dist_mask = _mm256_cmp_ps(__dist_8, __smallest_distance8, _CMP_LT_OQ);
+          
+          __smallest_distance8 = _mm256_blendv_ps(__smallest_distance8, __dist_8, __update_dist_mask);
+          _mm256_storeu_ps(&list1_smallest_dist[id1], __smallest_distance8);
+
+          __m256 __score8 = _mm256_mul_ps(__smallest_distance8, __magnitude_8);
+          __m256 __update_score_mask = _mm256_cmp_ps(__score8, __best_score8, _CMP_GT_OQ);
+
+          __best_index8 = _mm256_blendv_epi8(__best_index8, 
+            _mm256_set_epi32(id1 + 7, id1 + 3, id1 + 6, id1 + 2, id1 + 5, id1 + 1, id1 + 4, id1),
+            _mm256_castps_si256(__update_score_mask));
+
+          __best_score8 = _mm256_blendv_ps(__best_score8, __score8, __update_score_mask);
+        }
+
+        _mm256_store_ps(best_score8, __best_score8);
+        _mm256_store_si256((__m256i*) best_index8, __best_index8);
+
+        for (size_t i = 0; i < 8; ++i) {
+          if (best_score8[i] > best_score)
+          {
+            best_score = best_score8[i];
+            best_index = best_index8[i];
+          }
+        }
+#endif
+        for (; id1 < list1.size(); ++id1)
+        {
+          // find smallest distance
+          //float smallest_distance = std::numeric_limits<float>::max ();
+          //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
+          const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
+
+          const float distance = dx*dx + dy*dy;
+
+          if (distance < list1_smallest_dist[id1])
+          {
+            list1_smallest_dist[id1] = distance;
+          }
+
+          const float score = list1_smallest_dist[id1] * list1[id1].magnitude;
+
+          if (score > best_score)
+          {
+            best_score = score;
+            best_index = id1;
+          }
+        }
+#else
+        for (size_t id1 = 0; id1 < list1.size(); ++id1)
         {
           // find smallest distance
           float smallest_distance = std::numeric_limits<float>::max ();
-          for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+          for (size_t id2 = 0; id2 < list2.size(); ++id2)
           {
-            const float dx = static_cast<float> (iter1->x) - static_cast<float> (iter2->x);
-            const float dy = static_cast<float> (iter1->y) - static_cast<float> (iter2->y);
+            const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
+            const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
 
             const float distance = dx*dx + dy*dy;
 
@@ -617,27 +778,31 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             }
           }
 
-          const float score = smallest_distance * iter1->gradient.magnitude;
+          const float score = smallest_distance * list1[id1].magnitude;
 
           if (score > best_score)
           {
             best_score = score;
-            best_iter = iter1;
+            best_index = id1;
           }
         }
+#endif //if 1
 
-        if (best_iter != list1.end ())
+        if (best_index != std::numeric_limits<uint32_t>::max())
         {
-          list2.push_back (*best_iter);
+          list2.push_back (list1[best_index]);
         }
         else
         {
           break;
         }
-      }  
+      }
+      printf("size %d\n", list2.size());
+      printf("3 - extractfe %f\n", 1000.0*(getTickCount()-start)/1e9);
+      start = getTickCount();
     }
   }
-  else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
+  /*else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
   {
     MaskMap eroded_mask;
     erode (mask, eroded_mask);
@@ -657,8 +822,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           {
             Candidate candidate;
             candidate.gradient = gradient;
-            candidate.x = static_cast<int> (col_index);
-            candidate.y = static_cast<int> (row_index);
+            candidate.x = static_cast<float> (col_index);
+            candidate.y = static_cast<float> (row_index);
 
             list1.push_back (candidate);
           }
@@ -714,16 +879,18 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       }
       --distance;
     }
-  }
+  }*/
 
-  for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+  //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+  for (size_t id2 = 0; id2 < list2.size(); ++id2)
   {
     QuantizedMultiModFeature feature;
-    
-    feature.x = iter2->x;
-    feature.y = iter2->y;
+
+    const Candidate &c = list2[id2];
+    feature.x = c.x;
+    feature.y = c.y;
     feature.modality_index = modality_index;
-    feature.quantized_value = filtered_quantized_color_gradients_ (iter2->x, iter2->y);
+    feature.quantized_value = filtered_quantized_color_gradients_ (c.x, c.y);
 
     features.push_back (feature);
   }
@@ -753,9 +920,9 @@ extractAllFeatures (const MaskMap & mask, const size_t, const size_t modality_in
           && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
         {
           Candidate candidate;
-          candidate.gradient = gradient;
-          candidate.x = static_cast<int> (col_index);
-          candidate.y = static_cast<int> (row_index);
+          candidate.magnitude= gradient.magnitude;
+          candidate.x = static_cast<float> (col_index);
+          candidate.y = static_cast<float> (row_index);
 
           list1.push_back (candidate);
         }
