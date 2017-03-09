@@ -39,6 +39,9 @@
 
 #include <pcl/recognition/linemod.h>
 
+#if __AVX2__
+#include <immintrin.h>
+#endif
 #ifdef __SSE2__
 #include <emmintrin.h>
 #endif
@@ -1018,17 +1021,96 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   // compute scores for templates
   const size_t width = modality_energy_maps[0].getWidth ();
   const size_t height = modality_energy_maps[0].getHeight ();
+  #pragma omp parallel for
   for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
   {
     const size_t mem_width = width / step_size;
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
+#if defined(__AVX2__) || defined(__SSE2__)
+    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+#else
+    unsigned short * score_sums = new unsigned short[mem_size];
+
+#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+    unsigned short * score_sums_1 = new unsigned short[mem_size];
+    unsigned short * score_sums_2 = new unsigned short[mem_size];
+    unsigned short * score_sums_3 = new unsigned short[mem_size];
+#endif
+#endif
+
     for (float scale = min_scale; scale <= max_scale; scale *= scale_multiplier)
     {
-#ifdef __SSE2__
-      unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
-      unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+#ifdef __AVX2__
+      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+
+      int max_score = 0;
+      size_t copy_back_counter = 0;
+      for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+      {
+        const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+        for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+        {
+          if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+          {
+            max_score += 4;
+
+            unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
+                size_t (float (feature.x) * scale), size_t (float (feature.y) * scale));
+
+            size_t mem_index = 0;
+            for (; mem_index <= mem_size - 32; mem_index+=32)
+            {
+              __m256i __tmp_score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
+              __tmp_score_sums = _mm256_add_epi8(__tmp_score_sums, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + mem_index)));
+              _mm256_storeu_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
+            }
+            for (; mem_index < mem_size; ++mem_index)
+            {
+              tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
+            }
+          }
+        }
+
+        ++copy_back_counter;
+
+        if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+        {
+          copy_back_counter = 0;
+
+          size_t mem_index = 0;
+          for (; mem_index <= mem_size - 32; mem_index+=32)
+          {
+            __m256i __tmp_score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
+            // First half
+            __m256i __score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
+            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
+            // Second half
+            __score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
+            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
+            _mm256_storeu_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
+          }
+          for (; mem_index < mem_size; ++mem_index)
+          {
+            score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
+          }
+          memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+        }
+      }
+      {
+        for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+        {
+          score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
+        }
+        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+      }
+
+#elif defined(__SSE2__)
       memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
       memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
 
@@ -1111,15 +1193,10 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         
         memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
       }
-#else
-      unsigned short * score_sums = new unsigned short[mem_size];
-      //unsigned char * score_sums = new unsigned char[mem_size];
+#else // NO AVX2 and SSE
       memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
 
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      unsigned short * score_sums_1 = new unsigned short[mem_size];
-      unsigned short * score_sums_2 = new unsigned short[mem_size];
-      unsigned short * score_sums_3 = new unsigned short[mem_size];
       memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
       memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
       memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
@@ -1162,7 +1239,6 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         }
       }
 #endif
-
       const float inv_max_score = 1.0f / float (max_score);
 
       // we compute a new threshold based on the threshold supplied by the user;
@@ -1285,24 +1361,25 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
           std::cerr << "score3: " << static_cast<float> (score_sums_3[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_3[mem_index]) * inv_max_score - 1.0f) << std::endl;
 #endif
 
-
-          detections.push_back (detection);
+          #pragma omp critical
+          {
+            detections.push_back (detection);
+          }
         }
       }
-
-#ifdef __SSE2__
+    }
+    #if defined(__AVX2__) || defined(__SSE2__)
       aligned_free (score_sums);
       aligned_free (tmp_score_sums);
-#else
+    #else
       delete[] score_sums;
-#endif
+    #endif
 
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
       delete[] score_sums_1;
       delete[] score_sums_2;
       delete[] score_sums_3;
-#endif
-    }
+    #endif
   }
 
   printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
