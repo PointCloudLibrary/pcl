@@ -1028,7 +1028,12 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     const size_t mem_height = height / step_size;
     const size_t mem_size = mem_width * mem_height;
 
-#if defined(__AVX2__) || defined(__SSE2__)
+#if defined(__AVX2__)
+    unsigned short * score_sums;
+    unsigned char * tmp_score_sums;
+    posix_memalign((void**) &score_sums, 32, mem_size*sizeof(unsigned short));
+    posix_memalign((void**) &tmp_score_sums, 32, mem_size*sizeof(unsigned char));
+#elif defined(__SSE2__)
     unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
     unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
 #else
@@ -1053,22 +1058,26 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       {
         const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
+        std::vector<LinearizedMaps> &linearized_map_modality = modality_linearized_maps[feature.modality_index];
+        const size_t map_x = size_t (float (feature.x) * scale);
+        const size_t map_y = size_t (float (feature.y) * scale);
+
         for (size_t bin_index = 0; bin_index < 8; ++bin_index)
         {
           if ((feature.quantized_value & (0x1<<bin_index)) != 0)
           {
             max_score += 4;
 
-            unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
-                size_t (float (feature.x) * scale), size_t (float (feature.y) * scale));
+            const unsigned char *data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
 
             size_t mem_index = 0;
             for (; mem_index <= mem_size - 32; mem_index+=32)
             {
-              __m256i __tmp_score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
+              __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
               __tmp_score_sums = _mm256_add_epi8(__tmp_score_sums, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + mem_index)));
-              _mm256_storeu_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
+              _mm256_store_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
             }
+;
             for (; mem_index < mem_size; ++mem_index)
             {
               tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
@@ -1085,15 +1094,15 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
           size_t mem_index = 0;
           for (; mem_index <= mem_size - 32; mem_index+=32)
           {
-            __m256i __tmp_score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
+            __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
             // First half
-            __m256i __score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
+            __m256i __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
             __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
-            _mm256_storeu_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
+            _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
             // Second half
-            __score_sums = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
+            __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
             __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
-            _mm256_storeu_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
+            _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
           }
           for (; mem_index < mem_size; ++mem_index)
           {
@@ -1239,6 +1248,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         }
       }
 #endif
+
       const float inv_max_score = 1.0f / float (max_score);
 
       // we compute a new threshold based on the threshold supplied by the user;
