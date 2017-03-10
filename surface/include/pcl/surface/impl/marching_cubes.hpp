@@ -309,8 +309,8 @@ pcl::MarchingCubes<PointNT>::performReconstructionProc ()
   // and copy the point cloud + connectivity into output
   intermediate_cloud_.clear();
 
-  // preallocate memory assuming a hull
-  intermediate_cloud_.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2);
+  // preallocate memory assuming a hull. suppose 6 point per voxel
+  intermediate_cloud_.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2 * 6);
 
   for (int x = 1; x < res_x_-1; ++x)
     for (int y = 1; y < res_y_-1; ++y)
