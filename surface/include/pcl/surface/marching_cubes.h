@@ -430,6 +430,19 @@ namespace pcl
       getPercentageExtendGrid ()
       { return percentage_extend_grid_; }
 
+      /** \brief Method that sets the parameter that defines the distance to ignore the distance to ignore
+        * a grid
+        * \param[in] threshold of distance. if it is negative, then calculate in all grids; otherwise
+        * ignore grids with distance to point cloud(to nearest point) larger than distIgnore
+        */
+      inline void
+      setDistanceIgnore (float distIgnore)
+      { dist_ignore_ = distIgnore; }
+
+//      inline void // TODO need to reorder functions to make it valid
+//      setDistanceIgnoreToGridDiagram ()
+//      { dist_ignore_ = (max_p_ - min_p_).cwiseQuotient(Eigen::Vector3f(res_x_, res_y_, res_z_)).norm(); }
+
     protected:
       /** \brief The data structure storing the 3D grid */
       std::vector<float> grid_;
@@ -446,6 +459,11 @@ namespace pcl
 
       /** \brief The iso level to be extracted. */
       float iso_level_;
+
+      /** \brief ignore the distance function
+       * if it is negative
+       * or distance between voxel centroid and point are larger that it. */
+      float dist_ignore_;
 
       /** \brief Convert the point cloud into voxel data. */
       virtual void

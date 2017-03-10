@@ -45,7 +45,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
 pcl::MarchingCubes<PointNT>::MarchingCubes () 
-: min_p_ (), max_p_ (), percentage_extend_grid_ (), iso_level_ ()
+: min_p_ (), max_p_ (), percentage_extend_grid_ (), iso_level_ (), dist_ignore_ (-1.0f)
 {
 }
 
@@ -201,6 +201,15 @@ pcl::MarchingCubes<PointNT>::getNeighborList1D (std::vector<float> &leaf,
   leaf[5] = getGridValue (index3d + Eigen::Vector3i (1, 1, 0));
   leaf[6] = getGridValue (index3d + Eigen::Vector3i (1, 1, 1));
   leaf[7] = getGridValue (index3d + Eigen::Vector3i (0, 1, 1));
+
+  for(int i = 0; i < 8; ++i)
+  {
+    if(std::isnan(leaf[i]))
+    {
+      leaf.clear();
+      break;
+    }
+  }
 }
 
 
@@ -234,7 +243,8 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
   }
 
   // Create grid
-  grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+  // grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+  grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
 
   // Populate tree
   tree_->setInputCloud (input_);
@@ -258,7 +268,8 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
         Eigen::Vector3i index_3d (x, y, z);
         std::vector<float> leaf_node;
         getNeighborList1D (leaf_node, index_3d);
-        createSurface (leaf_node, index_3d, cloud);
+        if(!leaf_node.empty())
+          createSurface (leaf_node, index_3d, cloud);
       }
   pcl::toPCLPointCloud2 (cloud, output.cloud);
 

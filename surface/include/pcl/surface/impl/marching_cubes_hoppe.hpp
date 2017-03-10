@@ -60,8 +60,16 @@ pcl::MarchingCubesHoppe<PointNT>::~MarchingCubesHoppe ()
 template <typename PointNT> void
 pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 {
+  const bool is_far_ignored = dist_ignore_ > 0.0f;
+
   for (int x = 0; x < res_x_; ++x)
+  {
+    const int y_start = x * res_y_*res_z_;
+
     for (int y = 0; y < res_y_; ++y)
+    {
+      const int z_start = y_start + y * res_z_;
+
       for (int z = 0; z < res_z_; ++z)
       {
         std::vector<int> nn_indices;
@@ -77,9 +85,12 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 
         tree_->nearestKSearch (p, 1, nn_indices, nn_sqr_dists);
 
-        grid_[x * res_y_*res_z_ + y * res_z_ + z] = input_->points[nn_indices[0]].getNormalVector3fMap ().dot (
-            point - input_->points[nn_indices[0]].getVector3fMap ());
+        if(!is_far_ignored || nn_sqr_dists.front() > dist_ignore_)
+          grid_[z_start + z] = input_->points[nn_indices[0]].getNormalVector3fMap ().dot (
+              point - input_->points[nn_indices[0]].getVector3fMap ());
       }
+    }
+  }
 }
 
 
