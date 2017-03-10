@@ -439,10 +439,6 @@ namespace pcl
       setDistanceIgnore (float distIgnore)
       { dist_ignore_ = distIgnore; }
 
-//      inline void // TODO need to reorder functions to make it valid
-//      setDistanceIgnoreToGridDiagram ()
-//      { dist_ignore_ = (max_p_ - min_p_).cwiseQuotient(Eigen::Vector3f(res_x_, res_y_, res_z_)).norm(); }
-
     protected:
       /** \brief The data structure storing the 3D grid */
       std::vector<float> grid_;
