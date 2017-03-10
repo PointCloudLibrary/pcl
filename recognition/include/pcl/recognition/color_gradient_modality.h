@@ -1058,6 +1058,33 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
 
 #include <omp.h>
 
+
+// Equivalent to atan2(y/x) then quantize to 8 directions
+static uint8_t quantizedAngleFromXY(float x, float y) {
+  if (x==0.0)
+    return 0;
+  float a = y / x;
+
+  // bin_width = 360 / 16
+  // borders = tan(bin_width / 2 + bin_width * index)
+  if (a > 0.198912367379658) {
+    if (a > 1.496605762665489) {
+      return a > 5.027339492125846 ? 3 + 1 : 2 + 1;
+    } else {
+      return a > 0.6681786379192989 ? 1 + 1 : 0 + 1;
+    }
+  } else {
+    if (a > -1.4966057626654885) {
+      return (a > -0.1989123673796579) ?
+        7 + 1 :
+        (a > -0.6681786379192988) ?
+          6 + 1 : 5 + 1;
+    } else {
+      return (a > -5.02733949212585) ? 4 + 1 : 3 + 1;
+    }
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
 void
@@ -1073,6 +1100,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
 
   const float pi = tanf (1.0f) * 2.0f;
 
+  //#pragma omp parallel for
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     int col_index = 1;
@@ -1133,10 +1161,11 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
           size_t id = 4 * pixelId + max_channel;
           GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
           gradient.magnitude = sqr_mag4[id];
-          gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
-
-          assert(gradient.angle >= -180 &&
-                 gradient.angle <=  180);
+          //gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
+          gradient.angle = static_cast<float>(quantizedAngleFromXY(dx4[4], dy4[4]));
+          //printf("%f\n", gradient.angle);
+          // assert(gradient.angle >= -180 &&
+          //        gradient.angle <=  180);
       }
     }
 #endif
@@ -1182,9 +1211,10 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_r));
-        gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        gradient.angle = static_cast<float>(quantizedAngleFromXY(r_dx, r_dy));
+        //gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
+        //if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        //if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
 
         color_gradients_ (col_index, row_index) = gradient;
       }
@@ -1192,9 +1222,10 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_g));
-        gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        gradient.angle = static_cast<float>(quantizedAngleFromXY(g_dx, g_dy));
+        // gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
+        // if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        // if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
 
         color_gradients_ (col_index, row_index) = gradient;
       }
@@ -1202,15 +1233,16 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       {
         GradientXY gradient;
         gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_b));
-        gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
-        if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        // gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
+        // if (gradient.angle < -180.0f) gradient.angle += 360.0f;
+        // if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        gradient.angle = static_cast<float>(quantizedAngleFromXY(b_dx, b_dy));
 
         color_gradients_ (col_index, row_index) = gradient;
       }
 
-      assert (color_gradients_ (col_index, row_index).angle >= -180 &&
-              color_gradients_ (col_index, row_index).angle <=  180);
+      // assert (color_gradients_ (col_index, row_index).angle >= -180 &&
+      //         color_gradients_ (col_index, row_index).angle <=  180);
     }
   }
 
@@ -1244,7 +1276,7 @@ quantizeColorGradients ()
 
   //float min_angle = std::numeric_limits<float>::max ();
   //float max_angle = -std::numeric_limits<float>::max ();
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (size_t row_index = 0; row_index < height; ++row_index)
   {
     for (size_t col_index = 0; col_index < width; ++col_index)
@@ -1255,9 +1287,14 @@ quantizeColorGradients ()
         continue;
       }
 
-      const float angle = 11.25f + color_gradients_ (col_index, row_index).angle + 180.0f;
-      const int quantized_value = (static_cast<int> (angle * angleScale)) & 7;
-      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value + 1); 
+      //const float angle = 11.25f + color_gradients_ (col_index, row_index).angle + 180.0f;
+      //const int quantized_value = (static_cast<int> (angle * angleScale)) & 7;
+      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value + 1);
+      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (color_gradients_ (col_index, row_index).angle);
+      // if (quantized_color_gradients_ (col_index, row_index) < 0 || quantized_color_gradients_ (col_index, row_index) > 8) {
+      //   printf("omg rol_index col_index %d %d %d\n", row_index, col_index, quantized_color_gradients_ (col_index, row_index));
+      //   std::exit(-1);
+      // }
 
       //const float angle = color_gradients_ (col_index, row_index).angle + 180.0f;
 
