@@ -97,8 +97,8 @@ pcl::MarchingCubes<PointNT>::interpolateEdge (Eigen::Vector3f &p1,
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::createSurface (std::vector<float> &leaf_node,
-                                            Eigen::Vector3i &index_3d,
+pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
+                                            const Eigen::Vector3i &index_3d,
                                             pcl::PointCloud<PointNT> &cloud)
 {
   int cubeindex = 0;
@@ -242,38 +242,12 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
     return;
   }
 
-  // Create grid
-  // grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
-  grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
+  // real part of marching cube
+  performReconstructionProc();
 
-  // Populate tree
-  tree_->setInputCloud (input_);
+  pcl::toPCLPointCloud2 (intermediate_cloud_, output.cloud);
 
-  getBoundingBox ();
-
-  // Transform the point cloud into a voxel grid
-  // This needs to be implemented in a child class
-  voxelizeData ();
-
-
-
-  // Run the actual marching cubes algorithm, store it into a point cloud,
-  // and copy the point cloud + connectivity into output
-  pcl::PointCloud<PointNT> cloud;
-
-  for (int x = 1; x < res_x_-1; ++x)
-    for (int y = 1; y < res_y_-1; ++y)
-      for (int z = 1; z < res_z_-1; ++z)
-      {
-        Eigen::Vector3i index_3d (x, y, z);
-        std::vector<float> leaf_node;
-        getNeighborList1D (leaf_node, index_3d);
-        if(!leaf_node.empty())
-          createSurface (leaf_node, index_3d, cloud);
-      }
-  pcl::toPCLPointCloud2 (cloud, output.cloud);
-
-  output.polygons.resize (cloud.size () / 3);
+  output.polygons.resize (intermediate_cloud_.size () / 3);
   for (size_t i = 0; i < output.polygons.size (); ++i)
   {
     pcl::Vertices v;
@@ -299,30 +273,10 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
     return;
   }
 
-  // Create grid
-  grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+  // real part of marching cube
+  performReconstructionProc();
 
-  // Populate tree
-  tree_->setInputCloud (input_);
-
-  getBoundingBox ();
-
-  // Transform the point cloud into a voxel grid
-  // This needs to be implemented in a child class
-  voxelizeData ();
-
-  // Run the actual marching cubes algorithm, store it into a point cloud,
-  // and copy the point cloud + connectivity into output
-  points.clear ();
-  for (int x = 1; x < res_x_-1; ++x)
-    for (int y = 1; y < res_y_-1; ++y)
-      for (int z = 1; z < res_z_-1; ++z)
-      {
-        Eigen::Vector3i index_3d (x, y, z);
-        std::vector<float> leaf_node;
-        getNeighborList1D (leaf_node, index_3d);
-        createSurface (leaf_node, index_3d, points);
-      }
+  points.swap(intermediate_cloud_);
 
   polygons.resize (points.size () / 3);
   for (size_t i = 0; i < polygons.size (); ++i)
@@ -335,6 +289,40 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   }
 }
 
+template <typename PointNT> void
+pcl::MarchingCubes<PointNT>::performReconstructionProc ()
+{
+  // Create grid
+  // grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
+  grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
+
+  // Populate tree
+  tree_->setInputCloud (input_);
+
+  getBoundingBox ();
+
+  // Transform the point cloud into a voxel grid
+  // This needs to be implemented in a child class
+  voxelizeData ();
+
+  // Run the actual marching cubes algorithm, store it into a point cloud,
+  // and copy the point cloud + connectivity into output
+  intermediate_cloud_.clear();
+
+  // preallocate memory assuming a hull
+  intermediate_cloud_.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2);
+
+  for (int x = 1; x < res_x_-1; ++x)
+    for (int y = 1; y < res_y_-1; ++y)
+      for (int z = 1; z < res_z_-1; ++z)
+      {
+        Eigen::Vector3i index_3d (x, y, z);
+        std::vector<float> leaf_node;
+        getNeighborList1D (leaf_node, index_3d);
+        if(!leaf_node.empty())
+          createSurface (leaf_node, index_3d, intermediate_cloud_);
+      }
+}
 
 
 #define PCL_INSTANTIATE_MarchingCubes(T) template class PCL_EXPORTS pcl::MarchingCubes<T>;
