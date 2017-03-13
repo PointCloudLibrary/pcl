@@ -46,7 +46,9 @@
 #include <pcl/recognition/point_types.h>
 #include <pcl/filters/convolution.h>
 
+#include <cmath>
 #include <list>
+#include <vector>
 
 namespace pcl
 {
@@ -1078,28 +1080,30 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
 
 // Equivalent to atan2(y/x) then quantize to 8 directions
 static uint8_t quantizedAngleFromXY(float x, float y) {
-  if (x==0.0)
-    return 0;
+  if (x == 0.0f || x == -0.0f)
+   return 4 + 1;
   float a = y / x;
 
-  // bin_width = 360 / 16
-  // borders = tan(bin_width / 2 + bin_width * index)
+  uint8_t ret;
+
   if (a > 0.198912367379658) {
     if (a > 1.496605762665489) {
-      return a > 5.027339492125846 ? 3 + 1 : 2 + 1;
+      ret = a > 5.027339492125846 ? 4 : 3;
     } else {
-      return a > 0.6681786379192989 ? 1 + 1 : 0 + 1;
+      ret = a > 0.6681786379192989 ? 2 : 1;
     }
   } else {
     if (a > -1.4966057626654885) {
-      return (a > -0.1989123673796579) ?
-        7 + 1 :
+      ret = (a > -0.1989123673796579) ?
+        0 :
         (a > -0.6681786379192988) ?
-          6 + 1 : 5 + 1;
+          7 : 6;
     } else {
-      return (a > -5.02733949212585) ? 4 + 1 : 3 + 1;
+      ret = (a > -5.02733949212585) ? 5 : 4;
     }
   }
+
+  return ret + 1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1193,7 +1197,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
           GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
           gradient.magnitude = sqr_mag4[id];
           //gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
-          gradient.angle = static_cast<float>(quantizedAngleFromXY(dx4[4], dy4[4]));
+          gradient.angle = static_cast<float>(quantizedAngleFromXY(dx4[id], dy4[id]));
           //printf("%f\n", gradient.angle);
           // assert(gradient.angle >= -180 &&
           //        gradient.angle <=  180);
