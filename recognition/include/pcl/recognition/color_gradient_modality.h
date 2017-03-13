@@ -226,10 +226,6 @@ namespace pcl
       void
       computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & cloud);
   
-      /** \brief Quantizes the color gradients. */
-      void
-      quantizeColorGradients ();
-  
       /** \brief Filters the quantized gradients. */
       void
       filterQuantizedColorGradients ();
@@ -260,7 +256,7 @@ namespace pcl
       float gradient_magnitude_threshold_feature_extraction_;
 
       /** \brief The point cloud which holds the max-RGB gradients. */
-      pcl::PointCloud<pcl::GradientXY> color_gradients_;
+      pcl::PointCloud<float> color_gradients_;
 
       /** \brief The spreading size. */
       size_t spreading_size_;
@@ -412,12 +408,6 @@ processInputData ()
   printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
 
-  // quantize gradients
-  quantizeColorGradients ();
-
-  printf("5 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
   // filter quantized gradients to get only dominants one + thresholding
   filterQuantizedColorGradients ();
 
@@ -470,12 +460,12 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       {
         if (mask (col_index, row_index) != 0)
         {
-          const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
+          const float & gradient_mag = color_gradients_ (col_index, row_index);
+          if (gradient_mag > gradient_magnitude_threshold_feature_extraction_
             && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
           {
             Candidate candidate;
-            candidate.magnitude = gradient.magnitude;
+            candidate.magnitude = gradient_mag;
             candidate.x = static_cast<float> (col_index);
             candidate.y = static_cast<float> (row_index);
 
@@ -964,12 +954,12 @@ extractAllFeatures (const MaskMap & mask, const size_t, const size_t modality_in
     {
       if (mask (col_index, row_index) != 0)
       {
-        const GradientXY & gradient = color_gradients_ (col_index, row_index);
-        if (gradient.magnitude > gradient_magnitude_threshold_feature_extraction_
+        const float& gradient_mag = color_gradients_ (col_index, row_index);
+        if (gradient_mag > gradient_magnitude_threshold_feature_extraction_
           && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
         {
           Candidate candidate;
-          candidate.magnitude= gradient.magnitude;
+          candidate.magnitude= gradient_mag;
           candidate.x = static_cast<float> (col_index);
           candidate.y = static_cast<float> (row_index);
 
@@ -1044,27 +1034,27 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
 
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_r);
-        gradient.angle = atan2 (r_dy, r_dx) * 180.0f / pi;
+        float gradient_mag = sqrt (sqr_mag_r);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient_mag;
+        quantized_color_gradients_(col_index+1, row_index+1) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : atan2 (r_dy, r_dx) * 180.0f / pi;
       }
       else if (sqr_mag_g > sqr_mag_b)
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_g);
-        gradient.angle = atan2 (g_dy, g_dx) * 180.0f / pi;
+        float gradient_mag = sqrt (sqr_mag_g);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient_mag;
+        quantized_color_gradients_(col_index+1, row_index+1) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : atan2 (g_dy, g_dx) * 180.0f / pi;
       }
       else
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrt (sqr_mag_b);
-        gradient.angle = atan2 (b_dy, b_dx) * 180.0f / pi;
+        float gradient_mag = sqrt (sqr_mag_b);
 
-        color_gradients_ (col_index+1, row_index+1) = gradient;
+        color_gradients_ (col_index+1, row_index+1) = gradient_mag;
+        quantized_color_gradients_(col_index+1, row_index+1) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : atan2 (b_dy, b_dx) * 180.0f / pi;
       }
 
       assert (color_gradients_ (col_index+1, row_index+1).angle >= -180 &&
@@ -1118,8 +1108,8 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   color_gradients_.points.resize (width*height);
   color_gradients_.width = width;
   color_gradients_.height = height;
-
-  const float pi = tanf (1.0f) * 2.0f;
+  quantized_color_gradients_.resize (width, height);
+  //memset(&quantized_color_gradients_[0], 0, sizeof(uint8_t) * width * height);
 
   //#pragma omp parallel for
   for (int row_index = 1; row_index < height-1; ++row_index)
@@ -1194,10 +1184,14 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
           }
 
           size_t id = 4 * pixelId + max_channel;
-          GradientXY &gradient = color_gradients_(col_index + pixelId, row_index);
-          gradient.magnitude = sqr_mag4[id];
+
+          color_gradients_(col_index + pixelId, row_index) = sqr_mag4[id];
           //gradient.angle = atan2f(static_cast<float>(dy4[id]), static_cast<float>(dx4[id])) * (180.0f / pi);
-          gradient.angle = static_cast<float>(quantizedAngleFromXY(dx4[id], dy4[id]));
+          //gradient.angle = static_cast<float>(quantizedAngleFromXY(dx4[id], dy4[id]));
+
+          quantized_color_gradients_ (col_index + pixelId, row_index) = sqr_mag4[id] < gradient_magnitude_threshold_ ?
+            0 : quantizedAngleFromXY(dx4[id], dy4[id]);
+
           //printf("%f\n", gradient.angle);
           // assert(gradient.angle >= -180 &&
           //        gradient.angle <=  180);
@@ -1244,36 +1238,33 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
 
       if (sqr_mag_r > sqr_mag_g && sqr_mag_r > sqr_mag_b)
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_r));
-        gradient.angle = static_cast<float>(quantizedAngleFromXY(r_dx, r_dy));
-        //gradient.angle = atan2f (static_cast<float> (r_dy), static_cast<float> (r_dx)) * 180.0f / pi;
-        //if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        //if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        float gradient_mag = sqrtf (static_cast<float> (sqr_mag_r));
+        //gradient.angle = static_cast<float>(quantizedAngleFromXY(r_dx, r_dy));
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_ (col_index, row_index) = gradient_mag;
+        quantized_color_gradients_ (col_index, row_index) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : quantizedAngleFromXY(r_dx, r_dy);
       }
       else if (sqr_mag_g > sqr_mag_b)
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_g));
-        gradient.angle = static_cast<float>(quantizedAngleFromXY(g_dx, g_dy));
-        // gradient.angle = atan2f (static_cast<float> (g_dy), static_cast<float> (g_dx)) * 180.0f / pi;
-        // if (gradient.angle < -180.0f) gradient.angle += 360.0f;
-        // if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
+        float gradient_mag = sqrtf (static_cast<float> (sqr_mag_g));
+        //gradient.angle = static_cast<float>(quantizedAngleFromXY(g_dx, g_dy));
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_ (col_index, row_index) = gradient_mag;
+        quantized_color_gradients_ (col_index, row_index) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : quantizedAngleFromXY(g_dx, g_dy);
       }
       else
       {
-        GradientXY gradient;
-        gradient.magnitude = sqrtf (static_cast<float> (sqr_mag_b));
+        float gradient_mag = sqrtf (static_cast<float> (sqr_mag_b));
         // gradient.angle = atan2f (static_cast<float> (b_dy), static_cast<float> (b_dx)) * 180.0f / pi;
         // if (gradient.angle < -180.0f) gradient.angle += 360.0f;
         // if (gradient.angle >= 180.0f) gradient.angle -= 360.0f;
-        gradient.angle = static_cast<float>(quantizedAngleFromXY(b_dx, b_dy));
+        //gradient.angle = static_cast<float>(quantizedAngleFromXY(b_dx, b_dy));
 
-        color_gradients_ (col_index, row_index) = gradient;
+        color_gradients_ (col_index, row_index) = gradient_mag;
+        quantized_color_gradients_ (col_index, row_index) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : quantizedAngleFromXY(b_dx, b_dy);
       }
 
       // assert (color_gradients_ (col_index, row_index).angle >= -180 &&
@@ -1282,75 +1273,6 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
   }
 
   return;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT>
-void
-pcl::ColorGradientModality<PointInT>::
-quantizeColorGradients ()
-{
-  //std::cerr << "quantize this, bastard!!!" << std::endl;
-
-  //unsigned char quantization_map[16] = {0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7};
-  //unsigned char quantization_map[16] = {1,2,3,4,5,6,7,8,1,2,3,4,5,6,7,8};
-
-  //for (float angle = 0.0f; angle < 360.0f; angle += 1.0f)
-  //{
-  //  const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
-  //  std::cerr << angle << ": " << quantized_value << std::endl;
-  //}
-
-
-  const size_t width = input_->width;
-  const size_t height = input_->height;
-
-  quantized_color_gradients_.resize (width, height);
-
-  const float angleScale = 16.0f/360.0f;
-
-  //float min_angle = std::numeric_limits<float>::max ();
-  //float max_angle = -std::numeric_limits<float>::max ();
-  //#pragma omp parallel for
-  for (size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (size_t col_index = 0; col_index < width; ++col_index)
-    {
-      if (color_gradients_ (col_index, row_index).magnitude < gradient_magnitude_threshold_) 
-      {
-        quantized_color_gradients_ (col_index, row_index) = 0;
-        continue;
-      }
-
-      //const float angle = 11.25f + color_gradients_ (col_index, row_index).angle + 180.0f;
-      //const int quantized_value = (static_cast<int> (angle * angleScale)) & 7;
-      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value + 1);
-      quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (color_gradients_ (col_index, row_index).angle);
-      // if (quantized_color_gradients_ (col_index, row_index) < 0 || quantized_color_gradients_ (col_index, row_index) > 8) {
-      //   printf("omg rol_index col_index %d %d %d\n", row_index, col_index, quantized_color_gradients_ (col_index, row_index));
-      //   std::exit(-1);
-      // }
-
-      //const float angle = color_gradients_ (col_index, row_index).angle + 180.0f;
-
-      //min_angle = std::min (min_angle, angle);
-      //max_angle = std::max (max_angle, angle);
-
-      //if (angle < 0.0f || angle >= 360.0f)
-      //{
-      //  std::cerr << "angle shitty: " << angle << std::endl;
-      //}
-
-      //const int quantized_value = quantization_map[static_cast<int> (angle * angleScale)];
-      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> (quantized_value); 
-
-      //assert (0 <= quantized_value && quantized_value < 16);
-      //quantized_color_gradients_ (col_index, row_index) = quantization_map[quantized_value];
-      //quantized_color_gradients_ (col_index, row_index) = static_cast<unsigned char> ((quantized_value & 7) + 1); // = (quantized_value % 8) + 1
-    }
-  }
-
-  //std::cerr << ">>>>> " << min_angle << ", " << max_angle << std::endl;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
