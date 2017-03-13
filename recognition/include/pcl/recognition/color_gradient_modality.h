@@ -498,8 +498,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           float smallest_distance = std::numeric_limits<float>::max ();
           for (size_t id2 = 0; id2 < list2.size(); ++id2)
           {
-            const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
-            const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
+            const float dx = list1[id1].x - list2[id2].x;
+            const float dy = list1[id1].y - list2[id2].y;
 
             const float distance = dx*dx + dy*dy;
 
@@ -531,8 +531,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             if (id2 == id3)
               continue;
 
-            const float dx = static_cast<float> (list2[id2].x) - static_cast<float> (list2[id3].x);
-            const float dy = static_cast<float> (list2[id2].y) - static_cast<float> (list2[id3].y);
+            const float dx = list2[id2].x - list2[id3].x;
+            const float dy = list2[id2].y - list2[id3].y;
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -547,8 +547,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
           // check current feature
           {
-            const float dx = static_cast<float> (list2[id2].x) - static_cast<float> (list1[best_index].x);
-            const float dy = static_cast<float> (list2[id2].x) - static_cast<float> (list1[best_index].y);
+            const float dx = list2[id2].x - list1[best_index].x;
+            const float dy = list2[id2].x - list1[best_index].y;
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -646,30 +646,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
               _mm256_shuffle_ps(__list1_c01, __list1_c23, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 0 2 1 3 0 2 1 3
               _mm256_shuffle_ps(__list1_c45, __list1_c67, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 4 6 5 7 4 6 5 7
               (2 << 6) + (0 << 4) + (2 << 2) + 0);
-    //      __magnitude8 = _mm256_permutevar8x32_ps(__magnitude8, __magnitude_permute);
-
-          // _mm256_store_ps(best_score8, __magnitude8);
-          // printf("magnitude %f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[4], best_score8[1], best_score8[5],
-          //   best_score8[2], best_score8[6], best_score8[3], best_score8[7]);
-          // printf("%f %f %f %f %f %f %f %f\n", 
-          //   list1[0].magnitude,
-          //   list1[1].magnitude,
-          //   list1[2].magnitude,
-          //   list1[3].magnitude,
-          //   list1[4].magnitude,
-          //   list1[5].magnitude,
-          //   list1[6].magnitude,
-          //   list1[7].magnitude);
 
           __m256 __list1_xy_0213 = _mm256_shuffle_ps(__list1_c01, __list1_c23, (3 << 6) + (2 << 4) + (3 << 2) + 2);
           __m256 __list1_xy_4657 = _mm256_shuffle_ps(__list1_c45, __list1_c67, (3 << 6) + (2 << 4) + (3 << 2) + 2);
-
-          // _mm256_store_ps(best_score8, __list1_c01);
-          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
-          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
-          // _mm256_store_ps(best_score8, __list1_c23);
-          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
-          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
 
           __m256 __xy_sqr_0213 = _mm256_sub_ps(__list1_xy_0213, __list2_xy);
           __xy_sqr_0213 = _mm256_mul_ps(__xy_sqr_0213, __xy_sqr_0213);
@@ -679,47 +658,11 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           // Order: 0 4 1 5 2 6 3 7
           __m256 __dist_8 = _mm256_hadd_ps(__xy_sqr_0213, __xy_sqr_4657);
 
-          // _mm256_store_ps(best_score8, __dist_8);
-          // // // _mm256_store_ps(best_score8, __xy_sqr_0213);
-          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[4], best_score8[1], best_score8[5],
-          //   best_score8[2], best_score8[6], best_score8[3], best_score8[7]);
-          // // // printf("%f %f %f %f %f %f %f %f\n", 
-          // // //   (list1[0].x - list2[id2].x),
-          // // //   (list1[0].y - list2[id2].y),
-          // // //   (list1[1].x - list2[id2].x),
-          // // //   (list1[1].y - list2[id2].y),
-          // // //   (list1[2].x - list2[id2].x),
-          // // //   (list1[2].y - list2[id2].y),
-          // // //   (list1[3].x - list2[id2].x),
-          // // //   (list1[3].y - list2[id2].y));
-          // _mm256_store_ps(best_score8, __dist_8);
-          // printf("dist8 %f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[4], best_score8[1], best_score8[5],
-          //    best_score8[2], best_score8[6], best_score8[3], best_score8[7]);
-          // printf("%f %f %f %f %f %f %f %f\n", 
-          //   (list1[0].x - list2[id2].x) * (list1[0].x - list2[id2].x) + (list1[0].y - list2[id2].y) * (list1[0].y - list2[id2].y),
-          //   (list1[1].x - list2[id2].x) * (list1[1].x - list2[id2].x) + (list1[1].y - list2[id2].y) * (list1[1].y - list2[id2].y),
-          //   (list1[2].x - list2[id2].x) * (list1[2].x - list2[id2].x) + (list1[2].y - list2[id2].y) * (list1[2].y - list2[id2].y),
-          //   (list1[3].x - list2[id2].x) * (list1[3].x - list2[id2].x) + (list1[3].y - list2[id2].y) * (list1[3].y - list2[id2].y),
-          //   (list1[4].x - list2[id2].x) * (list1[4].x - list2[id2].x) + (list1[4].y - list2[id2].y) * (list1[4].y - list2[id2].y),
-          //   (list1[5].x - list2[id2].x) * (list1[5].x - list2[id2].x) + (list1[5].y - list2[id2].y) * (list1[5].y - list2[id2].y),
-          //   (list1[6].x - list2[id2].x) * (list1[6].x - list2[id2].x) + (list1[6].y - list2[id2].y) * (list1[6].y - list2[id2].y),
-          //   (list1[7].x - list2[id2].x) * (list1[7].x - list2[id2].x) + (list1[7].y - list2[id2].y) * (list1[7].y - list2[id2].y));
-          //std::exit(-1);
-
           __m256 __smallest_distance8 = _mm256_loadu_ps(&list1_smallest_dist[id1]);
-          //__m256 __update_dist_mask = _mm256_cmp_ps(__dist_8, __smallest_distance8, _CMP_LT_OQ);
-
           __smallest_distance8 = _mm256_min_ps(__smallest_distance8, __dist_8);
           _mm256_storeu_ps(&list1_smallest_dist[id1], __smallest_distance8);
 
-          // _mm256_store_ps(best_score8, __smallest_distance8);
-          // printf("small8 %f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[4], best_score8[1], best_score8[5],
-          //   best_score8[2], best_score8[6], best_score8[3], best_score8[7]);
-
           __m256 __score8 = _mm256_mul_ps(__smallest_distance8, __magnitude8);
-          // _mm256_store_ps(best_score8, __score8);
-          // printf("score8 %f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[4], best_score8[1], best_score8[5],
-          //   best_score8[2], best_score8[6], best_score8[3], best_score8[7]);
           __m256 __update_score_mask = _mm256_cmp_ps(__score8, __best_score8, _CMP_GT_OQ);
 
           __best_index8 = _mm256_blendv_epi8(__best_index8, 
@@ -727,34 +670,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             _mm256_castps_si256(__update_score_mask));
 
           __best_score8 = _mm256_blendv_ps(__best_score8, __score8, __update_score_mask);
-
-          // _mm256_store_ps(best_score8, __best_score8);
-          // printf("%f %f %f %f %f %f %f %f\n", best_score8[0], best_score8[1], best_score8[2], best_score8[3],
-          //   best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
-          // for (size_t i = 0; i < 8; ++i) {
-          //   _mm256_store_si256((__m256i*) best_index8, __best_index8);
-          //   if (best_index8[i] != std::numeric_limits<uint32_t>::max() && best_index8[i] > 200000) {
-          //     printf("%u %u %u %u %u %u %u %u\n", best_index8[0], best_index8[1], best_index8[2], best_index8[3],
-          //        best_index8[4], best_index8[5], best_index8[6], best_index8[7]);
-          //     std::exit(-1);
-          //   }
-          // }
-          // _mm256_store_ps(best_score8, __best_score8);
-          // _mm256_store_si256((__m256i*) best_index8, __best_index8);
-          
-          //_mm256_store_ps(best_score8, __score8);
-          //_mm256_store_si256((__m256i*) best_index8, _mm256_set_epi32(id1 + 7, id1 + 5, id1 + 3, id1 + 1, id1 + 6, id1 + 4, id1 + 2, id1));
-
-          // for (size_t i = 0; i < 8; ++i) {
-          //   printf("best %f %u %f\n", best_score8[i], best_index8[i], list1_smallest_dist[id1]);
-          //   if (best_score8[i] > best_score)
-          //   {
-          //     best_score = best_score8[i];
-          //     best_index = best_index8[i];
-          //     //printf("best %f %u\n", best_score, best_index);
-          //   }
-          // }
-          // std::exit(-1);
         }
 
         _mm256_store_ps(best_score8, __best_score8);
