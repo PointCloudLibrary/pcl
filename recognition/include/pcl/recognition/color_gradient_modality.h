@@ -1202,7 +1202,7 @@ filterQuantizedColorGradients ()
   filtered_quantized_color_gradients_.resize (width, height);
 
   // filter data
-  //#pragma omp parallel for
+  #pragma omp parallel for
   for (size_t row_index = 1; row_index < height-1; ++row_index)
   {
     for (size_t col_index = 1; col_index < width-1; ++col_index)
