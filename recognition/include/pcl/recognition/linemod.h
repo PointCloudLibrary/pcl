@@ -351,6 +351,13 @@ namespace pcl
                             const std::vector<MaskMap*> & masks,
                             const RegionXY & region);
 
+
+      void
+      createTemplate (const std::vector<QuantizableModality*> & modalities,
+                      const std::vector<MaskMap*> & masks,
+                      const RegionXY & region,
+                      SparseQuantizedMultiModTemplate & linemod_template);
+
       /** \brief Adds the specified template to the matching queue.
         * \param[in] linemod_template the template to add.
         */
@@ -461,6 +468,18 @@ namespace pcl
         */
       void 
       deserialize (std::istream & stream);
+
+      inline SparseQuantizedMultiModTemplate &
+      getTemplate (int template_id)
+      {
+        return (templates_[template_id]);
+      }
+
+      void
+      resizeTemplates (size_t n)
+      {
+        return templates_.resize(n);
+      }
 
 
     private:

@@ -478,10 +478,10 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     //list1.sort();
     std::sort(list1.begin(), list1.end());
 
-    printf("size %d\n", list1.size());
+    // printf("size %d\n", list1.size());
 
-    printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
-    start = getTickCount();
+    // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+    // start = getTickCount();
 
     if (variable_feature_nr_)
     {
@@ -601,13 +601,13 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         }
         return;
       }
-      printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
-      start = getTickCount();
+      // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
+      // start = getTickCount();
 
       list2.push_back (list1[0]);
-      printf("2.1 %f\n", 1000.0*(getTickCount()-start)/1e9);
-      start = getTickCount();
-      printf("size before%zu\n", list2.size());
+      // printf("2.1 %f\n", 1000.0*(getTickCount()-start)/1e9);
+      // start = getTickCount();
+      // printf("size before%zu\n", list2.size());
       std::vector<float> list1_smallest_dist(list1.size(), std::numeric_limits<float>::max());
       while (list2.size () != nr_features)
       {
@@ -751,9 +751,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           break;
         }
       }
-      printf("size %d\n", list2.size());
-      printf("3 - extractfe %f\n", 1000.0*(getTickCount()-start)/1e9);
-      start = getTickCount();
+      // printf("size %d\n", list2.size());
+      // printf("3 - extractfe %f\n", 1000.0*(getTickCount()-start)/1e9);
+      // start = getTickCount();
     }
   }
   /*else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)

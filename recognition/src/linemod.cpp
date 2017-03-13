@@ -76,6 +76,20 @@ pcl::LINEMOD::createAndAddTemplate (const std::vector<pcl::QuantizableModality*>
 
   SparseQuantizedMultiModTemplate linemod_template;
 
+  createTemplate(modalities, masks, region, linemod_template);
+
+  // add template to template storage
+  templates_.push_back(linemod_template);
+
+  return static_cast<int> (templates_.size () - 1);
+}
+
+void
+pcl::LINEMOD::createTemplate (const std::vector<QuantizableModality*> & modalities,
+                              const std::vector<MaskMap*> & masks,
+                              const RegionXY & region,
+                              SparseQuantizedMultiModTemplate & linemod_template)
+{
   // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
   const size_t nr_features_per_modality = 63;
   const size_t nr_modalities = modalities.size();
@@ -106,11 +120,6 @@ pcl::LINEMOD::createAndAddTemplate (const std::vector<pcl::QuantizableModality*>
   //linemod_template.region.y = region.y - centerY;
   linemod_template.region.width = region.width;
   linemod_template.region.height = region.height;
-
-  // add template to template storage
-  templates_.push_back(linemod_template);
-
-  return static_cast<int> (templates_.size () - 1);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
