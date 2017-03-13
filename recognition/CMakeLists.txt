@@ -24,6 +24,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/crh_alignment.h"
         "include/pcl/${SUBSYS_NAME}/linemod.h"
         "include/pcl/${SUBSYS_NAME}/dotmod.h"
+        "include/pcl/${SUBSYS_NAME}/grayscale_gradient_modality.h"
         "include/pcl/${SUBSYS_NAME}/quantizable_modality.h"
         "include/pcl/${SUBSYS_NAME}/quantized_map.h"
         "include/pcl/${SUBSYS_NAME}/dot_modality.h"
