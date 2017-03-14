@@ -68,7 +68,8 @@ pcl::LINEMOD::~LINEMOD()
 int 
 pcl::LINEMOD::createAndAddTemplate (const std::vector<pcl::QuantizableModality*> & modalities,
                       const std::vector<pcl::MaskMap*> & masks,
-                      const pcl::RegionXY & region)
+                      const pcl::RegionXY & region,
+                      size_t nr_features_per_modality)
 {
   // assuming width and height is same for all modalities; should we check this??
   //const int width = modalities[0]->getQuantizedMap().getWidth ();
@@ -76,7 +77,7 @@ pcl::LINEMOD::createAndAddTemplate (const std::vector<pcl::QuantizableModality*>
 
   SparseQuantizedMultiModTemplate linemod_template;
 
-  createTemplate(modalities, masks, region, linemod_template);
+  createTemplate(modalities, masks, region, linemod_template, nr_features_per_modality);
 
   // add template to template storage
   templates_.push_back(linemod_template);
@@ -88,10 +89,9 @@ void
 pcl::LINEMOD::createTemplate (const std::vector<QuantizableModality*> & modalities,
                               const std::vector<MaskMap*> & masks,
                               const RegionXY & region,
-                              SparseQuantizedMultiModTemplate & linemod_template)
+                              SparseQuantizedMultiModTemplate & linemod_template,
+                              size_t nr_features_per_modality)
 {
-  // select N features from every modality (N = 50, hardcoded; CHANGE this to a parameter!!!)
-  const size_t nr_features_per_modality = 63;
   const size_t nr_modalities = modalities.size();
   for (size_t modality_index = 0; modality_index < nr_modalities; ++modality_index)
   {
@@ -1087,7 +1087,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
               __tmp_score_sums = _mm256_add_epi8(__tmp_score_sums, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + mem_index)));
               _mm256_store_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
             }
-;
+
             for (; mem_index < mem_size; ++mem_index)
             {
               tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
@@ -1107,11 +1107,11 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
             __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
             // First half
             __m256i __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
-            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
+            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
             _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
             // Second half
             __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
-            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepi8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
+            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
             _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
           }
           for (; mem_index < mem_size; ++mem_index)
