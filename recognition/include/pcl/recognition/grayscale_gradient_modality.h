@@ -982,22 +982,17 @@ computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::Cons
   gradients_.height = height;
   quantized_gradients_.resize (width, height);
 
+#if __AVX2__
+  static const __m256i __index_shuffle = _mm256_set_epi8(
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 12, 8, 4, 0,
+    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 12, 8, 4, 0);
+  static const __m256i __ones = _mm256_set1_epi32(0xFFFFFFFF);
+#endif
   //#pragma omp parallel for
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     int col_index = 1;
 #if __AVX2__
-    static const __m256i __index_shuffle = _mm256_set_epi8(
-        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 12, 8, 4, 0,
-        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 12, 8, 4, 0);
-
-    static const __m256i __ones = _mm256_set1_epi32(0xFFFFFFFF);
-
-    float best_score8[8] __attribute__((aligned(32)));
-    int32_t buffff8[8] __attribute__((aligned(32)));
-    uint8_t xxxxxxx[16] __attribute__((aligned(32)));
-    int16_t sixteen[16] __attribute__((aligned(32)));
-
     for (; col_index <= width - 1 - 16; col_index += 16)
     {
       // __m256i __loadtemp = _mm256_loadu_si256((const __m256i*) &cloud->points[(row_index-1)*width + (col_index-1)]);
