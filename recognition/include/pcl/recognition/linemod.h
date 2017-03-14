@@ -349,14 +349,16 @@ namespace pcl
       int 
       createAndAddTemplate (const std::vector<QuantizableModality*> & modalities,
                             const std::vector<MaskMap*> & masks,
-                            const RegionXY & region);
+                            const RegionXY & region,
+                            size_t nr_features_per_modality = 63);
 
 
       void
       createTemplate (const std::vector<QuantizableModality*> & modalities,
                       const std::vector<MaskMap*> & masks,
                       const RegionXY & region,
-                      SparseQuantizedMultiModTemplate & linemod_template);
+                      SparseQuantizedMultiModTemplate & linemod_template,
+                      size_t nr_features_per_modality = 63);
 
       /** \brief Adds the specified template to the matching queue.
         * \param[in] linemod_template the template to add.
