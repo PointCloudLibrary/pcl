@@ -986,8 +986,10 @@ computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::Cons
   for (int row_index = 1; row_index < height-1; ++row_index)
   {
     int col_index = 1;
-#if 0 // __AVX2__
-    for (; col_index <= width - 1 - 4; col_index += 4)
+#if 0// __AVX2__
+    float best_score8[8] __attribute__((aligned(32)));
+    int32_t buffff8[8] __attribute__((aligned(32)));
+    for (; col_index <= width - 1 - 16; col_index += 16)
     {
       // __m256i __loadtemp = _mm256_loadu_si256((const __m256i*) &cloud->points[(row_index-1)*width + (col_index-1)]);
       // __m256i __7 = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(__loadtemp, 0));
@@ -1021,12 +1023,34 @@ computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::Cons
       __m256i __dx = _mm256_sub_epi16(_mm256_add_epi16(_mm256_add_epi16(__9, _mm256_slli_epi16(__6, 1)), __3),
                                       _mm256_add_epi16(_mm256_add_epi16(__7, _mm256_slli_epi16(__4, 1)), __1));
       
-      __m256i __dx8 = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(__dx, 0));
-      __m256i __dy8 = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(__dy, 0));
-      
-      __m256 __mag_8 = _mm256_sqrt_ps(_mm256_cvtepi32_ps(_mm256_add_epi32(_mm256_mul_epi32(__dx8, __dx8), _mm256_mul_epi32(__dy8, __dy8))));
+      __m256 __dx8 = _mm256_cvtepi32_ps(_mm256_cvtepi16_epi32(_mm256_extracti128_si256(__dx, 0)));
+      __m256 __dy8 = _mm256_cvtepi32_ps(_mm256_cvtepi16_epi32(_mm256_extracti128_si256(__dy, 0)));
 
-      __m256 __ydx8 = _mm256_div_ps(_mm256_cvtepi32_ps(__dy8), _mm256_cvtepi32_ps(__dx8));
+      _mm256_store_ps(best_score8, __dx8);
+      printf("dx8 %f %f %f %f %f %f %f %f\n",
+        best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+        best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+
+      _mm256_store_ps(best_score8, __dy8);
+      printf("dy8 %f %f %f %f %f %f %f %f\n",
+        best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+        best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+      
+      // TODO: Use FMA3
+      __m256 __mag_8 = _mm256_sqrt_ps(_mm256_add_ps(_mm256_mul_ps(__dx8, __dx8), _mm256_mul_ps(__dy8, __dy8)));
+
+      /*_mm256_store_si256((__m256i*) buffff8, _mm256_mul_epi32(__dx8, __dx8));
+      printf("magaaa %d %d %d %d %d %d %d %d\n",
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3],
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);*/
+
+
+      _mm256_store_ps(best_score8, __mag_8);
+      printf("mag8 %f %f %f %f %f %f %f %f\n",
+        best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+        best_score8[4], best_score8[5], best_score8[6], best_score8[7]);
+
+      __m256 __ydx8 = _mm256_div_ps(__dy8, __dx8);
 
       _mm256_storeu_ps(&gradients_(col_index, row_index), __mag_8);
 
@@ -1037,62 +1061,94 @@ computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::Cons
         255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 12, 8, 4, 0);
 
       // Is this really faster than looping?...
-      #define QUANTIZE_ANGLE(index_var_name) \
-      __m256i __##index_var_name = _mm256_setzero_si256(); \
+      #define QUANTIZE_ANGLE(__index_var) \
+      __index_var = _mm256_setzero_si256(); \
           \
-      __accum_mask = _mm256_cmp_ps(__mag_8, _mm256_set1_ps(gradient_magnitude_threshold_), _CMP_LT_OQ); \
+      __accum_mask = _mm256_castps_si256(_mm256_cmp_ps(__mag_8, _mm256_set1_ps(gradient_magnitude_threshold_), _CMP_LT_OQ)); \
         \
+      _mm256_store_si256((__m256i*) buffff8, __accum_mask); \
+      printf("accum %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
       __update_mask =    \
         _mm256_xor_si256(   \
           __accum_mask, \
           _mm256_or_si256( \
             _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(5.027339492125846), _CMP_GT_OQ)), \
-            _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-5.02733949212585), _CMP_LT_OQ))); \
+            _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-5.02733949212585), _CMP_LT_OQ)))); \
+      _mm256_store_si256((__m256i*) buffff8, __update_mask); \
+      printf("update %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(5), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(5), __update_mask); \
                                                                         \
+      _mm256_store_si256((__m256i*) buffff8, __index_var); \
+      printf("index 5 - %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(1.496605762665489), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(4), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(4), __update_mask); \
                                                                         \
+      _mm256_store_si256((__m256i*) buffff8, __index_var); \
+      printf("index 4 - %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(0.6681786379192989), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(3), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(3), __update_mask); \
                                                                         \
+      _mm256_store_si256((__m256i*) buffff8, __index_var); \
+      printf("index 3 - %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(0.198912367379658), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(2), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(2), __update_mask); \
                                                                         \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-0.1989123673796579), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(1), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(1), __update_mask); \
                                                                          \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-0.6681786379192988), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask);                                                                                 \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(8), __update_mask);                                                                            \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(8), __update_mask);                                                                            \
                 \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-1.4966057626654885), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(7), __update_mask); \
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(7), __update_mask); \
                 \
       __update_mask = _mm256_xor_si256(__accum_mask, _mm256_castps_si256(_mm256_cmp_ps(__ydx8, _mm256_set1_ps(-5.02733949212585), _CMP_GT_OQ))); \
       __accum_mask = _mm256_or_si256(__update_mask, __accum_mask); \
-      __##index_var_name = _mm256_blendv_epi8(__##index_var_name, _mm256_set1_epi32(6), __update_mask); \
-         \
-      __##index_var_name = _mm256_shuffle_epi8(__##index_var_name, __index_shuffle); \
-      __##index_var_name = _mm256_permutevar8x32_epi32(__##index_var_name, _mm256_set_epi32(4, 0, 4, 0, 4, 0, 4, 0));
+      __index_var = _mm256_blendv_epi8(__index_var, _mm256_set1_epi32(6), __update_mask); \
+      _mm256_store_si256((__m256i*) buffff8, __index_var); \
+      printf("index first 8 %d %d %d %d %d %d %d %d\n", \
+        buffff8[0], buffff8[1], buffff8[2], buffff8[3], \
+        buffff8[4], buffff8[5], buffff8[6], buffff8[7]);   \
+      __index_var = _mm256_shuffle_epi8(__index_var, __index_shuffle); \
+      __index_var = _mm256_permutevar8x32_epi32(__index_var, _mm256_set_epi32(4, 0, 4, 0, 4, 0, 4, 0));
       
+      _mm256_store_ps(best_score8, __ydx8);
+      printf("best score %f %f %f %f %f %f %f %f\n",
+        best_score8[0], best_score8[1], best_score8[2], best_score8[3],
+        best_score8[4], best_score8[5], best_score8[6], best_score8[7]); 
+
       // index 0-7 = [0:63]
-      QUANTIZE_ANGLE(index_first8);
+      __m256i __index_first8;
+      QUANTIZE_ANGLE(__index_first8);
 
       // Second half
-      __dx8 = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(__dx, 1));
-      __dy8 = _mm256_cvtepu16_epi32(_mm256_extracti128_si256(__dy, 1));
-      __ydx8 = _mm256_div_ps(_mm256_cvtepi32_ps(__dy8), _mm256_cvtepi32_ps(__dx8));
-      __mag_8 = _mm256_sqrt_ps(_mm256_cvtepi32_ps(_mm256_add_epi32(_mm256_mul_epi32(__dx8, __dx8), _mm256_mul_epi32(__dy8, __dy8))));
+      __dx8 = _mm256_cvtepi32_ps(_mm256_cvtepi16_epi32(_mm256_extracti128_si256(__dx, 1)));
+      __dy8 = _mm256_cvtepi32_ps(_mm256_cvtepi16_epi32(_mm256_extracti128_si256(__dy, 1)));
+      __ydx8 = _mm256_div_ps(__dy8, __dx8);
+      // TODO: Use FMA3
+      __mag_8 = _mm256_sqrt_ps(_mm256_add_ps(_mm256_mul_ps(__dx8, __dx8), _mm256_mul_ps(__dy8, __dy8)));
+
 
       // index 8-15 = [0:63]
-      QUANTIZE_ANGLE(index_second8);
+      __m256i __index_second8;
+      QUANTIZE_ANGLE(__index_second8);
 
       #undef QUANTIZE_ANGLE
 
@@ -1101,6 +1157,40 @@ computeMaxGradientsSobel (const typename pcl::PointCloud<pcl::Intensity8u>::Cons
       _mm_storeu_si128(
         (__m128i*) &quantized_gradients_ (col_index, row_index),
         _mm256_extracti128_si256(_mm256_castps_si256(_mm256_shuffle_ps(_mm256_castsi256_ps(__index_first8), _mm256_castsi256_ps(__index_second8), (1 << 6) + (0 << 4) + (1 << 2) + 0)), 0));
+
+      for (size_t a = 0; a < 16; ++a) {
+        printf("a %d %d\n", a, quantized_gradients_ (col_index + a, row_index));
+      }
+      
+      for (size_t a = 0; a < 16; ++a) {
+        const int r7 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index-1) + a].intensity);
+        const int r8 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index) + a].intensity);
+        const int r9 = static_cast<int> (cloud->points[(row_index-1)*width + (col_index+1) + a].intensity);
+        const int r4 = static_cast<int> (cloud->points[(row_index)*width + (col_index-1) + a].intensity);
+        const int r6 = static_cast<int> (cloud->points[(row_index)*width + (col_index+1) + a].intensity);
+        const int r1 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index-1) + a].intensity);
+        const int r2 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index) + a].intensity);
+        const int r3 = static_cast<int> (cloud->points[(row_index+1)*width + (col_index+1) + a].intensity);
+
+        const int r_dx = r9 + 2*r6 + r3 - (r7 + 2*r4 + r1);
+        const int r_dy = r1 + 2*r2 + r3 - (r7 + 2*r8 + r9);
+
+        const int sqr_mag_r = r_dx*r_dx + r_dy*r_dy;
+
+        float gradient_mag = sqrtf (static_cast<float> (sqr_mag_r));
+        //gradient.angle = static_cast<float>(quantizedAngleFromXY(r_dx, r_dy));
+
+        gradients_ (col_index + a, row_index) = gradient_mag;
+        quantized_gradients_ (col_index + a, row_index) = gradient_mag < gradient_magnitude_threshold_ ?
+          0 : quantizedAngleFromXY(r_dx, r_dy);
+        printf("b %d %f %d mag: %f\n",
+          a,
+          gradients_ (col_index + a, row_index),
+          quantized_gradients_ (col_index + a, row_index),
+          gradient_mag);
+      }
+      std::exit(-1);
+
 
     }
 #endif
