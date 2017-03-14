@@ -1057,6 +1057,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       __m256i __2 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index+1)*width + (col_index)]));
       __m256i __3 = _mm256_cvtepu8_epi16(_mm_loadu_si128((const __m128i*) &cloud->points[(row_index+1)*width + (col_index+1)]));
 
+      // Reverse?
       __dy = _mm256_sub_epi16(__dy,
                               _mm256_add_epi16(_mm256_add_epi16(__1, _mm256_slli_epi16(__2, 1)), __3));
 
@@ -1068,6 +1069,7 @@ computeMaxColorGradientsSobel (const typename pcl::PointCloud<pcl::RGB>::ConstPt
       __m256i __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dx, 0));
       __m256i __sqr_mag01 = _mm256_mul_epi32(__temp, __temp);
       __temp = _mm256_cvtepi16_epi32(_mm256_extractf128_si256(__dy, 0));
+      // mul32 ok?
       __sqr_mag01 = _mm256_add_epi32(__sqr_mag01, _mm256_mul_epi32(__temp, __temp));
 
       float sqr_mag4[16] __attribute__((aligned(32)));
