@@ -366,9 +366,9 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
   const size_t width = mask.getWidth ();
   const size_t height = mask.getHeight ();
   
-  std::vector<Candidate> list1;
-  std::vector<Candidate> list2;
-  list2.reserve(nr_features);
+  std::vector<Candidate> candidateVec1;
+  std::vector<Candidate> candidateVec2;
+  candidateVec2.reserve(nr_features);
 
   if (feature_selection_method_ == DISTANCE_MAGNITUDE_SCORE)
   {
@@ -389,37 +389,37 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             candidate.x = static_cast<float> (col_index);
             candidate.y = static_cast<float> (row_index);
 
-            list1.push_back (candidate);
+            candidateVec1.push_back (candidate);
           }
         }
       }
     }
 
-    //list1.sort();
-    std::sort(list1.begin(), list1.end());
+    //candidateVec1.sort();
+    std::sort(candidateVec1.begin(), candidateVec1.end());
 
-    // printf("size %d\n", list1.size());
+    // printf("size %d\n", candidateVec1.size());
 
     // printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
     // start = getTickCount();
 
     if (variable_feature_nr_)
     {
-      list2.push_back (list1[0]);
-      //while (list2.size () != nr_features)
+      candidateVec2.push_back (candidateVec1[0]);
+      //while (candidateVec2.size () != nr_features)
       bool feature_selection_finished = false;
       while (!feature_selection_finished)
       {
         float best_score = 0.0f;
         uint32_t best_index = std::numeric_limits<uint32_t>::max();
-        for (size_t id1 = 0; id1 < list1.size(); ++id1)
+        for (size_t id1 = 0; id1 < candidateVec1.size(); ++id1)
         {
           // find smallest distance
           float smallest_distance = std::numeric_limits<float>::max ();
-          for (size_t id2 = 0; id2 < list2.size(); ++id2)
+          for (size_t id2 = 0; id2 < candidateVec2.size(); ++id2)
           {
-            const float dx = list1[id1].x - list2[id2].x;
-            const float dy = list1[id1].y - list2[id2].y;
+            const float dx = candidateVec1[id1].x - candidateVec2[id2].x;
+            const float dy = candidateVec1[id1].y - candidateVec2[id2].y;
 
             const float distance = dx*dx + dy*dy;
 
@@ -429,7 +429,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             }
           }
 
-          const float score = smallest_distance * list1[id1].magnitude;
+          const float score = smallest_distance * candidateVec1[id1].magnitude;
 
           if (score > best_score)
           {
@@ -441,18 +441,18 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
         float min_min_sqr_distance = std::numeric_limits<float>::max ();
         float max_min_sqr_distance = 0;
-        //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-        for (size_t id2 = 0; id2 < list2.size(); ++id2)
+        //for (typename std::list<Candidate>::iterator iter2 = candidateVec2.begin (); iter2 != candidateVec2.end (); ++iter2)
+        for (size_t id2 = 0; id2 < candidateVec2.size(); ++id2)
         {
           float min_sqr_distance = std::numeric_limits<float>::max ();
-          //for (typename std::list<Candidate>::iterator iter3 = list2.begin (); iter3 != list2.end (); ++iter3)
-          for (size_t id3 = 0; id3 < list2.size(); ++id3)
+          //for (typename std::list<Candidate>::iterator iter3 = candidateVec2.begin (); iter3 != candidateVec2.end (); ++iter3)
+          for (size_t id3 = 0; id3 < candidateVec2.size(); ++id3)
           {
             if (id2 == id3)
               continue;
 
-            const float dx = list2[id2].x - list2[id3].x;
-            const float dy = list2[id2].y - list2[id3].y;
+            const float dx = candidateVec2[id2].x - candidateVec2[id3].x;
+            const float dy = candidateVec2[id2].y - candidateVec2[id3].y;
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -467,8 +467,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
           // check current feature
           {
-            const float dx = list2[id2].x - list1[best_index].x;
-            const float dy = list2[id2].x - list1[best_index].y;
+            const float dx = candidateVec2[id2].x - candidateVec1[best_index].x;
+            const float dy = candidateVec2[id2].x - candidateVec1[best_index].y;
 
             const float sqr_distance = dx*dx + dy*dy;
 
@@ -488,7 +488,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
         if (best_index != std::numeric_limits<uint32_t>::max())
         {
-          //std::cerr << "feature_index: " << list2.size () << std::endl;
+          //std::cerr << "feature_index: " << candidateVec2.size () << std::endl;
           //std::cerr << "min_min_sqr_distance: " << min_min_sqr_distance << std::endl;
           //std::cerr << "max_min_sqr_distance: " << max_min_sqr_distance << std::endl;
 
@@ -498,19 +498,19 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             break;
           }
 
-          list2.push_back(list1[best_index]);
+          candidateVec2.push_back(candidateVec1[best_index]);
         }
       } 
     }
     else
     {
-      if (list1.size () <= nr_features)
+      if (candidateVec1.size () <= nr_features)
       {
-        //for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
-        for (size_t id1 = 0; id1 < list1.size(); ++id1)
+        //for (typename std::list<Candidate>::iterator iter1 = candidateVec1.begin (); iter1 != candidateVec1.end (); ++iter1)
+        for (size_t id1 = 0; id1 < candidateVec1.size(); ++id1)
         {
           QuantizedMultiModFeature feature;
-          const Candidate &c = list1[id1];
+          const Candidate &c = candidateVec1[id1];
 
           feature.x = c.x;
           feature.y = c.y;
@@ -524,18 +524,18 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       // printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
       // start = getTickCount();
 
-      list2.push_back (list1[0]);
+      candidateVec2.push_back (candidateVec1[0]);
       // printf("2.1 %f\n", 1000.0*(getTickCount()-start)/1e9);
       // start = getTickCount();
-      // printf("size before%zu\n", list2.size());
-      std::vector<float> list1_smallest_dist(list1.size(), std::numeric_limits<float>::max());
-      while (list2.size () != nr_features)
+      // printf("size before%zu\n", candidateVec2.size());
+      std::vector<float> candidateVec1_smallest_dist(candidateVec1.size(), std::numeric_limits<float>::max());
+      while (candidateVec2.size () != nr_features)
       {
         float best_score = 0.0f;
-        //typename std::list<Candidate>::iterator best_iter = list1.end ();
+        //typename std::list<Candidate>::iterator best_iter = candidateVec1.end ();
         uint32_t best_index = std::numeric_limits<uint32_t>::max();
 
-        const size_t id2 = list2.size() - 1; // list2.size() is always >= 1
+        const size_t id2 = candidateVec2.size() - 1; // candidateVec2.size() is always >= 1
         size_t id1 = 0;
 
 #if __AVX2__
@@ -545,41 +545,41 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         // TODO remove
         assert(sizeof(Candidate) == 4 * sizeof(float));
 
-        const __m256 __list2_xy = _mm256_set_ps(
-          list2[id2].y, list2[id2].x,
-          list2[id2].y, list2[id2].x,
-          list2[id2].y, list2[id2].x,
-          list2[id2].y, list2[id2].x);
+        const __m256 __candidateVec2_xy = _mm256_set_ps(
+          candidateVec2[id2].y, candidateVec2[id2].x,
+          candidateVec2[id2].y, candidateVec2[id2].x,
+          candidateVec2[id2].y, candidateVec2[id2].x,
+          candidateVec2[id2].y, candidateVec2[id2].x);
 
         __m256i __best_index8 = _mm256_set1_epi32(best_index);
         __m256 __best_score8 = _mm256_set1_ps(best_score);
-        for (; id1 <= list1.size() - 8; id1+=8)
+        for (; id1 <= candidateVec1.size() - 8; id1+=8)
         {
-          __m256 __list1_c01 = _mm256_loadu_ps((const float*) &list1[id1]); // Loading 2 candidates at a time
-          __m256 __list1_c23 = _mm256_loadu_ps((const float*) &list1[id1 + 2]);
-          __m256 __list1_c45 = _mm256_loadu_ps((const float*) &list1[id1 + 4]);
-          __m256 __list1_c67 = _mm256_loadu_ps((const float*) &list1[id1 + 6]);
+          __m256 __candidateVec1_c01 = _mm256_loadu_ps((const float*) &candidateVec1[id1]); // Loading 2 candidates at a time
+          __m256 __candidateVec1_c23 = _mm256_loadu_ps((const float*) &candidateVec1[id1 + 2]);
+          __m256 __candidateVec1_c45 = _mm256_loadu_ps((const float*) &candidateVec1[id1 + 4]);
+          __m256 __candidateVec1_c67 = _mm256_loadu_ps((const float*) &candidateVec1[id1 + 6]);
 
           // Order = 0 2 4 6 1 3 5 7
           __m256 __magnitude8 = _mm256_shuffle_ps(
-              _mm256_shuffle_ps(__list1_c01, __list1_c23, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 0 2 1 3 0 2 1 3
-              _mm256_shuffle_ps(__list1_c45, __list1_c67, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 4 6 5 7 4 6 5 7
+              _mm256_shuffle_ps(__candidateVec1_c01, __candidateVec1_c23, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 0 2 1 3 0 2 1 3
+              _mm256_shuffle_ps(__candidateVec1_c45, __candidateVec1_c67, (1 << 6) + (1 << 4) + (1 << 2) + 1), // 4 6 5 7 4 6 5 7
               (2 << 6) + (0 << 4) + (2 << 2) + 0);
 
-          __m256 __list1_xy_0213 = _mm256_shuffle_ps(__list1_c01, __list1_c23, (3 << 6) + (2 << 4) + (3 << 2) + 2);
-          __m256 __list1_xy_4657 = _mm256_shuffle_ps(__list1_c45, __list1_c67, (3 << 6) + (2 << 4) + (3 << 2) + 2);
+          __m256 __candidateVec1_xy_0213 = _mm256_shuffle_ps(__candidateVec1_c01, __candidateVec1_c23, (3 << 6) + (2 << 4) + (3 << 2) + 2);
+          __m256 __candidateVec1_xy_4657 = _mm256_shuffle_ps(__candidateVec1_c45, __candidateVec1_c67, (3 << 6) + (2 << 4) + (3 << 2) + 2);
 
-          __m256 __xy_sqr_0213 = _mm256_sub_ps(__list1_xy_0213, __list2_xy);
+          __m256 __xy_sqr_0213 = _mm256_sub_ps(__candidateVec1_xy_0213, __candidateVec2_xy);
           __xy_sqr_0213 = _mm256_mul_ps(__xy_sqr_0213, __xy_sqr_0213);
-          __m256 __xy_sqr_4657 = _mm256_sub_ps(__list1_xy_4657, __list2_xy);
+          __m256 __xy_sqr_4657 = _mm256_sub_ps(__candidateVec1_xy_4657, __candidateVec2_xy);
           __xy_sqr_4657 = _mm256_mul_ps(__xy_sqr_4657, __xy_sqr_4657);
 
           // Order: 0 4 1 5 2 6 3 7
           __m256 __dist_8 = _mm256_hadd_ps(__xy_sqr_0213, __xy_sqr_4657);
 
-          __m256 __smallest_distance8 = _mm256_loadu_ps(&list1_smallest_dist[id1]);
+          __m256 __smallest_distance8 = _mm256_loadu_ps(&candidateVec1_smallest_dist[id1]);
           __smallest_distance8 = _mm256_min_ps(__smallest_distance8, __dist_8);
-          _mm256_storeu_ps(&list1_smallest_dist[id1], __smallest_distance8);
+          _mm256_storeu_ps(&candidateVec1_smallest_dist[id1], __smallest_distance8);
 
           __m256 __score8 = _mm256_mul_ps(__smallest_distance8, __magnitude8);
           __m256 __update_score_mask = _mm256_cmp_ps(__score8, __best_score8, _CMP_GT_OQ);
@@ -603,24 +603,24 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           }
         }
 #endif
-        for (; id1 < list1.size(); ++id1)
+        for (; id1 < candidateVec1.size(); ++id1)
         {
           // find smallest distance
           //float smallest_distance = std::numeric_limits<float>::max ();
-          //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-          const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
-          const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
+          //for (typename std::list<Candidate>::iterator iter2 = candidateVec2.begin (); iter2 != candidateVec2.end (); ++iter2)
+          const float dx = static_cast<float> (candidateVec1[id1].x) - static_cast<float> (candidateVec2[id2].x);
+          const float dy = static_cast<float> (candidateVec1[id1].y) - static_cast<float> (candidateVec2[id2].y);
 
           const float distance = dx*dx + dy*dy;
 
-          if (distance < list1_smallest_dist[id1])
+          if (distance < candidateVec1_smallest_dist[id1])
           {
-            list1_smallest_dist[id1] = distance;
+            candidateVec1_smallest_dist[id1] = distance;
           }
 
-          const float score = list1_smallest_dist[id1] * list1[id1].magnitude;
+          const float score = candidateVec1_smallest_dist[id1] * candidateVec1[id1].magnitude;
 
-          //printf("%f %f %f %d\n", list1_smallest_dist[id1], list1[id1].magnitude, score, id1);
+          //printf("%f %f %f %d\n", candidateVec1_smallest_dist[id1], candidateVec1[id1].magnitude, score, id1);
           //printf("best %f %u\n", best_score, best_index);
           if (score > best_score)
           {
@@ -635,7 +635,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
         if (best_index != std::numeric_limits<uint32_t>::max())
         {
-          list2.push_back (list1[best_index]);
+          candidateVec2.push_back (candidateVec1[best_index]);
         }
         else
         {
@@ -723,12 +723,11 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     }
   }*/
 
-  //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-  for (size_t id2 = 0; id2 < list2.size(); ++id2)
+  for (size_t id2 = 0; id2 < candidateVec2.size(); ++id2)
   {
     QuantizedMultiModFeature feature;
 
-    const Candidate &c = list2[id2];
+    const Candidate &c = candidateVec2[id2];
     feature.x = c.x;
     feature.y = c.y;
     feature.modality_index = modality_index;
