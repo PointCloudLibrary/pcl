@@ -238,6 +238,8 @@ namespace pcl
         */
       static void
       erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
+
+      static uint8_t quantizedAngleFromXY(float x, float y);
   
     private:
 
@@ -341,79 +343,6 @@ computeGaussianKernel (const size_t kernel_size, const float sigma, std::vector 
     cf[i] = float (cf[i]*sum);
   }
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-/*template <typename PointInT>
-void
-pcl::GrayscaleGradientModality<PointInT>::
-processInputData ()
-{
-  double start = getTickCount();
-
-  // compute gaussian kernel values
-  const size_t kernel_size = 7;
-  std::vector<float> kernel_values;
-  computeGaussianKernel (kernel_size, 0.0f, kernel_values);
-
-  // smooth input
-    pcl::filters::Convolution<pcl::Intensity8u, pcl::Intensity8u> convolution;
-    Eigen::ArrayXf gaussian_kernel(kernel_size);
-    //gaussian_kernel << 1.f/16, 1.f/8, 3.f/16, 2.f/8, 3.f/16, 1.f/8, 1.f/16;
-    //gaussian_kernel << 16.f/1600.f,  32.f/1600.f,  64.f/1600.f, 128.f/1600.f, 256.f/1600.f, 128.f/1600.f,  64.f/1600.f,  32.f/1600.f,  16.f/1600.f;
-  gaussian_kernel << kernel_values[0], kernel_values[1], kernel_values[2], kernel_values[3], kernel_values[4], kernel_values[5], kernel_values[6];
-
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
-  pcl::PointCloud<pcl::Intensity8u>::Ptr rgb_input_ (new pcl::PointCloud<pcl::Intensity8u>());
-  
-  const uint32_t width = input_->width;
-  const uint32_t height = input_->height;
-
-  rgb_input_->resize (width*height);
-  rgb_input_->width = width;
-  rgb_input_->height = height;
-  rgb_input_->is_dense = input_->is_dense;
-  for (size_t row_index = 0; row_index < height; ++row_index)
-  {
-    for (size_t col_index = 0; col_index < width; ++col_index)
-    {
-      (*rgb_input_) (col_index, row_index).intensity = (*input_) (col_index, row_index).intensity;
-    }
-  }
-
-  printf("2 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
-    convolution.setInputCloud (rgb_input_);
-    convolution.setKernel (gaussian_kernel);
-
-  convolution.convolve (*smoothed_input_);
-
-  printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
-  // extract color gradients
-  computeMaxGradientsSobel (smoothed_input_);
-
-  printf("4 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
-  // filter quantized gradients to get only dominants one + thresholding
-  filterQuantizedGradients ();
-
-  printf("6 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-
-  // spread filtered quantized gradients
-  //spreadFilteredQunatizedColorGradients ();
-  pcl::QuantizedMap::spreadQuantizedMap (filtered_quantized_gradients_,
-                                         spreaded_filtered_quantized_gradients_, 
-                                         spreading_size_);
-
-  printf("1 %f\n", 1000.0*(getTickCount()-start)/1e9);
-  start = getTickCount();
-}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
@@ -606,7 +535,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         //typename std::list<Candidate>::iterator best_iter = list1.end ();
         uint32_t best_index = std::numeric_limits<uint32_t>::max();
 
-#if 1 // Fixing n^2 algorithm
         const size_t id2 = list2.size() - 1; // list2.size() is always >= 1
         size_t id1 = 0;
 
@@ -704,34 +632,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           //   std::exit(-1);
           // }
         }
-#else
-        for (size_t id1 = 0; id1 < list1.size(); ++id1)
-        {
-          // find smallest distance
-          float smallest_distance = std::numeric_limits<float>::max ();
-          //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
-          for (size_t id2 = 0; id2 < list2.size(); ++id2)
-          {
-            const float dx = static_cast<float> (list1[id1].x) - static_cast<float> (list2[id2].x);
-            const float dy = static_cast<float> (list1[id1].y) - static_cast<float> (list2[id2].y);
-
-            const float distance = dx*dx + dy*dy;
-
-            if (distance < smallest_distance)
-            {
-              smallest_distance = distance;
-            }
-          }
-
-          const float score = smallest_distance * list1[id1].magnitude;
-
-          if (score > best_score)
-          {
-            best_score = score;
-            best_index = id1;
-          }
-        }
-#endif //if 1
 
         if (best_index != std::numeric_limits<uint32_t>::max())
         {
@@ -742,9 +642,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           break;
         }
       }
-      // printf("size %d\n", list2.size());
-      // printf("3 - extractfe %f\n", 1000.0*(getTickCount()-start)/1e9);
-      // start = getTickCount();
     }
   }
   /*else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
@@ -937,11 +834,11 @@ computeMaxGradients (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr 
   return;
 }
 
-#include <omp.h>
-
-
 // Equivalent to atan2(y/x) then quantize to 8 directions
-/*static uint8_t quantizedAngleFromXY(float x, float y) {
+template <typename PointInT>
+uint8_t
+pcl::GrayscaleGradientModality<PointInT>::
+quantizedAngleFromXY(float x, float y) {
   if (x == 0.0f || x == -0.0f)
    return 4 + 1;
   float a = y / x;
@@ -966,7 +863,7 @@ computeMaxGradients (const typename pcl::PointCloud<pcl::Intensity8u>::ConstPtr 
   }
 
   return ret + 1;
-}*/
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT>
@@ -1160,28 +1057,6 @@ filterQuantizedGradients ()
       ++histogram[data_ptr[0]];
       ++histogram[data_ptr[1]];
       ++histogram[data_ptr[2]];
-      // {
-      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index-1)*width+col_index-1;
-      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-      //   ++histogram[data_ptr[0]];
-      //   ++histogram[data_ptr[1]];
-      //   ++histogram[data_ptr[2]];
-      // }
-      // {
-      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + row_index*width+col_index-1;
-      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-      //   ++histogram[data_ptr[0]];
-      //   ++histogram[data_ptr[1]];
-      //   ++histogram[data_ptr[2]];
-      // }
-      // {
-      //   const unsigned char * data_ptr = quantized_color_gradients_.getData () + (row_index+1)*width+col_index-1;
-      //   assert (data_ptr[0] < 9 && data_ptr[1] < 9 && data_ptr[2] < 9);
-      //   ++histogram[data_ptr[0]];
-      //   ++histogram[data_ptr[1]];
-      //   ++histogram[data_ptr[2]];
-      // }
-
 
       unsigned char max_hist_value = 0;
       int max_hist_index = -1;

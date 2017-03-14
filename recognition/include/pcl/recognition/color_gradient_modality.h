@@ -238,6 +238,8 @@ namespace pcl
         */
       static void
       erode (const pcl::MaskMap & mask_in, pcl::MaskMap & mask_out);
+
+      static uint8_t quantizedAngleFromXY(float x, float y);
   
     private:
 
@@ -980,11 +982,11 @@ computeMaxColorGradients (const typename pcl::PointCloud<pcl::RGB>::ConstPtr & c
   return;
 }
 
-#include <omp.h>
-
-
 // Equivalent to atan2(y/x) then quantize to 8 directions
-static uint8_t quantizedAngleFromXY(float x, float y) {
+template <typename PointInT>
+uint8_t
+pcl::ColorGradientModality<PointInT>::
+quantizedAngleFromXY(float x, float y) {
   if (x == 0.0f || x == -0.0f)
    return 4 + 1;
   float a = y / x;
