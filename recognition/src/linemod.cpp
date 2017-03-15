@@ -895,6 +895,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
     energy_maps_3.initialize (width, height, nr_bins);
 #endif
     //std::vector< unsigned char* > energy_maps(nr_bins);
+    //#pragma omp parallel for
     for (int bin_index = 0; bin_index < nr_bins; ++bin_index)
     {
       //energy_maps[bin_index] = new unsigned char[width*height];
@@ -907,7 +908,29 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       const unsigned char val3 = static_cast<unsigned char> (val2 | (base_bit << ((bin_index+3)%8)) | (base_bit << ((bin_index+5)%8))); // e.g. 11111101
       unsigned char *energy_map_bin = energy_maps (bin_index);
 
-      for (size_t index = 0; index < width*height; ++index)
+      size_t index = 0;
+#if defined(__AVX2__) && !LINEMOD_USE_SEPARATE_ENERGY_MAPS
+      const __m256i __val0 = _mm256_set1_epi8(val0);
+      const __m256i __val1 = _mm256_set1_epi8(val1);
+      const __m256i __val2 = _mm256_set1_epi8(val2);
+      const __m256i __val3 = _mm256_set1_epi8(val3);
+      const __m256i __one  = _mm256_set1_epi8(1);
+      const __m256i __zero  = _mm256_set1_epi8(0);
+      for (; index <= width*height - 32; index += 32)
+      {
+        const __m256i __quantized_data = _mm256_loadu_si256((const __m256i*)&quantized_data[index]);
+
+        const __m256i __sum =
+          _mm256_add_epi8(_mm256_add_epi8(_mm256_add_epi8(
+            _mm256_andnot_si256(_mm256_cmpeq_epi8(_mm256_and_si256(__val0, __quantized_data), __zero), __one),
+            _mm256_andnot_si256(_mm256_cmpeq_epi8(_mm256_and_si256(__val1, __quantized_data), __zero), __one)),
+            _mm256_andnot_si256(_mm256_cmpeq_epi8(_mm256_and_si256(__val2, __quantized_data), __zero), __one)),
+            _mm256_andnot_si256(_mm256_cmpeq_epi8(_mm256_and_si256(__val3, __quantized_data), __zero), __one));
+
+        _mm256_store_si256((__m256i*) &energy_map_bin[index], __sum);
+      }
+#endif
+      for (; index < width*height; ++index)
       {
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
         if ((val0 & quantized_data[index]) != 0)
@@ -919,10 +942,11 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
         if ((val3 & quantized_data[index]) != 0)
           ++energy_maps_3 (bin_index, index);
 #else
-        energy_map_bin[index] += ((val0 & quantized_data[index]) != 0) +
-                                 ((val1 & quantized_data[index]) != 0) +
-                                 ((val2 & quantized_data[index]) != 0) +
-                                 ((val3 & quantized_data[index]) != 0);
+        const uint8_t byte = quantized_data[index];
+        energy_map_bin[index] = ((val0 & byte) != 0) +
+                                ((val1 & byte) != 0) +
+                                ((val2 & byte) != 0) +
+                                ((val3 & byte) != 0);
 #endif
       }
     }

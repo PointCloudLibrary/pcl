@@ -98,10 +98,11 @@ namespace pcl
         height_ = height;
         nr_bins_ = nr_bins;
 
-        // Makes sure each map is aligned to 16 bytes
-        map_size_ = (((width * height) + 15) / 16) * 16;
+        // Makes sure each map is aligned to 32 bytes
+        map_size_ = (((width * height) + 31) / 32) * 32;
 
-        maps_ = reinterpret_cast<unsigned char*> (aligned_malloc (map_size_ * nr_bins));
+        //maps_ = reinterpret_cast<unsigned char*> (aligned_malloc (map_size_ * nr_bins));
+        posix_memalign ((void **) &maps_, 32, map_size_ * nr_bins);
         memset (maps_, 0, map_size_ * nr_bins);
       }
 
@@ -109,7 +110,8 @@ namespace pcl
       void 
       releaseAll ()
       {
-        aligned_free(maps_);
+        //aligned_free(maps_);
+        std::free(maps_);
         maps_ = NULL;
 
         width_ = 0;
@@ -231,32 +233,29 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t step_size)
       {
-        maps_.resize(step_size*step_size, NULL);
         width_ = width;
         height_ = height;
         mem_width_ = width / step_size;
         mem_height_ = height / step_size;
         step_size_ = step_size;
 
-        const size_t mapsSize = mem_width_ * mem_height_;
+        map_size_ = (((2 * mem_width_ * mem_height_) + 15) / 16) * 16;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-        {
-          //maps_[map_index] = new unsigned char[2*mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (2*mapsSize));
-          memset (maps_[map_index], 0, 2*mapsSize);
-        }
+        maps_ = reinterpret_cast<unsigned char*> (aligned_malloc (step_size * step_size * map_size_));
+        memset (maps_, 0, step_size * step_size * map_size_);
       }
 
       /** \brief Releases the internal memory. */
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-          //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+        aligned_free(maps_);
+        maps_ = NULL;
+        // for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
+        //   //if (maps_[map_index] != NULL) delete[] maps_[map_index];
+        //   if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
 
-        maps_.clear ();
+        // maps_.clear ();
         width_ = 0;
         height_ = 0;
         mem_width_ = 0;
@@ -271,7 +270,7 @@ namespace pcl
       inline unsigned char * 
       operator() (const size_t col_index, const size_t row_index)
       {
-        return (maps_[row_index*step_size_ + col_index]);
+        return maps_ + (row_index*step_size_ + col_index) * map_size_;
       }
 
       /** \brief Returns a linearized map starting at the specified position.
@@ -287,7 +286,7 @@ namespace pcl
         const size_t map_mem_col_index = col_index / step_size_;
         const size_t map_mem_row_index = row_index / step_size_;
 
-        return (maps_[map_row*step_size_ + map_col] + map_mem_row_index*mem_width_ + map_mem_col_index);
+        return maps_ + (map_row*step_size_ + map_col) * map_size_ + map_mem_row_index*mem_width_ + map_mem_col_index;
       }
 
     private:
@@ -302,7 +301,9 @@ namespace pcl
       /** \brief the step-size used for sampling the original data. */
       size_t step_size_;
       /** \brief a vector containing all the linearized maps. */
-      std::vector<unsigned char*> maps_;
+      unsigned char* maps_;
+
+      size_t map_size_;
   };
 
   /** \brief Represents a detection of a template using the LINEMOD approach.
