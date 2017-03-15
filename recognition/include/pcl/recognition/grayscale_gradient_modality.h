@@ -366,6 +366,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
   const size_t width = mask.getWidth ();
   const size_t height = mask.getHeight ();
   
+  features.reserve(nr_features);
+
   std::vector<Candidate> candidateVec1;
   std::vector<Candidate> candidateVec2;
   candidateVec2.reserve(nr_features);
@@ -395,7 +397,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       }
     }
 
-    //candidateVec1.sort();
     std::sort(candidateVec1.begin(), candidateVec1.end());
 
     // printf("size %d\n", candidateVec1.size());
@@ -437,7 +438,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
             best_index = id1;
           }
         }
-
 
         float min_min_sqr_distance = std::numeric_limits<float>::max ();
         float max_min_sqr_distance = 0;
@@ -532,7 +532,6 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       while (candidateVec2.size () != nr_features)
       {
         float best_score = 0.0f;
-        //typename std::list<Candidate>::iterator best_iter = candidateVec1.end ();
         uint32_t best_index = std::numeric_limits<uint32_t>::max();
 
         const size_t id2 = candidateVec2.size() - 1; // candidateVec2.size() is always >= 1
@@ -607,9 +606,8 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         {
           // find smallest distance
           //float smallest_distance = std::numeric_limits<float>::max ();
-          //for (typename std::list<Candidate>::iterator iter2 = candidateVec2.begin (); iter2 != candidateVec2.end (); ++iter2)
-          const float dx = static_cast<float> (candidateVec1[id1].x) - static_cast<float> (candidateVec2[id2].x);
-          const float dy = static_cast<float> (candidateVec1[id1].y) - static_cast<float> (candidateVec2[id2].y);
+          const float dx = candidateVec1[id1].x - candidateVec2[id2].x;
+          const float dy = candidateVec1[id1].y - candidateVec2[id2].y;
 
           const float distance = dx*dx + dy*dy;
 
