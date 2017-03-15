@@ -1055,363 +1055,368 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
   // compute scores for templates
   const size_t width = modality_energy_maps[0].getWidth ();
   const size_t height = modality_energy_maps[0].getHeight ();
-  #pragma omp parallel for
-  for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
+  const size_t mem_width = width / step_size;
+  const size_t mem_height = height / step_size;
+  const size_t mem_size = mem_width * mem_height;
+
+  #pragma omp parallel
   {
-    const size_t mem_width = width / step_size;
-    const size_t mem_height = height / step_size;
-    const size_t mem_size = mem_width * mem_height;
+    // Thread local storage
+    #if defined(__AVX2__)
+      unsigned short * score_sums;
+      unsigned char * tmp_score_sums;
+      posix_memalign((void**) &score_sums, 32, mem_size*sizeof(unsigned short));
+      posix_memalign((void**) &tmp_score_sums, 32, mem_size*sizeof(unsigned char));
+    #elif defined(__SSE2__)
+      unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
+      unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
+    #else
+      unsigned short * score_sums = new unsigned short[mem_size];
 
-#if defined(__AVX2__)
-    unsigned short * score_sums;
-    unsigned char * tmp_score_sums;
-    posix_memalign((void**) &score_sums, 32, mem_size*sizeof(unsigned short));
-    posix_memalign((void**) &tmp_score_sums, 32, mem_size*sizeof(unsigned char));
-#elif defined(__SSE2__)
-    unsigned short * score_sums = reinterpret_cast<unsigned short*> (aligned_malloc (mem_size*sizeof(unsigned short)));
-    unsigned char * tmp_score_sums = reinterpret_cast<unsigned char*> (aligned_malloc (mem_size*sizeof(unsigned char)));
-#else
-    unsigned short * score_sums = new unsigned short[mem_size];
+    #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+      unsigned short * score_sums_1 = new unsigned short[mem_size];
+      unsigned short * score_sums_2 = new unsigned short[mem_size];
+      unsigned short * score_sums_3 = new unsigned short[mem_size];
+    #endif
+    #endif
 
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-    unsigned short * score_sums_1 = new unsigned short[mem_size];
-    unsigned short * score_sums_2 = new unsigned short[mem_size];
-    unsigned short * score_sums_3 = new unsigned short[mem_size];
-#endif
-#endif
-
-    for (float scale = min_scale; scale <= max_scale; scale *= scale_multiplier)
+    #pragma omp for
+    for (size_t template_index = 0; template_index < templates_.size (); ++template_index)
     {
-#ifdef __AVX2__
-      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
-
-      int max_score = 0;
-      size_t copy_back_counter = 0;
-      for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+      for (float scale = min_scale; scale <= max_scale; scale *= scale_multiplier)
       {
-        const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+  #ifdef __AVX2__
+        memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
 
-        std::vector<LinearizedMaps> &linearized_map_modality = modality_linearized_maps[feature.modality_index];
-        const size_t map_x = size_t (float (feature.x) * scale);
-        const size_t map_y = size_t (float (feature.y) * scale);
-
-        for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+        int max_score = 0;
+        size_t copy_back_counter = 0;
+        for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
         {
-          if ((feature.quantized_value & (0x1<<bin_index)) != 0)
-          {
-            max_score += 4;
+          const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
 
-            const unsigned char *data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
+          std::vector<LinearizedMaps> &linearized_map_modality = modality_linearized_maps[feature.modality_index];
+          const size_t map_x = size_t (float (feature.x) * scale);
+          const size_t map_y = size_t (float (feature.y) * scale);
+
+          for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+          {
+            if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+            {
+              max_score += 4;
+
+              const unsigned char *data = linearized_map_modality[bin_index].getOffsetMap(map_x, map_y);
+
+              size_t mem_index = 0;
+              for (; mem_index <= mem_size - 32; mem_index+=32)
+              {
+                __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
+                __tmp_score_sums = _mm256_add_epi8(__tmp_score_sums, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + mem_index)));
+                _mm256_store_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
+              }
+
+              for (; mem_index < mem_size; ++mem_index)
+              {
+                tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
+              }
+            }
+          }
+
+          ++copy_back_counter;
+
+          if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+          {
+            copy_back_counter = 0;
 
             size_t mem_index = 0;
             for (; mem_index <= mem_size - 32; mem_index+=32)
             {
               __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
-              __tmp_score_sums = _mm256_add_epi8(__tmp_score_sums, _mm256_loadu_si256(reinterpret_cast<const __m256i*>(data + mem_index)));
-              _mm256_store_si256(reinterpret_cast<__m256i*>(tmp_score_sums + mem_index), __tmp_score_sums);
+              // First half
+              __m256i __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
+              __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
+              _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
+              // Second half
+              __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
+              __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
+              _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
             }
-
             for (; mem_index < mem_size; ++mem_index)
             {
-              tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
+              score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
             }
+            memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
           }
         }
-
-        ++copy_back_counter;
-
-        if (copy_back_counter > 63) // only valid if each feature has only one bit set..
         {
-          copy_back_counter = 0;
-
-          size_t mem_index = 0;
-          for (; mem_index <= mem_size - 32; mem_index+=32)
-          {
-            __m256i __tmp_score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(tmp_score_sums + mem_index));
-            // First half
-            __m256i __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index));
-            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 0)));
-            _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index), __score_sums);
-            // Second half
-            __score_sums = _mm256_load_si256(reinterpret_cast<const __m256i*>(score_sums + mem_index + 16));
-            __score_sums = _mm256_add_epi16(__score_sums, _mm256_cvtepu8_epi16(_mm256_extractf128_si256(__tmp_score_sums, 1)));
-            _mm256_store_si256(reinterpret_cast<__m256i*>(score_sums + mem_index + 16), __score_sums);
-          }
-          for (; mem_index < mem_size; ++mem_index)
+          for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
           {
             score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
           }
           memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
         }
-      }
-      {
-        for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
-        {
-          score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
-        }
+
+  #elif defined(__SSE2__)
+        memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
         memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
-      }
 
-#elif defined(__SSE2__)
-      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
-      memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
+        //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
+        __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
 
-      //__m128i * score_sums_m128i = reinterpret_cast<__m128i*> (score_sums);
-      __m128i * tmp_score_sums_m128i = reinterpret_cast<__m128i*> (tmp_score_sums);
+        const size_t mem_size_16 = mem_size / 16;
+        //const size_t mem_size_mod_16 = mem_size & 15;
+        const size_t mem_size_mod_16_base = mem_size_16 * 16;
 
-      const size_t mem_size_16 = mem_size / 16;
-      //const size_t mem_size_mod_16 = mem_size & 15;
-      const size_t mem_size_mod_16_base = mem_size_16 * 16;
-
-      int max_score = 0;
-      size_t copy_back_counter = 0;
-      for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
-      {
-        const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
-
-        for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+        int max_score = 0;
+        size_t copy_back_counter = 0;
+        for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
         {
-          if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+          const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+          for (size_t bin_index = 0; bin_index < 8; ++bin_index)
           {
-            max_score += 4;
-
-            unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
-                size_t (float (feature.x) * scale), size_t (float (feature.y) * scale));
-            __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
-
-            for (size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
+            if ((feature.quantized_value & (0x1<<bin_index)) != 0)
             {
-              __m128i aligned_data_m128i = _mm_loadu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE2
-              //__m128i aligned_data_m128i = _mm_lddqu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE3
-              tmp_score_sums_m128i[mem_index] = _mm_add_epi8 (tmp_score_sums_m128i[mem_index], aligned_data_m128i);
+              max_score += 4;
+
+              unsigned char *data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (
+                  size_t (float (feature.x) * scale), size_t (float (feature.y) * scale));
+              __m128i * data_m128i = reinterpret_cast<__m128i*> (data);
+
+              for (size_t mem_index = 0; mem_index < mem_size_16; ++mem_index)
+              {
+                __m128i aligned_data_m128i = _mm_loadu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE2
+                //__m128i aligned_data_m128i = _mm_lddqu_si128 (reinterpret_cast<const __m128i*> (data_m128i + mem_index)); // SSE3
+                tmp_score_sums_m128i[mem_index] = _mm_add_epi8 (tmp_score_sums_m128i[mem_index], aligned_data_m128i);
+              }
+              for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+              {
+                tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
+              }
+            }
+          }
+
+          ++copy_back_counter;
+
+          //if ((feature_index & 7) == 7)
+          //if ((feature_index & 63) == 63)
+          if (copy_back_counter > 63) // only valid if each feature has only one bit set..
+          {
+            copy_back_counter = 0;
+
+            for (size_t mem_index = 0; mem_index < mem_size_mod_16_base; mem_index += 16)
+            {
+              score_sums[mem_index+0]  = static_cast<unsigned short> (score_sums[mem_index+0]  + tmp_score_sums[mem_index+0]);
+              score_sums[mem_index+1]  = static_cast<unsigned short> (score_sums[mem_index+1]  + tmp_score_sums[mem_index+1]);
+              score_sums[mem_index+2]  = static_cast<unsigned short> (score_sums[mem_index+2]  + tmp_score_sums[mem_index+2]);
+              score_sums[mem_index+3]  = static_cast<unsigned short> (score_sums[mem_index+3]  + tmp_score_sums[mem_index+3]);
+              score_sums[mem_index+4]  = static_cast<unsigned short> (score_sums[mem_index+4]  + tmp_score_sums[mem_index+4]);
+              score_sums[mem_index+5]  = static_cast<unsigned short> (score_sums[mem_index+5]  + tmp_score_sums[mem_index+5]);
+              score_sums[mem_index+6]  = static_cast<unsigned short> (score_sums[mem_index+6]  + tmp_score_sums[mem_index+6]);
+              score_sums[mem_index+7]  = static_cast<unsigned short> (score_sums[mem_index+7]  + tmp_score_sums[mem_index+7]);
+              score_sums[mem_index+8]  = static_cast<unsigned short> (score_sums[mem_index+8]  + tmp_score_sums[mem_index+8]);
+              score_sums[mem_index+9]  = static_cast<unsigned short> (score_sums[mem_index+9]  + tmp_score_sums[mem_index+9]);
+              score_sums[mem_index+10] = static_cast<unsigned short> (score_sums[mem_index+10] + tmp_score_sums[mem_index+10]);
+              score_sums[mem_index+11] = static_cast<unsigned short> (score_sums[mem_index+11] + tmp_score_sums[mem_index+11]);
+              score_sums[mem_index+12] = static_cast<unsigned short> (score_sums[mem_index+12] + tmp_score_sums[mem_index+12]);
+              score_sums[mem_index+13] = static_cast<unsigned short> (score_sums[mem_index+13] + tmp_score_sums[mem_index+13]);
+              score_sums[mem_index+14] = static_cast<unsigned short> (score_sums[mem_index+14] + tmp_score_sums[mem_index+14]);
+              score_sums[mem_index+15] = static_cast<unsigned short> (score_sums[mem_index+15] + tmp_score_sums[mem_index+15]);
             }
             for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
             {
-              tmp_score_sums[mem_index] = static_cast<unsigned char> (tmp_score_sums[mem_index] + data[mem_index]);
+              score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
             }
+
+            memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
           }
         }
-
-        ++copy_back_counter;
-
-        //if ((feature_index & 7) == 7)
-        //if ((feature_index & 63) == 63)
-        if (copy_back_counter > 63) // only valid if each feature has only one bit set..
         {
-          copy_back_counter = 0;
-
-          for (size_t mem_index = 0; mem_index < mem_size_mod_16_base; mem_index += 16)
-          {
-            score_sums[mem_index+0]  = static_cast<unsigned short> (score_sums[mem_index+0]  + tmp_score_sums[mem_index+0]);
-            score_sums[mem_index+1]  = static_cast<unsigned short> (score_sums[mem_index+1]  + tmp_score_sums[mem_index+1]);
-            score_sums[mem_index+2]  = static_cast<unsigned short> (score_sums[mem_index+2]  + tmp_score_sums[mem_index+2]);
-            score_sums[mem_index+3]  = static_cast<unsigned short> (score_sums[mem_index+3]  + tmp_score_sums[mem_index+3]);
-            score_sums[mem_index+4]  = static_cast<unsigned short> (score_sums[mem_index+4]  + tmp_score_sums[mem_index+4]);
-            score_sums[mem_index+5]  = static_cast<unsigned short> (score_sums[mem_index+5]  + tmp_score_sums[mem_index+5]);
-            score_sums[mem_index+6]  = static_cast<unsigned short> (score_sums[mem_index+6]  + tmp_score_sums[mem_index+6]);
-            score_sums[mem_index+7]  = static_cast<unsigned short> (score_sums[mem_index+7]  + tmp_score_sums[mem_index+7]);
-            score_sums[mem_index+8]  = static_cast<unsigned short> (score_sums[mem_index+8]  + tmp_score_sums[mem_index+8]);
-            score_sums[mem_index+9]  = static_cast<unsigned short> (score_sums[mem_index+9]  + tmp_score_sums[mem_index+9]);
-            score_sums[mem_index+10] = static_cast<unsigned short> (score_sums[mem_index+10] + tmp_score_sums[mem_index+10]);
-            score_sums[mem_index+11] = static_cast<unsigned short> (score_sums[mem_index+11] + tmp_score_sums[mem_index+11]);
-            score_sums[mem_index+12] = static_cast<unsigned short> (score_sums[mem_index+12] + tmp_score_sums[mem_index+12]);
-            score_sums[mem_index+13] = static_cast<unsigned short> (score_sums[mem_index+13] + tmp_score_sums[mem_index+13]);
-            score_sums[mem_index+14] = static_cast<unsigned short> (score_sums[mem_index+14] + tmp_score_sums[mem_index+14]);
-            score_sums[mem_index+15] = static_cast<unsigned short> (score_sums[mem_index+15] + tmp_score_sums[mem_index+15]);
-          }
-          for (size_t mem_index = mem_size_mod_16_base; mem_index < mem_size; ++mem_index)
+          for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
           {
             score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
           }
 
           memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
         }
-      }
-      {
+  #else // NO AVX2 and SSE
+        memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+        memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
+        memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
+        memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
+  #endif
+
+        int max_score = 0;
+        for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
+        {
+          const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+
+          //feature.modality_index;
+          for (size_t bin_index = 0; bin_index < 8; ++bin_index)
+          {
+            if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+            {
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+              ++max_score;
+
+              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              unsigned char * data_1 = modality_linearized_maps_1[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              unsigned char * data_2 = modality_linearized_maps_2[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              unsigned char * data_3 = modality_linearized_maps_3[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
+              for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+              {
+                score_sums[mem_index] += data[mem_index];
+                score_sums_1[mem_index] += data_1[mem_index];
+                score_sums_2[mem_index] += data_2[mem_index];
+                score_sums_3[mem_index] += data_3[mem_index];
+              }
+  #else
+              max_score += 4;
+
+              unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (static_cast<size_t> (feature.x*scale), static_cast<size_t> (feature.y*scale));
+              for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+              {
+                score_sums[mem_index] += data[mem_index];
+              }
+  #endif
+            }
+          }
+        }
+  #endif
+
+        const float inv_max_score = 1.0f / float (max_score);
+
+        // we compute a new threshold based on the threshold supplied by the user;
+        // this is due to the use of the cosine approx. in the response computation;
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+        const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
+  #else
+        const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
+  #endif
+
+        //int max_value = 0;
+        //size_t max_index = 0;
         for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
         {
-          score_sums[mem_index] = static_cast<unsigned short> (score_sums[mem_index] + tmp_score_sums[mem_index]);
-        }
-        
-        memset (tmp_score_sums, 0, mem_size*sizeof (tmp_score_sums[0]));
-      }
-#else // NO AVX2 and SSE
-      memset (score_sums, 0, mem_size*sizeof (score_sums[0]));
+          //const float score = score_sums[mem_index] * inv_max_score;
 
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      memset (score_sums_1, 0, mem_size*sizeof (score_sums_1[0]));
-      memset (score_sums_2, 0, mem_size*sizeof (score_sums_2[0]));
-      memset (score_sums_3, 0, mem_size*sizeof (score_sums_3[0]));
-#endif
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+          const float raw_score = score_sums[mem_index]
+            + score_sums_1[mem_index]
+            + score_sums_2[mem_index]
+            + score_sums_3[mem_index];
 
-      int max_score = 0;
-      for (size_t feature_index = 0; feature_index < templates_[template_index].features.size (); ++feature_index)
-      {
-        const QuantizedMultiModFeature & feature = templates_[template_index].features[feature_index];
+          const float score = 2.0f * static_cast<float> (raw_score) * 0.25f * inv_max_score - 1.0f;
+  #else
+          const float raw_score = score_sums[mem_index];
 
-        //feature.modality_index;
-        for (size_t bin_index = 0; bin_index < 8; ++bin_index)
-        {
-          if ((feature.quantized_value & (0x1<<bin_index)) != 0)
+          const float score = 2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f;
+  #endif
+
+
+          //if (score > template_threshold_)
+          if (raw_score > raw_threshold) /// \todo Ask Stefan why this line was used instead of the one above
           {
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-            ++max_score;
+            const size_t mem_col_index = (mem_index % mem_width);
+            const size_t mem_row_index = (mem_index / mem_width);
 
-            unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-            unsigned char * data_1 = modality_linearized_maps_1[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-            unsigned char * data_2 = modality_linearized_maps_2[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-            unsigned char * data_3 = modality_linearized_maps_3[feature.modality_index][bin_index].getOffsetMap (feature.x*scale, feature.y*scale);
-            for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
+            if (use_non_max_suppression_)
             {
-              score_sums[mem_index] += data[mem_index];
-              score_sums_1[mem_index] += data_1[mem_index];
-              score_sums_2[mem_index] += data_2[mem_index];
-              score_sums_3[mem_index] += data_3[mem_index];
-            }
-#else
-            max_score += 4;
-
-            unsigned char * data = modality_linearized_maps[feature.modality_index][bin_index].getOffsetMap (static_cast<size_t> (feature.x*scale), static_cast<size_t> (feature.y*scale));
-            for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
-            {
-              score_sums[mem_index] += data[mem_index];
-            }
-#endif
-          }
-        }
-      }
-#endif
-
-      const float inv_max_score = 1.0f / float (max_score);
-
-      // we compute a new threshold based on the threshold supplied by the user;
-      // this is due to the use of the cosine approx. in the response computation;
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-      const float raw_threshold = (4.0f * float (max_score) / 2.0f + template_threshold_ * (4.0f * float (max_score) / 2.0f));
-#else
-      const float raw_threshold = (float (max_score) / 2.0f + template_threshold_ * (float (max_score) / 2.0f));
-#endif
-
-      //int max_value = 0;
-      //size_t max_index = 0;
-      for (size_t mem_index = 0; mem_index < mem_size; ++mem_index)
-      {
-        //const float score = score_sums[mem_index] * inv_max_score;
-
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-        const float raw_score = score_sums[mem_index] 
-          + score_sums_1[mem_index]
-          + score_sums_2[mem_index]
-          + score_sums_3[mem_index];
-
-        const float score = 2.0f * static_cast<float> (raw_score) * 0.25f * inv_max_score - 1.0f;
-#else
-        const float raw_score = score_sums[mem_index];
-
-        const float score = 2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f;
-#endif
-
-
-        //if (score > template_threshold_) 
-        if (raw_score > raw_threshold) /// \todo Ask Stefan why this line was used instead of the one above
-        {
-          const size_t mem_col_index = (mem_index % mem_width);
-          const size_t mem_row_index = (mem_index / mem_width);
-
-          if (use_non_max_suppression_)
-          {
-            bool is_local_max = true;
-            for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1 && is_local_max; ++sup_row_index)
-            {
-              if (sup_row_index >= mem_height)
-                continue;
-
-              for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
+              bool is_local_max = true;
+              for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1 && is_local_max; ++sup_row_index)
               {
-                if (sup_col_index >= mem_width)
+                if (sup_row_index >= mem_height)
                   continue;
 
-                if (score_sums[mem_index] < score_sums[sup_row_index*mem_width + sup_col_index])
+                for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
                 {
-                  is_local_max = false;
-                  break;
+                  if (sup_col_index >= mem_width)
+                    continue;
+
+                  if (score_sums[mem_index] < score_sums[sup_row_index*mem_width + sup_col_index])
+                  {
+                    is_local_max = false;
+                    break;
+                  }
                 }
-              } 
+              }
+
+              if (!is_local_max)
+                continue;
             }
 
-            if (!is_local_max)
-              continue;
-          }
+            LINEMODDetection detection;
 
-          LINEMODDetection detection;
-
-          if (average_detections_)
-          {
-            size_t average_col = 0;
-            size_t average_row = 0;
-            size_t sum = 0;
-
-            for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1; ++sup_row_index)
+            if (average_detections_)
             {
-              if (sup_row_index >= mem_height)
-                continue;
+              size_t average_col = 0;
+              size_t average_row = 0;
+              size_t sum = 0;
 
-              for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
+              for (size_t sup_row_index = mem_row_index-1; sup_row_index <= mem_row_index+1; ++sup_row_index)
               {
-                if (sup_col_index >= mem_width)
+                if (sup_row_index >= mem_height)
                   continue;
 
-                const size_t weight = static_cast<size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
-                average_col += sup_col_index * weight;
-                average_row += sup_row_index * weight;
-                sum += weight;
-              } 
+                for (size_t sup_col_index = mem_col_index-1; sup_col_index <= mem_col_index+1; ++sup_col_index)
+                {
+                  if (sup_col_index >= mem_width)
+                    continue;
+
+                  const size_t weight = static_cast<size_t> (score_sums[sup_row_index*mem_width + sup_col_index]);
+                  average_col += sup_col_index * weight;
+                  average_row += sup_row_index * weight;
+                  sum += weight;
+                }
+              }
+
+              average_col *= step_size;
+              average_row *= step_size;
+
+              average_col /= sum;
+              average_row /= sum;
+
+              //std::cerr << mem_col_index << ", " << mem_row_index << " - " << average_col << ", " << average_row << std::endl;
+              std::cerr << mem_col_index*step_size << ", " << mem_row_index*step_size << " - " << average_col << ", " << average_row << std::endl;
+
+              const size_t detection_col_index = average_col;// * step_size;
+              const size_t detection_row_index = average_row;// * step_size;
+
+              detection.x = static_cast<int> (detection_col_index);
+              detection.y = static_cast<int> (detection_row_index);
+            }
+            else
+            {
+              const size_t detection_col_index = mem_col_index * step_size;
+              const size_t detection_row_index = mem_row_index * step_size;
+
+              detection.x = static_cast<int> (detection_col_index);
+              detection.y = static_cast<int> (detection_row_index);
             }
 
-            average_col *= step_size;
-            average_row *= step_size;
+            detection.template_id = static_cast<int> (template_index);
+            detection.score = score;
+            detection.scale = scale;
 
-            average_col /= sum;
-            average_row /= sum;
+  #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
+            std::cerr << "score: " << static_cast<float> (raw_score) * inv_max_score * 0.25f << ", " << (2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f) << std::endl;
+            std::cerr << "score0: " << static_cast<float> (score_sums[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums[mem_index]) * inv_max_score - 1.0f) << std::endl;
+            std::cerr << "score1: " << static_cast<float> (score_sums_1[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_1[mem_index]) * inv_max_score - 1.0f) << std::endl;
+            std::cerr << "score2: " << static_cast<float> (score_sums_2[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_2[mem_index]) * inv_max_score - 1.0f) << std::endl;
+            std::cerr << "score3: " << static_cast<float> (score_sums_3[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_3[mem_index]) * inv_max_score - 1.0f) << std::endl;
+  #endif
 
-            //std::cerr << mem_col_index << ", " << mem_row_index << " - " << average_col << ", " << average_row << std::endl;
-            std::cerr << mem_col_index*step_size << ", " << mem_row_index*step_size << " - " << average_col << ", " << average_row << std::endl;
-
-            const size_t detection_col_index = average_col;// * step_size;
-            const size_t detection_row_index = average_row;// * step_size;
-
-            detection.x = static_cast<int> (detection_col_index);
-            detection.y = static_cast<int> (detection_row_index);
-          }
-          else
-          {
-            const size_t detection_col_index = mem_col_index * step_size;
-            const size_t detection_row_index = mem_row_index * step_size;
-
-            detection.x = static_cast<int> (detection_col_index);
-            detection.y = static_cast<int> (detection_row_index);
-          }
-
-          detection.template_id = static_cast<int> (template_index);
-          detection.score = score;
-          detection.scale = scale;
-
-#ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
-          std::cerr << "score: " << static_cast<float> (raw_score) * inv_max_score * 0.25f << ", " << (2.0f * static_cast<float> (raw_score) * inv_max_score - 1.0f) << std::endl;
-          std::cerr << "score0: " << static_cast<float> (score_sums[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums[mem_index]) * inv_max_score - 1.0f) << std::endl;
-          std::cerr << "score1: " << static_cast<float> (score_sums_1[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_1[mem_index]) * inv_max_score - 1.0f) << std::endl;
-          std::cerr << "score2: " << static_cast<float> (score_sums_2[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_2[mem_index]) * inv_max_score - 1.0f) << std::endl;
-          std::cerr << "score3: " << static_cast<float> (score_sums_3[mem_index]) * inv_max_score << ", " << (2.0f * static_cast<float> (score_sums_3[mem_index]) * inv_max_score - 1.0f) << std::endl;
-#endif
-
-          #pragma omp critical
-          {
-            detections.push_back (detection);
+            #pragma omp critical
+            {
+              detections.push_back (detection);
+            }
           }
         }
       }
     }
+    // Free thread local storage
     #if defined(__AVX2__) || defined(__SSE2__)
       aligned_free (score_sums);
       aligned_free (tmp_score_sums);
@@ -1424,7 +1429,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       delete[] score_sums_2;
       delete[] score_sums_3;
     #endif
-  }
+  } // #pragma omp parallel
 
   printf("3 %f\n", 1000.0*(getTickCount()-start)/1e9);
   start = getTickCount();
