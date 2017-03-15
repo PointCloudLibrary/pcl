@@ -598,14 +598,12 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
           {
             best_score = best_score8[i];
             best_index = best_index8[i];
-            //printf("best %f %u\n", best_score, best_index);
           }
         }
 #endif
         for (; id1 < candidateVec1.size(); ++id1)
         {
           // find smallest distance
-          //float smallest_distance = std::numeric_limits<float>::max ();
           const float dx = candidateVec1[id1].x - candidateVec2[id2].x;
           const float dy = candidateVec1[id1].y - candidateVec2[id2].y;
 
@@ -618,17 +616,11 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
 
           const float score = candidateVec1_smallest_dist[id1] * candidateVec1[id1].magnitude;
 
-          //printf("%f %f %f %d\n", candidateVec1_smallest_dist[id1], candidateVec1[id1].magnitude, score, id1);
-          //printf("best %f %u\n", best_score, best_index);
           if (score > best_score)
           {
             best_score = score;
             best_index = id1;
-            //printf("best- %d %d\n", best_score, best_index);
           }
-          // if (id1 == 8) {
-          //   std::exit(-1);
-          // }
         }
 
         if (best_index != std::numeric_limits<uint32_t>::max())
