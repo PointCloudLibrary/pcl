@@ -56,7 +56,7 @@ namespace pcl
   {
     public:
       /** \brief Constructor. */
-      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ () 
+      EnergyMaps () : width_ (0), height_ (0), nr_bins_ (0), maps_ (NULL), map_size_(0)
       {
       }
 
@@ -94,33 +94,28 @@ namespace pcl
       void 
       initialize (const size_t width, const size_t height, const size_t nr_bins)
       {
-        maps_.resize(nr_bins, NULL);
         width_ = width;
         height_ = height;
         nr_bins_ = nr_bins;
 
-        const size_t mapsSize = width*height;
+        // Makes sure each map is aligned to 16 bytes
+        map_size_ = (((width * height) + 15) / 16) * 16;
 
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-        {
-          //maps_[map_index] = new unsigned char[mapsSize];
-          maps_[map_index] = reinterpret_cast<unsigned char*> (aligned_malloc (mapsSize));
-          memset (maps_[map_index], 0, mapsSize);
-        }
+        maps_ = reinterpret_cast<unsigned char*> (aligned_malloc (map_size_ * nr_bins));
+        memset (maps_, 0, map_size_ * nr_bins);
       }
 
       /** \brief Releases the internal data. */
       void 
       releaseAll ()
       {
-        for (size_t map_index = 0; map_index < maps_.size (); ++map_index)
-          //if (maps_[map_index] != NULL) delete[] maps_[map_index];
-          if (maps_[map_index] != NULL) aligned_free (maps_[map_index]);
+        aligned_free(maps_);
+        maps_ = NULL;
 
-        maps_.clear ();
         width_ = 0;
         height_ = 0;
         nr_bins_ = 0;
+        map_size_ = 0;
       }
 
       /** \brief Operator for accessing a specific element in the set of energy maps.
@@ -131,7 +126,7 @@ namespace pcl
       inline unsigned char & 
       operator() (const size_t bin_index, const size_t col_index, const size_t row_index)
       {
-        return (maps_[bin_index][row_index*width_ + col_index]);
+        return *(maps_ + bin_index * map_size_ + row_index * width_ + col_index);
       }
 
       /** \brief Operator for accessing a specific element in the set of energy maps.
@@ -141,7 +136,7 @@ namespace pcl
       inline unsigned char & 
       operator() (const size_t bin_index, const size_t index)
       {
-        return (maps_[bin_index][index]);
+        return *(maps_ + bin_index * map_size_ + index);
       }
 
       /** \brief Returns a pointer to the data of the specified energy map.
@@ -150,7 +145,7 @@ namespace pcl
       inline unsigned char * 
       operator() (const size_t bin_index)
       {
-        return (maps_[bin_index]);
+        return maps_ + bin_index * map_size_;
       }
 
       /** \brief Operator for accessing a specific element in the set of energy maps.
@@ -161,7 +156,7 @@ namespace pcl
       inline const unsigned char & 
       operator() (const size_t bin_index, const size_t col_index, const size_t row_index) const
       {
-        return (maps_[bin_index][row_index*width_ + col_index]);
+        return *(maps_ + bin_index * map_size_ + row_index * width_ + col_index);
       }
 
       /** \brief Operator for accessing a specific element in the set of energy maps.
@@ -171,7 +166,7 @@ namespace pcl
       inline const unsigned char & 
       operator() (const size_t bin_index, const size_t index) const
       {
-        return (maps_[bin_index][index]);
+        return *(maps_ + bin_index * map_size_ + index);
       }
 
       /** \brief Returns a pointer to the data of the specified energy map.
@@ -180,7 +175,7 @@ namespace pcl
       inline const unsigned char * 
       operator() (const size_t bin_index) const
       {
-        return (maps_[bin_index]);
+        return maps_ + bin_index * map_size_;
       }
 
     private:
@@ -191,7 +186,9 @@ namespace pcl
       /** \brief The number of quantization bins (== the number of internally stored energy maps). */
       size_t nr_bins_;
       /** \brief Storage for the energy maps. */
-      std::vector<unsigned char*> maps_;
+      unsigned char* maps_;
+
+      size_t map_size_;
   };
 
   /** \brief Stores a set of linearized maps.

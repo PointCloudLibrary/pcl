@@ -900,7 +900,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       //energy_maps[bin_index] = new unsigned char[width*height];
       //memset (energy_maps[bin_index], 0, width*height);
 
-      const unsigned char base_bit = static_cast<unsigned char> (0x1);
+      static const unsigned char base_bit = static_cast<unsigned char> (0x1);
       const unsigned char val0 = static_cast<unsigned char> (base_bit << bin_index); // e.g. 00100000
       const unsigned char val1 = static_cast<unsigned char> (val0 | (base_bit << ((bin_index+1)%8)) | (base_bit << ((bin_index+7)%8))); // e.g. 01110000
       const unsigned char val2 = static_cast<unsigned char> (val1 | (base_bit << ((bin_index+2)%8)) | (base_bit << ((bin_index+6)%8))); // e.g. 11111000
@@ -911,7 +911,7 @@ pcl::LINEMOD::detectTemplatesSemiScaleInvariant (
       {
 #ifdef LINEMOD_USE_SEPARATE_ENERGY_MAPS
         if ((val0 & quantized_data[index]) != 0)
-          ++energy_maps (bin_index, index);
+          ++energy_map_bin[index];
         if ((val1 & quantized_data[index]) != 0)
           ++energy_maps_1 (bin_index, index);
         if ((val2 & quantized_data[index]) != 0)
