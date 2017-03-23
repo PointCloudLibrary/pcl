@@ -119,7 +119,6 @@ namespace pcl
         , integral_image_XYZ_ (true)
         , diff_x_ (NULL)
         , diff_y_ (NULL)
-        , depth_data_ (NULL)
         , distance_map_ (NULL)
         , use_depth_dependent_smoothing_ (false)
         , max_depth_change_factor_ (20.0f*0.001f)
