@@ -107,33 +107,7 @@ namespace pcl
       typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
 
       /** \brief Constructor */
-      IntegralImageNormalEstimation ()
-        : normal_estimation_method_(AVERAGE_3D_GRADIENT)
-        , border_policy_ (BORDER_POLICY_IGNORE)
-        , rect_width_ (0)
-        , rect_height_ (0)
-        , distance_threshold_ (0)
-        , integral_image_DX_ (false)
-        , integral_image_DY_ (false)
-        , integral_image_depth_ (false)
-        , integral_image_XYZ_ (true)
-        , distance_map_ (NULL)
-        , use_depth_dependent_smoothing_ (false)
-        , max_depth_change_factor_ (20.0f*0.001f)
-        , normal_smoothing_size_ (10.0f)
-        , init_covariance_matrix_ (false)
-        , init_average_3d_gradient_ (false)
-        , init_simple_3d_gradient_ (false)
-        , init_depth_change_ (false)
-        , vpx_ (0.0f)
-        , vpy_ (0.0f)
-        , vpz_ (0.0f)
-        , use_sensor_origin_ (true)
-      {
-        feature_name_ = "IntegralImagesNormalEstimation";
-        tree_.reset ();
-        k_ = 1;
-      }
+      IntegralImageNormalEstimation ();
 
       /** \brief Destructor **/
       virtual ~IntegralImageNormalEstimation ();
@@ -341,6 +315,12 @@ namespace pcl
       void
       initData ();
 
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        */
+      inline void 
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+
     private:
 
       /** \brief Flip (in place) the estimated normal of a point towards a given viewpoint
@@ -436,6 +416,9 @@ namespace pcl
 
       /** whether the sensor origin of the input cloud or a user given viewpoint should be used.*/
       bool use_sensor_origin_;
+
+      /** \brief The number of threads the scheduler should use. */
+      int threads_;
       
       /** \brief This method should get called before starting the actual computation. */
       bool

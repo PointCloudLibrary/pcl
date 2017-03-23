@@ -40,7 +40,37 @@
 #define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 
 #include <pcl/features/integral_image_normal.h>
-#include <omp.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT>
+pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::IntegralImageNormalEstimation ()
+  : normal_estimation_method_(AVERAGE_3D_GRADIENT)
+  , border_policy_ (BORDER_POLICY_IGNORE)
+  , rect_width_ (0)
+  , rect_height_ (0)
+  , distance_threshold_ (0)
+  , integral_image_DX_ (false)
+  , integral_image_DY_ (false)
+  , integral_image_depth_ (false)
+  , integral_image_XYZ_ (true)
+  , distance_map_ (NULL)
+  , use_depth_dependent_smoothing_ (false)
+  , max_depth_change_factor_ (20.0f*0.001f)
+  , normal_smoothing_size_ (10.0f)
+  , init_covariance_matrix_ (false)
+  , init_average_3d_gradient_ (false)
+  , init_simple_3d_gradient_ (false)
+  , init_depth_change_ (false)
+  , vpx_ (0.0f)
+  , vpy_ (0.0f)
+  , vpz_ (0.0f)
+  , use_sensor_origin_ (true)
+  , threads_(0)
+{
+  feature_name_ = "IntegralImagesNormalEstimation";
+  tree_.reset ();
+  k_ = 1;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
@@ -738,10 +768,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   memset (depthChangeMap, 255, input_->points.size ());
 
   unsigned index = 0;
-  //#pragma omp parallel for
   for (unsigned int ri = 0; ri < input_->height-1; ++ri)
   {
-    for (unsigned int ci = 0; ci < input_->width-1; ++ci, ++index)
+    for (unsigned int ci = 0; ci < input_->width-1; ++ci/*, ++index*/)
     {
       index = ri * input_->width + ci;
 
@@ -851,7 +880,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
     size_t count = border * input_->width;
-    #pragma omp parallel for
+#ifdef _OPENMP
+    #pragma omp parallel for num_threads(threads_)
+#endif
     for (size_t idx = 0; idx < count; ++idx)
     {
       vec1 [idx].getNormalVector3fMap ().setConstant (bad_point);
@@ -863,8 +894,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // left and right borders actually columns
     vec1 = &output [border * input_->width];
     vec2 = vec1 + input_->width - border;
-
-    #pragma omp parallel for
+#ifdef _OPENMP
+    #pragma omp parallel for num_threads(threads_)
+#endif
     for (size_t ri = border; ri < input_->height - border; ++ri/*, vec1 += input_->width, vec2 += input_->width*/)
     {
       const size_t offset = input_->width * (ri - border);
@@ -884,7 +916,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
       index = border + input_->width * border;
       unsigned skip = (border << 1);
 
-      #pragma omp parallel for
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (unsigned ri = border; ri < input_->height - border; ++ri/*, index += skip*/)
       {
         for (unsigned ci = border; ci < input_->width - border; ++ci/*, ++index*/)
@@ -917,11 +951,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
+      const float smoothing_constant = normal_smoothing_size_;
 
       index = border + input_->width * border;
       unsigned skip = (border << 1);
-      #pragma omp parallel for
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (unsigned ri = border; ri < input_->height - border; ++ri/*, index += skip*/)
       {
         for (unsigned ci = border; ci < input_->width - border; ++ci/*, ++index*/)
@@ -959,7 +995,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
       //index = 0;
       //unsigned skip = 0;
       //for (unsigned ri = 0; ri < input_->height; ++ri, index += skip)
-      //#pragma omp parallel for
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (unsigned ri = 0; ri < input_->height; ++ri)
       {
         //for (unsigned ci = 0; ci < input_->width; ++ci, ++index)
@@ -991,12 +1029,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
+      const float smoothing_constant = normal_smoothing_size_;
 
       //index = border + input_->width * border;
       //unsigned skip = (border << 1);
       //for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
-      #pragma omp parallel for
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (unsigned ri = 0; ri < input_->height; ++ri)
       {
         //for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
@@ -1043,6 +1083,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     if (use_depth_dependent_smoothing_)
     {
       // Iterating over the entire index vector
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
@@ -1084,8 +1127,11 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
+      const float smoothing_constant = normal_smoothing_size_;
       // Iterating over the entire index vector
+#ifdef _OPENMP
+      #pragma omp parallel for num_threads(threads_)
+#endif
       for (std::size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
@@ -1161,7 +1207,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeaturePart (con
     }
     else
     {
-      float smoothing_constant = normal_smoothing_size_;
+      const float smoothing_constant = normal_smoothing_size_;
       for (size_t idx = 0; idx < indices_->size (); ++idx)
       {
         unsigned pt_index = (*indices_)[idx];
