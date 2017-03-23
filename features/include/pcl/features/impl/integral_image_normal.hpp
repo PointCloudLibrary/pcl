@@ -40,6 +40,7 @@
 #define PCL_FEATURES_INTEGRALIMAGE_BASED_IMPL_NORMAL_ESTIMATOR_H_
 
 #include <pcl/features/integral_image_normal.h>
+#include <omp.h>
 
 //////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointInT, typename PointOutT>
@@ -731,6 +732,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   memset (depthChangeMap, 255, input_->points.size ());
 
   unsigned index = 0;
+  #pragma omp parallel for
   for (unsigned int ri = 0; ri < input_->height-1; ++ri)
   {
     for (unsigned int ci = 0; ci < input_->width-1; ++ci, ++index)
@@ -775,9 +777,24 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   // first pass
   float* previous_row = distanceMap;
   float* current_row = previous_row + input_->width;
+  #pragma omp parallel for
   for (size_t ri = 1; ri < input_->height; ++ri)
   {
-    for (size_t ci = 1; ci < input_->width; ++ci)
+    size_t ci = 1;
+#if __AVX2__
+    for (; ci <= input_->width - 8; ci += 8)
+    {
+      const __m256 __upLeft = _mm256_add_ps(_mm256_loadu_ps(&previous_row[ci - 1]), _mm256_set1_ps(1.4f));
+      const __m256 __up = _mm256_add_ps(_mm256_loadu_ps(&previous_row[ci]), _mm256_set1_ps(1.0f));
+      const __m256 __upRight = _mm256_add_ps(_mm256_loadu_ps(&previous_row[ci + 1]), _mm256_set1_ps(1.4f));
+      const __m256 __left = _mm256_add_ps(_mm256_loadu_ps(&current_row[ci - 1]), _mm256_set1_ps(1.0f));
+      const __m256 __center = _mm256_loadu_ps(&current_row[ci]);
+
+      _mm256_storeu_ps(&current_row[ci],
+        _mm256_min_ps(__center, _mm256_min_ps(_mm256_min_ps(__upLeft, __up), _mm256_min_ps(__left, __upRight))));
+    }
+#endif
+    for (; ci < input_->width; ++ci)
     {
       const float upLeft  = previous_row [ci - 1] + 1.4f; //distanceMap[(ri-1)*input_->width + ci-1] + 1.4f;
       const float up      = previous_row [ci] + 1.0f;     //distanceMap[(ri-1)*input_->width + ci] + 1.0f;
@@ -797,6 +814,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeature (PointCl
   float* next_row    = distanceMap + input_->width * (input_->height - 1);
   current_row = next_row - input_->width;
   // second pass
+  #pragma omp parallel for
   for (int ri = input_->height-2; ri >= 0; --ri)
   {
     for (int ci = input_->width-2; ci >= 0; --ci)
@@ -843,6 +861,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
     size_t count = border * input_->width;
+    #pragma omp parallel for
     for (size_t idx = 0; idx < count; ++idx)
     {
       vec1 [idx].getNormalVector3fMap ().setConstant (bad_point);
@@ -854,14 +873,19 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // left and right borders actually columns
     vec1 = &output [border * input_->width];
     vec2 = vec1 + input_->width - border;
-    for (size_t ri = border; ri < input_->height - border; ++ri, vec1 += input_->width, vec2 += input_->width)
+
+    #pragma omp parallel for
+    for (size_t ri = border; ri < input_->height - border; ++ri/*, vec1 += input_->width, vec2 += input_->width*/)
     {
+      const size_t offset = input_->width * (ri - border);
+      PointOutT* vec1_ = vec1 + offset;
+      PointOutT* vec2_ = vec2 + offset;
       for (size_t ci = 0; ci < border; ++ci)
       {
-        vec1 [ci].getNormalVector3fMap ().setConstant (bad_point);
-        vec1 [ci].curvature = bad_point;
-        vec2 [ci].getNormalVector3fMap ().setConstant (bad_point);
-        vec2 [ci].curvature = bad_point;
+        vec1_ [ci].getNormalVector3fMap ().setConstant (bad_point);
+        vec1_ [ci].curvature = bad_point;
+        vec2_ [ci].getNormalVector3fMap ().setConstant (bad_point);
+        vec2_ [ci].curvature = bad_point;
       }
     }
 
@@ -869,7 +893,9 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     {
       index = border + input_->width * border;
       unsigned skip = (border << 1);
-      for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
+
+      #pragma omp parallel for
+      for (unsigned ri = border; ri < input_->height - border; ++ri/*, index += skip*/)
       {
         for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
         {
@@ -906,7 +932,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
 
       index = border + input_->width * border;
       unsigned skip = (border << 1);
-      for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
+      #pragma omp parallel for
+      for (unsigned ri = border; ri < input_->height - border; ++ri/*, index += skip*/)
       {
         for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
         {
@@ -944,6 +971,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
       //index = 0;
       //unsigned skip = 0;
       //for (unsigned ri = 0; ri < input_->height; ++ri, index += skip)
+      #pragma omp parallel for
       for (unsigned ri = 0; ri < input_->height; ++ri)
       {
         //for (unsigned ci = 0; ci < input_->width; ++ci, ++index)
@@ -981,6 +1009,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
       //index = border + input_->width * border;
       //unsigned skip = (border << 1);
       //for (unsigned ri = border; ri < input_->height - border; ++ri, index += skip)
+      #pragma omp parallel for
       for (unsigned ri = 0; ri < input_->height; ++ri)
       {
         //for (unsigned ci = border; ci < input_->width - border; ++ci, ++index)
