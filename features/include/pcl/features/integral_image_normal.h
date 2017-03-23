@@ -117,8 +117,6 @@ namespace pcl
         , integral_image_DY_ (false)
         , integral_image_depth_ (false)
         , integral_image_XYZ_ (true)
-        , diff_x_ (NULL)
-        , diff_y_ (NULL)
         , distance_map_ (NULL)
         , use_depth_dependent_smoothing_ (false)
         , max_depth_change_factor_ (20.0f*0.001f)
@@ -406,11 +404,6 @@ namespace pcl
       IntegralImage2D<float, 1> integral_image_depth_;
       /** integral image xyz */
       IntegralImage2D<float, 3> integral_image_XYZ_;
-
-      /** derivatives in x-direction */
-      float *diff_x_;
-      /** derivatives in y-direction */
-      float *diff_y_;
 
       /** depth data */
       float *depth_data_;

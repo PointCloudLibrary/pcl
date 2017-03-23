@@ -46,8 +46,6 @@
 template <typename PointInT, typename PointOutT>
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::~IntegralImageNormalEstimation ()
 {
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
   if (distance_map_ != NULL) delete[] distance_map_;
 }
 
@@ -68,11 +66,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initData ()
                          "[pcl::IntegralImageNormalEstimation::initData] unknown normal estimation method.");
 
   // compute derivatives
-  if (diff_x_ != NULL) delete[] diff_x_;
-  if (diff_y_ != NULL) delete[] diff_y_;
   if (distance_map_ != NULL) delete[] distance_map_;
-  diff_x_ = NULL;
-  diff_y_ = NULL;
   distance_map_ = NULL;
 
   if (normal_estimation_method_ == COVARIANCE_MATRIX)
@@ -139,11 +133,11 @@ template <typename PointInT, typename PointOutT> void
 pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMethod ()
 {
   size_t data_size = (input_->points.size () << 2);
-  diff_x_ = new float[data_size];
-  diff_y_ = new float[data_size];
+  float *diff_x = new float[data_size];
+  float *diff_y = new float[data_size];
 
-  memset (diff_x_, 0, sizeof(float) * data_size);
-  memset (diff_y_, 0, sizeof(float) * data_size);
+  memset (diff_x, 0, sizeof(float) * data_size);
+  memset (diff_y, 0, sizeof(float) * data_size);
 
   // x u x
   // l x r
@@ -152,8 +146,8 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMe
   const PointInT* point_dn = point_up + (input_->width << 1);//&(input_->points [1 + (input_->width << 1)]);
   const PointInT* point_lf = &(input_->points [input_->width]);
   const PointInT* point_rg = point_lf + 2; //&(input_->points [input_->width + 2]);
-  float* diff_x_ptr = diff_x_ + ((input_->width + 1) << 2);
-  float* diff_y_ptr = diff_y_ + ((input_->width + 1) << 2);
+  float* diff_x_ptr = diff_x + ((input_->width + 1) << 2);
+  float* diff_y_ptr = diff_y + ((input_->width + 1) << 2);
   unsigned diff_skip = 8; // skip last element in row and the first in the next row
 
   for (size_t ri = 1; ri < input_->height - 1; ++ri
@@ -177,10 +171,13 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::initAverage3DGradientMe
   }
 
   // Compute integral images
-  integral_image_DX_.setInput (diff_x_, input_->width, input_->height, 4, input_->width << 2);
-  integral_image_DY_.setInput (diff_y_, input_->width, input_->height, 4, input_->width << 2);
+  integral_image_DX_.setInput (diff_x, input_->width, input_->height, 4, input_->width << 2);
+  integral_image_DY_.setInput (diff_y, input_->width, input_->height, 4, input_->width << 2);
   init_covariance_matrix_ = init_depth_change_ = init_simple_3d_gradient_ = false;
   init_average_3d_gradient_ = true;
+
+  delete[] diff_x;
+  delete[] diff_y;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
