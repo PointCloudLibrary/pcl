@@ -880,9 +880,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     PointOutT* vec2 = vec1 + input_->width * (input_->height - border);
 
     size_t count = border * input_->width;
-#ifdef _OPENMP
-    #pragma omp parallel for num_threads(threads_)
-#endif
     for (size_t idx = 0; idx < count; ++idx)
     {
       vec1 [idx].getNormalVector3fMap ().setConstant (bad_point);
@@ -894,9 +891,6 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // left and right borders actually columns
     vec1 = &output [border * input_->width];
     vec2 = vec1 + input_->width - border;
-#ifdef _OPENMP
-    #pragma omp parallel for num_threads(threads_)
-#endif
     for (size_t ri = border; ri < input_->height - border; ++ri/*, vec1 += input_->width, vec2 += input_->width*/)
     {
       const size_t offset = input_->width * (ri - border);
