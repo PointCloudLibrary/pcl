@@ -110,8 +110,8 @@ namespace pcl
       IntegralImageNormalEstimation ()
         : normal_estimation_method_(AVERAGE_3D_GRADIENT)
         , border_policy_ (BORDER_POLICY_IGNORE)
-        , rect_width_ (0), rect_width_2_ (0), rect_width_4_ (0)
-        , rect_height_ (0), rect_height_2_ (0), rect_height_4_ (0)
+        , rect_width_ (0)
+        , rect_height_ (0)
         , distance_threshold_ (0)
         , integral_image_DX_ (false)
         , integral_image_DY_ (false)
@@ -161,7 +161,8 @@ namespace pcl
         * \param[out] normal the output estimated normal
         */
       void
-      computePointNormal (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
+      computePointNormal (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal,
+        int rect_width, int rect_height);
 
       /** \brief Computes the normal at the specified position with mirroring for border handling.
         * \param[in] pos_x x position (pixel)
@@ -170,7 +171,8 @@ namespace pcl
         * \param[out] normal the output estimated normal
         */
       void
-      computePointNormalMirror (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal);
+      computePointNormalMirror (const int pos_x, const int pos_y, const unsigned point_index, PointOutT &normal,
+        int rect_width, int rect_height);
 
       /** \brief The depth change threshold for computing object borders
         * \param[in] max_depth_change_factor the depth change threshold for computing object borders based on
@@ -386,12 +388,8 @@ namespace pcl
 
       /** The width of the neighborhood region used for computing the normal. */
       int rect_width_;
-      int rect_width_2_;
-      int rect_width_4_;
       /** The height of the neighborhood region used for computing the normal. */
       int rect_height_;
-      int rect_height_2_;
-      int rect_height_4_;
 
       /** the threshold used to detect depth discontinuities */
       float distance_threshold_;
