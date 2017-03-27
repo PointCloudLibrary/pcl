@@ -196,7 +196,7 @@ macro(PCL_ADD_LIBRARY _name _component)
       target_link_libraries(${_name} gomp)
     endif()
 	
-	if(MSVC90 OR MSVC10)
+	if(MSVC)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
 	endif()
 
