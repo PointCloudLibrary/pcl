@@ -1669,7 +1669,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::Polygo
 
   for (size_t i=0; i < input.polygons.size (); ++i)
     for (size_t j=0; j < input.polygons[i].vertices.size (); ++j)
-      triangleList[j].push_back (i);
+      triangleList[input.polygons[i].vertices[j]].push_back (i);
   return (triangleList);
 }
 
