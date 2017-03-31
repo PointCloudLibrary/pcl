@@ -891,17 +891,14 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computeFeatureFull (con
     // left and right borders actually columns
     vec1 = &output [border * input_->width];
     vec2 = vec1 + input_->width - border;
-    for (size_t ri = border; ri < input_->height - border; ++ri/*, vec1 += input_->width, vec2 += input_->width*/)
+    for (size_t ri = border; ri < input_->height - border; ++ri, vec1 += input_->width, vec2 += input_->width)
     {
-      const size_t offset = input_->width * (ri - border);
-      PointOutT* vec1_ = vec1 + offset;
-      PointOutT* vec2_ = vec2 + offset;
       for (size_t ci = 0; ci < border; ++ci)
       {
-        vec1_ [ci].getNormalVector3fMap ().setConstant (bad_point);
-        vec1_ [ci].curvature = bad_point;
-        vec2_ [ci].getNormalVector3fMap ().setConstant (bad_point);
-        vec2_ [ci].curvature = bad_point;
+        vec1 [ci].getNormalVector3fMap ().setConstant (bad_point);
+        vec1 [ci].curvature = bad_point;
+        vec2 [ci].getNormalVector3fMap ().setConstant (bad_point);
+        vec2 [ci].curvature = bad_point;
       }
     }
 
