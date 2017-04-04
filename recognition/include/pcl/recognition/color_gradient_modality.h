@@ -758,7 +758,7 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       // start = getTickCount();
     }
   }
-  /*else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
+  else if (feature_selection_method_ == MASK_BORDER_HIGH_GRADIENTS || feature_selection_method_ == MASK_BORDER_EQUALLY)
   {
     MaskMap eroded_mask;
     erode (mask, eroded_mask);
@@ -772,12 +772,12 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       {
         if (diff_mask (col_index, row_index) != 0)
         {
-          const GradientXY & gradient = color_gradients_ (col_index, row_index);
-          if ((feature_selection_method_ == MASK_BORDER_EQUALLY || gradient.magnitude > gradient_magnitude_threshold_feature_extraction_)
+          const float &gradient_mag = color_gradients_ (col_index, row_index);
+          if ((feature_selection_method_ == MASK_BORDER_EQUALLY || gradient_mag > gradient_magnitude_threshold_feature_extraction_)
             && filtered_quantized_color_gradients_ (col_index, row_index) != 0)
           {
             Candidate candidate;
-            candidate.gradient = gradient;
+            candidate.magnitude = gradient_mag;
             candidate.x = static_cast<float> (col_index);
             candidate.y = static_cast<float> (row_index);
 
@@ -787,18 +787,18 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
       }
     }
 
-    list1.sort();
+    std::sort(list1.begin(), list1.end());
 
     if (list1.size () <= nr_features)
     {
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      for (size_t id1 = 0; id1 < list1.size(); ++id1)
       {
         QuantizedMultiModFeature feature;
           
-        feature.x = iter1->x;
-        feature.y = iter1->y;
+        feature.x = list1[id1].x;
+        feature.y = list1[id1].y;
         feature.modality_index = modality_index;
-        feature.quantized_value = filtered_quantized_color_gradients_ (iter1->x, iter1->y);
+        feature.quantized_value = filtered_quantized_color_gradients_ (list1[id1].x, list1[id1].y);
 
         features.push_back (feature);
       }
@@ -809,14 +809,14 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
     while (list2.size () != nr_features)
     {
       const size_t sqr_distance = distance*distance;
-      for (typename std::list<Candidate>::iterator iter1 = list1.begin (); iter1 != list1.end (); ++iter1)
+      for (size_t id1 = 0; id1 < list1.size(); ++id1)
       {
         bool candidate_accepted = true;
 
-        for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
+        for (size_t id2 = 0; id2 < list2.size(); ++id2)
         {
-          const int dx = iter1->x - iter2->x;
-          const int dy = iter1->y - iter2->y;
+          const int dx = list1[id1].x - list2[id2].x;
+          const int dy = list1[id1].y - list2[id2].y;
           const unsigned int tmp_distance = dx*dx + dy*dy;
 
           //if (tmp_distance < distance) 
@@ -828,14 +828,14 @@ extractFeatures (const MaskMap & mask, const size_t nr_features, const size_t mo
         }
 
         if (candidate_accepted)
-          list2.push_back (*iter1);
+          list2.push_back (list1[id1]);
 
         if (list2.size () == nr_features)
           break;
       }
       --distance;
     }
-  }*/
+  }
 
   //for (typename std::list<Candidate>::iterator iter2 = list2.begin (); iter2 != list2.end (); ++iter2)
   for (size_t id2 = 0; id2 < list2.size(); ++id2)
