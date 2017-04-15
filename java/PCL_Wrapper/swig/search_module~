@@ -1,0 +1,3 @@
+%module search
+
+%include "swig/search/KdTree.i"

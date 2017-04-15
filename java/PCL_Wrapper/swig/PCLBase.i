@@ -1,0 +1,133 @@
+%nspace pcl::PCLBase;
+
+%{
+#include "pcl/pcl_base.h"
+%}
+
+%rename (at) operator[];//because java doesn't support operator overloading
+//%shared_ptr(std::vector<int>) //making a shared pointer for SetIndices function
+//%template(vector_int) std::vector<int>;
+%shared_ptr(std::vector<int>)
+
+namespace pcl
+{
+  // definitions used everywhere
+  typedef boost::shared_ptr <std::vector<int> > IndicesPtr;
+  typedef boost::shared_ptr <const std::vector<int> > IndicesConstPtr;
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  /** \brief PCL base class. Implements methods that are used by most PCL algorithms. 
+    * \ingroup common 
+    */
+  template <typename PointT>
+  class PCLBase
+  {
+    public:
+      typedef pcl::PointCloud<PointT> PointCloud;
+      typedef typename PointCloud::Ptr PointCloudPtr;
+      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+
+      typedef boost::shared_ptr<PointIndices> PointIndicesPtr;
+      typedef boost::shared_ptr<PointIndices const> PointIndicesConstPtr;
+
+      /** \brief Empty constructor. */
+      PCLBase ();
+      
+      /** \brief Copy constructor. */
+      PCLBase (const PCLBase& base);
+
+      /** \brief Destructor. */
+      virtual ~PCLBase ();
+      
+      /** \brief Provide a pointer to the input dataset
+        * \param[in] cloud the const boost shared pointer to a PointCloud message
+        */
+      virtual void 
+      setInputCloud (const PointCloudConstPtr &cloud);
+
+      /** \brief Get a pointer to the input point cloud dataset. */
+      inline PointCloudConstPtr const 
+      getInputCloud () { return (input_); }
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+      virtual void
+      setIndices (const IndicesPtr &indices);
+
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+	/*
+	// I removed it because it makes swig redenfines a function , so it won't compile
+      virtual void
+      setIndices (const IndicesConstPtr &indices);
+	*/
+      /** \brief Provide a pointer to the vector of indices that represents the input data.
+        * \param[in] indices a pointer to the indices that represent the input data.
+        */
+      virtual void
+      setIndices (const PointIndicesConstPtr &indices);
+
+      /** \brief Set the indices for the points laying within an interest region of 
+        * the point cloud.
+        * \note you shouldn't call this method on unorganized point clouds!
+        * \param[in] row_start the offset on rows
+        * \param[in] col_start the offset on columns
+        * \param[in] nb_rows the number of rows to be considered row_start included
+        * \param[in] nb_cols the number of columns to be considered col_start included
+        */
+      virtual void 
+      setIndices (size_t row_start, size_t col_start, size_t nb_rows, size_t nb_cols);
+
+      /** \brief Get a pointer to the vector of indices used. */
+      inline IndicesPtr const 
+      getIndices () ;
+
+      /** \brief Override PointCloud operator[] to shorten code
+        * \note this method can be called instead of (*input_)[(*indices_)[pos]]
+        * or input_->points[(*indices_)[pos]]
+        * \param[in] pos position in indices_ vector
+        */
+      inline const PointT& operator[] (size_t pos);
+
+    protected:
+      /** \brief The input point cloud dataset. */
+      PointCloudConstPtr input_;
+
+      /** \brief A pointer to the vector of point indices to use. */
+      IndicesPtr indices_;
+
+      /** \brief Set to true if point indices are used. */
+      bool use_indices_;
+
+      /** \brief If no set of indices are given, we construct a set of fake indices that mimic the input PointCloud. */
+      bool fake_indices_;
+
+      /** \brief This method should get called before starting the actual computation. 
+        *
+        * Internally, initCompute() does the following:
+        *   - checks if an input dataset is given, and returns false otherwise
+        *   - checks whether a set of input indices has been given. Returns true if yes.
+        *   - if no input indices have been given, a fake set is created, which will be used until:
+        *     - either a new set is given via setIndices(), or 
+        *     - a new cloud is given that has a different set of points. This will trigger an update on the set of fake indices
+        */
+      bool
+      initCompute ();
+
+      /** \brief This method should get called after finishing the actual computation. 
+        */
+      bool
+      deinitCompute ();
+
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+  };
+}
+
+//making instances of the template to be used within java
+%import "point_types/Normal.i"
+%template (PCLBase_PointXYZ) pcl::PCLBase<pcl::PointXYZ>;
+
+%template(vector_int) std::vector<int>; //for usage with SetIndices

@@ -1,0 +1,15 @@
+%nspace search::kdTree;
+
+%include <stdint.i>
+%include <std_vector.i>
+
+%{
+#include <pcl/search/kdtree.h>
+#include <pcl/point_cloud.h>
+%}
+
+%include "pcl/search/kdtree.h"
+
+%import "swig/point_types/PointXYZ.i"
+%template (KdTree_PointXYZ) pcl::search::KdTree<pcl::PointXYZ>;
+
