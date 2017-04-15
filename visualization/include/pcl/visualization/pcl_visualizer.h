@@ -252,7 +252,10 @@ namespace pcl
           return (registerAreaPickingCallback (boost::bind (callback, boost::ref (instance), _1, cookie)));
         }
 
-        /** \brief Spin method. Calls the interactor and runs an internal loop. */
+        /** \brief Spin method. Calls the interactor and runs an internal loop. 
+		  * \The spin() or spinOnce() method is necessary when use the 
+		    pcl::visualization::PCLVisualizer class.
+		  */
         void
         spin ();
 
@@ -260,6 +263,8 @@ namespace pcl
           *  \param[in] time - How long (in ms) should the visualization loop be allowed to run.
           *  \param[in] force_redraw - if false it might return without doing anything if the
           *  interactor's framerate does not require a redraw yet.
+		  * \The spin() or spinOnce() method is necessary when use the 
+		     pcl::visualization::PCLVisualizer class.
           */
         void
         spinOnce (int time = 1, bool force_redraw = false);
