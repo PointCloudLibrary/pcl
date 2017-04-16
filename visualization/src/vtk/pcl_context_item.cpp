@@ -42,6 +42,13 @@
 #include <vtkPen.h>
 #include <vtkBrush.h>
 #include <vtkTextProperty.h>
+#if VTK_MAJOR_VERSION >= 6
+#include <vtkContextDevice2D.h>
+#include <vtkContextScene.h>
+#include <vtkTransform2D.h>
+#include <vtkViewport.h>
+#include <vtkWindow.h>
+#endif
 
 #include <pcl/visualization/vtk/pcl_context_item.h>
 
@@ -52,6 +59,14 @@ namespace pcl
     // Standard VTK macro for *New ()
     vtkStandardNewMacro (PCLContextItem);
     vtkStandardNewMacro (PCLContextImageItem);
+#if VTK_MAJOR_VERSION >= 6
+    vtkStandardNewMacro (PCLContextActor);
+    bool PCLContextActor::initial_viewport_set_ = false;
+    int PCLContextActor::initial_viewport_x_size_ = 0;
+    int PCLContextActor::initial_viewport_y_size_ = 0;
+    double PCLContextActor::initial_viewport_x_aspect_ = 0.0;
+    double PCLContextActor::initial_viewport_y_aspect_ = 0.0;
+#endif
     namespace context_items
     {
       vtkStandardNewMacro (Point);
@@ -271,3 +286,72 @@ pcl::visualization::PCLContextImageItem::PCLContextImageItem ()
 {
   image = vtkSmartPointer<vtkImageData>::New ();
 }
+
+#if VTK_MAJOR_VERSION >= 6
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////
+pcl::visualization::PCLContextActor::PCLContextActor ()
+{
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::visualization::PCLContextActor::RenderOverlay (vtkViewport *viewport)
+{
+  vtkDebugMacro(<< "pcl::visualization::PCLContextActor::RenderOverlay");
+
+  if (!this->Context.GetPointer ())
+  {
+    vtkErrorMacro(<< "pcl::visualization::PCLContextActor::Render - No painter set");
+    return 0;
+  }
+
+  if (!this->Initialized)
+  {
+    this->Initialize(viewport);
+  }
+
+  const int *viewport_size = viewport->GetVTKWindow()->GetSize();
+
+  // initial viewport size for scaling and positioning all later created context items
+  if (!initial_viewport_set_)
+  {
+    initial_viewport_x_size_ = viewport_size[0];
+    initial_viewport_y_size_ = viewport_size[1];
+  }
+
+  // scale factors for actual viewport size
+  double x_scale = (static_cast<double>(viewport_size[0]) / static_cast<double>(initial_viewport_x_size_));
+  double y_scale = (static_cast<double>(viewport_size[1]) / static_cast<double>(initial_viewport_y_size_));
+
+  double aspect[2];
+  viewport->GetAspect (aspect);
+
+  // initial viewport aspect ratio
+  if (!initial_viewport_set_)
+  {
+    initial_viewport_x_aspect_ = aspect[0];
+    initial_viewport_y_aspect_ = aspect[1];
+    initial_viewport_set_ = true;
+  }
+  double aspect_modification = initial_viewport_x_aspect_ * aspect[1] / (initial_viewport_y_aspect_ * aspect[0]);
+
+  // initialize the drawing device
+  this->GetContext ()->GetDevice ()->Begin (viewport);
+  vtkTransform2D *transform = this->Scene->GetTransform ();
+  transform->Identity();
+
+  // emulate the window resizing referring to 'vtkImageSlice': complex composition of scaling and translating
+  transform->Scale (x_scale * aspect_modification, y_scale);
+  transform->Translate ((1.0 - aspect_modification) * static_cast<double>(viewport_size[0])/2.0 
+    * static_cast<double>(initial_viewport_y_size_)/static_cast<double>(viewport_size[1]), 0.0);
+
+  this->Scene->SetTransform (transform);
+  this->Scene->Paint(this->Context.GetPointer());
+  this->GetContext ()->GetDevice()->End();
+
+  return 1;
+  //return Superclass::RenderOverlay (viewport);
+}
+#endif

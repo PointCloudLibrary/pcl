@@ -55,7 +55,6 @@
 #include <vtkInteractorStyleImage.h>
 
 class vtkImageSlice;
-class vtkContextActor;
 class vtkImageViewer;
 class vtkImageFlip;
 
@@ -973,7 +972,7 @@ namespace pcl
         struct Layer
         {
           Layer () : actor (), layer_name () {}
-          vtkSmartPointer<vtkContextActor> actor;
+          vtkSmartPointer<PCLContextActor> actor;
           std::string layer_name;
         };
 
