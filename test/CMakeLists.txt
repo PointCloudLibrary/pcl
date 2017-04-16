@@ -43,7 +43,6 @@ if(build)
     add_subdirectory(search)
     add_subdirectory(keypoints)
     add_subdirectory(surface)
-    add_subdirectory(segmentation)
     add_subdirectory(sample_consensus)
 
 	  PCL_ADD_TEST(a_recognition_ism_test test_recognition_ism
