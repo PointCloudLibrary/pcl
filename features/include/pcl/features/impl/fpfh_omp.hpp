@@ -146,6 +146,9 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
       output.points[idx].histogram[d] = fpfh_histogram[d];
   }
 
+  output.width = static_cast<uint32_t> (output.points.size());
+  output.height = 1;
+
 }
 
 #define PCL_INSTANTIATE_FPFHEstimationOMP(T,NT,OutT) template class PCL_EXPORTS pcl::FPFHEstimationOMP<T,NT,OutT>;
