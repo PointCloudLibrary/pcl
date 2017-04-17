@@ -305,11 +305,11 @@ void ON_PolynomialSurface::Destroy()
 }
 
 ON_BOOL32 ON_PolynomialSurface::Evaluate( // returns false if unable to evaluate
-       double s, 
-       double t,           // evaluation parameter
-       int der_count,      // number of derivatives (>=0)
-       int v_stride,       // array stride (>=Dimension())
-       double* v           // array of length stride*(ndir+1)*(ndir+2)/2
+       double, 
+       double,           // evaluation parameter
+       int,      // number of derivatives (>=0)
+       int,       // array stride (>=Dimension())
+       double*           // array of length stride*(ndir+1)*(ndir+2)/2
        ) const
 {
   ON_ERROR("TODO: - finish ON_PolynomialSurface::Evaluate()\n");
