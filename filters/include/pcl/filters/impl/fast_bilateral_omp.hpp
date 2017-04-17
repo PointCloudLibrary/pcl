@@ -159,7 +159,7 @@ pcl::FastBilateralFilterOMP<PointT>::applyFilter (PointCloud &output)
   if (early_division_)
   {
     for (std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >::iterator d = data.begin (); d != data.end (); ++d)
-      *d /= ((*d)[0] != 0) ? (*d)[1] : 1;
+      *d /= ((*d)[1] != 0) ? (*d)[1] : 1;
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (threads_)
