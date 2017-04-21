@@ -4,7 +4,7 @@
 # This sets the following variables:
 # GTEST_FOUND - True if GTest was found.
 # GTEST_INCLUDE_DIRS - Directories containing the GTest include files.
-# GTEST_SRC - Directories containing the GTest source files.
+# GTEST_SRC_DIR - Directories containing the GTest source files.
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} /usr /usr/local)

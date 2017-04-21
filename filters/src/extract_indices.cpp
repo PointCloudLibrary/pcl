@@ -44,7 +44,42 @@
 void
 pcl::ExtractIndices<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
 {
-  // TODO: the PCLPointCloud2 implementation is not yet using the keep_organized_ system -FF
+  if (keep_organized_)
+  {
+    output = *input_;
+    if (negative_)
+    {
+      // Prepare the output and copy the data
+      for (size_t i = 0; i < indices_->size (); ++i)
+        for (size_t j = 0; j < output.fields.size(); ++j)
+          memcpy (&output.data[(*indices_)[i] * output.point_step + output.fields[j].offset],
+                  &user_filter_value_, sizeof(float));
+    }
+    else
+    {
+      // Prepare a vector holding all indices
+      std::vector<int> all_indices (input_->width * input_->height);
+      for (int i = 0; i < static_cast<int>(all_indices.size ()); ++i)
+        all_indices[i] = i;
+
+      std::vector<int> indices = *indices_;
+      std::sort (indices.begin (), indices.end ());
+
+      // Get the diference
+      std::vector<int> remaining_indices;
+      set_difference (all_indices.begin (), all_indices.end (), indices.begin (), indices.end (),
+                      inserter (remaining_indices, remaining_indices.begin ()));
+
+      // Prepare the output and copy the data
+      for (size_t i = 0; i < remaining_indices.size (); ++i)
+        for (size_t j = 0; j < output.fields.size(); ++j)
+          memcpy (&output.data[remaining_indices[i] * output.point_step + output.fields[j].offset],
+                  &user_filter_value_, sizeof(float));
+    }
+    if (!pcl_isfinite (user_filter_value_))
+      output.is_dense = false;
+    return;
+  }
   if (indices_->empty () || (input_->width * input_->height == 0))
   {
     output.width = output.height = 0;

@@ -31,11 +31,11 @@ The default following values can be tweaked into cmake if you don't have a stand
 
   ENSENSO_ABI_DIR     /opt/ensenso_test/development/c
 
-You can deactivate building the Ensenso support by setting ``BUILD_ENSENSO`` to false.
+You can deactivate building the Ensenso support by setting ``WITH_ENSENSO`` to false.
 Compile and install PCL.
 
 Using the example
-==================
+=================
 
 The `pcl_ensenso_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/visualization/tools/ensenso_viewer.cpp>`_ example shows how to
 display a point cloud grabbed from an Ensenso device using the `EnsensoGrabber <http://docs.pointclouds.org/trunk/classpcl_1_1_ensenso_grabber.html>`_ class.
@@ -77,4 +77,17 @@ Here is an example of the terminal output ::
 
 Another example is available in `PCL sources <https://github.com/PointCloudLibrary/pcl/blob/master/doc/tutorials/content/sources/ensenso_cameras/>`_, it uses OpenCV to display Ensenso
 images and the PCLVisualizer to display the point cloud at the same time.
+
+Extrinsic calibration
+=====================
+
+If you want to perform extrinsic calibration of the sensor, please first make sure your EnsensoSDK version is greater than 1.3.
+A fully automated extrinsic calibration ROS package is available to help you calibrate the sensor mounted on a robot arm, 
+the package can be found in the `Institut Maupertuis repository <https://github.com/InstitutMaupertuis/ensenso_extrinsic_calibration>`_.
+
+The following video shows the automatic calibration procedure on a Fanuc R1000iA 80f industrial robot:
+
+.. raw:: html
+
+  <iframe width="800" height="500" src="https://www.youtube.com/embed/2g6gdx8fKX8" frameborder="0" allowfullscreen></iframe>
 

@@ -53,7 +53,7 @@
 
 using namespace pcl::io::openni2;
 
-namespace pcl
+namespace
 {
   // Treat color as chars, float32, or uint32
   typedef union
@@ -219,7 +219,7 @@ pcl::io::OpenNI2Grabber::start ()
   try
   {
     // check if we need to start/stop any stream
-    if (image_required_ && !device_->isColorStreamStarted () )
+    if (image_required_ && !device_->isColorStreamStarted () && device_->hasColorSensor ())
     {
       block_signals ();
       device_->startColorStream ();
@@ -401,8 +401,8 @@ pcl::io::OpenNI2Grabber::startSynchronization ()
 {
   try
   {
-    if (device_->isSynchronizationSupported () && !device_->isSynchronized () && !device_->isFile () &&
-      device_->getColorVideoMode ().frame_rate_ == device_->getDepthVideoMode ().frame_rate_)
+    if (device_->hasColorSensor () && (device_->isSynchronizationSupported () && !device_->isSynchronized () && !device_->isFile () &&
+        device_->getColorVideoMode ().frame_rate_ == device_->getDepthVideoMode ().frame_rate_))
       device_->setSynchronization (true);
   }
   catch (const IOException& exception)
@@ -660,7 +660,7 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 
   // fill in XYZ values
   unsigned step = cloud->width / depth_width_;
-  unsigned skip = cloud->width * step - cloud->width;
+  unsigned skip = cloud->width - (depth_width_ * step);
 
   int value_idx = 0;
   int point_idx = 0;
@@ -690,12 +690,12 @@ pcl::io::OpenNI2Grabber::convertToXYZRGBPointCloud (const Image::Ptr &image, con
 
   // fill in the RGB values
   step = cloud->width / image_width_;
-  skip = cloud->width * step - cloud->width;
+  skip = cloud->width - (image_width_ * step);
 
   value_idx = 0;
   point_idx = 0;
   RGBValue color;
-  color.Alpha = 0;
+  color.Alpha = 0xff;
 
   for (unsigned yIdx = 0; yIdx < image_height_; ++yIdx, point_idx += skip)
   {

@@ -3,19 +3,34 @@ set(SUBSUBSYS_DESC "PCLModeler: PCL based reconstruction platform")
 set(SUBSUBSYS_DEPS common geometry io filters sample_consensus segmentation visualization kdtree features surface octree registration keypoints tracking search apps)
 set(REASON "")
 
-# Find VTK and QVTK
-if(VTK_FOUND AND VTK_USE_QVTK)
+# Find VTK
+if(NOT VTK_FOUND)
+  set(DEFAULT AUTO_OFF)
+  set(REASON "VTK was not found.")
+else(NOT VTK_FOUND)
   set(DEFAULT TRUE)
   set(REASON)
   set(VTK_USE_FILE "${VTK_USE_FILE}" CACHE INTERNAL "VTK_USE_FILE")
   include("${VTK_USE_FILE}")
-elseif(NOT VTK_FOUND)
+endif(NOT VTK_FOUND)
+
+# QT4 Found?
+if(NOT QT4_FOUND)
   set(DEFAULT AUTO_OFF)
-  set(REASON "VTK was not found.")
-elseif(NOT VTK_USE_QVTK)
+  set(REASON "Qt4 was not found.")
+elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+  set(DEFAULT TRUE)
+  set(REASON)
+endif(NOT QT4_FOUND)
+
+# QVTK?
+if(NOT VTK_USE_QVTK)
   set(DEFAULT AUTO_OFF)
   set(REASON "VTK was not built with Qt support.")
-endif(VTK_FOUND AND VTK_USE_QVTK)
+elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
+  set(DEFAULT TRUE)
+  set(REASON)
+endif(NOT VTK_USE_QVTK)
 
 # Default to not building for now
 if (${DEFAULT} STREQUAL "TRUE")
@@ -30,7 +45,7 @@ PCL_ADD_DOC("${SUBSUBSYS_NAME}")
 if(build)
   include_directories("${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-  # Set Qt files and resources here  
+  # Set Qt files and resources here 
   set(uis main_window.ui)
   set(moc_incs "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/main_window.h"
                "include/pcl/${SUBSYS_NAME}/${SUBSUBSYS_NAME}/scene_tree.h"

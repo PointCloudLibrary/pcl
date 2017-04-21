@@ -60,14 +60,13 @@ pcl::compute3DCentroid (ConstCloudIterator<PointT> &cloud_iterator,
   while (cloud_iterator.isValid ())
   {
     // Check if the point is invalid
-    if (!pcl_isfinite (cloud_iterator->x) ||
-        !pcl_isfinite (cloud_iterator->y) ||
-        !pcl_isfinite (cloud_iterator->z))
-      continue;
-    centroid[0] += cloud_iterator->x;
-    centroid[1] += cloud_iterator->y;
-    centroid[2] += cloud_iterator->z;
-    ++cp;
+    if (pcl::isFinite (*cloud_iterator))
+    {
+      centroid[0] += cloud_iterator->x;
+      centroid[1] += cloud_iterator->y;
+      centroid[2] += cloud_iterator->z;
+      ++cp;
+    }
     ++cloud_iterator;
   }
   centroid /= static_cast<Scalar> (cp);

@@ -1,4 +1,3 @@
-PCL is a large collaborative effort, and it would not exist without the
-contributions of several people. Please see http://dev.pointclouds.org for a
-complete list of developers.
+PCL is a large collaborative effort, and it would not exist without the contributions of several people.
+ Please see https://github.com/PointCloudLibrary/pcl/graphs/contributors for a complete list of developers.
 

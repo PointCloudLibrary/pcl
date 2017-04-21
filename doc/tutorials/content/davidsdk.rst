@@ -14,9 +14,9 @@ Install davidSDK
 You need a davidSDK to run the SDK on the server side, the official davidSDK does not come with a Makefile or a CMake project. An un-official fork provides a CMake project that enables to easily use the SDK under Linux (with minor tweaks)
 
   * `Official davidSDK download page <http://www.david-3d.com/en/support/downloads>`_
-  * `Victor Lamoine davidSDK fork <https://github.com/VictorLamoine/davidSDK>`_
+  * `Victor Lamoine davidSDK fork <https://github.com/InstitutMaupertuis/davidSDK>`_
 
-Please test `the example project <https://github.com/VictorLamoine/davidSDK/blob/master/README.md#example-project-using-the-davidsdk>`_ before going further.
+Please test `the example project <https://github.com/InstitutMaupertuis/davidSDK/blob/master/README.md#example-project-using-the-davidsdk>`_ before going further.
 
 .. note:: If you use the trial version of the server, the only format available is OBJ (used by default)
 
@@ -57,6 +57,7 @@ Edit samba configuration (samba must be installed first):
   sudo tee -a /etc/samba/smb.conf
 
 Restard samba server:
+
 .. code-block:: bash
 
   sudo service smbd restart
@@ -96,7 +97,7 @@ The davidSDK will only allow you to scan if the scanner is calibrated, the david
 Using the example
 ==================
 
-The `pcl_davidsdk_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/visualization/tools/davidsdk_viewer.cpp>`_ example shows how to display a point cloud grabbed from an davidSDK device using the :pcl:`DavidSDKGrabber <pcl::DavidSDKGrabber>` class.
+The `pcl_davidsdk_viewer <https://github.com/PointCloudLibrary/pcl/blob/master/visualization/tools/davidsdk_viewer.cpp>`_ example shows how to display a point cloud grabbed from a davidSDK device using the :pcl:`DavidSDKGrabber <pcl::DavidSDKGrabber>` class.
 
 When using the DavidSDKGrabber you must connect to the server first; if the server is running locally you don't need to specify an IP address. If you are using davidSDK over a network just call :pcl:`connect <pcl::DavidSDKGrabber::connect>` with the address IP as a string, please also check that the connection didn't failed:
 

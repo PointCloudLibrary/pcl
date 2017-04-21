@@ -43,6 +43,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/io.h>
 #include <pcl/console/print.h>
+#include <pcl/io/auto_io.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/io/ascii_io.h>
@@ -724,18 +725,21 @@ TEST (PCL, PCDReaderWriter)
 TEST (PCL, PCDReaderWriterASCIIColorPrecision)
 {
   PointCloud<PointXYZRGB> cloud;
+  cloud.points.reserve (256 / 4 * 256 / 4 * 256 / 4 * 256 / 16);
   for (size_t r_i = 0; r_i < 256; r_i += 5)
     for (size_t g_i = 0; g_i < 256; g_i += 5)
       for (size_t b_i = 0; b_i < 256; b_i += 5)
-      {
-        PointXYZRGB p;
-        p.r = static_cast<unsigned char> (r_i);
-        p.g = static_cast<unsigned char> (g_i);
-        p.b = static_cast<unsigned char> (b_i);
-        p.x = p.y = p.z = 0.f;
+          for (size_t a_i = 0; a_i < 256; a_i += 10)
+          {
+            PointXYZRGB p;
+            p.r = static_cast<unsigned char> (r_i);
+            p.g = static_cast<unsigned char> (g_i);
+            p.b = static_cast<unsigned char> (b_i);
+            p.a = static_cast<unsigned char> (a_i);
+            p.x = p.y = p.z = 0.f;
 
-        cloud.push_back (p);
-      }
+            cloud.push_back (p);
+          }
   cloud.height = 1;
   cloud.width = uint32_t (cloud.size ());
   cloud.is_dense = true;
@@ -761,7 +765,6 @@ TEST (PCL, PCDReaderWriterASCIIColorPrecision)
   }
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ASCIIReader)
 {
@@ -791,7 +794,7 @@ TEST (PCL, ASCIIReader)
   afile.close();
 
   ASCIIReader reader;
-  reader.setInputFields( pcl::PointXYZI() );
+  reader.setInputFields<pcl::PointXYZI> ();
 
   EXPECT_GE(reader.read("test_pcd.txt", rcloud), 0);
   EXPECT_EQ(cloud.points.size(), rcloud.points.size() );
@@ -863,6 +866,180 @@ TEST (PCL, PLYReaderWriter)
     EXPECT_FLOAT_EQ (cloud[counter].z, cloud2[counter].z);     // test for fromPCLPointCloud2 ()
     EXPECT_FLOAT_EQ (cloud[counter].intensity, cloud2[counter].intensity);  // test for fromPCLPointCloud2 ()
   }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class PLYTest : public ::testing::Test
+{
+  protected:
+
+  PLYTest () : mesh_file_ply_("ply_color_mesh.ply")
+  {
+    std::ofstream fs;
+    fs.open (mesh_file_ply_.c_str ());
+    fs << "ply\n"
+          "format ascii 1.0\n"
+          "element vertex 4\n"
+          "property float x\n"
+          "property float y\n"
+          "property float z\n"
+          "property uchar red\n"
+          "property uchar green\n"
+          "property uchar blue\n"
+          "property uchar alpha\n"
+          "element face 2\n"
+          "property list uchar int vertex_indices\n"
+          "end_header\n"
+          "4.23607 0 1.61803 255 0 0 255\n"
+          "2.61803 2.61803 2.61803 0 255 0 0\n"
+          "0 1.61803 4.23607 0 0 255 128\n"
+          "0 -1.61803 4.23607 255 255 255 128\n"
+          "3 0 1 2\n"
+          "3 1 2 3\n";
+    fs.close ();
+
+    // Test colors from ply_benchmark.ply
+    rgba_1_ =  static_cast<uint32_t> (255) << 24 | static_cast<uint32_t> (255) << 16 |
+              static_cast<uint32_t> (0) << 8 | static_cast<uint32_t> (0);
+    rgba_2_ =  static_cast<uint32_t> (0) << 24 | static_cast<uint32_t> (0) << 16 |
+              static_cast<uint32_t> (255) << 8 | static_cast<uint32_t> (0);
+    rgba_3_ =  static_cast<uint32_t> (128) << 24 | static_cast<uint32_t> (0) << 16 |
+              static_cast<uint32_t> (0) << 8 | static_cast<uint32_t> (255);
+    rgba_4_ =  static_cast<uint32_t> (128) << 24 | static_cast<uint32_t> (255) << 16 |
+              static_cast<uint32_t> (255) << 8 | static_cast<uint32_t> (255);
+  }
+
+  virtual
+  ~PLYTest () { remove (mesh_file_ply_.c_str ()); }
+
+  std::string mesh_file_ply_;
+  uint32_t rgba_1_;
+  uint32_t rgba_2_;
+  uint32_t rgba_3_;
+  uint32_t rgba_4_;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoBlob)
+{
+  int res;
+  uint32_t rgba;
+
+  PCLPointCloud2 cloud_blob;
+  uint32_t ps;
+  int32_t offset = -1;
+
+  // check if loading is ok
+  res = loadPLYFile (mesh_file_ply_, cloud_blob);
+  ASSERT_EQ (res, 0);
+
+  // blob has proper structure
+  EXPECT_EQ (cloud_blob.height, 1);
+  EXPECT_EQ (cloud_blob.width, 4);
+  EXPECT_EQ (cloud_blob.fields.size(), 4);
+  EXPECT_FALSE (cloud_blob.is_bigendian);
+  EXPECT_EQ (cloud_blob.point_step, 16);
+  EXPECT_EQ (cloud_blob.row_step, 16 * 4);
+  EXPECT_EQ (cloud_blob.data.size(), 16 * 4);
+  // EXPECT_TRUE (cloud_blob.is_dense);   // this is failing and it shouldnt?
+
+  // scope blob data
+  ps = cloud_blob.point_step;
+  for (size_t i = 0; i < cloud_blob.fields.size (); ++i)
+    if (cloud_blob.fields[i].name == std::string("rgba"))
+      offset = static_cast<int32_t> (cloud_blob.fields[i].offset);
+
+  ASSERT_GE (offset, 0);
+
+  // 1st point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[offset]);
+  ASSERT_EQ (rgba, rgba_1_);
+
+  // 2th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[ps + offset]);
+  ASSERT_EQ (rgba, rgba_2_);
+
+  // 3th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[2 * ps + offset]);
+  ASSERT_EQ (rgba, rgba_3_);
+
+  // 4th point
+  rgba = *reinterpret_cast<uint32_t *> (&cloud_blob.data[3 * ps + offset]);
+  ASSERT_EQ (rgba, rgba_4_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST_F (PLYTest, LoadPLYFileColoredASCIIIntoPolygonMesh)
+{
+  int res;
+  uint32_t rgba;
+  PolygonMesh mesh;
+  uint32_t ps;
+  int32_t offset = -1;
+
+  // check if loading is ok
+  res = loadPLYFile (mesh_file_ply_, mesh);
+  ASSERT_EQ (res, 0);
+
+  // blob has proper structure
+  EXPECT_EQ (mesh.cloud.height, 1);
+  EXPECT_EQ (mesh.cloud.width, 4);
+  EXPECT_EQ (mesh.cloud.fields.size(), 4);
+  EXPECT_FALSE (mesh.cloud.is_bigendian);
+  EXPECT_EQ (mesh.cloud.point_step, 16);
+  EXPECT_EQ (mesh.cloud.row_step, 16 * 4);
+  EXPECT_EQ (mesh.cloud.data.size(), 16 * 4);
+  // EXPECT_TRUE (mesh.cloud.is_dense);   // this is failing and it shouldnt?
+
+  // scope blob data
+  ps = mesh.cloud.point_step;
+  for (size_t i = 0; i < mesh.cloud.fields.size (); ++i)
+    if (mesh.cloud.fields[i].name == std::string("rgba"))
+      offset = static_cast<int32_t> (mesh.cloud.fields[i].offset);
+
+  ASSERT_GE (offset, 0);
+
+  // 1st point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[offset]);
+  ASSERT_EQ (rgba, rgba_1_);
+
+  // 2th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[ps + offset]);
+  ASSERT_EQ (rgba, rgba_2_);
+
+  // 3th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[2 * ps + offset]);
+  ASSERT_EQ (rgba, rgba_3_);
+
+  // 4th point
+  rgba = *reinterpret_cast<uint32_t *> (&mesh.cloud.data[3 * ps + offset]);
+  ASSERT_EQ (rgba, rgba_4_);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class PLYPointCloudTest : public PLYTest { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_RGB_POINT_TYPES)> RGBPointTypes;
+TYPED_TEST_CASE (PLYPointCloudTest, RGBPointTypes);
+TYPED_TEST (PLYPointCloudTest, LoadPLYFileColoredASCIIIntoPointCloud)
+{
+  int res;
+  PointCloud<TypeParam> cloud_rgb;
+
+  // check if loading is ok
+  res = loadPLYFile (PLYTest::mesh_file_ply_, cloud_rgb);
+  ASSERT_EQ (res, 0);
+
+  // cloud has proper structure
+  EXPECT_EQ (cloud_rgb.height, 1);
+  EXPECT_EQ (cloud_rgb.width, 4);
+  EXPECT_EQ (cloud_rgb.points.size(), 4);
+  // EXPECT_TRUE (cloud_rgb.is_dense); // this is failing and it shouldnt?
+
+  // scope cloud data
+  ASSERT_EQ (cloud_rgb[0].rgba, PLYTest::rgba_1_);
+  ASSERT_EQ (cloud_rgb[1].rgba, PLYTest::rgba_2_);
+  ASSERT_EQ (cloud_rgb[2].rgba, PLYTest::rgba_3_);
+  ASSERT_EQ (cloud_rgb[3].rgba, PLYTest::rgba_4_);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1190,6 +1367,43 @@ TEST (PCL, Locale)
   {
   }
 #endif
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class AutoIOTest : public testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES PCL_NORMAL_POINT_TYPES)> PCLXyzNormalPointTypes;
+TYPED_TEST_CASE (AutoIOTest, PCLXyzNormalPointTypes);
+TYPED_TEST (AutoIOTest, AutoLoadCloudFiles)
+{
+  PointCloud<TypeParam> cloud;
+  PointCloud<TypeParam> cloud_pcd;
+  PointCloud<TypeParam> cloud_ply;
+  PointCloud<TypeParam> cloud_ifs;
+
+  cloud.width  = 10;
+  cloud.height = 5;
+  cloud.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  save ("test_autoio.pcd", cloud);
+  save ("test_autoio.ply", cloud);
+  save ("test_autoio.ifs", cloud);
+
+  load ("test_autoio.pcd", cloud_pcd);
+  EXPECT_EQ (cloud_pcd.width * cloud_pcd.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_pcd.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ply", cloud_ply);
+  EXPECT_EQ (cloud_ply.width * cloud_ply.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ply.is_dense, cloud.is_dense);
+
+  load ("test_autoio.ifs", cloud_ifs);
+  EXPECT_EQ (cloud_ifs.width * cloud_ifs.height, cloud.width * cloud.height);
+  EXPECT_EQ (cloud_ifs.is_dense, cloud.is_dense);
+
+  remove ("test_autoio.pcd");
+  remove ("test_autoio.ply");
+  remove ("test_autoio.ifs");
 }
 
 /* ---[ */

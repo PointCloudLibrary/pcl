@@ -10,7 +10,6 @@
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met
  *
- *   * The use for research only (no for any commercial application).
  *   * Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *   * Redistributions in binary form must reproduce the above
@@ -85,6 +84,8 @@ namespace pcl
 
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     };
+
+    typedef std::vector<MatchingCandidate, Eigen::aligned_allocator<MatchingCandidate> > MatchingCandidates;
 
     /** \brief Sorting of candidates based on fitness score value. */
     struct by_score

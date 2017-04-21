@@ -89,7 +89,10 @@ pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
   // Set default resolution if not reading a file
   if (!openni_device_->isFile ())
   {
-    setColorVideoMode (getDefaultColorMode ());
+    if (openni_device_->hasSensor (openni::SENSOR_COLOR))
+    {
+      setColorVideoMode (getDefaultColorMode ());
+    }
     setDepthVideoMode (getDefaultDepthMode ());
     setIRVideoMode (getDefaultIRMode ());
   }
@@ -685,7 +688,7 @@ pcl::io::openni2::OpenNI2Device::findCompatibleVideoMode (const std::vector<Open
       && resizingSupported (modeIt->x_resolution_, modeIt->y_resolution_, requested_mode.x_resolution_, requested_mode.y_resolution_))
     {
       if (found)
-      { // check wheter the new mode is better -> smaller than the current one.
+      { // check whether the new mode is better -> smaller than the current one.
         if (actual_mode.x_resolution_ * actual_mode.x_resolution_ > modeIt->x_resolution_ * modeIt->y_resolution_ )
           actual_mode = *modeIt;
       }

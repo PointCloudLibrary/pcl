@@ -75,7 +75,7 @@ pcl::cloud_composer::TransformClouds::performTemplatedAction (QList <const Cloud
     else
       pcl::visualization::PCLVisualizer::convertToEigenMatrix (transform_map_.value (input_item->getId ()), transform);
     
-    typename PointCloud<PointT>::Ptr transformed_cloud = boost::make_shared<PointCloud<PointT> > ();
+    typename PointCloud<PointT>::Ptr transformed_cloud = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
     
     transformPointCloud<PointT> (*input_cloud, *transformed_cloud, transform);
     CloudItem*  new_cloud_item = CloudItem::createCloudItemFromTemplate<PointT>(input_item->text (),transformed_cloud);

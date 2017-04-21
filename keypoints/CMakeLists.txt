@@ -11,7 +11,6 @@ PCL_ADD_DOC("${SUBSYS_NAME}")
 if(build)
     set(srcs
         src/narf_keypoint.cpp
-        src/uniform_sampling.cpp
         src/sift_keypoint.cpp
         src/smoothed_surfaces_keypoint.cpp
         src/harris_3d.cpp
@@ -38,7 +37,6 @@ if(build)
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/keypoint.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/sift_keypoint.hpp"
-        "include/pcl/${SUBSYS_NAME}/impl/uniform_sampling.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/smoothed_surfaces_keypoint.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/agast_2d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/harris_2d.hpp"

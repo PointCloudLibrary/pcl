@@ -60,6 +60,7 @@ namespace pcl
       using pcl::SampleConsensusModelRegistration<PointT>::correspondences_;
       using pcl::SampleConsensusModelRegistration<PointT>::sample_dist_thresh_;
       using pcl::SampleConsensusModelRegistration<PointT>::computeOriginalIndexMapping;
+      using pcl::SampleConsensusModel<PointT>::isModelValid;
 
       typedef typename pcl::SampleConsensusModel<PointT>::PointCloud PointCloud;
       typedef typename pcl::SampleConsensusModel<PointT>::PointCloudPtr PointCloudPtr;
@@ -80,6 +81,8 @@ namespace pcl
         // Call our own setInputCloud
         setInputCloud (cloud);
         model_name_ = "SampleConsensusModelRegistration2D";
+        sample_size_ = 3;
+        model_size_ = 16;
       }
 
       /** \brief Constructor for base SampleConsensusModelRegistration2D.
@@ -96,6 +99,8 @@ namespace pcl
         computeOriginalIndexMapping ();
         computeSampleDistanceThreshold (cloud, indices);
         model_name_ = "SampleConsensusModelRegistration2D";
+        sample_size_ = 3;
+        model_size_ = 16;
       }
       
       /** \brief Empty destructor */
@@ -142,6 +147,9 @@ namespace pcl
       { return (projection_matrix_); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check if a sample of indices results in a good sample of points
         * indices.
         * \param[in] samples the resultant index samples

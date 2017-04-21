@@ -59,7 +59,7 @@ pcl::io::DeBayer::debayerBilinear (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  register unsigned yIdx, xIdx;
+  unsigned yIdx, xIdx;
   // first two pixel values for first two lines
   // Bayer         0 1 2
   //         0     G r g
@@ -428,7 +428,7 @@ pcl::io::DeBayer::debayerEdgeAware (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  register unsigned yIdx, xIdx;
+  unsigned yIdx, xIdx;
   int dh, dv;
 
   // first two pixel values for first two lines
@@ -816,7 +816,7 @@ pcl::io::DeBayer::debayerEdgeAwareWeighted (
 
   // padding skip for destination image
   unsigned rgb_line_skip = rgb_line_step - width * 3;
-  register unsigned yIdx, xIdx;
+  unsigned yIdx, xIdx;
   int dh, dv;
 
   // first two pixel values for first two lines

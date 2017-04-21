@@ -6,7 +6,11 @@
 #include <pcl/kdtree/kdtree.h>
 #include <pcl/segmentation/extract_clusters.h>
 
-Q_EXPORT_PLUGIN2(cloud_composer_euclidean_clustering_tool, pcl::cloud_composer::EuclideanClusteringToolFactory)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+  Q_EXPORT_PLUGIN2(cloud_composer_euclidean_clustering_tool, pcl::cloud_composer::EuclideanClusteringToolFactory)
+#else
+  Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+#endif
 
 pcl::cloud_composer::EuclideanClusteringTool::EuclideanClusteringTool (PropertiesModel* parameter_model, QObject* parent)
   : SplitItemTool (parameter_model, parent)

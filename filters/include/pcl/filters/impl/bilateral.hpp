@@ -81,7 +81,7 @@ pcl::BilateralFilter<PointT>::applyFilter (PointCloud &output)
   // In case a search method has not been given, initialize it using some defaults
   if (!tree_)
   {
-    // For organized datasets, use an OrganizedDataIndex
+    // For organized datasets, use an OrganizedNeighbor
     if (input_->isOrganized ())
       tree_.reset (new pcl::search::OrganizedNeighbor<PointT> ());
     // For unorganized data, use a FLANN kdtree

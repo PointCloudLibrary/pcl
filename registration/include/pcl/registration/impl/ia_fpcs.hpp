@@ -10,7 +10,6 @@
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met
  *
- *   * The use for research only (no for any commercial application).
  *   * Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *   * Redistributions in binary form must reproduce the above
@@ -339,7 +338,8 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   const float too_close_sqr = max_base_diameter_sqr_*0.01;
 
   Eigen::VectorXf coefficients (4);
-  pcl::SampleConsensusModelPlane <PointTarget> plane (target_, target_indices_);
+  pcl::SampleConsensusModelPlane <PointTarget> plane (target_);
+  plane.setIndices (target_indices_);
   Eigen::Vector4f centre_pt;
   float nearest_to_plane = FLT_MAX;
 

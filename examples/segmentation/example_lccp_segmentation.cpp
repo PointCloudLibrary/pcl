@@ -167,7 +167,7 @@ LCCPSegmentation Parameters: \n\
   -st <smoothness threshold> - Invalidate steps. Value from the interval [0,1], where 0 is the strictest and 1 equals 'no smoothness check' \n\
   -ec - Use extended (less local) convexity check\n\
   -sc - Use sanity criterion to invalidate singular connected patches\n\
-  -smooth <mininmal segment size>  - Remove small segments which have fewer points than minimal segment size\n\
+  -smooth <mininmal segment size>  - Merge small segments which have fewer points than minimal segment size\n\
     \n",
         argv[0]);
     return (1);
@@ -176,7 +176,7 @@ LCCPSegmentation Parameters: \n\
   /// -----------------------------------|  Preparations  |-----------------------------------
 
   bool sv_output_specified = pcl::console::find_switch (argc, argv, "-so");
-  bool show_visualization = (not pcl::console::find_switch (argc, argv, "-novis"));
+  bool show_visualization = (!pcl::console::find_switch (argc, argv, "-novis"));
   bool ignore_provided_normals = pcl::console::find_switch (argc, argv, "-nonormals");
   bool add_label_field = pcl::console::find_switch (argc, argv, "-add");
   bool save_binary_pcd = pcl::console::find_switch (argc, argv, "-bin");
@@ -276,7 +276,7 @@ LCCPSegmentation Parameters: \n\
   pcl::console::parse (argc, argv, "-ct", concavity_tolerance_threshold);
   pcl::console::parse (argc, argv, "-st", smoothness_threshold);
   use_extended_convexity = pcl::console::find_switch (argc, argv, "-ec");
-  uint k_factor = 0;
+  unsigned int k_factor = 0;
   if (use_extended_convexity)
     k_factor = 1;
   use_sanity_criterion = pcl::console::find_switch (argc, argv, "-sc");
@@ -321,13 +321,9 @@ LCCPSegmentation Parameters: \n\
   lccp.setSanityCheck (use_sanity_criterion);
   lccp.setSmoothnessCheck (true, voxel_resolution, seed_resolution, smoothness_threshold);
   lccp.setKFactor (k_factor);
-  lccp.segment (supervoxel_clusters, supervoxel_adjacency);
-
-  if (min_segment_size > 0)
-  {
-    PCL_INFO ("Merging small segments\n");
-    lccp.mergeSmallSegments (min_segment_size);
-  }
+  lccp.setInputSupervoxels (supervoxel_clusters, supervoxel_adjacency);
+  lccp.setMinSegmentSize (min_segment_size);
+  lccp.segment ();
 
   PCL_INFO ("Interpolation voxel cloud -> input cloud and relabeling\n");
   pcl::PointCloud<pcl::PointXYZL>::Ptr sv_labeled_cloud = super.getLabeledCloud ();
@@ -391,14 +387,14 @@ LCCPSegmentation Parameters: \n\
 
     /// Create a cloud of the voxelcenters and map: VertexID in adjacency graph -> Point index in cloud
 
-    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New (); 
-    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();     
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
+    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
     vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
     
     // Create a polydata to store everything in
-    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();    
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
     for (VertexIterator itr = vertex_iterator_range.first; itr != vertex_iterator_range.second; ++itr)
     {
       const uint32_t sv_label = sv_adjacency_list[*itr];
@@ -417,7 +413,7 @@ LCCPSegmentation Parameters: \n\
         colors->InsertNextTupleValue (color);
         
         pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (sv_label);
-        pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;    
+        pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;
         
         
         const uint32_t sv_neighbor_label = sv_adjacency_list[*itr_neighbor];
@@ -434,10 +430,10 @@ LCCPSegmentation Parameters: \n\
         polyLine->GetPointIds ()->SetId (1, points->GetNumberOfPoints ()-1);
         cells->InsertNextCell (polyLine);
       }
-    }    
+    }
     polyData->SetPoints (points);
     // Add the lines to the dataset
-    polyData->SetLines (cells);    
+    polyData->SetLines (cells);
     
     polyData->GetPointData ()->SetScalars (colors);
         

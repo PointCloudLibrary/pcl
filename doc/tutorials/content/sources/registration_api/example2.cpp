@@ -5,7 +5,7 @@
 
 #include <pcl/io/pcd_io.h>
 #include <pcl/conversions.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/features/fpfh.h>
 #include <pcl/registration/correspondence_estimation.h>
@@ -26,18 +26,15 @@ estimateKeypoints (const PointCloud<PointXYZ>::Ptr &src,
                    PointCloud<PointXYZ> &keypoints_src,
                    PointCloud<PointXYZ> &keypoints_tgt)
 {
-  PointCloud<int> keypoints_src_idx, keypoints_tgt_idx;
   // Get an uniform grid of keypoints
   UniformSampling<PointXYZ> uniform;
   uniform.setRadiusSearch (1);  // 1m
 
   uniform.setInputCloud (src);
-  uniform.compute (keypoints_src_idx);
-  copyPointCloud<PointXYZ, PointXYZ> (*src, keypoints_src_idx.points, keypoints_src);
+  uniform.filter (keypoints_src);
 
   uniform.setInputCloud (tgt);
-  uniform.compute (keypoints_tgt_idx);
-  copyPointCloud<PointXYZ, PointXYZ> (*tgt, keypoints_tgt_idx.points, keypoints_tgt);
+  uniform.filter (keypoints_tgt);
 
   // For debugging purposes only: uncomment the lines below and use pcl_viewer to view the results, i.e.:
   // pcl_viewer source_pcd keypoints_src.pcd -ps 1 -ps 10

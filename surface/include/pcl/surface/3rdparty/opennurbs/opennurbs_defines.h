@@ -23,6 +23,8 @@
 #if !defined(OPENNURBS_DEFINES_INC_)
 #define OPENNURBS_DEFINES_INC_
 
+#include <pcl/pcl_exports.h>
+
 #if defined (cplusplus) || defined(_cplusplus) || defined(__cplusplus) || defined(ON_CPLUSPLUS)
 // C++ extern "C" declaration for C linkage
 
@@ -357,7 +359,7 @@ union ON_U
 #if defined(ON_CPLUSPLUS)
 
 // OpenNurbs enums
-class ON_CLASS ON
+class PCL_EXPORTS ON_CLASS ON
 {
 public:
   /*

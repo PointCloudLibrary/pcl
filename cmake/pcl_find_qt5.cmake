@@ -70,7 +70,7 @@ if(Qt5Core_FOUND)
         endmacro()
     endif()
 
-    set(QT_USE_FILE ${CMAKE_CURRENT_BINARY_DIR}/use-qt5.cmake CACHE PATH "")
+    set(QT_USE_FILE ${CMAKE_CURRENT_BINARY_DIR}/use-qt5.cmake CACHE PATH "" FORCE)
     file(WRITE ${QT_USE_FILE} "#")
 
     # Trick the remainder of the build system.

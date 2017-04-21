@@ -86,6 +86,8 @@ namespace pcl
         , sin_angle_ (-1.0)
       {
         model_name_ = "SampleConsensusModelParallelPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelParallelPlane.
@@ -102,6 +104,8 @@ namespace pcl
         , sin_angle_ (-1.0)
       {
         model_name_ = "SampleConsensusModelParallelPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
       
       /** \brief Empty destructor */
@@ -161,10 +165,13 @@ namespace pcl
       getModelType () const { return (SACMODEL_PARALLEL_PLANE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */

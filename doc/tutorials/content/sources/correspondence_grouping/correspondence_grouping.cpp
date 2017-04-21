@@ -4,7 +4,7 @@
 #include <pcl/features/normal_3d_omp.h>
 #include <pcl/features/shot_omp.h>
 #include <pcl/features/board.h>
-#include <pcl/keypoints/uniform_sampling.h>
+#include <pcl/filters/uniform_sampling.h>
 #include <pcl/recognition/cg/hough_3d.h>
 #include <pcl/recognition/cg/geometric_consistency.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -221,19 +221,16 @@ main (int argc, char *argv[])
   //
   //  Downsample Clouds to Extract keypoints
   //
-  pcl::PointCloud<int> sampled_indices;
 
   pcl::UniformSampling<PointType> uniform_sampling;
   uniform_sampling.setInputCloud (model);
   uniform_sampling.setRadiusSearch (model_ss_);
-  uniform_sampling.compute (sampled_indices);
-  pcl::copyPointCloud (*model, sampled_indices.points, *model_keypoints);
+  uniform_sampling.filter (*model_keypoints);
   std::cout << "Model total points: " << model->size () << "; Selected Keypoints: " << model_keypoints->size () << std::endl;
 
   uniform_sampling.setInputCloud (scene);
   uniform_sampling.setRadiusSearch (scene_ss_);
-  uniform_sampling.compute (sampled_indices);
-  pcl::copyPointCloud (*scene, sampled_indices.points, *scene_keypoints);
+  uniform_sampling.filter (*scene_keypoints);
   std::cout << "Scene total points: " << scene->size () << "; Selected Keypoints: " << scene_keypoints->size () << std::endl;
 
 

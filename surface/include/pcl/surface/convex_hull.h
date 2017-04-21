@@ -119,7 +119,7 @@ namespace pcl
 
       /** \brief If set to true, the qhull library is called to compute the total area and volume of the convex hull.
         * NOTE: When this option is activated, the qhull library produces output to the console.
-        * \param[in] value wheter to compute the area and the volume, default is false
+        * \param[in] value whether to compute the area and the volume, default is false
         */
       void
       setComputeAreaVolume (bool value)

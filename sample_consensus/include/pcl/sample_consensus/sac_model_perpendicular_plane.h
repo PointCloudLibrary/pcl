@@ -90,6 +90,8 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelPerpendicularPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
 
       /** \brief Constructor for base SampleConsensusModelPerpendicularPlane.
@@ -105,8 +107,10 @@ namespace pcl
         , eps_angle_ (0.0)
       {
         model_name_ = "SampleConsensusModelPerpendicularPlane";
+        sample_size_ = 3;
+        model_size_ = 4;
       }
-      
+
       /** \brief Empty destructor */
       virtual ~SampleConsensusModelPerpendicularPlane () {}
 
@@ -164,10 +168,13 @@ namespace pcl
       getModelType () const { return (SACMODEL_PERPENDICULAR_PLANE); }
 
     protected:
+      using SampleConsensusModel<PointT>::sample_size_;
+      using SampleConsensusModel<PointT>::model_size_;
+
       /** \brief Check whether a model is valid given the user constraints.
         * \param[in] model_coefficients the set of model coefficients
         */
-      bool 
+      virtual bool
       isModelValid (const Eigen::VectorXf &model_coefficients);
 
       /** \brief The axis along which we need to search for a plane perpendicular to. */

@@ -90,7 +90,7 @@ namespace pcl
         * @param[in] input_height height of input image
         * @param[in] output_width width of desired output image
         * @param[in] output_height height of desired output image
-        * @return wheter the resizing is supported or not.
+        * @return whether the resizing is supported or not.
         */
         virtual bool
         isResizingSupported (unsigned input_width, unsigned input_height,

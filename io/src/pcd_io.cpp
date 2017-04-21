@@ -83,7 +83,14 @@ pcl::PCDWriter::setLockingPermissions (const std::string &file_name,
     PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] File %s could not be locked!\n", file_name.c_str ());
 
   namespace fs = boost::filesystem;
-  fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
+  try
+  {
+    fs::permissions (fs::path (file_name), fs::add_perms | fs::set_gid_on_exe);
+  }
+  catch (const std::exception &e)
+  {
+    PCL_DEBUG ("[pcl::PCDWriter::setLockingPermissions] Permissions on %s could not be set!\n", file_name.c_str ());
+  }
 #endif
 #endif
 }
@@ -100,7 +107,14 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 #if BOOST_VERSION >= 104900
   (void)file_name;
   namespace fs = boost::filesystem;
-  fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
+  try
+  {
+    fs::permissions (fs::path (file_name), fs::remove_perms | fs::set_gid_on_exe);
+  }
+  catch (const std::exception &e)
+  {
+    PCL_DEBUG ("[pcl::PCDWriter::resetLockingPermissions] Permissions on %s could not be reset!\n", file_name.c_str ());
+  }
   lock.unlock ();
 #endif
 #endif
@@ -1105,11 +1119,21 @@ pcl::PCDWriter::generateHeaderASCII (const pcl::PCLPointCloud2 &cloud,
   {
     // Ignore invalid padded dimensions that are inherited from binary data
     if (cloud.fields[d].name != "_")
-      stream << pcl::getFieldType (cloud.fields[d].datatype) << " ";
+    {
+      if (cloud.fields[d].name == "rgb")
+        stream << "U ";
+      else
+        stream << pcl::getFieldType (cloud.fields[d].datatype) << " ";
+    }
   }
   // Ignore invalid padded dimensions that are inherited from binary data
   if (cloud.fields[cloud.fields.size () - 1].name != "_")
-    stream << pcl::getFieldType (cloud.fields[cloud.fields.size () - 1].datatype);
+  {
+    if (cloud.fields[cloud.fields.size () - 1].name == "rgb")
+      stream << "U";
+    else
+      stream << pcl::getFieldType (cloud.fields[cloud.fields.size () - 1].datatype);
+  }
 
   // Remove trailing spaces
   result = stream.str ();
@@ -1370,7 +1394,15 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
           }
           case pcl::PCLPointField::FLOAT32:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
+            /*
+             * Despite the float type, store the rgb field as uint32
+             * because several fully opaque color values are mapped to
+             * nan.
+             */
+            if ("rgb" == cloud.fields[d].name)
+              copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
+            else
+              copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::FLOAT64:
@@ -1428,7 +1460,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   setLockingPermissions (file_name, file_lock);
 
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
@@ -1535,7 +1567,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str());

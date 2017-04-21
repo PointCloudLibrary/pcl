@@ -100,7 +100,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
       x = curr_x + directions [nIdx].d_x;
       y = curr_y + directions [nIdx].d_y;
       index = curr_idx + directions [nIdx].d_index;
-      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
+      if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
         break;
     }
     
@@ -120,7 +120,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::segment (pcl::Poi
   std::vector<unsigned> run_ids;
 
   unsigned invalid_label = std::numeric_limits<unsigned>::max ();
-  pcl::Label invalid_pt;
+  PointLT invalid_pt;
   invalid_pt.label = std::numeric_limits<unsigned>::max ();
   labels.points.resize (input_->points.size (), invalid_pt);
   labels.width = input_->width;

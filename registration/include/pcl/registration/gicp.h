@@ -90,6 +90,10 @@ namespace pcl
       typedef PointIndices::Ptr PointIndicesPtr;
       typedef PointIndices::ConstPtr PointIndicesConstPtr;
 
+      typedef std::vector< Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > MatricesVector;
+      typedef boost::shared_ptr< MatricesVector > MatricesVectorPtr;
+      typedef boost::shared_ptr< const MatricesVector > MatricesVectorConstPtr;
+      
       typedef typename Registration<PointSource, PointTarget>::KdTree InputKdTree;
       typedef typename Registration<PointSource, PointTarget>::KdTreePtr InputKdTreePtr;
 
@@ -104,8 +108,6 @@ namespace pcl
         : k_correspondences_(20)
         , gicp_epsilon_(0.001)
         , rotation_epsilon_(2e-3)
-        , input_covariances_(0)
-        , target_covariances_(0)
         , mahalanobis_(0)
         , max_inner_iterations_(20)
       {
@@ -144,10 +146,20 @@ namespace pcl
           input[i].data[3] = 1.0;
         
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputSource (cloud);
-        input_covariances_.clear ();
-        input_covariances_.reserve (input_->size ());
+        input_covariances_.reset ();
       }
 
+      /** \brief Provide a pointer to the covariances of the input source (if computed externally!). 
+        * If not set, GeneralizedIterativeClosestPoint will compute the covariances itself.
+        * Make sure to set the covariances AFTER setting the input source point cloud (setting the input source point cloud will reset the covariances).
+        * \param[in] target the input point cloud target
+        */
+      inline void 
+      setSourceCovariances (const MatricesVectorPtr& covariances)
+      {
+        input_covariances_ = covariances;
+      }
+      
       /** \brief Provide a pointer to the input target (e.g., the point cloud that we want to align the input source to)
         * \param[in] target the input point cloud target
         */
@@ -155,10 +167,20 @@ namespace pcl
       setInputTarget (const PointCloudTargetConstPtr &target)
       {
         pcl::IterativeClosestPoint<PointSource, PointTarget>::setInputTarget(target);
-        target_covariances_.clear ();
-        target_covariances_.reserve (target_->size ());
+        target_covariances_.reset ();
       }
 
+      /** \brief Provide a pointer to the covariances of the input target (if computed externally!). 
+        * If not set, GeneralizedIterativeClosestPoint will compute the covariances itself.
+        * Make sure to set the covariances AFTER setting the input source point cloud (setting the input source point cloud will reset the covariances).
+        * \param[in] target the input point cloud target
+        */
+	    inline void 
+      setTargetCovariances (const MatricesVectorPtr& covariances)
+      {
+        target_covariances_ = covariances;
+      }
+      
       /** \brief Estimate a rigid rotation transformation between a source and a target point cloud using an iterative
         * non-linear Levenberg-Marquardt approach.
         * \param[in] cloud_src the source point cloud dataset
@@ -266,13 +288,13 @@ namespace pcl
 
       
       /** \brief Input cloud points covariances. */
-      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > input_covariances_;
+      MatricesVectorPtr input_covariances_;
 
       /** \brief Target cloud points covariances. */
-      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > target_covariances_;
+      MatricesVectorPtr target_covariances_;
 
       /** \brief Mahalanobis matrices holder. */
-      std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> > mahalanobis_;
+      std::vector<Eigen::Matrix3d> mahalanobis_;
       
       /** \brief maximum number of optimizations */
       int max_inner_iterations_;
@@ -286,7 +308,7 @@ namespace pcl
       template<typename PointT>
       void computeCovariances(typename pcl::PointCloud<PointT>::ConstPtr cloud, 
                               const typename pcl::search::KdTree<PointT>::Ptr tree,
-                              std::vector<Eigen::Matrix3d, Eigen::aligned_allocator<Eigen::Matrix3d> >& cloud_covariances);
+                              MatricesVector& cloud_covariances);
 
       /** \return trace of mat1^t . mat2 
         * \param mat1 matrix of dimension nxm

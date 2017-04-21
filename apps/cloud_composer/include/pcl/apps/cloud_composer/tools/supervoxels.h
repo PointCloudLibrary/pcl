@@ -70,6 +70,9 @@
      {
        Q_OBJECT
        Q_INTERFACES (pcl::cloud_composer::ToolFactory)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+       Q_PLUGIN_METADATA(IID "cloud_composer.ToolFactory/1.0")
+#endif
      public:
        SplitItemTool*
        createTool (PropertiesModel* parameter_model, QObject* parent = 0) 

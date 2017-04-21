@@ -47,7 +47,7 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/visualization/histogram_visualizer.h>
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
 #include <pcl/visualization/pcl_plotter.h>
 #endif
 #include <pcl/visualization/point_picking_event.h>
@@ -146,7 +146,7 @@ printHelp (int, char **argv)
 }
 
 // Global visualizer object
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
 pcl::visualization::PCLPlotter ph_global;
 #endif
 boost::shared_ptr<pcl::visualization::PCLVisualizer> p;
@@ -200,7 +200,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
     if (!isMultiDimensionalFeatureField (cloud->fields[i]))
       continue;
     PCL_INFO ("Multidimensional field found: %s\n", cloud->fields[i].name.c_str ());
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
     ph_global.addFeatureHistogram (*cloud, cloud->fields[i].name, idx, ss.str ());
     ph_global.renderOnce ();
 #endif
@@ -338,7 +338,7 @@ main (int argc, char** argv)
       shadings.push_back ("flat");
 
   // Create the PCLVisualizer object
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
 #endif  
   // Using min_p, max_p to set the global Y min/max range for the histogram
@@ -454,13 +454,13 @@ main (int argc, char** argv)
     {
       cloud_name << argv[p_file_indices.at (i)];
 
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       if (!ph)
         ph.reset (new pcl::visualization::PCLPlotter);
 #endif
 
       pcl::getMinMax (*cloud, 0, cloud->fields[0].name, min_p, max_p);
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       ph->addFeatureHistogram (*cloud, cloud->fields[0].name, cloud_name.str ());
 #endif
       print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", cloud->fields[0].count); print_info (" points]\n");
@@ -718,7 +718,7 @@ main (int argc, char** argv)
     bool stopped = false;
     do
     {
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
       if (ph) ph->spinOnce ();
 #endif
 
@@ -748,7 +748,7 @@ main (int argc, char** argv)
   else
   {
     // If no images, continue
-#if VTK_MAJOR_VERSION==6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
+#if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
     if (ph)
     {
       //print_highlight ("Setting the global Y range for all histograms to: "); print_value ("%f -> %f\n", min_p, max_p);

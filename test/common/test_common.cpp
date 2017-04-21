@@ -38,6 +38,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <pcl/pcl_tests.h>
 #include <pcl/common/common.h>
 #include <pcl/common/distances.h>
 #include <pcl/common/intersections.h>
@@ -413,7 +414,7 @@ TEST (PCL, CopyIfFieldExists)
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
   EXPECT_EQ (is_rgb, true);
   int rgb = *reinterpret_cast<int*>(&rgb_val);
-  EXPECT_EQ (rgb, 8339710);      // alpha is 0
+  EXPECT_EQ (rgb, 0xff7f40fe);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
   EXPECT_EQ (is_normal_x, true);
   EXPECT_EQ (normal_x_val, 1.0);
@@ -520,6 +521,35 @@ TEST (PCL, HasField)
   // has_label
   EXPECT_TRUE ((pcl::traits::has_label<pcl::PointXYZL>::value));
   EXPECT_FALSE ((pcl::traits::has_label<pcl::Normal>::value));
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, GetMaxDistance)
+{
+  PointCloud<PointXYZ> cloud;
+  Eigen::Vector4f max_pt, max_exp_pt;
+  const Eigen::Vector4f pivot_pt (Eigen::Vector4f::Zero ());
+
+  // populate cloud
+  cloud.points.resize (3);
+  cloud[0].data[0] = 4.f; cloud[0].data[1] = 3.f;
+  cloud[0].data[2] = 0.f; cloud[0].data[3] = 0.f;
+  cloud[1].data[0] = 0.f; cloud[1].data[1] = 0.f;
+  cloud[1].data[2] = 0.f; cloud[1].data[3] = 1000.f;  //This term should not influence max dist
+  cloud[2].data[0] = -1.5f; cloud[2].data[1] = 1.5f;
+  cloud[2].data[2] = -.5f; cloud[2].data[3] = 0.f;
+
+  // No indices specified
+  max_exp_pt = cloud[0].getVector4fMap ();
+  getMaxDistance (cloud, pivot_pt, max_pt);
+  test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
+
+  // Specifying indices
+  std::vector<int> idx (2);
+  idx[0] = 1; idx[1] = 2;
+  max_exp_pt = cloud[2].getVector4fMap ();
+  getMaxDistance (cloud, idx, pivot_pt, max_pt);
+  test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 }
 
 /* ---[ */
