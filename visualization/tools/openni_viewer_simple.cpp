@@ -44,6 +44,7 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/image_viewer.h>
 #include <pcl/io/openni_camera/openni_driver.h>
+#include <pcl/console/print.h>
 #include <pcl/console/parse.h>
 #include <pcl/visualization/boost.h>
 #include <pcl/visualization/mouse_event.h>
@@ -356,22 +357,30 @@ main(int argc, char ** argv)
   if (pcl::console::find_argument(argc, argv, "-xyz") != -1)
     xyz = true;
   
-  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
+  try
+  {
+    pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
   
-  if (xyz) // only if xyz flag is set, since grabber provides at least XYZ and XYZI pointclouds
-  {
-    SimpleOpenNIViewer<pcl::PointXYZ> v (grabber);
-    v.run ();
+    if (xyz) // only if xyz flag is set, since grabber provides at least XYZ and XYZI pointclouds
+    {
+      SimpleOpenNIViewer<pcl::PointXYZ> v (grabber);
+      v.run ();
+    }
+    else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+    {
+      SimpleOpenNIViewer<pcl::PointXYZRGBA> v (grabber);
+      v.run ();
+    }
+    else
+    {
+      SimpleOpenNIViewer<pcl::PointXYZI> v (grabber);
+      v.run ();
+    }
   }
-  else if (grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+  catch (pcl::IOException& e)
   {
-    SimpleOpenNIViewer<pcl::PointXYZRGBA> v (grabber);
-    v.run ();
-  }
-  else
-  {
-    SimpleOpenNIViewer<pcl::PointXYZI> v (grabber);
-    v.run ();
+    pcl::console::print_error ("Failed to create a grabber: %s\n", e.what ());
+    return (1);
   }
 
   return (0);
