@@ -352,17 +352,25 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
 
-  pcl::io::OpenNI2Grabber grabber (device_id, depth_mode, image_mode);
+  try
+  {
+    pcl::io::OpenNI2Grabber grabber (device_id, depth_mode, image_mode);
 
-  if (xyz || !grabber.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_point_cloud_rgb> ())
-  {
-    OpenNI2Viewer<pcl::PointXYZ> openni_viewer (grabber);
-    openni_viewer.run ();
+    if (xyz || !grabber.providesCallback<pcl::io::OpenNI2Grabber::sig_cb_openni_point_cloud_rgb> ())
+    {
+      OpenNI2Viewer<pcl::PointXYZ> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
+    else
+    {
+      OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
   }
-  else
+  catch (pcl::IOException& e)
   {
-    OpenNI2Viewer<pcl::PointXYZRGBA> openni_viewer (grabber);
-    openni_viewer.run ();
+    pcl::console::print_error ("Failed to create a grabber: %s\n", e.what ());
+    return (1);
   }
 
   return (0);
