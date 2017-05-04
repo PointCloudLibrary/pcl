@@ -1,5 +1,8 @@
 .. _using_kinfu_large_scale:
 
+.. DANGER::
+   This application is deprecated in favor of https://github.com/Nerei/kinfu_remake
+
 Using Kinfu Large Scale to generate a textured mesh
 ---------------------------------------------------
 
