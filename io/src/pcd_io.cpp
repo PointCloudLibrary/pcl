@@ -1258,15 +1258,15 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string
-pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud,
+int
+pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
+                                                const pcl::PCLPointCloud2 &cloud,
                                                 const Eigen::Vector4f &origin, 
                                                 const Eigen::Quaternionf &orientation)
 {
-  std::ostringstream oss;
-  oss.imbue (std::locale::classic ());
+  os.imbue (std::locale::classic ());
 
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
+  os <<  "# .PCD v0.7 - Point Cloud Data file format"
          "\nVERSION 0.7"
          "\nFIELDS";
 
@@ -1279,7 +1279,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
   if (fsize > cloud.point_step)
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinaryCompressed] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
-    return ("");
+    return (-1);
   }
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
@@ -1296,18 +1296,18 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
-  oss << field_names.str ();
-  oss << "\nSIZE" << field_sizes.str () 
+  os  << field_names.str ();
+  os  << "\nSIZE" << field_sizes.str () 
       << "\nTYPE" << field_types.str () 
       << "\nCOUNT" << field_counts.str ();
-  oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+  os  << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
+  os  << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
   
-  oss << "POINTS " << cloud.width * cloud.height << "\n";
+  os  << "POINTS " << cloud.width * cloud.height << "\n";
 
-  return (oss.str ());
+  return (os ? 0 : -1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1555,7 +1555,11 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   std::ostringstream oss;
   oss.imbue (std::locale::classic ());
 
-  oss << generateHeaderBinaryCompressed (cloud, origin, orientation) << "DATA binary_compressed\n";
+  if (generateHeaderBinaryCompressed (oss, cloud, origin, orientation))
+  {
+    return (-1);
+  }
+  oss << "DATA binary_compressed\n";
   oss.flush ();
   data_idx = oss.tellp ();
 
