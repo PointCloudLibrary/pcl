@@ -213,6 +213,7 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
       (input_ != 0   && input_->points.empty ()) ||
       (indices_ != 0 && indices_->empty ()))
   {
+		clusters_.clear ();
     clusters.clear ();
     return;
   }
@@ -236,7 +237,76 @@ pcl::EuclideanClusterExtraction<PointT>::extract (std::vector<PointIndices> &clu
   // Sort the clusters based on their size (largest one first)
   std::sort (clusters.rbegin (), clusters.rend (), comparePointClusters);
 
+	clusters_.resize (clusters.size ());
+  std::vector<pcl::PointIndices>::iterator cluster_iter_input = clusters_.begin ();
+  for (std::vector<pcl::PointIndices>::const_iterator cluster_iter = clusters.begin (); cluster_iter != clusters.end (); cluster_iter++)
+  {
+    if ((static_cast<int> (cluster_iter->indices.size ()) >= min_pts_per_cluster_) &&
+        (static_cast<int> (cluster_iter->indices.size ()) <= max_pts_per_cluster_))
+    {
+      *cluster_iter_input = *cluster_iter;
+      cluster_iter_input++;
+    }
+  }
+
+  clusters = std::vector<pcl::PointIndices> (clusters_.begin (), cluster_iter_input);
+  clusters_.resize(clusters.size());
+
   deinitCompute ();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointT> pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+pcl::EuclideanClusterExtraction<PointT>::getColoredCloud ()
+{
+  pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud;
+
+  if (!clusters_.empty ())
+  {
+    colored_cloud = (new pcl::PointCloud<pcl::PointXYZRGB>)->makeShared ();
+
+    srand (static_cast<unsigned int> (time (0)));
+    std::vector<unsigned char> colors;
+    for (size_t i_segment = 0; i_segment < clusters_.size (); i_segment++)
+    {
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
+      colors.push_back (static_cast<unsigned char> (rand () % 256));
+    }
+
+    colored_cloud->width = input_->width;
+    colored_cloud->height = input_->height;
+    colored_cloud->is_dense = input_->is_dense;
+    for (size_t i_point = 0; i_point < input_->points.size (); i_point++)
+    {
+      pcl::PointXYZRGB point;
+      point.x = *(input_->points[i_point].data);
+      point.y = *(input_->points[i_point].data + 1);
+      point.z = *(input_->points[i_point].data + 2);
+      point.r = 255;
+      point.g = 0;
+      point.b = 0;
+      colored_cloud->points.push_back (point);
+    }
+
+    std::vector< pcl::PointIndices >::iterator i_segment;
+    int next_color = 0;
+    for (i_segment = clusters_.begin (); i_segment != clusters_.end (); i_segment++)
+    {
+      std::vector<int>::iterator i_point;
+      for (i_point = i_segment->indices.begin (); i_point != i_segment->indices.end (); i_point++)
+      {
+        int index;
+        index = *i_point;
+        colored_cloud->points[index].r = colors[3 * next_color];
+        colored_cloud->points[index].g = colors[3 * next_color + 1];
+        colored_cloud->points[index].b = colors[3 * next_color + 2];
+      }
+      next_color++;
+    }
+  }
+
+  return (colored_cloud);
 }
 
 #define PCL_INSTANTIATE_EuclideanClusterExtraction(T) template class PCL_EXPORTS pcl::EuclideanClusterExtraction<T>;
