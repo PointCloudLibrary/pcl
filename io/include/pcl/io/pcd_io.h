@@ -326,6 +326,17 @@ namespace pcl
                              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
                              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
+      /** \brief Save point cloud data to a std::ostream containing n-D points, in BINARY_COMPRESSED format
+        * \param[out] os the stream into which to write the data
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        */
+      int
+      writeBinaryCompressed (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
+                             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
+                             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+
       /** \brief Save point cloud data to a PCD file containing n-D points
         * \param[in] file_name the output file name
         * \param[in] cloud the point cloud data message
