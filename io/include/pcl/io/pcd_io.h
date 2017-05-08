@@ -84,6 +84,32 @@ namespace pcl
         PCD_V7 = 1
       };
 
+      /** \brief Read a point cloud data header from a PCD-formatted, binary istream.
+        *
+        * Load only the meta information (number of points, their types, etc),
+        * and not the points themselves, from a given PCD stream. Useful for fast
+        * evaluation of the underlying data structure.
+        *
+        * \attention The PCD data is \b always stored in ROW major format! The
+        * read/write PCD methods will detect column major input and automatically convert it.
+        *
+        * \param[in] binary_istream a std::istream with openmode set to std::ios::binary.
+        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
+        * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
+        * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
+        * \param[out] data_type the type of data (0 = ASCII, 1 = Binary, 2 = Binary compressed) 
+        * \param[out] data_idx the offset of cloud data within the file
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int 
+      readHeader (std::istream &binary_istream, pcl::PCLPointCloud2 &cloud,
+                  Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, int &pcd_version,
+                  int &data_type, unsigned int &data_idx);
+
       /** \brief Read a point cloud data header from a PCD file. 
         *
         * Load only the meta information (number of points, their types, etc),
