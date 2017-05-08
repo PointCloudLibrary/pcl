@@ -575,13 +575,12 @@ pcl::PCDReader::readBody_Binary (const unsigned char *map, pcl::PCLPointCloud2 &
       cloud.data.resize (uncompressed_size);
     }
 
-    size_t data_size = data_idx + cloud.data.size ();
-    char *buf = static_cast<char*> (malloc (data_size));
+    unsigned int data_size = data_idx + static_cast<unsigned int> (cloud.data.size ());
+    std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
-    unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, buf, static_cast<unsigned int> (data_size));
+    unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, &buf[0], data_size);
     if (tmp_size != uncompressed_size)
     {
-      free (buf);
       PCL_ERROR ("[pcl::PCDReader::read] Size of decompressed lzf data (%u) does not match value stored in PCD header (%u). Errno: %d\n", tmp_size, uncompressed_size, errno);
       return (-1);
     }
@@ -621,8 +620,6 @@ pcl::PCDReader::readBody_Binary (const unsigned char *map, pcl::PCLPointCloud2 &
       }
     }
     //memcpy (&cloud.data[0], &buf[0], uncompressed_size);
-
-    free (buf);
   }
   else
     // Copy the data
