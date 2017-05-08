@@ -168,6 +168,45 @@ namespace pcl
       int 
       readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud, const int offset = 0);
 
+      /** \brief Read the point cloud data (body) from a PCD stream. 
+        *
+        * Reads the cloud points from a text-formatted stream.  For use after
+        * readHeader(), when the resulting data_type == 0.
+        *
+        * \attention This assumes the stream has been seeked to the position
+        * indicated by the data_idx result of readHeader().
+        *
+        * \param[in] stream the stream from which to read the body.
+        * \param[out] cloud the resultant point cloud dataset to be filled.
+        * \param[in] pcd_version the PCD version of the stream (from readHeader()).
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int
+      readBody_Ascii (std::istream &stream, pcl::PCLPointCloud2 &cloud, int pcd_version);
+
+      /** \brief Read the point cloud data (body) from a block of memory. 
+        *
+        * Reads the cloud points from a binary-formatted memory block.  For use
+        * after readHeader(), when the resulting data_type is nonzero.
+        *
+        * \param[in] data the memory location from which to read the body.
+        * \param[out] cloud the resultant point cloud dataset to be filled.
+        * \param[in] pcd_version the PCD version of the stream (from readHeader()).
+        * \param[in] compressed indicates whether the PCD block contains compressed
+        * data.  This should be true if the data_type returne by readHeader() == 2.
+        * \param[in] data_idx the offset of the body, as reported by readHeader().
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int
+      readBody_Binary (const unsigned char *data, pcl::PCLPointCloud2 &cloud,
+                       int pcd_version, bool compressed, unsigned int &data_idx);
+
       /** \brief Read a point cloud data from a PCD file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data
         * \param[out] cloud the resultant PointCloud message read from disk
