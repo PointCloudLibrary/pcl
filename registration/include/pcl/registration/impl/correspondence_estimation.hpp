@@ -164,7 +164,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt);
+      copyPoint<PointSource, PointTarget> (input_->points[*idx], pt);
 
       tree_->nearestKSearch (pt, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -235,7 +235,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
     for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
     {
       // Copy the source data to a target PointTarget format so we can search in the tree
-      copyPoint (input_->points[*idx], pt_src);
+      copyPoint<PointSource, PointTarget> (input_->points[*idx], pt_src);
 
       tree_->nearestKSearch (pt_src, 1, index, distance);
       if (distance[0] > max_dist_sqr)
@@ -244,7 +244,7 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
       target_idx = index[0];
 
       // Copy the target data to a target PointSource format so we can search in the tree_reciprocal
-      copyPoint (target_->points[target_idx], pt_tgt);
+      copyPoint<PointSource, PointTarget> (target_->points[target_idx], pt_tgt);
 
       tree_reciprocal_->nearestKSearch (pt_tgt, 1, index_reciprocal, distance_reciprocal);
       if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])

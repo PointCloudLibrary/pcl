@@ -450,8 +450,8 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
       n3d.compute (*scene_normals);
     }
 
-    pcl::copyPointCloud (*input_, *cloud_voxelized);
-    pcl::copyPointCloud (*scene_normals, *cloud_voxelized);
+    pcl::copyPointCloud<pcl::PointXYZ, pcl::PointNormal> (*input_, *cloud_voxelized);
+    pcl::copyPointCloud<pcl::Normal, pcl::PointNormal> (*scene_normals, *cloud_voxelized);
 
     pcl::PointCloud<pcl::PointNormal>::Ptr cloud_voxelized_icp_normals (new pcl::PointCloud<pcl::PointNormal> ());
     pcl::VoxelGrid<pcl::PointNormal> voxel_grid_icp;
@@ -462,7 +462,7 @@ void pcl::RFFaceDetectorTrainer::detectFaces()
 
     //compute normals
     pcl::PointCloud<pcl::PointNormal>::Ptr model_aligned_normals (new pcl::PointCloud<pcl::PointNormal> ());
-    pcl::copyPointCloud (*model_original_, *model_aligned_normals);
+    pcl::copyPointCloud<pcl::PointXYZ, pcl::PointNormal> (*model_original_, *model_aligned_normals);
 
     pcl::NormalEstimation<pcl::PointNormal, pcl::PointNormal> normal_est_;
     normal_est_.setKSearch (10);
