@@ -32,6 +32,9 @@ if (build)
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src" ${CUDA_INCLUDE_DIRS})
+    if(OpenCV_FOUND)
+      include_directories("${CMAKE_SOURCE_DIR}/gpu/utils/include")
+    endif()
 
     if (UNIX OR APPLE)
         set (CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}  "-Xcompiler;-fPIC;")
