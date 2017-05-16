@@ -67,6 +67,10 @@ namespace pcl
         /** \brief Supported Point Types */
         typedef PointXYZ PointType;
         typedef Normal  NormalType;
+
+        typedef PointCloud<PointXYZI> PointCloudXYZI;
+        typedef PointCloud<PointXYZ> PointCloudXYZ;
+        typedef PointCloud<PointIntensity> PointCloudIntensity;
         
         /** \brief Structure storing voxel grid resolution, volume size (in mm) and element_size of data stored on host*/
         struct Header
@@ -178,15 +182,34 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
         /** \brief Generates cloud using GPU in connected6 mode only
           * \param[out] cloud_buffer_xyz buffer to store point cloud
-          * \param cloud_buffer_intensity
+          * \param[out] cloud_buffer_intensity array to store TSDF (intensity) values
           * \param[in] buffer Pointer to the buffer struct that contains information about memory addresses of the tsdf volume memory block, which are used for the cyclic buffer.
           * \param[in] shiftX Offset in indices.
           * \param[in] shiftY Offset in indices.
           * \param[in] shiftZ Offset in indices.
-          * \return DeviceArray with disabled reference counting that points to filled part of cloud_buffer.
+          * \param[inout] last_data_transfer_matrix VOLUME_Y * VOLUME_X matrix, initialize with 0s at first execution
+          * \param[out] finished if 0, the method did not finish (due to full buffers) and should be called again
+          * \return the number of valid points contained in cloud_buffer_xyz and cloud_buffer_intensity.
           */
         size_t
-        fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity, const tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ ) const;
+        fetchSliceAsCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity,
+          const tsdf_buffer* buffer, int shiftX, int shiftY, int shiftZ,
+          DeviceArray2D<int>& last_data_transfer_matrix, int& finished ) const;
+
+        /** \brief Generates cloud using GPU in connected6 mode only
+          * \param[out] cloud_buffer_xyz buffer to store point cloud
+          * \param[out] cloud_buffer_intensity array to store TSDF (intensity) values
+          * \param[inout] last_data_transfer_matrix matrix used internally
+          * \param[in] buffer Pointer to the buffer struct that contains information about memory addresses of the tsdf volume memory block, which are used for the cyclic buffer.
+          * \param[in] shiftX Offset in indices.
+          * \param[in] shiftY Offset in indices.
+          * \param[in] shiftZ Offset in indices.
+          * \return the point cloud with TSDF values (intensity).
+          */
+        PointCloudXYZI::Ptr
+        fetchSliceAsPointCloud (DeviceArray<PointType>& cloud_buffer_xyz, DeviceArray<float>& cloud_buffer_intensity,
+          DeviceArray2D<int>& last_data_transfer_matrix,const pcl::gpu::kinfuLS::tsdf_buffer* buffer,
+          int offset_x, int offset_y, int offset_z ) const;
 
         /** \brief Computes normals as gradient of tsdf for given points
           * \param[in] cloud Points where normals are computed.

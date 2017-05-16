@@ -82,45 +82,17 @@ pcl::gpu::kinfuLS::CyclicalBuffer::performShift (const TsdfVolume::Ptr volume, c
   computeAndSetNewCubeMetricOrigin (target_point, offset_x, offset_y, offset_z);
 
   // extract current slice from the TSDF volume (coordinates are in indices! (see fetchSliceAsCloud() )
-  DeviceArray<PointXYZ> points;
-  DeviceArray<float> intensities;
-  int size;
+  PointCloudXYZI::Ptr current_slice;
   if(!last_shift)
   {
-    size = volume->fetchSliceAsCloud (cloud_buffer_device_xyz_, cloud_buffer_device_intensities_, &buffer_, offset_x, offset_y, offset_z);
+    current_slice = volume->fetchSliceAsPointCloud (cloud_buffer_device_xyz_, cloud_buffer_device_intensities_,
+      last_data_transfer_matrix_device_, &buffer_, offset_x, offset_y, offset_z);
   }
   else
   {
-    size = volume->fetchSliceAsCloud (cloud_buffer_device_xyz_, cloud_buffer_device_intensities_, &buffer_, buffer_.voxels_size.x - 1, buffer_.voxels_size.y - 1, buffer_.voxels_size.z - 1);
+    current_slice = volume->fetchSliceAsPointCloud (cloud_buffer_device_xyz_, cloud_buffer_device_intensities_,
+      last_data_transfer_matrix_device_, &buffer_, buffer_.voxels_size.x - 1, buffer_.voxels_size.y - 1, buffer_.voxels_size.z - 1);
   }
-  points = DeviceArray<PointXYZ> (cloud_buffer_device_xyz_.ptr (), size);
-  intensities = DeviceArray<float> (cloud_buffer_device_intensities_.ptr(), size);
-
-  PointCloud<PointXYZI>::Ptr current_slice (new PointCloud<PointXYZI>);
-  PointCloud<PointXYZ>::Ptr current_slice_xyz (new PointCloud<PointXYZ>);
-  PointCloud<PointIntensity>::Ptr current_slice_intensities (new PointCloud<PointIntensity>);
-
-  // Retrieving XYZ
-  points.download (current_slice_xyz->points);
-  current_slice_xyz->width = (int) current_slice_xyz->points.size ();
-  current_slice_xyz->height = 1;
-
-  // Retrieving intensities
-  // TODO change this mechanism by using PointIntensity directly (in spite of float)
-  // when tried, this lead to wrong intenisty values being extracted by fetchSliceAsCloud () (padding pbls?)
-  std::vector<float , Eigen::aligned_allocator<float> > intensities_vector;
-  intensities.download (intensities_vector);
-  current_slice_intensities->points.resize (current_slice_xyz->points.size ());
-  for(int i = 0 ; i < current_slice_intensities->points.size () ; ++i)
-    current_slice_intensities->points[i].intensity = intensities_vector[i];
-
-  current_slice_intensities->width = (int) current_slice_intensities->points.size ();
-  current_slice_intensities->height = 1;
-
-  // Concatenating XYZ and Intensities
-  pcl::concatenateFields (*current_slice_xyz, *current_slice_intensities, *current_slice);
-  current_slice->width = (int) current_slice->points.size ();
-  current_slice->height = 1;
 
   // transform the slice from local to global coordinates
   Eigen::Affine3f global_cloud_transformation;
