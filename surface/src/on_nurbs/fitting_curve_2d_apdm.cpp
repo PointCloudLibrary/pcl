@@ -31,7 +31,7 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
@@ -161,10 +161,12 @@ FittingCurve2dAPDM::assemble (const Parameter &parameter)
 
   m_solver.assign (nrows, ncp, 2);
 
+  m_data->element_points_support.assign(elements.size(), 0);
+
   unsigned row (0);
 
   if (wInt > 0.0)
-    assembleInterior (wInt, parameter.interior_sigma2, parameter.rScale, row);
+    assembleInterior (elements, wInt, parameter.interior_sigma2, parameter.rScale, row);
 
   assembleClosestPoints (elements, parameter.closest_point_weight, parameter.closest_point_sigma2, cp_res, row);
 
@@ -517,8 +519,8 @@ FittingCurve2dAPDM::initCPsNurbsCurve2D (int order, const vector_vec2d &cps)
   for (int j = 0; j < cps.size (); j++)
     nurbs.SetCV (cp_red + j, ON_3dPoint (cps[j] (0), cps[j] (1), 0.0));
 
-  // close nurbs
-  nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
+                 // close nurbs
+                 nurbs.SetCV (cp_red + int (cps.size ()), ON_3dPoint (cps[0] (0), cps[0] (1), 0.0));
 
   // make smooth at closing point
   for (int j = 0; j < cp_red; j++)
@@ -637,7 +639,7 @@ FittingCurve2dAPDM::getElementVector (const ON_NurbsCurve &nurbs)
 }
 
 void
-FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale, unsigned &row)
+FittingCurve2dAPDM::assembleInterior (const std::vector<double> &elements, double wInt, double sigma2, double rScale, unsigned &row)
 {
   int nInt = int (m_data->interior.size ());
   bool wFunction (true);
@@ -646,6 +648,7 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
   m_data->interior_normals.clear ();
   m_data->interior_line_start.clear ();
   m_data->interior_line_end.clear ();
+  m_data->interior_line_flag.clear();
 
   for (int p = 0; p < nInt; p++)
   {
@@ -670,6 +673,9 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
 
     m_data->interior_error.push_back (error);
 
+    int E = findElement(param, elements);
+    m_data->element_points_support[E]++;
+
     // evaluate if point lies inside or outside the closed curve
     Eigen::Vector3d a (pcp (0) - pt (0), pcp (1) - pt (1), 0.0);
     Eigen::Vector3d b (t (0), t (1), 0.0);
@@ -690,6 +696,7 @@ FittingCurve2dAPDM::assembleInterior (double wInt, double sigma2, double rScale,
     {
       m_data->interior_line_start.push_back (pcp);
       m_data->interior_line_end.push_back (pt);
+      m_data->interior_line_flag.push_back (0);
     }
 
     //      w = 0.5 * wInt * exp(-(error * error) * ds);
@@ -738,8 +745,6 @@ FittingCurve2dAPDM::assembleClosestPoints (const std::vector<double> &elements, 
   m_data->closest_points.clear ();
   m_data->closest_points_param.clear ();
   m_data->closest_points_error.clear ();
-  //  m_data->interior_line_start.clear();
-  //  m_data->interior_line_end.clear();
 
   if (samples_per_element <= 0)
     samples_per_element = 1;
@@ -790,8 +795,9 @@ FittingCurve2dAPDM::assembleClosestPoints (const std::vector<double> &elements, 
       if (w > 0.0)
       {
         addPointConstraint (xi, p2, w, row);
-        //      m_data->interior_line_start.push_back(p1);
-        //      m_data->interior_line_end.push_back(p2);
+        m_data->interior_line_start.push_back(p1);
+        m_data->interior_line_end.push_back(p2);
+        m_data->interior_line_flag.push_back(1);
       }
     }
   }

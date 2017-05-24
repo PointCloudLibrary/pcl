@@ -31,78 +31,19 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * 
+ *
  *
  */
 
 #include <iostream>
 #include <stdexcept>
+#include <ctime>
 
 #include <pcl/surface/on_nurbs/nurbs_solve.h>
 
 using namespace std;
 using namespace pcl;
 using namespace on_nurbs;
-
-void
-NurbsSolve::assign (unsigned rows, unsigned cols, unsigned dims)
-{
-  m_Keig = Eigen::MatrixXd::Zero (rows, cols);
-  m_xeig = Eigen::MatrixXd::Zero (cols, dims);
-  m_feig = Eigen::MatrixXd::Zero (rows, dims);
-}
-
-void
-NurbsSolve::K (unsigned i, unsigned j, double v)
-{
-  m_Keig (i, j) = v;
-}
-void
-NurbsSolve::x (unsigned i, unsigned j, double v)
-{
-  m_xeig (i, j) = v;
-}
-void
-NurbsSolve::f (unsigned i, unsigned j, double v)
-{
-  m_feig (i, j) = v;
-}
-
-double
-NurbsSolve::K (unsigned i, unsigned j)
-{
-  return m_Keig (i, j);
-}
-double
-NurbsSolve::x (unsigned i, unsigned j)
-{
-  return m_xeig (i, j);
-}
-double
-NurbsSolve::f (unsigned i, unsigned j)
-{
-  return m_feig (i, j);
-}
-
-void
-NurbsSolve::resize (unsigned rows)
-{
-  m_feig.conservativeResize (rows, m_feig.cols ());
-  m_Keig.conservativeResize (rows, m_Keig.cols ());
-}
-
-void
-NurbsSolve::printK ()
-{
-  for (unsigned r = 0; r < m_Keig.rows (); r++)
-  {
-    for (unsigned c = 0; c < m_Keig.cols (); c++)
-    {
-      printf (" %f", m_Keig (r, c));
-    }
-    printf ("\n");
-  }
-}
 
 void
 NurbsSolve::printX ()
@@ -130,20 +71,151 @@ NurbsSolve::printF ()
   }
 }
 
+double
+NurbsSolve::x (unsigned i, unsigned j)
+{
+  return m_xeig (i, j);
+}
+
+double
+NurbsSolve::f (unsigned i, unsigned j)
+{
+  return m_feig (i, j);
+}
+
+void
+NurbsSolve::x (unsigned i, unsigned j, double v)
+{
+  m_xeig (i, j) = v;
+}
+void
+NurbsSolve::f (unsigned i, unsigned j, double v)
+{
+//  m_feig (i, j) = v;
+  throw std::runtime_error("[NurbsSolve::f] Shouldn't assign f directly.");
+}
+
+
+void
+NurbsSolve::resize (unsigned rows)
+{
+  // Nothing to do...
+}
+
+void
+NurbsSolve::assign (unsigned rows, unsigned cols, unsigned dims)
+{
+  m_xeig = Eigen::MatrixXd::Zero (cols, dims);
+  m_feig = Eigen::MatrixXd::Zero (cols, dims);
+
+  m_Ksparse.clear();
+  m_KeigenSparse = new Eigen::SparseMatrix<double>(cols,cols);
+}
+
+void
+NurbsSolve::K (unsigned i, unsigned j, double v)
+{
+//  m_KeigenSparse.insert(i,j) = v;
+  throw std::runtime_error("[NurbsSolve::K] Shouldn't assign K directly.");
+}
+
+double
+NurbsSolve::K (unsigned i, unsigned j)
+{
+  return m_KeigenSparse->coeff(i,j);
+}
+
+//void
+//NurbsSolve::AddRow(const std::vector<double>& row, const std::vector<double>& f)
+//{
+//  unsigned N = m_feig.rows();
+//  double newVal = 0.0;
+//  for(unsigned j=0; j<N; ++j)
+//  {
+//    if(abs(row[j]) < 1e-10) continue;
+//    for(unsigned jj=0; jj<m_feig.cols(); ++jj)
+//    {
+//      m_feig(j,jj) += row[j]*f[jj];
+//    }
+//    for(unsigned jj=j; jj<N; ++jj)
+//    {
+//      newVal = m_KeigenSparse.coeff(j,jj) + row[j]*row[jj];
+//      if(abs(newVal) > 1e-10)
+//      {
+//        m_KeigenSparse.coeffRef(j,jj) = newVal;
+//        m_KeigenSparse.coeffRef(jj,j) = newVal;
+//      }
+//    }
+//  }
+
+//}
+
+void
+NurbsSolve::AddRow(const std::vector<double>& row,
+                   const std::vector<double>& f,
+                   const std::vector<int>& sparsePattern)
+{
+  if(row.size()!=sparsePattern.size())
+    throw std::runtime_error("[NurbsSolve::AddRow] size does not match. (row,sparsePattern)");
+
+  if(f.size()!=m_feig.cols())
+    throw std::runtime_error("[NurbsSolve::AddRow] size does not match. (f,m_feig)");
+
+  double newVal = 0.0;
+  int j,jj;
+  for(unsigned iSparse=0; iSparse<sparsePattern.size(); ++iSparse)
+  {
+    j = sparsePattern[iSparse];
+    // if(abs(row[j]) < 1e-10) continue;
+    for(jj=0; jj<m_feig.cols(); ++jj)
+    {
+      m_feig(j,jj) += row[iSparse]*f[jj];
+    }
+    for(unsigned jSparse=0; jSparse < sparsePattern.size(); ++jSparse)
+    {
+      jj = sparsePattern[jSparse];
+      if(jj<j) continue;
+      newVal = m_KeigenSparse->coeff(j,jj) + row[iSparse]*row[jSparse];
+      if(abs(newVal) > 1e-10)
+      {
+        m_KeigenSparse->coeffRef(j,jj) = newVal;
+        m_KeigenSparse->coeffRef(jj,j) = newVal;
+      }
+    }
+  }
+
+}
+
+
+void
+NurbsSolve::printK ()
+{
+  for (unsigned r = 0; r < m_KeigenSparse->rows (); r++)
+  {
+    for (unsigned c = 0; c < m_KeigenSparse->cols (); c++)
+    {
+      printf (" %f", m_KeigenSparse->coeff (r, c));
+    }
+    printf ("\n");
+  }
+}
+
+
 bool
 NurbsSolve::solve ()
 {
-  //  m_xeig = m_Keig.colPivHouseholderQr().solve(m_feig);
-  //  Eigen::MatrixXd x = A.householderQr().solve(b);
-  m_xeig = m_Keig.jacobiSvd (Eigen::ComputeThinU | Eigen::ComputeThinV).solve (m_feig);
-
+  Eigen::SimplicialCholesky<Eigen::SparseMatrix<double>,Eigen::Lower> chol(*m_KeigenSparse);
+  if(chol.info() != Eigen::Success )
+  {
+    return false;
+  }
+  m_xeig = chol.solve(m_feig);
   return true;
 }
 
 Eigen::MatrixXd
 NurbsSolve::diff ()
 {
-  Eigen::MatrixXd f (m_Keig * m_xeig);
+  Eigen::MatrixXd f ((*m_KeigenSparse) * m_xeig);
   return (f - m_feig);
 }
-

@@ -132,14 +132,18 @@ main (int argc, char *argv[])
   curve_fit.fitting (curve_params);
   visualizeCurve (curve_fit.m_nurbs, fit.m_nurbs, viewer);
 
+
   // ############################################################################
   // triangulation of trimmed surface
 
+  mesh.cloud.fields.clear();
+
   printf ("  triangulate trimmed surface ...\n");
   viewer.removePolygonMesh (mesh_id);
-  pcl::on_nurbs::Triangulation::convertTrimmedSurface2PolygonMesh (fit.m_nurbs, curve_fit.m_nurbs, mesh,
+  pcl::PolygonMesh mesh_trimmed;
+  pcl::on_nurbs::Triangulation::convertTrimmedSurface2PolygonMesh (fit.m_nurbs, curve_fit.m_nurbs, mesh_trimmed,
                                                                    mesh_resolution);
-  viewer.addPolygonMesh (mesh, mesh_id);
+  viewer.addPolygonMesh (mesh_trimmed, mesh_id);
 
 
   // save trimmed B-spline surface

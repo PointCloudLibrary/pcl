@@ -90,6 +90,9 @@ namespace pcl
 
       protected:
 
+        virtual void
+        addPointConstraint (const double &param, const Eigen::Vector2d &point, double weight, unsigned &row);
+
         /** \brief Add minimization constraint: point-to-surface distance (squared-distance-minimization). */
         virtual void
         addPointConstraint (const double &param, const Eigen::Vector2d &point, const Eigen::Vector2d &normal,
@@ -101,7 +104,7 @@ namespace pcl
 
         /** \brief Assemble point-to-surface constraints. */
         virtual void
-        assembleInterior (double wInt, double sigma2, double rScale, unsigned &row);
+        assembleInterior (const std::vector<double> &elements, double wInt, double sigma2, double rScale, unsigned &row);
 
         /** \brief Assemble closest points constraints. At each midpoint of the curve elements the closest data points
           * are computed and point-to-surface constraints are added. 
