@@ -94,7 +94,9 @@ namespace pcl
         * read/write PCD methods will detect column major input and automatically convert it.
         *
         * \param[in] binary_istream a std::istream with openmode set to std::ios::binary.
-        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] cloud the resultant point cloud dataset (only these
+        *             members will be filled: width, height, point_step,
+        *             row_step, fields[]; data is resized but not written)
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
@@ -120,7 +122,9 @@ namespace pcl
         * read/write PCD methods will detect column major input and automatically convert it.
         *
         * \param[in] file_name the name of the file to load
-        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] cloud the resultant point cloud dataset (only these
+        *             members will be filled: width, height, point_step,
+        *             row_step, fields[]; data is resized but not written)
         * \param[out] origin the sensor acquisition origin (only for > PCD_V7 - null if not present)
         * \param[out] orientation the sensor acquisition orientation (only for > PCD_V7 - identity if not present)
         * \param[out] pcd_version the PCD version of the file (i.e., PCD_V6, PCD_V7)
@@ -153,7 +157,9 @@ namespace pcl
         * read/write PCD methods will detect column major input and automatically convert it.
         *
         * \param[in] file_name the name of the file to load
-        * \param[out] cloud the resultant point cloud dataset (only the header will be filled)
+        * \param[out] cloud the resultant point cloud dataset (only these
+        *             members will be filled: width, height, point_step,
+        *             row_step, fields[]; data is resized but not written)
         * \param[in] offset the offset of where to expect the PCD Header in the
         * file (optional parameter). One usage example for setting the offset
         * parameter is for reading data from a TAR "archive containing multiple
