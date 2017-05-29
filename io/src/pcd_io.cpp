@@ -1067,6 +1067,17 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud,
+                                                const Eigen::Vector4f &origin, 
+                                                const Eigen::Quaternionf &orientation)
+{
+  std::ostringstream oss;
+  generateHeaderBinaryCompressed (oss, cloud, origin, orientation);
+  return oss.str();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
                             const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation,
