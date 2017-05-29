@@ -181,7 +181,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   pcl::compute3DCentroid (*input_, nn_indices, xyz_centroid);
 
   // Compute the 3x3 covariance matrix
-  pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix);
+  if (pcl::computeCovarianceMatrix (*input_, nn_indices, xyz_centroid, covariance_matrix) == 0)
+  {
+    PCL_ERROR("computeCovarianceMatrix failed\n");
+    std::cerr << "centroid: " << xyz_centroid << std::endl;
+  }
   EIGEN_ALIGN16 Eigen::Vector3d::Scalar eigen_value;
   EIGEN_ALIGN16 Eigen::Vector3d eigen_vector;
   Eigen::Vector4d model_coefficients;
@@ -502,8 +506,13 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
 
     // Copy all information from the input cloud to the output points (not doing any interpolation)
     for (size_t pp = 0; pp < projected_points.size (); ++pp)
+    {
+      if (!pcl::isFinite(projected_points[pp]))
+      {
+        PCL_ERROR ("NaN encountered\n");
+      }
       copyMissingFields (input_->points[(*indices_)[cp]], projected_points[pp]);
-
+    }
 
     // Append projected points to output
     output.insert (output.end (), projected_points.begin (), projected_points.end ());
