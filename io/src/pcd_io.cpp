@@ -433,7 +433,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readBody_Ascii (std::istream &fs, pcl::PCLPointCloud2 &cloud, int /*pcd_version*/)
+pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int /*pcd_version*/)
 {
   // Get the number of points the cloud should have
   unsigned int nr_points = cloud.width * cloud.height;
@@ -553,7 +553,7 @@ pcl::PCDReader::readBody_Ascii (std::istream &fs, pcl::PCLPointCloud2 &cloud, in
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readBody_Binary (const unsigned char *map, pcl::PCLPointCloud2 &cloud,
+pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &cloud,
                                  int /*pcd_version*/, bool compressed, unsigned int &data_idx)
 {
   // Setting the is_dense property to true by default
@@ -730,7 +730,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     fs.seekg (data_idx);
 
     // Read the rest of the file
-    res = readBody_Ascii (fs, cloud, pcd_version);
+    res = readBodyASCII (fs, cloud, pcd_version);
 
     // Close file
     fs.close ();
@@ -783,7 +783,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     }
 #endif
 
-    res = readBody_Binary (map, cloud, pcd_version, data_type == 2, data_idx);
+    res = readBodyBinary (map, cloud, pcd_version, data_type == 2, data_idx);
 
     // Unmap the pages of memory
 #ifdef _WIN32

@@ -191,7 +191,7 @@ namespace pcl
         *  * == 0 on success
         */
       int
-      readBody_Ascii (std::istream &stream, pcl::PCLPointCloud2 &cloud, int pcd_version);
+      readBodyASCII (std::istream &stream, pcl::PCLPointCloud2 &cloud, int pcd_version);
 
       /** \brief Read the point cloud data (body) from a block of memory. 
         *
@@ -210,7 +210,7 @@ namespace pcl
         *  * == 0 on success
         */
       int
-      readBody_Binary (const unsigned char *data, pcl::PCLPointCloud2 &cloud,
+      readBodyBinary (const unsigned char *data, pcl::PCLPointCloud2 &cloud,
                        int pcd_version, bool compressed, unsigned int &data_idx);
 
       /** \brief Read a point cloud data from a PCD file and store it into a pcl/PCLPointCloud2.
