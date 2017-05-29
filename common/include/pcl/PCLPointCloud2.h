@@ -17,6 +17,12 @@
 namespace pcl
 {
 
+  /** \brief Blob representation of 3D points.
+    *
+    * This class should only be used to interact with ROS code. Otherwise, use \ref pcl::PointCloud instead.
+    *
+    * \note Available only in PCL 1.x. We're hoping to deprecate this in the near future, in the 2.x trunk.
+    */
   struct PCLPointCloud2
   {
     PCLPointCloud2 () : header (), height (0), width (0), fields (),
