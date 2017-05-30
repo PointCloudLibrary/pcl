@@ -378,6 +378,9 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 {
   PointCloudSource intm_cloud = output;
 
+  nr_iterations_ = 0;
+  converged_ = false;
+
   if (guess != Eigen::Matrix4f::Identity ())
   {
     transformation_ = guess;
