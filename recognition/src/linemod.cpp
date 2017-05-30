@@ -354,7 +354,7 @@ pcl::LINEMOD::matchTemplates (const std::vector<QuantizableModality*> & modaliti
 
     detections.push_back (detection);
 
-    delete[] score_sums;
+    free(score_sums);
   }
 
   // release data
