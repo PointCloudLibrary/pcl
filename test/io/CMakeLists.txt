@@ -14,6 +14,12 @@ PCL_ADD_TEST (io_grabbers test_grabbers
               FILES test_grabbers.cpp
               LINK_WITH pcl_gtest pcl_io
               ARGUMENTS "${PCL_SOURCE_DIR}/test/grabber_sequences")
+
+PCL_ADD_TEST (octree_compression test_octree_compression
+               FILES test_octree_compression.cpp
+               LINK_WITH pcl_gtest pcl_io pcl_common pcl_octree
+               ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_color.pcd")
+
 # Uses VTK readers to verify            
 if (VTK_FOUND AND NOT ANDROID)
   PCL_ADD_TEST (io_ply_mesh_io test_ply_mesh_io
