@@ -358,6 +358,7 @@ namespace Eigen
   template<typename PointT> struct NumTraits<pcl::ndt2d::NormalDist<PointT> >
   {
     typedef double Real;
+    typedef double Literal;
     static Real dummy_precision () { return 1.0; }
     enum {
       IsComplex = 0,
