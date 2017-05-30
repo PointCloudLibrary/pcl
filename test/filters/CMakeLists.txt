@@ -32,3 +32,7 @@ PCL_ADD_TEST(filters_local_maximum test_filters_local_maximum
              FILES test_local_maximum.cpp
              LINK_WITH pcl_gtest pcl_common pcl_filters)
  
+PCL_ADD_TEST(filters_local_modify test_filters_local_modify
+             FILES test_local_modify.cpp
+             LINK_WITH pcl_gtest pcl_common pcl_filters)
+
