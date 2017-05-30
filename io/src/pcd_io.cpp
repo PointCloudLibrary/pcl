@@ -563,9 +563,9 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
   if (compressed)
   {
     // Uncompress the data first
-    unsigned int compressed_size, uncompressed_size;
-    memcpy (&compressed_size, &map[data_idx + 0], sizeof (unsigned int));
-    memcpy (&uncompressed_size, &map[data_idx + 4], sizeof (unsigned int));
+    unsigned int compressed_size = 0, uncompressed_size = 0;
+    memcpy (&compressed_size, &map[data_idx + 0], 4);
+    memcpy (&uncompressed_size, &map[data_idx + 4], 4);
     PCL_DEBUG ("[pcl::PCDReader::read] Read a binary compressed file with %u bytes compressed and %u original.\n", compressed_size, uncompressed_size);
 
     if (uncompressed_size != cloud.data.size ())
@@ -1380,11 +1380,11 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     }
   }
 
-  std::vector<char> temp_buf (data_size * 3 / 2 + 2 * sizeof (unsigned int));
+  std::vector<char> temp_buf (data_size * 3 / 2 + 8);
   // Compress the valid data
   unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (), 
                                                    static_cast<unsigned int> (data_size), 
-                                                   &temp_buf[2*sizeof (unsigned int)], 
+                                                   &temp_buf[8], 
                                                    data_size * 3 / 2);
   // Was the compression successful?
   if (compressed_size == 0)
@@ -1393,7 +1393,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
   }
 
   memcpy (&temp_buf[0], &compressed_size, sizeof (unsigned int));
-  memcpy (&temp_buf[sizeof (unsigned int)], &data_size, sizeof (unsigned int));
+  memcpy (&temp_buf[4], &data_size, sizeof (unsigned int));
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
