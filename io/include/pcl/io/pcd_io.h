@@ -211,7 +211,7 @@ namespace pcl
         */
       int
       readBodyBinary (const unsigned char *data, pcl::PCLPointCloud2 &cloud,
-                       int pcd_version, bool compressed, unsigned int &data_idx);
+                       int pcd_version, bool compressed, unsigned int data_idx);
 
       /** \brief Read a point cloud data from a PCD file and store it into a pcl/PCLPointCloud2.
         * \param[in] file_name the name of the file containing the actual PointCloud data

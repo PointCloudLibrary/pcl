@@ -554,7 +554,7 @@ pcl::PCDReader::readBodyASCII (std::istream &fs, pcl::PCLPointCloud2 &cloud, int
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &cloud,
-                                 int /*pcd_version*/, bool compressed, unsigned int &data_idx)
+                                 int /*pcd_version*/, bool compressed, unsigned int data_idx)
 {
   // Setting the is_dense property to true by default
   cloud.is_dense = true;
