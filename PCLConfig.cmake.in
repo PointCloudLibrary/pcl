@@ -270,7 +270,7 @@ macro(find_ensenso)
   endif()
 
   if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
-    get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
+    get_filename_component(ENSENSO_ABI_HINT "@ENSENSO_INCLUDE_DIR@" PATH)
   endif()
 
   find_path(ENSENSO_INCLUDE_DIR nxLib.h
