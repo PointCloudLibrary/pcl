@@ -1,11 +1,14 @@
 PCL_ADD_TEST(features_ptr test_features_ptr
              FILES test_ptr.cpp
              LINK_WITH pcl_gtest pcl_features)
-
 PCL_ADD_TEST(feature_base test_base_feature
              FILES test_base_feature.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+PCL_ADD_TEST(feature_colorh_estimation test_colorh_estimation
+             FILES test_colorh_estimation.cpp
+             LINK_WITH pcl_gtest pcl_features pcl_io
+             ARGUMENTS "${PCL_SOURCE_DIR}/test/milk_color.pcd")
 PCL_ADD_TEST(feature_cppf_estimation test_cppf_estimation
              FILES test_cppf_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
@@ -23,7 +26,6 @@ PCL_ADD_TEST(feature_cvfh_estimation test_cvfh_estimation
              FILES test_cvfh_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io pcl_filters
              ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk.pcd")
-
 PCL_ADD_TEST(feature_ppf_estimation test_ppf_estimation
              FILES test_ppf_estimation.cpp
              LINK_WITH pcl_gtest pcl_features pcl_io
