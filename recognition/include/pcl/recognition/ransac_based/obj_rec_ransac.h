@@ -83,7 +83,8 @@ namespace pcl
       * \author Chavdar Papazov
       * \ingroup recognition
       */
-    class PCL_EXPORTS ObjRecRANSAC
+    PCL_DEPRECATED_CLASS (class PCL_EXPORTS ObjRecRANSAC,
+      "The class ObjRecRANSAC will be gone in the next major release.")
     {
       public:
         typedef ModelLibrary::PointCloudIn PointCloudIn;
