@@ -256,8 +256,6 @@ namespace pcl
         class PCL_EXPORTS SpinImageEstimation : public FeatureFromNormals
         {
         public:  
-            typedef Histogram<153> SpinImage;
-
             SpinImageEstimation (unsigned int image_width = 8,
                 double support_angle_cos = 0.0,   // when 0, this is bogus, so not applied
                 unsigned int min_pts_neighb = 0);
@@ -274,7 +272,7 @@ namespace pcl
             void setAngularDomain (bool is_angular = true);
             void setRadialStructure (bool is_radial = true);
 
-            void compute(DeviceArray2D<SpinImage>& features, DeviceArray<unsigned char>& mask);
+            void compute(DeviceArray2D<SISignature153>& features, DeviceArray<unsigned char>& mask);
         
         private:            
             Normals input_normals_;

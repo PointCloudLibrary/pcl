@@ -509,6 +509,23 @@ namespace pcl
       }
   };
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation<SISignature153> : public PointRepresentation<SISignature153>
+  {
+    public:
+      DefaultPointRepresentation ()
+      {
+        nr_dimensions_ = 153;
+      }
+
+      virtual void
+      copyToFloatArray (const SISignature153 &p, float * out) const
+      {
+        for (int i = 0; i < nr_dimensions_; ++i)
+          out[i] = p.histogram[i];
+      }
+  };
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   /** \brief @b CustomPointRepresentation extends PointRepresentation to allow for sub-part selection on the point.

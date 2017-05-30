@@ -497,7 +497,7 @@ image_width_(image_width), support_angle_cos_(support_angle_cos), min_pts_neighb
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::gpu::SpinImageEstimation::compute(DeviceArray2D<SpinImage>& features, DeviceArray<unsigned char>& mask)
+void pcl::gpu::SpinImageEstimation::compute(DeviceArray2D<SISignature153>& features, DeviceArray<unsigned char>& mask)
 {   
 	assert(!indices_.empty());
 

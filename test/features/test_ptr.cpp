@@ -62,7 +62,7 @@ TEST (PCL, FeaturePtr)
   StatisticalMultiscaleInterestRegionExtraction<PointXYZ>::Ptr smire (new StatisticalMultiscaleInterestRegionExtraction<PointXYZ> ());
   smire->getScalesVector ();
 
-  SpinImageEstimation<PointXYZ, PointNormal, Histogram<153> >::Ptr spin (new SpinImageEstimation<PointXYZ, PointNormal, Histogram<153> > ());
+  SpinImageEstimation<PointXYZ, PointNormal, SISignature153 >::Ptr spin (new SpinImageEstimation<PointXYZ, PointNormal, SISignature153 > ());
   spin->setImageWidth (20);
 
 //  RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD>::Ptr rsd (new RSDEstimation<PointXYZ, Normal, PrincipalRadiiRSD> ());

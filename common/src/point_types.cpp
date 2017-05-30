@@ -436,4 +436,12 @@ namespace pcl
     return (os);
   }
 
+  std::ostream& 
+  operator << (std::ostream& os, const SISignature153& p)
+  {
+    for (size_t i = 0; i < 153; ++i)
+      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 152 ? ", " : ")");
+    return (os);
+  }
+  
 }

@@ -55,8 +55,6 @@ using namespace std;
 using namespace pcl;
 using namespace pcl::gpu;
 
-typedef pcl::Histogram<153> SpinImage;
-
 //TEST(PCL_FeaturesGPU, DISABLED_spinImages_rectangular)
 TEST(PCL_FeaturesGPU, spinImages_rectangular)
 {   
@@ -91,7 +89,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 	//se_gpu.setRadialStructure();
 	//se_gpu.setAngularDomain();	
 
-	DeviceArray2D<SpinImage> spin_images_device;
+	DeviceArray2D<SISignature153> spin_images_device;
 	DeviceArray<unsigned char> mask_device;
     
     {
@@ -100,13 +98,13 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
     }
 
 	int c;
-    vector<SpinImage> downloaded;
+    vector<SISignature153> downloaded;
 	vector<unsigned char> downloaded_mask;
     spin_images_device.download(downloaded, c);
 	mask_device.download(downloaded_mask);
 
 	//////////// CPU ////////////
-	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
+	pcl::SpinImageEstimation<PointXYZ, Normal, SISignature153> se(8, 0.0, 16);   
 	se.setInputCloud (source.cloud);
 	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
@@ -115,7 +113,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 	//se.setRadialStructure();
 	//se.setAngularDomain();	
 	  
-	PointCloud<SpinImage>::Ptr spin_images (new PointCloud<SpinImage> ());
+	PointCloud<SISignature153>::Ptr spin_images (new PointCloud<SISignature153> ());
 	{
         ScopeTime up("cpu");
 		se.compute (*spin_images);
@@ -126,10 +124,10 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular)
 		if(!downloaded_mask[i]) // less than min neighbours, so spinimage wasn't computed
 			continue;  
 
-        SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SISignature153& gpu = downloaded[i];
+        SISignature153& cpu = spin_images->points[i];
         
-        size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
+        size_t FSize = sizeof(SISignature153)/sizeof(gpu.histogram[0]);                                
         
         float norm = 0, norm_diff = 0;
         for(size_t j = 0; j < FSize; ++j)
@@ -181,7 +179,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 	se_gpu.setRadialStructure();
 	//se_gpu.setAngularDomain();	
 
-	DeviceArray2D<SpinImage> spin_images_device;
+	DeviceArray2D<SISignature153> spin_images_device;
 	DeviceArray<unsigned char> mask_device;
     
     {
@@ -190,13 +188,13 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
     }
 
 	int c;
-    vector<SpinImage> downloaded;
+    vector<SISignature153> downloaded;
 	vector<unsigned char> downloaded_mask;
     spin_images_device.download(downloaded, c);
 	mask_device.download(downloaded_mask);
 
 	//////////// CPU ////////////
-	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
+	pcl::SpinImageEstimation<PointXYZ, Normal, SISignature153> se(8, 0.0, 16);   
 	se.setInputCloud (source.cloud);
 	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
@@ -205,7 +203,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 	se.setRadialStructure();
 	//se.setAngularDomain();	
 	  
-	PointCloud<SpinImage>::Ptr spin_images (new PointCloud<SpinImage> ());
+	PointCloud<SISignature153>::Ptr spin_images (new PointCloud<SISignature153> ());
 	{
         ScopeTime up("cpu");
 		se.compute (*spin_images);
@@ -216,10 +214,10 @@ TEST(PCL_FeaturesGPU, spinImages_radial)
 		if(!downloaded_mask[i]) // less than min neighbours, so spinimage wasn't computed
 			continue;  
 
-        SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SISignature153& gpu = downloaded[i];
+        SISignature153& cpu = spin_images->points[i];
         
-        size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
+        size_t FSize = sizeof(SISignature153)/sizeof(gpu.histogram[0]);                                
         
         float norm = 0, norm_diff = 0;
         for(size_t j = 0; j < FSize; ++j)
@@ -271,7 +269,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 	//se_gpu.setRadialStructure();
 	se_gpu.setAngularDomain();
 
-	DeviceArray2D<SpinImage> spin_images_device;
+	DeviceArray2D<SISignature153> spin_images_device;
 	DeviceArray<unsigned char> mask_device;
     
     {
@@ -280,13 +278,13 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
     }
 
 	int c;
-    vector<SpinImage> downloaded;
+    vector<SISignature153> downloaded;
 	vector<unsigned char> downloaded_mask;
     spin_images_device.download(downloaded, c);
 	mask_device.download(downloaded_mask);
 
 	//////////// CPU ////////////
-	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
+	pcl::SpinImageEstimation<PointXYZ, Normal, SISignature153> se(8, 0.0, 16);   
 	se.setInputCloud (source.cloud);
 	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
@@ -295,7 +293,7 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 	//se.setRadialStructure();
 	se.setAngularDomain();
 	  
-	PointCloud<SpinImage>::Ptr spin_images (new PointCloud<SpinImage> ());
+	PointCloud<SISignature153>::Ptr spin_images (new PointCloud<SISignature153> ());
 	{
         ScopeTime up("cpu");
 		se.compute (*spin_images);
@@ -306,10 +304,10 @@ TEST(PCL_FeaturesGPU, spinImages_rectangular_angular)
 		if(!downloaded_mask[i]) // less than min neighbours, so spinimage wasn't computed
 			continue;  
 
-        SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SISignature153& gpu = downloaded[i];
+        SISignature153& cpu = spin_images->points[i];
         
-        size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
+        size_t FSize = sizeof(SISignature153)/sizeof(gpu.histogram[0]);                                
         
         float norm = 0, norm_diff = 0;
         for(size_t j = 0; j < FSize; ++j)
@@ -361,7 +359,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 	se_gpu.setRadialStructure();
 	se_gpu.setAngularDomain();
 
-	DeviceArray2D<SpinImage> spin_images_device;
+	DeviceArray2D<SISignature153> spin_images_device;
 	DeviceArray<unsigned char> mask_device;
     
     {
@@ -370,13 +368,13 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
     }
 
 	int c;
-    vector<SpinImage> downloaded;
+    vector<SISignature153> downloaded;
 	vector<unsigned char> downloaded_mask;
     spin_images_device.download(downloaded, c);
 	mask_device.download(downloaded_mask);
 
 	//////////// CPU ////////////
-	pcl::SpinImageEstimation<PointXYZ, Normal, SpinImage> se(8, 0.0, 16);   
+	pcl::SpinImageEstimation<PointXYZ, Normal, SISignature153> se(8, 0.0, 16);   
 	se.setInputCloud (source.cloud);
 	se.setInputNormals (source.normals);
 	se.setIndices (source.indices);	
@@ -385,7 +383,7 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 	se.setRadialStructure();
 	se.setAngularDomain();
 	  
-	PointCloud<SpinImage>::Ptr spin_images (new PointCloud<SpinImage> ());
+	PointCloud<SISignature153>::Ptr spin_images (new PointCloud<SISignature153> ());
 	{
         ScopeTime up("cpu");
 		se.compute (*spin_images);
@@ -396,10 +394,10 @@ TEST(PCL_FeaturesGPU, spinImages_radial_angular)
 		if(!downloaded_mask[i]) // less than min neighbours, so spinimage wasn't computed
 			continue;  
 
-        SpinImage& gpu = downloaded[i];
-        SpinImage& cpu = spin_images->points[i];
+        SISignature153& gpu = downloaded[i];
+        SISignature153& cpu = spin_images->points[i];
         
-        size_t FSize = sizeof(SpinImage)/sizeof(gpu.histogram[0]);                                
+        size_t FSize = sizeof(SISignature153)/sizeof(gpu.histogram[0]);                                
         
         float norm = 0, norm_diff = 0;
         for(size_t j = 0; j < FSize; ++j)

@@ -91,7 +91,8 @@
   (pcl::SHOT1344)               \
   (pcl::PointUV)                \
   (pcl::ReferenceFrame)         \
-  (pcl::PointDEM)
+  (pcl::PointDEM)               \
+  (pcl::SISignature153)
 
 // Define all point types that include RGB data
 #define PCL_RGB_POINT_TYPES     \
@@ -149,7 +150,10 @@
   (pcl::GRSDSignature21)        \
   (pcl::ESFSignature640)        \
   (pcl::BRISKSignature512)      \
-  (pcl::Narf36)
+  (pcl::Narf36)                 \
+  (pcl::ShapeContext1980)       \
+  (pcl::UniqueShapeContext1960) \
+  (pcl::SISignature153)
 
 namespace pcl
 {
@@ -1297,7 +1301,18 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const SHOT1344& p);
   };
 
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const SISignature153& p);
+  /** \brief A point structure representing a Spin Image.
+    * \ingroup common
+    */
+  struct SISignature153
+  {
+    float histogram[153];
+    static int descriptorSize () { return 153; }
 
+    friend std::ostream& operator << (std::ostream& os, const SISignature153& p);
+  };
+  
   /** \brief A structure representing the Local Reference Frame of a point.
     *  \ingroup common
     */

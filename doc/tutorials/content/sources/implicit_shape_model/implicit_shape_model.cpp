@@ -40,10 +40,10 @@ main (int argc, char** argv)
     training_classes.push_back (tr_class);
   }
 
-  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> >::Ptr fpfh
-    (new pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> >);
+  pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::SISignature153 >::Ptr fpfh
+    (new pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::SISignature153 >);
   fpfh->setRadiusSearch (30.0);
-  pcl::Feature< pcl::PointXYZ, pcl::Histogram<153> >::Ptr feature_estimator(fpfh);
+  pcl::Feature< pcl::PointXYZ, pcl::SISignature153 >::Ptr feature_estimator(fpfh);
 
   pcl::ism::ImplicitShapeModelEstimation<153, pcl::PointXYZ, pcl::Normal> ism;
   ism.setFeatureEstimator(feature_estimator);

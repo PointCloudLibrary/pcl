@@ -46,10 +46,6 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace pcl::console;
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Histogram<153>,
-  (float[153], histogram, spinimage)
-)
-
 int    default_image_width = 8;
 double default_support_angle = 0.5;
 int    default_min_neigh = 1;
@@ -162,8 +158,7 @@ main (int argc, char** argv)
 
   print_highlight (stderr, "Computing ");
 
-  typedef Histogram<153> SpinImage;
-  SpinImageEstimation<PointNormal, PointNormal, SpinImage> spin_est (image_width, support_angle, min_neigh); 
+  SpinImageEstimation<PointNormal, PointNormal, SISignature153> spin_est (image_width, support_angle, min_neigh); 
   //spin_est.setInputWithNormals (xyznormals, xyznormals);
   spin_est.setInputCloud (xyznormals);
   spin_est.setInputNormals (xyznormals);
@@ -176,7 +171,7 @@ main (int argc, char** argv)
   if (find_argument(argc, argv, "-angular") > 0)
     spin_est.setAngularDomain();
 
-  PointCloud<SpinImage> descriptors;
+  PointCloud<SISignature153> descriptors;
   spin_est.compute (descriptors);
 
   print_info ("[done, "); print_value ("%g", tt.toc ()); print_info (" ms : "); print_value ("%d", descriptors.width * descriptors.height); print_info (" points]\n");

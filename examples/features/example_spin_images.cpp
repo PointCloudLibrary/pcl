@@ -74,13 +74,13 @@ main (int, char** argv)
   normal_estimation.compute (*normals);
 
   // Setup spin image computation
-  pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::Histogram<153> > spin_image_descriptor(8, 0.5, 16);
+  pcl::SpinImageEstimation<pcl::PointXYZ, pcl::Normal, pcl::SISignature153 > spin_image_descriptor(8, 0.5, 16);
   spin_image_descriptor.setInputCloud (cloud);
   spin_image_descriptor.setInputNormals (normals);
 
   // Use the same KdTree from the normal estimation
   spin_image_descriptor.setSearchMethod (kdtree);
-  pcl::PointCloud<pcl::Histogram<153> >::Ptr spin_images (new pcl::PointCloud<pcl::Histogram<153> >);
+  pcl::PointCloud<pcl::SISignature153 >::Ptr spin_images (new pcl::PointCloud<pcl::SISignature153 >);
   spin_image_descriptor.setRadiusSearch (0.2);
 
   // Actually compute the spin images
@@ -88,7 +88,7 @@ main (int, char** argv)
   std::cout << "SI output points.size (): " << spin_images->points.size () << std::endl;
 
   // Display and retrieve the spin image descriptor vector for the first point.
-  pcl::Histogram<153> first_descriptor = spin_images->points[0];
+  pcl::SISignature153 first_descriptor = spin_images->points[0];
   std::cout << first_descriptor << std::endl;
 
   return 0;

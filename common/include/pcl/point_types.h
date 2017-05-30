@@ -290,6 +290,11 @@ namespace pcl
      */
   struct Narf36;
 
+  /** \brief Members: float histogram[153]
+    * \ingroup common
+    */
+  struct SISignature153;
+
   /** \brief Data type to store extended information about a transition from foreground to backgroundSpecification of the fields for BorderDescription::traits.
     * \ingroup common
     */
@@ -629,6 +634,10 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::ESFSignature640,
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Narf36,
     (float[36], descriptor, descriptor)
+)
+
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::SISignature153,
+    (float[153], histogram, spinimage)
 )
 
 POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::GFPFHSignature16,
