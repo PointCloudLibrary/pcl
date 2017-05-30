@@ -39,11 +39,11 @@
 #ifndef PCL_GICP6D_H_
 #define PCL_GICP6D_H_
 
-#include <pcl/registration/gicp.h>
-#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_representation.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
+#include <pcl/registration/gicp.h>
 
 namespace pcl
 {
