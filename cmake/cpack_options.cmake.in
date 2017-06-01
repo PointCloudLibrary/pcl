@@ -16,9 +16,9 @@ IF ((WIN32 OR UNIX) AND (CPACK_GENERATOR STREQUAL "NSIS"))
     set(CPACK_NSIS_MODIFY_PATH ON)
     set(CPACK_PACKAGE_EXECUTABLES @PCL_EXECUTABLES@)
     set(CPACK_NSIS_MENU_LINKS 
-            "share/doc/pcl/tutorials/html/index.html" "Tutorials"
-            "share/doc/pcl/tutorials/html/sources" "Tutorials sources"
-            "share/doc/pcl/html/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.chm" "Documentation"
+            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/tutorials/html/index.html" "Tutorials"
+            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/tutorials/html/sources" "Tutorials sources"
+            "share/doc/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@/html/pcl-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@.chm" "Documentation"
             "http://www.pointclouds.org" "PCL Website")
     #set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/user_guide.pdf" "User's guide")
     #set(CPACK_NSIS_MENU_LINKS "share/doc/@PROJECT_NAME@/developer_guide.pdf" "Developer's guide")

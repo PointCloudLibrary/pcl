@@ -340,7 +340,8 @@ namespace pcl
 
     inline RGB ()
     {
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
     }
   
     friend std::ostream& operator << (std::ostream& os, const RGB& p);
@@ -615,7 +616,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
     }
     inline PointXYZRGB (uint8_t _r, uint8_t _g, uint8_t _b)
     {
@@ -624,7 +626,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
-      a = 0;
+      a = 255;
     }
 
     friend std::ostream& operator << (std::ostream& os, const PointXYZRGB& p);
@@ -647,7 +649,7 @@ namespace pcl
       x = y = z = 0.0f;
       data[3] = 1.0f;
       r = g = b = 0;
-      a = 0;
+      a = 255;
       label = 255;
     }
     inline PointXYZRGBL (uint8_t _r, uint8_t _g, uint8_t _b, uint32_t _label)
@@ -657,7 +659,7 @@ namespace pcl
       r = _r;
       g = _g;
       b = _b;
-      a = 0;
+      a = 255;
       label = _label;
     }
   
@@ -935,7 +937,8 @@ namespace pcl
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
-      r = g = b = a = 0;
+      r = g = b = 0;
+      a = 255;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
       curvature = 0;
     }
@@ -1588,7 +1591,8 @@ namespace pcl
       x = y = z = 0.0f;
       data[3] = 1.0f;
       normal_x = normal_y = normal_z = data_n[3] = 0.0f;
-      rgba = 0;
+      r = g = b = 0;
+      a = 255;
       radius = confidence = curvature = 0.0f;
     }
   

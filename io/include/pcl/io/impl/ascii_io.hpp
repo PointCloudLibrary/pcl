@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -34,24 +33,27 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- * $Id: io.h 5850 2012-06-06 14:04:59Z stfox88 $
- *
  */
 
-#ifndef PCL_TEST_BOOST_H_
-#define PCL_TEST_BOOST_H_
+#ifndef PCL_IO_ASCII_IO_HPP_
+#define PCL_IO_ASCII_IO_HPP_
 
-#ifdef __GNUC__
-#pragma GCC system_header 
-#endif
+template<typename PointT> void
+pcl::ASCIIReader::setInputFields ()
+{
+  pcl::getFields<PointT> (fields_);
 
-// Marking all Boost headers as system headers to remove warnings
-#include <boost/random.hpp>
-#include <boost/thread.hpp>
-#include <boost/smart_ptr/shared_array.hpp>
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int.hpp>
-#include <boost/random/uniform_real.hpp>
-#include <boost/random/variate_generator.hpp>
+  // Remove empty fields and adjust offset
+  int offset =0;
+  for (std::vector<pcl::PCLPointField>::iterator field_iter = fields_.begin ();
+       field_iter != fields_.end (); field_iter++)
+  {
+    if (field_iter->name == "_") 
+      field_iter = fields_.erase (field_iter);
+    field_iter->offset = offset;
+    offset += typeSize (field_iter->datatype);
+  }
+}
 
-#endif    // PCL_TEST_BOOST_H_
+
+#endif    //PCL_IO_ASCII_IO_HPP_

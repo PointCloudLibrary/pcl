@@ -49,6 +49,12 @@
 #include <vtkPointData.h>
 #include <vtkFloatArray.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 int

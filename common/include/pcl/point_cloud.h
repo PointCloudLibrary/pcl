@@ -428,6 +428,14 @@ namespace pcl
       typedef boost::shared_ptr<PointCloud<PointT> > Ptr;
       typedef boost::shared_ptr<const PointCloud<PointT> > ConstPtr;
 
+      // std container compatibility typedefs according to
+      // http://en.cppreference.com/w/cpp/concept/Container
+      typedef PointT        value_type;
+      typedef PointT&       reference;
+      typedef const PointT& const_reference;
+      typedef typename VectorType::difference_type difference_type;
+      typedef typename VectorType::size_type size_type;
+
       // iterators
       typedef typename VectorType::iterator iterator;
       typedef typename VectorType::const_iterator const_iterator;

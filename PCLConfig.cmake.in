@@ -91,7 +91,7 @@ macro(find_boost)
   else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
     set(Boost_ADDITIONAL_VERSIONS
       "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
-      "1.61.0" "1.61" "1.60.0" "1.60"
+      "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
       "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55"
       "1.54.0" "1.54" "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
       "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47")
@@ -270,7 +270,7 @@ macro(find_ensenso)
   endif()
 
   if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
-    get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
+    get_filename_component(ENSENSO_ABI_HINT "@ENSENSO_INCLUDE_DIR@" PATH)
   endif()
 
   find_path(ENSENSO_INCLUDE_DIR nxLib.h
@@ -466,18 +466,15 @@ endmacro(find_flann)
 macro(find_VTK)
   if(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
     if(EXISTS "${PCL_ROOT}/3rdParty/VTK/lib/cmake")
-      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/cmake/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@")
+      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/cmake/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@" CACHE PATH "The directory containing VTKConfig.cmake")
     else()
-      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@")
+      set(VTK_DIR "${PCL_ROOT}/3rdParty/VTK/lib/vtk-@VTK_MAJOR_VERSION@.@VTK_MINOR_VERSION@" CACHE PATH "The directory containing VTKConfig.cmake")
     endif()
   elseif(NOT VTK_DIR AND NOT ANDROID)
-    set(VTK_DIR "@VTK_DIR@")
+    set(VTK_DIR "@VTK_DIR@" CACHE PATH "The directory containing VTKConfig.cmake")
   endif(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
   if(NOT ANDROID)
     find_package(VTK ${QUIET_})
-    if (VTK_FOUND)
-      set(VTK_LIBRARIES "@VTK_LIBRARIES@")
-    endif(VTK_FOUND)
   endif()
 endmacro(find_VTK)
 
@@ -588,7 +585,7 @@ IF(GLEW_FOUND)
     MESSAGE(STATUS "Found Glew: ${GLEW_LIBRARIES}")
   ENDIF(NOT GLEW_FIND_QUIETLY)
   IF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-    ADD_DEFINITIONS(-DGLEW_STATIC)
+    list(APPEND PCL_DEFINITIONS "-DGLEW_STATIC")
   ENDIF(GLEW_GLEW_LIBRARY MATCHES glew32s)
 ELSE(GLEW_FOUND)
   IF(GLEW_FIND_REQUIRED)
@@ -659,7 +656,7 @@ macro(find_external_library _component _lib _is_optional)
     endif(${LIB}_DEFINITIONS AND NOT ${LIB} STREQUAL "VTK")
   else(${LIB}_FOUND)
     if("${_is_optional}" STREQUAL "OPTIONAL")
-      add_definitions("-DDISABLE_${LIB}")
+      list(APPEND PCL_${COMPONENT}_DEFINITIONS "-DDISABLE_${LIB}")
       pcl_message("** WARNING ** ${_component} features related to ${_lib} will be disabled")
     elseif("${_is_optional}" STREQUAL "REQUIRED")
       if((NOT PCL_FIND_ALL) OR (PCL_FIND_ALL EQUAL 1))
@@ -721,8 +718,7 @@ if(WIN32 AND NOT MINGW)
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
 else(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
-  get_filename_component(PCL_ROOT "${PCL_ROOT}" PATH)
+  set(PCL_ROOT "@CMAKE_INSTALL_PREFIX@")
 endif(WIN32 AND NOT MINGW)
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree

@@ -248,13 +248,13 @@ pcl::SupervoxelClustering<PointT>::computeVoxelData ()
       if ( !pcl::isFinite<PointT> (*input_itr))
         continue;
       //Otherwise look up its leaf container
-        LeafContainerT* leaf = adjacency_octree_->getLeafContainerAtPoint (*input_itr);
-        
-        //Get the voxel data object
-        VoxelData& voxel_data = leaf->getData ();
-        //Add this normal in (we will normalize at the end)
-        voxel_data.normal_ += normal_itr->getNormalVector4fMap ();
-        voxel_data.curvature_ += normal_itr->curvature;
+      LeafContainerT* leaf = adjacency_octree_->getLeafContainerAtPoint (*input_itr);
+
+      //Get the voxel data object
+      VoxelData& voxel_data = leaf->getData ();
+      //Add this normal in (we will normalize at the end)
+      voxel_data.normal_ += normal_itr->getNormalVector4fMap ();
+      voxel_data.curvature_ += normal_itr->curvature;
     }
     //Now iterate through the leaves and normalize 
     for (leaf_itr = adjacency_octree_->begin (); leaf_itr != adjacency_octree_->end (); ++leaf_itr)
@@ -415,8 +415,8 @@ pcl::SupervoxelClustering<PointT>::selectInitialSupervoxelSeeds (std::vector<int
   std::vector<float> sqr_distances;
   seed_indices.reserve (seed_indices_orig.size ());
   float search_radius = 0.5f*seed_resolution_;
-  // This is number of voxels which fit in a planar slice through search volume
-  // Area of planar slice / area of voxel side
+  // This is 1/20th of the number of voxels which fit in a planar slice through search volume
+  // Area of planar slice / area of voxel side. (Note: This is smaller than the value mentioned in the original paper)
   float min_points = 0.05f * (search_radius)*(search_radius) * 3.1415926536f  / (resolution_*resolution_);
   for (size_t i = 0; i < seed_indices_orig.size (); ++i)
   {

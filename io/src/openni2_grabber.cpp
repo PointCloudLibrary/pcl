@@ -53,7 +53,7 @@
 
 using namespace pcl::io::openni2;
 
-namespace pcl
+namespace
 {
   // Treat color as chars, float32, or uint32
   typedef union

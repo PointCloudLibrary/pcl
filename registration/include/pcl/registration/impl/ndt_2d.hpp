@@ -358,6 +358,7 @@ namespace Eigen
   template<typename PointT> struct NumTraits<pcl::ndt2d::NormalDist<PointT> >
   {
     typedef double Real;
+    typedef double Literal;
     static Real dummy_precision () { return 1.0; }
     enum {
       IsComplex = 0,
@@ -376,6 +377,9 @@ template <typename PointSource, typename PointTarget> void
 pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransformation (PointCloudSource &output, const Eigen::Matrix4f &guess)
 {
   PointCloudSource intm_cloud = output;
+
+  nr_iterations_ = 0;
+  converged_ = false;
 
   if (guess != Eigen::Matrix4f::Identity ())
   {

@@ -104,6 +104,13 @@
 #include <boost/filesystem.hpp>
 #include <pcl/console/parse.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 #if defined(_WIN32)
   // Remove macros defined in Windows.h
   #undef near

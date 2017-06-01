@@ -16,7 +16,7 @@ href="http://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22New_BSD_L
 BSD license</a> and is open source software.  <b>It is free for commercial and
 research use.</b>
 
-\image html http://www.pointclouds.org/assets/images/contents/logos/pointcloudlibrary_logo.png
+\image html pointcloudlibrary_logo.png
 
 PCL is cross-platform, and has been successfully compiled and deployed on
 Linux, MacOS, Windows, and Android. To simplify development, PCL is split into

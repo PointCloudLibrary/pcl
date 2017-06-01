@@ -64,6 +64,13 @@
 
 #include <pcl/visualization/common/shapes.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
@@ -678,7 +685,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -821,6 +828,11 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
   // create actor
   vtkSmartPointer<vtkLODActor> actor = vtkSmartPointer<vtkLODActor>::New ();
   actor->SetMapper (mapper);
+
+  // Use cloud view point info
+  vtkSmartPointer<vtkMatrix4x4> transformation = vtkSmartPointer<vtkMatrix4x4>::New ();
+  convertToVtkMatrix (cloud->sensor_origin_, cloud->sensor_orientation_, transformation);
+  actor->SetUserMatrix (transformation);
 
   // Add it to all renderers
   addActorToRenderer (actor, viewport);
@@ -1837,5 +1849,11 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   return (true);
 }
+
+#ifdef vtkGenericDataArray_h
+#undef SetTupleValue
+#undef InsertNextTupleValue
+#undef GetTupleValue
+#endif
 
 #endif

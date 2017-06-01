@@ -108,7 +108,10 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     Eigen::Vector4f v23 (p2 - p3);
     a = v21.norm (); b = v31.norm (); c = v23.norm (); s = (a+b+c) * 0.5f;
     if (s * (s-a) * (s-b) * (s-c) <= 0.001f)
-      continue;
+    {
+        nn_idx--;
+        continue;
+    }
 
     v21.normalize ();
     v31.normalize ();

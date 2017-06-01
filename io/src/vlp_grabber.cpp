@@ -127,7 +127,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
     for (int j = 0; j < HDL_LASER_PER_FIRING; j++)
     {
       double current_azimuth = firing_data.rotationalPosition;
-      if (j > VLP_MAX_NUM_LASERS)
+      if (j >= VLP_MAX_NUM_LASERS)
       {
         current_azimuth += interpolated_azimuth_delta;
       }
@@ -174,7 +174,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
       }
 
-      if (! (boost::math::isnan (xyz.x) || boost::math::isnan (xyz.y) || boost::math::isnan (xyz.z)))
+      if (! (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z)))
       {
         current_sweep_xyz_->push_back (xyz);
         current_sweep_xyzi_->push_back (xyzi);
@@ -184,7 +184,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       if (dataPacket->mode == VLP_DUAL_MODE)
       {
         if ( (dual_xyz.x != xyz.x || dual_xyz.y != xyz.y || dual_xyz.z != xyz.z)
-            && ! (boost::math::isnan (dual_xyz.x) || boost::math::isnan (dual_xyz.y) || boost::math::isnan (dual_xyz.z)))
+            && ! (pcl_isnan (dual_xyz.x) || pcl_isnan (dual_xyz.y) || pcl_isnan (dual_xyz.z)))
         {
           current_sweep_xyz_->push_back (dual_xyz);
           current_sweep_xyzi_->push_back (dual_xyzi);

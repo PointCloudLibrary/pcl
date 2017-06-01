@@ -127,6 +127,13 @@ namespace pcl
         search_radius_ = salient_radius_;
       }
 
+      /** \brief Destructor. */
+      ~ISSKeypoint3D ()
+      {
+        delete[] third_eigen_value_;
+        delete[] edge_points_;
+      }
+
       /** \brief Set the radius of the spherical neighborhood used to compute the scatter matrix.
         * \param[in] salient_radius the radius of the spherical neighborhood
         */
@@ -140,14 +147,14 @@ namespace pcl
       setNonMaxRadius (double non_max_radius);
 
       /** \brief Set the radius used for the estimation of the surface normals of the input cloud. If the radius is
-	* too large, the temporal performances of the detector may degrade significantly.
+        * too large, the temporal performances of the detector may degrade significantly.
         * \param[in] normal_radius the radius used to estimate surface normals
         */
       void
       setNormalRadius (double normal_radius);
 
       /** \brief Set the radius used for the estimation of the boundary points. If the radius is too large,
-	* the temporal performances of the detector may degrade significantly.
+        * the temporal performances of the detector may degrade significantly.
         * \param[in] border_radius the radius used to compute the boundary points
         */
       void
@@ -178,13 +185,13 @@ namespace pcl
       setNormals (const PointCloudNConstPtr &normals);
 
       /** \brief Set the decision boundary (angle threshold) that marks points as boundary or regular.
-	* (default \f$\pi / 2.0\f$)
+        * (default \f$\pi / 2.0\f$)
         * \param[in] angle the angle threshold
         */
       inline void
       setAngleThreshold (float angle)
       {
-	angle_threshold_ = angle;
+        angle_threshold_ = angle;
       }
 
       /** \brief Initialize the scheduler and set the number of threads to use.
