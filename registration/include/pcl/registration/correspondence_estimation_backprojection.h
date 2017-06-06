@@ -184,7 +184,7 @@ namespace pcl
           * cloud for computing correspondences. By default we use k = 10 nearest 
           * neighbors.
           */
-        inline void
+        inline unsigned int
         getKSearch () const { return (k_); }
         
         /** \brief Clone and cast to CorrespondenceEstimationBase */
