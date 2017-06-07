@@ -430,6 +430,15 @@ namespace pcl
       getPercentageExtendGrid ()
       { return percentage_extend_grid_; }
 
+      /** \brief Method that sets the parameter that defines the distance to ignore the distance to ignore
+        * a grid
+        * \param[in] threshold of distance. if it is negative, then calculate in all grids; otherwise
+        * ignore grids with distance to point cloud(to nearest point) larger than distIgnore
+        */
+      inline void
+      setDistanceIgnore (float distIgnore)
+      { dist_ignore_ = distIgnore; }
+
     protected:
       /** \brief The data structure storing the 3D grid */
       std::vector<float> grid_;
@@ -446,6 +455,15 @@ namespace pcl
 
       /** \brief The iso level to be extracted. */
       float iso_level_;
+
+      /** \brief ignore the distance function
+       * if it is negative
+       * or distance between voxel centroid and point are larger that it. */
+      float dist_ignore_;
+
+      /** \brief the point cloud really generated from Marching Cubes
+       */
+      pcl::PointCloud<PointNT> intermediate_cloud_;
 
       /** \brief Convert the point cloud into voxel data. */
       virtual void
@@ -468,8 +486,8 @@ namespace pcl
         * \param cloud point cloud to store the vertices of the polygon
        */
       void
-      createSurface (std::vector<float> &leaf_node,
-                     Eigen::Vector3i &index_3d,
+      createSurface (const std::vector<float> &leaf_node,
+                     const Eigen::Vector3i &index_3d,
                      pcl::PointCloud<PointNT> &cloud);
 
       /** \brief Get the bounding box for the input data points. */
@@ -507,6 +525,11 @@ namespace pcl
        virtual void
        performReconstruction (pcl::PointCloud<PointNT> &points,
                               std::vector<pcl::Vertices> &polygons);
+
+        /** \brief real marching cube part. called in two performReconstruction-s
+          */
+        virtual void
+        performReconstructionProc ();
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
