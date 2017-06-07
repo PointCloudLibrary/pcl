@@ -51,6 +51,7 @@ find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
     PATHS
     "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"  # Win64 needs '64' suffix
     /usr/include/openni2  # common path for deb packages
+    ${OPENNI2_INCLUDE_DIR}
 )
 
 find_library(OPENNI2_LIBRARY
@@ -58,6 +59,7 @@ find_library(OPENNI2_LIBRARY
              libOpenNI2     # Linux
              PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}"  # Windows default path, Win64 needs '64' suffix
              "$ENV{OPENNI2_REDIST}"                      # Linux install does not use a separate 'lib' directory
+             ${OPENNI2_LIB_DIR}
              )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
