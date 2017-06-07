@@ -206,13 +206,7 @@ TEST (PCL, concatenatePointCloud)
     EXPECT_EQ (cloud_all[i].rgba, cloud_xyz_rgba[i].rgba);
   }
   for (int i = 0; i < int (cloud_xyz_rgb.size ()); ++i)
-  {
     EXPECT_XYZ_EQ (cloud_all[cloud_xyz_rgba.size () + i], cloud_xyz_rgb[i]);
-    EXPECT_FLOAT_EQ (cloud_all[cloud_xyz_rgba.size () + i].r, 0);
-    EXPECT_FLOAT_EQ (cloud_all[cloud_xyz_rgba.size () + i].g, 0);
-    EXPECT_FLOAT_EQ (cloud_all[cloud_xyz_rgba.size () + i].b, 0);
-    EXPECT_EQ (cloud_all[cloud_xyz_rgba.size () + i].rgba, 0);
-  }
 
   cloud1.fields[rgb_idx].name = "rgba";
   // regular vs _
