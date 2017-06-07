@@ -439,8 +439,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages (pcl::Poin
                                                                        pcl::PointCloud<pcl::Intensity>::Ptr& z_dy)
 {
   // setup images
-  const int width = input_->width;
-  const int height = input_->height;
+  const uint32_t width = input_->width;
+  const uint32_t height = input_->height;
   x_image->resize (width * height);
   x_image->width = width;
   x_image->height = height;
@@ -450,14 +450,14 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::prepareImages (pcl::Poin
   z_image->resize (width * height);
   z_image->width = width;
   z_image->height = height;
-  for (unsigned int v = 0; v < height; ++v)
+  for (uint32_t v = 0; v < height; ++v)
   {
-    const size_t point_index = v * width;
+    const uint32_t point_index = v * width;
     pcl::Intensity* x_ptr = & (x_image->points[point_index]);
     pcl::Intensity* y_ptr = & (y_image->points[point_index]);
     pcl::Intensity* z_ptr = & (z_image->points[point_index]);
     const PointT* point = & (input_->points[point_index]);
-    for (unsigned int u = 0; u < width; ++u)
+    for (uint32_t u = 0; u < width; ++u)
     {
       // point cloud matrix indices: row y, column x!
       if (point->z == point->z)  // test for NaN
@@ -555,8 +555,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable33 (pcl::
                                                                            const float h2,
                                                                            const float h3)
 {
-  const int height = image->height;
-  const int width = image->width;
+  const uint32_t height = image->height;
+  const uint32_t width = image->width;
 
   // first pass: vertical v1/v2/v3 convolution
   pcl::PointCloud<pcl::Intensity>::Ptr temp (new pcl::PointCloud<pcl::Intensity>);
@@ -567,12 +567,12 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable33 (pcl::
   pcl::Intensity* ptr1 = & (image->points[0]);
   pcl::Intensity* ptr2 = & (image->points[0]);
   pcl::Intensity* ptr3 = & (image->points[width]);
-  for (unsigned int u = 0; u < width; ++u, ++ptr, ++ptr2, ++ptr3)
+  for (uint32_t u = 0; u < width; ++u, ++ptr, ++ptr2, ++ptr3)
     ptr->intensity = v2 * ptr2->intensity + v3 * ptr3->intensity;
-  for (unsigned int v = 1; v < height - 1; ++v)
-    for (unsigned int u = 0; u < width; ++u, ++ptr, ++ptr1, ++ptr2, ++ptr3)
+  for (uint32_t v = 1; v < height - 1; ++v)
+    for (uint32_t u = 0; u < width; ++u, ++ptr, ++ptr1, ++ptr2, ++ptr3)
       ptr->intensity = v1 * ptr1->intensity + v2 * ptr2->intensity + v3 * ptr3->intensity;
-  for (unsigned int u = 0; u < width; ++u, ++ptr, ++ptr1, ++ptr2)
+  for (uint32_t u = 0; u < width; ++u, ++ptr, ++ptr1, ++ptr2)
     ptr->intensity = v1 * ptr1->intensity + v2 * ptr2->intensity;
 
   // second pass: horizontal h1/h2/h3 convolution
@@ -583,11 +583,11 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable33 (pcl::
   ptr2 = & (temp->points[1]);
   ptr3 = & (temp->points[2]);
   ptr = & (result->points[0]);
-  for (unsigned int v = 0; v < height; ++v)
+  for (uint32_t v = 0; v < height; ++v)
   {
     ptr->intensity = h2 * ptr1->intensity + h3 * ptr2->intensity;  // pointers 0 and 1 are already preset one field in advance, hence the pointer name does not match with h2 and h3 (but the computations are correct)
     ++ptr;
-    for (unsigned int u = 1; u < width - 1; ++u, ++ptr, ++ptr1, ++ptr2, ++ptr3)
+    for (uint32_t u = 1; u < width - 1; ++u, ++ptr, ++ptr1, ++ptr2, ++ptr3)
       ptr->intensity = h1 * ptr1->intensity + h2 * ptr2->intensity + h3 * ptr3->intensity;
     ptr->intensity = h1 * ptr1->intensity + h2 * ptr2->intensity;
     ++ptr;
@@ -603,8 +603,8 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable (pcl::Po
                                                                          const std::vector<float> vertical_coefficients,
                                                                          const std::vector<float> horizontal_coefficients)
 {
-  const int height = image->height;
-  const int width = image->width;
+  const uint32_t height = image->height;
+  const uint32_t width = image->width;
 
   // first pass: vertical convolution
   // --------------------------------
@@ -615,16 +615,16 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable (pcl::Po
   const int kernel_size_v = (int) vertical_coefficients.size ();
   const int kernel_min_dv = -kernel_size_v / 2;  // this is the kernel offset
   int base_index = 0;
-  for (unsigned int v = 0; v < height; ++v)
+  for (uint32_t v = 0; v < height; ++v)
   {
-    for (unsigned int u = 0; u < width; ++u, ++base_index)
+    for (uint32_t u = 0; u < width; ++u, ++base_index)
     {
       float value = 0.f;
       int dv = kernel_min_dv;
       for (int i = 0; i < kernel_size_v; ++i, ++dv)
       {
-        if (v + dv >= 0 && v + dv < height)
-          value += vertical_coefficients[i] * image->points[base_index + dv * width].intensity;
+        if ((int)v + dv >= 0 && (int)v + dv < (int)height)
+          value += vertical_coefficients[i] * image->points[base_index + dv * (int)width].intensity;
       }
       temp->points[base_index].intensity = value;
     }
@@ -638,15 +638,15 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::filterSeparable (pcl::Po
   const int kernel_size_h = (int) horizontal_coefficients.size ();
   const int kernel_min_dh = -kernel_size_h / 2;  // this is the kernel offset
   base_index = 0;
-  for (unsigned int v = 0; v < height; ++v)
+  for (uint32_t v = 0; v < height; ++v)
   {
-    for (unsigned int u = 0; u < width; ++u, ++base_index)
+    for (uint32_t u = 0; u < width; ++u, ++base_index)
     {
       float value = 0.f;
       int du = kernel_min_dh;
       for (int i = 0; i < kernel_size_h; ++i, ++du)
       {
-        if (u + du >= 0 && u + du < width)
+        if ((int)u + du >= 0 && (int)u + du < (int)width)
           value += horizontal_coefficients[i] * temp->points[base_index + du].intensity;
       }
       result->points[base_index].intensity = value;
@@ -669,9 +669,9 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuit
     pcl::Intensity* z_dx_ptr = & (z_dx->points[0]);
     pcl::Intensity* z_dy_ptr = & (z_dy->points[0]);
     const float depth_factor = edge_detection_config_.depth_step_factor_;
-    for (int v = 0; v < z_dx->height; ++v)
+    for (uint32_t v = 0; v < z_dx->height; ++v)
     {
-      for (int u = 0; u < z_dx->width; ++u, ++z_image_ptr, ++z_dx_ptr, ++z_dy_ptr)
+      for (uint32_t u = 0; u < z_dx->width; ++u, ++z_image_ptr, ++z_dx_ptr, ++z_dy_ptr)
       {
         float depth = z_image_ptr->intensity;  //z_image->at(u, v).intensity;
         if (depth == 0.f)
@@ -689,13 +689,13 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeDepthDiscontinuit
   {
     // copy pre-computed depth edges into edge image
     const unsigned invalid_label = unsigned (0);
-    for (unsigned int v = 0; v < labels.height; ++v)
+    for (uint32_t v = 0; v < labels.height; ++v)
     {
       const size_t point_index = v * input_->width;
       pcl::Intensity8u* dst = & (edge->points[point_index]);
 
       const PointLT* src = & (labels.points[point_index]);
-      for (unsigned int u = 0; u < labels.width; u++)
+      for (uint32_t u = 0; u < labels.width; u++)
       {
         if (src->label != invalid_label)
           dst->intensity = (uint8_t) 254;
@@ -896,9 +896,9 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeSurfaceDiscontinu
 
   // close 45 degree edges with an additional edge pixel for better neighborhood selection during normal estimation
   const int width = edge->width;
-  for (int v = max_line_width; v < edge->height - max_line_width; ++v)
+  for (uint32_t v = max_line_width; v < edge->height - max_line_width; ++v)
   {
-    int base_index = v * width + max_line_width;  // attention: needs to start with same u-offset as u in the following loop
+    uint32_t base_index = v * width + max_line_width;  // attention: needs to start with same u-offset as u in the following loop
     for (int u = max_line_width; u < width - max_line_width; ++u, ++base_index)
     {
       if (edge->points[base_index].intensity == 0)
@@ -999,12 +999,12 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::nonMaximumSuppression (p
                                                                                const pcl::PointCloud<pcl::Intensity>::Ptr& dx,
                                                                                const pcl::PointCloud<pcl::Intensity>::Ptr& dy)
 {
-  const int height = edge->height;
-  const int width = edge->width;
+  const uint32_t height = edge->height;
+  const uint32_t width = edge->width;
   std::vector<std::pair<uint32_t, uint32_t> > setToZerosSet;
   for (uint32_t v = 1; v < height - 1; ++v)
   {
-    int index = v * width + 1;
+    uint32_t index = v * width + 1;
     for (uint32_t u = 1; u < width - 1; ++u, ++index)
     {
       if (edge->points[index].intensity == 0)
@@ -1040,16 +1040,16 @@ pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeIntegralImageX (c
   dst_z->resize (src_x->height * src_x->width);
   dst_z->width = src_x->width;
   dst_z->height = src_x->height;
-  for (int v = 0; v < src_x->height; ++v)
+  for (uint32_t v = 0; v < src_x->height; ++v)
   {
-    const size_t point_index = v * src_x->width;
+    const uint32_t point_index = v * src_x->width;
     const pcl::Intensity* src_x_ptr = & (src_x->points[point_index]);
     pcl::Intensity* dst_x_ptr = & (dst_x->points[point_index]);
     const pcl::Intensity* src_z_ptr = & (src_z->points[point_index]);
     pcl::Intensity* dst_z_ptr = & (dst_z->points[point_index]);
     float sum_x = 0.f;
     float sum_z = 0.f;
-    for (int u = 0; u < src_x->width; ++u)
+    for (uint32_t u = 0; u < src_x->width; ++u)
     {
       sum_x += src_x_ptr->intensity;
       dst_x_ptr->intensity = sum_x;
@@ -1068,8 +1068,8 @@ template <typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapHorizontal (const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
                                                                                           std::vector<std::pair<int, int> >& distance_map)
 {
-  const int height = edge->height;
-  const int width = edge->width;
+  const int height = (int)edge->height;
+  const int width = (int)edge->width;
   distance_map.resize (height * width);
   for (int v = 0; v < height; ++v)
   {
@@ -1109,8 +1109,8 @@ template <typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::computeEdgeDistanceMapVertical (const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
                                                                                         std::vector<std::pair<int, int> >& distance_map)
 {
-  const int height = edge->height;
-  const int width = edge->width;
+  const int height = (int)edge->height;
+  const int width = (int)edge->width;
   distance_map.resize (height * width);
 
   // distance to next edge above query pixel
@@ -1222,17 +1222,17 @@ template <typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::transposeImage (const pcl::PointCloud<pcl::Intensity>::Ptr& src,
                                                                         pcl::PointCloud<pcl::Intensity>::Ptr& dst)
 {
-  const int height = src->height;
-  const int width = src->width;
+  const uint32_t height = src->height;
+  const uint32_t width = src->width;
   dst->resize (height * width);
   dst->height = width;
   dst->width = height;
 
-  int dst_index = 0;
-  for (unsigned int v = 0; v < width; ++v)
+  uint32_t dst_index = 0;
+  for (uint32_t v = 0; v < width; ++v)
   {
-    int src_index = v;
-    for (unsigned int u = 0; u < height; ++u, ++dst_index, src_index += width)
+    uint32_t src_index = v;
+    for (uint32_t u = 0; u < height; ++u, ++dst_index, src_index += width)
       dst->points[dst_index] = src->points[src_index];
   }
 //  for (unsigned int v = 0; v < width; ++v)  // no measurable speedup with this version
@@ -1287,8 +1287,8 @@ template <typename PointT, typename PointNT, typename PointLT> void
 pcl::OrganizedEdgeFromPoints<PointT, PointNT, PointLT>::setLabels (const pcl::PointCloud<pcl::Intensity8u>::Ptr& edge,
                                                                    pcl::PointCloud<PointLT>& labels)
 {
-  const int width = edge->width;
-  const int height = edge->height;
+  const uint32_t width = edge->width;
+  const uint32_t height = edge->height;
   if (use_fast_depth_discontinuity_mode_ == true)
   {
     pcl::Intensity8u* e_ptr = & (edge->points[0]);

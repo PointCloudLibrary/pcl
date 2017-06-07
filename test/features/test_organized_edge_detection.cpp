@@ -197,13 +197,13 @@ class Evaluation
       gt_labels->height = gt_point_cloud->height;
 
       // label surface and depth edges
-      for (int v = 0; v < gt_labels->height; ++v)
-        for (int u = 0; u < gt_labels->width; ++u)
+      for (uint32_t v = 0; v < gt_labels->height; ++v)
+        for (uint32_t u = 0; u < gt_labels->width; ++u)
           gt_labels->at (u, v).label = checkGroundTruthEdge (gt_point_cloud, u, v);
 
       // remove surface edges which are labeled directly next to a depth edge
-      for (int v = 1; v < gt_labels->height; ++v)
-        for (int u = 1; u < gt_labels->width; ++u)
+      for (uint32_t v = 1; v < gt_labels->height; ++v)
+        for (uint32_t u = 1; u < gt_labels->width; ++u)
           if ( (gt_labels->at (u, v).label & pcl::OrganizedEdgeBase<pcl::PointXYZRGB, pcl::Label>::EDGELABEL_HIGH_CURVATURE)
               && ( (gt_labels->at (u - 1, v).label & pcl::OrganizedEdgeBase<pcl::PointXYZRGB, pcl::Label>::EDGELABEL_OCCLUDING)
                   || ( (gt_labels->at (u, v - 1).label & pcl::OrganizedEdgeBase<pcl::PointXYZRGB, pcl::Label>::EDGELABEL_OCCLUDING))))
@@ -212,8 +212,8 @@ class Evaluation
 
     int
     checkGroundTruthEdge (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& gt_point_cloud,
-                          const int u,
-                          const int v)
+                          const uint32_t u,
+                          const uint32_t v)
     {
       const double pi = 3.14159265359;
       if (u != 0 && v != 0 && u != gt_point_cloud->width - 1 && v != gt_point_cloud->height - 1)
@@ -258,9 +258,9 @@ class Evaluation
       recall.clear ();
       recall.resize (number_of_edgetypes_ + 1, 0.);
       std::vector<int> surface_type_counter (number_of_edgetypes_ + 1, 0);
-      for (int v = max_scan_line_width_; v < gt_labels.height - max_scan_line_width_; ++v)
+      for (uint32_t v = max_scan_line_width_; v < gt_labels.height - (uint32_t)max_scan_line_width_; ++v)
       {
-        for (int u = max_scan_line_width_; u < gt_labels.width - max_scan_line_width_; ++u)
+        for (uint32_t u = max_scan_line_width_; u < gt_labels.width - (uint32_t)max_scan_line_width_; ++u)
         {
           for (int label_index = 0; label_index <= number_of_edgetypes_; ++label_index)
           {
@@ -273,9 +273,9 @@ class Evaluation
             {
               for (int du = -search_radius; du <= search_radius && correct == false; ++du)
               {
-                const int x = u + du;
-                const int y = v + dv;
-                if (x < 0 || x >= gt_labels.width || y < 0 || y >= gt_labels.height)
+                const int x = (int)(u + du);
+                const int y = (int)(v + dv);
+                if (x < 0 || x >= (int)gt_labels.width || y < 0 || y >= (int)gt_labels.height)
                   continue;
                 if ((int) estimated_labels.at (x, y).label == gt_label || ( ((int) estimated_labels.at (x, y).label & gt_label) == true))
                 {
@@ -305,9 +305,9 @@ class Evaluation
       precision.resize (number_of_edgetypes_ + 1, 0.);
       surface_type_counter.clear ();
       surface_type_counter.resize (number_of_edgetypes_ + 1, 0);
-      for (int v = max_scan_line_width_; v < estimated_labels.height - max_scan_line_width_; ++v)
+      for (uint32_t v = max_scan_line_width_; v < estimated_labels.height - (uint32_t)max_scan_line_width_; ++v)
       {
-        for (int u = max_scan_line_width_; u < estimated_labels.width - max_scan_line_width_; ++u)
+        for (uint32_t u = max_scan_line_width_; u < estimated_labels.width - (uint32_t)max_scan_line_width_; ++u)
         {
           for (int label_index = 0; label_index <= number_of_edgetypes_; ++label_index)
           {
@@ -320,9 +320,9 @@ class Evaluation
             {
               for (int du = -search_radius; du <= search_radius && correct == false; ++du)
               {
-                const int x = u + du;
-                const int y = v + dv;
-                if (x < 0 || x >= estimated_labels.width || y < 0 || y >= estimated_labels.height)
+                const int x = (int)(u + du);
+                const int y = (int)(v + dv);
+                if (x < 0 || x >= (int)estimated_labels.width || y < 0 || y >= (int)estimated_labels.height)
                   continue;
                 if ((int) gt_labels.at (x, y).label == estimated_label || ( ((int) gt_labels.at (x, y).label & estimated_label) == true))
                 {
@@ -373,9 +373,9 @@ class Evaluation
       gt_normals->height = gt_point_cloud->height;
       gt_normals->width = gt_point_cloud->width;
       //gt_normals->is_dense = true;
-      for (int v = 1; v < gt_point_cloud->height - 1; ++v)
+      for (uint32_t v = 1; v < gt_point_cloud->height - 1; ++v)
       {
-        for (int u = 1; u < gt_point_cloud->width - 1; ++u)
+        for (uint32_t u = 1; u < gt_point_cloud->width - 1; ++u)
         {
           if (checkGroundTruthEdge (gt_point_cloud, u, v) == 0)
           {
@@ -436,9 +436,9 @@ class Evaluation
       normal_error = 0.;
       normal_error_deg = 0.;
       //normals->is_dense = true;
-      for (int v = padding; v < gt_point_cloud->height - padding; ++v)
+      for (uint32_t v = padding; v < gt_point_cloud->height - padding; ++v)
       {
-        for (int u = padding; u < gt_point_cloud->width - padding; ++u)
+        for (uint32_t u = padding; u < gt_point_cloud->width - padding; ++u)
         {
           if (pcl_isnan(gt_normals->at(u,v).normal_z)==false)
           {

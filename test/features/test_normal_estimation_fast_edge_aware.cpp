@@ -142,9 +142,9 @@ class Evaluation
       gt_normals->header = gt_point_cloud->header;
       gt_normals->height = gt_point_cloud->height;
       gt_normals->width = gt_point_cloud->width;
-      for (int v = 1; v < gt_point_cloud->height - 1; ++v)
+      for (uint32_t v = 1; v < gt_point_cloud->height - 1; ++v)
       {
-        for (int u = 1; u < gt_point_cloud->width - 1; ++u)
+        for (uint32_t u = 1; u < gt_point_cloud->width - 1; ++u)
         {
           if (checkGroundTruthEdge (gt_point_cloud, u, v) == 0)
           {
@@ -189,8 +189,8 @@ class Evaluation
 
     int
     checkGroundTruthEdge (const pcl::PointCloud<pcl::PointXYZRGB>::ConstPtr& gt_point_cloud,
-                          const int u,
-                          const int v)
+                          const uint32_t u,
+                          const uint32_t v)
     {
       const double pi = 3.14159265359;
       if (u != 0 && v != 0 && u != gt_point_cloud->width - 1 && v != gt_point_cloud->height - 1)
@@ -239,9 +239,9 @@ class Evaluation
       number_good_normals = 0;
       normal_error = 0.;
       normal_error_deg = 0.;
-      for (int v = padding; v < gt_point_cloud->height - padding; ++v)
+      for (int v = padding; v < (int)gt_point_cloud->height - padding; ++v)
       {
-        for (int u = padding; u < gt_point_cloud->width - padding; ++u)
+        for (int u = padding; u < (int)gt_point_cloud->width - padding; ++u)
         {
           if (pcl_isnan(gt_normals->at(u,v).normal_z)==false)
           {
