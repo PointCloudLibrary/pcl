@@ -1,0 +1,28 @@
+The grabber is still in an early stage.
+You need libfreenect2 in order to use the grabber. Test the protonect example provided by libfreenect2 in order
+to be sure that your system is compatible with the kinect v2.
+
+To build the grabber test you need to specify some cmake variables in order to find the correct libfreenect2 includes, libraries and dependencies.
+Here is an example of cmake invocation:
+
+cmake .. 
+-DGLEW_LIB=/home/gf/Libraries/libfreenect2/depends/glew/lib64/libGLEW.so 
+-DGLFW_LIB=/home/gf/Libraries/libfreenect2/examples/protonect/lib/libglfw.so.3.0 
+-DGLEW_INCLUDE_DIRS=/home/gf/Libraries/libfreenect2/depends/glew/include 
+-DGLEWF_INCLUDE_DIRS=/home/gf/Libraries/libfreenect2/depends/glfw/include 
+-DLIBFREENECT2_LIB=/home/gf/Libraries/libfreenect2/examples/protonect/lib/libfreenect2.so
+
+As soon as libfreenect2 will be finished I will create a stand alone cmake file. If you want to use the grabber just include the .hpp file and use the grabber as shown in the test file. (test.cpp).
+It is possible to specify the cloud dimension that you want, but for now this feature is not working correctly so avoid it.
+
+I have added my own claibration files n order to show you the format in which they should be. If needed I can add the code to acquire N images to calibrate the camera.
+
+For any questions or doubts don't hesitate to contact me. 
+
+G. Dabisias, PhD Student
+PERCRO, (Laboratory of Perceptual Robotics)
+Scuola Superiore Sant'Anna
+via Luigi Alamanni 13D, San Giuliano Terme 56010 (PI), Italy
+mob.: +39 3480839095
+mail: giacomo.dabisias@gmail.com
+mail: g.dabisias@sssup.it
