@@ -16,13 +16,13 @@ the :ref:`normal_estimation_fast_edge_aware` tutorial for fast edge aware normal
     In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
 
 .. image:: images/organized_edge_detection/organized_edge_detection_1.jpg
-  :height: 480
+  :height: 360
 
 .. image:: images/organized_edge_detection/organized_edge_detection_2.png
-  :height: 480
+  :height: 360
 
 .. image:: images/organized_edge_detection/organized_edge_detection_3.png
-  :height: 480
+  :height: 360
 
 
 Theoretical primer

@@ -169,8 +169,9 @@ Then we compute the normals using the **pcl::FastEdgeAwareNormalEstimation** met
       fast_edge_aware_normal_estimation.compute (*normals_edge_aware);
       std::cout << "Edge detection and normal estimation completed after " << timer.getTime () << "ms." << std::endl;
 
-Alternatively, the normals may also be computed alongside with the 3d surface and depth edges using the **pcl::OrganizedEdgeFromPoints** method. 
+Alternatively, the normals may also be computed alongside with the 3d surface and depth edges using the **pcl::OrganizedEdgeFromPoints** method 
 (see also :ref:`organized_edge_detection`).
+
 .. code-block:: cpp
 
       // 3b. ALTERNATIVELY, you may compute 3d surface and depth edges and estimate normals at the same time with these commands (see also example_organized_edge_detection.cpp)

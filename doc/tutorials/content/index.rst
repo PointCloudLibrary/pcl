@@ -305,10 +305,43 @@ Features
      .. |fe_3| image:: images/normal_estimation_ii.png
                :height: 100px
 
+
+  * :ref:`normal_estimation_fast_edge_aware`
+    
+     ======  ======
+     |fe_4|  Title: **Fast Edge-Aware Normal Estimation**
+
+             Author: *Richard Bormann*
+
+             Compatibility: > PCL 1.9
+
+             This tutorial explains how to use a fast and edge sensitive normal estimation algorithm that adapts the support region according to 3d depth and surface edges on organized point clouds.
+     ======  ======
+     
+     .. |fe_4| image:: images/normal_estimation_fast_edge_aware.jpg
+               :height: 100px
+
+
+  * :ref:`organized_edge_detection`
+    
+     ======  ======
+     |fe_5|  Title: **Organized 3d Edge Detection**
+
+             Author: *Richard Bormann*
+
+             Compatibility: > PCL 1.9
+
+             This tutorial explains how to use a fast 3d edge detection algorithm for depth discontinuities and surface kinks on organized point clouds.
+     ======  ======
+     
+     .. |fe_5| image:: images/organized_edge_detection.jpg
+               :height: 100px
+
+
   * :ref:`pfh_estimation`
     
      ======  ======
-     |fe_4|  Title: **Point Feature Histograms (PFH) descriptors**
+     |fe_6|  Title: **Point Feature Histograms (PFH) descriptors**
 
              Author: *Radu B. Rusu*
 
@@ -317,13 +350,13 @@ Features
              This tutorial introduces a family of 3D feature descriptors called PFH (Point Feature Histograms) and discusses their implementation details from PCL's perspective.
      ======  ======
      
-     .. |fe_4| image:: images/pfh_estimation.png
+     .. |fe_6| image:: images/pfh_estimation.png
                :height: 100px
 
   * :ref:`fpfh_estimation`
     
      ======  ======
-     |fe_5|  Title: **Fast Point Feature Histograms (FPFH) descriptors**
+     |fe_7|  Title: **Fast Point Feature Histograms (FPFH) descriptors**
 
              Author: *Radu B. Rusu*
 
@@ -332,13 +365,13 @@ Features
              This tutorial introduces the FPFH (Fast Point Feature Histograms) 3D descriptor and discusses their implementation details from PCL's perspective.
      ======  ======
      
-     .. |fe_5| image:: images/fpfh_estimation.jpg
+     .. |fe_7| image:: images/fpfh_estimation.jpg
                :height: 100px
 
   * :ref:`vfh_estimation`
     
      ======  ======
-     |fe_6|  Title: **Estimating VFH signatures for a set of points**
+     |fe_8|  Title: **Estimating VFH signatures for a set of points**
 
              Author: *Radu B. Rusu*
 
@@ -347,13 +380,13 @@ Features
              This document describes the Viewpoint Feature Histogram (VFH) descriptor, a novel representation for point clusters for the problem of Cluster (e.g., Object) Recognition and 6DOF Pose Estimation.
      ======  ======
      
-     .. |fe_6| image:: images/vfh_estimation.png
+     .. |fe_8| image:: images/vfh_estimation.png
                :height: 100px
   
   * :ref:`narf_feature_extraction`
     
      ======  ======
-     |fe_7|  Title: **How to extract NARF features from a range image**
+     |fe_9|  Title: **How to extract NARF features from a range image**
 
              Author: *Bastian Steder*
 
@@ -362,13 +395,13 @@ Features
              In this tutorial, we will learn how to extract NARF features from a range image.
      ======  ======
      
-     .. |fe_7| image:: images/narf_keypoint_extraction.png
+     .. |fe_9| image:: images/narf_keypoint_extraction.png
                :height: 100px
 
   * :ref:`moment_of_inertia`
 
      ======  ======
-     |fe_8|  Title: **Moment of inertia and eccentricity based descriptors**
+     |fe_10|  Title: **Moment of inertia and eccentricity based descriptors**
 
              Author: *Sergey Ushakov*
 
@@ -377,13 +410,13 @@ Features
              In this tutorial we will learn how to compute moment of inertia and eccentricity of the cloud. In addition to this we will learn how to extract AABB and OBB.
      ======  ======
 
-     .. |fe_8| image:: images/moment_of_inertia.png
+     .. |fe_10| image:: images/moment_of_inertia.png
                :height: 100px
 
   * :ref:`rops_feature`
 
      ======  ======
-     |fe_9|  Title: **RoPs (Rotational Projection Statistics) feature**
+     |fe_11|  Title: **RoPs (Rotational Projection Statistics) feature**
 
              Author: *Sergey Ushakov*
 
@@ -392,7 +425,7 @@ Features
              In this tutorial we will learn how to compute RoPS feature.
      ======  ======
 
-     .. |fe_9| image:: images/rops_feature.png
+     .. |fe_11| image:: images/rops_feature.png
                :height: 100px
 
 .. _filtering_tutorial:
