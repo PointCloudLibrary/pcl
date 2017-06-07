@@ -53,11 +53,12 @@ namespace pcl
    * slope vectors yields the surface normal. Due to the use and re-use of efficient data structures and algorithms this normal computation method is very fast
    * and accurate while computing correct normal directions close to non-differentiable surface edges (i.e. no "round-edge" effect at surface borders). For example,
    * using this algorithm normals of two touching surfaces of a cube will receive correct perpendicular surface normals even close to the edge while other normal
-   * estimation methods rather tend to amalgamate different normal direction of the two surfaces into one average direction.
+   * estimation methods rather tend to amalgamate the different normal directions of the two surfaces into one average direction.
    *
-   * If your are using this method for normal computation, please cite:
-   * Richard Bormann, Joshua Hampp, Martin Haegele, Markus Vincze. Fast and Accurate Normal Estimation by Efficient 3d Edge Detection.
-   * In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
+   * \note If you use this code in any academic work, please cite:
+   *   - Richard Bormann, Joshua Hampp, Martin Haegele, Markus Vincze.
+   *     Fast and Accurate Normal Estimation by Efficient 3d Edge Detection.
+   *     In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
    *
    * \author Richard Bormann
    * \ingroup features

@@ -38,8 +38,8 @@
  */
 
 #include <iostream>
-
 #include <pcl/common/time.h>
+#include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/png_io.h>
 #include <pcl/point_cloud.h>
@@ -74,16 +74,16 @@ main (int argc,
 
   // 2. set up parameters for 3d edge detection
   pcl::EdgeDetectionConfig cfg (pcl::EdgeDetectionConfig::GAUSSIAN, 3, 0.01f, 40., true, 5, 30, 15);
-  // alternatively, all these properties can be set individually as follows
-//  cfg.noise_reduction_mode_ = pcl::EdgeDetectionConfig::GAUSSIAN;
-//  cfg.noise_reduction_kernel_size_ = 3;
-//  cfg.depth_step_factor_ = 0.01f;
-//  cfg.min_detectable_edge_angle_ = 40.;
-//  cfg.use_adaptive_scan_line_ = true;
-//  cfg.min_scan_line_width_ = 5;
-//  cfg.max_scan_line_width_ = 30;
-//  cfg.scan_line_width_at_2m_ = 15;
-//  cfg.updateScanLineModel();  // do not forget to run this command after updating the scan line model parameters
+  // ALTERNATIVELY, all these properties can be set individually as follows
+  cfg.noise_reduction_mode_ = pcl::EdgeDetectionConfig::GAUSSIAN;
+  cfg.noise_reduction_kernel_size_ = 3;
+  cfg.depth_step_factor_ = 0.01f;
+  cfg.min_detectable_edge_angle_ = 40.;
+  cfg.use_adaptive_scan_line_ = true;
+  cfg.min_scan_line_width_ = 5;
+  cfg.max_scan_line_width_ = 30;
+  cfg.scan_line_width_at_2m_ = 15;
+  cfg.updateScanLineModel();  // do not forget to run this command after updating the scan line model parameters
 
   // 3. compute 3d surface and depth edges
   pcl::StopWatch timer;
@@ -137,6 +137,15 @@ main (int argc,
   std::string pcd_filename = filename + "_edges_normals.pcd";
   pcl::io::savePCDFileBinaryCompressed (pcd_filename, result);
   std::cout << "Saved pcd file with edges and normals to: " << pcd_filename << std::endl;
+
+  // 6. visualize normals
+  pcl::visualization::PCLVisualizer viewer("PCL Viewer");
+  viewer.setBackgroundColor (0.0, 0.0, 0.5);
+  viewer.addPointCloudNormals<pcl::PointXYZRGB,pcl::Normal>(cloud, normals_edge_aware);
+  while (!viewer.wasStopped ())
+  {
+    viewer.spinOnce ();
+  }
 
   return 0;
 }

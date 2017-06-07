@@ -531,9 +531,10 @@ namespace pcl
    * OrganizedEdgeFromPoints accepts PCL_XYZ_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, and EDGELABEL_HIGH_CURVATURE.
    * OrganizedEdgeFromRGBPoints accepts PCL_RGB_POINT_TYPES and returns EDGELABEL_NAN_BOUNDARY, EDGELABEL_OCCLUDING, EDGELABEL_OCCLUDED, EDGELABEL_HIGH_CURVATURE, and EDGELABEL_RGB_CANNY.
    *
-   * If your are using this method for surface edge computation, please cite:
-   * Richard Bormann, Joshua Hampp, Martin Haegele, Markus Vincze. Fast and Accurate Normal Estimation by Efficient 3d Edge Detection.
-   * In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
+   * \note If you use this code in any academic work, please cite:
+   *   - Richard Bormann, Joshua Hampp, Martin Haegele, Markus Vincze.
+   *     Fast and Accurate Normal Estimation by Efficient 3d Edge Detection.
+   *     In Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems, Sept 28 - Oct 03, 2015, Congress Center Hamburg, Hamburg, Germany.
    *
    * \author Richard Bormann
    * \ingroup features
