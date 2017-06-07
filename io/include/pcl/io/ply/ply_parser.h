@@ -392,8 +392,6 @@ namespace pcl
             std::vector<boost::shared_ptr<property> > properties;
           };
 
-          flags_type flags_;
-          
           info_callback_type info_callback_;
           warning_callback_type warning_callback_;
           error_callback_type error_callback_;
