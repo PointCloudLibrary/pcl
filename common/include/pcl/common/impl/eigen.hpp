@@ -738,6 +738,9 @@ template <typename Derived, typename OtherDerived>
 typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
 pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling)
 {
+#if EIGEN_VERSION_AT_LEAST (3, 3, 0)
+  return Eigen::umeyama (src, dst, with_scaling);
+#else
   typedef typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type TransformationMatrixType;
   typedef typename Eigen::internal::traits<TransformationMatrixType>::Scalar Scalar;
   typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
@@ -804,6 +807,7 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   }
 
   return (Rt);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
