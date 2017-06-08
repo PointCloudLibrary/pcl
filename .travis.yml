@@ -46,6 +46,8 @@ matrix:
       env: TASK="test-ext-2"
     - compiler: gcc
       env: TASK="doc"
+cache:
+  apt: true
 addons:
   apt:
     sources:

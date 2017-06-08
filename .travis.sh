@@ -224,7 +224,7 @@ function test_ext_1 ()
         -DBUILD_keypoints=OFF \
         -DBUILD_ml=OFF \
         -DBUILD_octree=ON \
-        -DBUILD_outofcore=ON \
+        -DBUILD_outofcore=OFF \
         -DBUILD_people=OFF \
         -DBUILD_recognition=OFF \
         -DBUILD_registration=ON \
@@ -233,9 +233,9 @@ function test_ext_1 ()
         -DBUILD_segmentation=OFF \
         -DBUILD_simulation=OFF \
         -DBUILD_stereo=OFF \
-        -DBUILD_surface=ON \
+        -DBUILD_surface=OFF \
         -DBUILD_tracking=OFF \
-        -DBUILD_visualization=ON \
+        -DBUILD_visualization=OFF \
         -DBUILD_global_tests=ON \
         -DBUILD_tests_2d=OFF \
         -DBUILD_tests_common=OFF \
@@ -246,15 +246,15 @@ function test_ext_1 ()
         -DBUILD_tests_kdtree=OFF \
         -DBUILD_tests_keypoints=OFF \
         -DBUILD_tests_octree=OFF \
-        -DBUILD_tests_outofcore=ON \
+        -DBUILD_tests_outofcore=OFF \
         -DBUILD_tests_people=OFF \
         -DBUILD_tests_recognition=OFF \
         -DBUILD_tests_registration=ON \
         -DBUILD_tests_sample_consensus=OFF \
         -DBUILD_tests_search=OFF \
         -DBUILD_tests_segmentation=OFF \
-        -DBUILD_tests_surface=ON \
-        -DBUILD_tests_visualization=ON \
+        -DBUILD_tests_surface=OFF \
+        -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
   make tests
@@ -280,7 +280,7 @@ function test_ext_2 ()
         -DBUILD_keypoints=OFF \
         -DBUILD_ml=ON \
         -DBUILD_octree=ON \
-        -DBUILD_outofcore=OFF \
+        -DBUILD_outofcore=ON \
         -DBUILD_people=ON \
         -DBUILD_recognition=ON \
         -DBUILD_registration=ON \
@@ -289,7 +289,7 @@ function test_ext_2 ()
         -DBUILD_segmentation=ON \
         -DBUILD_simulation=OFF \
         -DBUILD_stereo=OFF \
-        -DBUILD_surface=OFF \
+        -DBUILD_surface=ON \
         -DBUILD_tracking=OFF \
         -DBUILD_visualization=ON \
         -DBUILD_global_tests=ON \
@@ -302,15 +302,15 @@ function test_ext_2 ()
         -DBUILD_tests_kdtree=OFF \
         -DBUILD_tests_keypoints=OFF \
         -DBUILD_tests_octree=OFF \
-        -DBUILD_tests_outofcore=OFF \
+        -DBUILD_tests_outofcore=ON \
         -DBUILD_tests_people=ON \
         -DBUILD_tests_recognition=ON \
         -DBUILD_tests_registration=OFF \
         -DBUILD_tests_sample_consensus=OFF \
         -DBUILD_tests_search=OFF \
         -DBUILD_tests_segmentation=ON \
-        -DBUILD_tests_surface=OFF \
-        -DBUILD_tests_visualization=OFF \
+        -DBUILD_tests_surface=ON \
+        -DBUILD_tests_visualization=ON \
         $PCL_DIR
   # Build and run tests
   make tests
