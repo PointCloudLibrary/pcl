@@ -144,7 +144,7 @@ pcl::registration::TransformationEstimationSVD<PointSource, PointTarget, Scalar>
     }
     
     // Call Umeyama directly from Eigen (PCL patched version until Eigen is released)
-    transformation_matrix = Eigen::umeyama (cloud_src, cloud_tgt, false);
+    transformation_matrix = pcl::umeyama (cloud_src, cloud_tgt, false);
   }
   else
   {
