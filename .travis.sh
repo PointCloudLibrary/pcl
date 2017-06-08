@@ -313,7 +313,7 @@ function test_ext_2 ()
         -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make tests -j2
 }
 
 function doc ()
