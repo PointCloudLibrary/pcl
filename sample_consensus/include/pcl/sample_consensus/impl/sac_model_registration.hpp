@@ -289,7 +289,7 @@ pcl::SampleConsensusModelRegistration<PointT>::estimateRigidTransformationSVD (
   }
 
   // Call Umeyama directly from Eigen
-  Eigen::Matrix4d transformation_matrix = Eigen::umeyama (src, tgt, false);
+  Eigen::Matrix4d transformation_matrix = pcl::umeyama (src, tgt, false);
 
   // Return the correct transformation
   transform.segment<4> (0).matrix () = transformation_matrix.cast<float> ().row (0); 

@@ -378,6 +378,40 @@ namespace pcl
                            : (int (a) == Eigen::Dynamic || int (b) == Eigen::Dynamic) ? Eigen::Dynamic \
                            : (int (a) <= int (b)) ? int (a) : int (b))
 
+  /** \brief Returns the transformation between two point sets. 
+    * The algorithm is based on: 
+    * "Least-squares estimation of transformation parameters between two point patterns",
+    * Shinji Umeyama, PAMI 1991, DOI: 10.1109/34.88573
+    *
+    * It estimates parameters \f$ c, \mathbf{R}, \f$ and \f$ \mathbf{t} \f$ such that
+    * \f{align*}
+    *   \frac{1}{n} \sum_{i=1}^n \vert\vert y_i - (c\mathbf{R}x_i + \mathbf{t}) \vert\vert_2^2
+    * \f}
+    * is minimized.
+    *
+    * The algorithm is based on the analysis of the covariance matrix
+    * \f$ \Sigma_{\mathbf{x}\mathbf{y}} \in \mathbb{R}^{d \times d} \f$
+    * of the input point sets \f$ \mathbf{x} \f$ and \f$ \mathbf{y} \f$ where
+    * \f$d\f$ is corresponding to the dimension (which is typically small).
+    * The analysis is involving the SVD having a complexity of \f$O(d^3)\f$
+    * though the actual computational effort lies in the covariance
+    * matrix computation which has an asymptotic lower bound of \f$O(dm)\f$ when
+    * the input point sets have dimension \f$d \times m\f$.
+    *
+    * \param[in] src Source points \f$ \mathbf{x} = \left( x_1, \hdots, x_n \right) \f$
+    * \param[in] dst Destination points \f$ \mathbf{y} = \left( y_1, \hdots, y_n \right) \f$.
+    * \param[in] with_scaling Sets \f$ c=1 \f$ when <code>false</code> is passed. (default: false)
+    * \return The homogeneous transformation 
+    * \f{align*}
+    *   T = \begin{bmatrix} c\mathbf{R} & \mathbf{t} \\ \mathbf{0} & 1 \end{bmatrix}
+    * \f}
+    * minimizing the resudiual above. This transformation is always returned as an
+    * Eigen::Matrix.
+    */
+  template <typename Derived, typename OtherDerived> 
+  typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
+  umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling = false);
+
 /** \brief Transform a point using an affine matrix
   * \param[in] point_in the vector to be transformed
   * \param[out] point_out the transformed vector
