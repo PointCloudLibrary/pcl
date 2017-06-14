@@ -1,5 +1,8 @@
 sudo: false
 language: cpp
+os:
+  - linux
+  - osx
 compiler:
   - gcc
   - clang
@@ -32,20 +35,30 @@ env:
     - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
 matrix:
   include:
-    - compiler: clang
+    - os: linux
+      compiler: clang
       env: TASK="build-examples"
-    - compiler: clang
+    - os: linux
+      compiler: clang
       env: TASK="build-tools"
-    - compiler: clang
+    - os: linux
+      compiler: clang
       env: TASK="build-apps"
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
       env: TASK="test-core"
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
       env: TASK="test-ext-1"
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
       env: TASK="test-ext-2"
-    - compiler: gcc
+    - os: linux
+      compiler: gcc
       env: TASK="doc"
+cache:
+  directories:
+    - $HOME/Library/Caches/Homebrew
 addons:
   apt:
     sources:
@@ -68,5 +81,8 @@ addons:
       - libqt4-dev
       - libvtk5-qt4-dev
       - libglew-dev
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install "--only-dependencies" pcl ; fi
 script:
   - bash .travis.sh $TASK
