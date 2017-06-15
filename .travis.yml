@@ -10,6 +10,12 @@ env:
   matrix:
     - TASK="build"
     - TASK="build-examples"
+    - TASK="build-tools"
+    - TASK="build-apps"
+    - TASK="test-core"
+    - TASK="test-ext-1"
+    - TASK="test-ext-2"
+    - TASK="doc"
   global:
     - secure: XQw5SBf/7b1SHFR+kKklBWhWVgNvm4vIi+wwyajFSbDLOPpsAqtnDKeA2DV9ciaQJ3CVAvBoyxYgzAvpbsb5k95jadbvu9aSlo/AQnAbz+8DhkJL25DwJAn8G4s4zD1MFi7P4fxJHZsv/l9UcdW4BzjEhh0VidWCO4hP6I9BAQc=
     - secure: dRKTSeQI2Jad+/K9XCkNZxuu8exPi2wGzf6D0ogd1Nb2ZIUsOtnHSME4DO+xv7F5ZYrythHTrfezQl5hhcK+cr7A12okxlvmF/gVFuGCBPkUbyWPOrxx/Ic5pqdVnmrMFG1hFmr1KmOxCVx0F48JfGNd4ZgtUBAmnIomRp8sXRI=
@@ -40,26 +46,17 @@ matrix:
       compiler: gcc
     - os: linux
       compiler: gcc
-      env: TASK="build-examples"
-  include:
+      env:
+        - TASK="build-examples"
+        - TASK="build-tools"
+        - TASK="build-apps"
     - os: linux
       compiler: clang
-      env: TASK="build-tools"
-    - os: linux
-      compiler: clang
-      env: TASK="build-apps"
-    - os: linux
-      compiler: gcc
-      env: TASK="test-core"
-    - os: linux
-      compiler: gcc
-      env: TASK="test-ext-1"
-    - os: linux
-      compiler: gcc
-      env: TASK="test-ext-2"
-    - os: linux
-      compiler: gcc
-      env: TASK="doc"
+      env:
+        - TASK="test-core"
+        - TASK="test-ext-1"
+        - TASK="test-ext-2"
+        - TASK="doc"
 cache: ccache
 addons:
   apt:
