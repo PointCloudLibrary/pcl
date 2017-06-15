@@ -21,13 +21,10 @@ function before_install ()
     if [[ "$CC" == "clang" ]]; then
       sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
       sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+      export CFLAGS="$CFLAGS -Qunused-arguments"
+      export CXXFLAGS="$CXXFLAGS -Qunused-arguments"
     fi
   fi
-
-  echo "which gcc: $(which gcc)"
-  echo "which g++: $(which g++)"
-  echo "which clang: $(which clang)"
-  echo "which clang++: $(which clang++)"
 
     # Print some more system information after installing all build tools
   echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
