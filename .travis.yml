@@ -9,6 +9,7 @@ compiler:
 env:
   matrix:
     - TASK="build"
+    - TASK="build-examples"
   global:
     - secure: XQw5SBf/7b1SHFR+kKklBWhWVgNvm4vIi+wwyajFSbDLOPpsAqtnDKeA2DV9ciaQJ3CVAvBoyxYgzAvpbsb5k95jadbvu9aSlo/AQnAbz+8DhkJL25DwJAn8G4s4zD1MFi7P4fxJHZsv/l9UcdW4BzjEhh0VidWCO4hP6I9BAQc=
     - secure: dRKTSeQI2Jad+/K9XCkNZxuu8exPi2wGzf6D0ogd1Nb2ZIUsOtnHSME4DO+xv7F5ZYrythHTrfezQl5hhcK+cr7A12okxlvmF/gVFuGCBPkUbyWPOrxx/Ic5pqdVnmrMFG1hFmr1KmOxCVx0F48JfGNd4ZgtUBAmnIomRp8sXRI=
@@ -35,9 +36,6 @@ env:
     - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
 matrix:
   include:
-    - os: linux
-      compiler: clang
-      env: TASK="build-examples"
     - os: linux
       compiler: clang
       env: TASK="build-tools"

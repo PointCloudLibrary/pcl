@@ -50,17 +50,32 @@ function build_examples ()
   cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
-        -DBUILD_simulation=ON \
         -DBUILD_global_tests=OFF \
         -DBUILD_examples=ON \
         -DBUILD_tools=OFF \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=ON \
+        -DBUILD_ml=ON \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=ON \
+        -DBUILD_people=OFF \
+        -DBUILD_recognition=OFF \
+        -DBUILD_registration=OFF \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=ON \
+        -DBUILD_simulation=OFF \
+        -DBUILD_stereo=ON \
+        -DBUILD_surface=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_tracking=OFF \
+        -DBUILD_visualization=ON \
         $PCL_DIR
   # Build
   make -j2
