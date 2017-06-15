@@ -21,8 +21,6 @@ function before_install ()
     if [[ "$CC" == "clang" ]]; then
       sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
       sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
-      export CC="$CC -Qunused-arguments"
-      export CXX="$CXX -Qunused-arguments"
     fi
   fi
 

@@ -46,17 +46,25 @@ matrix:
       compiler: gcc
     - os: linux
       compiler: gcc
-      env:
-        - TASK="build-examples"
-        - TASK="build-tools"
-        - TASK="build-apps"
+      env: TASK="build-examples"
+    - os: linux
+      compiler: gcc
+      env: TASK="build-tools"
+    - os: linux
+      compiler: gcc
+      env: - TASK="build-apps"
     - os: linux
       compiler: clang
-      env:
-        - TASK="test-core"
-        - TASK="test-ext-1"
-        - TASK="test-ext-2"
-        - TASK="doc"
+      env: TASK="test-core"
+    - os: linux
+      compiler: clang
+      env: TASK="test-ext-1"
+    - os: linux
+      compiler: clang
+      env: TASK="test-ext-2"
+    - os: linux
+      compiler: clang
+      env: TASK="doc"
 cache: ccache
 addons:
   apt:

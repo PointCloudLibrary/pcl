@@ -190,6 +190,9 @@ if(CMAKE_COMPILER_IS_CLANG)
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
+message(STATUS "CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
+message(STATUS "CMAKE_C_FLAGS:" ${CMAKE_C_FLAGS})
+
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
 set(PCL_VERSION 1.8.0 CACHE STRING "PCL version")
 DISSECT_VERSION()
