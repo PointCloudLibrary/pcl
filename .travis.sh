@@ -17,12 +17,12 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
-  # elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-  #   export CCACHE_CPP2
+  elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    if [[ "$CC" == "clang" ]]; then
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+    fi
   fi
-
-  export CC="ccache $CC"
-  export CXX="ccache $CXX"
 
   echo "which gcc: $(which gcc)"
   echo "which g++: $(which g++)"
@@ -50,8 +50,8 @@ function before_install ()
 function build ()
 {
   case $CC in
-    "ccache clang" ) build_lib;;
-    "ccache gcc" ) build_lib_core;;
+    clang ) build_lib;;
+    gcc ) build_lib_core;;
   esac
 }
 
@@ -169,6 +169,7 @@ function build_apps ()
 function build_lib_core ()
 {
   # A reduced build, only pcl_common
+  echo "Building only pcl common"
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
