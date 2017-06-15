@@ -17,11 +17,11 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
-  elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-    if [[ "$CC" == "clang" ]]; then
-      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
-      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
-    fi
+  # elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  #   if [[ "$CC" == "clang" ]]; then
+  #     sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
+  #     sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+  #   fi
   fi
 
     # Print some more system information after installing all build tools
