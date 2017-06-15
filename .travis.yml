@@ -54,9 +54,7 @@ matrix:
     - os: linux
       compiler: gcc
       env: TASK="doc"
-cache:
-  directories:
-    - $HOME/Library/Caches/Homebrew
+cache: ccache
 addons:
   apt:
     sources:
@@ -80,7 +78,6 @@ addons:
       - libvtk5-qt4-dev
       - libglew-dev
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew tap homebrew/science ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install "--only-dependencies" pcl ; fi
+  - bash .travis.sh before_install
 script:
   - bash .travis.sh $TASK

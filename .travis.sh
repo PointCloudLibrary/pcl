@@ -10,6 +10,16 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
+function before_install ()
+{
+  if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    brew tap homebrew/science
+    brew install --only-dependencies pcl
+    brew install ccache
+    export PATH=/usr/local/opt/ccache/libexec:$PATH
+  fi
+}
+
 function build ()
 {
   case $CC in
