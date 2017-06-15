@@ -16,8 +16,31 @@ function before_install ()
     brew tap homebrew/science
     brew install --only-dependencies pcl
     brew install ccache
-    export PATH=/usr/local/opt/ccache/libexec:$PATH
+    export PATH="/usr/local/opt/ccache/libexec:$PATH"
+  # elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  #   export CCACHE_CPP2
   fi
+  echo "which gcc: $(which gcc)"
+  echo "which g++: $(which g++)"
+  echo "which clang: $(which clang)"
+  echo "which clang++: $(which clang++)"
+
+    # Print some more system information after installing all build tools
+  echo "-------------------- BEGIN SYSTEM INFORMATION --------------------"
+  uname -a
+  if [ "$TRAVIS_OS_NAME" == "linux" ]; then lsb_release -a; fi
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then system_profiler SPSoftwareDataType; fi
+  env
+  which cmake
+  cmake --version
+  which $CC
+  $CC --version
+  which $CXX
+  $CXX --version
+  which ccache
+  ccache --version
+  ccache -s
+  echo "--------------------  END SYSTEM INFORMATION  --------------------"
 }
 
 function build ()
