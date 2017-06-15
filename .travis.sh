@@ -390,6 +390,7 @@ function doc ()
 }
 
 case $1 in
+  before_install ) before_install;;
   build ) build;;
   build-examples ) build_examples;;
   build-tools ) build_tools;;
