@@ -52,7 +52,7 @@ matrix:
       env: TASK="build-tools"
     - os: linux
       compiler: gcc
-      env: - TASK="build-apps"
+      env: TASK="build-apps"
     - os: linux
       compiler: clang
       env: TASK="test-core"
