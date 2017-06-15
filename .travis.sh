@@ -20,6 +20,10 @@ function before_install ()
   # elif [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
   #   export CCACHE_CPP2
   fi
+
+  export CC="ccache $CC"
+  export CXX="ccache $CXX"
+
   echo "which gcc: $(which gcc)"
   echo "which g++: $(which g++)"
   echo "which clang: $(which clang)"
@@ -46,8 +50,8 @@ function before_install ()
 function build ()
 {
   case $CC in
-    clang ) build_lib;;
-    gcc ) build_lib_core;;
+    "ccache clang" ) build_lib;;
+    "ccache gcc" ) build_lib_core;;
   esac
 }
 
