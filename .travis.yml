@@ -38,6 +38,9 @@ matrix:
   exclude:
     - os: osx
       compiler: gcc
+    - os: linux
+      compiler: gcc
+      env: TASK="build-examples"
   include:
     - os: linux
       compiler: clang
