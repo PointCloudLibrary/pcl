@@ -15,11 +15,12 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
-    if [ "$TASK" == "test-core" ] || [ "$TASK" == "test-ext-1" ] || [ "$TASK" == "test-ext-1" ]; then
+    if [ "$TASK" == "test-core" ] || [ "$TASK" == "test-ext-1" ] || [ "$TASK" == "test-ext-2" ]; then
       mkdir -p $GTEST_DIR
       git clone https://github.com/google/googletest.git $GTEST_DIR
     elif [ "$TASK" == "doc" ]; then
       brew install doxygen
+      export PATH=$HOME/Library/Python/2.7/bin:$PATH
     fi
   fi
 
@@ -29,15 +30,26 @@ function before_install ()
   if [ "$TRAVIS_OS_NAME" == "linux" ]; then lsb_release -a; fi
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then system_profiler SPSoftwareDataType; fi
   env
+  echo
+  echo "CMake Info:"
   which cmake
   cmake --version
+  echo '$CC Info:'
   which $CC
   $CC --version
+  echo '$CXX Info:'
   which $CXX
   $CXX --version
+  echo "CCache Info:"
   which ccache
   ccache --version
   ccache -s
+  echo "Python Info:"
+  which python
+  python --version
+  echo "pip Info:"
+  which pip
+  pip --version
   echo "--------------------  END SYSTEM INFORMATION  --------------------"
 }
 
