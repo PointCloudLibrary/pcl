@@ -92,6 +92,11 @@ if($ENV{USE_CCACHE})
   endif(CCACHE_FOUND)
 endif($ENV{USE_CCACHE})
 
+message(STATUS "CMAKE_CXX_COMPILER_ID:" ${CMAKE_CXX_COMPILER_ID})
+message(STATUS "CMAKE_COMPILER_IS_CLANG:" ${CMAKE_COMPILER_IS_CLANG})
+message(STATUS "CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
+message(STATUS "CMAKE_C_FLAGS:" ${CMAKE_C_FLAGS})
+
 # Compiler identification
 # Define a variable CMAKE_COMPILER_IS_X where X is the compiler short name.
 # Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
@@ -203,6 +208,8 @@ if(CMAKE_COMPILER_IS_CLANG)
   SET(CLANG_LIBRARIES "stdc++")
 endif()
 
+message(STATUS "CMAKE_CXX_COMPILER_ID:" ${CMAKE_CXX_COMPILER_ID})
+message(STATUS "CMAKE_COMPILER_IS_CLANG:" ${CMAKE_COMPILER_IS_CLANG})
 message(STATUS "CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
 message(STATUS "CMAKE_C_FLAGS:" ${CMAKE_C_FLAGS})
 
