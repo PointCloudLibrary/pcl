@@ -15,9 +15,10 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
-    if [[ "$TASK" == "test-core" -o "$TASK" == "test-ext-1" -o "$TASK" == "test-ext-1"]]
-    mkdir -p $GTEST_DIR
-    git clone https://github.com/google/googletest.git $GTEST_DIR
+    if [ "$TASK" == "test-core" ] || [ "$TASK" == "test-ext-1" ] || [ "$TASK" == "test-ext-1" ]; then
+      mkdir -p $GTEST_DIR
+      git clone https://github.com/google/googletest.git $GTEST_DIR
+    fi
   fi
 
     # Print some more system information after installing all build tools
