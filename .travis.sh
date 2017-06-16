@@ -3,12 +3,10 @@
 PCL_DIR=`pwd`
 BUILD_DIR=$PCL_DIR/build
 DOC_DIR=$BUILD_DIR/doc/doxygen/html
+GTEST_DIR=$HOME/gtest
 
 TUTORIALS_DIR=$BUILD_DIR/doc/tutorials/html
 ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
-
-# CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
-# CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function before_install ()
 {
@@ -17,6 +15,9 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
+    if [[ "$TASK" == "test-core" -o "$TASK" == "test-ext-1" -o "$TASK" == "test-ext-1"]]
+    mkdir -p $GTEST_DIR
+    git clone https://github.com/google/googletest.git $GTEST_DIR
   fi
 
     # Print some more system information after installing all build tools
@@ -195,6 +196,8 @@ function test_core ()
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DCMAKE_BUILD_TYPE=Release \
+        -DGTEST_SRC_DIR=$GTEST_DIR/googletest \
+        -DGTEST_INCLUDE_DIR=$GTEST_DIR/googletest/include \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -250,6 +253,8 @@ function test_ext_1 ()
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DCMAKE_BUILD_TYPE=Release \
+        -DGTEST_SRC_DIR=$GTEST_DIR/googletest \
+        -DGTEST_INCLUDE_DIR=$GTEST_DIR/googletest/include \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -305,6 +310,8 @@ function test_ext_2 ()
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DCMAKE_BUILD_TYPE=Release \
+        -DGTEST_SRC_DIR=$GTEST_DIR/googletest \
+        -DGTEST_INCLUDE_DIR=$GTEST_DIR/googletest/include \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
