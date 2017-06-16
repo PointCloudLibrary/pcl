@@ -18,6 +18,8 @@ function before_install ()
     if [ "$TASK" == "test-core" ] || [ "$TASK" == "test-ext-1" ] || [ "$TASK" == "test-ext-1" ]; then
       mkdir -p $GTEST_DIR
       git clone https://github.com/google/googletest.git $GTEST_DIR
+    elif [ "$TASK" == "doc" ]; then
+      brew install doxygen
     fi
   fi
 

@@ -66,7 +66,9 @@ matrix:
     - os: linux
       compiler: clang
       env: TASK="doc"
-cache: ccache
+cache:
+  ccache: true
+  pip: true
 addons:
   apt:
     sources:
