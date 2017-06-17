@@ -68,7 +68,8 @@ matrix:
       env: TASK="doc"
 cache:
   ccache: true
-  pip: true
+  directories:
+    - $HOME/.cache/pip
 addons:
   apt:
     sources:

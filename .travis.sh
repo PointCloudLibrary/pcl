@@ -15,12 +15,12 @@ function before_install ()
     brew install --only-dependencies pcl
     brew install ccache
     export PATH="/usr/local/opt/ccache/libexec:$PATH"
-    if [ "$TASK" == "test-core" ] || [ "$TASK" == "test-ext-1" ] || [ "$TASK" == "test-ext-2" ]; then
+    if [[ "$TASK" == "test-core" || "$TASK" == "test-ext-1" || "$TASK" == "test-ext-2" ]] ; then
       mkdir -p $GTEST_DIR
       git clone https://github.com/google/googletest.git $GTEST_DIR
     elif [ "$TASK" == "doc" ]; then
       brew install doxygen
-      export PATH=$HOME/Library/Python/2.7/bin:$PATH
+      export PATH=$HOME/Library/Python/2.7/lib/python/site-packages:$HOME/Library/Python/2.7/bin:$PATH
     fi
   fi
 
@@ -383,6 +383,7 @@ function doc ()
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
   # Install sphinx
   pip install --user sphinx pyparsing==2.1.9 sphinxcontrib-doxylink
+
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
