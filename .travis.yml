@@ -1,4 +1,4 @@
-sudo: false
+sudo: required
 language: cpp
 compiler:
   - gcc
@@ -46,6 +46,8 @@ matrix:
       env: TASK="test-ext-2"
     - compiler: gcc
       env: TASK="doc"
+cache:
+  ccache: true
 addons:
   apt:
     sources:
@@ -66,7 +68,10 @@ addons:
       - libflann-dev
       - doxygen
       - libqt4-dev
+      - libqt4-opengl-dev
       - libvtk5-qt4-dev
       - libglew-dev
+before_install:
+  - bash .travis.sh before-install
 script:
   - bash .travis.sh $TASK

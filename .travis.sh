@@ -10,6 +10,23 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+  if [ "$CC" == "clang" ]; then
+    CMAKE_C_FLAGS="$CMAKE_C_FLAGS -Qunused-arguments"
+    CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS -Qunused-arguments"
+  fi
+fi
+
+function before_install ()
+{
+  if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    if [ "$CC" == "clang" ]; then
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+    fi
+  fi
+}
+
 function build ()
 {
   case $CC in
@@ -23,7 +40,7 @@ function build_lib ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -47,7 +64,7 @@ function build_examples ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -71,7 +88,7 @@ function build_tools ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -95,7 +112,7 @@ function build_apps ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -119,7 +136,7 @@ function build_lib_core ()
   # A reduced build, only pcl_common
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DBUILD_2d=OFF \
         -DBUILD_features=OFF \
@@ -152,8 +169,7 @@ function test_core ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -208,8 +224,7 @@ function test_ext_1 ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -257,15 +272,14 @@ function test_ext_1 ()
         -DBUILD_tests_visualization=ON \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make -j2 tests
 }
 
 function test_ext_2 ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -313,7 +327,7 @@ function test_ext_2 ()
         -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make -j2 tests
 }
 
 function doc ()
@@ -365,6 +379,7 @@ function doc ()
 }
 
 case $1 in
+  before-install ) before_install;;
   build ) build;;
   build-examples ) build_examples;;
   build-tools ) build_tools;;
