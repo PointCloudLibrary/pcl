@@ -72,12 +72,6 @@ function build_examples ()
         -DBUILD_examples=ON \
         -DBUILD_tools=OFF \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -96,12 +90,6 @@ function build_tools ()
         -DBUILD_examples=OFF \
         -DBUILD_tools=ON \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -115,7 +103,9 @@ function build_apps ()
   cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
-        -DBUILD_simulation=ON \
+        -DBUILD_simulation=OFF \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=OFF \
         -DBUILD_global_tests=OFF \
         -DBUILD_examples=OFF \
         -DBUILD_tools=OFF \
@@ -124,7 +114,7 @@ function build_apps ()
         -DBUILD_apps_cloud_composer=ON \
         -DBUILD_apps_in_hand_scanner=ON \
         -DBUILD_apps_modeler=ON \
-        -DBUILD_apps_optronic_viewer=ON \
+        -DBUILD_apps_optronic_viewer=OFF \
         -DBUILD_apps_point_cloud_editor=ON \
         $PCL_DIR
   # Build
