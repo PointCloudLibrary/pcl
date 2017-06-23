@@ -131,7 +131,9 @@ Add the following lines to your CMakeLists.txt file:
    :language: cmake
    :linenos:
 
-After you have made the executable, you can run it. Simply do::
+After you have made the executable, you can run it. Download the mesh here: <https://github.com/PointCloudLibrary/pcl/tree/master/test/cube.ply>`_
+
+Then run::
 
   $ ./matrix_transform cube.ply
 
