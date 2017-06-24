@@ -30,7 +30,7 @@ public:
   explicit PCLViewer (QWidget *parent = 0);
   ~PCLViewer ();
 
-public slots:
+public Q_SLOTS:
   void
   randomButtonPressed ();
 

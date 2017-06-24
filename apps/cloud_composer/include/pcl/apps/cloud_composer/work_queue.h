@@ -61,7 +61,7 @@ namespace pcl
       public:
         WorkQueue (QObject* parent = 0);  
         virtual ~WorkQueue();  
-      public slots:
+      public Q_SLOTS:
         void
         enqueueNewAction (AbstractTool* new_tool, ConstItemList input_data);
         
@@ -70,7 +70,7 @@ namespace pcl
         
         void 
         checkQueue ();
-      signals:
+      Q_SIGNALS:
         void 
         commandProgress (QString command_text, double progress);
 

@@ -74,11 +74,11 @@ namespace pcl
         void 
         copyProperties (const PropertiesModel* to_copy);
         
-      public slots:
+      public Q_SLOTS:
         void
         propertyChanged (QStandardItem* property_item);
       
-      signals:
+      Q_SIGNALS:
         void 
         propertyChanged (const QStandardItem* property_item, const CloudComposerItem* parent_item_);
         

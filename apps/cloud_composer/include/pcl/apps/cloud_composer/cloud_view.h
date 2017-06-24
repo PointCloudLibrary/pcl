@@ -78,7 +78,7 @@ namespace pcl
       
       void 
       setInteractorStyle (interactor_styles::INTERACTOR_STYLES style);
-    public slots:
+    public Q_SLOTS:
       void 
       refresh ();
       
@@ -90,7 +90,7 @@ namespace pcl
       void 
       dataChanged ( const QModelIndex & topLeft, const QModelIndex & bottomRight );
       
-    protected slots:
+    protected Q_SLOTS:
       /** \brief Slot called when an item in the model changes
        * \param topLeft 
        * \param bottomRight

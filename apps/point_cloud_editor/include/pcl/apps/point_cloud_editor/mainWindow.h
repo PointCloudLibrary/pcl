@@ -100,7 +100,7 @@ class MainWindow : public QMainWindow
     int
     getSelectedSpinBoxValue ();
 
-  private slots:
+  private Q_SLOTS:
     void
     about ();
 

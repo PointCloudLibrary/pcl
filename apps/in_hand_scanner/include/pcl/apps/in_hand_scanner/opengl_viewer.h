@@ -248,7 +248,7 @@ namespace pcl
         void
         setScalingFactor (const double scale);
 
-      public slots:
+      public Q_SLOTS:
 
         /** \brief Requests the scene to be re-drawn (called periodically from a timer). */
         void
