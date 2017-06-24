@@ -69,7 +69,7 @@ namespace pcl
         void
         addTopLevelItem(RenderWindowItem* render_window_item);
 
-      public slots:
+      public Q_SLOTS:
         // slots for file menu
         void 
         slotOpenPointCloud();
@@ -99,7 +99,7 @@ namespace pcl
         void
         slotCloseRenderWindow();
 
-      signals:
+      Q_SIGNALS:
         void
         fileOpened(const QString& filename);
 
@@ -113,7 +113,7 @@ namespace pcl
         virtual bool
         dropMimeData(QTreeWidgetItem * parent, int index, const QMimeData * data, Qt::DropAction action);
 
-      private slots:
+      private Q_SLOTS:
         void
         slotUpdateOnSelectionChange(const QItemSelection& selected, const QItemSelection& deselected);
 

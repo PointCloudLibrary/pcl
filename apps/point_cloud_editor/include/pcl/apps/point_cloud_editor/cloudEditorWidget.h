@@ -70,7 +70,7 @@ class CloudEditorWidget : public QGLWidget
     void
     loadFile(const std::string &filename);
 
-  public slots:
+  public Q_SLOTS:
     /// @brief Loads a new cloud.
     void
     load ();
@@ -186,8 +186,6 @@ class CloudEditorWidget : public QGLWidget
     /// @brief Turn on the dialog box showing the statistics of the cloud.
     void
     showStat ();
-
-  //signals:
 
   protected:  
     /// initializes GL

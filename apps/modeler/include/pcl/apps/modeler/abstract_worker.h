@@ -57,11 +57,11 @@ namespace pcl
         int
         exec();
 
-      public slots:
+      public Q_SLOTS:
         void
         process();
 
-      signals:
+      Q_SIGNALS:
         void
         dataUpdated(CloudMeshItem* cloud_mesh_item);
 

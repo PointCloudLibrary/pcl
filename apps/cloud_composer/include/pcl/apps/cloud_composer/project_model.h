@@ -112,7 +112,7 @@ namespace pcl
         /** \brief This is invoked to perform the manipulations specified on the model */
         void
         manipulateClouds (boost::shared_ptr<ManipulationEvent> manip_event);
-      public slots:
+      public Q_SLOTS:
         void 
         commandCompleted (CloudCommand* command);
         
@@ -157,7 +157,7 @@ namespace pcl
         /** \brief Selects all items in the model */
         void 
         selectAllItems (QStandardItem* item = 0 );
-      signals:  
+      Q_SIGNALS:
         void
         enqueueNewAction (AbstractTool* tool, ConstItemList data);
         

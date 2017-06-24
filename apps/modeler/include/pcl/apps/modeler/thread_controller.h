@@ -57,11 +57,11 @@ namespace pcl
         bool
         runWorker(AbstractWorker* worker);
 
-      signals:
+      Q_SIGNALS:
         void
         prepared();
 
-      private slots:
+      private Q_SLOTS:
         void
         slotOnCloudMeshItemUpdate(CloudMeshItem* cloud_mesh_item);
     };

@@ -138,13 +138,13 @@ namespace pcl
         inline Integration&
         getIntegration () {return (*integration_);}
 
-      signals:
+      Q_SIGNALS:
 
         /** \brief Emitted when the running mode changes. */
         void
         runningModeChanged (RunningMode new_running_mode) const;
 
-      public slots:
+      public Q_SLOTS:
 
         /** \brief Start the grabber (enables the scanning pipeline). */
         void

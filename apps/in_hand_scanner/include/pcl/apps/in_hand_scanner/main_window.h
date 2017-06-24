@@ -83,7 +83,7 @@ namespace pcl
         explicit MainWindow (QWidget* parent = 0);
         ~MainWindow ();
 
-      public slots:
+      public Q_SLOTS:
 
         void showHelp ();
         void saveAs ();

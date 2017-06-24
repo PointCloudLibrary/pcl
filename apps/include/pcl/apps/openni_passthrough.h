@@ -100,7 +100,7 @@ class OpenNIPassthrough : public QMainWindow
     Ui::MainWindow *ui_;
     QTimer *vis_timer_;
 
-  public slots:
+  public Q_SLOTS:
     void
     adjustPassThroughValues (int new_value)
     {
@@ -108,11 +108,11 @@ class OpenNIPassthrough : public QMainWindow
       PCL_INFO ("Changed passthrough maximum value to: %f\n", float (new_value) / 10.0f);
     }
     
-  private slots:
+  private Q_SLOTS:
     void
     timeoutSlot ();
     
-  signals:
+  Q_SIGNALS:
     void 
     valueChanged (int new_value);
 };
