@@ -79,6 +79,19 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Maintainer."
     FORCE)
 
+# Explicit request to use CCACHE
+if($ENV{USE_CCACHE})
+  message(STATUS "Checking for 'ccache':")
+  find_program(CCACHE_FOUND ccache)
+  if(CCACHE_FOUND)
+      message(STATUS "ccache found!")
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+  else($ENV{USE_CCACHE})
+      message(STATUS "ccache not found")
+  endif(CCACHE_FOUND)
+endif($ENV{USE_CCACHE})
+
 # Compiler identification
 # Define a variable CMAKE_COMPILER_IS_X where X is the compiler short name.
 # Note: CMake automatically defines one for GNUCXX, nothing to do in this case.
@@ -182,7 +195,7 @@ if(CMAKE_COMPILER_IS_CLANG)
     SET(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+    SET(CMAKE_CXX_FLAGS "-Wall -Wextra -ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
     endif()
