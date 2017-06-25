@@ -52,7 +52,7 @@ namespace pcl
         CloudMeshItemUpdater (CloudMeshItem* cloud_mesh_item);
         ~CloudMeshItemUpdater ();
 
-      public slots:
+      public Q_SLOTS:
         void
         updateCloudMeshItem();
 

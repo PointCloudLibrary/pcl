@@ -39,7 +39,7 @@ class PCLViewer : public QMainWindow
     /** @brief Destructor */
     ~PCLViewer ();
 
-  public slots:
+  public Q_SLOTS:
     /** @brief Triggered whenever the "Save file" button is clicked */
     void
     saveFileButtonPressed ();

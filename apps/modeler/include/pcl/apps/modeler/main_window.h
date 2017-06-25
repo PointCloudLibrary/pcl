@@ -66,7 +66,7 @@ namespace pcl
         RenderWindowItem*
         createRenderWindow();
 
-      public slots:
+      public Q_SLOTS:
         // slots for file menu
         void 
         slotOpenProject();
@@ -120,7 +120,7 @@ namespace pcl
         void 
         saveGlobalSettings();
 
-      private slots:
+      private Q_SLOTS:
         void 
         slotOpenRecentPointCloud();
         void 

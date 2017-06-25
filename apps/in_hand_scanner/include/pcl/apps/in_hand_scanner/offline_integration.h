@@ -92,13 +92,13 @@ namespace pcl
         /** \brief Destructor. */
         ~OfflineIntegration ();
 
-      public slots:
+      public Q_SLOTS:
 
         /** \brief Start the procedure from a path. */
         void
         start ();
 
-      private slots:
+      private Q_SLOTS:
 
         /** \brief Loads in new data. */
         void
