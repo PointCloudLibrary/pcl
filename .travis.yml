@@ -1,7 +1,11 @@
 sudo: required
 language: cpp
+
 cache:
   ccache: true
+  directories:
+    - $HOME/.ccache
+
 addons:
   apt:
     sources:
@@ -27,6 +31,7 @@ addons:
       - libvtk5-qt4-dev
       - libglew-dev
       - libopenni-dev
+
 before_install:
   - bash .travis.sh before-install
 
@@ -58,32 +63,60 @@ env:
 
 jobs:
   include:
-    - stage: Core Build
-      env: TASK="build"
+    # - stage: pcl_common build
+    #   os: linux
+    #   compiler: gcc
+    #   script: bash .travis.sh build-lib-core
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh build-lib-core
+    - stage: core build
+      os: linux
       compiler: gcc
-      script: bash .travis.sh $TASK
-    - env: TASK="build"
+      script: bash .travis.sh build-lib
+    - os: osx
       compiler: clang
-      script: bash .travis.sh $TASK
-    - stage: Extended Build and Tests
+      script: bash .travis.sh build-lib
+    - stage: extended build and tests
+      os: linux
+      compiler: gcc
+      script: bash .travis.sh build-examples
+    - os: linux
+      compiler: gcc
+      script: bash .travis.sh build-tools
+    # - os: linux
+    #   compiler: gcc
+    #   script: bash .travis.sh build-apps
+    - os: osx
       compiler: clang
-      env: TASK="build-examples"
-      script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-tools"
-      script: bash .travis.sh $TASK
-    # - compiler: clang
-    #   env: TASK="build-apps"
-    #   script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="doc"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-core"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-ext-1"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-ext-2"
-      script: bash .travis.sh $TASK
+      script: bash .travis.sh build-examples
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh build-tools
+    - os: osx
+      compiler: clang
+      script: bash .travis.sh build-apps
+    - os: linux
+      compiler: gcc
+      script: bash .travis.sh test-core
+    - os: linux
+      compiler: gcc
+      script: bash .travis.sh test-ext-1
+    - os: linux
+      compiler: gcc
+      script: bash .travis.sh test-ext-2
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh test-core
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh test-ext-1
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh test-ext-2
+    - os: linux
+      compiler: gcc
+      script: bash .travis.sh doc
+    # - os: osx
+    #   compiler: clang
+    #   script: bash .travis.sh doc
