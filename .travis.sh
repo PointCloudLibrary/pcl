@@ -10,6 +10,23 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+  if [ "$CC" == "clang" ]; then
+    CMAKE_C_FLAGS="$CMAKE_C_FLAGS -Qunused-arguments"
+    CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS -Qunused-arguments"
+  fi
+fi
+
+function before_install ()
+{
+  if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    if [ "$CC" == "clang" ]; then
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+    fi
+  fi
+}
+
 function build ()
 {
   case $CC in
@@ -23,7 +40,7 @@ function build_lib ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -47,7 +64,7 @@ function build_examples ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -55,12 +72,6 @@ function build_examples ()
         -DBUILD_examples=ON \
         -DBUILD_tools=OFF \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -71,7 +82,7 @@ function build_tools ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
         -DBUILD_simulation=ON \
@@ -79,12 +90,6 @@ function build_tools ()
         -DBUILD_examples=OFF \
         -DBUILD_tools=ON \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -95,10 +100,12 @@ function build_apps ()
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_QT_VERSION=4 \
-        -DBUILD_simulation=ON \
+        -DBUILD_simulation=OFF \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=OFF \
         -DBUILD_global_tests=OFF \
         -DBUILD_examples=OFF \
         -DBUILD_tools=OFF \
@@ -107,7 +114,7 @@ function build_apps ()
         -DBUILD_apps_cloud_composer=ON \
         -DBUILD_apps_in_hand_scanner=ON \
         -DBUILD_apps_modeler=ON \
-        -DBUILD_apps_optronic_viewer=ON \
+        -DBUILD_apps_optronic_viewer=OFF \
         -DBUILD_apps_point_cloud_editor=ON \
         $PCL_DIR
   # Build
@@ -119,7 +126,7 @@ function build_lib_core ()
   # A reduced build, only pcl_common
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DBUILD_2d=OFF \
         -DBUILD_features=OFF \
@@ -152,8 +159,7 @@ function test_core ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -208,8 +214,7 @@ function test_ext_1 ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -257,15 +262,14 @@ function test_ext_1 ()
         -DBUILD_tests_visualization=ON \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make -j2 tests
 }
 
 function test_ext_2 ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DPCL_NO_PRECOMPILE=ON \
         -DBUILD_tools=OFF \
@@ -313,7 +317,7 @@ function test_ext_2 ()
         -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make -j2 tests
 }
 
 function doc ()
@@ -365,6 +369,7 @@ function doc ()
 }
 
 case $1 in
+  before-install ) before_install;;
   build ) build;;
   build-examples ) build_examples;;
   build-tools ) build_tools;;
