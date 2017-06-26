@@ -194,7 +194,7 @@ pcl::ShapeContext3DEstimation<PointInT, PointNT, PointOutT>::computePoint (
 
     /// ----- Compute current neighbour polar coordinates -----
     /// Get distance between the neighbour and the origin
-    float r = sqrtf (nn_dists[ne]);
+    float r = std::sqrt (nn_dists[ne]);
 
     /// Project point into the tangent plane
     Eigen::Vector3f proj;

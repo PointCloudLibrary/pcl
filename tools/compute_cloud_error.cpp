@@ -126,7 +126,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else if (correspondence_type == "nn")
   {
@@ -154,7 +154,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
 
   }
   else if (correspondence_type == "nnplane")
@@ -190,7 +190,7 @@ compute (const pcl::PCLPointCloud2::ConstPtr &cloud_source, const pcl::PCLPointC
       output_xyzi->points[point_i].z = xyz_source->points[point_i].z;
       output_xyzi->points[point_i].intensity = dist * dist;
     }
-    rmse = sqrtf (rmse / static_cast<float> (xyz_source->points.size ()));
+    rmse = std::sqrt (rmse / static_cast<float> (xyz_source->points.size ()));
   }
   else
   {

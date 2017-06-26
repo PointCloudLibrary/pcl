@@ -263,7 +263,7 @@ namespace pcl
             cen_t[2] = model_->input_->points[(*model_->tmp_inliers_)[i]].z - x[2];
             
             // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
-            fvec[i] = sqrtf (cen_t.dot (cen_t)) - x[3];
+            fvec[i] = std::sqrt (cen_t.dot (cen_t)) - x[3];
           }
           return (0);
         }

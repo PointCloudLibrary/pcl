@@ -88,7 +88,7 @@ float RangeImageBorderExtractor::getNeighborDistanceChangeScore(
   float neighbor_distance_squared = squaredEuclideanDistance(neighbor, point);
   if (neighbor_distance_squared <= local_surface.max_neighbor_distance_squared)
     return 0.0f;
-  float ret = 1.0f - sqrtf(local_surface.max_neighbor_distance_squared / neighbor_distance_squared);
+  float ret = 1.0f - std::sqrt (local_surface.max_neighbor_distance_squared / neighbor_distance_squared);
   if (neighbor.range < point.range)
     ret = -ret;
   return ret;
@@ -376,15 +376,15 @@ bool RangeImageBorderExtractor::calculateMainPrincipalCurvature(int x, int y, in
   
   Eigen::Vector3f eigen_values, eigen_vector1, eigen_vector2;
   vector_average.doPCA(eigen_values, eigen_vector1, eigen_vector2, main_direction);
-  magnitude = sqrtf(eigen_values[2]);
+  magnitude = std::sqrt (eigen_values[2]);
   //magnitude = eigen_values[2];
   //magnitude = 1.0f - powf(1.0f-magnitude, 5);
   //magnitude = 1.0f - powf(1.0f-magnitude, 10);
   //magnitude += magnitude - powf(magnitude,2);
   //magnitude += magnitude - powf(magnitude,2);
   
-  //magnitude = sqrtf(local_surface->eigen_values[0]/local_surface->eigen_values.sum());
-  //magnitude = sqrtf(local_surface->eigen_values_no_jumps[0]/local_surface->eigen_values_no_jumps.sum());
+  //magnitude = std::sqrt (local_surface->eigen_values[0]/local_surface->eigen_values.sum());
+  //magnitude = std::sqrt (local_surface->eigen_values_no_jumps[0]/local_surface->eigen_values_no_jumps.sum());
 
   //if (surface_structure_[y*range_image_->width+x+1]==NULL||surface_structure_[y*range_image_->width+x-1]==NULL)
   //{
