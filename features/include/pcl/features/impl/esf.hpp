@@ -188,7 +188,7 @@ pcl::ESFEstimation<PointInT, PointOutT>::computeESF (
     }
 
     // D3 ( herons formula )
-    d3v.push_back (sqrtf (sqrtf (s * (s-a) * (s-b) * (s-c))));
+    d3v.push_back (std::sqrt (std::sqrt (s * (s-a) * (s-b) * (s-c))));
     if (vxlcnt_sum <= 21)
     {
       wt_d3.push_back (0);

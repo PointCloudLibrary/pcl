@@ -635,7 +635,7 @@ RangeImage::getImpactAngle (const PointWithRange& point1, const PointWithRange& 
     float r1Sqr = r1*r1,
           r2Sqr = r2*r2,
           dSqr  = squaredEuclideanDistance (point1, point2),
-          d     = sqrtf (dSqr);
+          d     = std::sqrt (dSqr);
     float cos_impact_angle = (r2Sqr + dSqr - r1Sqr)/ (2.0f*r2*d);
     cos_impact_angle = (std::max) (0.0f, (std::min) (1.0f, cos_impact_angle));
     impact_angle = acosf (cos_impact_angle);  // Using the cosine rule
@@ -770,9 +770,9 @@ RangeImage::getSurfaceAngleChange (int x, int y, int radius, float& angle_change
     //return acosf ( (Eigen::Vector3f (point.x, point.y, point.z)-getSensorPos ()).normalized ().dot ( (Eigen::Vector3f (neighbor1.x, neighbor1.y, neighbor1.z)-Eigen::Vector3f (point.x, point.y, point.z)).normalized ()));
   
   //float d1_squared = squaredEuclideanDistance (point, neighbor1),
-        //d1 = sqrtf (d1_squared),
+        //d1 = std::sqrt (d1_squared),
         //d2_squared = squaredEuclideanDistance (point, neighbor2),
-        //d2 = sqrtf (d2_squared),
+        //d2 = std::sqrt (d2_squared),
         //d3_squared = squaredEuclideanDistance (neighbor1, neighbor2);
   //float cos_surface_change = (d1_squared + d2_squared - d3_squared)/ (2.0f*d1*d2),
         //surface_change = acosf (cos_surface_change);
@@ -871,9 +871,9 @@ RangeImage::getAverageEuclideanDistance (int x, int y, int offset_x, int offset_
       else
         break;
     }
-    //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<sqrtf (pixel_distance)<<"m\n";
+    //std::cout << x<<","<<y<<"->"<<x2<<","<<y2<<": "<<std::sqrt (pixel_distance)<<"m\n";
     weight += 1.0f;
-    average_pixel_distance += sqrtf (pixel_distance);
+    average_pixel_distance += std::sqrt (pixel_distance);
   }
   average_pixel_distance /= weight;
   //std::cout << x<<","<<y<<","<<offset_x<<","<<offset_y<<" => "<<average_pixel_distance<<"\n";

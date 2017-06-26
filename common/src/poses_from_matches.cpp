@@ -121,12 +121,12 @@ pcl::PosesFromMatches::estimatePosesUsing2Correspondences (const pcl::PointCorre
       if (   distance_quotient_squared < min_distance_quotient_squared
           || distance_quotient_squared > max_distance_quotient_squared)
       {
-        //std::cout << "Skipping because of mismatching distances "<<sqrtf (distance1_squared)
-        //          << " and "<<sqrtf (distance1_corr_squared)<<".\n";
+        //std::cout << "Skipping because of mismatching distances "<<std::sqrt (distance1_squared)
+        //          << " and "<<std::sqrt (distance1_corr_squared)<<".\n";
         continue;
       }
       
-      float distance = sqrtf (distance_squared);
+      float distance = std::sqrt (distance_squared);
       
       Eigen::Vector3f corr3=corr1, corr4=corr2;
       corr3[0]+=distance; corr4[0]+=distance;

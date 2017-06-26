@@ -94,7 +94,7 @@ RangeImagePlanar::calculate3DPoint (float image_x, float image_y, float range, E
   //cout << __PRETTY_FUNCTION__ << " called.\n";
   float delta_x = (image_x+static_cast<float> (image_offset_x_)-center_x_)*focal_length_x_reciprocal_,
         delta_y = (image_y+static_cast<float> (image_offset_y_)-center_y_)*focal_length_y_reciprocal_;
-  point[2] = range / (sqrtf (delta_x*delta_x + delta_y*delta_y + 1));
+  point[2] = range / (std::sqrt (delta_x*delta_x + delta_y*delta_y + 1));
   point[0] = delta_x*point[2];
   point[1] = delta_y*point[2];
   point = to_world_system_ * point;

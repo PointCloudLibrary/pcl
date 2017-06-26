@@ -129,7 +129,7 @@ pcl::approximatePolygon2D (const typename pcl::PointCloud<PointT>::VectorType &p
     float line_y = polygon [currentInterval.second].x - polygon [currentInterval.first].x;
     float line_d = polygon [currentInterval.first].x * polygon [currentInterval.second].y - polygon [currentInterval.first].y * polygon [currentInterval.second].x;
     
-    float linelen = 1.0f / sqrtf (line_x * line_x + line_y * line_y);
+    float linelen = 1.0f / std::sqrt (line_x * line_x + line_y * line_y);
     
     line_x *= linelen;
     line_y *= linelen;

@@ -213,7 +213,7 @@ namespace pcl
           multAB[k].r = a * c - b * d;
           multAB[k].i = b * c + a * d;
 
-          float tmp = sqrtf (multAB[k].r * multAB[k].r + multAB[k].i * multAB[k].i);
+          float tmp = std::sqrt (multAB[k].r * multAB[k].r + multAB[k].i * multAB[k].i);
 
           multAB[k].r /= tmp;
           multAB[k].i /= tmp;

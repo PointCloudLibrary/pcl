@@ -493,7 +493,7 @@ TEST (PCL, TransformationEstimationPointToPlaneLLS)
       ny = 0.6f * p.y - 0.2f;
       nz = 1.0f;
 
-      float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
+      float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
       nx /= magnitude;
       ny /= magnitude;
       nz /= magnitude;
@@ -627,7 +627,7 @@ TEST (PCL, TransformationEstimationPointToPlane)
       ny = 0.6f * p.y - 0.2f;
       nz = 1.0f;
 
-      float magnitude = sqrtf (nx * nx + ny * ny + nz * nz);
+      float magnitude = std::sqrt (nx * nx + ny * ny + nz * nz);
       nx /= magnitude;
       ny /= magnitude;
       nz /= magnitude;

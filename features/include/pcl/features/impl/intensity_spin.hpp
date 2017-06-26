@@ -72,7 +72,7 @@ pcl::IntensitySpinEstimation<PointInT, PointOutT>::computeIntensitySpinImage (
   {
     // Normalize distance and intensity values to: 0.0 <= d,i < nr_distance_bins,nr_intensity_bins
     const float eps = std::numeric_limits<float>::epsilon ();
-    float d = static_cast<float> (nr_distance_bins) * sqrtf (squared_distances[idx]) / (radius + eps);
+    float d = static_cast<float> (nr_distance_bins) * std::sqrt (squared_distances[idx]) / (radius + eps);
     float i = static_cast<float> (nr_intensity_bins) * 
               (cloud.points[indices[idx]].intensity - min_intensity) / (max_intensity - min_intensity + eps);
 
