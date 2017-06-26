@@ -291,7 +291,7 @@ namespace pcl
           {
             result->first.push_back (classes_[it - sqr_distances->begin ()]);
             // TODO leave it squared, and relate param to sigma...
-            result->second.push_back (expf (-sqrtf (*it) / gaussian_param));
+            result->second.push_back (expf (-std::sqrt (*it) / gaussian_param));
           }
 
         // Return label/score list pair

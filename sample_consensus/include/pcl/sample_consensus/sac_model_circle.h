@@ -247,7 +247,7 @@ namespace pcl
             float yt = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
             
             // g = sqrt ((x-a)^2 + (y-b)^2) - R
-            fvec[i] = sqrtf (xt * xt + yt * yt) - x[2];
+            fvec[i] = std::sqrt (xt * xt + yt * yt) - x[2];
           }
           return (0);
         }

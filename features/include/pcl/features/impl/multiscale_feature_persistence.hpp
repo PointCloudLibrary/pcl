@@ -170,7 +170,7 @@ pcl::MultiscaleFeaturePersistence<PointSource, PointFeature>::extractUniqueFeatu
       standard_dev += diff * diff;
       diff_vector[point_i] = diff;
     }
-    standard_dev = sqrtf (standard_dev / static_cast<float> (features_at_scale_vectorized_[scale_i].size ()));
+    standard_dev = std::sqrt (standard_dev / static_cast<float> (features_at_scale_vectorized_[scale_i].size ()));
     PCL_DEBUG ("[pcl::MultiscaleFeaturePersistence::extractUniqueFeatures] Standard deviation for scale %f is %f\n", scale_values_[scale_i], standard_dev);
 
     // Select only points outside (mean +/- alpha * standard_dev)

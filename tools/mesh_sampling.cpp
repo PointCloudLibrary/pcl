@@ -62,7 +62,7 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
 {
   float r1 = static_cast<float> (uniform_deviate (rand ()));
   float r2 = static_cast<float> (uniform_deviate (rand ()));
-  float r1sqr = sqrtf (r1);
+  float r1sqr = std::sqrt (r1);
   float OneMinR1Sqr = (1 - r1sqr);
   float OneMinR2 = (1 - r2);
   a1 *= OneMinR1Sqr;

@@ -167,7 +167,7 @@ pcl::NormalBasedSignatureEstimation<PointT, PointNT, PointFeature>::computeFeatu
           Xk_real += static_cast<float> (s_matrix (n, column_i) * cos (2.0f * M_PI / static_cast<double> (N_ * k * n)));
           Xk_imag += static_cast<float> (s_matrix (n, column_i) * sin (2.0f * M_PI / static_cast<double> (N_ * k * n)));
         }
-        dft_col[k] = sqrtf (Xk_real*Xk_real + Xk_imag*Xk_imag);
+        dft_col[k] = std::sqrt (Xk_real*Xk_real + Xk_imag*Xk_imag);
       }
       dft_matrix.col (column_i).matrix () = dft_col;
     }

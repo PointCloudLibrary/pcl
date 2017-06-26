@@ -81,7 +81,7 @@ inline void Narf::copyToNarf36(Narf36& narf36) const
     //{
       //diff = (diff - middle_value)*normalization_factor2;
       //diff = 0.5f + 0.5f*diff;
-      ////diff = 0.5f + 0.5f*sqrtf(diff);
+      ////diff = 0.5f + 0.5f*std::sqrt(diff);
       ////diff = 0.5f + 0.5f*powf(diff, 0.3f);
     //}
     //ret += diff;

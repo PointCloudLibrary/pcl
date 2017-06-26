@@ -694,7 +694,7 @@ RangeImage::getNormalBasedUprightTransformation (const Eigen::Vector3f& point, f
         continue;
       }
       still_in_range = true;
-      float distance = sqrtf (distance_squared),
+      float distance = std::sqrt (distance_squared),
             weight = distance*max_dist_reciprocal;
       vector_average.add (neighbor, weight);
     }
