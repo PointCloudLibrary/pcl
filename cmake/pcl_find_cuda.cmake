@@ -66,4 +66,6 @@ if(CUDA_FOUND)
 	include(${PCL_SOURCE_DIR}/cmake/CudaComputeTargetFlags.cmake)
 	APPEND_TARGET_ARCH_FLAGS()
 
+  # Prevent compilation issues between recent gcc versions and old CUDA versions
+  list(APPEND CUDA_NVCC_FLAGS "-D_FORCE_INLINES")
 endif()
