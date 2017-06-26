@@ -377,6 +377,10 @@ log2f (float x)
   #define MALLOC_ALIGNED 1
 #endif
 
+#if defined (HAVE_MM_MALLOC)
+  #include <mm_malloc.h>
+#endif
+
 inline void*
 aligned_malloc (size_t size)
 {
@@ -405,7 +409,7 @@ aligned_free (void* ptr)
 #if   defined (MALLOC_ALIGNED) || defined (HAVE_POSIX_MEMALIGN)
   std::free (ptr);
 #elif defined (HAVE_MM_MALLOC)
-  ptr = _mm_free (ptr);
+  _mm_free (ptr);
 #elif defined (_MSC_VER)
   _aligned_free (ptr);
 #elif defined (ANDROID)
