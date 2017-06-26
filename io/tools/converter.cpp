@@ -270,7 +270,7 @@ main (int argc,
     if (cloud_output)
       mesh.polygons.clear();
 
-    if (saveMesh (mesh, argv[file_args[1]], output_type))
+    if (!saveMesh (mesh, argv[file_args[1]], output_type))
       return (-1);
   }
   else if (boost::filesystem::path (argv[file_args[0]]).extension () == ".stl")
