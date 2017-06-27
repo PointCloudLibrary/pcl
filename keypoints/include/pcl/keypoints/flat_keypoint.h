@@ -38,7 +38,7 @@
 
 #include <pcl/keypoints/keypoint.h>
 
-#include <random>
+#include <pcl/common/random.h>
 
 namespace pcl
 {
@@ -104,7 +104,6 @@ namespace pcl
     /** \brief Constructor. */
     FlatKeypoint () :
     normals_ (new pcl::PointCloud<NormalT>),
-      seed_ (static_cast<unsigned long> (time (NULL))),
       min_neighbors_ (5),
       R_discard_ (2),
       R1_search_ (2),
@@ -114,7 +113,7 @@ namespace pcl
     {
       name_ = "FlatKeypoint";
 	  
-	  randomGenerator_.seed(seed_);
+	  randomGenerator_.setSeed(static_cast<pcl::uint32_t> (time (NULL)));
     }
 
     /** \brief Set the normals of the input cloud.
@@ -132,16 +131,7 @@ namespace pcl
     inline void
       setSeed (unsigned long seed)
     {
-      seed_ = seed;
-	  randomGenerator_.seed(seed_);
-    }
-
-    /** \brief Get the value of the internal \a seed parameter.
-    */
-    inline unsigned long
-      getSeed ()
-    {
-      return (seed_);
+	  randomGenerator_.setSeed(seed);
     }
 
     /** \brief Set the minimum number of neighbors that has to be found while applying the radius searches.
@@ -212,11 +202,8 @@ namespace pcl
     /** \brief The cloud of normals related to the input surface. */
     PointCloudNConstPtr normals_;
 
-    /** \brief Random number seed. */
-    unsigned long seed_;
-
 	/** \brief Random generator */
-	std::default_random_engine randomGenerator_;
+	pcl::common::UniformGenerator<int> randomGenerator_;
 
     /** \brief Minimum number of neighbors that has to be found while applying radius searches. */
     int min_neighbors_;

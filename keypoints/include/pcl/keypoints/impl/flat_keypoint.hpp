@@ -129,7 +129,7 @@ template<typename PointInT, typename PointOutT, typename NormalT> void
   std::vector<int> neigh_indices;
   std::vector<float> neigh_sqr_dists;
 
-  std::uniform_int_distribution<int> uniformRandomGenerator(0,n_cloud_points-1);
+  randomGenerator_.setParameters(0, n_cloud_points-1);
 
   float coverage_percentage_best = 0.0f;
   int n_unselectable_points_best = 0;
@@ -139,7 +139,7 @@ template<typename PointInT, typename PointOutT, typename NormalT> void
   while((coverage_percentage_best <= T_search) && (coverage_percentage_seed <= T_search))
   {
     //select a random point
-    int point_index = uniformRandomGenerator(randomGenerator_);
+    int point_index = randomGenerator_.run();
 
     //if the random point has already been extracted, search for the points at left or right of the random point until find a not-already-selected point
     while((!selectable_point_seed[point_index]))
