@@ -8,6 +8,7 @@ cache:
   ccache: true
   directories:
     - $HOME/Library/Caches/Homebrew
+  timeout: 600
 
 addons:
   apt:
