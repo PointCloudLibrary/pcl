@@ -1699,6 +1699,38 @@ TEST (PCL, Octree_Pointcloud_Adjacency)
   }
 
 }
+
+TEST (PCL, Octree_Pointcloud_Bounds)
+{
+    const double SOME_RESOLUTION (10 + 1/3.0);
+    const int SOME_DEPTH (4);
+    const double DESIRED_MAX = ((1<<SOME_DEPTH) + 0.5)*SOME_RESOLUTION;
+    const double DESIRED_MIN = 0;
+    
+    OctreePointCloud<PointXYZ> tree (SOME_RESOLUTION);
+    tree.defineBoundingBox (DESIRED_MIN, DESIRED_MIN, DESIRED_MIN, DESIRED_MAX, DESIRED_MAX, DESIRED_MAX);
+    
+    double min_x, min_y, min_z, max_x, max_y, max_z;
+    tree.getBoundingBox (min_x, min_y, min_z, max_x, max_y, max_z);
+    
+    ASSERT_GE( max_x, DESIRED_MAX );
+    ASSERT_GE( DESIRED_MIN, min_x );
+    
+    const double LARGE_MIN = 1e7-45*SOME_RESOLUTION;
+    const double LARGE_MAX = 1e7-5*SOME_RESOLUTION;
+    tree.defineBoundingBox (LARGE_MIN, LARGE_MIN, LARGE_MIN, LARGE_MAX, LARGE_MAX, LARGE_MAX);
+    tree.getBoundingBox (min_x, min_y, min_z, max_x, max_y, max_z);
+    const unsigned int depth = tree.getTreeDepth ();
+    tree.defineBoundingBox (min_x, min_y, min_z, max_x, max_y, max_z);
+    
+    ASSERT_EQ( depth == tree.getTreeDepth (), true );
+    
+    double min_x2, min_y2, min_z2, max_x2, max_y2, max_z2;
+    tree.getBoundingBox (min_x2, min_y2, min_z2, max_x2, max_y2, max_z2);
+    
+    ASSERT_EQ( min_x2 == min_x, true );
+    ASSERT_EQ( max_x2 == max_x, true );
+}
 /* ---[ */
 int
 main (int argc, char** argv)
