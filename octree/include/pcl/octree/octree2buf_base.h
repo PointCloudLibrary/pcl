@@ -41,13 +41,11 @@
 
 #include <vector>
 
-#include "octree_nodes.h"
-#include "octree_container.h"
-#include "octree_key.h"
-#include "octree_iterator.h"
+#include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_container.h>
+#include <pcl/octree/octree_key.h>
+#include <pcl/octree/octree_iterator.h>
 
-#include <stdio.h>
-#include <string.h>
 
 namespace pcl
 {
@@ -920,7 +918,9 @@ namespace pcl
   }
 }
 
-//#include "impl/octree2buf_base.hpp"
+#ifdef PCL_NO_PRECOMPILE
+#include <pcl/octree/impl/octree2buf_base.hpp>
+#endif
 
 #endif
 

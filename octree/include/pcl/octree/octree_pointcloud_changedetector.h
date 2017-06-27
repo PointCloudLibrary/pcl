@@ -39,7 +39,8 @@
 #ifndef PCL_OCTREE_CHANGEDETECTOR_H
 #define PCL_OCTREE_CHANGEDETECTOR_H
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
+#include <pcl/octree/octree2buf_base.h>
 
 namespace pcl
 {

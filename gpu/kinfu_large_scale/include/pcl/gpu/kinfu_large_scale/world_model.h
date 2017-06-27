@@ -40,8 +40,6 @@
 #define PCL_WORLD_MODEL_H_
 
 #include <pcl/common/impl/common.hpp>
-#include <pcl/octree/octree.h>
-#include <pcl/octree/octree_impl.h>
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/filter_indices.h>
 #include <pcl/filters/crop_box.h>

@@ -39,12 +39,7 @@
 #ifndef PCL_OCTREE_SEARCH_IMPL_H_
 #define PCL_OCTREE_SEARCH_IMPL_H_
 
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
-
-#include <pcl/common/common.h>
 #include <assert.h>
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> bool
@@ -863,5 +858,7 @@ pcl::octree::OctreePointCloudSearch<PointT, LeafContainerT, BranchContainerT>::g
 
   return (voxel_count);
 }
+
+#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
 
 #endif    // PCL_OCTREE_SEARCH_IMPL_H_

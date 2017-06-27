@@ -37,6 +37,13 @@
  *
  */
 
+/*
+ * Do not use pre-compiled versions in this compilation unit (cpp-file),
+ * especially for the octree classes. This way the OctreePointCloudAdjacency
+ * class is instantiated with the custom leaf container SupervoxelClustering.
+ */
+#define PCL_NO_PRECOMPILE
+
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/segmentation/impl/supervoxel_clustering.hpp>
@@ -161,14 +168,14 @@ typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelData
 typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT> AdjacencyContainerRGBT;
 typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT> AdjacencyContainerRGBAT;
 
-template class pcl::SupervoxelClustering<pcl::PointXYZ>;
-template class pcl::SupervoxelClustering<pcl::PointXYZRGB>;
-template class pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
+template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZ>;
+template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZRGB>;
+template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
 
-template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT>;
-template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
-template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
 
-template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZ, AdjacencyContainerT>;
-template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGB, AdjacencyContainerRGBT>;
-template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGBA, AdjacencyContainerRGBAT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZ, AdjacencyContainerT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGB, AdjacencyContainerRGBT>;
+template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGBA, AdjacencyContainerRGBAT>;

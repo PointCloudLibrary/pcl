@@ -45,7 +45,7 @@
 #include <pcl/pcl_base.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_search.h>
 #include <pcl/octree/octree_pointcloud_adjacency.h>
 #include <pcl/search/search.h>
 #include <pcl/segmentation/boost.h>

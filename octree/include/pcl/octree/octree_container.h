@@ -39,7 +39,6 @@
 #ifndef PCL_OCTREE_CONTAINER_H
 #define PCL_OCTREE_CONTAINER_H
 
-#include <string.h>
 #include <vector>
 #include <cstddef>
 

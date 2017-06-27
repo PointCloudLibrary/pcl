@@ -41,8 +41,7 @@
 #include <pcl/visualization/point_cloud_handlers.h>
 #include <pcl/visualization/common/common.h>
 
-#include <pcl/octree/octree.h>
-#include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_pointcloud_voxelcentroid.h>
 
 #include <pcl/filters/filter.h>
 #include "boost.h"

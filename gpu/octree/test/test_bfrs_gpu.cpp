@@ -44,7 +44,6 @@
 #endif
 
 #include <pcl/point_cloud.h>
-#include <pcl/octree/octree.h>
 
 #if defined _MSC_VER
     #pragma warning (default: 4521)
