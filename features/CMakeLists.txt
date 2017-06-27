@@ -111,6 +111,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/3dsc.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/usc.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/boundary.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/range_image_border_extractor.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/good.hpp"
         )
 
