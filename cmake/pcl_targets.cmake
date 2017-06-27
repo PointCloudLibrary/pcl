@@ -207,7 +207,7 @@ macro(PCL_ADD_LIBRARY _name _component)
 	endif()
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
@@ -240,7 +240,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
