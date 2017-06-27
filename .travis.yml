@@ -1,10 +1,13 @@
 sudo: required
 language: cpp
 
+git:
+  depth: 1
+
 cache:
   ccache: true
   directories:
-    - $HOME/.ccache
+    - $HOME/Library/Caches/Homebrew
 
 addons:
   apt:
