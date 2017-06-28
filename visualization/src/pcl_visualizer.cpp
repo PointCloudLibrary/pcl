@@ -1499,7 +1499,7 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
       vtkSmartPointer<vtkLookupTable> table;
-      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
+      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(value), table))
         break;
       table->SetRange (range[0], range[1]);
       actor->GetMapper ()->SetLookupTable (table);
@@ -1745,7 +1745,7 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
       actor->GetMapper ()->ScalarVisibilityOn ();
       actor->GetMapper ()->SetScalarRange (range[0], range[1]);
       vtkSmartPointer<vtkLookupTable> table = vtkSmartPointer<vtkLookupTable>::New ();
-      getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table);
+      getColormapLUT (static_cast<LookUpTableRepresentationProperties>(value), table);
       table->SetRange (range[0], range[1]);
       actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
