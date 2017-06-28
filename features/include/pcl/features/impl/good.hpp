@@ -210,7 +210,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationXAxis (boost::shared_ptr<pcl::P
 {
   int Xpositive =0; 
   int Xnegative =0; 
-  int thereshold = trunc (XoZ_projected_view -> points.size()/10);
+  int threshold_overall = trunc (XoZ_projected_view -> points.size()/10);
 
   //XoZ page
   for (size_t i=0; i< XoZ_projected_view -> points.size(); i++)
@@ -224,7 +224,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationXAxis (boost::shared_ptr<pcl::P
       Xnegative ++;
     }	  
   }  
-  if ((Xpositive < Xnegative) and (Xnegative - Xpositive >= thereshold)) 
+  if ((Xpositive < Xnegative) and (Xnegative - Xpositive >= threshold_overall)) 
   {
     sign = -1;
   }
@@ -241,7 +241,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationYAxis (boost::shared_ptr<pcl::P
 {
   int Ypositive =0; 
   int Ynegative =0; 
-  int thereshold = trunc (YoZ_projected_view -> points.size()/10);
+  int threshold_overall = trunc (YoZ_projected_view -> points.size()/10);
   //YoZ page
   for (size_t i=0; i < YoZ_projected_view -> points.size(); i++)
   {	
@@ -254,7 +254,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationYAxis (boost::shared_ptr<pcl::P
       Ynegative ++;
     }
   }  
-  if ((Ypositive < Ynegative) and (Ynegative - Ypositive >= thereshold))
+  if ((Ypositive < Ynegative) and (Ynegative - Ypositive >= threshold_overall))
   {
     sign = -1;
   }
