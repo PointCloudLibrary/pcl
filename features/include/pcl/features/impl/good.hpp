@@ -210,7 +210,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationXAxis (boost::shared_ptr<pcl::P
 {
   int Xpositive =0; 
   int Xnegative =0; 
-  unsigned int thereshold = trunc (XoZ_projected_view -> points.size()/10);
+  int thereshold = trunc (XoZ_projected_view -> points.size()/10);
 
   //XoZ page
   for (size_t i=0; i< XoZ_projected_view -> points.size(); i++)
@@ -241,7 +241,7 @@ pcl::GOODEstimation<PointInT>::signDisambiguationYAxis (boost::shared_ptr<pcl::P
 {
   int Ypositive =0; 
   int Ynegative =0; 
-  unsigned int thereshold = trunc (YoZ_projected_view -> points.size()/10);
+  int thereshold = trunc (YoZ_projected_view -> points.size()/10);
   //YoZ page
   for (size_t i=0; i < YoZ_projected_view -> points.size(); i++)
   {	
