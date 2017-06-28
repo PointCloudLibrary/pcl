@@ -43,7 +43,7 @@
 #include <pcl/impl/instantiate.hpp>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-  PCL_INSTANTIATE_PRODUCT(GOODEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+  PCL_INSTANTIATE_PRODUCT(GOODEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA)))
 #else
   PCL_INSTANTIATE_PRODUCT(GOODEstimation, (PCL_XYZ_POINT_TYPES))
 #endif
