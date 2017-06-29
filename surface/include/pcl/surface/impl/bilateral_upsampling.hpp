@@ -116,7 +116,7 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
                 abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
                 abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
             
-            float val_exp_rgb = val_exp_rgb_vector(d_color);
+            float val_exp_rgb = val_exp_rgb_vector(int(d_color));
 
             if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
             {
