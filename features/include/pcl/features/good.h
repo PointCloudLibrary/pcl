@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2011, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -34,7 +33,6 @@
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
  *
- *
  */
 
 
@@ -43,6 +41,8 @@
 
 #include <pcl/common/transforms.h>
 #include <pcl/common/common.h>
+#include <pcl/features/feature.h>
+
 
 namespace pcl
 {
@@ -72,168 +72,235 @@ namespace pcl
   * Please adequately refer to this work any time this code is being used by citing above papers.
   * If you do publish a paper where GOOD descriptor helped your research, we encourage you to cite the above papers in your publications.
   * 
-  * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt)
+  * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt  Kasaei.Hamidreza[at]gmail[dot]com )
   */
   
   template <typename PointInT>
-  class GOODEstimation
+  class PCL_EXPORTS GOODEstimation //: public Feature<PointInT, PointOutT>
   {
     public:     
 
-      /** \brief Empty Constructor. */
-      GOODEstimation();    
+      typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudIn;
+      //using PCLBase<PointInT>::input_;	  
       
       /** \brief Constructor.
-	* \param[in] number_of_bins_
-	* \param[in] threshold_
-	*/
-      GOODEstimation(unsigned int, float);
+	* \param[in] number_of_bins_ number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins.
+	* The three projection vectors will be concatenated producing a vector of dimension 3 × number_of_bins^2 which is the final object descriptor, GOOD. 
+	* \param[in] threshold_ threshold parameter is used in constructing local reference frame
+	*/     
+      GOODEstimation (const unsigned int number_of_bins = 5, const float threshold = 0.0015)
+      {
+	number_of_bins_ = number_of_bins;
+	threshold_ = threshold;
+      };
       
-      /** \brief Empty destructor */
-      virtual ~GOODEstimation () {}
-      
+           
       /** \brief Set the input cloud.
-	* \param[in] cloud the boost shared pointer to a point cloud.
+	* \param[in] cloud pointer to a point cloud.
+	* \note: I will remove this function, whenever I can drive it from PCLBase and Feature
 	*/      
       void
-      setInputCloud (boost::shared_ptr<pcl::PointCloud<PointInT> > cloud);  
-      
+      setInputCloud (PointCloudIn cloud);  
+
       /** \brief Sets GOOD descriptor resolution.
 	* \param[in] number_of_bins number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins.
 	* The three projection vectors will be concatenated producing a vector of dimension 3 × number_of_bins^2 which is the final object descriptor, GOOD. 
-	*/
-      void
-      setNumberOfBins (unsigned int number_of_bins);  
-      
-      /** \brief Set the threshold for local reference frame estimation */
-      void
-      setThreshold (float threshold);
+	*/      
+      inline void
+      setNumberOfBins (const unsigned int number_of_bins) 
+      {
+	number_of_bins_ = number_of_bins;
+      }
+
+      /** \brief Returns the number_of_bins_ parameter. */
+      inline unsigned int
+      getNumberOfBins () 
+      { 
+	return number_of_bins_; 	
+      }
+           
+      /** \brief Set the threshold param which is used for local reference frame construction 
+       * \param[in] threshold threshold_  parameter
+       */
+      inline void
+      setThreshold (const float threshold) 
+      {
+	threshold_ = threshold;
+      }
+
+      /** \brief Returns the number_of_bins_ parameter. */
+      inline float
+      getThreshold () 
+      { 
+	return threshold_; 	
+      }
+              
+      /** \brief get three orthographic projections of a set of points given by setInputCloud() 
+        * \param[out] vector_of_projected_views the resultant vector of point clouds that contains three orthographic projections of the query point cloud
+        */ 
+      inline void
+      getOrthographicProjections (std::vector<PointCloudIn> &vector_of_projected_views) const
+      {
+	vector_of_projected_views = vector_of_projected_views_;  
+      }
+
+      /** \brief get objec point cloud in local reference frame constructed by the GOOD descriptor 
+        * \param[out] transformed_point_cloud the resultant point cloud of the object in local reference frame
+        */ 
+      inline void
+      getTransformedObject (PointCloudIn &transformed_point_cloud) const
+      {
+	transformed_point_cloud = transformed_point_cloud_;
+      } 
+
+      /** \brief get center of boundingbox of a set of points given by setInputCloud() in camera reference frame 
+        * \param[out] center_of_bbox the resultant center of boundingbox
+        */ 
+      inline void
+      getCenterOfObjectBoundingBox (pcl::PointXYZ &center_of_bbox) const
+      {
+	center_of_bbox = center_of_bbox_;
+      }
+
+      /** \brief get dimensions of bounding box of a set of points given by setInputCloud()
+        * \param[out] bbox_dimensions the resultant boundingbox dimensions
+        */ 
+      inline void
+      getObjectBoundingBoxDimensions(pcl::PointXYZ &bbox_dimensions) const
+      {
+	bbox_dimensions = bbox_dimensions_;
+      }
+
+      /** \brief get the order of protection plans in constructing GOOD descriptor
+        * \param[out] order_of_projected_plane the resultant of order of projections
+        */  
+      inline void
+      getOrderOfProjectedPlanes (std::string &order_of_projected_plane) const
+      {
+	order_of_projected_plane = order_of_projected_plane_;
+      }
+
+      /** \brief get the transformation matrix from camera reference frame to object local reference frame
+        * \param[out] transformation the resultant transformation matrix
+        */       
+      inline void
+      getTransformationMatrix (Eigen::Matrix4f &transformation) const
+      {
+	transformation = transformation_;
+      } 
       
       /** \brief Estimate the GOOD descriptor at a set of points given by setInputCloud() 
         * \param[out] object_description  the resultant GOOD descriptor representing the feature at the query point cloud
         */
       void
-      compute (std::vector< float > &object_description );
-
-      /** \brief get three orthographic projections of a set of points given by setInputCloud() 
-        * \param[out] vector_of_projected_views the resultant vector of point clouds that contains three orthographic projections of the query point cloud
-        */ 
-      void
-      getOrthographicProjections (std::vector < boost::shared_ptr<pcl::PointCloud<PointInT> > > &vector_of_projected_views);
-      
-      /** \brief get objec point cloud in local reference frame constructed by the GOOD descriptor 
-        * \param[out] transformed_point_cloud the resultant point cloud of the object in local reference frame
-        */ 
-      void
-      getTransformedObject (boost::shared_ptr<pcl::PointCloud<PointInT> > &transformed_point_cloud);
-      
-      /** \brief get center of boundingbox of a set of points given by setInputCloud() in camera reference frame 
-        * \param[out] center_of_bbox the resultant center of boundingbox
-        */ 
-      void
-      getCenterOfObjectBoundingBox (pcl::PointXYZ &center_of_bbox);
-
-      /** \brief get dimensions of bounding box of a set of points given by setInputCloud()
-        * \param[out] bbox_dimensions the resultant boundingbox dimensions
-        */       
-      void
-      getObjectBoundingBoxDimensions(pcl::PointXYZ &bbox_dimensions);
-
-      /** \brief get the order of protection plans in constructing GOOD descriptor
-        * \param[out] order_of_projected_plane the resultant of order of projections
-        */       
-      void 
-      getOrderOfProjectedPlanes(std::string &order_of_projected_plane);
-      
-      /** \brief get the transformation matrix from camera reference frame to object local reference frame
-        * \param[out] transformation the resultant transformation matrix
-        */       
-      void 
-      getTransformationMatrix( Eigen::Matrix4f &transformation);
-      
+      compute (std::vector<float> &object_description );
+       
     private:
 
+      /** \brief number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins. 
+       * By default, the number_of_bins_ is set to 5.
+       */
       unsigned int number_of_bins_; 
-      float threshold_;      
+      
+      /** \brief threshold parameter is used in constructing local reference frame. 
+       * By default, the number_of_bins_ is set to 0.0015.
+       */
+      float threshold_;
+
+      /** \brief resultant of sign disambiguation can be either 1 or -1 */
       int sign_;
-      boost::shared_ptr<pcl::PointCloud<PointInT> > input_ ;
-      boost::shared_ptr<pcl::PointCloud<PointInT> > transformed_point_cloud_;  
-      pcl::PointXYZ bbox_dimensions_;
-      pcl::PointXYZ center_of_bbox_;
-      std::vector < boost::shared_ptr<pcl::PointCloud<PointInT> > > vector_of_projected_views_;
-      std::string projections_ordered_;
-      std::string order_of_projected_plane_;    
+      
+      /** \brief given point cloud*/
+      PointCloudIn input_ ;
+      
+      /** \brief transformed point cloud in LRF */
+      PointCloudIn transformed_point_cloud_;  
+      
+      /** \brief get transformation matrix */
       Eigen::Matrix4f transformation_;
       
+      /** \brief dimensions of boundingboxbox of given point cloud */
+      pcl::PointXYZ bbox_dimensions_;
+      
+      /** \brief center of boundingboxbox of given point cloud */
+      pcl::PointXYZ center_of_bbox_;
+      
+      /** \brief vector of three point clouds containing orthographic projection views */
+      std::vector < PointCloudIn > vector_of_projected_views_;
+      
+      /** \brief get order of projection views e.g. XoY-XoZ-YoZ */
+      std::string order_of_projected_plane_;    
+
+      
       /** \brief get dimensions of bounding box of a given point cloud
- 	* \param[in] pc the boost shared pointer to a point cloud.
+ 	* \param[in] pc pointer to a point cloud.
 	* \param[out] dimensions the resultant boundingbox dimensions
         */ 
       void 
-      computeBoundingBoxDimensions (boost::shared_ptr<pcl::PointCloud<PointInT> > pc, pcl::PointXYZ& dimensions);
+      computeBoundingBoxDimensions (PointCloudIn pc, pcl::PointXYZ &dimensions);
 
       /** \brief project point cloud to a plane
- 	* \param[in] pc_in the boost shared pointer to a point cloud.
+ 	* \param[in] pc_in pointer to a point cloud.
 	* \param[in] coefficients pcl::ModelCoefficients
 	* \param[out] pc_out the resultant projected point cloud
         */ 
       void
-      projectPointCloudToPlane (boost::shared_ptr<pcl::PointCloud<PointInT> > pc_in, boost::shared_ptr<pcl::ModelCoefficients> coefficients, boost::shared_ptr<pcl::PointCloud<PointInT> > pc_out);
+      projectPointCloudToPlane (PointCloudIn pc_in, pcl::ModelCoefficients::Ptr coefficients, PointCloudIn pc_out);
 
       /** \brief convert 2D histogram to 1D histogram
  	* \param[in] histogram_2D a 2D vector of unsigned int 
 	* \param[out] histogram the resultant 1D vector of unsigned int 
         */ 
       void 
-      convert2DHistogramTo1DHistogram (std::vector <std::vector <unsigned int> >  histogram_2D, std::vector <unsigned int>  &histogram);
+      convert2DHistogramTo1DHistogram (std::vector<std::vector<unsigned int> > histogram_2D, std::vector<unsigned int>  &histogram);
 
       /** \brief sign disambiguation of axis X
- 	* \param[in] XoZ_projected_view the boost shared pointer to a point cloud.
+ 	* \param[in] XoZ_projected_view pointer to a point cloud.
 	* \param[in] threshold used to deal with the special case when a point is close to the YoZ plane
 	* \param[out] sign the resultant sign (either 1 or -1) 
         */       
       void
-      signDisambiguationXAxis (boost::shared_ptr<pcl::PointCloud<PointInT> >  XoZ_projected_view, float threshold, int &sign );
+      signDisambiguationXAxis (PointCloudIn  XoZ_projected_view, float threshold, int &sign );
       
       /** \brief sign disambiguation of axis Y
- 	* \param[in] YoZ_projected_view the boost shared pointer to a point cloud.
+ 	* \param[in] YoZ_projected_view pointer to a point cloud.
 	* \param[in] threshold used to deal with the special case when a point is close to the XoZ plane
 	* \param[out] sign the resultant sign (either 1 or -1) 
         */            
       void 
-      signDisambiguationYAxis (boost::shared_ptr<pcl::PointCloud<PointInT> >  YoZ_projected_view, float threshold, int &sign );
+      signDisambiguationYAxis (PointCloudIn  YoZ_projected_view, float threshold, int &sign );
 
       /** \brief create a 2D histogram from YOZ projection
- 	* \param[in] YoZ_projected_view the boost shared pointer to a point cloud.
+ 	* \param[in] YoZ_projected_view pointer to a point cloud.
 	* \param[in] largest_side largest side of object bounding box
 	* \param[in] number_of_bins  number of bins along one dimension;
 	* \param[in] sign either 1 or -1
 	* \param[out] YOZ_histogram a 2D vector of unsigned int
         */            
       void
-      create2DHistogramFromYOZProjection (boost::shared_ptr<pcl::PointCloud<PointInT> >  YOZ_projected_view,
-			  double largest_side, unsigned int number_of_bins, int sign, std::vector < std::vector<unsigned int> > &YOZ_histogram);
+      create2DHistogramFromYOZProjection (PointCloudIn  YOZ_projected_view, double largest_side, unsigned int number_of_bins, 
+					   int sign, std::vector<std::vector<unsigned int> > &YOZ_histogram);
 
       /** \brief create a 2D histogram from XOZ projection
- 	* \param[in] XoZ_projected_view the boost shared pointer to a point cloud.
+ 	* \param[in] XoZ_projected_view pointer to a point cloud.
 	* \param[in] largest_side largest side of object bounding box.
 	* \param[in] number_of_bins  number of bins along one dimension.
 	* \param[in] sign either 1 or -1.
 	* \param[out] XOZ_histogram a 2D vector of unsigned int.
         */            
       void 
-      create2DHistogramFromXOZProjection ( boost::shared_ptr<pcl::PointCloud<PointInT> >  XOZ_projected_view, double largest_side, 
+      create2DHistogramFromXOZProjection ( PointCloudIn  XOZ_projected_view, double largest_side, 
 					    unsigned int number_of_bins, int sign, std::vector < std::vector<unsigned int> > &XOZ_histogram);
       
       /** \brief create a 2D histogram from XOY projection
- 	* \param[in] XoY_projected_view the boost shared pointer to a point cloud.
+ 	* \param[in] XoY_projected_view pointer to a point cloud.
 	* \param[in] largest_side largest side of object bounding box.
 	* \param[in] number_of_bins  number of bins along one dimension.
 	* \param[in] sign either 1 or -1.
 	* \param[out] XOY_histogram a 2D vector of unsigned int.
         */  
       void 
-      create2DHistogramFromXOYProjection (boost::shared_ptr<pcl::PointCloud<PointInT> >  XOY_projected_view,	double largest_side,
+      create2DHistogramFromXOYProjection (PointCloudIn  XOY_projected_view,	double largest_side,
 					unsigned int number_of_bins, int sign, std::vector < std::vector<unsigned int> > &XOY_histogram);
 
       /** \brief normalizing a 1D histogram
@@ -255,7 +322,7 @@ namespace pcl
 	* \param[out] index the resultant projection index.
         */  
       void
-      findMaxViewPointEntropy (std::vector <float> view_point_entropy, int &index);
+      findMaxViewPointEntropy (std::vector<float> view_point_entropy, int &index);
 
       /** \brief compute average of view point histograms
 	* \param[in] histogram1 normalized histogram of projection 1.
@@ -264,14 +331,14 @@ namespace pcl
 	* \param[out] average the resultant average of three histograms.
         */  
       void
-      averageHistograms (std::vector< float> histogram1, std::vector< float> historam2, std::vector< float> historam3, std::vector< float> &average);
+      averageHistograms (std::vector<float> histogram1, std::vector<float> historam2, std::vector<float> historam3, std::vector<float> &average);
 
       /** \brief compute mean of a given histogram
 	* \param[in] histogram normalized histogram of projection.
 	* \param[out] mean the resultant mean.
         */        
       void
-      meanOfHistogram (std::vector< float> histogram, float &mean);
+      meanOfHistogram (std::vector<float> histogram, float &mean);
 
       /** \brief compute variance of a given histogram
 	* \param[in] histogram normalized histogram of projection.
@@ -279,7 +346,7 @@ namespace pcl
 	* \param[out] mean the resultant mean.
         */        
       void
-      varianceOfHistogram (std::vector< float> histogram, float mean, float &variance);
+      varianceOfHistogram (std::vector<float> histogram, float mean, float &variance);
 
       /** \brief concatinating three orthographic projections
        * three histograms are obtained for the projections; afterwards, two statistic features including entropy and variance have been calculated for each distribution vector;
@@ -291,8 +358,8 @@ namespace pcl
 	* \param[out] name_of_sorted_projected_plane an string represents the order of concatenating projections.
         */              
       void
-      objectViewHistogram (int maximum_entropy_index, std::vector< std::vector<float> >normalized_projected_views,
-		      std::vector< float> &sorted_normalized_projected_views,
+      objectViewHistogram (int maximum_entropy_index, std::vector<std::vector<float> > normalized_projected_views,
+		      std::vector<float> &sorted_normalized_projected_views,
 		      std::string &name_of_sorted_projected_plane /*debug*/);
 
       /** \brief compute largest side of boundingbox
@@ -308,13 +375,13 @@ namespace pcl
 	* \param[out] largest_side the resultant distance.
         */           
       void
-      computeDistanceBetweenProjections (std::vector <std::vector <float> > projection1, std::vector <std::vector <float> > projection2, float &distance);
+      computeDistanceBetweenProjections (std::vector <std::vector<float> > projection1, std::vector <std::vector<float> > projection2, float &distance);
 
       /** \brief initializing a 2D histogram with 0; This function creates a 2D vector with the size of [number_of_bins × number_of_bins] and initializes all elements with 0 value.
 	* \param[in] number_of_bins number of bin 
 	* \param[out] a_2D_vector
         */           
-      inline std::vector < std::vector<unsigned int> > initializing2DHistogram (unsigned int number_of_bins);
+      inline std::vector<std::vector<unsigned int> > initializing2DHistogram (unsigned int number_of_bins);
       
   };
 }

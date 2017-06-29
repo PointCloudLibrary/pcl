@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -32,8 +32,6 @@
  *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
  *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  *  POSSIBILITY OF SUCH DAMAGE.
- *
- * $Id$
  *
  */
 
@@ -70,55 +68,32 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/io/ply_io.h>
 #include <boost/filesystem.hpp>
+#include <pcl/io/auto_io.h>
 
 typedef pcl::PointXYZRGBA PointT;  
-using namespace pcl;
+typedef pcl::PointCloud<PointT>::Ptr PointCloudIn;
 
-int
-readPointCloud(std::string object_path,  boost::shared_ptr<pcl::PointCloud<PointT> > point_cloud)
-{
-  std::string extension = boost::filesystem::extension(object_path);
-  if (extension == ".pcd" || extension == ".PCD")
-  { 
-    if (pcl::io::loadPCDFile(object_path.c_str() , *point_cloud) == -1)
-    {
-      std::cout << "Cloud reading failed." << std::endl;
-      return (-1);
-    }
-  }
-  else if (extension == ".ply" || extension == ".PLY")
-  {   
-    if (pcl::io::loadPLYFile(object_path , *point_cloud) == -1)
-    {
-      std::cout << "Cloud reading failed." << std::endl;
-      return (-1);
-    }
-  }
-  else 
-  {
-      std::cout << "file extension is not correct. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
-      return -1;
-  }
-  return 1;
-}
 
 int main(int argc, char* argv[])
 {  
 
-  if (argc < 2 ||argc > 2) 
+  if (argc != 2) 
   {
     std::cout << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
     return 0;
   }
-
+  
   std::string object_path =  argv[1];  
   pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
-  if (readPointCloud( object_path,  object)==-1)
+  if (pcl::io::load(object_path, *object)==-1)  
+  {
+    std::cout << "\n file extension is not correct. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
     return -1;
+  }
   
-  std::vector< float > object_description;
-  std::vector < boost::shared_ptr<pcl::PointCloud<PointT> > > vector_of_projected_views;
-  boost::shared_ptr<pcl::PointCloud<PointT> > transformed_object (new pcl::PointCloud<PointT>);
+  std::vector<float> object_description;
+  std::vector<PointCloudIn> vector_of_projected_views;
+  PointCloudIn transformed_object (new pcl::PointCloud<PointT>);
 
   Eigen::Matrix4f transformation;
   pcl::PointXYZ center_of_bounding_box;
@@ -126,8 +101,8 @@ int main(int argc, char* argv[])
   std::string order_of_projected_planes;
     
   // Setup the GOOD descriptor
-  // GOOD can also be setup in a line:  GOODEstimation test_GOOD_descriptor (5, 0.0015); 
-  GOODEstimation<PointT> test_GOOD_descriptor; 
+  // GOOD can also be setup in a line:  pcl::GOODEstimation test_GOOD_descriptor (5, 0.0015); 
+  pcl::GOODEstimation<PointT> test_GOOD_descriptor; 
   test_GOOD_descriptor.setNumberOfBins(5);
   test_GOOD_descriptor.setThreshold(0.0015);  
     
