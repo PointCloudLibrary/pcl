@@ -100,26 +100,26 @@ int main(int argc, char* argv[])
   std::string order_of_projected_planes;
     
   // Setup the GOOD descriptor
-  // GOOD can also be setup in a line:  pcl::GOODEstimation test_GOOD_descriptor (5, 0.0015); 
   const int number_of_bins = 5;   
-  pcl::GOODEstimation<PointT, number_of_bins > test_GOOD_descriptor ; 
+  const unsigned int lengh_of_descriptor = 3 * number_of_bins * number_of_bins; 
+  pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
+
+  
+  pcl::GOODEstimation<PointT, number_of_bins> test_GOOD_descriptor ; 
   test_GOOD_descriptor.setThreshold(0.0015);  
-    
-  // Provide the original point cloud
-  test_GOOD_descriptor.setInputCloud(object);
+  // NOTE : GOOD descriptor can be setup in a line:  pcl::GOODEstimation<PointT, number_of_bins> test_GOOD_descriptor (0.0015); 
+  test_GOOD_descriptor.setInputCloud(object); // pass original point cloud
+  test_GOOD_descriptor.compute(object_description);   // Actually compute the GOOD discriptor for the given object
   
-  // Compute GOOD discriptor for the given object
-  pcl::PointCloud<pcl::Histogram<75> > object_description;
-  test_GOOD_descriptor.compute(object_description);
+  // Printing GOOD_descriptor for the given point cloud
+  pcl::Histogram<lengh_of_descriptor> GOOD_descriptor = object_description.points[0];
+  std::cout <<"\n GOOD =" << GOOD_descriptor <<std::endl; 
   
-  pcl::Histogram<75> GOOD_descriptor = object_description.points[0];
-  std::cout <<"\n GOOD = [" << GOOD_descriptor <<"]"<<std::endl; 
-   
   /*_________________________________________
   |                                          |
   | Functionalities for Object Manipulation  |
   |__________________________________________| */   
-  // The following functinalities of GOOD are usefull for manipulation tasks:
+  // The following functinalities of GOOD descriptor are usefull for manipulation tasks:
 
   // Get objec point cloud in local reference frame
   test_GOOD_descriptor.getTransformedObject (transformed_object);
@@ -139,14 +139,14 @@ int main(int argc, char* argv[])
   test_GOOD_descriptor.getOrderOfProjectedPlanes(order_of_projected_planes);
   std::cout << "\n order of projected planes = "<<order_of_projected_planes << std::endl;
 
-  // Pass the following point cloud to a pcl::visualization::PCLVisualizer forVisualizing the 
+  // NOTE : Pass the following point cloud to a pcl::visualization::PCLVisualizer forVisualizing the 
   //transformed object, local reference fram and three orthographic projections
-
-  pcl::PointCloud<PointT>::Ptr transformed_object_and_projected_views (new pcl::PointCloud<PointT>);
-  *transformed_object_and_projected_views += *vector_of_projected_views.at(0);
-  *transformed_object_and_projected_views += *vector_of_projected_views.at(1);
-  *transformed_object_and_projected_views += *vector_of_projected_views.at(2);
-  *transformed_object_and_projected_views += *transformed_object;    
+  
+  //pcl::PointCloud<PointT>::Ptr transformed_object_and_projected_views (new pcl::PointCloud<PointT>);
+  //*transformed_object_and_projected_views += *vector_of_projected_views.at(0);
+  //*transformed_object_and_projected_views += *vector_of_projected_views.at(1);
+  //*transformed_object_and_projected_views += *vector_of_projected_views.at(2);
+  //*transformed_object_and_projected_views += *transformed_object;    
 
   return 0;
 }

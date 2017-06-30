@@ -75,40 +75,34 @@ namespace pcl
   * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt  Kasaei.Hamidreza[at]gmail[dot]com )
   */
   
-  template <typename PointInT, int N>
-  class PCL_EXPORTS GOODEstimation : public Feature<PointInT, Histogram<3*N*N> >
+  template <typename PointInT, int NumberOfBins>
+  class PCL_EXPORTS GOODEstimation : public Feature<PointInT, Histogram<3*NumberOfBins*NumberOfBins> >
   {
     public:     
 
+      typedef Histogram<3*NumberOfBins*NumberOfBins> Descriptor;     
       typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudIn;
-      typedef typename Feature<PointInT, Histogram<3*N*N> >::PointCloudOut PointCloudOut;
+      typedef typename Feature<PointInT, Descriptor>::PointCloudOut PointCloudOut;      
+      using Feature<PointInT, Descriptor>::feature_name_;
+      using Feature<PointInT, Descriptor>::k_;
       using PCLBase<PointInT>::input_;
-      
+
       /** \brief Constructor.
-	* \param[in] number_of_bins_ number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins.
-	* The three projection vectors will be concatenated producing a vector of dimension 3 ? number_of_bins^2 which is the final object descriptor, GOOD. 
+	* \param[in] number_of_bins_ number of bins along one dimension of a projection plane; therefore, each projection plane is divided into number_of_bins X number_of_bins square bins.
+	* The three projection vectors will be concatenated producing a vector of dimension 3 X number_of_bins^2 which is the final lengh of GOOD descriptor.
 	* \param[in] threshold_ threshold parameter is used in constructing local reference frame
 	*/     
-      GOODEstimation (const unsigned int number_of_bins = 5, const float threshold = 0.0015)
+      GOODEstimation (const float threshold = 0.0015)       
       {
-	number_of_bins_ = number_of_bins;
+	number_of_bins_ = NumberOfBins;
 	threshold_ = threshold;
+	feature_name_ = "GOODEstimation";
+	k_ =1;//not needed?	
       };
       
       /** \brief Empty destructor */
       virtual ~GOODEstimation () {}
-
            
-      /** \brief Sets GOOD descriptor resolution.
-	* \param[in] number_of_bins number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins.
-	* The three projection vectors will be concatenated producing a vector of dimension 3 ? number_of_bins^2 which is the final object descriptor, GOOD. 
-	*/      
-      inline void
-      setNumberOfBins (const unsigned int number_of_bins) 
-      {
-	number_of_bins_ = number_of_bins;
-      }
-
       /** \brief Returns the number_of_bins_ parameter. */
       inline unsigned int
       getNumberOfBins () 
@@ -211,10 +205,7 @@ namespace pcl
 
       /** \brief resultant of sign disambiguation can be either 1 or -1 */
       int sign_;
-      
-      /** \brief given point cloud*/
-     // PointCloudIn input_ ;
-      
+            
       /** \brief transformed point cloud in LRF */
       PointCloudIn transformed_point_cloud_;  
       
@@ -232,7 +223,6 @@ namespace pcl
       
       /** \brief get order of projection views e.g. XoY-XoZ-YoZ */
       std::string order_of_projected_plane_;    
-
       
       /** \brief get dimensions of bounding box of a given point cloud
  	* \param[in] pc pointer to a point cloud.
