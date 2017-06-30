@@ -36,17 +36,16 @@
  *
  */
 
-#include <pcl/features/impl/organized_edge_detection.hpp>
+#include <pcl/features/impl/normal_3d_fast_edge_aware.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeBase, (PCL_XYZ_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGB, (PCL_RGB_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBNormals, (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromPoints, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBPoints, (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-
+// Instantiations of specific point types
+#ifdef PCL_ONLY_CORE_POINT_TYPES
+  PCL_INSTANTIATE_PRODUCT(FastEdgeAwareNormalEstimation, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal)))
+#else
+  PCL_INSTANTIATE_PRODUCT(FastEdgeAwareNormalEstimation, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+#endif
 #endif    // PCL_NO_PRECOMPILE
 

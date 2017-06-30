@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2011, Willow Garage, Inc.
  *  Copyright (c) 2012-, Open Perception, Inc.
  *
  *  All rights reserved.
@@ -36,17 +36,36 @@
  *
  */
 
-#include <pcl/features/impl/organized_edge_detection.hpp>
+#ifndef PCL_NORMAL_3D_FAST_EDGE_AWARE_HPP_
+#define PCL_NORMAL_3D_FAST_EDGE_AWARE_HPP_
+#define EIGEN_II_METHOD 1
 
-#ifndef PCL_NO_PRECOMPILE
-#include <pcl/point_types.h>
-#include <pcl/impl/instantiate.hpp>
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeBase, (PCL_XYZ_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGB, (PCL_RGB_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromNormals, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBNormals, (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromPoints, (PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
-PCL_INSTANTIATE_PRODUCT(OrganizedEdgeFromRGBPoints, (PCL_RGB_POINT_TYPES)(PCL_NORMAL_POINT_TYPES)((pcl::Label)))
+#include <pcl/features/normal_3d_fast_edge_aware.h>
+#include <pcl/common/time.h>
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT>
+pcl::FastEdgeAwareNormalEstimation<PointInT, PointOutT>::~FastEdgeAwareNormalEstimation ()
+{
+}
 
-#endif    // PCL_NO_PRECOMPILE
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointOutT>
+void
+void_delete (pcl::PointCloud<PointOutT>*)
+{
+  return;
+}
 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointInT, typename PointOutT> void
+pcl::FastEdgeAwareNormalEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
+{
+  pcl::PointCloud<pcl::Label> labels;
+  std::vector<pcl::PointIndices> label_indices;
+  boost::shared_ptr<pcl::PointCloud<PointOutT> > normals (&output, void_delete<PointOutT>);
+  edge_detection_.compute (labels, label_indices, normals);
+}
+
+#define PCL_INSTANTIATE_FastEdgeAwareNormalEstimation(T,NT) template class PCL_EXPORTS pcl::FastEdgeAwareNormalEstimation<T,NT>;
+
+#endif  // PCL_NORMAL_3D_FAST_EDGE_AWARE_HPP_

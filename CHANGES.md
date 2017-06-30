@@ -1,6 +1,6 @@
 # ChangeList
 
-## *= 1.8.0 (14.06.2016) =*
+## *= 1.8.0 (04.08.2016) =*
 
 * Added missing `Eigen::aligned_allocator` in vectors and maps that contain
   vectorizable Eigen where appropriate
@@ -98,6 +98,10 @@
   [[#1331]](https://github.com/PointCloudLibrary/pcl/pull/1331)
 * Fixed wrong erasing order in feature cache in `PFHEstimation`
   [[#1335]](https://github.com/PointCloudLibrary/pcl/pull/1335)
+* Added new functions for 3d surface and depth edge detection directly from
+  organized point clouds without previous normal computation. The algorithm
+  comes with a very fast and edge aware normal estimation function.
+  [[#1672]](https://github.com/PointCloudLibrary/pcl/pull/1672)
 
 ### `libpcl_filters:`
 
