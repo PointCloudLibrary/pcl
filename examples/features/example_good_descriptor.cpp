@@ -91,7 +91,6 @@ int main(int argc, char* argv[])
     return -1;
   }
   
-  std::vector<float> object_description;
   std::vector<PointCloudIn> vector_of_projected_views;
   PointCloudIn transformed_object (new pcl::PointCloud<PointT>);
 
@@ -102,20 +101,20 @@ int main(int argc, char* argv[])
     
   // Setup the GOOD descriptor
   // GOOD can also be setup in a line:  pcl::GOODEstimation test_GOOD_descriptor (5, 0.0015); 
-  pcl::GOODEstimation<PointT> test_GOOD_descriptor; 
-  test_GOOD_descriptor.setNumberOfBins(5);
+  const int number_of_bins = 5;   
+  pcl::GOODEstimation<PointT, number_of_bins > test_GOOD_descriptor ; 
   test_GOOD_descriptor.setThreshold(0.0015);  
     
   // Provide the original point cloud
   test_GOOD_descriptor.setInputCloud(object);
   
   // Compute GOOD discriptor for the given object
+  pcl::PointCloud<pcl::Histogram<75> > object_description;
   test_GOOD_descriptor.compute(object_description);
-  std::cout <<"\n GOOD = ["; 
-  for (size_t i =0; i< object_description.size()-1; i ++)
-    std::cout << object_description.at(i)<<",";
-  std::cout << object_description.back() <<"]"<<std::endl;  
   
+  pcl::Histogram<75> GOOD_descriptor = object_description.points[0];
+  std::cout <<"\n GOOD = [" << GOOD_descriptor <<"]"<<std::endl; 
+   
   /*_________________________________________
   |                                          |
   | Functionalities for Object Manipulation  |

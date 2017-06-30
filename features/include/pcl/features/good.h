@@ -60,11 +60,11 @@ namespace pcl
   * 
   * \note This is an implementation of the GOOD descriptor which has been presented in the following papers:
   * 
-  *	[1] Kasaei, S. Hamidreza,  Ana Maria Tomé, Luís Seabra Lopes, Miguel Oliveira 
+  *	[1] Kasaei, S. Hamidreza,  Ana Maria Tom?, Lu?s Seabra Lopes, Miguel Oliveira 
   *	"GOOD: A global orthographic object descriptor for 3D object recognition and manipulation." 
   *	Pattern Recognition Letters 83 (2016): 312-320.http://dx.doi.org/10.1016/j.patrec.2016.07.006
   *
-  *	[2] Kasaei, S. Hamidreza, Luís Seabra Lopes, Ana Maria Tomé, Miguel Oliveira 
+  *	[2] Kasaei, S. Hamidreza, Lu?s Seabra Lopes, Ana Maria Tom?, Miguel Oliveira 
   * 	"An orthographic descriptor for 3D object learning and recognition." 
   *	2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Daejeon, 2016, 
   *	pp. 4158-4163. doi: 10.1109/IROS.2016.7759612
@@ -75,17 +75,18 @@ namespace pcl
   * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt  Kasaei.Hamidreza[at]gmail[dot]com )
   */
   
-  template <typename PointInT>
-  class PCL_EXPORTS GOODEstimation //: public Feature<PointInT, PointOutT>
+  template <typename PointInT, int N>
+  class PCL_EXPORTS GOODEstimation : public Feature<PointInT, Histogram<3*N*N> >
   {
     public:     
 
       typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudIn;
-      //using PCLBase<PointInT>::input_;	  
+      typedef typename Feature<PointInT, Histogram<3*N*N> >::PointCloudOut PointCloudOut;
+      using PCLBase<PointInT>::input_;
       
       /** \brief Constructor.
-	* \param[in] number_of_bins_ number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins.
-	* The three projection vectors will be concatenated producing a vector of dimension 3 × number_of_bins^2 which is the final object descriptor, GOOD. 
+	* \param[in] number_of_bins_ number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins.
+	* The three projection vectors will be concatenated producing a vector of dimension 3 ? number_of_bins^2 which is the final object descriptor, GOOD. 
 	* \param[in] threshold_ threshold parameter is used in constructing local reference frame
 	*/     
       GOODEstimation (const unsigned int number_of_bins = 5, const float threshold = 0.0015)
@@ -94,17 +95,13 @@ namespace pcl
 	threshold_ = threshold;
       };
       
-           
-      /** \brief Set the input cloud.
-	* \param[in] cloud pointer to a point cloud.
-	* \note: I will remove this function, whenever I can drive it from PCLBase and Feature
-	*/      
-      void
-      setInputCloud (PointCloudIn cloud);  
+      /** \brief Empty destructor */
+      virtual ~GOODEstimation () {}
 
+           
       /** \brief Sets GOOD descriptor resolution.
-	* \param[in] number_of_bins number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins.
-	* The three projection vectors will be concatenated producing a vector of dimension 3 × number_of_bins^2 which is the final object descriptor, GOOD. 
+	* \param[in] number_of_bins number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins.
+	* The three projection vectors will be concatenated producing a vector of dimension 3 ? number_of_bins^2 which is the final object descriptor, GOOD. 
 	*/      
       inline void
       setNumberOfBins (const unsigned int number_of_bins) 
@@ -188,16 +185,21 @@ namespace pcl
       {
 	transformation = transformation_;
       } 
-      
+
+    
+    protected:
+
       /** \brief Estimate the GOOD descriptor at a set of points given by setInputCloud() 
-        * \param[out] object_description  the resultant GOOD descriptor representing the feature at the query point cloud
-        */
-      void
-      compute (std::vector<float> &object_description );
-       
+      * \param[out] object_description  the resultant GOOD descriptor representing the feature at the query point cloud
+      */        
+
+      virtual void
+      computeFeature (PointCloudOut &output);
+    
+
     private:
 
-      /** \brief number of bins along one dimension; each projection plane is divided into number_of_bins × number_of_bins square bins. 
+      /** \brief number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins. 
        * By default, the number_of_bins_ is set to 5.
        */
       unsigned int number_of_bins_; 
@@ -211,7 +213,7 @@ namespace pcl
       int sign_;
       
       /** \brief given point cloud*/
-      PointCloudIn input_ ;
+     // PointCloudIn input_ ;
       
       /** \brief transformed point cloud in LRF */
       PointCloudIn transformed_point_cloud_;  
@@ -377,7 +379,7 @@ namespace pcl
       void
       computeDistanceBetweenProjections (std::vector <std::vector<float> > projection1, std::vector <std::vector<float> > projection2, float &distance);
 
-      /** \brief initializing a 2D histogram with 0; This function creates a 2D vector with the size of [number_of_bins × number_of_bins] and initializes all elements with 0 value.
+      /** \brief initializing a 2D histogram with 0; This function creates a 2D vector with the size of [number_of_bins ? number_of_bins] and initializes all elements with 0 value.
 	* \param[in] number_of_bins number of bin 
 	* \param[out] a_2D_vector
         */           

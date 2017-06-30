@@ -39,6 +39,7 @@
 #define PCL_FEATURES_IMPL_GOOD_H_
 #include <pcl/features/good.h>
 #include <pcl/filters/project_inliers.h>
+#include <pcl/point_types.h>
 
 
 /** \brief GOOD: a Global Orthographic Object Descriptor for 3D object recognition and manipulation.
@@ -70,18 +71,17 @@
   * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt  Kasaei.Hamidreza[at]gmail[dot]com )
   */
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT>
-void 
-pcl::GOODEstimation<PointInT>::setInputCloud (PointCloudIn cloud)
-{ 
-  input_ = cloud; 
-};
+// template <typename PointInT, int N>
+// void 
+// pcl::GOODEstimation<PointInT, N>::setInputCloud (PointCloudIn cloud)
+// { 
+//   input_ = cloud; 
+// };
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void 
-pcl::GOODEstimation<PointInT>::computeBoundingBoxDimensions (PointCloudIn pc, pcl::PointXYZ& dimensions)
+pcl::GOODEstimation<PointInT, N>::computeBoundingBoxDimensions (PointCloudIn pc, pcl::PointXYZ &dimensions)
 {
   PointInT minimum_pt;
   PointInT maximum_pt;
@@ -96,9 +96,9 @@ pcl::GOODEstimation<PointInT>::computeBoundingBoxDimensions (PointCloudIn pc, pc
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::projectPointCloudToPlane (PointCloudIn pc_in, boost::shared_ptr<pcl::ModelCoefficients> coefficients, PointCloudIn pc_out)
+pcl::GOODEstimation<PointInT, N>::projectPointCloudToPlane (PointCloudIn pc_in, boost::shared_ptr<pcl::ModelCoefficients> coefficients, PointCloudIn pc_out)
 {
   //Create the projection object
   pcl::ProjectInliers<PointInT> projection;
@@ -109,9 +109,9 @@ pcl::GOODEstimation<PointInT>::projectPointCloudToPlane (PointCloudIn pc_in, boo
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void 
-pcl::GOODEstimation<PointInT>::convert2DHistogramTo1DHistogram (std::vector<std::vector<unsigned int> >  histogram_2D, std::vector<unsigned int>  &histogram)
+pcl::GOODEstimation<PointInT, N>::convert2DHistogramTo1DHistogram (std::vector<std::vector<unsigned int> >  histogram_2D, std::vector<unsigned int>  &histogram)
 {
   for (size_t i = 0 ; i < histogram_2D.size(); i++)
   {   
@@ -123,9 +123,9 @@ pcl::GOODEstimation<PointInT>::convert2DHistogramTo1DHistogram (std::vector<std:
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::signDisambiguationXAxis (PointCloudIn  XoZ_projected_view, float threshold, int &sign )
+pcl::GOODEstimation<PointInT, N>::signDisambiguationXAxis (PointCloudIn  XoZ_projected_view, float threshold, int &sign )
 {
   unsigned Xpositive = 0; 
   unsigned Xnegative = 0; 
@@ -154,9 +154,9 @@ pcl::GOODEstimation<PointInT>::signDisambiguationXAxis (PointCloudIn  XoZ_projec
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void 
-pcl::GOODEstimation<PointInT>::signDisambiguationYAxis (PointCloudIn  YoZ_projected_view, float threshold, int &sign )
+pcl::GOODEstimation<PointInT, N>::signDisambiguationYAxis (PointCloudIn  YoZ_projected_view, float threshold, int &sign )
 {
   unsigned int Ypositive =0; 
   unsigned int Ynegative =0; 
@@ -185,9 +185,9 @@ pcl::GOODEstimation<PointInT>::signDisambiguationYAxis (PointCloudIn  YoZ_projec
 //////////////////////////////////////////////////////////////////////////////////////////////
  
  
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::create2DHistogramFromYOZProjection (PointCloudIn  YOZ_projected_view,
+pcl::GOODEstimation<PointInT, N>::create2DHistogramFromYOZProjection (PointCloudIn  YOZ_projected_view,
 			double largest_side, unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &YOZ_histogram)
 {
   double y = largest_side / 2; 
@@ -210,9 +210,9 @@ pcl::GOODEstimation<PointInT>::create2DHistogramFromYOZProjection (PointCloudIn 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void 
-pcl::GOODEstimation<PointInT>::create2DHistogramFromXOZProjection (PointCloudIn  XOZ_projected_view, double largest_side, 
+pcl::GOODEstimation<PointInT, N>::create2DHistogramFromXOZProjection (PointCloudIn  XOZ_projected_view, double largest_side, 
 				      unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &XOZ_histogram)
 {  
   double x = largest_side / 2;
@@ -234,9 +234,9 @@ pcl::GOODEstimation<PointInT>::create2DHistogramFromXOZProjection (PointCloudIn 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void 
-pcl::GOODEstimation<PointInT>::create2DHistogramFromXOYProjection (PointCloudIn  XOY_projected_view,	double largest_side,
+pcl::GOODEstimation<PointInT, N>::create2DHistogramFromXOYProjection (PointCloudIn  XOY_projected_view,	double largest_side,
 				      unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &XOY_histogram)
 {    
   double x = largest_side / 2; 
@@ -257,9 +257,9 @@ pcl::GOODEstimation<PointInT>::create2DHistogramFromXOYProjection (PointCloudIn 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::normalizingHistogram (std::vector<unsigned int> histogram, std::vector<float> &normalized_histogram)
+pcl::GOODEstimation<PointInT, N>::normalizingHistogram (std::vector<unsigned int> histogram, std::vector<float> &normalized_histogram)
 {
   int sum_all_bins = 0;    
   //compute sumation of all histogram's bins.
@@ -277,9 +277,9 @@ pcl::GOODEstimation<PointInT>::normalizingHistogram (std::vector<unsigned int> h
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::viewpointEntropy (std::vector<float> normalized_histogram, float &entropy)
+pcl::GOODEstimation<PointInT, N>::viewpointEntropy (std::vector<float> normalized_histogram, float &entropy)
 {
   //http://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform
   entropy =0;  
@@ -295,9 +295,9 @@ pcl::GOODEstimation<PointInT>::viewpointEntropy (std::vector<float> normalized_h
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::findMaxViewPointEntropy (std::vector <float> view_point_entropy, int &index)
+pcl::GOODEstimation<PointInT, N>::findMaxViewPointEntropy (std::vector <float> view_point_entropy, int &index)
 {
   index = 0;
   std::vector<float>::iterator it;
@@ -307,9 +307,9 @@ pcl::GOODEstimation<PointInT>::findMaxViewPointEntropy (std::vector <float> view
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>  
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::averageHistograms (std::vector<float> histogram1, std::vector<float> historam2, std::vector<float> historam3, std::vector<float> &average)
+pcl::GOODEstimation<PointInT, N>::averageHistograms (std::vector<float> histogram1, std::vector<float> historam2, std::vector<float> historam3, std::vector<float> &average)
 {
   for (size_t i = 0; i < histogram1.size(); i++ )
   {
@@ -318,9 +318,9 @@ pcl::GOODEstimation<PointInT>::averageHistograms (std::vector<float> histogram1,
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::meanOfHistogram (std::vector<float> histogram, float &mean)
+pcl::GOODEstimation<PointInT, N>::meanOfHistogram (std::vector<float> histogram, float &mean)
 { 	    
   // http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm
   float mu = 0;
@@ -332,9 +332,9 @@ pcl::GOODEstimation<PointInT>::meanOfHistogram (std::vector<float> histogram, fl
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::varianceOfHistogram (std::vector<float> histogram, float mean, float &variance)
+pcl::GOODEstimation<PointInT, N>::varianceOfHistogram (std::vector<float> histogram, float mean, float &variance)
 {
   //https://people.richland.edu/james/lecture/m170/ch06-prb.html
   //http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm  
@@ -347,9 +347,9 @@ pcl::GOODEstimation<PointInT>::varianceOfHistogram (std::vector<float> histogram
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::objectViewHistogram (int maximum_entropy_index, std::vector<std::vector<float> > normalized_projected_views,
+pcl::GOODEstimation<PointInT, N>::objectViewHistogram (int maximum_entropy_index, std::vector<std::vector<float> > normalized_projected_views,
 		    std::vector<float> &sorted_normalized_projected_views,
 		    std::string &name_of_sorted_projected_plane /*debug*/)
 {
@@ -432,9 +432,9 @@ pcl::GOODEstimation<PointInT>::objectViewHistogram (int maximum_entropy_index, s
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::computeLargestSideOfBoundingBox (pcl::PointXYZ dimensions, double &largest_side )
+pcl::GOODEstimation<PointInT, N>::computeLargestSideOfBoundingBox (pcl::PointXYZ dimensions, double &largest_side )
 {    
   std::vector<double> tmp;
   tmp.push_back (dimensions.x);  tmp.push_back (dimensions.y);  tmp.push_back (dimensions.z);  
@@ -445,9 +445,9 @@ pcl::GOODEstimation<PointInT>::computeLargestSideOfBoundingBox (pcl::PointXYZ di
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::computeDistanceBetweenProjections (std::vector<std::vector<float> > projection1, std::vector<std::vector<float> > projection2, float &distance)
+pcl::GOODEstimation<PointInT, N>::computeDistanceBetweenProjections (std::vector<std::vector<float> > projection1, std::vector<std::vector<float> > projection2, float &distance)
 {
   float sum  = 0 ;
   for (size_t i = 0; i < projection1.size(); i++)
@@ -461,8 +461,8 @@ pcl::GOODEstimation<PointInT>::computeDistanceBetweenProjections (std::vector<st
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
-inline std::vector<std::vector<unsigned int> > pcl::GOODEstimation<PointInT>::initializing2DHistogram (unsigned int number_of_bins)
+template <typename PointInT, int N>
+inline std::vector<std::vector<unsigned int> > pcl::GOODEstimation<PointInT, N>::initializing2DHistogram (unsigned int number_of_bins)
 {
   std::vector<unsigned int> row (number_of_bins, 0);
   std::vector<std::vector<unsigned int> > histogram2D (number_of_bins, row);
@@ -470,10 +470,12 @@ inline std::vector<std::vector<unsigned int> > pcl::GOODEstimation<PointInT>::in
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT>
+template <typename PointInT, int N>
 void
-pcl::GOODEstimation<PointInT>::compute (std::vector<float> &object_description )	
+pcl::GOODEstimation<PointInT, N>::computeFeature (PointCloudOut &output )	
 {
+ //output.points[0].histogram[0]=1;
+  std::vector<float> object_description;
   double largest_side = 0;
   int  sign = 1;
   std::vector <float> view_point_entropy;
@@ -663,6 +665,15 @@ pcl::GOODEstimation<PointInT>::compute (std::vector<float> &object_description )
   order_of_projected_plane_ =  name_of_sorted_projected_plane;  
 }
 
-#define PCL_INSTANTIATE_GOODEstimation(T) template class PCL_EXPORTS pcl::GOODEstimation<T>;
+// //////////////////////////////////////////////////////////////////////////////////////////////
+// template <typename PointInT, int N>
+// void
+// pcl::GOODEstimation<PointInT, N>::compute (PointCloudOut &output)
+// {
+//   // Perform the actual feature computation
+//   computeFeature (output);
+// }
+
+#define PCL_INSTANTIATE_GOODEstimation(T, x) template class PCL_EXPORTS pcl::GOODEstimation<T, x >;
 
 #endif /* PCL_FEATURES_IMPL_GOOD_H_ */
