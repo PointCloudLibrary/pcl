@@ -168,14 +168,14 @@ typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelData
 typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT> AdjacencyContainerRGBT;
 typedef pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT> AdjacencyContainerRGBAT;
 
-template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZ>;
-template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZRGB>;
-template class PCL_EXPORTS pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
+template class pcl::SupervoxelClustering<pcl::PointXYZ>;
+template class pcl::SupervoxelClustering<pcl::PointXYZRGB>;
+template class pcl::SupervoxelClustering<pcl::PointXYZRGBA>;
 
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT>;
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
+template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZ, VoxelDataT>;
+template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGB, VoxelDataRGBT>;
+template class pcl::octree::OctreePointCloudAdjacencyContainer<pcl::PointXYZRGBA, VoxelDataRGBAT>;
 
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZ, AdjacencyContainerT>;
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGB, AdjacencyContainerRGBT>;
-template class PCL_EXPORTS pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGBA, AdjacencyContainerRGBAT>;
+template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZ, AdjacencyContainerT>;
+template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGB, AdjacencyContainerRGBT>;
+template class pcl::octree::OctreePointCloudAdjacency<pcl::PointXYZRGBA, AdjacencyContainerRGBAT>;
