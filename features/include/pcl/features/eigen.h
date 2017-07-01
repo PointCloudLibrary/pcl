@@ -46,6 +46,5 @@
 
 #include <Eigen/StdVector>
 #include <Eigen/Geometry>
-#include <Eigen/Sparse>
 
 #endif    // PCL_FEATURES_EIGEN_H_
