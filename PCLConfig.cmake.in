@@ -126,8 +126,7 @@ macro(find_eigen)
           "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
-  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
-      -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
 endmacro(find_eigen)
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -751,6 +750,9 @@ endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
+
+#set SSE flags used compiling PCL
+list(APPEND PCL_DEFINITIONS "@PCLCONFIG_SSE_DEFINITIONS@")
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)
