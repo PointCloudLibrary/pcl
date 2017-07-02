@@ -191,7 +191,7 @@ if(CMAKE_COMPILER_IS_CLANG)
 endif()
 
 include("${PCL_SOURCE_DIR}/cmake/pcl_utils.cmake")
-set(PCL_VERSION "1.8.0-dev" CACHE STRING "PCL version")
+set(PCL_VERSION "1.8.1" CACHE STRING "PCL version")
 DISSECT_VERSION()
 GET_OS_INFO()
 SET_INSTALL_DIRS()
