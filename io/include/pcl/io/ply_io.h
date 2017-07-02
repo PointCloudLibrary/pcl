@@ -95,8 +95,6 @@ namespace pcl
         , rgb_offset_before_ (0)
         , do_resize_ (false)
         , polygons_ (0)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
       {}
 
       PLYReader (const PLYReader &p)
@@ -111,8 +109,6 @@ namespace pcl
         , rgb_offset_before_ (0)
         , do_resize_ (false)
         , polygons_ (0)
-        , r_(0), g_(0), b_(0)
-        , a_(0), rgba_(0)
       {
         *this = p;
       }
@@ -533,12 +529,6 @@ namespace pcl
       std::vector<pcl::Vertices> *polygons_;
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-      
-    private:
-      // RGB values stored by vertexColorCallback()
-      int32_t r_, g_, b_;
-      // Color values stored by vertexAlphaCallback()
-      uint32_t a_, rgba_;
   };
 
   /** \brief Point Cloud Data (PLY) file format writer.
