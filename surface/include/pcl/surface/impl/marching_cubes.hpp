@@ -239,8 +239,6 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // the point cloud really generated from Marching Cubes, prev intermediate_cloud_
   pcl::PointCloud<PointNT> intermediate_cloud;
 
-  Eigen::Array3f upper_boundary, lower_boundary;
-
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
 
