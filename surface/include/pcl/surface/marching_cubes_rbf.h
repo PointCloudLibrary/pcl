@@ -63,6 +63,9 @@ namespace pcl
       using MarchingCubes<PointNT>::res_x_;
       using MarchingCubes<PointNT>::res_y_;
       using MarchingCubes<PointNT>::res_z_;
+      using MarchingCubes<PointNT>::size_voxel_;
+      using MarchingCubes<PointNT>::upper_boundary_;
+      using MarchingCubes<PointNT>::lower_boundary_;
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
@@ -71,18 +74,21 @@ namespace pcl
 
 
       /** \brief Constructor. */
-      MarchingCubesRBF ();
+      MarchingCubesRBF (const float percentage_extend_grid = 0.0f,
+                        const float iso_level = 0.0f,
+                        const float off_surface_epsilon = 0.1f) :
+        MarchingCubes<PointNT> (percentage_extend_grid, iso_level),
+        off_surface_epsilon_ (off_surface_epsilon)
+      {
+      }
 
       /** \brief Destructor. */
       ~MarchingCubesRBF ();
 
       /** \brief Convert the point cloud into voxel data.
-        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
-        * \param[in] lower_boundary The lower boundary of point cloud (after extension)
         */
       void
-      voxelizeData (const Eigen::Vector3f &upper_boundary,
-                    const Eigen::Vector3f &lower_boundary);
+      voxelizeData ();
 
 
       /** \brief Set the off-surface points displacement value.

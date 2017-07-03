@@ -61,7 +61,9 @@ namespace pcl
       using MarchingCubes<PointNT>::res_x_;
       using MarchingCubes<PointNT>::res_y_;
       using MarchingCubes<PointNT>::res_z_;
-      using MarchingCubes<PointNT>::dist_ignore_;
+      using MarchingCubes<PointNT>::size_voxel_;
+      using MarchingCubes<PointNT>::upper_boundary_;
+      using MarchingCubes<PointNT>::lower_boundary_;
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
@@ -70,18 +72,35 @@ namespace pcl
 
 
       /** \brief Constructor. */
-      MarchingCubesHoppe ();
+      MarchingCubesHoppe (const float percentage_extend_grid = 0.0f,
+                          const float iso_level = 0.0f,
+                          const float dist_ignore = -1.0f) :
+        MarchingCubes<PointNT> (percentage_extend_grid, iso_level),
+        dist_ignore_ (dist_ignore)
+      {}
 
       /** \brief Destructor. */
       ~MarchingCubesHoppe ();
 
       /** \brief Convert the point cloud into voxel data.
-        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
-        * \param[in] lower_boundary The lower boundary of point cloud (after extension)
         */
       void
-      voxelizeData (const Eigen::Vector3f &upper_boundary, 
-                    const Eigen::Vector3f &lower_boundary);
+      voxelizeData ();
+
+      /** \brief Method that sets the parameter that defines the distance to ignore the distance to ignore
+        * a grid
+        * \param[in] threshold of distance. if it is negative, then calculate in all grids; otherwise
+        * ignore grids with distance to point cloud(to nearest point) larger than distIgnore
+        */
+      inline void
+      setDistanceIgnore (float dist_ignore)
+      { dist_ignore_ = dist_ignore; }
+
+    protected:
+      /** \brief ignore the distance function
+       * if it is negative
+       * or distance between voxel centroid and point are larger that it. */
+      float dist_ignore_;
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

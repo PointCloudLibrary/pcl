@@ -44,36 +44,25 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubes<PointNT>::MarchingCubes (const float percentage_extend_grid,
-                                            const float iso_level,
-                                            const float dist_ignore)
-: percentage_extend_grid_ (percentage_extend_grid), 
-  iso_level_ (iso_level), 
-  dist_ignore_ (dist_ignore)
-{
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointNT>
 pcl::MarchingCubes<PointNT>::~MarchingCubes ()
 {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::getBoundingBox (Eigen::Vector3f &upper_boundary,
-                                             Eigen::Vector3f &lower_boundary) const
+pcl::MarchingCubes<PointNT>::getBoundingBox ()
 {
   PointNT max_pt, min_pt;
   pcl::getMinMax3D (*input_, min_pt, max_pt);
 
-  lower_boundary = min_pt.getVector3fMap ();
-  upper_boundary = max_pt.getVector3fMap ();
+  lower_boundary_ = min_pt.getVector3fMap ().array ();
+  upper_boundary_ = max_pt.getVector3fMap ().array ();
 
-  const Eigen::Vector3f size3_extend = 0.5f * percentage_extend_grid_ * (upper_boundary - lower_boundary);
+  const Eigen::Array3f size3_extend = 0.5f * percentage_extend_grid_ 
+    * (upper_boundary_ - lower_boundary_);
 
-  lower_boundary -= size3_extend;
-  upper_boundary += size3_extend;
+  lower_boundary_ -= size3_extend;
+  upper_boundary_ += size3_extend;
 }
 
 
@@ -85,7 +74,7 @@ pcl::MarchingCubes<PointNT>::interpolateEdge (Eigen::Vector3f &p1,
                                               float val_p2,
                                               Eigen::Vector3f &output)
 {
-  float mu = (iso_level_ - val_p1) / (val_p2 - val_p1);
+  const float mu = (iso_level_ - val_p1) / (val_p2 - val_p1);
   output = p1 + mu * (p2 - p1);
 }
 
@@ -94,8 +83,6 @@ pcl::MarchingCubes<PointNT>::interpolateEdge (Eigen::Vector3f &p1,
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
                                             const Eigen::Vector3i &index_3d,
-                                            const Eigen::Vector3f &upper_boundary,
-                                            const Eigen::Vector3f &lower_boundary,
                                             pcl::PointCloud<PointNT> &cloud)
 {
   int cubeindex = 0;
@@ -113,10 +100,8 @@ pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
   if (edgeTable[cubeindex] == 0)
     return;
 
-  const Eigen::Vector3f size_voxel = (upper_boundary - lower_boundary).cwiseQuotient (
-      Eigen::Vector3f (res_x_, res_y_, res_z_));
-
-  const Eigen::Vector3f center = lower_boundary + size_voxel.cwiseProduct (index_3d.cast<float> ());
+  const Eigen::Vector3f center = lower_boundary_ 
+    + size_voxel_ * index_3d.cast<float> ().array ();
 
   std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > p;
   p.resize (8);
@@ -124,17 +109,16 @@ pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
   {
     Eigen::Vector3f point = center;
     if(i & 0x4)
-      point[1] = static_cast<float> (center[1] + size_voxel[1]);
+      point[1] = static_cast<float> (center[1] + size_voxel_[1]);
 
     if(i & 0x2)
-      point[2] = static_cast<float> (center[2] + size_voxel[2]);
+      point[2] = static_cast<float> (center[2] + size_voxel_[2]);
 
     if((i & 0x1) ^ ((i >> 1) & 0x1))
-      point[0] = static_cast<float> (center[0] + size_voxel[0]);
+      point[0] = static_cast<float> (center[0] + size_voxel_[0]);
 
     p[i] = point;
   }
-
 
   // Find the vertices where the surface intersects the cube
   if (edgeTable[cubeindex] & 1)
@@ -255,7 +239,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // the point cloud really generated from Marching Cubes, prev intermediate_cloud_
   pcl::PointCloud<PointNT> intermediate_cloud;
 
-  Eigen::Vector3f upper_boundary, lower_boundary;
+  Eigen::Array3f upper_boundary, lower_boundary;
 
   // Create grid
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
@@ -263,15 +247,14 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
   // Populate tree
   tree_->setInputCloud (input_);
 
-  getBoundingBox (upper_boundary, lower_boundary);
+  // Compute bounding box and voxel size
+  getBoundingBox ();
+  size_voxel_ = (upper_boundary_ - lower_boundary_) 
+    * Eigen::Array3f (res_x_, res_y_, res_z_).inverse ();
 
   // Transform the point cloud into a voxel grid
   // This needs to be implemented in a child class
-  voxelizeData (upper_boundary, lower_boundary);
-
-  // Run the actual marching cubes algorithm, store it into a point cloud,
-  // and copy the point cloud + connectivity into output
-  intermediate_cloud.clear ();
+  voxelizeData ();
 
   // preallocate memory assuming a hull. suppose 6 point per voxel
   double size_reserve = std::min((double) intermediate_cloud.points.max_size (),
@@ -286,7 +269,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
         std::vector<float> leaf_node;
         getNeighborList1D (leaf_node, index_3d);
         if(!leaf_node.empty())
-          createSurface (leaf_node, index_3d, upper_boundary, lower_boundary, intermediate_cloud);
+          createSurface (leaf_node, index_3d, intermediate_cloud);
       }
 
   points.swap (intermediate_cloud);
