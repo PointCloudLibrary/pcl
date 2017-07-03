@@ -237,7 +237,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 
   performReconstruction (points, output.polygons);
 
-  pcl::toPCLPointCloud2(points, output.cloud);
+  pcl::toPCLPointCloud2 (points, output.cloud);
 }
 
 
@@ -273,10 +273,12 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 
   // Run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
-  intermediate_cloud.clear();
+  intermediate_cloud.clear ();
 
   // preallocate memory assuming a hull. suppose 6 point per voxel
-  intermediate_cloud.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2 * 6);
+  double size_reserve = std::min((double) intermediate_cloud.points.max_size (),
+      2.0 * 6.0 * (double) (res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_));
+  intermediate_cloud.reserve ((size_t) size_reserve);
 
   for (int x = 1; x < res_x_-1; ++x)
     for (int y = 1; y < res_y_-1; ++y)
@@ -289,7 +291,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
           createSurface (leaf_node, index_3d, intermediate_cloud);
       }
 
-  points.swap(intermediate_cloud);
+  points.swap (intermediate_cloud);
 
   polygons.resize (points.size () / 3);
   for (size_t i = 0; i < polygons.size (); ++i)
