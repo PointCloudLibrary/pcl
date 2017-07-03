@@ -90,7 +90,7 @@ pcl::MarchingCubes<PointNT>::interpolateEdge (Eigen::Vector3f &p1,
                                               float val_p2,
                                               Eigen::Vector3f &output)
 {
-  float mu = (iso_level_ - val_p1) / (val_p2-val_p1);
+  float mu = (iso_level_ - val_p1) / (val_p2 - val_p1);
   output = p1 + mu * (p2 - p1);
 }
 
@@ -233,29 +233,11 @@ pcl::MarchingCubes<PointNT>::getGridValue (Eigen::Vector3i pos)
 template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 {
-  if (!(iso_level_ >= 0 && iso_level_ < 1))
-  {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
-    output.cloud.width = output.cloud.height = 0;
-    output.cloud.data.clear ();
-    output.polygons.clear ();
-    return;
-  }
+  pcl::PointCloud<PointNT> points;
 
-  // real part of marching cube
-  performReconstructionProc();
+  performReconstruction (points, output.polygons);
 
-  pcl::toPCLPointCloud2 (intermediate_cloud_, output.cloud);
-
-  output.polygons.resize (intermediate_cloud_.size () / 3);
-  for (size_t i = 0; i < output.polygons.size (); ++i)
-  {
-    pcl::Vertices v;
-    v.vertices.resize (3);
-    for (int j = 0; j < 3; ++j)
-      v.vertices[j] = static_cast<int> (i) * 3 + j;
-    output.polygons[i] = v;
-  }
+  pcl::toPCLPointCloud2(points, output.cloud);
 }
 
 
@@ -266,34 +248,18 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
 {
   if (!(iso_level_ >= 0 && iso_level_ < 1))
   {
-    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", getClassName ().c_str (), iso_level_);
+    PCL_ERROR ("[pcl::%s::performReconstruction] Invalid iso level %f! Please use a number between 0 and 1.\n", 
+        getClassName ().c_str (), iso_level_);
     points.width = points.height = 0;
     points.points.clear ();
     polygons.clear ();
     return;
   }
 
-  // real part of marching cube
-  performReconstructionProc();
+  // the point cloud really generated from Marching Cubes, prev intermediate_cloud_
+  pcl::PointCloud<PointNT> intermediate_cloud;
 
-  points.swap(intermediate_cloud_);
-
-  polygons.resize (points.size () / 3);
-  for (size_t i = 0; i < polygons.size (); ++i)
-  {
-    pcl::Vertices v;
-    v.vertices.resize (3);
-    for (int j = 0; j < 3; ++j)
-      v.vertices[j] = static_cast<int> (i) * 3 + j;
-    polygons[i] = v;
-  }
-}
-
-template <typename PointNT> void
-pcl::MarchingCubes<PointNT>::performReconstructionProc ()
-{
   // Create grid
-  // grid_ = std::vector<float> (res_x_*res_y_*res_z_, 0.0f);
   grid_ = std::vector<float> (res_x_*res_y_*res_z_, NAN);
 
   // Populate tree
@@ -307,10 +273,10 @@ pcl::MarchingCubes<PointNT>::performReconstructionProc ()
 
   // Run the actual marching cubes algorithm, store it into a point cloud,
   // and copy the point cloud + connectivity into output
-  intermediate_cloud_.clear();
+  intermediate_cloud.clear();
 
   // preallocate memory assuming a hull. suppose 6 point per voxel
-  intermediate_cloud_.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2 * 6);
+  intermediate_cloud.reserve((size_t)(res_y_*res_z_ + res_x_*res_z_ + res_x_*res_y_) * 2 * 6);
 
   for (int x = 1; x < res_x_-1; ++x)
     for (int y = 1; y < res_y_-1; ++y)
@@ -320,10 +286,21 @@ pcl::MarchingCubes<PointNT>::performReconstructionProc ()
         std::vector<float> leaf_node;
         getNeighborList1D (leaf_node, index_3d);
         if(!leaf_node.empty())
-          createSurface (leaf_node, index_3d, intermediate_cloud_);
+          createSurface (leaf_node, index_3d, intermediate_cloud);
       }
-}
 
+  points.swap(intermediate_cloud);
+
+  polygons.resize (points.size () / 3);
+  for (size_t i = 0; i < polygons.size (); ++i)
+  {
+    pcl::Vertices v;
+    v.vertices.resize (3);
+    for (int j = 0; j < 3; ++j)
+      v.vertices[j] = static_cast<int> (i) * 3 + j;
+    polygons[i] = v;
+  }
+}
 
 #define PCL_INSTANTIATE_MarchingCubes(T) template class PCL_EXPORTS pcl::MarchingCubes<T>;
 

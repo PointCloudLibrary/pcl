@@ -62,14 +62,9 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 {
   const bool is_far_ignored = dist_ignore_ > 0.0f;
 
-  std::vector<int> nn_indices(1, 0);
-  std::vector<float> nn_sqr_dists(1, 0.0f);
-  Eigen::Vector3f point;
-  PointNT p;
-  const Eigen::Vector4f delta = ( max_p_ - min_p_ ).cwiseQuotient( Eigen::Vector4f(
-      float (res_x_),  float (res_y_),  float (res_z_), 1.0f ) );
-
-  Eigen::Vector3f normal;
+  const Eigen::Vector3f min_p = min_p_.segment(0, 3);
+  const Eigen::Vector3f delta = ( max_p_ - min_p_ ).segment(0, 3).cwiseQuotient(
+        Eigen::Vector3f((float)res_x_, (float)res_y_, (float)res_z_) );
 
   for (int x = 0; x < res_x_; ++x)
   {
@@ -81,9 +76,10 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 
       for (int z = 0; z < res_z_; ++z)
       {
-        point[0] = min_p_[0] + delta[0] * float (x);
-        point[1] = min_p_[1] + delta[1] * float (y);
-        point[2] = min_p_[2] + delta[2] * float (z);
+        std::vector<int> nn_indices(1, 0);
+        std::vector<float> nn_sqr_dists(1, 0.0f);
+        const Eigen::Vector3f point = min_p + delta.cwiseProduct(Eigen::Vector3f(x, y, z));
+        PointNT p;
 
         p.getVector3fMap () = point;
 
@@ -91,7 +87,7 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 
         if( !is_far_ignored || nn_sqr_dists[0] < dist_ignore_ )
         {
-          normal = input_->points[nn_indices[0]].getNormalVector3fMap ();
+          const Eigen::Vector3f normal = input_->points[nn_indices[0]].getNormalVector3fMap ();
 
           if(normal.norm() > 0.5f)
             grid_[z_start + z] = normal.dot (
