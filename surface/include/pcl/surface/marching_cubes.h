@@ -446,9 +446,6 @@ namespace pcl
       /** \brief The grid resolution */
       int res_x_, res_y_, res_z_;
 
-      /** \brief Min and max data points. */
-      Eigen::Vector4f min_p_, max_p_;
-
       /** \brief Parameter that defines how much free space should be left inside the grid between
         * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
       float percentage_extend_grid_;
@@ -461,9 +458,13 @@ namespace pcl
        * or distance between voxel centroid and point are larger that it. */
       float dist_ignore_;
 
-      /** \brief Convert the point cloud into voxel data. */
+      /** \brief Convert the point cloud into voxel data. 
+        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
+        * \param[in] lower_boundary The upper boundary of point cloud (after extension)
+        */
       virtual void
-      voxelizeData () = 0;
+      voxelizeData (const Eigen::Vector3f &upper_boundary,
+                    const Eigen::Vector3f &lower_boundary) = 0;
 
       /** \brief Interpolate along the voxel edge.
         * \param[in] p1 The first point on the edge
@@ -479,16 +480,24 @@ namespace pcl
       /** \brief Calculate out the corresponding polygons in the leaf node
         * \param leaf_node the leaf node to be checked
         * \param index_3d the 3d index of the leaf node to be checked
+        * \param upper_boundary the upper boundary of point cloud
+        * \param lower_boundary the lower boundary of point cloud
         * \param cloud point cloud to store the vertices of the polygon
-       */
+        */
       void
       createSurface (const std::vector<float> &leaf_node,
                      const Eigen::Vector3i &index_3d,
+                     const Eigen::Vector3f &upper_boundary,
+                     const Eigen::Vector3f &lower_boundary,
                      pcl::PointCloud<PointNT> &cloud);
 
-      /** \brief Get the bounding box for the input data points. */
+      /** \brief Get the bounding box for the input data points. 
+        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
+        * \param[in] lower_boundary The upper boundary of point cloud (after extension)
+        */
       void
-      getBoundingBox ();
+      getBoundingBox (Eigen::Vector3f &upper_boundary,
+                      Eigen::Vector3f &lower_boundary) const;
 
 
       /** \brief Method that returns the scalar value at the given grid position.

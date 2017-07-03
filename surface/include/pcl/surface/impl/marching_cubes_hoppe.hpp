@@ -58,12 +58,12 @@ pcl::MarchingCubesHoppe<PointNT>::~MarchingCubesHoppe ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
+pcl::MarchingCubesHoppe<PointNT>::voxelizeData (const Eigen::Vector3f &upper_boundary,
+                                                const Eigen::Vector3f &lower_boundary)
 {
   const bool is_far_ignored = dist_ignore_ > 0.0f;
 
-  const Eigen::Vector3f min_p = min_p_.segment (0, 3);
-  const Eigen::Vector3f delta = ( max_p_ - min_p_ ).segment (0, 3).cwiseQuotient (
+  const Eigen::Vector3f delta = (upper_boundary - lower_boundary).cwiseQuotient (
       Eigen::Vector3f (res_x_, res_y_, res_z_));
 
   for (int x = 0; x < res_x_; ++x)
@@ -78,7 +78,7 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
       {
         std::vector<int> nn_indices (1, 0);
         std::vector<float> nn_sqr_dists (1, 0.0f);
-        const Eigen::Vector3f point = min_p + delta.cwiseProduct (Eigen::Vector3f (x, y, z));
+        const Eigen::Vector3f point = lower_boundary + delta.cwiseProduct (Eigen::Vector3f (x, y, z));
         PointNT p;
 
         p.getVector3fMap () = point;

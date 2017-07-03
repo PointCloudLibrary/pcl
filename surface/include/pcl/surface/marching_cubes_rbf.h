@@ -78,9 +78,13 @@ namespace pcl
       /** \brief Destructor. */
       ~MarchingCubesRBF ();
 
-      /** \brief Convert the point cloud into voxel data. */
+      /** \brief Convert the point cloud into voxel data.
+        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
+        * \param[in] lower_boundary The lower boundary of point cloud (after extension)
+        */
       void
-      voxelizeData ();
+      voxelizeData (const Eigen::Vector3f &upper_boundary,
+                    const Eigen::Vector3f &lower_boundary);
 
 
       /** \brief Set the off-surface points displacement value.

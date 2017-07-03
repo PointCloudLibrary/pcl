@@ -61,8 +61,6 @@ namespace pcl
       using MarchingCubes<PointNT>::res_x_;
       using MarchingCubes<PointNT>::res_y_;
       using MarchingCubes<PointNT>::res_z_;
-      using MarchingCubes<PointNT>::min_p_;
-      using MarchingCubes<PointNT>::max_p_;
       using MarchingCubes<PointNT>::dist_ignore_;
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
@@ -77,10 +75,13 @@ namespace pcl
       /** \brief Destructor. */
       ~MarchingCubesHoppe ();
 
-      /** \brief Convert the point cloud into voxel data. */
+      /** \brief Convert the point cloud into voxel data.
+        * \param[in] upper_boundary The upper boundary of point cloud (after extension)
+        * \param[in] lower_boundary The lower boundary of point cloud (after extension)
+        */
       void
-      voxelizeData ();
-
+      voxelizeData (const Eigen::Vector3f &upper_boundary, 
+                    const Eigen::Vector3f &lower_boundary);
 
     public:
       EIGEN_MAKE_ALIGNED_OPERATOR_NEW

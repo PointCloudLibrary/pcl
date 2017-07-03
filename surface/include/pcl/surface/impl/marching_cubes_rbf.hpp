@@ -61,7 +61,8 @@ pcl::MarchingCubesRBF<PointNT>::~MarchingCubesRBF ()
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> void
-pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
+pcl::MarchingCubesRBF<PointNT>::voxelizeData (const Eigen::Vector3f &upper_boundary,
+                                              const Eigen::Vector3f &lower_boundary)
 {
   // Initialize data structures
   unsigned int N = static_cast<unsigned int> (input_->size ());
@@ -99,14 +100,15 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     weights[i + N] = w (i + N, 0);
   }
 
+  const Eigen::Vector3d delta = (upper_boundary - lower_boundary).cast<double> ().cwiseQuotient (
+      Eigen::Vector3d (res_x_, res_y_, res_z_));
+  const Eigen::Vector3d base = lower_boundary.cast<double> ();
+
   for (int x = 0; x < res_x_; ++x)
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
-        Eigen::Vector3d point;
-        point[0] = min_p_[0] + (max_p_[0] - min_p_[0]) * float (x) / float (res_x_);
-        point[1] = min_p_[1] + (max_p_[1] - min_p_[1]) * float (y) / float (res_y_);
-        point[2] = min_p_[2] + (max_p_[2] - min_p_[2]) * float (z) / float (res_z_);
+        Eigen::Vector3d point = base + delta.cwiseProduct (Eigen::Vector3d (x, y, z));
 
         double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());
