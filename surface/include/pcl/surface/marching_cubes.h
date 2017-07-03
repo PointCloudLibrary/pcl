@@ -376,7 +376,9 @@ namespace pcl
 
 
       /** \brief Constructor. */
-      MarchingCubes ();
+      MarchingCubes (const float percentage_extend_grid = 0.0f,
+                     const float iso_level = 0.0f,
+                     const float dist_ignore = -1.0f);
 
       /** \brief Destructor. */
       virtual ~MarchingCubes ();

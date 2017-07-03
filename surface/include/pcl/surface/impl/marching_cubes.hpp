@@ -44,8 +44,12 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT>
-pcl::MarchingCubes<PointNT>::MarchingCubes () 
-: percentage_extend_grid_ (), iso_level_ (), dist_ignore_ (-1.0f)
+pcl::MarchingCubes<PointNT>::MarchingCubes (const float percentage_extend_grid,
+                                            const float iso_level,
+                                            const float dist_ignore)
+: percentage_extend_grid_ (percentage_extend_grid), 
+  iso_level_ (iso_level), 
+  dist_ignore_ (dist_ignore)
 {
 }
 
@@ -66,25 +70,10 @@ pcl::MarchingCubes<PointNT>::getBoundingBox (Eigen::Vector3f &upper_boundary,
   lower_boundary = min_pt.getVector3fMap ();
   upper_boundary = max_pt.getVector3fMap ();
 
-  Eigen::Vector3f size3_extend = 0.5f * percentage_extend_grid_ * (upper_boundary - lower_boundary);
+  const Eigen::Vector3f size3_extend = 0.5f * percentage_extend_grid_ * (upper_boundary - lower_boundary);
 
   lower_boundary -= size3_extend;
   upper_boundary += size3_extend;
-
-  Eigen::Vector3f bounding_box_size = upper_boundary - lower_boundary;
-
-  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Size of Bounding Box is [%f, %f, %f]\n",
-             bounding_box_size.x (), bounding_box_size.y (), bounding_box_size.z ());
-  double max_size =
-      (std::max) ((std::max)(bounding_box_size.x (), bounding_box_size.y ()),
-          bounding_box_size.z ());
-  (void)max_size;
-  // ????
-  //  data_size_ = static_cast<uint64_t> (max_size / leaf_size_);
-  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Lower left point is [%f, %f, %f]\n",
-             lower_boundary.x (), lower_boundary.y (), lower_boundary.z ());
-  PCL_DEBUG ("[pcl::MarchingCubesHoppe::getBoundingBox] Upper left point is [%f, %f, %f]\n",
-             upper_boundary.x (), upper_boundary.y (), upper_boundary.z ());
 }
 
 

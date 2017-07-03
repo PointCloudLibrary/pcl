@@ -63,8 +63,6 @@ namespace pcl
       using MarchingCubes<PointNT>::res_x_;
       using MarchingCubes<PointNT>::res_y_;
       using MarchingCubes<PointNT>::res_z_;
-      using MarchingCubes<PointNT>::min_p_;
-      using MarchingCubes<PointNT>::max_p_;
 
       typedef typename pcl::PointCloud<PointNT>::Ptr PointCloudPtr;
 
