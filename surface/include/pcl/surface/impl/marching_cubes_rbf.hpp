@@ -95,9 +95,9 @@ pcl::MarchingCubesRBF<PointNT>::voxelizeData ()
     for (int y = 0; y < res_y_; ++y)
       for (int z = 0; z < res_z_; ++z)
       {
-        const Eigen::Vector3f point_f = (lower_boundary_ + size_voxel_ * Eigen::Array3f (x, y, z)).matrix ();
+        const Eigen::Vector3f point_f = (size_voxel_ * Eigen::Array3f (x, y, z) 
+            + lower_boundary_).matrix ();
         const Eigen::Vector3d point = point_f.cast<double> ();
-//          .matrix ().cast<double> ();
 
         double f = 0.0;
         std::vector<double>::const_iterator w_it (weights.begin());
