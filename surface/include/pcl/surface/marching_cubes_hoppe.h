@@ -72,12 +72,13 @@ namespace pcl
 
 
       /** \brief Constructor. */
-      MarchingCubesHoppe (const float percentage_extend_grid = 0.0f,
-                          const float iso_level = 0.0f,
-                          const float dist_ignore = -1.0f) :
+      MarchingCubesHoppe (const float dist_ignore = -1.0f,
+                          const float percentage_extend_grid = 0.0f,
+                          const float iso_level = 0.0f) :
         MarchingCubes<PointNT> (percentage_extend_grid, iso_level),
         dist_ignore_ (dist_ignore)
-      {}
+      {
+      }
 
       /** \brief Destructor. */
       ~MarchingCubesHoppe ();

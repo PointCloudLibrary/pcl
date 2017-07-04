@@ -74,11 +74,11 @@ pcl::MarchingCubesHoppe<PointNT>::voxelizeData ()
 
         tree_->nearestKSearch (p, 1, nn_indices, nn_sqr_dists);
 
-        if( !is_far_ignored || nn_sqr_dists[0] < dist_ignore_ )
+        if (!is_far_ignored || nn_sqr_dists[0] < dist_ignore_)
         {
           const Eigen::Vector3f normal = input_->points[nn_indices[0]].getNormalVector3fMap ();
 
-          if(!std::isnan (normal(0)) && normal.norm () > 0.5f)
+          if (!std::isnan (normal (0)) && normal.norm () > 0.5f)
             grid_[z_start + z] = normal.dot (
                 point - input_->points[nn_indices[0]].getVector3fMap ());
         }

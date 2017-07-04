@@ -74,9 +74,9 @@ namespace pcl
 
 
       /** \brief Constructor. */
-      MarchingCubesRBF (const float percentage_extend_grid = 0.0f,
-                        const float iso_level = 0.0f,
-                        const float off_surface_epsilon = 0.1f) :
+      MarchingCubesRBF (const float off_surface_epsilon = 0.1f,
+                        const float percentage_extend_grid = 0.0f,
+                        const float iso_level = 0.0f) :
         MarchingCubes<PointNT> (percentage_extend_grid, iso_level),
         off_surface_epsilon_ (off_surface_epsilon)
       {

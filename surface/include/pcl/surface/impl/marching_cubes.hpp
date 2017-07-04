@@ -55,8 +55,8 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
   PointNT max_pt, min_pt;
   pcl::getMinMax3D (*input_, min_pt, max_pt);
 
-  lower_boundary_ = min_pt.getVector3fMap ().array ();
-  upper_boundary_ = max_pt.getVector3fMap ().array ();
+  lower_boundary_ = min_pt.getArray3fMap ();
+  upper_boundary_ = max_pt.getArray3fMap ();
 
   const Eigen::Array3f size3_extend = 0.5f * percentage_extend_grid_ 
     * (upper_boundary_ - lower_boundary_);
@@ -86,7 +86,6 @@ pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
                                             pcl::PointCloud<PointNT> &cloud)
 {
   int cubeindex = 0;
-  Eigen::Vector3f vertex_list[12];
   if (leaf_node[0] < iso_level_) cubeindex |= 1;
   if (leaf_node[1] < iso_level_) cubeindex |= 2;
   if (leaf_node[2] < iso_level_) cubeindex |= 4;
@@ -108,19 +107,21 @@ pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
   for (int i = 0; i < 8; ++i)
   {
     Eigen::Vector3f point = center;
-    if(i & 0x4)
+    if (i & 0x4)
       point[1] = static_cast<float> (center[1] + size_voxel_[1]);
 
-    if(i & 0x2)
+    if (i & 0x2)
       point[2] = static_cast<float> (center[2] + size_voxel_[2]);
 
-    if((i & 0x1) ^ ((i >> 1) & 0x1))
+    if ((i & 0x1) ^ ((i >> 1) & 0x1))
       point[0] = static_cast<float> (center[0] + size_voxel_[0]);
 
     p[i] = point;
   }
 
   // Find the vertices where the surface intersects the cube
+  std::vector<Eigen::Vector3f, Eigen::aligned_allocator<Eigen::Vector3f> > vertex_list;
+  vertex_list.resize (12);
   if (edgeTable[cubeindex] & 1)
     interpolateEdge (p[0], p[1], leaf_node[0], leaf_node[1], vertex_list[0]);
   if (edgeTable[cubeindex] & 2)
@@ -147,20 +148,14 @@ pcl::MarchingCubes<PointNT>::createSurface (const std::vector<float> &leaf_node,
     interpolateEdge (p[3], p[7], leaf_node[3], leaf_node[7], vertex_list[11]);
 
   // Create the triangle
-  for (int i = 0; triTable[cubeindex][i] != -1; i+=3)
+  for (int i = 0; triTable[cubeindex][i] != -1; i += 3)
   {
-    PointNT p1,p2,p3;
-    p1.x = vertex_list[triTable[cubeindex][i  ]][0];
-    p1.y = vertex_list[triTable[cubeindex][i  ]][1];
-    p1.z = vertex_list[triTable[cubeindex][i  ]][2];
+    PointNT p1, p2, p3;
+    p1.getVector3fMap () = vertex_list[triTable[cubeindex][i]];
     cloud.push_back (p1);
-    p2.x = vertex_list[triTable[cubeindex][i+1]][0];
-    p2.y = vertex_list[triTable[cubeindex][i+1]][1];
-    p2.z = vertex_list[triTable[cubeindex][i+1]][2];
+    p2.getVector3fMap () = vertex_list[triTable[cubeindex][i+1]];
     cloud.push_back (p2);
-    p3.x = vertex_list[triTable[cubeindex][i+2]][0];
-    p3.y = vertex_list[triTable[cubeindex][i+2]][1];
-    p3.z = vertex_list[triTable[cubeindex][i+2]][2];
+    p3.getVector3fMap () = vertex_list[triTable[cubeindex][i+2]];
     cloud.push_back (p3);
   }
 }
@@ -171,7 +166,7 @@ template <typename PointNT> void
 pcl::MarchingCubes<PointNT>::getNeighborList1D (std::vector<float> &leaf,
                                                 Eigen::Vector3i &index3d)
 {
-  leaf.resize(8);
+  leaf.resize (8);
 
   leaf[0] = getGridValue (index3d);
   leaf[1] = getGridValue (index3d + Eigen::Vector3i (1, 0, 0));
@@ -182,11 +177,11 @@ pcl::MarchingCubes<PointNT>::getNeighborList1D (std::vector<float> &leaf,
   leaf[6] = getGridValue (index3d + Eigen::Vector3i (1, 1, 1));
   leaf[7] = getGridValue (index3d + Eigen::Vector3i (0, 1, 1));
 
-  for(int i = 0; i < 8; ++i)
+  for (int i = 0; i < 8; ++i)
   {
-    if(std::isnan(leaf[i]))
+    if (std::isnan (leaf[i]))
     {
-      leaf.clear();
+      leaf.clear ();
       break;
     }
   }
@@ -266,7 +261,7 @@ pcl::MarchingCubes<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &po
         Eigen::Vector3i index_3d (x, y, z);
         std::vector<float> leaf_node;
         getNeighborList1D (leaf_node, index_3d);
-        if(!leaf_node.empty())
+        if (!leaf_node.empty ())
           createSurface (leaf_node, index_3d, intermediate_cloud);
       }
 
