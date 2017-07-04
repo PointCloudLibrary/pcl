@@ -88,14 +88,21 @@ namespace pcl
       void
       voxelizeData ();
 
-      /** \brief Method that sets the parameter that defines the distance to ignore the distance to ignore
-        * a grid
-        * \param[in] threshold of distance. if it is negative, then calculate in all grids; otherwise
-        * ignore grids with distance to point cloud(to nearest point) larger than distIgnore
+      /** \brief Method that sets the distance for ignoring voxels which are far from point cloud.
+        * If the distance is negative, then the distance functions would be calculated in all voxels;
+        * otherwise, only voxels with distance lower than dist_ignore would be involved in marching cube.
+        * \param[in] threshold of distance. Default value is -1.0. Set to negative if all voxels are
+        * to be involved.
         */
-      inline void
-      setDistanceIgnore (float dist_ignore)
+      void
+      setDistanceIgnore (const float dist_ignore)
       { dist_ignore_ = dist_ignore; }
+
+      /** \brief get the distance for ignoring voxels which are far from point cloud.
+       * */
+      float
+      getDistanceIgnore () const
+      { return dist_ignore_; }
 
     protected:
       /** \brief ignore the distance function

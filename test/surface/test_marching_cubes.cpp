@@ -76,12 +76,12 @@ TEST (PCL, MarchingCubesTest)
   std::vector<Vertices> vertices;
   hoppe.reconstruct (points, vertices);
 
-  EXPECT_NEAR (points.points[points.size()/2].x, -0.042528, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y, 0.080196, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, 0.043159, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 10854);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 10855);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 10856);
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.037143, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y,  0.098213, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z, -0.044911, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 11202);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 11203);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 11204);
 
 
   MarchingCubesRBF<PointNormal> rbf;
@@ -92,12 +92,12 @@ TEST (PCL, MarchingCubesTest)
   rbf.setOffSurfaceDisplacement (0.02f);
   rbf.reconstruct (points, vertices);
 
-  EXPECT_NEAR (points.points[points.size()/2].x, -0.033919, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y, 0.151683, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, -0.000086, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4284);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4285);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4286);
+  EXPECT_NEAR (points.points[points.size()/2].x, -0.025630, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].y,  0.135228, 1e-3);
+  EXPECT_NEAR (points.points[points.size()/2].z,  0.035766, 1e-3);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 4275);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 4276);
+  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 4277);
 }
 
 

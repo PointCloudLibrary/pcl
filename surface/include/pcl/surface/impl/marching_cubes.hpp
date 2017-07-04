@@ -61,10 +61,8 @@ pcl::MarchingCubes<PointNT>::getBoundingBox ()
   const Eigen::Array3f size3_extend = 0.5f * percentage_extend_grid_ 
     * (upper_boundary_ - lower_boundary_);
 
-  //lower_boundary_ -= size3_extend;
-  //upper_boundary_ += size3_extend;
-  lower_boundary_ -= (upper_boundary_-lower_boundary_)*percentage_extend_grid_/2;
-  upper_boundary_ += (upper_boundary_-lower_boundary_)*percentage_extend_grid_/2;
+  lower_boundary_ -= size3_extend;
+  upper_boundary_ += size3_extend;
 }
 
 
