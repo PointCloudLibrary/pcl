@@ -94,13 +94,13 @@ namespace pcl
         * \param[in] threshold of distance. Default value is -1.0. Set to negative if all voxels are
         * to be involved.
         */
-      void
+      inline void
       setDistanceIgnore (const float dist_ignore)
       { dist_ignore_ = dist_ignore; }
 
       /** \brief get the distance for ignoring voxels which are far from point cloud.
        * */
-      float
+      inline float
       getDistanceIgnore () const
       { return dist_ignore_; }
 
