@@ -372,6 +372,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
       xyz.x = xyzrgb.x = xyzi.x;
       xyz.y = xyzrgb.y = xyzi.y;
       xyz.z = xyzrgb.z = xyzi.z;
+      xyzi.timestamp_offset = hdl_timing_offsets_[i][j];
 
       xyzrgb.rgba = laser_rgb_mapping_[j + offset].rgba;
       if (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z))

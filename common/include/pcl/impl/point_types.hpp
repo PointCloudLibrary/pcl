@@ -441,6 +441,7 @@ namespace pcl
       struct
       {
         float intensity;
+        float timestamp_offset;
       };
       float data_c[4];
     };
@@ -454,6 +455,7 @@ namespace pcl
     {
       x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
       intensity = p.intensity;
+      timestamp_offset = p.timestamp_offset;
     }
 
     inline PointXYZI ()
@@ -461,12 +463,14 @@ namespace pcl
       x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = 0.0f;
+      timestamp_offset = 0.0f;
     }
     inline PointXYZI (float _intensity)
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
       intensity = _intensity;
+      timestamp_offset = 0.0f;
     }
     friend std::ostream& operator << (std::ostream& os, const PointXYZI& p);
   };
