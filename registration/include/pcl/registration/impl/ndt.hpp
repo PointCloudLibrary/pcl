@@ -156,14 +156,20 @@ pcl::NormalDistributionsTransform<PointSource, PointTarget>::computeTransformati
     if (update_visualizer_ != 0)
       update_visualizer_ (output, std::vector<int>(), *target_, std::vector<int>() );
 
-    if (nr_iterations_ > max_iterations_ ||
-        (nr_iterations_ && (std::fabs (delta_p_norm) < transformation_epsilon_)))
-    {
-      converged_ = true;
-    }
+    double cos_angle = 0.5 * (transformation_.coeff (0, 0) + transformation_.coeff (1, 1) + transformation_.coeff (2, 2) - 1);
+    double translation_sqr = transformation_.coeff (0, 3) * transformation_.coeff (0, 3) +
+                             transformation_.coeff (1, 3) * transformation_.coeff (1, 3) +
+                             transformation_.coeff (2, 3) * transformation_.coeff (2, 3);
 
     nr_iterations_++;
 
+    if (nr_iterations_ >= max_iterations_ ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ <= 0)                                             && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ <= 0)))
+    {
+      converged_ = true;
+    }
   }
 
   // Store transformation probability.  The realtive differences within each scan registration are accurate

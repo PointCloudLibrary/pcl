@@ -475,9 +475,19 @@ pcl::NormalDistributionsTransform2D<PointSource, PointTarget>::computeTransforma
 
     //std::cout << "eps=" << fabs ((transformation - previous_transformation_).sum ()) << std::endl;
 
-    if (nr_iterations_ > max_iterations_ ||
-       (transformation - previous_transformation_).array ().abs ().sum () < transformation_epsilon_)
+    Eigen::Matrix4f transformation_delta = transformation.inverse() * previous_transformation_;
+    double cos_angle = 0.5 * (transformation_delta.coeff (0, 0) + transformation_delta.coeff (1, 1) + transformation_delta.coeff (2, 2) - 1);
+    double translation_sqr = transformation_delta.coeff (0, 3) * transformation_delta.coeff (0, 3) +
+                               transformation_delta.coeff (1, 3) * transformation_delta.coeff (1, 3) +
+                               transformation_delta.coeff (2, 3) * transformation_delta.coeff (2, 3);
+
+    if (nr_iterations_ >= max_iterations_ ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ <= 0)                                             && (transformation_rotation_epsilon_ > 0 && cos_angle >= transformation_rotation_epsilon_)) ||
+        ((transformation_epsilon_ > 0 && translation_sqr <= transformation_epsilon_) && (transformation_rotation_epsilon_ <= 0)))
+    {
       converged_ = true;
+    }
   }
   final_transformation_ = transformation;
   output = intm_cloud;

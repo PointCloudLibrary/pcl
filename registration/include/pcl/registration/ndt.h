@@ -225,6 +225,7 @@ namespace pcl
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::transformation_;
       using Registration<PointSource, PointTarget>::transformation_epsilon_;
+      using Registration<PointSource, PointTarget>::transformation_rotation_epsilon_;
       using Registration<PointSource, PointTarget>::converged_;
       using Registration<PointSource, PointTarget>::corr_dist_threshold_;
       using Registration<PointSource, PointTarget>::inlier_threshold_;

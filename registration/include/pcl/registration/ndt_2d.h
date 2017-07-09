@@ -135,8 +135,9 @@ namespace pcl
       using Registration<PointSource, PointTarget>::nr_iterations_;
       using Registration<PointSource, PointTarget>::max_iterations_;
       using Registration<PointSource, PointTarget>::transformation_epsilon_;
+      using Registration<PointSource, PointTarget>::transformation_rotation_epsilon_;
       using Registration<PointSource, PointTarget>::transformation_;
-      using Registration<PointSource, PointTarget>::previous_transformation_;      
+      using Registration<PointSource, PointTarget>::previous_transformation_;
       using Registration<PointSource, PointTarget>::final_transformation_;
       using Registration<PointSource, PointTarget>::update_visualizer_;
       using Registration<PointSource, PointTarget>::indices_;
