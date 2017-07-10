@@ -194,7 +194,7 @@ class ObjectSelection
       if (cloud_->isOrganized ())
       {
         // Use an organized clustering segmentation to extract the individual clusters
-        typename EuclideanClusterComparator<PointT, Normal, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Normal, Label>);
+        typename EuclideanClusterComparator<PointT, Label>::Ptr euclidean_cluster_comparator (new EuclideanClusterComparator<PointT, Label>);
         euclidean_cluster_comparator->setInputCloud (cloud);
         euclidean_cluster_comparator->setDistanceThreshold (0.03f, false);
         // Set the entire scene to false, and the inliers of the objects located on top of the plane to true

@@ -403,8 +403,7 @@ class HRCSSegmentation
             }
           }
         
-          pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator_ (new pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> ());
-
+          pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator_ (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
           euclidean_cluster_comparator_->setInputCloud (cloud);
           euclidean_cluster_comparator_->setLabels (labels_ptr);
           euclidean_cluster_comparator_->setExcludeLabels (plane_labels);
