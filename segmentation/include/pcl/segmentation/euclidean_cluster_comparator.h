@@ -131,14 +131,14 @@ namespace pcl
       virtual bool
       compare (int idx1, int idx2) const
       {
-        int label1 = labels_->points[idx1].label;
-        int label2 = labels_->points[idx2].label;
-        
-        if (label1 == -1 || label2 == -1)
-          return false;
-        
-        if ( (*exclude_labels_)[label1] || (*exclude_labels_)[label2])
-          return false;
+        if (labels_ && exclude_labels_)
+        {
+          assert (labels_->size () == input_->size ());
+          const uint32_t &label1 = labels_->at (idx1).label;
+          const uint32_t &label2 = labels_->at (idx2).label;
+          if ( (*exclude_labels_)[label1] || (*exclude_labels_)[label2])
+            return false;
+        }
         
         float dist_threshold = distance_threshold_;
         if (depth_dependent_)
