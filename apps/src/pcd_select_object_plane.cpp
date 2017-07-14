@@ -205,7 +205,9 @@ class ObjectSelection
           scene->points[points_above_plane->indices[i]].label = 1;
         euclidean_cluster_comparator->setLabels (scene);
 
-        vector<bool> exclude_labels (2);  exclude_labels[0] = true; exclude_labels[1] = false;
+        boost::shared_ptr<std::map<uint32_t, bool> > exclude_labels = boost::make_shared<std::map<uint32_t, bool> > ();
+        (*exclude_labels)[0] = true;
+        (*exclude_labels)[1] = false;
         euclidean_cluster_comparator->setExcludeLabels (exclude_labels);
 
         OrganizedConnectedComponentSegmentation<PointT, Label> euclidean_segmentation (euclidean_cluster_comparator);
