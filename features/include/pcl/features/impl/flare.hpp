@@ -2,8 +2,7 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2010-2011, Willow Garage, Inc.
-*  Copyright (c) 2012-, Open Perception, Inc.
+*  Copyright (c) 2016-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -44,7 +43,40 @@
 #include <pcl/features/flare.h>
 #include <utility>
 #include <pcl/common/transforms.h>
-#include <pcl/features/lrf_utils.h>
+
+
+template<typename PointNT> bool
+pcl::normalDisambiguation ( pcl::PointCloud<PointNT> const &normal_cloud,
+                            std::vector<int> const &normal_indices,
+                            Eigen::Vector3f &normal)
+{
+  Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero();
+
+  bool at_least_one_valid_point = false;
+  for (size_t i = 0; i < normal_indices.size (); ++i)
+  {
+    const PointNT& curPt = normal_cloud[normal_indices[i]];
+
+    if(pcl::isFinite(curPt))
+    {
+      normal_mean += curPt.getNormalVector3fMap ();
+      at_least_one_valid_point = true;
+    }
+  }
+
+  if(!at_least_one_valid_point)
+    return false;
+
+  normal_mean.normalize ();
+
+  if (normal.dot (normal_mean) < 0)
+  {
+    normal = -normal;
+  }
+
+  return true;
+}
+
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,11 +87,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   {
     PCL_ERROR ("[pcl::%s::initCompute] Init failed.\n", getClassName ().c_str ());
     return (false);
-  }
-
-  if(!sampled_surface_ && sampled_tree_)
-  {
-    PCL_WARN ("[pcl::%s::initCompute] sampled_surface_ is not set even if sampled_tree_ is already set. sampled_tree_ will be rebuilt from surface_. Use sampled_surface_.\n", getClassName ().c_str ());
   }
 
   if(tangent_radius_ == 0.0f)
@@ -73,6 +100,12 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   {
     fake_sampled_surface_ = true;
     sampled_surface_ = surface_;
+
+    if(sampled_tree_)
+    {
+      PCL_WARN ("[pcl::%s::initCompute] sampled_surface_ is not set even if sampled_tree_ is already set.", getClassName ().c_str ());
+      PCL_WARN ("sampled_tree_ will be rebuilt from surface_. Use sampled_surface_.\n");
+    }
   }
 
   // Check if a space search locator was given for sampled_surface_
@@ -111,7 +144,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename SignedDistanceT> SignedDistanceT
-  pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computePointLRF (const int &index,
+  pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computePointLRF (const int index,
   Eigen::Matrix3f &lrf)
 {
   Eigen::Vector3f x_axis, y_axis;
@@ -122,7 +155,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //extract support points for the computation of Z axis
   std::vector<int> neighbours_indices;
   std::vector<float> neighbours_distances;
-  int n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
+  int n_neighbours = searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
   if (n_neighbours < min_neighbors_for_normal_axis_)
   {
@@ -136,54 +169,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
     //set z_axis as the normal of index point
     fitted_normal = (*normals_)[index].getNormalVector3fMap();
-
-    return (std::numeric_limits<SignedDistanceT>::max ());
   }
   else
   {
-    ////find centroid for plane fitting
-    //  Eigen::Vector3f centroid = Eigen::Vector3f::Zero();
-    //  Eigen::Vector3f mean_normal = Eigen::Vector3f::Zero();
-    //for(size_t ne = 0; ne < neighbours_indices.size(); ++ne)
-    //{
-    //    centroid += (*surface_)[ neighbours_indices[ne] ].getVector3fMap();
-    //    mean_normal += (*normals_)[ neighbours_indices[ne] ].getNormalVector3fMap();
-    //}
-    //  centroid /= (float)neighbours_indices.size();
-    //  mean_normal.normalize(); 
-
-
-    ////plane fitting
-    //  EIGEN_ALIGN16 Eigen::Matrix3f covariance_matrix = Eigen::Matrix3f::Zero();
-    //  float temp;
-    //  Eigen::Vector3f no_centroid = Eigen::Vector3f::Zero();
-    //for(size_t ne = 0; ne < neighbours_indices.size(); ++ne)
-    //{
-    //    no_centroid = (*surface_)[ neighbours_indices[ne] ].getVector3fMap() - centroid;
-
-    //    covariance_matrix (0,0) += no_centroid.x() * no_centroid.x();
-    //    covariance_matrix (1,1) += no_centroid.y() * no_centroid.y();
-    //    covariance_matrix (2,2) = no_centroid.z() * no_centroid.z();
-
-    //    temp =  no_centroid.x() * no_centroid.y();
-    //    covariance_matrix (0,1) += temp;
-    //    covariance_matrix (1,0) += temp;
-    //    temp =  no_centroid.x() * no_centroid.z();
-    //    covariance_matrix (0,2) += temp;
-    //    covariance_matrix (2,0) += temp;
-    //    temp =  no_centroid.y() * no_centroid.z();
-    //    covariance_matrix (1,2) += temp;
-    //    covariance_matrix (2,1) += temp;
-    //  }
-
-    //EIGEN_ALIGN16 Eigen::Vector3f::Scalar eigen_value;
-    //EIGEN_ALIGN16 Eigen::Vector3f eigen_vector;
-    //pcl::eigen33 (covariance_matrix, eigen_value, eigen_vector);
-
-    //fitted_normal.x() = eigen_vector [0];
-    //fitted_normal.y() = eigen_vector [1];
-    //fitted_normal.z() = eigen_vector [2];
-
     float plane_curvature;
     normal_estimation_.computePointNormal(*surface_, neighbours_indices, fitted_normal(0), fitted_normal(1), fitted_normal(2), plane_curvature);
 
@@ -211,6 +199,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     //set X axis as a random axis
     randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
+
+    lrf.row (0).matrix () = x_axis;
+    lrf.row (1).matrix () = y_axis;
 
     return (std::numeric_limits<SignedDistanceT>::max ());
   }
@@ -242,9 +233,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
     //point curr_neigh_idx is inside the ring between marginThresh and Radius
 
-    shapeScore =	(*sampled_surface_)[curr_neigh_idx].getVector3fMap()[0] * fitted_normal[0] +
-      (*sampled_surface_)[curr_neigh_idx].getVector3fMap()[1] * fitted_normal[1] +
-      (*sampled_surface_)[curr_neigh_idx].getVector3fMap()[2] * fitted_normal[2];
+    shapeScore = fitted_normal.dot( (*sampled_surface_)[curr_neigh_idx].getVector3fMap() );
 
     if(shapeScore > bestShapeScore)
     {
@@ -256,9 +245,11 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   if (bestShapeIndex == -1)
   {
-
     randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
+
+    lrf.row (0).matrix () = x_axis;
+    lrf.row (1).matrix () = y_axis;
 
     return (std::numeric_limits<SignedDistanceT>::max ());
   }
@@ -272,7 +263,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   lrf.row (1).matrix () = y_axis;
   //z axis already set
 
-  bestShapeScore -= (fitted_normal[0]*feature_point[0] + fitted_normal[1]*feature_point[1] + fitted_normal[2]*feature_point[2]);
+  bestShapeScore -= fitted_normal.dot( feature_point );
   return (bestShapeScore);
 }
 
@@ -281,7 +272,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computeFeature (PointCloudOut &output)
 {
   //check whether used with search radius or search k-neighbors
-  if (this->getKSearch () != 0)
+  if (getKSearch () != 0)
   {
     PCL_ERROR(
       "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
@@ -303,12 +294,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
       output.is_dense = false;
     }
 
-    for (int d = 0; d < 3; ++d)
-    {
-      rf.x_axis[d] = currentLrf (0, d);
-      rf.y_axis[d] = currentLrf (1, d);
-      rf.z_axis[d] = currentLrf (2, d);
-    }
+    rf.getXAxisVector3fMap () = currentLrf.row (0);
+    rf.getYAxisVector3fMap () = currentLrf.row (1);
+    rf.getZAxisVector3fMap () = currentLrf.row (2);
   }
 }
 
