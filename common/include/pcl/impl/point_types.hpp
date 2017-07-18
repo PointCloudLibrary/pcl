@@ -52,6 +52,7 @@
   (pcl::PointXYZI)              \
   (pcl::PointXYZL)              \
   (pcl::Label)                  \
+  (pcl::Intensity)              \
   (pcl::PointXYZRGBA)           \
   (pcl::PointXYZRGB)            \
   (pcl::PointXYZRGBL)           \
