@@ -155,7 +155,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //extract support points for the computation of Z axis
   std::vector<int> neighbours_indices;
   std::vector<float> neighbours_distances;
-  int n_neighbours = searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
+  int n_neighbours = this->searchForNeighbors (index, search_parameter_, neighbours_indices, neighbours_distances);
 
   if (n_neighbours < min_neighbors_for_normal_axis_)
   {
@@ -272,7 +272,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   pcl::FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT, SignedDistanceT>::computeFeature (PointCloudOut &output)
 {
   //check whether used with search radius or search k-neighbors
-  if (getKSearch () != 0)
+  if (this->getKSearch () != 0)
   {
     PCL_ERROR(
       "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
