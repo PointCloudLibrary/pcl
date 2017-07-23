@@ -575,7 +575,7 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
       cloud.data.resize (uncompressed_size);
     }
 
-    unsigned int data_size = data_idx + static_cast<unsigned int> (cloud.data.size ());
+    unsigned int data_size = static_cast<unsigned int> (cloud.data.size ());
     std::vector<char> buf (data_size);
     // The size of the uncompressed data better be the same as what we stored in the header
     unsigned int tmp_size = pcl::lzfDecompress (&map[data_idx + 8], compressed_size, &buf[0], data_size);
@@ -727,7 +727,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       return (-1);
     }
 
-    fs.seekg (data_idx);
+    fs.seekg (data_idx + offset);
 
     // Read the rest of the file
     res = readBodyASCII (fs, cloud, pcd_version);
@@ -747,17 +747,39 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       return (-1);
     }
     
-    // Seek at the given offset
-    off_t result = pcl_lseek (fd, offset, SEEK_SET);
-    if (result < 0)
+    size_t mmap_size = offset + data_idx;   // ...because we mmap from the start of the file.
+    if (data_type == 2)
     {
-      pcl_close (fd);
-      PCL_ERROR ("[pcl::PCDReader::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
-      PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
-      return (-1);
-    }
+      // Seek to real start of data.
+      off_t result = pcl_lseek (fd, offset + data_idx, SEEK_SET);
+      if (result < 0)
+      {
+        pcl_close (fd);
+        PCL_ERROR ("[pcl::PCDReader::read] lseek errno: %d strerror: %s\n", errno, strerror (errno));
+        PCL_ERROR ("[pcl::PCDReader::read] Error during lseek ()!\n");
+        return (-1);
+      }
     
-    size_t data_size = data_idx + cloud.data.size ();
+      // Read compressed size to compute how much must be mapped
+      unsigned int compressed_size = 0;
+      ssize_t num_read = pcl_read (fd, &compressed_size, 4);
+      if (num_read < 0)
+      {
+        pcl_close (fd);
+        PCL_ERROR ("[pcl::PCDReader::read] read errno: %d strerror: %s\n", errno, strerror (errno));
+        PCL_ERROR ("[pcl::PCDReader::read] Error during road()!\n");
+        return (-1);
+      }
+      mmap_size += compressed_size;
+
+      // Reset position
+      pcl_lseek (fd, 0, SEEK_SET);
+    }
+    else
+    {
+      mmap_size += cloud.data.size ();
+    }
+
     // Prepare the map
 #ifdef _WIN32
     // As we don't know the real size of data (compressed or not), 
@@ -774,7 +796,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       return (-1);
     }
 #else
-    unsigned char *map = static_cast<unsigned char*> (mmap (0, data_size, PROT_READ, MAP_SHARED, fd, 0));
+    unsigned char *map = static_cast<unsigned char*> (mmap (0, mmap_size, PROT_READ, MAP_SHARED, fd, 0));
     if (map == reinterpret_cast<unsigned char*> (-1))    // MAP_FAILED
     {
       pcl_close (fd);
@@ -783,14 +805,14 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     }
 #endif
 
-    res = readBodyBinary (map, cloud, pcd_version, data_type == 2, data_idx);
+    res = readBodyBinary (map, cloud, pcd_version, data_type == 2, offset + data_idx);
 
     // Unmap the pages of memory
 #ifdef _WIN32
     UnmapViewOfFile (map);
     CloseHandle (fm);
 #else
-    if (munmap (map, data_size) == -1)
+    if (munmap (map, mmap_size) == -1)
     {
       pcl_close (fd);
       PCL_ERROR ("[pcl::PCDReader::read] Munmap failure\n");
@@ -1392,8 +1414,9 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
     return (-1);
   }
 
-  memcpy (&temp_buf[0], &compressed_size, sizeof (unsigned int));
-  memcpy (&temp_buf[4], &data_size, sizeof (unsigned int));
+  memcpy (&temp_buf[0], &compressed_size, 4);
+  memcpy (&temp_buf[4], &data_size, 4);
+  temp_buf.resize (compressed_size + 8);
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
