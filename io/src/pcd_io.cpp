@@ -401,7 +401,7 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   fs.open (file_name.c_str (), std::ios::binary);
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno)); 
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno)); 
     fs.close ();
     return (-1);
   }
@@ -638,49 +638,49 @@ pcl::PCDReader::readBodyBinary (const unsigned char *map, pcl::PCLPointCloud2 &c
         {
           case pcl::PCLPointField::INT8:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT8>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::INT16:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT16>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::INT32:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT32>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::UINT32:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::FLOAT32:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
           case pcl::PCLPointField::FLOAT64:
           {
-            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c))
+            if (!isValueFinite<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (cloud, i, point_size, d, c))
               cloud.is_dense = false;
             break;
           }
@@ -787,7 +787,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     HANDLE fm = CreateFileMapping ((HANDLE) _get_osfhandle (fd), NULL, PAGE_READONLY, 0, 0, NULL);
     // As we don't know the real size of data (compressed or not), 
     // we set dwNumberOfBytesToMap = 0 so as to map the whole file
-    unsigned char *map = static_cast<unsigned char*>(MapViewOfFile (fm, FILE_MAP_READ, 0, 0, 0));
+    unsigned char *map = static_cast<unsigned char*> (MapViewOfFile (fm, FILE_MAP_READ, 0, 0, 0));
     if (map == NULL)
     {
       CloseHandle (fm);
@@ -1096,7 +1096,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
 {
   std::ostringstream oss;
   generateHeaderBinaryCompressed (oss, cloud, origin, orientation);
-  return oss.str();
+  return oss.str ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1117,7 +1117,7 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
   fs.open (file_name.c_str ());      // Open file
   if (!fs.is_open () || fs.fail ())
   {
-    PCL_ERROR("[pcl::PCDWriter::writeASCII] Could not open file '%s' for writing! Error : %s\n", file_name.c_str (), strerror(errno)); 
+    PCL_ERROR ("[pcl::PCDWriter::writeASCII] Could not open file '%s' for writing! Error : %s\n", file_name.c_str (), strerror (errno)); 
     return (-1);
   }
   // Mandatory lock file
@@ -1153,32 +1153,32 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
         {
           case pcl::PCLPointField::INT8:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT8>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::UINT8:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT8>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT8>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::INT16:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT16>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::UINT16:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT16>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT16>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::INT32:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::INT32>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::UINT32:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::FLOAT32:
@@ -1189,14 +1189,14 @@ pcl::PCDWriter::writeASCII (const std::string &file_name, const pcl::PCLPointClo
              * nan.
              */
             if ("rgb" == cloud.fields[d].name)
-              copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type>(cloud, i, point_size, d, c, stream);
+              copyValueString<pcl::traits::asType<pcl::PCLPointField::UINT32>::type> (cloud, i, point_size, d, c, stream);
             else
-              copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type>(cloud, i, point_size, d, c, stream);
+              copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT32>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           case pcl::PCLPointField::FLOAT64:
           {
-            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type>(cloud, i, point_size, d, c, stream);
+            copyValueString<pcl::traits::asType<pcl::PCLPointField::FLOAT64>::type> (cloud, i, point_size, d, c, stream);
             break;
           }
           default:
@@ -1234,14 +1234,14 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   oss.imbue (std::locale::classic ());
 
   oss << generateHeaderBinary (cloud, origin, orientation) << "DATA binary\n";
-  oss.flush();
+  oss.flush ();
   data_idx = static_cast<unsigned int> (oss.tellp ());
 
 #ifdef _WIN32
   HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (h_native_file == INVALID_HANDLE_VALUE)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during CreateFile (%s)!\n", file_name.c_str());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during CreateFile (%s)!\n", file_name.c_str ());
     return (-1);
   }
   // Mandatory lock file
@@ -1252,7 +1252,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinary] Error during open (%s)!\n", file_name.c_str ());
     return (-1);
   }
   // Mandatory lock file
@@ -1282,7 +1282,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
   // Prepare the map
 #ifdef _WIN32
   HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + cloud.data.size ()), NULL);
-  char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
+  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + cloud.data.size ()));
   CloseHandle (fm);
 
 #else
@@ -1297,7 +1297,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 #endif
 
   // copy header
-  memcpy (&map[0], oss.str().c_str (), static_cast<size_t> (data_idx));
+  memcpy (&map[0], oss.str ().c_str (), static_cast<size_t> (data_idx));
 
   // Copy the data
   memcpy (&map[0] + data_idx, &cloud.data[0], cloud.data.size ());
@@ -1322,7 +1322,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 #endif
   // Close file
 #ifdef _WIN32
-  CloseHandle(h_native_file);
+  CloseHandle (h_native_file);
 #else
   pcl_close (fd);
 #endif
@@ -1420,7 +1420,7 @@ pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointClou
 
   os.imbue (std::locale::classic ());
   os << "DATA binary_compressed\n";
-  std::copy (temp_buf.begin(), temp_buf.end(), std::ostream_iterator<char> (os));
+  std::copy (temp_buf.begin (), temp_buf.end (), std::ostream_iterator<char> (os));
   os.flush ();
 
   return (os ? 0 : -1);
@@ -1451,7 +1451,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str());
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str ());
     return (-1);
   }
 #endif
