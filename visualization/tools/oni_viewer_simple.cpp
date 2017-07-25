@@ -133,7 +133,7 @@ public:
       {
         FPS_CALC ("drawing");
         //the call to get() sets the cloud_ to null;
-        viewer.showCloud (getLatestCloud ());
+        viewer.showCloud (getLatestCloud (), "cloud");
       }
     }
 

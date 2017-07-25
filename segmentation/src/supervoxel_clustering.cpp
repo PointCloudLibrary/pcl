@@ -37,6 +37,13 @@
  *
  */
 
+/*
+ * Do not use pre-compiled versions in this compilation unit (cpp-file),
+ * especially for the octree classes. This way the OctreePointCloudAdjacency
+ * class is instantiated with the custom leaf container SupervoxelClustering.
+ */
+#define PCL_NO_PRECOMPILE
+
 #include <pcl/point_types.h>
 #include <pcl/impl/instantiate.hpp>
 #include <pcl/segmentation/impl/supervoxel_clustering.hpp>

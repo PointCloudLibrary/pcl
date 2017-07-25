@@ -84,7 +84,7 @@ class DenoiseParameterForm : public QDialog
       return (ok_);
     }
 
-  private slots:
+  private Q_SLOTS:
     /// @brief Accepts and stores the current user inputs, and turns off the
     /// dialog box.
     void

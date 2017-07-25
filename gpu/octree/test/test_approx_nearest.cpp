@@ -48,7 +48,7 @@
     #pragma warning (disable: 4521)
 #endif
 #include <pcl/point_cloud.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_search.h>
 #if defined _MSC_VER
     #pragma warning (default: 4521)
 #endif

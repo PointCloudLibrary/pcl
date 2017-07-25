@@ -338,7 +338,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_x, normal_y, normal_z);
     
-    const float scale = 1.0f / sqrtf (normal_length);
+    const float scale = 1.0f / std::sqrt (normal_length);
 
     normal.normal_x = normal_x * scale;
     normal.normal_y = normal_y * scale;
@@ -697,7 +697,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
 
     flipNormalTowardsViewpoint (input_->points[point_index], vpx_, vpy_, vpz_, normal_x, normal_y, normal_z);
     
-    const float scale = 1.0f / sqrtf (normal_length);
+    const float scale = 1.0f / std::sqrt (normal_length);
 
     normal.normal_x = normal_x * scale;
     normal.normal_y = normal_y * scale;

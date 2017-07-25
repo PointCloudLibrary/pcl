@@ -111,7 +111,7 @@ namespace pcl
             return theSingleton;
           }
 
-        public slots:
+        public Q_SLOTS:
           void selectedSensorChanged (int index);
           void cloud_callback (const pcl::PointCloud<pcl::PointXYZRGBA>::ConstPtr cloud);
           void refresh ();
@@ -124,7 +124,7 @@ namespace pcl
           // find connected devices
           void findConnectedDevices ();
 
-          private slots:
+          private Q_SLOTS:
             void addFilter ();
             void updateFilter (QListWidgetItem*);
             void filterSelectionChanged ();

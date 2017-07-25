@@ -4,8 +4,8 @@
 
 Continuous integration
 ----------------------
-[ ![Release] [release-image] ] [releases]
-[ ![License] [license-image] ] [license]
+[![Release][release-image]][releases]
+[![License][license-image]][license]
 
 [release-image]: https://img.shields.io/badge/release-1.8.0-green.svg?style=flat
 [releases]: https://github.com/PointCloudLibrary/pcl/releases

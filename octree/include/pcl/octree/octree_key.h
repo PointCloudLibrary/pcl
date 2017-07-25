@@ -38,8 +38,6 @@
 #ifndef PCL_OCTREE_KEY_H
 #define PCL_OCTREE_KEY_H
 
-#include <string>
-
 namespace pcl
 {
   namespace octree

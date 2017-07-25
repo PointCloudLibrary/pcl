@@ -40,10 +40,8 @@
 #ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 #define PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 
-#include <pcl/console/print.h>
-#include <pcl/common/geometry.h>
 #include <pcl/octree/boost.h>
-#include <pcl/octree/octree_impl.h>
+#include <pcl/octree/octree_pointcloud.h>
 #include <pcl/octree/octree_pointcloud_adjacency_container.h>
 
 #include <set>
@@ -247,9 +245,8 @@ namespace pcl
 
 }
 
-//#ifdef PCL_NO_PRECOMPILE
+// Note: Do not precompile this octree type because it is typically used with custom leaf containers.
 #include <pcl/octree/impl/octree_pointcloud_adjacency.hpp>
-//#endif
 
 #endif // PCL_OCTREE_POINTCLOUD_ADJACENCY_H_
 

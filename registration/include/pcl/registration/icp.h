@@ -119,6 +119,7 @@ namespace pcl
       using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_;
       using Registration<PointSource, PointTarget, Scalar>::transformation_epsilon_;
+      using Registration<PointSource, PointTarget, Scalar>::transformation_rotation_epsilon_;
       using Registration<PointSource, PointTarget, Scalar>::converged_;
       using Registration<PointSource, PointTarget, Scalar>::corr_dist_threshold_;
       using Registration<PointSource, PointTarget, Scalar>::inlier_threshold_;

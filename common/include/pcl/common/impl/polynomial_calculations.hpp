@@ -398,7 +398,7 @@ inline bool
   {
     return false;    
     // Reduce degree of polynomial
-    //polynomial_degree = (unsigned int) (0.5f* (sqrtf (8*samplePoints.size ()+1) - 3));
+    //polynomial_degree = (unsigned int) (0.5f* (std::sqrt (8*samplePoints.size ()+1) - 3));
     //parameters_size = BivariatePolynomialT<real>::getNoOfParametersFromDegree (polynomial_degree);
     //cout << "Not enough points, so degree of polynomial was decreased to "<<polynomial_degree
     //     << " ("<<samplePoints.size ()<<" points => "<<parameters_size<<" parameters)\n";

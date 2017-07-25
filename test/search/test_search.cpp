@@ -41,9 +41,11 @@
 #include <pcl/search/organized.h>
 #include <pcl/search/octree.h>
 #include <pcl/io/pcd_io.h>
-#include "boost.h"
-
 #include <pcl/common/time.h>
+#include <boost/random/variate_generator.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int.hpp>
+#include <boost/random/uniform_real.hpp>
 
 using namespace pcl;
 using namespace std;

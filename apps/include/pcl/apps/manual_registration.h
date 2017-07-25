@@ -149,7 +149,7 @@ class ManualRegistration : public QMainWindow
 
     Eigen::Matrix4f                   transform_;
 
-  public slots:
+  public Q_SLOTS:
     void 
     confirmSrcPointPressed();
     void 
@@ -169,7 +169,7 @@ class ManualRegistration : public QMainWindow
     void
     safePressed();
 
-  private slots:
+  private Q_SLOTS:
     void
     timeoutSlot();
 

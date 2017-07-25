@@ -42,8 +42,6 @@
 #include <vector>
 
 #include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
-#include <pcl/octree/octree.h>
 
 namespace pcl
 {

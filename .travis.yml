@@ -1,11 +1,36 @@
-sudo: false
+sudo: required
 language: cpp
-compiler:
-  - gcc
-  - clang
+cache:
+  ccache: true
+addons:
+  apt:
+    sources:
+      - kalakris-cmake
+      - boost-latest
+      - kubuntu-backports
+      - sourceline: 'ppa:kedazo/doxygen-updates-precise'
+      - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
+    packages:
+      - cmake
+      - libboost1.55-all-dev
+      - libeigen3-dev
+      - libgtest-dev
+      - doxygen-latex
+      - dvipng
+      - libusb-1.0-0-dev
+      - libqhull-dev
+      - libvtk5-dev
+      - libflann-dev
+      - doxygen
+      - libqt4-dev
+      - libqt4-opengl-dev
+      - libvtk5-qt4-dev
+      - libglew-dev
+      - libopenni-dev
+before_install:
+  - bash .travis.sh before-install
+
 env:
-  matrix:
-    - TASK="build"
   global:
     - secure: XQw5SBf/7b1SHFR+kKklBWhWVgNvm4vIi+wwyajFSbDLOPpsAqtnDKeA2DV9ciaQJ3CVAvBoyxYgzAvpbsb5k95jadbvu9aSlo/AQnAbz+8DhkJL25DwJAn8G4s4zD1MFi7P4fxJHZsv/l9UcdW4BzjEhh0VidWCO4hP6I9BAQc=
     - secure: dRKTSeQI2Jad+/K9XCkNZxuu8exPi2wGzf6D0ogd1Nb2ZIUsOtnHSME4DO+xv7F5ZYrythHTrfezQl5hhcK+cr7A12okxlvmF/gVFuGCBPkUbyWPOrxx/Ic5pqdVnmrMFG1hFmr1KmOxCVx0F48JfGNd4ZgtUBAmnIomRp8sXRI=
@@ -30,32 +55,35 @@ env:
     - secure: WTZ238yAEfXRyll1n8yau3FUW9HTvq6scKIl9AmNZrnzTr9dktupWrBVV6CtvaufT1mSmDigZ7VGC6T71HkyRIyb2qfVTrnjnxE96Wtcci6PfkuQc2L2puuZYo8dXaBRoOgJKGHFo/uKVKWnp7t55dp3lBJJmclHhon+K2hMSJw=
     - secure: LNsNoBvqY/jYDoBjWCE5cM+f1H8xOwSBc/tbWZo6E/jPRjUOLzXSicMMUMrlVto+bFzSUT8OVajV3XmoRx+Qntzv6bDSAGjdycvHd2YZQPn8BYrsFtR4So7SsJkF9FlxzbiOXaiSRpwGn7TP/DO7Neubrr4IS2ef4nWowGrnCE8=
     - secure: PZivWbaCWFA2BFFY8n3UMxdEWjz7rBh568u9LF5LH3HgWADnfiwWzNriACqX9fhe7tSmDru5Bk978s+xPPAY9v24cfiDEX5a5MQ/XVr2rP48n3vlUDWERDhIodJ73F9F9GGZXToGdNz0MBUAHgiv7Lb0GYUfmOYzUJjWghngLBw=
-matrix:
+
+jobs:
   include:
+    - stage: Core Build
+      env: TASK="build"
+      compiler: gcc
+      script: bash .travis.sh $TASK
+    - env: TASK="build"
+      compiler: clang
+      script: bash .travis.sh $TASK
+    - stage: Extended Build and Tests
+      compiler: clang
+      env: TASK="build-examples"
+      script: bash .travis.sh $TASK
+    - compiler: clang
+      env: TASK="build-tools"
+      script: bash .travis.sh $TASK
+    # - compiler: clang
+    #   env: TASK="build-apps"
+    #   script: bash .travis.sh $TASK
     - compiler: gcc
-      env: TASK="test"
-    - env: TASK="doc"
-addons:
-  apt:
-    sources:
-      - kalakris-cmake
-      - boost-latest
-      - kubuntu-backports
-    packages:
-      - cmake
-      - libboost1.55-all-dev
-      - libeigen3-dev
-      - libgtest-dev
-      - doxygen-latex
-      - dvipng
-      - libusb-1.0-0-dev
-cache:
-  directories:
-  - $HOME/flann
-  - $HOME/vtk
-  - $HOME/qhull
-  - $HOME/doxygen
-before_install:
-  - bash .travis.sh install
-script:
-  - bash .travis.sh $TASK
+      env: TASK="doc"
+      script: bash .travis.sh $TASK
+    - compiler: gcc
+      env: TASK="test-core"
+      script: bash .travis.sh $TASK
+    - compiler: gcc
+      env: TASK="test-ext-1"
+      script: bash .travis.sh $TASK
+    - compiler: gcc
+      env: TASK="test-ext-2"
+      script: bash .travis.sh $TASK

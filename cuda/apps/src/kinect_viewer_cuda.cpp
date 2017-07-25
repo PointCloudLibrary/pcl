@@ -65,7 +65,7 @@ class KinectViewerCuda
       pcl::PointCloud<pcl::PointXYZRGB>::Ptr output (new pcl::PointCloud<pcl::PointXYZRGB>);
       pcl::cuda::toPCL (*data, *output);
 
-      viewer.showCloud (output);
+      viewer.showCloud (output, "cloud");
 
     }
     

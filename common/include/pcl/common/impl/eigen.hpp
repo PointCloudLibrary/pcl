@@ -738,6 +738,9 @@ template <typename Derived, typename OtherDerived>
 typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type
 pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<OtherDerived>& dst, bool with_scaling)
 {
+#if EIGEN_VERSION_AT_LEAST (3, 3, 0)
+  return Eigen::umeyama (src, dst, with_scaling);
+#else
   typedef typename Eigen::internal::umeyama_transform_matrix_type<Derived, OtherDerived>::type TransformationMatrixType;
   typedef typename Eigen::internal::traits<TransformationMatrixType>::Scalar Scalar;
   typedef typename Eigen::NumTraits<Scalar>::Real RealScalar;
@@ -780,37 +783,17 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
 
   // Eq. (39)
   VectorType S = VectorType::Ones (m);
-  if (sigma.determinant () < 0) 
+
+  if  ( svd.matrixU ().determinant () * svd.matrixV ().determinant () < 0 )
     S (m - 1) = -1;
 
   // Eq. (40) and (43)
-  const VectorType& d = svd.singularValues ();
-  Index rank = 0; 
-  for (Index i = 0; i < m; ++i) 
-    if (!Eigen::internal::isMuchSmallerThan (d.coeff (i), d.coeff (0))) 
-      ++rank;
-  if (rank == m - 1) 
-  {
-    if (svd.matrixU ().determinant () * svd.matrixV ().determinant () > 0) 
-      Rt.block (0, 0, m, m).noalias () = svd.matrixU () * svd.matrixV ().transpose ();
-    else 
-    {
-      const Scalar s = S (m - 1); 
-      S (m - 1) = -1;
-      Rt.block (0, 0, m, m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
-      S (m - 1) = s;
-    }
-  } 
-  else 
-  {
-    Rt.block (0, 0, m, m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
-  }
+  Rt.block (0,0,m,m).noalias () = svd.matrixU () * S.asDiagonal () * svd.matrixV ().transpose ();
 
-  // Eq. (42)
   if (with_scaling)
   {
     // Eq. (42)
-    const Scalar c = 1 / src_var * svd.singularValues ().dot (S);
+    const Scalar c = Scalar (1)/ src_var * svd.singularValues ().dot (S);
 
     // Eq. (41)
     Rt.col (m).head (m) = dst_mean;
@@ -824,6 +807,7 @@ pcl::umeyama (const Eigen::MatrixBase<Derived>& src, const Eigen::MatrixBase<Oth
   }
 
   return (Rt);
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -38,7 +38,16 @@
 #ifndef PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
 #define PCL_OCTREE_POINTCLOUD_ADJACENCY_HPP_
 
-#include <pcl/octree/octree_pointcloud_adjacency.h>
+#include <pcl/console/print.h>
+#include <pcl/common/geometry.h>
+/*
+ * OctreePointCloudAdjacency is not precompiled, since it's used in other
+ * parts of PCL with custom LeafContainers. So if PCL_NO_PRECOMPILE is NOT
+ * used, octree_pointcloud_adjacency.h includes this file but octree_pointcloud.h
+ * would not include the implementation because it's precompiled. So we need to
+ * include it here "manually".
+ */
+#include <pcl/octree/impl/octree_pointcloud.hpp>
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT> 

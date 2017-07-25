@@ -241,9 +241,9 @@ class OpenNIViewer
           }
 
           if (image->getEncoding() == openni_wrapper::Image::RGB)
-            image_viewer_->addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight ());
+            image_viewer_->addRGBImage (image->getMetaData ().Data (), image->getWidth (), image->getHeight (), "rgb_image");
           else
-            image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight ());
+            image_viewer_->addRGBImage (rgb_data_, image->getWidth (), image->getHeight (), "rgb_image");
           image_viewer_->spinOnce ();
         }
         
@@ -351,17 +351,25 @@ main (int argc, char** argv)
   if (pcl::console::find_argument (argc, argv, "-xyz") != -1)
     xyz = true;
   
-  pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
+  try
+  {
+    pcl::OpenNIGrabber grabber (device_id, depth_mode, image_mode);
   
-  if (xyz || !grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
-  {
-    OpenNIViewer<pcl::PointXYZ> openni_viewer (grabber);
-    openni_viewer.run ();
+    if (xyz || !grabber.providesCallback<pcl::OpenNIGrabber::sig_cb_openni_point_cloud_rgb> ())
+    {
+      OpenNIViewer<pcl::PointXYZ> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
+    else
+    {
+      OpenNIViewer<pcl::PointXYZRGBA> openni_viewer (grabber);
+      openni_viewer.run ();
+    }
   }
-  else
+  catch (pcl::IOException& e)
   {
-    OpenNIViewer<pcl::PointXYZRGBA> openni_viewer (grabber);
-    openni_viewer.run ();
+    pcl::console::print_error ("Failed to create a grabber: %s\n", e.what ());
+    return (1);
   }
   
   return (0);

@@ -91,7 +91,7 @@ macro(find_boost)
   else(${CMAKE_VERSION} VERSION_LESS 2.8.5)
     set(Boost_ADDITIONAL_VERSIONS
       "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@.@Boost_SUBMINOR_VERSION@" "@Boost_MAJOR_VERSION@.@Boost_MINOR_VERSION@"
-      "1.61.0" "1.61" "1.60.0" "1.60"
+      "1.64.0" "1.64" "1.63.0" "1.63" "1.62.0" "1.62" "1.61.0" "1.61" "1.60.0" "1.60"
       "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55"
       "1.54.0" "1.54" "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
       "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47")
@@ -122,12 +122,11 @@ macro(find_eigen)
   find_path(EIGEN_INCLUDE_DIRS Eigen/Core
     HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
           "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/Eigen 3.0.0" "$ENV{PROGRAMW6432}/Eigen 3.0.0"
+    PATHS "$ENV{PROGRAMFILES}/Eigen3" "$ENV{PROGRAMW6432}/Eigen3"
           "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
     PATH_SUFFIXES eigen3 include/eigen3 include)
   find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
-  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS} -DEIGEN_USE_NEW_STDVECTOR 
-      -DEIGEN_YES_I_KNOW_SPARSE_MODULE_IS_NOT_STABLE_YET)
+  set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
 endmacro(find_eigen)
 
 #remove this as soon as qhull is shipped with FindQhull.cmake
@@ -270,7 +269,7 @@ macro(find_ensenso)
   endif()
 
   if(NOT ENSENSO_ROOT AND ("@HAVE_ENSENSO@" STREQUAL "TRUE"))
-    get_filename_component(ENSENSO_ABI_HINT @ENSENSO_INCLUDE_DIR@ PATH)
+    get_filename_component(ENSENSO_ABI_HINT "@ENSENSO_INCLUDE_DIR@" PATH)
   endif()
 
   find_path(ENSENSO_INCLUDE_DIR nxLib.h
@@ -475,9 +474,6 @@ macro(find_VTK)
   endif(PCL_ALL_IN_ONE_INSTALLER AND NOT ANDROID)
   if(NOT ANDROID)
     find_package(VTK ${QUIET_})
-    if (VTK_FOUND)
-      set(VTK_LIBRARIES "@VTK_LIBRARIES@")
-    endif(VTK_FOUND)
   endif()
 endmacro(find_VTK)
 
@@ -721,7 +717,7 @@ if(WIN32 AND NOT MINGW)
   get_filename_component(PCL_ROOT "${PCL_DIR}" PATH)
 else(WIN32 AND NOT MINGW)
 # PCLConfig.cmake is installed to PCL_ROOT/share/pcl-x.y
-  set(PCL_ROOT "@CMAKE_INSTALL_PREFIX@")
+  get_filename_component(PCL_ROOT "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
 endif(WIN32 AND NOT MINGW)
 
 # check whether PCLConfig.cmake is found into a PCL installation or in a build tree
@@ -754,6 +750,9 @@ endif(EXISTS "${PCL_ROOT}/include/pcl-${PCL_VERSION_MAJOR}.${PCL_VERSION_MINOR}/
 #set a suffix for debug libraries
 set(PCL_DEBUG_SUFFIX "@CMAKE_DEBUG_POSTFIX@")
 set(PCL_RELEASE_SUFFIX "@CMAKE_RELEASE_POSTFIX@")
+
+#set SSE flags used compiling PCL
+list(APPEND PCL_DEFINITIONS "@PCLCONFIG_SSE_DEFINITIONS@")
 
 set(pcl_all_components @PCLCONFIG_AVAILABLE_COMPONENTS@ )
 list(LENGTH pcl_all_components PCL_NB_COMPONENTS)

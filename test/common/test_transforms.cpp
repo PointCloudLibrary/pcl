@@ -52,7 +52,7 @@ using namespace pcl::io;
 using namespace std;
 
 const float PI = 3.14159265f;
-const float rho = sqrtf (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
+const float rho = std::sqrt (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
 
 PointCloud<PointXYZ> cloud;
 pcl::PCLPointCloud2 cloud_blob;

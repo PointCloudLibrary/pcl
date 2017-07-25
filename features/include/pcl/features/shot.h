@@ -94,7 +94,7 @@ namespace pcl
         shot_ (), lrf_radius_ (0),
         sqradius_ (0), radius3_4_ (0), radius1_4_ (0), radius1_2_ (0),
         nr_grid_sector_ (32),
-        maxAngularSectors_ (28),
+        maxAngularSectors_ (32),
         descLength_ (0)
       {
         feature_name_ = "SHOTEstimation";

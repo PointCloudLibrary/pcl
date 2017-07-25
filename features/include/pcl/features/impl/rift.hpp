@@ -78,7 +78,7 @@ pcl::RIFTEstimation<PointInT, GradientT, PointOutT>::computeRIFT (
 
     // Normalize distance and angle values to: 0.0 <= d,g < nr_distances_bins,nr_gradient_bins
     const float eps = std::numeric_limits<float>::epsilon ();
-    float d = static_cast<float> (nr_distance_bins) * sqrtf (sqr_distances[idx]) / (radius + eps);
+    float d = static_cast<float> (nr_distance_bins) * std::sqrt (sqr_distances[idx]) / (radius + eps);
     float g = static_cast<float> (nr_gradient_bins) * gradient_angle_from_center / (static_cast<float> (M_PI) + eps);
 
     // Compute the bin indices that need to be updated
