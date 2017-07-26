@@ -41,10 +41,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/io/vtk_io.h>
 #include <pcl/features/normal_3d.h>
-#include <pcl/surface/mls.h>
-#include <pcl/surface/gp3.h>
 #include <pcl/surface/ball_pivoting.h>
 #include <pcl/common/common.h>
 
@@ -66,30 +63,34 @@ search::KdTree<PointNormal>::Ptr tree4;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BallPivotingTest)
 {
+  pcl::PolygonMesh mesh_fixed_radius;
+  pcl::PolygonMesh mesh_found_radius;
+
   BallPivoting<PointNormal> pivoter;
   pivoter.setInputCloud (cloud_with_normals);
   pivoter.setSearchMethod (tree2);
-  pivoter.setSearchRadius (0.02); // pivoter.setEstimatedRadius (10, 5, 0.9f); is random
 
-  PointCloud<PointNormal> points;
-  std::vector<Vertices> vertices;
-  pivoter.reconstruct (points, vertices);
+  pivoter.setSearchRadius (0.02);
+  pivoter.reconstruct (mesh_fixed_radius);
+
+  pivoter.setEstimatedRadius (100, 5, 0.95f); 
+  pivoter.reconstruct (mesh_found_radius);
   
-  EXPECT_NEAR (points.points[points.size()/2].x, 0.01097, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y, 0.11058, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, 0.039648, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 204);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 208);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 206);
+  const std::vector<Vertices> &polygons_fixed_radius = mesh_fixed_radius.polygons;
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[0], 88);
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[1], 89);
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[2], 98);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[0], 118);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[1], 121);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[2], 119);
 
-  pivoter.setEstimatedRadius (10, 5, 0.9f); 
-
-  EXPECT_NEAR (points.points[points.size()/2].x, 0.01097, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].y, 0.11058, 1e-3);
-  EXPECT_NEAR (points.points[points.size()/2].z, 0.039648, 1e-3);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[0], 204);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[1], 208);
-  EXPECT_EQ (vertices[vertices.size ()/2].vertices[2], 206);
+  const std::vector<Vertices> &polygons_found_radius = mesh_found_radius.polygons;
+  EXPECT_EQ (polygons_found_radius[100].vertices[0], 82);
+  EXPECT_EQ (polygons_found_radius[100].vertices[1], 84);
+  EXPECT_EQ (polygons_found_radius[100].vertices[2], 88);
+  EXPECT_EQ (polygons_found_radius[200].vertices[0], 30);
+  EXPECT_EQ (polygons_found_radius[200].vertices[1], 40);
+  EXPECT_EQ (polygons_found_radius[200].vertices[2], 41);
 }
 
 
@@ -133,7 +134,7 @@ main (int argc, char** argv)
     pcl::PCLPointCloud2 cloud_blob1;
     loadPCDFile (argv[2], cloud_blob1);
     fromPCLPointCloud2 (cloud_blob1, *cloud1);
-        // Create search tree
+    // Create search tree
     tree3.reset (new search::KdTree<PointXYZ> (false));
     tree3->setInputCloud (cloud1);
 
