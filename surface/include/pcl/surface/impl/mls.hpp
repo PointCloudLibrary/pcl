@@ -116,22 +116,28 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
       float tmp = static_cast<float> (search_radius_ / 2.0f);
       boost::uniform_real<float> uniform_distrib (-tmp, tmp);
       rng_uniform_distribution_.reset (new boost::variate_generator<boost::mt19937&, boost::uniform_real<float> > (rng_alg_, uniform_distrib));
-
-      mls_results_.resize (1); // Need to have a reference to a single dummy result.
       
       break;
     }
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
       {
-        mls_results_.resize (input_->size ());
+        cache_mls_results_ = true;
         break;
       }
     default:
       {
-        mls_results_.resize (1); // Need to have a reference to a single dummy result.
         break;
       }
+  }
+
+  if (cache_mls_results_)
+  {
+    mls_results_.resize (input_->size ());
+  }
+  else
+  {
+    mls_results_.resize (1); // Need to have a reference to a single dummy result.
   }
 
   // Perform the actual surface reconstruction
@@ -271,6 +277,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
     P_weight_Pt.llt ().solveInPlace (c_vec);
   }
 
+  if (cache_mls_results_)
+  {
+    mls_result = MLSResult (point, plane_normal, u_axis, v_axis, c_vec, static_cast<int> (nn_indices.size ()), curvature);
+  }
+
   switch (upsample_method_)
   {
     case (NONE):
@@ -396,9 +407,6 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
     {
-      // Take all point pairs and sample space between them in a grid-fashion
-      // \note consider only point pairs with increasing indices
-      mls_result = MLSResult (point, plane_normal, u_axis, v_axis, c_vec, static_cast<int> (nn_indices.size ()), curvature);
       break;
     }
   }
@@ -494,7 +502,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performProcessing (PointCloudOut &
     // Get a plane approximating the local surface's tangent and project point onto it
     int index = (*indices_)[cp];
     
-    if (upsample_method_ == VOXEL_GRID_DILATION || upsample_method_ == DISTINCT_CLOUD)
+    if (cache_mls_results_)
       mls_result_index = index; // otherwise we give it a dummy location.
 
     computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points, projected_points_normals, *corresponding_input_indices_, mls_results_[mls_result_index]);
@@ -557,7 +565,7 @@ pcl::MovingLeastSquaresOMP<PointInT, PointOutT>::performProcessing (PointCloudOu
         int index = (*indices_)[cp];
         size_t mls_result_index = 0;
         
-        if (upsample_method_ == VOXEL_GRID_DILATION || upsample_method_ == DISTINCT_CLOUD)
+        if (this->cache_mls_results_)
           mls_result_index = index; // otherwise we give it a dummy location.
         
         this->computeMLSPointNormal (index, nn_indices, nn_sqr_dists, projected_points[tn], projected_points_normals[tn], corresponding_input_indices[tn], this->mls_results_[mls_result_index]);
