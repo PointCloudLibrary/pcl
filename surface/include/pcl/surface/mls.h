@@ -91,6 +91,28 @@ namespace pcl
 
       enum UpsamplingMethod {NONE, DISTINCT_CLOUD, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION};
 
+      /** \brief Data structure used to store the results of the MLS fitting
+        * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
+        */
+      struct MLSResult
+      {
+        MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
+
+        MLSResult (const Eigen::Vector3d &a_mean,
+                   const Eigen::Vector3d &a_plane_normal,
+                   const Eigen::Vector3d &a_u,
+                   const Eigen::Vector3d &a_v,
+                   const Eigen::VectorXd a_c_vec,
+                   const int a_num_neighbors,
+                   const float &a_curvature);
+
+        Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
+        Eigen::VectorXd c_vec;
+        int num_neighbors;
+        float curvature;
+        bool valid;
+      };
+
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
                               normals_ (),
@@ -106,6 +128,7 @@ namespace pcl
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
                               desired_num_points_in_radius_ (0),
+                              cache_mls_results_ (false),
                               mls_results_ (),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
@@ -283,6 +306,22 @@ namespace pcl
       inline int
       getDilationIterations () { return dilation_iteration_num_; }
 
+      /** \brief Set wether the mls results should be stored for each point in the input cloud
+        * \param[in] True if the mls results should be stored, otherwise false.
+        */
+      inline void
+      setCacheMLSResults (bool cache_mls_results) { cache_mls_results_ = cache_mls_results; }
+
+      /** \brief Get the cache_mls_results_ value (True if the mls results should be stored, otherwise false). */
+      inline bool
+      getCacheMLSResults () const { return cache_mls_results_; }
+
+      /** \brief Get the MLSResults for input cloud
+        * \note The results are only stored if setCacheMLSResults(true) was called
+        *       or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
+        */
+      inline const std::vector<MLSResult>& getMLSResults() const { return mls_results_; }
+
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
         */
@@ -341,28 +380,8 @@ namespace pcl
         */
       int desired_num_points_in_radius_;
 
-      
-      /** \brief Data structure used to store the results of the MLS fitting
-        * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
-        */
-      struct MLSResult
-      {
-        MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
-
-        MLSResult (const Eigen::Vector3d &a_mean,
-                   const Eigen::Vector3d &a_plane_normal,
-                   const Eigen::Vector3d &a_u,
-                   const Eigen::Vector3d &a_v,
-                   const Eigen::VectorXd a_c_vec,
-                   const int a_num_neighbors,
-                   const float &a_curvature);
-
-        Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
-        Eigen::VectorXd c_vec;
-        int num_neighbors;
-        float curvature;
-        bool valid;
-      };
+      /** \brief True if the mls results for the input cloud should be stored */
+      bool cache_mls_results_;
 
       /** \brief Stores the MLS result for each point in the input cloud
         * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
@@ -549,6 +568,7 @@ namespace pcl
       using MovingLeastSquares<PointInT, PointOutT>::order_;
       using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
       using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
+      using MovingLeastSquares<PointInT, PointOutT>::cache_mls_results_;
       using MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION;
       using MovingLeastSquares<PointInT, PointOutT>::DISTINCT_CLOUD;
 
