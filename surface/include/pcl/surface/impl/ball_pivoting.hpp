@@ -66,22 +66,6 @@ namespace pcl
   }
   
   /**
-   * @brief is_positions_near checks whether any pair of three points are near
-   * @param pos0
-   * @param pos1
-   * @param pos2
-   * @param threshold threshold for whether two points are near
-   * @return
-   */
-  bool
-  is_positions_near (const Eigen::Vector3f &pos0, const Eigen::Vector3f &pos1, 
-                     const Eigen::Vector3f &pos2, const float threshold)
-  {
-    return (pos0 - pos1).norm () < threshold || (pos1 - pos2).norm () < threshold 
-      || (pos2 - pos0).norm () < threshold;
-  }
-  
-  /**
    * @brief get_id_point_in_sphere returns the index of points which are in sphere
    *        with center and radius as given
    * @param kdtree kdtree containing the point cloud
@@ -92,11 +76,13 @@ namespace pcl
   template<typename PointNT>
   std::vector<int>
   get_id_point_in_sphere (const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree, 
-                          const PointNT &center, const double radius)
+                          const Eigen::Vector3f &center, const double radius)
   {
+    PointNT center_point;
     std::vector<int> indices;
     std::vector<float> sqr_distances;
-    kdtree->radiusSearch (center, radius, indices, sqr_distances);
+    center_point.getVector3fMap () = center;
+    kdtree->radiusSearch (center_point, radius, indices, sqr_distances);
     return indices;
   }
   
@@ -109,26 +95,12 @@ namespace pcl
    */
   template<typename PointNT>
   size_t
-  num_point_in_sphere (const PointNT &center, const float radius, 
+  num_point_in_sphere (const Eigen::Vector3f &center, const float radius, 
                        const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree)
   {
-    return get_id_point_in_sphere (kdtree, center, radius).size ();
+    return get_id_point_in_sphere<PointNT> (kdtree, center, radius).size ();
   }
-  
-  /**
-   * @brief vec2pointnormal returns a point with vector as coordinate
-   * @param vector
-   * @return
-   */
-  template<typename PointNT>
-  boost::shared_ptr<PointNT>
-  vec2pointnormal (const Eigen::Vector3f &vector)
-  {
-    boost::shared_ptr<PointNT> point = boost::shared_ptr<PointNT> (new PointNT ());
-    point->getVector3fMap () = vector;
-    return point;
-  }
-  
+   
   /**
    * checks whether normal is consistent with the normal vectors of points with indexes
    * @tparam PointNT
@@ -318,12 +290,12 @@ namespace pcl
   }
   
   template<typename PointNT>
-  boost::shared_ptr<PointNT>
+  boost::shared_ptr<Eigen::Vector3f>
   BallPivoting<PointNT>::getBallCenter (const bool is_back_first, 
                                         std::vector<uint32_t> &index, 
                                         bool &is_back_ball) const
   {
-    boost::shared_ptr<PointNT> center;
+    boost::shared_ptr<Eigen::Vector3f> center;
     // for checking whether three points are collinear
     const Eigen::Vector3f pos0 (input_->at (index.at (0)).getVector3fMap ());
     const Eigen::Vector3f pos1 (input_->at (index.at (1)).getVector3fMap ());
@@ -333,7 +305,9 @@ namespace pcl
     const Eigen::Vector3f vec1 = (pos2 - pos0).normalized ();
   
     // the three points should not be too near or collinear
-    if (!is_positions_near (pos0, pos1, pos2, threshold_distance_near_) &&
+    if ((pos0 - pos1).norm () > threshold_distance_near_ && 
+        (pos1 - pos2).norm () > threshold_distance_near_ && 
+        (pos2 - pos0).norm () > threshold_distance_near_ && 
         fabs (vec0.dot (vec1)) < threshold_collinear_cos_)
     {
       Eigen::Vector3f center_circle = get_circle_center (pos0, pos1, pos2);
@@ -343,7 +317,7 @@ namespace pcl
       if (radius_planar < radius_)
       {
         Eigen::Vector3f normal = vec0.cross (vec1).normalized ();
-        boost::shared_ptr<PointNT> center_candidate;
+        Eigen::Vector3f center_candidate;
         const float dist_normal = sqrt ((float) radius_ * radius_ - radius_planar * radius_planar);
         if (!is_normal_consistent<PointNT> (normal, index, input_))
         {
@@ -355,36 +329,36 @@ namespace pcl
   
         if (is_back_first)
         {
-          center_candidate = vec2pointnormal<PointNT> (Eigen::Vector3f (center_circle - normal));
-          if (num_point_in_sphere (*center_candidate, radius_, tree_) <= 3)
+          center_candidate = center_circle - normal;
+          if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
           {
-            center = center_candidate;
+            center = boost::make_shared<Eigen::Vector3f> (center_candidate);
             is_back_ball = true;
           }
           else if (is_allow_flip_)
           {
-            center_candidate = vec2pointnormal<PointNT> (Eigen::Vector3f (center_circle + normal));
-            if (num_point_in_sphere (*center_candidate, radius_, tree_) <= 3)
+            center_candidate = center_circle + normal;
+            if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
             {
-              center = center_candidate;
+              center = boost::make_shared<Eigen::Vector3f> (center_candidate);
               is_back_ball = false;
             }
           }
         }
         else
         {
-          center_candidate = vec2pointnormal<PointNT> (Eigen::Vector3f (center_circle + normal));
-          if (num_point_in_sphere (*center_candidate, radius_, tree_) <= 3)
+          center_candidate = center_circle + normal;
+          if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
           {
-            center = center_candidate;
+            center = boost::make_shared<Eigen::Vector3f> (center_candidate);
             is_back_ball = false;
           }
           else if (is_allow_flip_)
           {
-            center_candidate = vec2pointnormal<PointNT> (Eigen::Vector3f (center_circle - normal));
-            if (num_point_in_sphere (*center_candidate, radius_, tree_) <= 3)
+            center_candidate = center_circle - normal;
+            if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
             {
-              center = center_candidate;
+              center = boost::make_shared<Eigen::Vector3f> (center_candidate);
               is_back_ball = true;
             }
           }
@@ -397,20 +371,20 @@ namespace pcl
   
   template<typename PointNT>
   bool
-  BallPivoting<PointNT>::pivot (const Edge &edge, uint32_t &id_extended, 
-                                PointNT &center_new, bool &is_back_ball) const
+  BallPivoting<PointNT>::pivot (const bpa::Front::Edge &edge, uint32_t &id_extended, 
+                                Eigen::Vector3f &center_new, bool &is_back_ball) const
   {
     const uint32_t id0 = edge.getIdVertice (0);
     const uint32_t id1 = edge.getIdVertice (1);
     const uint32_t id_op = edge.getIdOpposite ();
-    const Eigen::Vector3f center = edge.getCenter ().getVector3fMap ();
+    const Eigen::Vector3f center = edge.getCenter ();
     const Eigen::Vector3f v0 = input_->at (id0).getVector3fMap ();
     const Eigen::Vector3f v1 = input_->at (id1).getVector3fMap ();
     const Eigen::Vector3f mid = (v0 + v1) * 0.5f;
     // pivot opposite to normal direction, change direction for angle
     const Eigen::Vector4f plane = edge.isBackBall () ? get_plane_between (v0, v1) 
                                                      : get_plane_between (v1, v0);
-    pcl::PointCloud<PointNT> center_candidates;
+    std::vector<Eigen::Vector3f> center_candidates; // only store, no need to align
     std::vector<float> dot_candidates;
     std::vector<uint32_t> id_candidates;
     std::vector<bool> is_back_candidates;
@@ -418,8 +392,7 @@ namespace pcl
     const double search_radius = sqrt (radius_ * radius_ - (v0 - mid).dot (Eigen::Vector3f (v0 - mid))) 
                                + radius_;
     std::vector<uint32_t> point3 (3, 0);
-    std::vector<int> indices = get_id_point_in_sphere<PointNT> (tree_, *vec2pointnormal<PointNT> (mid), 
-                                                                search_radius);
+    std::vector<int> indices = get_id_point_in_sphere<PointNT> (tree_, mid, search_radius);
   
     center_candidates.reserve (indices.size ());
     dot_candidates.reserve (indices.size ());
@@ -441,12 +414,12 @@ namespace pcl
       // the three points are different, the normal of triangle is consistent to the normal vectors or vertices
       // and the cloud[point3[2]] has distance to plane smaller than radius
       bool is_back_bool;
-      boost::shared_ptr<PointNT> center_jr = getBallCenter (edge.isBackBall (), point3, is_back_bool);
+      boost::shared_ptr<Eigen::Vector3f> center_jr = getBallCenter (edge.isBackBall (), point3, is_back_bool);
   
       if (center_jr)
       {
         center_candidates.push_back (*center_jr);
-        dot_candidates.push_back (get_angle_rotation (center, center_jr->getVector3fMap (), mid, plane));
+        dot_candidates.push_back (get_angle_rotation (center, *center_jr, mid, plane));
         id_candidates.push_back ((uint32_t) *it);
         is_back_candidates.push_back (is_back_bool);
       }
@@ -489,11 +462,11 @@ namespace pcl
   void
   BallPivoting<PointNT>::proceedFront (std::vector<pcl::Vertices> &polygons)
   {
-    typename BallPivoting::Edge::Ptr edge;
-    while (edge = front_.getActiveEdge ())
+    bpa::Front::Edge::Ptr edge = front_.getActiveEdge ();
+    while (edge)
     {
       uint32_t id_ext;
-      PointNT center_new;
+      Eigen::Vector3f center_new;
       bool is_back_ball;
       if (!front_.isEdgeFinished (*edge) && pivot (*edge, id_ext, center_new, is_back_ball))
       {
@@ -509,15 +482,9 @@ namespace pcl
   
         is_used_.at (id_ext) = true;
         front_.addPoint (*edge, id_ext, center_new, is_back_ball);
-  
-        // pivoting succeeds, not boundary
-        front_.setFeedback (false);
       }
-      else
-      {
-        // not pivoted
-        front_.setFeedback (true);
-      }
+
+      edge = front_.getActiveEdge ();
     }
   }
   
@@ -536,7 +503,7 @@ namespace pcl
 
     is_used_.clear ();
     is_used_.resize (input_->size (), false);
-    front_ = Front ();
+    front_.clear ();
   
     // if radius is not valid, guess with default configuration (see default parameters of guess_radius)
     if (radius_ < 0.0)
@@ -550,7 +517,7 @@ namespace pcl
       proceedFront (polygons);
   
       pcl::Vertices::Ptr seed;
-      PointNT center;
+      Eigen::Vector3f center;
       bool is_back_ball;
       if (findSeed (seed, center, is_back_ball))
       {
@@ -582,7 +549,7 @@ namespace pcl
   
   template<typename PointNT>
   bool
-  BallPivoting<PointNT>::findSeed (pcl::Vertices::Ptr &seed, PointNT &center, bool &is_back_ball)
+  BallPivoting<PointNT>::findSeed (pcl::Vertices::Ptr &seed, Eigen::Vector3f &center, bool &is_back_ball)
   {
     const double search_radius = radius_ * 2.0;
   
@@ -597,7 +564,7 @@ namespace pcl
   
       std::vector<uint32_t> index3 (3, 0);
       std::vector<int> indices = get_id_point_in_sphere<PointNT> (
-          tree_, input_->at (id_search), search_radius);
+          tree_, input_->at (id_search).getVector3fMap (), search_radius);
       if (indices.size () < 3)
       {
         continue;
@@ -624,18 +591,18 @@ namespace pcl
           index3.at (1) = index1;
           index3.at (2) = index2;
   
-          bool is_back_ball;
-          boost::shared_ptr<PointNT> center_ = getBallCenter (false, index3, is_back_ball);
+          bool is_back_ball_local;
+          boost::shared_ptr<Eigen::Vector3f> center_ = getBallCenter (false, index3, is_back_ball_local);
           if (!center_ && is_allow_back_ball_)
           {
-            center_ = getBallCenter (true, index3, is_back_ball);
+            center_ = getBallCenter (true, index3, is_back_ball_local);
           }
           if (center_)
           {
             seed = pcl::Vertices::Ptr (new pcl::Vertices ());
             seed->vertices = index3;
             center = *center_;
-            is_back_ball = is_back_ball;
+            is_back_ball = is_back_ball_local;
             is_used_.at (index3.at (0)) = true;
             is_used_.at (index3.at (1)) = true;
             is_used_.at (index3.at (2)) = true;
@@ -648,209 +615,6 @@ namespace pcl
       is_used_.at (id_search) = true;
     }
     return false;
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Edge::Edge ()
-  {
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Edge::Edge (const uint32_t id0, const uint32_t id1)
-  {
-    id_vertices_.resize (2);
-    id_vertices_.at (0) = id0;
-    id_vertices_.at (1) = id1;
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Edge::Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, 
-  	                             const PointNT &center, const bool is_back_ball):
-    id_vertices_ (edge), 
-    id_opposite_ (id_opposite), 
-    center_ (center), 
-    is_back_ball_ (is_back_ball)
-  {
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Edge::~Edge ()
-  {
-  }
-  
-  template<typename PointNT>
-  PointNT
-  BallPivoting<PointNT>::Edge::getCenter () const
-  {
-    return center_;
-  }
-  
-  template<typename PointNT>
-  uint32_t
-  BallPivoting<PointNT>::Edge::getIdVertice (const size_t id) const
-  {
-    return id_vertices_.at (id);
-  }
-  
-  template<typename PointNT>
-  uint32_t
-  BallPivoting<PointNT>::Edge::getIdOpposite () const
-  {
-    return id_opposite_;
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Edge::setIdVertice (const size_t id, const uint32_t id_vertice)
-  {
-    id_vertices_.at (id) = id_vertice;
-  }
-  
-  template<typename PointNT>
-  bool
-  BallPivoting<PointNT>::Edge::isBackBall () const
-  {
-    return is_back_ball_;
-  }
-  
-  template<typename PointNT>
-  std::pair<uint32_t, uint32_t>
-  BallPivoting<PointNT>::Edge::getSignature () const
-  {
-    return std::pair<uint32_t, uint32_t> (id_vertices_.at (0), id_vertices_.at (1));
-  }
-  
-  template<typename PointNT>
-  std::pair<uint32_t, uint32_t>
-  BallPivoting<PointNT>::Edge::getSignatureReverse () const
-  {
-    return std::pair<uint32_t, uint32_t> (id_vertices_.at (1), id_vertices_.at (0));
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Front::Front ()
-  {
-    clear ();
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::Front::~Front ()
-  {
-  }
-  
-  template<typename PointNT>
-  typename BallPivoting<PointNT>::Edge::Ptr
-  BallPivoting<PointNT>::Front::getActiveEdge ()
-  {
-    typename Edge::Ptr re;
-    if (!front_.empty ())
-    {
-      re = boost::make_shared<Edge> (front_.begin ()->second);
-      current_edge_ = re;
-      front_.erase (front_.begin ());
-    }
-    return re;
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::setFeedback (const bool is_boundary)
-  {
-    if (is_boundary)
-    {
-      boundary_[current_edge_->getSignature ()] = *current_edge_;
-    }
-    finished_.insert (current_edge_->getSignature ());
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::addTriangle (const pcl::Vertices::ConstPtr &seed, 
-                                             const PointNT &center,
-                                             const bool is_back_ball)
-  {
-    for (size_t idv = 0; idv < 3; ++idv)
-    {
-      std::vector<uint32_t> edge (2, 0);
-      edge.at (0) = seed->vertices.at (idv);
-      edge.at (1) = seed->vertices.at ((idv + 2) % 3);
-  
-      addEdge (Edge (edge, seed->vertices.at ((idv + 1) % 3), center, is_back_ball));
-    }
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::addPoint (const Edge &last_edge, const uint32_t id_vertice_extended, 
-                                          const PointNT &center, const bool is_back_ball)
-  {
-    std::vector<uint32_t> edge (2, 0);
-  
-    edge.at (0) = last_edge.getIdVertice (0);
-    edge.at (1) = id_vertice_extended;
-    addEdge (Edge (edge, last_edge.getIdVertice (1), center, is_back_ball));
-  
-    edge.at (0) = id_vertice_extended;
-    edge.at (1) = last_edge.getIdVertice (1);
-    addEdge (Edge (edge, last_edge.getIdVertice (0), center, is_back_ball));
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::addEdge (const Edge &edge)
-  {
-    if (!isEdgeOnFront (edge))
-    {
-      front_[Signature (edge.getIdVertice (0), edge.getIdVertice (1))] = edge;
-    }
-  }
-  
-  template<typename PointNT>
-  bool
-  BallPivoting<PointNT>::Front::isEdgeOnFront (const Edge &edge) const
-  {
-    // toggle comment to delete one-directionally
-    return front_.find (edge.getSignature ()) != front_.end () ||
-           front_.find (edge.getSignatureReverse ()) != front_.end ();
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::removeEdge (const uint32_t id0, const uint32_t id1)
-  {
-    if (!front_.empty ())
-    {
-      typename std::map<Signature, Edge>::iterator loc = front_.find (Signature (id0, id1));
-      if (loc != front_.end ())
-      {
-        front_.erase (loc);
-      }
-      else // comment to delete one-directionally
-      {
-        loc = front_.find (Signature (id1, id0));
-        if (loc != front_.end ())
-        {
-          front_.erase (loc);
-        }
-      }
-    }
-  }
-  
-  template<typename PointNT>
-  void
-  BallPivoting<PointNT>::Front::clear ()
-  {
-    front_.clear ();
-    boundary_.clear ();
-    current_edge_.reset ();
-  }
-  
-  template<typename PointNT>
-  bool
-  BallPivoting<PointNT>::Front::isEdgeFinished (const Edge &edge) const
-  {
-    return finished_.find (edge.getSignature ()) != finished_.end () ||
-           finished_.find (edge.getSignatureReverse ()) != finished_.end ();
   }
 } // namespace pcl
 

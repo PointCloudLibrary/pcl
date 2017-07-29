@@ -45,9 +45,10 @@
   
 #include "pcl/surface/boost.h"
 #include "pcl/surface/reconstruction.h"
+#include "pcl/surface/ball_pivoting_front.h"
 
 namespace pcl
-{
+{  
   /**
    * This class is an implementation of ball pivoting algorithm(BPA) with some 
    * different details. BPA exhibits linear time complexity (besides searching 
@@ -65,198 +66,10 @@ namespace pcl
    *
    * \ingroup surface
    */
+
   template<typename PointNT>
   class BallPivoting: public SurfaceReconstruction<PointNT>
   {
-  protected:
-    /**
-     * This class describes the pivoting ball, which rolls on points and links the mesh.
-     */
-    class Edge
-    {
-    protected:
-      /** list of vertice index, should have length 2 */
-      std::vector<uint32_t> id_vertices_;
-      /** index of the opposite vertice, it and id_vertices_ form the last triangle */
-      uint32_t id_opposite_;
-      /** center point of the last ball, it may not be one in the cloud */
-      PointNT center_;
-      /** whether this ball it to the it rolled in the back face of surface (not normal direction) */
-      bool is_back_ball_;
-  
-    public:
-      Edge ();
-  
-      /**
-       * a fake constructor with only vertice index on edge
-       * @param id0 index of start point on edge
-       * @param id1 index of end point on edge
-       */
-      Edge (const uint32_t id0, const uint32_t id1);
-  
-      /**
-       * real constructor for edge with full information
-       * @param edge list of vertice index on edge
-       * @param id_opposite index of opposite vertice
-       * @param center center point of the ball
-       * @param is_back_ball whether the ball was rolling on the back surface
-       */
-      Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, const PointNT &center,
-            const bool is_back_ball = false);
-  
-      ~Edge ();
-  
-      /**
-       * returns the center of ball
-       * @return
-       */
-      PointNT
-      getCenter () const;
-  
-      /**
-       * get the index of id-th vertice on edge, id should be either 0 or 1
-       * @param id
-       * @return
-       */
-      uint32_t
-      getIdVertice (const size_t id) const;
-  
-      /**
-       * get the index of opposite vertice
-       * @return
-       */
-      uint32_t
-      getIdOpposite () const;
-  
-      /**
-       * set the index of id-th vertice to be id_vertice
-       * @param id index inside edge. Should be 0 or 1
-       * @param id_vertice value of vertice index
-       */
-      void
-      setIdVertice (const size_t id, const uint32_t id_vertice);
-  
-      /**
-       * checks whether the ball was rolling on back surface
-       * @return
-       */
-      bool
-      isBackBall () const;
-  
-      /**
-       * get the signature of this edge, [index start vertice, index end vertice]
-       * @return
-       */
-      std::pair<uint32_t, uint32_t>
-      getSignature () const;
-  
-      /**
-       * get the reverse signature of this edge, [index end vertice, index start vertice]
-       * @return
-       */
-      std::pair<uint32_t, uint32_t>
-      getSignatureReverse () const;
-  
-      typedef boost::shared_ptr<Edge> Ptr;
-      typedef boost::shared_ptr<Edge const> ConstPtr;
-    };
-  
-    /**
-     * Front manages the edges, which ones are to be pivoted, which ones are pivoted.
-     */
-    class Front
-    {
-      typedef std::pair<uint32_t, uint32_t> Signature;
-    protected:
-      /** The set of edges to be pivoted */
-      std::map<Signature, Edge> front_;
-      /** The set of edges which are pivoted, but cannot reach suitable points. Edges here should be open boundary */
-      std::map<Signature, Edge> boundary_;
-      /** The set of successfully pivoted edges */
-      std::set<Signature> finished_;
-      /** The edge that is being pivoted and waiting for pivoting result: boundary or pivoted? */
-      typename Edge::Ptr current_edge_;
-  
-    public:
-      Front ();
-  
-      ~Front ();
-  
-      /**
-       * get one of the edges to pivot
-       * @return
-       */
-      typename Edge::Ptr
-      getActiveEdge ();
-  
-      /**
-       * add the three edges of one triangle to edges to pivot
-       * @param seed index of three vertices
-       * @param center the center of the ball
-       * @param is_back_ball whether the ball was pivoted on the back surface
-       */
-      void
-      addTriangle (const pcl::Vertices::ConstPtr &seed, const PointNT &center, const bool is_back_ball);
-  
-      /**
-       * extend the edges with one pivoted edge and vertice on new ball. the vertice on new ball should
-       * form two edges with the start vertice and end vertice of the old edge
-       * @param last_edge the edge which was pivoted and contributes two vertices to new edges
-       * @param id_vetice_extended index of the vertice to form new edges
-       * @param center center of the new ball
-       * @param is_back_ball whether ball is rolling on back surface
-       */
-      void
-      addPoint (const Edge &last_edge, const uint32_t id_vetice_extended, const PointNT &center, const bool is_back_ball);
-  
-      /**
-       * add one edge to edges to pivot
-       * @param edge
-       */
-      void
-      addEdge (const Edge &edge);
-  
-      /**
-       * checks whether edge is one the edges to pivot
-       * @param edge
-       * @return
-       */
-      bool
-      isEdgeOnFront (const Edge &edge) const;
-  
-      /**
-       * removes the edge with signature [id0,id1] or [id1,id0] in edges to pivoted
-       * @param id0
-       * @param id1
-       */
-      void
-      removeEdge (const uint32_t id0, const uint32_t id1);
-  
-      /**
-       * set the edge being pivoted as boundary or pivoted edge
-       * @param is_boundary
-       */
-      void
-      setFeedback (const bool is_boundary);
-  
-      /**
-       * reset the front
-       */
-      void
-      clear ();
-  
-      /**
-       * checks whether edge or the reversed edge is pivoted
-       * @param edge
-       * @return
-       */
-      bool
-      isEdgeFinished (const Edge &edge) const;
-  
-      typedef boost::shared_ptr<Front> Ptr;
-      typedef boost::shared_ptr<Front const> ConstPtr;
-    };
-
   public:
     typedef boost::shared_ptr<BallPivoting<PointNT> > Ptr;
     typedef boost::shared_ptr<const BallPivoting<PointNT> > ConstPtr;
@@ -273,7 +86,7 @@ namespace pcl
     /** is_used_[id] indicates whether point input_[id] is used for meshing */
     std::vector<bool> is_used_;
     /** edge manager */
-    Front front_;
+    bpa::Front front_;
     /** search radius. default value is -1, radius would be guessed if it is non-positive */
     double radius_;
     /** whether balls on the back surface would be considered */
@@ -293,7 +106,7 @@ namespace pcl
      * @return whether one triangle is found
      */
     bool
-    findSeed (pcl::Vertices::Ptr &seed, PointNT &center, bool &is_back_ball);
+    findSeed (pcl::Vertices::Ptr &seed, Eigen::Vector3f &center, bool &is_back_ball);
   
     /**
      * pivoting around edge
@@ -304,7 +117,8 @@ namespace pcl
      * @return whether pivoting is successful, if not, it is a bounday
      */
     bool
-    pivot (const Edge &edge, uint32_t &id_extended, PointNT &center_new, bool &is_back_ball) const;
+    pivot (const bpa::Front::Edge &edge, uint32_t &id_extended, 
+    	   Eigen::Vector3f &center_new, bool &is_back_ball) const;
   
     /**
      * pivot until the front has no edge to pivot
@@ -321,7 +135,7 @@ namespace pcl
      * @param is_back_ball whether the pivoted ball is on back surface
      * @return
      */
-    boost::shared_ptr<PointNT>
+    boost::shared_ptr<Eigen::Vector3f>
     getBallCenter (const bool is_back_first, std::vector<uint32_t> &index, bool &is_back_ball) const;
   
   public:
