@@ -38,22 +38,6 @@
 #ifndef PCL_BALL_PIVOTING_H_
 #define PCL_BALL_PIVOTING_H_
 
-/**
- * This class is an implementation of ball pivoting algorithm with some different details
- * @article{bernardini1999ball,
- *   title={The ball-pivoting algorithm for surface reconstruction},
- *   author={Bernardini, Fausto and Mittleman, Joshua and Rushmeier, Holly and Silva, Cl{\'a}udio and Taubin, Gabriel},
- *   journal={IEEE transactions on visualization and computer graphics},
- *   volume={5},
- *   number={4},
- *   pages={349--359},
- *   year={1999},
- *   publisher={IEEE}
- * }
- * author Tongxi Lou
- * email tongxi.lou@tum.de (tongxi.lou@gmx.de)
- */
-
 #include <memory>
 #include <vector>
 #include <map>
@@ -63,7 +47,24 @@
 #include "pcl/surface/reconstruction.h"
 
 namespace pcl
-{  
+{
+  /**
+   * This class is an implementation of ball pivoting algorithm(BPA) with some 
+   * different details. BPA exhibits linear time complexity (besides searching 
+   * complexity) and robustness to noise in real scanned data. The output mesh 
+   * is a manifold of an alpha-shape of the point set. BPA requires that the 
+   * points are distributed over the entire surface with a spatial frequency 
+   * greater than or equal to a certain minimum value (scale of pivoted ball).
+   *
+   * algorithm from
+   * Bernardini F., Mittleman J., Rushmeier H., Silva C., Taubin G., 
+   * "The ball-pivoting algorithm for surface reconstruction", TVCG'99
+   *
+   * author Tongxi Lou
+   * email tongxi.lou@tum.de (tongxi.lou@gmx.de if first one is canceled after graduation)
+   *
+   * \ingroup surface
+   */
   template<typename PointNT>
   class BallPivoting: public SurfaceReconstruction<PointNT>
   {
