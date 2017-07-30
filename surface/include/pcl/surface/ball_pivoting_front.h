@@ -40,12 +40,12 @@
 
 namespace pcl
 {
-  namespace bpa
+  namespace ball_pivoting
   {
     /**
-     * Front manages the edges, which ones are to be pivoted, which ones are pivoted.
+     * BallPivotingFront manages the edges: which ones are to be pivoted, which ones are pivoted.
      */
-    class Front
+    class BallPivotingFront
     {
     public:
       typedef std::pair<uint32_t, uint32_t> Signature;
@@ -159,9 +159,9 @@ namespace pcl
       Edge::Ptr current_edge_;
   
     public:
-      Front ();
+      BallPivotingFront ();
   
-      ~Front ();
+      ~BallPivotingFront ();
   
       /**
        * get one of the edges to pivot
@@ -229,8 +229,8 @@ namespace pcl
       bool
       isEdgeFinished (const Edge &edge) const;
   
-      typedef boost::shared_ptr<Front> Ptr;
-      typedef boost::shared_ptr<Front const> ConstPtr;
+      typedef boost::shared_ptr<BallPivotingFront> Ptr;
+      typedef boost::shared_ptr<BallPivotingFront const> ConstPtr;
     };
   }
 }

@@ -42,21 +42,21 @@
 
 namespace pcl
 {
-  namespace bpa
+  namespace ball_pivoting
   {
-    Front::Edge::Edge ()
+    BallPivotingFront::Edge::Edge ()
     {
     }
     
-    Front::Edge::Edge (const uint32_t id0, const uint32_t id1)
+    BallPivotingFront::Edge::Edge (const uint32_t id0, const uint32_t id1)
     {
       id_vertices_.resize (2);
       id_vertices_.at (0) = id0;
       id_vertices_.at (1) = id1;
     }
     
-    Front::Edge::Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, 
-                       const Eigen::Vector3f &center, const bool is_back_ball):
+    BallPivotingFront::Edge::Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, 
+                                   const Eigen::Vector3f &center, const bool is_back_ball):
       id_vertices_ (edge), 
       id_opposite_ (id_opposite), 
       center_ (center), 
@@ -64,21 +64,21 @@ namespace pcl
     {
     }
     
-    Front::Edge::~Edge ()
+    BallPivotingFront::Edge::~Edge ()
     {
     }
     
-    Front::Front::Front ()
+    BallPivotingFront::BallPivotingFront ()
     {
       clear ();
     }
     
-    Front::Front::~Front ()
+    BallPivotingFront::~BallPivotingFront ()
     {
     }
     
-    Front::Edge::Ptr
-    Front::Front::getActiveEdge ()
+    BallPivotingFront::Edge::Ptr
+    BallPivotingFront::getActiveEdge ()
     {
       Edge::Ptr re;
       if (!active_edges.empty ())
@@ -93,9 +93,9 @@ namespace pcl
     }
     
     void
-    Front::Front::addTriangle (const pcl::Vertices::ConstPtr &seed, 
-                               const Eigen::Vector3f &center,
-                               const bool is_back_ball)
+    BallPivotingFront::addTriangle (const pcl::Vertices::ConstPtr &seed, 
+                                    const Eigen::Vector3f &center,
+                                    const bool is_back_ball)
     {
       for (size_t idv = 0; idv < 3; ++idv)
       {
@@ -108,8 +108,8 @@ namespace pcl
     }
     
     void
-    Front::Front::addPoint (const Edge &last_edge, const uint32_t id_vertice_extended, 
-                            const Eigen::Vector3f &center, const bool is_back_ball)
+    BallPivotingFront::addPoint (const Edge &last_edge, const uint32_t id_vertice_extended, 
+                                 const Eigen::Vector3f &center, const bool is_back_ball)
     {
       std::vector<uint32_t> edge (2, 0);
     
@@ -123,7 +123,7 @@ namespace pcl
     }
     
     void
-    Front::Front::addEdge (const Edge &edge)
+    BallPivotingFront::addEdge (const Edge &edge)
     {
       if (!isEdgeOnFront (edge))
       {
@@ -132,14 +132,14 @@ namespace pcl
     }
     
     bool
-    Front::Front::isEdgeOnFront (const Edge &edge) const
+    BallPivotingFront::isEdgeOnFront (const Edge &edge) const
     {
       return active_edges.find (edge.getSignature ()) != active_edges.end () ||
              active_edges.find (edge.getSignatureReverse ()) != active_edges.end ();
     }
     
     void
-    Front::Front::removeEdge (const uint32_t id0, const uint32_t id1)
+    BallPivotingFront::removeEdge (const uint32_t id0, const uint32_t id1)
     {
       if (!active_edges.empty ())
       {
@@ -160,7 +160,7 @@ namespace pcl
     }
     
     void
-    Front::Front::clear ()
+    BallPivotingFront::clear ()
     {
       active_edges.clear ();
       finished_signatures_.clear ();
@@ -168,7 +168,7 @@ namespace pcl
     }
     
     bool
-    Front::Front::isEdgeFinished (const Edge &edge) const
+    BallPivotingFront::isEdgeFinished (const Edge &edge) const
     {
       return finished_signatures_.find (edge.getSignature ()) != finished_signatures_.end () ||
              finished_signatures_.find (edge.getSignatureReverse ()) != finished_signatures_.end ();

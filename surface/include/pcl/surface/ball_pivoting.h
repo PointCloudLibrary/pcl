@@ -86,7 +86,7 @@ namespace pcl
     /** is_used_[id] indicates whether point input_[id] is used for meshing */
     std::vector<bool> is_used_;
     /** edge manager */
-    bpa::Front front_;
+    ball_pivoting::BallPivotingFront front_;
     /** search radius. default value is -1, radius would be guessed if it is non-positive */
     double radius_;
     /** whether balls on the back surface would be considered */
@@ -117,7 +117,7 @@ namespace pcl
      * @return whether pivoting is successful, if not, it is a bounday
      */
     bool
-    pivot (const bpa::Front::Edge &edge, uint32_t &id_extended, 
+    pivot (const ball_pivoting::BallPivotingFront::Edge &edge, uint32_t &id_extended, 
     	   Eigen::Vector3f &center_new, bool &is_back_ball) const;
   
     /**

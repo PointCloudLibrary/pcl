@@ -38,10 +38,10 @@ if (build)
     #             FILES test_poisson.cpp
     #             LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features
     #             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
-    PCL_ADD_TEST(ball_pivoting test_ball_pivoting
-                 FILES test_ball_pivoting.cpp
-                 LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
-                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
+    #PCL_ADD_TEST(ball_pivoting test_ball_pivoting
+    #             FILES test_ball_pivoting.cpp
+    #             LINK_WITH pcl_gtest pcl_io pcl_kdtree pcl_surface pcl_features pcl_search
+    #             ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
 
     if(QHULL_FOUND)
       PCL_ADD_TEST(surface_convex_hull test_convex_hull
