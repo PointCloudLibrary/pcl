@@ -152,7 +152,7 @@ namespace pcl
 
     protected:
       /** The set of edges to be pivoted */
-      std::map<Signature, Edge> active_edges;
+      std::map<Signature, Edge> active_edges_;
       /** The set of successfully pivoted edges */
       std::set<Signature> finished_signatures_;
       /** The edge that is being pivoted and waiting for pivoting result: boundary or pivoted? */
@@ -177,7 +177,7 @@ namespace pcl
        * @param is_back_ball whether the ball was pivoted on the back surface
        */
       void
-      addTriangle (const pcl::Vertices::ConstPtr &seed, const Eigen::Vector3f &center, 
+      addTriangle (const pcl::Vertices &seed, const Eigen::Vector3f &center, 
       	           const bool is_back_ball);
   
       /**
@@ -228,6 +228,15 @@ namespace pcl
        */
       bool
       isEdgeFinished (const Edge &edge) const;
+
+      /**
+       * adds the signature of edge to finished list
+       * @param edge
+       * @return
+       */
+      void
+      setEdgeAsFinished (const Edge &edge)
+      { finished_signatures_.insert (edge.getSignature ()); }
   
       typedef boost::shared_ptr<BallPivotingFront> Ptr;
       typedef boost::shared_ptr<BallPivotingFront const> ConstPtr;

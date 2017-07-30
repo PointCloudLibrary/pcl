@@ -78,9 +78,9 @@ namespace pcl
   get_id_point_in_sphere (const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree, 
                           const Eigen::Vector3f &center, const double radius)
   {
-    PointNT center_point;
     std::vector<int> indices;
     std::vector<float> sqr_distances;
+    PointNT center_point;
     center_point.getVector3fMap () = center;
     kdtree->radiusSearch (center_point, radius, indices, sqr_distances);
     return indices;
@@ -114,11 +114,15 @@ namespace pcl
   is_normal_consistent (const Eigen::Vector3f &normal, const std::vector<uint32_t> &indexes,
                         const typename pcl::PointCloud<PointNT>::ConstPtr &cloud)
   {
-    assert(indexes.size () == 3);
+    if (indexes.size () != 3)
+    {
+      PCL_ERROR ("indexes.size () != 3 in is_normal_consistent");
+      return false;
+    }
     int count_consistent = 0;
     for (size_t id = 0; id < 3; ++id)
     {
-      if (normal.dot (cloud->at (indexes.at (id)).getNormalVector3fMap ()) > 0.0f)
+      if (normal.dot (cloud->at (indexes.at (id)).getNormalVector3fMap ()) >= 0.0f)
       {
         ++count_consistent;
       }
@@ -163,7 +167,11 @@ namespace pcl
   get_normal_triangle (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud, 
                        const std::vector<uint32_t> &indexes)
   {
-    assert(indexes.size () == 3);
+    if (indexes.size () != 3)
+    {
+      PCL_ERROR ("indexes.size () != 3 in get_normal_triangle");
+      return Eigen::Vector3f::Zero ();
+    }
     const Eigen::Vector3f p0 = cloud->at (indexes.at (0)).getVector3fMap ();
     return (cloud->at (indexes.at (1)).getVector3fMap () - p0)
       .cross (cloud->at (indexes.at (2)).getVector3fMap () - p0)
@@ -220,7 +228,7 @@ namespace pcl
   
     const float sin_val = vc0.cross (-Eigen::Vector3f (plane.segment (0, 3))).dot (vc1);
     const float cos_val = vc0.dot (vc1);
-    float angle = atan2 (sin_val, cos_val);
+    float angle = std::atan2 (sin_val, cos_val);
     if (angle < 0.0f) // -pi~pi -> 0~2pi
     {
       angle += (float) (2.0 * M_PI);
@@ -484,6 +492,7 @@ namespace pcl
         front_.addPoint (*edge, id_ext, center_new, is_back_ball);
       }
 
+      front_.setEdgeAsFinished (*edge);
       edge = front_.getActiveEdge ();
     }
   }
@@ -516,13 +525,13 @@ namespace pcl
     {
       proceedFront (polygons);
   
-      pcl::Vertices::Ptr seed;
+      pcl::Vertices seed;
       Eigen::Vector3f center;
       bool is_back_ball;
       if (findSeed (seed, center, is_back_ball))
       {
         // add to mesh
-        polygons.push_back (*seed);
+        polygons.push_back (seed);
         // add for pivoting
         front_.addTriangle (seed, center, is_back_ball);
       }
@@ -549,7 +558,7 @@ namespace pcl
   
   template<typename PointNT>
   bool
-  BallPivoting<PointNT>::findSeed (pcl::Vertices::Ptr &seed, Eigen::Vector3f &center, bool &is_back_ball)
+  BallPivoting<PointNT>::findSeed (pcl::Vertices &seed, Eigen::Vector3f &center, bool &is_back_ball)
   {
     const double search_radius = radius_ * 2.0;
   
@@ -591,18 +600,15 @@ namespace pcl
           index3.at (1) = index1;
           index3.at (2) = index2;
   
-          bool is_back_ball_local;
-          boost::shared_ptr<Eigen::Vector3f> center_ = getBallCenter (false, index3, is_back_ball_local);
-          if (!center_ && is_allow_back_ball_)
+          boost::shared_ptr<Eigen::Vector3f> center_new = getBallCenter (false, index3, is_back_ball);
+          if (!center_new && is_allow_back_ball_)
           {
-            center_ = getBallCenter (true, index3, is_back_ball_local);
+            center_new = getBallCenter (true, index3, is_back_ball);
           }
-          if (center_)
+          if (center_new)
           {
-            seed = pcl::Vertices::Ptr (new pcl::Vertices ());
-            seed->vertices = index3;
-            center = *center_;
-            is_back_ball = is_back_ball_local;
+            seed.vertices = index3;
+            center = *center_new;
             is_used_.at (index3.at (0)) = true;
             is_used_.at (index3.at (1)) = true;
             is_used_.at (index3.at (2)) = true;

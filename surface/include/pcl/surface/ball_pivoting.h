@@ -106,7 +106,7 @@ namespace pcl
      * @return whether one triangle is found
      */
     bool
-    findSeed (pcl::Vertices::Ptr &seed, Eigen::Vector3f &center, bool &is_back_ball);
+    findSeed (pcl::Vertices &seed, Eigen::Vector3f &center, bool &is_back_ball);
   
     /**
      * pivoting around edge
