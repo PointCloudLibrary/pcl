@@ -81,29 +81,27 @@ namespace pcl
     BallPivotingFront::getActiveEdge ()
     {
       Edge::Ptr re;
-      if (!active_edges.empty ())
+      if (!active_edges_.empty ())
       {
-        re = boost::make_shared<Edge> (active_edges.begin ()->second);
+        re = boost::make_shared<Edge> (active_edges_.begin ()->second);
         current_edge_ = re;
-        active_edges.erase (active_edges.begin ());
-
-        finished_signatures_.insert (re->getSignature ());
+        active_edges_.erase (active_edges_.begin ());
       }
       return re;
     }
     
     void
-    BallPivotingFront::addTriangle (const pcl::Vertices::ConstPtr &seed, 
+    BallPivotingFront::addTriangle (const pcl::Vertices &seed, 
                                     const Eigen::Vector3f &center,
                                     const bool is_back_ball)
     {
       for (size_t idv = 0; idv < 3; ++idv)
       {
         std::vector<uint32_t> edge (2, 0);
-        edge.at (0) = seed->vertices.at (idv);
-        edge.at (1) = seed->vertices.at ((idv + 2) % 3);
+        edge.at (0) = seed.vertices.at (idv);
+        edge.at (1) = seed.vertices.at ((idv + 2) % 3);
     
-        addEdge (Edge (edge, seed->vertices.at ((idv + 1) % 3), center, is_back_ball));
+        addEdge (Edge (edge, seed.vertices.at ((idv + 1) % 3), center, is_back_ball));
       }
     }
     
@@ -127,33 +125,33 @@ namespace pcl
     {
       if (!isEdgeOnFront (edge))
       {
-        active_edges[Signature (edge.getIdVertice (0), edge.getIdVertice (1))] = edge;
+        active_edges_[Signature (edge.getIdVertice (0), edge.getIdVertice (1))] = edge;
       }
     }
     
     bool
     BallPivotingFront::isEdgeOnFront (const Edge &edge) const
     {
-      return active_edges.find (edge.getSignature ()) != active_edges.end () ||
-             active_edges.find (edge.getSignatureReverse ()) != active_edges.end ();
+      return active_edges_.find (edge.getSignature ()) != active_edges_.end () ||
+             active_edges_.find (edge.getSignatureReverse ()) != active_edges_.end ();
     }
     
     void
     BallPivotingFront::removeEdge (const uint32_t id0, const uint32_t id1)
     {
-      if (!active_edges.empty ())
+      if (!active_edges_.empty ())
       {
-        typename std::map<Signature, Edge>::iterator loc = active_edges.find (Signature (id0, id1));
-        if (loc != active_edges.end ())
+        typename std::map<Signature, Edge>::iterator loc = active_edges_.find (Signature (id0, id1));
+        if (loc != active_edges_.end ())
         {
-          active_edges.erase (loc);
+          active_edges_.erase (loc);
         }
         else // comment to delete one-directionally
         {
-          loc = active_edges.find (Signature (id1, id0));
-          if (loc != active_edges.end ())
+          loc = active_edges_.find (Signature (id1, id0));
+          if (loc != active_edges_.end ())
           {
-            active_edges.erase (loc);
+            active_edges_.erase (loc);
           }
         }
       }
@@ -162,7 +160,7 @@ namespace pcl
     void
     BallPivotingFront::clear ()
     {
-      active_edges.clear ();
+      active_edges_.clear ();
       finished_signatures_.clear ();
       current_edge_.reset ();
     }

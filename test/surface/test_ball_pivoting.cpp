@@ -75,7 +75,7 @@ TEST (PCL, BallPivotingTest)
 
   pivoter.setEstimatedRadius (100, 5, 0.95f); 
   pivoter.reconstruct (mesh_found_radius);
-  
+
   const std::vector<Vertices> &polygons_fixed_radius = mesh_fixed_radius.polygons;
   EXPECT_EQ (polygons_fixed_radius[100].vertices[0], 88);
   EXPECT_EQ (polygons_fixed_radius[100].vertices[1], 89);
