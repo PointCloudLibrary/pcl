@@ -1,7 +1,7 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2011, Willow Garage, Inc.
+ *  Copyright (c) 2017, Willow Garage, Inc.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -44,30 +44,6 @@ namespace pcl
 {
   namespace ball_pivoting
   {
-    BallPivotingFront::Edge::Edge ()
-    {
-    }
-    
-    BallPivotingFront::Edge::Edge (const uint32_t id0, const uint32_t id1)
-    {
-      id_vertices_.resize (2);
-      id_vertices_.at (0) = id0;
-      id_vertices_.at (1) = id1;
-    }
-    
-    BallPivotingFront::Edge::Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, 
-                                   const Eigen::Vector3f &center, const bool is_back_ball):
-      id_vertices_ (edge), 
-      id_opposite_ (id_opposite), 
-      center_ (center), 
-      is_back_ball_ (is_back_ball)
-    {
-    }
-    
-    BallPivotingFront::Edge::~Edge ()
-    {
-    }
-    
     BallPivotingFront::BallPivotingFront ()
     {
       clear ();
@@ -97,11 +73,8 @@ namespace pcl
     {
       for (size_t idv = 0; idv < 3; ++idv)
       {
-        std::vector<uint32_t> edge (2, 0);
-        edge.at (0) = seed.vertices.at (idv);
-        edge.at (1) = seed.vertices.at ((idv + 2) % 3);
-    
-        addEdge (Edge (edge, seed.vertices.at ((idv + 1) % 3), center, is_back_ball));
+        addEdge (Edge (seed.vertices.at (idv), seed.vertices.at ((idv + 2) % 3), 
+                       seed.vertices.at ((idv + 1) % 3), center, is_back_ball));
       }
     }
     
@@ -109,23 +82,19 @@ namespace pcl
     BallPivotingFront::addPoint (const Edge &last_edge, const uint32_t id_vertice_extended, 
                                  const Eigen::Vector3f &center, const bool is_back_ball)
     {
-      std::vector<uint32_t> edge (2, 0);
+      addEdge (Edge (last_edge.getIdPointStart (), id_vertice_extended,
+                     last_edge.getIdPointEnd (), center, is_back_ball));
     
-      edge.at (0) = last_edge.getIdVertice (0);
-      edge.at (1) = id_vertice_extended;
-      addEdge (Edge (edge, last_edge.getIdVertice (1), center, is_back_ball));
-    
-      edge.at (0) = id_vertice_extended;
-      edge.at (1) = last_edge.getIdVertice (1);
-      addEdge (Edge (edge, last_edge.getIdVertice (0), center, is_back_ball));
+      addEdge (Edge (id_vertice_extended, last_edge.getIdPointEnd (),
+                     last_edge.getIdPointStart (), center, is_back_ball));
     }
     
     void
     BallPivotingFront::addEdge (const Edge &edge)
     {
-      if (!isEdgeOnFront (edge))
+      if (!isEdgeOnFront (edge) && !isEdgeFinished (edge))
       {
-        active_edges_[Signature (edge.getIdVertice (0), edge.getIdVertice (1))] = edge;
+        active_edges_[edge.getSignature ()] = edge;
       }
     }
     

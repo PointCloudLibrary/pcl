@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -382,9 +382,9 @@ namespace pcl
   BallPivoting<PointNT>::pivot (const ball_pivoting::BallPivotingFront::Edge &edge, uint32_t &id_extended, 
                                 Eigen::Vector3f &center_new, bool &is_back_ball) const
   {
-    const uint32_t id0 = edge.getIdVertice (0);
-    const uint32_t id1 = edge.getIdVertice (1);
-    const uint32_t id_op = edge.getIdOpposite ();
+    const uint32_t id0 = edge.getIdPointStart ();
+    const uint32_t id1 = edge.getIdPointEnd ();
+    const uint32_t id_op = edge.getIdPointOpposite ();
     const Eigen::Vector3f center = edge.getCenter ();
     const Eigen::Vector3f v0 = input_->at (id0).getVector3fMap ();
     const Eigen::Vector3f v1 = input_->at (id1).getVector3fMap ();
@@ -478,8 +478,8 @@ namespace pcl
       bool is_back_ball;
       if (!front_.isEdgeFinished (*edge) && pivot (*edge, id_ext, center_new, is_back_ball))
       {
-        const uint32_t id0 = edge->getIdVertice (0);
-        const uint32_t id1 = edge->getIdVertice (1);
+        const uint32_t id0 = edge->getIdPointStart ();
+        const uint32_t id1 = edge->getIdPointEnd ();
         pcl::Vertices triangle;
         // add to polygons
         triangle.vertices.reserve (3);
