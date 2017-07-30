@@ -41,7 +41,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
-#include <pcl/features/normal_3d.h>
+//#include <pcl/features/normal_3d.h>
 #include <pcl/surface/ball_pivoting.h>
 #include <pcl/common/common.h>
 
@@ -49,7 +49,7 @@ using namespace pcl;
 using namespace pcl::io;
 using namespace std;
 
-PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+/*PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree;
 search::KdTree<PointNormal>::Ptr tree2;
@@ -58,7 +58,11 @@ search::KdTree<PointNormal>::Ptr tree2;
 PointCloud<PointXYZ>::Ptr cloud1 (new PointCloud<PointXYZ>);
 PointCloud<PointNormal>::Ptr cloud_with_normals1 (new PointCloud<PointNormal>);
 search::KdTree<PointXYZ>::Ptr tree3;
-search::KdTree<PointNormal>::Ptr tree4;
+search::KdTree<PointNormal>::Ptr tree4;*/
+
+// custom cloud and tree
+PointCloud<PointNormal>::Ptr cloud_custom (new PointCloud<PointNormal>);
+search::KdTree<PointNormal>::Ptr tree_custom;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, BallPivotingTest)
@@ -67,8 +71,8 @@ TEST (PCL, BallPivotingTest)
   pcl::PolygonMesh mesh_found_radius;
 
   BallPivoting<PointNormal> pivoter;
-  pivoter.setInputCloud (cloud_with_normals);
-  pivoter.setSearchMethod (tree2);
+  pivoter.setInputCloud (cloud_custom);
+  pivoter.setSearchMethod (tree_custom);
 
   pivoter.setSearchRadius (0.02);
   pivoter.reconstruct (mesh_fixed_radius);
@@ -77,28 +81,65 @@ TEST (PCL, BallPivotingTest)
   pivoter.reconstruct (mesh_found_radius);
 
   const std::vector<Vertices> &polygons_fixed_radius = mesh_fixed_radius.polygons;
-  EXPECT_EQ (polygons_fixed_radius[100].vertices[0], 88);
-  EXPECT_EQ (polygons_fixed_radius[100].vertices[1], 89);
-  EXPECT_EQ (polygons_fixed_radius[100].vertices[2], 98);
-  EXPECT_EQ (polygons_fixed_radius[200].vertices[0], 118);
-  EXPECT_EQ (polygons_fixed_radius[200].vertices[1], 121);
-  EXPECT_EQ (polygons_fixed_radius[200].vertices[2], 119);
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[0], 99);
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[1], 102);
+  EXPECT_EQ (polygons_fixed_radius[100].vertices[2], 101);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[0], 199);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[1], 202);
+  EXPECT_EQ (polygons_fixed_radius[200].vertices[2], 201);
 
   const std::vector<Vertices> &polygons_found_radius = mesh_found_radius.polygons;
-  EXPECT_EQ (polygons_found_radius[100].vertices[0], 82);
-  EXPECT_EQ (polygons_found_radius[100].vertices[1], 84);
-  EXPECT_EQ (polygons_found_radius[100].vertices[2], 88);
-  EXPECT_EQ (polygons_found_radius[200].vertices[0], 30);
-  EXPECT_EQ (polygons_found_radius[200].vertices[1], 40);
-  EXPECT_EQ (polygons_found_radius[200].vertices[2], 41);
+  EXPECT_EQ (polygons_found_radius[100].vertices[0], 99);
+  EXPECT_EQ (polygons_found_radius[100].vertices[1], 102);
+  EXPECT_EQ (polygons_found_radius[100].vertices[2], 101);
+  EXPECT_EQ (polygons_found_radius[200].vertices[0], 199);
+  EXPECT_EQ (polygons_found_radius[200].vertices[1], 202);
+  EXPECT_EQ (polygons_found_radius[200].vertices[2], 201);
 }
 
+/**
+ * return a point cloud similar to triangle strip in computer graphics, 
+ * it generally extends to +X direction, with normal in +Z and points on Z=0.
+ */
+pcl::PointCloud<pcl::PointNormal>::Ptr
+compose_strip_cloud (const size_t size_cloud)
+{
+  const Eigen::Vector3f normal (0.0f, 0.0f, 1.0f);
+  const Eigen::Vector3f odd_shift = Eigen::Vector3f (0.5f, std::sqrt (3.0f) / 2.0f, 0.0f) / 100.0f;
+  const Eigen::Vector3f even_shift = Eigen::Vector3f (1.0f, 0.0f, 0.0f) / 100.0f;
+  Eigen::Vector3f base = Eigen::Vector3f::Zero ();
+
+  pcl::PointCloud<pcl::PointNormal>::Ptr re (
+      new pcl::PointCloud<pcl::PointNormal> ());
+  re->reserve (size_cloud);
+
+  for (size_t id_point = 0; id_point < size_cloud; ++id_point)
+  {
+    Eigen::Vector3f position = base;
+    pcl::PointNormal point;
+    if (id_point % 2 == 1)
+    {
+      // 1,3,5,7,9...-th points
+      position += odd_shift;
+    }
+    else
+    {
+      // 0,2,4,6,8...-th points
+      base += even_shift;
+    }
+    point.getVector3fMap () = position;
+    point.getNormalVector3fMap () = normal;
+    re->push_back (point);
+  }
+
+  return re;
+}
 
 /* ---[ */
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
+/*  if (argc < 2)
   {
     std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
@@ -152,7 +193,12 @@ main (int argc, char** argv)
     // Create search tree
     tree4.reset (new search::KdTree<PointNormal>);
     tree4->setInputCloud (cloud_with_normals1);
-  }
+  }*/
+
+  // use composed point cloud for unit test
+  cloud_custom= compose_strip_cloud (1000);
+  tree_custom.reset (new search::KdTree<PointNormal>);
+  tree_custom->setInputCloud (cloud_custom);
 
   // Testing
   testing::InitGoogleTest (&argc, argv);
