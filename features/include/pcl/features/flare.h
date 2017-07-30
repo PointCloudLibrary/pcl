@@ -41,67 +41,11 @@
 
 #include <pcl/point_types.h>
 #include <pcl/features/feature.h>
-#include <pcl/features/normal_3d_omp.h>
+#include <pcl/features/normal_3d.h>
 
 
 namespace pcl
 {
-
-  /** \brief Project point on the plane defined by plane_point and plane_normal.
-    * 
-    * \param[in] point point to project
-    * \param[in] indices of normals used to disambiguate 
-    * \param[in] normal to disambiguate. normal is modified by the function.
-    * \ingroup features
-    */
-  void
-  projectPointOnPlane ( Eigen::Vector3f const &point,
-                        Eigen::Vector3f const &plane_point,
-                        Eigen::Vector3f const &plane_normal,
-                        Eigen::Vector3f &projected_point);
-
-
-  /** \brief Find the unit vector from axis_origin, directed toward point and orthogonal to axis.
-    * 
-    * \param[in] axis input axis
-    * \param[in] axis_origin point belonging to axis 
-    * \param[in] point point input point not belonging to axis
-    * \param[out] directed_ortho_axis unit vector from axis_origin, directed toward point and orthogonal to axis.
-    * \ingroup features
-    */
-  void
-  directedOrthogonalAxis ( Eigen::Vector3f const &axis,
-                           Eigen::Vector3f const &axis_origin,
-                           Eigen::Vector3f const &point,
-                           Eigen::Vector3f &directed_ortho_axis);
-
-
-  /** \brief Define a random unit vector orthogonal to axis.
-    * 
-    * \param[in] axis input axis
-    * \param[out] rand_ortho_axis random unit vector orthogonal to axis
-    * \ingroup features
-    */
-  void
-  randomOrthogonalAxis ( Eigen::Vector3f const &axis,
-                         Eigen::Vector3f &rand_ortho_axis);
-
-
-  /** \brief Disambiguate normal sign as described in:
-    * 
-    * A. Petrelli, L. Di Stefano, "A repeatable and efficient canonical reference for surface matching", 3DimPVT, 2012
-    * A. Petrelli, L. Di Stefano, "On the repeatability of the local reference frame for partial shape matching", 13th International Conference on Computer Vision (ICCV), 2011
-    * \param[in] normal_cloud input cloud of normals
-    * \param[in] normal_indices indices of normals used to disambiguate 
-    * \param[in] normal normal to disambiguate. normal is modified by the function.
-    * \return false if normal_indices does not contain any valid normal.
-    * \ingroup features
-    */
-  template<typename PointNT> bool
-  normalDisambiguation ( pcl::PointCloud<PointNT> const &normal_cloud,
-                         std::vector<int> const &normal_indices,
-                         Eigen::Vector3f &normal);
-
 
   /** \brief FLARELocalReferenceFrameEstimation implements the Fast LocAl Reference framE algorithm
     * for local reference frame estimation as described here:

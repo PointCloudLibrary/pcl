@@ -41,42 +41,7 @@
 
 
 #include <pcl/features/flare.h>
-#include <utility>
-#include <pcl/common/transforms.h>
-
-
-template<typename PointNT> bool
-pcl::normalDisambiguation ( pcl::PointCloud<PointNT> const &normal_cloud,
-                            std::vector<int> const &normal_indices,
-                            Eigen::Vector3f &normal)
-{
-  Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero();
-
-  bool at_least_one_valid_point = false;
-  for (size_t i = 0; i < normal_indices.size (); ++i)
-  {
-    const PointNT& curPt = normal_cloud[normal_indices[i]];
-
-    if(pcl::isFinite(curPt))
-    {
-      normal_mean += curPt.getNormalVector3fMap ();
-      at_least_one_valid_point = true;
-    }
-  }
-
-  if(!at_least_one_valid_point)
-    return false;
-
-  normal_mean.normalize ();
-
-  if (normal.dot (normal_mean) < 0)
-  {
-    normal = -normal;
-  }
-
-  return true;
-}
-
+#include <pcl/common/geometry.h>
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -176,7 +141,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     normal_estimation_.computePointNormal(*surface_, neighbours_indices, fitted_normal(0), fitted_normal(1), fitted_normal(2), plane_curvature);
 
     //disambiguate Z axis with normal mean
-    if (!normalDisambiguation<PointNT> (*normals_, neighbours_indices, fitted_normal) )
+    if (!pcl::flipNormalTowardsNormalsMean<PointNT> (*normals_, neighbours_indices, fitted_normal) )
     {
       //all normals in the neighbourood are invalid
       //setting lrf to NaN
@@ -197,7 +162,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   if (n_neighbours < min_neighbors_for_tangent_axis_)
   {
     //set X axis as a random axis
-    randomOrthogonalAxis (fitted_normal, x_axis);
+    pcl::geometry::randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
     lrf.row (0).matrix () = x_axis;
@@ -245,7 +210,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   if (bestShapeIndex == -1)
   {
-    randomOrthogonalAxis (fitted_normal, x_axis);
+    pcl::geometry::randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
 
     lrf.row (0).matrix () = x_axis;
@@ -255,7 +220,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   }
 
   //find orthogonal axis directed to bestShapeIndex point projection on plane with fittedNormal as axis
-  directedOrthogonalAxis (fitted_normal, feature_point, sampled_surface_->at(bestShapeIndex).getVector3fMap(), x_axis);
+  pcl::geometry::directedOrthogonalAxis (fitted_normal, feature_point, sampled_surface_->at(bestShapeIndex).getVector3fMap(), x_axis);
 
   y_axis = fitted_normal.cross (x_axis);
 
