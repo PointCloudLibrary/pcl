@@ -60,23 +60,19 @@ namespace pcl
        */
       struct Edge
       {
-      protected:
+      public:
         /** index of starting point */
-        uint32_t id_point_start_;
+        const uint32_t id_point_start_;
         /** index of ending point */
-        uint32_t id_point_end_;
+        const uint32_t id_point_end_;
         /** index of the opposite point, it and id_vertices_ form the last triangle */
-        uint32_t id_point_opposite_;
+        const uint32_t id_point_opposite_;
         /** center point of the last ball, it may not be one in the cloud */
-        Eigen::Vector3f center_;
+        const Eigen::Vector3f center_;
         /** whether this ball it to the it rolled in the back face of surface (not normal direction) */
-        bool is_back_ball_;
+        const bool is_back_ball_;
     
       public:
-        Edge ()
-        {
-        }
-
         /**
          * real constructor for edge with full information
          * @param id_point_start index of starting vertex
@@ -85,7 +81,8 @@ namespace pcl
          * @param center center point of the ball
          * @param is_back_ball whether the ball was rolling on the back surface
          */
-        Edge (const uint32_t id_point_start, const uint32_t id_point_end, 
+        Edge (const uint32_t id_point_start = 0, 
+              const uint32_t id_point_end = 0, 
               const uint32_t id_point_opposite = 0, 
               const Eigen::Vector3f &center = Eigen::Vector3f::Zero (), 
               const bool is_back_ball = false):
@@ -96,52 +93,6 @@ namespace pcl
           is_back_ball_ (is_back_ball)
         {
         }
-
-        ~Edge ()
-        {
-        }
-    
-        /**
-         * returns the center of ball
-         * @return
-         */
-        const Eigen::Vector3f&
-        getCenter () const
-        { return center_; }
-    
-        /**
-         * get the index of starting point of edge
-         * @param id
-         * @return
-         */
-        uint32_t
-        getIdPointStart () const
-        { return id_point_start_; }
-
-         /**
-         * get the index of ending point of edge
-         * @param id
-         * @return
-         */
-        uint32_t
-        getIdPointEnd () const
-        { return id_point_end_; }
-    
-        /**
-         * get the index of opposite point
-         * @return
-         */
-        uint32_t
-        getIdPointOpposite () const
-        { return id_point_opposite_; }
-       
-        /**
-         * checks whether the ball was rolling on back surface
-         * @return
-         */
-        bool
-        isBackBall () const
-        { return is_back_ball_; }
     
         /**
          * get the signature of this edge, [index start vertice, index end vertice]
@@ -165,7 +116,7 @@ namespace pcl
 
     protected:
       /** The set of edges to be pivoted */
-      std::map<Signature, Edge> active_edges_;
+      std::map<Signature, const Edge> active_edges_;
       /** The set of successfully pivoted edges */
       std::set<Signature> finished_signatures_;
       /** The edge that is being pivoted and waiting for pivoting result: boundary or pivoted? */

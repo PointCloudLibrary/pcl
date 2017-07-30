@@ -382,15 +382,15 @@ namespace pcl
   BallPivoting<PointNT>::pivot (const ball_pivoting::BallPivotingFront::Edge &edge, uint32_t &id_extended, 
                                 Eigen::Vector3f &center_new, bool &is_back_ball) const
   {
-    const uint32_t id0 = edge.getIdPointStart ();
-    const uint32_t id1 = edge.getIdPointEnd ();
-    const uint32_t id_op = edge.getIdPointOpposite ();
-    const Eigen::Vector3f center = edge.getCenter ();
+    const uint32_t id0 = edge.id_point_start_;
+    const uint32_t id1 = edge.id_point_end_;
+    const uint32_t id_op = edge.id_point_opposite_;
+    const Eigen::Vector3f &center = edge.center_;
     const Eigen::Vector3f v0 = input_->at (id0).getVector3fMap ();
     const Eigen::Vector3f v1 = input_->at (id1).getVector3fMap ();
     const Eigen::Vector3f mid = (v0 + v1) * 0.5f;
     // pivot opposite to normal direction, change direction for angle
-    const Eigen::Vector4f plane = edge.isBackBall () ? get_plane_between (v0, v1) 
+    const Eigen::Vector4f plane = edge.is_back_ball_ ? get_plane_between (v0, v1) 
                                                      : get_plane_between (v1, v0);
     std::vector<Eigen::Vector3f> center_candidates; // only store, no need to align
     std::vector<float> dot_candidates;
@@ -422,7 +422,7 @@ namespace pcl
       // the three points are different, the normal of triangle is consistent to the normal vectors or vertices
       // and the cloud[point3[2]] has distance to plane smaller than radius
       bool is_back_bool;
-      boost::shared_ptr<Eigen::Vector3f> center_jr = getBallCenter (edge.isBackBall (), point3, is_back_bool);
+      boost::shared_ptr<Eigen::Vector3f> center_jr = getBallCenter (edge.is_back_ball_, point3, is_back_bool);
   
       if (center_jr)
       {
@@ -478,8 +478,8 @@ namespace pcl
       bool is_back_ball;
       if (!front_.isEdgeFinished (*edge) && pivot (*edge, id_ext, center_new, is_back_ball))
       {
-        const uint32_t id0 = edge->getIdPointStart ();
-        const uint32_t id1 = edge->getIdPointEnd ();
+        const uint32_t id0 = edge->id_point_start_;
+        const uint32_t id1 = edge->id_point_end_;
         pcl::Vertices triangle;
         // add to polygons
         triangle.vertices.reserve (3);
