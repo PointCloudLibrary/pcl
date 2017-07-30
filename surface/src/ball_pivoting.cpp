@@ -82,11 +82,11 @@ namespace pcl
     BallPivotingFront::addPoint (const Edge &last_edge, const uint32_t id_vertice_extended, 
                                  const Eigen::Vector3f &center, const bool is_back_ball)
     {
-      addEdge (Edge (last_edge.getIdPointStart (), id_vertice_extended,
-                     last_edge.getIdPointEnd (), center, is_back_ball));
+      addEdge (Edge (last_edge.id_point_start_, id_vertice_extended,
+                     last_edge.id_point_end_, center, is_back_ball));
     
-      addEdge (Edge (id_vertice_extended, last_edge.getIdPointEnd (),
-                     last_edge.getIdPointStart (), center, is_back_ball));
+      addEdge (Edge (id_vertice_extended, last_edge.id_point_end_,
+                     last_edge.id_point_start_, center, is_back_ball));
     }
     
     void
@@ -94,7 +94,8 @@ namespace pcl
     {
       if (!isEdgeOnFront (edge) && !isEdgeFinished (edge))
       {
-        active_edges_[edge.getSignature ()] = edge;
+        active_edges_.insert (std::pair<Signature, const Edge> (
+              edge.getSignature (), edge));
       }
     }
     
@@ -110,7 +111,8 @@ namespace pcl
     {
       if (!active_edges_.empty ())
       {
-        typename std::map<Signature, Edge>::iterator loc = active_edges_.find (Signature (id0, id1));
+        typename std::map<Signature, const Edge>::iterator loc = 
+          active_edges_.find (Signature (id0, id1));
         if (loc != active_edges_.end ())
         {
           active_edges_.erase (loc);
