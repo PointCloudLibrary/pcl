@@ -371,7 +371,7 @@ namespace pcl
   
   template<typename PointNT>
   bool
-  BallPivoting<PointNT>::pivot (const bpa::Front::Edge &edge, uint32_t &id_extended, 
+  BallPivoting<PointNT>::pivot (const ball_pivoting::BallPivotingFront::Edge &edge, uint32_t &id_extended, 
                                 Eigen::Vector3f &center_new, bool &is_back_ball) const
   {
     const uint32_t id0 = edge.getIdVertice (0);
@@ -462,7 +462,7 @@ namespace pcl
   void
   BallPivoting<PointNT>::proceedFront (std::vector<pcl::Vertices> &polygons)
   {
-    bpa::Front::Edge::Ptr edge = front_.getActiveEdge ();
+    ball_pivoting::BallPivotingFront::Edge::Ptr edge = front_.getActiveEdge ();
     while (edge)
     {
       uint32_t id_ext;
