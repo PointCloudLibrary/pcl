@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -38,10 +38,7 @@
 #ifndef PCL_BALL_PIVOTING_H_
 #define PCL_BALL_PIVOTING_H_
 
-#include <memory>
 #include <vector>
-#include <map>
-#include <set>
   
 #include "pcl/surface/boost.h"
 #include "pcl/surface/reconstruction.h"

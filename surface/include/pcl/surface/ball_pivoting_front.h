@@ -2,7 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -38,6 +38,10 @@
 #ifndef PCL_BALL_PIVOTING_FRONT_H_
 #define PCL_BALL_PIVOTING_FRONT_H_
 
+#include <set>
+#include <map>
+#include <utility>
+
 namespace pcl
 {
   namespace ball_pivoting
@@ -51,77 +55,86 @@ namespace pcl
       typedef std::pair<uint32_t, uint32_t> Signature;
 
       /**
-       * This class describes the pivoting ball, which rolls on points and links the mesh.
+       * This struct describes the pivoting ball, which rolls on points and links the mesh.
        * Its partial definition describes an edge of the reconstructed triangle.
        */
-      class Edge
+      struct Edge
       {
       protected:
-        /** list of vertice index, should have length 2 */
-        std::vector<uint32_t> id_vertices_;
-        /** index of the opposite vertice, it and id_vertices_ form the last triangle */
-        uint32_t id_opposite_;
+        /** index of starting point */
+        uint32_t id_point_start_;
+        /** index of ending point */
+        uint32_t id_point_end_;
+        /** index of the opposite point, it and id_vertices_ form the last triangle */
+        uint32_t id_point_opposite_;
         /** center point of the last ball, it may not be one in the cloud */
         Eigen::Vector3f center_;
         /** whether this ball it to the it rolled in the back face of surface (not normal direction) */
         bool is_back_ball_;
     
       public:
-        Edge ();
-    
-        /**
-         * a fake constructor with only vertice index on edge
-         * @param id0 index of start point on edge
-         * @param id1 index of end point on edge
-         */
-        Edge (const uint32_t id0, const uint32_t id1);
-    
+        Edge ()
+        {
+        }
+
         /**
          * real constructor for edge with full information
-         * @param edge list of vertice index on edge
-         * @param id_opposite index of opposite vertice
+         * @param id_point_start index of starting vertex
+         * @param id_point_end index of ending vertex
+         * @param id_point_opposite index of opposite vertex
          * @param center center point of the ball
          * @param is_back_ball whether the ball was rolling on the back surface
          */
-        Edge (const std::vector<uint32_t> &edge, const uint32_t id_opposite, 
-              const Eigen::Vector3f &center, const bool is_back_ball = false);
-    
-        ~Edge ();
+        Edge (const uint32_t id_point_start, const uint32_t id_point_end, 
+              const uint32_t id_point_opposite = 0, 
+              const Eigen::Vector3f &center = Eigen::Vector3f::Zero (), 
+              const bool is_back_ball = false):
+          id_point_start_ (id_point_start),
+          id_point_end_ (id_point_end),
+          id_point_opposite_ (id_point_opposite),
+          center_ (center),
+          is_back_ball_ (is_back_ball)
+        {
+        }
+
+        ~Edge ()
+        {
+        }
     
         /**
          * returns the center of ball
          * @return
          */
-        Eigen::Vector3f
+        const Eigen::Vector3f&
         getCenter () const
         { return center_; }
     
         /**
-         * get the index of id-th vertice on edge, id should be either 0 or 1
+         * get the index of starting point of edge
          * @param id
          * @return
          */
         uint32_t
-        getIdVertice (const size_t id) const
-        { return id_vertices_.at (id); }
-    
-        /**
-         * get the index of opposite vertice
+        getIdPointStart () const
+        { return id_point_start_; }
+
+         /**
+         * get the index of ending point of edge
+         * @param id
          * @return
          */
         uint32_t
-        getIdOpposite () const
-        { return id_opposite_; }
+        getIdPointEnd () const
+        { return id_point_end_; }
     
         /**
-         * set the index of id-th vertice to be id_vertice
-         * @param id index inside edge. Should be 0 or 1
-         * @param id_vertice value of vertice index
+         * get the index of opposite point
+         * @return
          */
-        void
-        setIdVertice (const size_t id, const uint32_t id_vertice)
-        { id_vertices_.at (id) = id_vertice; }
-    
+        uint32_t
+        getIdPointOpposite () const
+        { return id_point_opposite_; }
+       
         /**
          * checks whether the ball was rolling on back surface
          * @return
@@ -136,7 +149,7 @@ namespace pcl
          */
         Signature
         getSignature () const
-        { return Signature (id_vertices_.at (0), id_vertices_.at (1)); }
+        { return Signature (id_point_start_, id_point_end_); }
     
         /**
          * get the reverse signature of this edge, [index end vertice, index start vertice]
@@ -144,7 +157,7 @@ namespace pcl
          */
         Signature
         getSignatureReverse () const
-        { return Signature (id_vertices_.at (1), id_vertices_.at (0)); }
+        { return Signature (id_point_end_, id_point_start_); }
     
         typedef boost::shared_ptr<Edge> Ptr;
         typedef boost::shared_ptr<Edge const> ConstPtr;

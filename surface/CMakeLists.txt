@@ -123,6 +123,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/marching_cubes_hoppe.h"
         "include/pcl/${SUBSYS_NAME}/marching_cubes_rbf.h"
         "include/pcl/${SUBSYS_NAME}/ball_pivoting.h"
+        "include/pcl/${SUBSYS_NAME}/ball_pivoting_front.h"
         "include/pcl/${SUBSYS_NAME}/bilateral_upsampling.h"
         "include/pcl/${SUBSYS_NAME}/mls.h"
         "include/pcl/${SUBSYS_NAME}/organized_fast_mesh.h"
