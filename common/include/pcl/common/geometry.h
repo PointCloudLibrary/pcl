@@ -43,6 +43,7 @@
 #endif
 
 #include <Eigen/Core>
+#include <pcl/console/print.h>
 
 /**
   * \file common/geometry.h
