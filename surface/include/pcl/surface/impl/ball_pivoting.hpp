@@ -48,98 +48,63 @@
   
 namespace pcl
 {
-  /**
-   * @brief get_plane_between returns the plane between two points,
-   *        it is perpendicular to v0-v1 and crosses their mid-point
-   * @param point0
-   * @param point1
-   * @return
-   */
+  template<typename PointNT>
   Eigen::Vector4f
-  get_plane_between (const Eigen::Vector3f &point0, const Eigen::Vector3f &point1)
+  BallPivoting<PointNT>::getPlaneBetweenPoints (const Eigen::Vector3f &point0, 
+                                                const Eigen::Vector3f &point1)
   {
     const Eigen::Vector3f normal = (point1 - point0).normalized ();
     Eigen::Vector4f plane;
-    // (v1+v0)/2 is on plane
+    // (point1+point0)/2 is on plane
     plane << normal, -(point1 + point0).dot (normal) * 0.5f;
     return plane;
   }
   
-  /**
-   * @brief get_id_point_in_sphere returns the index of points which are in sphere
-   *        with center and radius as given
-   * @param kdtree kdtree containing the point cloud
-   * @param center
-   * @param radius
-   * @return
-   */
   template<typename PointNT>
   std::vector<int>
-  get_id_point_in_sphere (const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree, 
-                          const Eigen::Vector3f &center, const double radius)
+  BallPivoting<PointNT>::getIdPointsInSphere (const Eigen::Vector3f &center, const double radius) const
   {
     std::vector<int> indices;
     std::vector<float> sqr_distances;
     PointNT center_point;
     center_point.getVector3fMap () = center;
-    kdtree->radiusSearch (center_point, radius, indices, sqr_distances);
+    tree_->radiusSearch (center_point, radius, indices, sqr_distances);
     return indices;
   }
   
-  /**
-   * @brief num_point_in_sphere returns the number of points in sphere with given center and radius
-   * @param center
-   * @param radius
-   * @param kdtree
-   * @return
-   */
   template<typename PointNT>
   size_t
-  num_point_in_sphere (const Eigen::Vector3f &center, const float radius, 
-                       const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree)
+  BallPivoting<PointNT>::getNumPointsInSphere (const Eigen::Vector3f &center, const float radius) const
   {
-    return get_id_point_in_sphere<PointNT> (kdtree, center, radius).size ();
+    return getIdPointsInSphere (center, radius).size ();
   }
    
-  /**
-   * checks whether normal is consistent with the normal vectors of points with indexes
-   * @tparam PointNT
-   * @param normal
-   * @param index
-   * @param cloud
-   * @return
-   */
   template<typename PointNT>
   bool
-  is_normal_consistent (const Eigen::Vector3f &normal, const std::vector<uint32_t> &indexes,
-                        const typename pcl::PointCloud<PointNT>::ConstPtr &cloud)
+  BallPivoting<PointNT>::isNormalConsistent (const Eigen::Vector3f &normal, 
+                                             const std::vector<uint32_t> &indexes) const
   {
     if (indexes.size () != 3)
     {
-      PCL_ERROR ("indexes.size () != 3 in is_normal_consistent");
+      PCL_ERROR ("indexes.size () != 3 in isNormalConsistent");
       return false;
     }
     int count_consistent = 0;
     for (size_t id = 0; id < 3; ++id)
     {
-      if (normal.dot (cloud->at (indexes.at (id)).getNormalVector3fMap ()) >= 0.0f)
+      if (normal.dot (input_->at (indexes.at (id)).getNormalVector3fMap ()) >= 0.0f)
       {
         ++count_consistent;
       }
     }
     return count_consistent >= 2;
   }
-  
-  /**
-   * get the center of circle where three point are on
-   * @param point0
-   * @param point1
-   * @param point2
-   * @return
-   */
+   
+  template<typename PointNT>
   Eigen::Vector3f
-  get_circle_center (const Eigen::Vector3f &point0, const Eigen::Vector3f &point1, 
-                     const Eigen::Vector3f &point2)
+  BallPivoting<PointNT>::getCircleCenter (const Eigen::Vector3f &point0, 
+                                          const Eigen::Vector3f &point1, 
+                                          const Eigen::Vector3f &point2) 
   {
     // https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_from_cross-_and_dot-products
     const Eigen::Vector3f vec2 = point0 - point1;
@@ -154,74 +119,28 @@ namespace pcl
   
     return alpha * point0 + beta * point1 + gamma * point2;
   }
-  
-  /**
-   * get the normal vector of a triangle, (p1-p0)x(p2-p0)
-   * @tparam PointNT
-   * @param cloud
-   * @param index
-   * @return
-   */
+
   template<typename PointNT>
   Eigen::Vector3f
-  get_normal_triangle (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud, 
-                       const std::vector<uint32_t> &indexes)
+  BallPivoting<PointNT>::getNormalTriangle (const std::vector<uint32_t> &indexes) const
   {
     if (indexes.size () != 3)
     {
-      PCL_ERROR ("indexes.size () != 3 in get_normal_triangle");
+      PCL_ERROR ("indexes.size () != 3 in getNormalTriangle");
       return Eigen::Vector3f::Zero ();
     }
-    const Eigen::Vector3f p0 = cloud->at (indexes.at (0)).getVector3fMap ();
-    return (cloud->at (indexes.at (1)).getVector3fMap () - p0)
-      .cross (cloud->at (indexes.at (2)).getVector3fMap () - p0)
+    const Eigen::Vector3f p0 = input_->at (indexes.at (0)).getVector3fMap ();
+    return (input_->at (indexes.at (1)).getVector3fMap () - p0)
+      .cross (input_->at (indexes.at (2)).getVector3fMap () - p0)
       .normalized ();
   }
   
-  /**
-   * reorder the vertices of triangle so the normal vector of triangle is consistent with normals of vertices
-   * @tparam PointNT
-   * @param cloud
-   * @param triangle
-   */
-  template<typename PointNT>
-  void
-  reorder (const typename pcl::PointCloud<PointNT>::ConstPtr &cloud, pcl::Vertices &triangle)
-  {
-    if (!is_normal_consistent (get_normal_triangle<PointNT> (cloud, triangle.vertices), 
-                               triangle.vertices, cloud))
-    {
-      // if the order (0,1,2) is not consistent, (0,2,1) should be consistent
-      std::swap (triangle.vertices.at (1), triangle.vertices.at (2));
-    }
-  }
-  
-  /**
-   * get the distance from point to plane
-   * @tparam PointNT
-   * @param plane
-   * @param point
-   * @return
-   */
   template<typename PointNT>
   float
-  get_distance_point_plane (const Eigen::Vector4f &plane, const PointNT &point)
-  {
-    // plane is (a,b,c,d), point is (x,y,z), then distance is ax+by+cz+d
-    return point.getVector3fMap ().dot (plane.segment (0, 3)) + plane (3);
-  }
-  
-  /**
-   * get the signed rotation angle from (point0-center) to (point1-center) on plane
-   * @param point0
-   * @param point1
-   * @param center
-   * @param plane the rotation is along the normal vector of plane
-   * @return
-   */
-  float
-  get_angle_rotation (const Eigen::Vector3f &point0, const Eigen::Vector3f &point1, 
-                      const Eigen::Vector3f &center, const Eigen::Vector4f &plane)
+  BallPivoting<PointNT>::getRotationAngle (const Eigen::Vector3f &point0, 
+                                           const Eigen::Vector3f &point1, 
+                                           const Eigen::Vector3f &center, 
+                                           const Eigen::Vector4f &plane)
   {
     const Eigen::Vector3f vc0 = (point0 - center).normalized ();
     const Eigen::Vector3f vc1 = (point1 - center).normalized ();
@@ -235,68 +154,7 @@ namespace pcl
     }
     return angle;
   }
-  
-  /**
-   * estimate a radius for the ball pivoting algorithm. the returned estimation is the minimal value, so that
-   * at least min_success_rate of the sample points have at least num_in_radius neighbors
-   * @tparam PointNT
-   * @param kdtree
-   * @param num_sample_point
-   * @param num_in_radius
-   * @param min_success_rate
-   * @return
-   */
-  template<typename PointNT>
-  double
-  guess_radius (const typename PCLSurfaceBase<PointNT>::KdTreePtr &kdtree,
-                const int num_sample_point = 500,
-                const int num_in_radius = 5, const float min_success_rate = 0.95f)
-  {
-    std::vector<float> farthest_distances;
-    const typename pcl::PointCloud<PointNT>::ConstPtr &cloud = kdtree->getInputCloud ();
-  
-    // sample num_sample_point points in cloud per index
-    std::vector<int> index_samples;
-    index_samples.reserve (cloud->size ());
-    for (size_t id = 0; id < cloud->size (); ++id)
-    {
-      index_samples.push_back ((int) id);
-    }
-    boost::range::random_shuffle (index_samples);
-    index_samples.resize (num_sample_point);
-  
-    farthest_distances.reserve (num_sample_point);
-    for (int id = 0; id < num_sample_point; ++id)
-    {
-      std::vector<int> indices;
-      std::vector<float> sqr_distances;
-      kdtree->nearestKSearch (cloud->at (index_samples.at (id)), num_in_radius, 
-                              indices, sqr_distances);
-      farthest_distances.push_back (sqr_distances.back ());
-    }
-  
-    // ascending summary of num_in_radius-th nearest neighbor
-    std::sort (farthest_distances.begin (), farthest_distances.end ());
-  
-    return sqrt (farthest_distances.at (
-          (int) floor (min_success_rate * (float) num_sample_point)));
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::BallPivoting ():
-    radius_ (-1.0), 
-    is_allow_back_ball_ (false), 
-    is_allow_flip_ (false),
-    threshold_collinear_cos_ (cos (10.0 * M_PI / 180.0)), 
-    threshold_distance_near_ (1e-6)
-  {
-  }
-  
-  template<typename PointNT>
-  BallPivoting<PointNT>::~BallPivoting ()
-  {
-  }
-  
+   
   template<typename PointNT>
   boost::shared_ptr<Eigen::Vector3f>
   BallPivoting<PointNT>::getBallCenter (const bool is_back_first, 
@@ -318,7 +176,7 @@ namespace pcl
         (pos2 - pos0).norm () > threshold_distance_near_ && 
         fabs (vec0.dot (vec1)) < threshold_collinear_cos_)
     {
-      Eigen::Vector3f center_circle = get_circle_center (pos0, pos1, pos2);
+      Eigen::Vector3f center_circle = getCircleCenter (pos0, pos1, pos2);
   
       // move to distance radius_ along normal direction
       float radius_planar = (center_circle - pos0).norm ();
@@ -327,7 +185,7 @@ namespace pcl
         Eigen::Vector3f normal = vec0.cross (vec1).normalized ();
         Eigen::Vector3f center_candidate;
         const float dist_normal = sqrt ((float) radius_ * radius_ - radius_planar * radius_planar);
-        if (!is_normal_consistent<PointNT> (normal, index, input_))
+        if (!isNormalConsistent (normal, index))
         {
           // reorder the vertices of triangle and reverse the normal vector
           normal = -normal;
@@ -338,7 +196,7 @@ namespace pcl
         if (is_back_first)
         {
           center_candidate = center_circle - normal;
-          if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
+          if (getNumPointsInSphere (center_candidate, radius_) <= 3)
           {
             center = boost::make_shared<Eigen::Vector3f> (center_candidate);
             is_back_ball = true;
@@ -346,7 +204,7 @@ namespace pcl
           else if (is_allow_flip_)
           {
             center_candidate = center_circle + normal;
-            if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
+            if (getNumPointsInSphere (center_candidate, radius_) <= 3)
             {
               center = boost::make_shared<Eigen::Vector3f> (center_candidate);
               is_back_ball = false;
@@ -356,7 +214,7 @@ namespace pcl
         else
         {
           center_candidate = center_circle + normal;
-          if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
+          if (getNumPointsInSphere (center_candidate, radius_) <= 3)
           {
             center = boost::make_shared<Eigen::Vector3f> (center_candidate);
             is_back_ball = false;
@@ -364,7 +222,7 @@ namespace pcl
           else if (is_allow_flip_)
           {
             center_candidate = center_circle - normal;
-            if (num_point_in_sphere<PointNT> (center_candidate, radius_, tree_) <= 3)
+            if (getNumPointsInSphere (center_candidate, radius_) <= 3)
             {
               center = boost::make_shared<Eigen::Vector3f> (center_candidate);
               is_back_ball = true;
@@ -390,8 +248,8 @@ namespace pcl
     const Eigen::Vector3f v1 = input_->at (id1).getVector3fMap ();
     const Eigen::Vector3f mid = (v0 + v1) * 0.5f;
     // pivot opposite to normal direction, change direction for angle
-    const Eigen::Vector4f plane = edge.is_back_ball_ ? get_plane_between (v0, v1) 
-                                                     : get_plane_between (v1, v0);
+    const Eigen::Vector4f plane = edge.is_back_ball_ ? getPlaneBetweenPoints (v0, v1) 
+                                                     : getPlaneBetweenPoints (v1, v0);
     std::vector<Eigen::Vector3f> center_candidates; // only store, no need to align
     std::vector<float> dot_candidates;
     std::vector<uint32_t> id_candidates;
@@ -400,7 +258,7 @@ namespace pcl
     const double search_radius = sqrt (radius_ * radius_ - (v0 - mid).dot (Eigen::Vector3f (v0 - mid))) 
                                + radius_;
     std::vector<uint32_t> point3 (3, 0);
-    std::vector<int> indices = get_id_point_in_sphere<PointNT> (tree_, mid, search_radius);
+    std::vector<int> indices = getIdPointsInSphere (mid, search_radius);
   
     center_candidates.reserve (indices.size ());
     dot_candidates.reserve (indices.size ());
@@ -413,8 +271,8 @@ namespace pcl
       point3.at (2) = (uint32_t) (*it);
   
       if (point3.at (2) == id0 || point3.at (2) == id1 || point3.at (2) == id_op ||
-          !is_normal_consistent<PointNT> (get_normal_triangle<PointNT> (input_, point3), point3, input_) ||
-          fabs (get_distance_point_plane<PointNT> (plane, input_->at (*it))) > radius_)
+          !isNormalConsistent (getNormalTriangle (point3), point3) ||
+          std::fabs (plane.segment (0, 3).dot (input_->at (*it).getVector3fMap ()) + plane[3]) > radius_)
       {
         continue;
       }
@@ -427,7 +285,7 @@ namespace pcl
       if (center_jr)
       {
         center_candidates.push_back (*center_jr);
-        dot_candidates.push_back (get_angle_rotation (center, *center_jr, mid, plane));
+        dot_candidates.push_back (getRotationAngle (center, *center_jr, mid, plane));
         id_candidates.push_back ((uint32_t) *it);
         is_back_candidates.push_back (is_back_bool);
       }
@@ -452,18 +310,46 @@ namespace pcl
   
   template<typename PointNT>
   void
-  BallPivoting<PointNT>::setEstimatedRadius (const int num_sample_point, 
-                                             const int num_point_in_radius,
-                                             const float ratio_success)
+  BallPivoting<PointNT>::setSearchRadiusAutomatically (const int num_sample_point, 
+                                                       const int num_point_in_radius,
+                                                       const float ratio_success)
   {
-    if (input_ && tree_ && tree_->getInputCloud ())
-    {
-      radius_ = guess_radius<PointNT> (tree_, num_sample_point, num_point_in_radius, ratio_success);
-    }
-    else
+    if (!(input_ && tree_ && tree_->getInputCloud ()))
     {
       PCL_ERROR ("InputCloud or KdTree is empty!\n");
+      return;
     }
+
+    std::vector<float> farthest_distances;
+    int num_sample_point_real = num_sample_point <= 0 ? input_->size () / 5 
+                                                      : num_sample_point;
+  
+    // sample num_sample_point_real points in input cloud per index
+    std::vector<int> index_samples;
+    index_samples.reserve (input_->size ());
+    for (size_t id = 0; id < input_->size (); ++id)
+    {
+      index_samples.push_back ((int) id);
+    }
+    boost::range::random_shuffle (index_samples);
+    index_samples.resize (num_sample_point_real);
+  
+    farthest_distances.reserve (num_sample_point_real);
+    for (int id = 0; id < num_sample_point_real; ++id)
+    {
+      std::vector<int> indices;
+      std::vector<float> sqr_distances;
+      tree_->nearestKSearch (input_->at (index_samples.at (id)), 
+                             num_point_in_radius, indices, sqr_distances);
+      farthest_distances.push_back (sqr_distances.back ());
+    }
+  
+    // ascending summary of num_in_radius-th nearest neighbor
+    std::sort (farthest_distances.begin (), farthest_distances.end ());
+  
+    // find the thresholding value
+    radius_ = std::sqrt (farthest_distances.at (
+          (int) floor (ratio_success * (float) num_sample_point_real)));
   }
   
   template<typename PointNT>
@@ -517,7 +403,7 @@ namespace pcl
     // if radius is not valid, guess with default configuration (see default parameters of guess_radius)
     if (radius_ < 0.0)
     {
-      radius_ = guess_radius<PointNT> (tree_);
+      setSearchRadiusAutomatically ();
     }
   
     // proceed until not seed can bt found
@@ -572,8 +458,8 @@ namespace pcl
       }
   
       std::vector<uint32_t> index3 (3, 0);
-      std::vector<int> indices = get_id_point_in_sphere<PointNT> (
-          tree_, input_->at (id_search).getVector3fMap (), search_radius);
+      std::vector<int> indices = getIdPointsInSphere (
+          input_->at (id_search).getVector3fMap (), search_radius);
       if (indices.size () < 3)
       {
         continue;
