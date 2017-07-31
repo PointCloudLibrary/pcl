@@ -94,6 +94,87 @@ namespace pcl
     double threshold_collinear_cos_;
     /** threshold for avoiding too near points */
     double threshold_distance_near_;
+
+    /**
+     * @brief getPlaneBetweenPoints returns the plane between two points,
+     *        it is perpendicular to point0-point1 and crosses their mid-point
+     * @param point0
+     * @param point1
+     * @return
+     */
+    static
+    Eigen::Vector4f
+    getPlaneBetweenPoints (const Eigen::Vector3f &point0, 
+                           const Eigen::Vector3f &point1);
+
+    /**
+     * @brief getIdPointsInSphere returns the index of points which are in sphere
+     *        with center and radius as given
+     * @param center
+     * @param radius
+     * @return
+     */
+    std::vector<int>
+    getIdPointsInSphere (const Eigen::Vector3f &center, const double radius) const;
+
+    /**
+     * @brief getNumPointsInSphere returns the number of points in sphere with given center and radius
+     * @param center
+     * @param radius
+     * @return
+     */
+    size_t
+    getNumPointsInSphere (const Eigen::Vector3f &center, const float radius) const;
+
+    /**
+     * checks whether normal is consistent with the normal vectors of points with indexes
+     * @tparam PointNT
+     * @param normal
+     * @param index
+     * @return
+     */
+    bool
+    isNormalConsistent (const Eigen::Vector3f &normal, 
+                        const std::vector<uint32_t> &indexes) const;
+
+    /**
+     * get the center of circle where three point are on
+     * @param point0
+     * @param point1
+     * @param point2
+     * @return
+     */
+    static
+    Eigen::Vector3f
+    getCircleCenter (const Eigen::Vector3f &point0, 
+                     const Eigen::Vector3f &point1, 
+                     const Eigen::Vector3f &point2);
+
+    /**
+     * get the normal vector of a triangle, (p1-p0)x(p2-p0)
+     * @tparam PointNT
+     * @param cloud
+     * @param index
+     * @return
+     */
+    Eigen::Vector3f
+    getNormalTriangle (const std::vector<uint32_t> &indexes) const;
+  
+    /**
+     * get the signed rotation angle from (point0-center) to (point1-center) on plane
+     * @param point0
+     * @param point1
+     * @param center
+     * @param plane the rotation is along the normal vector of plane
+     * @return
+     */
+    static
+    float
+    getRotationAngle (const Eigen::Vector3f &point0, 
+                      const Eigen::Vector3f &point1, 
+                      const Eigen::Vector3f &center, 
+                      const Eigen::Vector4f &plane);
+
   
     /**
      * find one starting triangle for ball pivoting
@@ -136,9 +217,19 @@ namespace pcl
     getBallCenter (const bool is_back_first, std::vector<uint32_t> &index, bool &is_back_ball) const;
   
   public:
-    BallPivoting ();
+    BallPivoting ():
+      radius_ (-1.0), 
+      is_allow_back_ball_ (false), 
+      is_allow_flip_ (false),
+      threshold_collinear_cos_ (cos (10.0 * M_PI / 180.0)), 
+      threshold_distance_near_ (1e-6)
+    {
+    }
+
   
-    ~BallPivoting ();
+    ~BallPivoting ()
+    {
+    }
   
     /**
      * set the radius of ball
@@ -202,7 +293,7 @@ namespace pcl
      * @param points the vertex positions of the resulting mesh
      * @param polygons the connectivity of the resulting mesh
      */
-    virtual void
+    void
     performReconstruction (pcl::PointCloud<PointNT> &points,
                            std::vector<pcl::Vertices> &polygons);
 
@@ -214,8 +305,10 @@ namespace pcl
      * @param num_point_in_radius
      * @param ratio_success
      */
-    virtual void
-    setEstimatedRadius (const int num_sample_point, const int num_point_in_radius, const float ratio_success);
+    void
+    setSearchRadiusAutomatically (const int num_sample_point = 0, 
+                                  const int num_point_in_radius = 6, 
+                                  const float ratio_success = 0.995f);
 
 
   public:

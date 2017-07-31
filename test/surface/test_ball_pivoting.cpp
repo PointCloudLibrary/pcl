@@ -66,7 +66,7 @@ TEST (PCL, BallPivotingTest)
   pivoter.reconstruct (mesh_fixed_radius);
 
   // reconstruction with estimated radius
-  pivoter.setEstimatedRadius (100, 5, 0.95f); 
+  pivoter.setSearchRadiusAutomatically (100, 5, 0.95f); 
   pivoter.reconstruct (mesh_found_radius);
 
   // test reconstruction with custom radius
