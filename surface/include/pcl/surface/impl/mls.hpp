@@ -704,14 +704,13 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointInT, typename PointOutT>
-pcl::MovingLeastSquares<PointInT, PointOutT>::MLSResult::MLSResult (const Eigen::Vector3d &a_mean,
-                                                                    const Eigen::Vector3d &a_plane_normal,
-                                                                    const Eigen::Vector3d &a_u,
-                                                                    const Eigen::Vector3d &a_v,
-                                                                    const Eigen::VectorXd a_c_vec,
-                                                                    const int a_num_neighbors,
-                                                                    const float &a_curvature) :
+pcl::MLSResult::MLSResult (const Eigen::Vector3d &a_mean,
+                             const Eigen::Vector3d &a_plane_normal,
+                             const Eigen::Vector3d &a_u,
+                             const Eigen::Vector3d &a_v,
+                             const Eigen::VectorXd a_c_vec,
+                             const int a_num_neighbors,
+                             const float &a_curvature) :
   mean (a_mean), plane_normal (a_plane_normal), u_axis (a_u), v_axis (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors),
   curvature (a_curvature), valid (true)
 {

@@ -52,6 +52,28 @@
 
 namespace pcl
 {
+  /** \brief Data structure used to store the results of the MLS fitting
+    * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
+    */
+  struct MLSResult
+  {
+    MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
+
+    MLSResult (const Eigen::Vector3d &a_mean,
+               const Eigen::Vector3d &a_plane_normal,
+               const Eigen::Vector3d &a_u,
+               const Eigen::Vector3d &a_v,
+               const Eigen::VectorXd a_c_vec,
+               const int a_num_neighbors,
+               const float &a_curvature);
+
+    Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
+    Eigen::VectorXd c_vec;
+    int num_neighbors;
+    float curvature;
+    bool valid;
+  };
+
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm 
     * for data smoothing and improved normal estimation. It also contains methods for upsampling the 
     * resulting cloud based on the parametric fit.
@@ -90,28 +112,6 @@ namespace pcl
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       enum UpsamplingMethod {NONE, DISTINCT_CLOUD, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION};
-
-      /** \brief Data structure used to store the results of the MLS fitting
-        * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
-        */
-      struct MLSResult
-      {
-        MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
-
-        MLSResult (const Eigen::Vector3d &a_mean,
-                   const Eigen::Vector3d &a_plane_normal,
-                   const Eigen::Vector3d &a_u,
-                   const Eigen::Vector3d &a_v,
-                   const Eigen::VectorXd a_c_vec,
-                   const int a_num_neighbors,
-                   const float &a_curvature);
-
-        Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
-        Eigen::VectorXd c_vec;
-        int num_neighbors;
-        float curvature;
-        bool valid;
-      };
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
@@ -317,8 +317,8 @@ namespace pcl
       getCacheMLSResults () const { return cache_mls_results_; }
 
       /** \brief Get the MLSResults for input cloud
-        * \note The results are only stored if setCacheMLSResults(true) was called
-        *       or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
+        * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
+        * \note This vector is align with the input cloud indicies, so use getCorrespondingIndices to get the correct results when using output cloud indicies.
         */
       inline const std::vector<MLSResult>& getMLSResults() const { return mls_results_; }
 
