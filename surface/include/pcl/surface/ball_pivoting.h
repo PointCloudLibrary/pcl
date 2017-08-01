@@ -246,6 +246,24 @@ namespace pcl
     double
     getSearchRadius () const
     { return radius_; }
+
+    /**
+     * estimate one radius and set it as ball radius. num_sample_point points would be selected randomly in cloud,
+     * as least ratio_success of the sample points must have at least num_point_in_radius neighbors within
+     * the estimated radius.
+     * @param num_sample_point the expected number of samples for estimating radius. With non-positive value (<1),
+     *        the radius would be estimated with 20% of the input points.
+     * @param num_point_in_radius the expected number of points in each sphere with sampled points as centers and 
+     *        estimated radius as radius. This parameter should be at least 3, as at lease 3 points are needed for
+     *        triangulation. Default value is 6 for better success rate.
+     * @param ratio_success how much of the spheres with sampled points as centers and estimated radius as radius 
+     *        contain at least $num_point_in_radius$ points. This value should be [0,1], a rectification inside the 
+     *        function would ensure it.
+     */
+    void
+    setSearchRadiusAutomatically (const int num_sample_point = 0, 
+                                  const int num_point_in_radius = 6, 
+                                  const float ratio_success = 0.995f);
   
     /**
      * set whether ball on the back surface is allowed. if this value is set to true, the ball only pivots on the
@@ -296,20 +314,6 @@ namespace pcl
     void
     performReconstruction (pcl::PointCloud<PointNT> &points,
                            std::vector<pcl::Vertices> &polygons);
-
-    /**
-     * estimate one radius and set it as ball radius. num_sample_point points would be selected randomly in cloud,
-     * as least ratio_success of the sample points must have at least num_point_in_radius neighbors within
-     * the estimated radius.
-     * @param num_sample_point
-     * @param num_point_in_radius
-     * @param ratio_success
-     */
-    void
-    setSearchRadiusAutomatically (const int num_sample_point = 0, 
-                                  const int num_point_in_radius = 6, 
-                                  const float ratio_success = 0.995f);
-
 
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
