@@ -37,8 +37,6 @@
 
 #include <boost/make_shared.hpp>
 
-#include <pcl/impl/instantiate.hpp>
-#include <pcl/point_types.h>
 #include <pcl/surface/ball_pivoting.h>
 #include <pcl/surface/impl/ball_pivoting.hpp>
 
@@ -147,5 +145,9 @@ namespace pcl
   } // namespace pcl::bpa
 } // namespace pcl
 
+#ifndef PCL_NO_PRECOMPILE
+#include <pcl/point_types.h>
+#include <pcl/impl/instantiate.hpp>
 // Instantiations of specific point types
 PCL_INSTANTIATE(BallPivoting, (pcl::PointNormal)(pcl::PointXYZRGBNormal)(pcl::PointXYZINormal))
+#endif    // PCL_NO_PRECOMPILE
