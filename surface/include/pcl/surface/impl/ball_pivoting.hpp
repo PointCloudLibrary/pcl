@@ -142,11 +142,14 @@ namespace pcl
                                            const Eigen::Vector3f &center, 
                                            const Eigen::Vector4f &plane)
   {
-    const Eigen::Vector3f vc0 = (point0 - center).normalized ();
-    const Eigen::Vector3f vc1 = (point1 - center).normalized ();
+    const Eigen::Vector3f vec0 = (point0 - center).normalized ();
+    const Eigen::Vector3f vec1 = (point1 - center).normalized ();
   
-    const float sin_val = vc0.cross (-Eigen::Vector3f (plane.segment (0, 3))).dot (vc1);
-    const float cos_val = vc0.dot (vc1);
+    // Use vec0 as "X-axis" and the cross product of vec0 and -plane.normal as "Y-axis",
+    // and use atan2 to get the unique angle (the range of atan2 is 2*pi).
+    // Reverse the normal vector of plane should make the angle alpha to be 2*pi-alpha
+    const float sin_val = vec0.cross (-Eigen::Vector3f (plane.segment (0, 3))).dot (vec1);
+    const float cos_val = vec0.dot (vec1);
     float angle = std::atan2 (sin_val, cos_val);
     if (angle < 0.0f) // -pi~pi -> 0~2pi
     {
@@ -269,7 +272,7 @@ namespace pcl
       point3.at (0) = id0;
       point3.at (1) = id1;
       point3.at (2) = (uint32_t) (*it);
-  
+
       if (point3.at (2) == id0 || point3.at (2) == id1 || point3.at (2) == id_op ||
           !isNormalConsistent (getNormalTriangle (point3), point3) ||
           std::fabs (plane.segment (0, 3).dot (input_->at (*it).getVector3fMap ()) + plane[3]) > radius_)
@@ -348,8 +351,9 @@ namespace pcl
     std::sort (farthest_distances.begin (), farthest_distances.end ());
   
     // find the thresholding value
+    const float ratio_success_rectified = std::max (0.0f, std::min (1.0f, ratio_success));
     radius_ = std::sqrt (farthest_distances.at (
-          (int) floor (ratio_success * (float) num_sample_point_real)));
+          (int) floor (ratio_success_rectified * (float) num_sample_point_real)));
   }
   
   template<typename PointNT>
