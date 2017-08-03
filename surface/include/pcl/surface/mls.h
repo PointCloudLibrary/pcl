@@ -49,22 +49,31 @@
 #include <pcl/surface/eigen.h>
 #include <pcl/surface/processing.h>
 #include <map>
+#include <boost/function.hpp>
 
 namespace pcl
 {
+
+  const double MLS_PROJECTION_CONVERGENCE_TOLERANCE = 1e-8;
+  const double MLS_MINIMUM_PRINCIPLE_CURVATURE = 1e-5;
+
   /** \brief Data structure used to store the results of the MLS fitting */
   struct MLSResult
   {
     MLSResult () : num_neighbors (0), curvature (0.0f), valid (false) {}
 
-    MLSResult (const Eigen::Vector3d &a_mean,
+    MLSResult (const Eigen::Vector3d &a_query_point,
+               const Eigen::Vector3d &a_mean,
                const Eigen::Vector3d &a_plane_normal,
                const Eigen::Vector3d &a_u,
                const Eigen::Vector3d &a_v,
-               const Eigen::VectorXd a_c_vec,
+               const Eigen::VectorXd &a_c_vec,
                const int a_num_neighbors,
-               const float &a_curvature);
+               const float &a_curvature,
+               const int a_order,
+               const bool a_polynomial_fit);
 
+    Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
     Eigen::Vector3d plane_normal; /**< \brief The normal of the local plane of the query point. */
     Eigen::Vector3d u_axis;       /**< \brief The axis corresponding to the u-coordinates of the local plane of the query point. */
@@ -72,8 +81,130 @@ namespace pcl
     Eigen::VectorXd c_vec;        /**< \brief The polynomial coefficients Example: z = c_vec[0] + c_vec[1]*v + c_vec[2]*v^2 + c_vec[3]*u + c_vec[4]*u*v + c_vec[5]*u^2 */
     int num_neighbors;            /**< \brief The number of neighbors used to create the mls surface. */
     float curvature;              /**< \brief The curvature at the query point. */
+    int order;                    /**< \brief The order of the polynomial used if polynomial_fit = true */
+    bool polynomial_fit;          /**< \brief If True, a polynomial surface was fitted to the neighbors as the mls surface */
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
+
   };
+
+  /** \brief Data structure used to store the MLS polynomial partial derivatives */
+  struct PolynomialPartialDerivative
+  {
+    double z;     /**< @brief The z component of the polynomial evaluated at z(u, v). */
+    double z_u;   /**< @brief The partial derivative dz/du. */
+    double z_v;   /**< @brief The partial derivative dz/dv. */
+    double z_uu;  /**< @brief The partial derivative d^2z/du^2. */
+    double z_vv;  /**< @brief The partial derivative d^2z/dv^2. */
+    double z_uv;  /**< @brief The partial derivative d^2z/dudv. */
+  };
+
+  /** \brief Data structure used to store the MLS projection results */
+  struct MLSProjectionResults
+  {
+    double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+    double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+    Eigen::Vector3d point;  /**< \brief The projected point. */
+    Eigen::Vector3d normal; /**< \brief The projected point's normal. */
+  };
+
+  /** \brief Given a point calculate it's 3D location in the MLS frame.
+    * \param[in] pt The point
+    * \param[in] mls_result The MLS results data
+    * \param[out] u The u-coordinate of the point in local MLS frame.
+    * \param[out] v The v-coordinate of the point in local MLS frame.
+    * \param[out] w The w-coordinate of the point in local MLS frame.
+    */
+  void getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v, double &w);
+
+  /** \brief Given a point calculate it's 2D location in the MLS frame.
+    * \param[in] pt The point
+    * \param[in] mls_result The MLS results data
+    * \param[out] u The u-coordinate of the point in local MLS frame.
+    * \param[out] v The v-coordinate of the point in local MLS frame.
+    */
+  void getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v);
+
+  /** \brief Calculate the polynomial
+    * \param[in] u The u-coordinate of the point in local MLS frame.
+    * \param[in] v The v-coordinate of the point in local MLS frame.
+    * \param[in] mls_result The MLS results data
+    * \return The polynomial value at the provide uv coordinates.
+    */
+  double getPolynomialValue (const double u, const double v, const pcl::MLSResult &mls_result);
+
+  /** \brief Calculate the polynomial's first and second partial derivatives.
+    * \param[in] u The u-coordinate of the point in local MLS frame.
+    * \param[in] v The v-coordinate of the point in local MLS frame.
+    * \param[in] mls_result The MLS results data
+    * \return The polynomial partial derivatives at the provide uv coordinates.
+    */
+  PolynomialPartialDerivative getPolynomialPartialDerivative (const double u, const double v, const pcl::MLSResult &mls_result);
+
+  /** \brief Calculate the principle curvatures using the polynomial surface.
+    * \param[in] u The u-coordinate of the point in local MLS frame.
+    * \param[in] v The v-coordinate of the point in local MLS frame.
+    * \param[in] mls_result The MLS results data
+    * \return The principle curvature [k1, k2] at the provided ub coordinates.
+    * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
+    */
+  Eigen::Vector2f calculatePrincipleCurvatures (const double u, const double v, const pcl::MLSResult &mls_result);
+
+ /** \brief Project a point orthogonal to the polynomial surface.
+   * \param[in] u The u-coordinate of the point in local MLS frame.
+   * \param[in] v The v-coordinate of the point in local MLS frame.
+   * \param[in] w The w-coordinate of the point in local MLS frame.
+   * \param[in] mls_result The mls results representing the surface.
+   * \return The MLSProjectionResults for the input data.
+   * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+   * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
+   * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
+   */
+ MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w, const pcl::MLSResult &mls_result);
+
+ /** \brief Project a point onto the MLS plane.
+   * \param[in] u The u-coordinate of the point in local MLS frame.
+   * \param[in] v The v-coordinate of the point in local MLS frame.
+   * \param[in] mls_result The mls results representing the surface.
+   * \return The MLSProjectionResults for the input data.
+   */
+ MLSProjectionResults projectPointToMLSPlane (const double u, const double v, const pcl::MLSResult &mls_result);
+
+ /** \brief Project a point along the MLS plane normal to the polynomial surface.
+   * \param[in] u The u-coordinate of the point in local MLS frame.
+   * \param[in] v The v-coordinate of the point in local MLS frame.
+   * \param[in] mls_result The mls results representing the surface.
+   * \return The MLSProjectionResults for the input data.
+   * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+   */
+ MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v, const pcl::MLSResult &mls_result);
+
+ /**
+   * \brief The default weight function used when fitting a polynomial surface
+   * \param sq_dist the squared distance from a point to origin of the mls frame
+   * \param sq_mls_radius the squraed mls search radius used
+   * \return The weight for a point at squared distance from the origin of the mls frame
+   */
+ double computeMLSWeight(const double sq_dist, const double sq_mls_radius) { return exp (-sq_dist / sq_mls_radius); }
+
+ /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
+   * \param[in] index the index of the query point in the input cloud
+   * \param[in] nn_indices the set of nearest neighbors indices for pt
+   * \param[in] search_radius the search radius used to find nearest neighbors for pt
+   * \param[out] mls_result stores the MLS result for each point in the input cloud
+   * \param[in] polynomial_fit if true a polynomial is fitted to the nearest neighbors
+   * \param[in] polynomial_order the order of the polynomial to fit to the nearest neighbors
+   * \param[in] weight_func defines the weight function for the polynomial fit
+   */
+ template <typename PointT>
+ void computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
+                         int index,
+                         const std::vector<int> &nn_indices,
+                         double search_radius,
+                         pcl::MLSResult &mls_result,
+                         bool polynomial_fit = true,
+                         int polynomial_order = 2,
+                         boost::function<double(const double)> weight_func = 0);
+
 
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm 
     * for data smoothing and improved normal estimation. It also contains methods for upsampling the 
@@ -113,6 +244,7 @@ namespace pcl
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
       enum UpsamplingMethod {NONE, DISTINCT_CLOUD, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION};
+      enum ProjectionMethod {SIMPLE, ORTHOGONAL};
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
@@ -131,6 +263,7 @@ namespace pcl
                               desired_num_points_in_radius_ (0),
                               cache_mls_results_ (true),
                               mls_results_ (),
+                              projection_method_ (SIMPLE),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
@@ -319,6 +452,22 @@ namespace pcl
       inline bool
       getCacheMLSResults () const { return cache_mls_results_; }
 
+      /** \brief Set the method to be used when projection the point on to the MLS surface.
+        * \param method
+        * \note This is only used when polynomial fit is enabled.
+        * \note Options are: * SIMPLE - Project the point along the mls plane normal onto the polynomial surface.
+        *                    * ORTHONORMAL - Project the point to the closest point on the polynonomial surface.
+        *
+        *
+        */
+      inline void
+      setProjectionMethod (ProjectionMethod method) { projection_method_ = method; }
+
+
+      /** \brief Get the current projection method being used. */
+      inline ProjectionMethod
+      getProjectionMethod () const { return projection_method_; }
+
       /** \brief Get the MLSResults for input cloud
         * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
         * \note This vector is align with the input cloud indicies, so use getCorrespondingIndices to get the correct results when using output cloud indicies.
@@ -392,6 +541,9 @@ namespace pcl
         * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
         */
       std::vector<MLSResult> mls_results_;
+
+      /** \brief Parameter that specifies the projection method to be used. */
+      ProjectionMethod projection_method_;
 
       
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
@@ -474,7 +626,7 @@ namespace pcl
       }
 
       /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
-        * \param[in] index the inex of the query point in the input cloud
+        * \param[in] index the index of the query point in the input cloud
         * \param[in] nn_indices the set of nearest neighbors indices for pt
         * \param[in] nn_sqr_dists the set of nearest neighbors squared distances for pt
         * \param[out] projected_points the set of points projected points around the query point
@@ -488,36 +640,30 @@ namespace pcl
       void
       computeMLSPointNormal (int index,
                              const std::vector<int> &nn_indices,
-                             std::vector<float> &nn_sqr_dists,
                              PointCloudOut &projected_points,
                              NormalCloud &projected_points_normals,
                              PointIndices &corresponding_input_indices,
                              MLSResult &mls_result) const;
 
-      /** \brief Fits a point (sample point) given in the local plane coordinates of an input point (query point) to
-        * the MLS surface of the input point
-        * \param[in] u_disp the u coordinate of the sample point in the local plane of the query point
-        * \param[in] v_disp the v coordinate of the sample point in the local plane of the query point
-        * \param[in] u_axis the axis corresponding to the u-coordinates of the local plane of the query point
-        * \param[in] v_axis the axis corresponding to the v-coordinates of the local plane of the query point
-        * \param[in] n_axis
-        * \param mean
-        * \param[in] curvature the curvature of the surface at the query point
-        * \param[in] c_vec the coefficients of the polynomial fit on the MLS surface of the query point
-        * \param[in] num_neighbors the number of neighbors of the query point in the input cloud
-        * \param[out] result_point the absolute 3D position of the resulting projected point
-        * \param[out] result_normal the normal of the resulting projected point
+
+      /** \brief This is a helper function for add projected points
+        * \param[in] index the index of the query point in the input cloud
+        * \param[in] point the projected point to be added
+        * \param[in] normal the projected point's normal to be added
+        * \param[in] curvature the projected point's curvature
+        * \param[out] projected_points the set of projected points around the query point
+        * \param[out] projected_points_normals the normals corresponding to the projected points
+        * \param[out] corresponding_input_indices the set of indices with each point in output having the corresponding point in input
         */
       void
-      projectPointToMLSSurface (float &u_disp, float &v_disp,
-                                Eigen::Vector3d &u_axis, Eigen::Vector3d &v_axis,
-                                Eigen::Vector3d &n_axis,
-                                Eigen::Vector3d &mean,
-                                float &curvature,
-                                Eigen::VectorXd &c_vec,
-                                int num_neighbors,
-                                PointOutT &result_point,
-                                pcl::Normal &result_normal) const;
+      addProjectedPointNormal(int index,
+                              const Eigen::Vector3d &point,
+                              const Eigen::Vector3d &normal,
+                              double curvature,
+                              PointCloudOut &projected_points,
+                              NormalCloud &projected_points_normals,
+                              PointIndices &corresponding_input_indices) const;
+
 
       void
       copyMissingFields (const PointInT &point_in,
