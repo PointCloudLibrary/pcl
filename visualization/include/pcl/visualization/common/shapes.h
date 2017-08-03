@@ -231,14 +231,14 @@ namespace pcl
       * // Note: The height of the cone is set using the magnitude of the axis_direction vector.
       *
       * pcl::ModelCoefficients cone_coeff;
-      * plane_coeff.values.resize (7);    // We need 7 values
-      * plane_coeff.values[0] = cone_apex.x ();
-      * plane_coeff.values[1] = cone_apex.y ();
-      * plane_coeff.values[2] = cone_apex.z ();
-      * plane_coeff.values[3] = axis_direction.x ();
-      * plane_coeff.values[4] = axis_direction.y ();
-      * plane_coeff.values[5] = axis_direction.z ();
-      * plane_coeff.values[6] = angle (); // degrees
+      * cone_coeff.values.resize (7);    // We need 7 values
+      * cone_coeff.values[0] = cone_apex.x ();
+      * cone_coeff.values[1] = cone_apex.y ();
+      * cone_coeff.values[2] = cone_apex.z ();
+      * cone_coeff.values[3] = axis_direction.x ();
+      * cone_coeff.values[4] = axis_direction.y ();
+      * cone_coeff.values[5] = axis_direction.z ();
+      * cone_coeff.values[6] = angle (); // degrees
       *
       * vtkSmartPointer<vtkDataSet> data = pcl::visualization::createCone (cone_coeff);
       * \endcode
@@ -248,14 +248,14 @@ namespace pcl
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCone (const pcl::ModelCoefficients &coefficients);
 
-    /** \brief Creaet a cube shape from a set of model coefficients.
+    /** \brief Create a cube shape from a set of model coefficients.
       * \param[in] coefficients the cube coefficients (Tx, Ty, Tz, Qx, Qy, Qz, Qw, width, height, depth)
       * \ingroup visualization 
       */
     PCL_EXPORTS vtkSmartPointer<vtkDataSet> 
     createCube (const pcl::ModelCoefficients &coefficients);
 
-    /** \brief Creaet a cube shape from a set of model coefficients.
+    /** \brief Create a cube shape from a set of model coefficients.
       *
       * \param[in] translation a translation to apply to the cube from 0,0,0
       * \param[in] rotation a quaternion-based rotation to apply to the cube 
