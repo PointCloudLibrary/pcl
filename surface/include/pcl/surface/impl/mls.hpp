@@ -121,14 +121,15 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::process (PointCloudOut &output)
     }
     case (VOXEL_GRID_DILATION):
     case (DISTINCT_CLOUD):
-      {
-        cache_mls_results_ = true;
-        break;
-      }
+    {
+      if (!cache_mls_results_)
+        PCL_WARN("The cache mls results is forced when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.\n");
+
+      cache_mls_results_ = true;
+      break;
+    }
     default:
-      {
-        break;
-      }
+      break;
   }
 
   if (cache_mls_results_)
@@ -404,11 +405,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
       break;
     }
 
-    case (VOXEL_GRID_DILATION):
-    case (DISTINCT_CLOUD):
-    {
+    default:
       break;
-    }
   }
 }
 
