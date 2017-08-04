@@ -462,7 +462,7 @@ namespace pcl
           * \param[in] ypos the Y position on screen where the text should be added
           * \param[in] r the red color value
           * \param[in] g the green color value
-          * \param[in] b the blue color vlaue
+          * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           * \param[in] viewport the view port (default: all)
           */
@@ -477,7 +477,7 @@ namespace pcl
           * \param[in] fontsize the fontsize of the text
           * \param[in] r the red color value
           * \param[in] g the green color value
-          * \param[in] b the blue color vlaue
+          * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           * \param[in] viewport the view port (default: all)
           */
@@ -503,7 +503,7 @@ namespace pcl
           * \param[in] ypos the new Y position on screen 
           * \param[in] r the red color value
           * \param[in] g the green color value
-          * \param[in] b the blue color vlaue
+          * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
@@ -518,7 +518,7 @@ namespace pcl
           * \param[in] fontsize the fontsize of the text
           * \param[in] r the red color value
           * \param[in] g the green color value
-          * \param[in] b the blue color vlaue
+          * \param[in] b the blue color value
           * \param[in] id the text object id (default: equal to the "text" parameter)
           */
         bool
@@ -579,7 +579,7 @@ namespace pcl
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
 
-        /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this vizualizer.
+        /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this visualizer.
           * \param[in] id the id of the cloud, shape, or coordinate to check
           * \return true if a cloud, shape, or coordinate with the specified id was found
           */
@@ -1128,7 +1128,7 @@ namespace pcl
         int
         getGeometryHandlerIndex (const std::string &id);
 
-        /** \brief Update/set the color index of a renderered PointCloud based on its ID
+        /** \brief Update/set the color index of a rendered PointCloud based on its ID
           * \param[in] id the point cloud object id
           * \param[in] index the color handler index to use
           */
@@ -1323,7 +1323,7 @@ namespace pcl
         addArrow (const P1 &pt1, const P2 &pt2, double r, double g, double b,
                   const std::string &id = "arrow", int viewport = 0);
 
-        /** \brief Add a line arrow segment between two points, and (optianally) display the distance between them
+        /** \brief Add a line arrow segment between two points, and (optionally) display the distance between them
           *
           * Arrow head is attached on the **start** point (\c pt1) of the arrow.
           *
@@ -1661,8 +1661,8 @@ namespace pcl
         renderView (int xres, int yres, pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud);
 
         /** \brief The purpose of this method is to render a CAD model added to the visualizer from different viewpoints
-          * in order to simulate partial views of model. The viewpoint locations are the vertices of a tesselated sphere
-          * build from an icosaheadron. The tesselation paremeter controls how many times the triangles of the original
+          * in order to simulate partial views of model. The viewpoint locations are the vertices of a tessellated sphere
+          * build from an icosaheadron. The tessellation parameter controls how many times the triangles of the original
           * icosahedron are divided to approximate the sphere and thus the number of partial view generated for a model,
           * with a tesselation_level of 0, 12 views are generated if use_vertices=true and 20 views if use_vertices=false
           *
@@ -1673,8 +1673,8 @@ namespace pcl
           * \param[out] enthropies are values between 0 and 1 representing which percentage of the model is seen from the respective viewpoint.
           * \param[in] tesselation_level represents the number of subdivisions applied to the triangles of original icosahedron.
           * \param[in] view_angle field of view of the virtual camera. Default: 45
-          * \param[in] radius_sphere the tesselated sphere radius. Default: 1
-          * \param[in] use_vertices if true, use the vertices of tesselated icosahedron (12,42,...) or if false, use the faces of tesselated
+          * \param[in] radius_sphere the tessellated sphere radius. Default: 1
+          * \param[in] use_vertices if true, use the vertices of tessellated icosahedron (12,42,...) or if false, use the faces of tessellated
           * icosahedron (20,80,...). Default: true
           */
         void
