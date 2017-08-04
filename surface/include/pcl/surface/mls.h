@@ -163,7 +163,7 @@ namespace pcl
 
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      getSearchMethod () const { return (tree_); }
 
       /** \brief Set the order of the polynomial to be fit.
         * \param[in] order the order of the polynomial
@@ -173,7 +173,7 @@ namespace pcl
 
       /** \brief Get the order of the polynomial to be fit. */
       inline int 
-      getPolynomialOrder () { return (order_); }
+      getPolynomialOrder () const { return (order_); }
 
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
@@ -183,7 +183,7 @@ namespace pcl
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
       inline bool 
-      getPolynomialFit () { return (polynomial_fit_); }
+      getPolynomialFit () const { return (polynomial_fit_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
@@ -194,7 +194,7 @@ namespace pcl
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double 
-      getSearchRadius () { return (search_radius_); }
+      getSearchRadius () const { return (search_radius_); }
 
       /** \brief Set the parameter used for distance based weighting of neighbors (the square of the search radius works
         * best in general).
@@ -235,7 +235,7 @@ namespace pcl
 
       /** \brief Get the distinct cloud used for the DISTINCT_CLOUD upsampling method. */
       inline PointCloudInConstPtr
-      getDistinctCloud () { return distinct_cloud_; }
+      getDistinctCloud () const { return distinct_cloud_; }
 
 
       /** \brief Set the radius of the circle in the local point plane that will be sampled
@@ -249,7 +249,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingRadius () { return upsampling_radius_; }
+      getUpsamplingRadius () const { return upsampling_radius_; }
 
       /** \brief Set the step size for the local plane sampling
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
@@ -263,7 +263,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingStepSize () { return upsampling_step_; }
+      getUpsamplingStepSize () const { return upsampling_step_; }
 
       /** \brief Set the parameter that specifies the desired number of points within the search radius
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
@@ -278,7 +278,7 @@ namespace pcl
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
       inline int
-      getPointDensity () { return desired_num_points_in_radius_; }
+      getPointDensity () const { return desired_num_points_in_radius_; }
 
       /** \brief Set the voxel size for the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -292,7 +292,7 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline float
-      getDilationVoxelSize () { return voxel_size_; }
+      getDilationVoxelSize () const { return voxel_size_; }
 
       /** \brief Set the number of dilation steps of the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -305,7 +305,7 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline int
-      getDilationIterations () { return dilation_iteration_num_; }
+      getDilationIterations () const { return dilation_iteration_num_; }
 
       /** \brief Set wether the mls results should be stored for each point in the input cloud
         * \param[in] True if the mls results should be stored, otherwise false.
@@ -335,7 +335,7 @@ namespace pcl
       /** \brief Get the set of indices with each point in output having the 
         * corresponding point in input */
       inline PointIndicesPtr
-      getCorrespondingIndices () { return (corresponding_input_indices_); }
+      getCorrespondingIndices () const { return (corresponding_input_indices_); }
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
