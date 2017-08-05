@@ -93,11 +93,11 @@ namespace pcl
       FLARELocalReferenceFrameEstimation () :
         tangent_radius_ (0.0f),
         margin_thresh_ (0.85f),
-        min_neighbors_for_normal_axis_(6),
-        min_neighbors_for_tangent_axis_(6),
-        sampled_surface_(), 
-        sampled_tree_(),
-        fake_sampled_surface_(false)
+        min_neighbors_for_normal_axis_ (6),
+        min_neighbors_for_tangent_axis_ (6),
+        sampled_surface_ (), 
+        sampled_tree_ (),
+        fake_sampled_surface_ (false)
       {
         feature_name_ = "FLARELocalReferenceFrameEstimation";
       }

@@ -104,54 +104,49 @@ namespace pcl
     }
 
 
-    /** \brief Find the unit vector from axis_origin, directed toward point and orthogonal to axis.
+    /** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector pointing from plane_origin to the projection of point on the plane.
       * 
-      * \param[in] axis input axis
-      * \param[in] axis_origin point belonging to axis 
-      * \param[in] point point input point not belonging to axis
-      * \param[out] directed_ortho_axis unit vector from axis_origin, directed toward point and orthogonal to axis.
-      * \ingroup features
+      * \param[in] point Point projected on the plane
+	  * \param[in] plane_origin The plane origin
+      * \param[in] plane_normal The plane normal 
+      * \param[out] projectedAsUnitVector Unit vector pointing from plane_origin to the projection of point on the plane.
+      * \ingroup geometry
       */
     inline void
-    directedOrthogonalAxis ( Eigen::Vector3f const &axis,
-                             Eigen::Vector3f const &axis_origin,
-                             Eigen::Vector3f const &point,
-                             Eigen::Vector3f &directed_ortho_axis)
+    projectedAsUnitVector (Eigen::Vector3f const &point,
+                           Eigen::Vector3f const &plane_origin,
+                           Eigen::Vector3f const &plane_normal,
+                           Eigen::Vector3f &projectedAsUnitVector)
     {
       Eigen::Vector3f projection;
-      project (point, axis_origin, axis, projection);
-      directed_ortho_axis = projection - axis_origin;
+      project (point, plane_origin, plane_normal, projection);
+	  projectedAsUnitVector = projection - plane_origin;
 
-      directed_ortho_axis.normalize ();
+	  projectedAsUnitVector.normalize ();
     }
 
 
     /** \brief Define a random unit vector orthogonal to axis.
       * 
-      * \param[in] axis input axis
-      * \param[out] rand_ortho_axis random unit vector orthogonal to axis
-      * \ingroup features
+      * \param[in] axis Axis
+      * \param[out] rand_ortho_axis Random unit vector orthogonal to axis
+      * \ingroup geometry
       */
     inline void
     randomOrthogonalAxis ( Eigen::Vector3f const &axis,
                            Eigen::Vector3f &rand_ortho_axis)
     {
+      rand_ortho_axis.setRandom();
       if (std::abs (axis.z ()) > 1E-8f)
       {
-        rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-        rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
         rand_ortho_axis.z () = -(axis.x () * rand_ortho_axis.x () + axis.y () * rand_ortho_axis.y ()) / axis.z ();
       }
       else if (std::abs (axis.y ()) > 1E-8f)
       {
-        rand_ortho_axis.x () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-        rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
         rand_ortho_axis.y () = -(axis.x () * rand_ortho_axis.x () + axis.z () * rand_ortho_axis.z ()) / axis.y ();
       }
       else if (std::abs (axis.x ()) > 1E-8f)
       {
-        rand_ortho_axis.y () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
-        rand_ortho_axis.z () = (static_cast<float> (rand ()) / static_cast<float> (RAND_MAX)) * 2.0f - 1.0f;
         rand_ortho_axis.x () = -(axis.y () * rand_ortho_axis.y () + axis.z () * rand_ortho_axis.z ()) / axis.x ();
       }
       else

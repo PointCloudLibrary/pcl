@@ -54,7 +54,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     return (false);
   }
 
-  if(tangent_radius_ == 0.0f)
+  if (tangent_radius_ == 0.0f)
   {
     PCL_ERROR ("[pcl::%s::initCompute] tangent_radius_ not set.\n", getClassName ().c_str ());
     return (false);
@@ -66,7 +66,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     fake_sampled_surface_ = true;
     sampled_surface_ = surface_;
 
-    if(sampled_tree_)
+    if (sampled_tree_)
     {
       PCL_WARN ("[pcl::%s::initCompute] sampled_surface_ is not set even if sampled_tree_ is already set.", getClassName ().c_str ());
       PCL_WARN ("sampled_tree_ will be rebuilt from surface_. Use sampled_surface_.\n");
@@ -124,7 +124,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   if (n_neighbours < min_neighbors_for_normal_axis_)
   {
-    if(!pcl::isFinite ((*normals_)[index]))
+    if (!pcl::isFinite ((*normals_)[index]))
     {
       //normal is invalid
       //setting lrf to NaN
@@ -141,7 +141,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     normal_estimation_.computePointNormal(*surface_, neighbours_indices, fitted_normal(0), fitted_normal(1), fitted_normal(2), plane_curvature);
 
     //disambiguate Z axis with normal mean
-    if (!pcl::flipNormalTowardsNormalsMean<PointNT> (*normals_, neighbours_indices, fitted_normal) )
+    if (!pcl::flipNormalTowardsNormalsMean<PointNT> (*normals_, neighbours_indices, fitted_normal))
     {
       //all normals in the neighbourood are invalid
       //setting lrf to NaN
@@ -157,7 +157,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //find X axis
 
   //extract support points for Rx radius
-  n_neighbours = sampled_tree_->radiusSearch( (*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
+  n_neighbours = sampled_tree_->radiusSearch ((*input_)[index], tangent_radius_, neighbours_indices, neighbours_distances);
 
   if (n_neighbours < min_neighbors_for_tangent_axis_)
   {
@@ -173,9 +173,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   //find point with the largest signed distance from tangent plane
 
-  SignedDistanceT shapeScore;
-  SignedDistanceT bestShapeScore = -std::numeric_limits<SignedDistanceT>::max();
-  int bestShapeIndex = -1;
+  SignedDistanceT shape_score;
+  SignedDistanceT best_shape_score = -std::numeric_limits<SignedDistanceT>::max ();
+  int best_shape_index = -1;
 
   Eigen::Vector3f best_margin_point;
 
@@ -198,17 +198,17 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
     //point curr_neigh_idx is inside the ring between marginThresh and Radius
 
-    shapeScore = fitted_normal.dot( (*sampled_surface_)[curr_neigh_idx].getVector3fMap() );
+    shape_score = fitted_normal.dot ((*sampled_surface_)[curr_neigh_idx].getVector3fMap ());
 
-    if(shapeScore > bestShapeScore)
+    if (shape_score > best_shape_score)
     {
-      bestShapeIndex = curr_neigh_idx;
-      bestShapeScore = shapeScore;
+      best_shape_index = curr_neigh_idx;
+      best_shape_score = shape_score;
     }
 
   } //for each neighbor
 
-  if (bestShapeIndex == -1)
+  if (best_shape_index == -1)
   {
     pcl::geometry::randomOrthogonalAxis (fitted_normal, x_axis);
     y_axis = fitted_normal.cross (x_axis);
@@ -219,8 +219,8 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     return (std::numeric_limits<SignedDistanceT>::max ());
   }
 
-  //find orthogonal axis directed to bestShapeIndex point projection on plane with fittedNormal as axis
-  pcl::geometry::directedOrthogonalAxis (fitted_normal, feature_point, sampled_surface_->at(bestShapeIndex).getVector3fMap(), x_axis);
+  //find orthogonal axis directed to best_shape_index point projection on plane with fittedNormal as axis
+  pcl::geometry::projectedAsUnitVector (sampled_surface_->at (best_shape_index).getVector3fMap (), feature_point, fitted_normal, x_axis);
 
   y_axis = fitted_normal.cross (x_axis);
 
@@ -228,8 +228,8 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   lrf.row (1).matrix () = y_axis;
   //z axis already set
 
-  bestShapeScore -= fitted_normal.dot( feature_point );
-  return (bestShapeScore);
+  best_shape_score -= fitted_normal.dot (feature_point);
+  return (best_shape_score);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -245,8 +245,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     return;
   }
 
-  if(signed_distances_from_highest_points_.size () != indices_->size ())
-    signed_distances_from_highest_points_.resize (indices_->size ());
+  signed_distances_from_highest_points_.resize (indices_->size ());
 
   for (size_t point_idx = 0; point_idx < indices_->size (); ++point_idx)
   {
@@ -254,7 +253,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     PointOutT &rf = output[point_idx];
 
     signed_distances_from_highest_points_[point_idx] = computePointLRF ((*indices_)[point_idx], currentLrf);
-    if(  signed_distances_from_highest_points_[point_idx] == std::numeric_limits<SignedDistanceT>::max () )
+    if (signed_distances_from_highest_points_[point_idx] == std::numeric_limits<SignedDistanceT>::max ())
     {
       output.is_dense = false;
     }

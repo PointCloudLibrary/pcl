@@ -191,9 +191,11 @@ namespace pcl
     * The method is described in:
     * A. Petrelli, L. Di Stefano, "A repeatable and efficient canonical reference for surface matching", 3DimPVT, 2012
     * A. Petrelli, L. Di Stefano, "On the repeatability of the local reference frame for partial shape matching", 13th International Conference on Computer Vision (ICCV), 2011
-    * \param[in] normal_cloud input cloud of normals used to compute the mean
-    * \param[in] normal_indices indices of normals used to compute the mean 
-    * \param[in] normal input normal to flip. normal is modified by the function.
+    *
+    * Normals should be unit vectors. Otherwise the resulting mean would be weighted by the normal norms.
+    * \param[in] normal_cloud Cloud of normals used to compute the mean
+    * \param[in] normal_indices Indices of normals used to compute the mean 
+    * \param[in] normal input Normal to flip. Normal is modified by the function.
     * \return false if normal_indices does not contain any valid normal.
     * \ingroup features
     */
@@ -202,21 +204,19 @@ namespace pcl
                                  std::vector<int> const &normal_indices,
                                  Eigen::Vector3f &normal)
   {
-    Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero();
+    Eigen::Vector3f normal_mean = Eigen::Vector3f::Zero ();
 
-    bool at_least_one_valid_point = false;
     for (size_t i = 0; i < normal_indices.size (); ++i)
     {
-      const PointNT& curPt = normal_cloud[normal_indices[i]];
+      const PointNT& cur_pt = normal_cloud[normal_indices[i]];
 
-      if(pcl::isFinite(curPt))
+      if (pcl::isFinite(cur_pt))
       {
-        normal_mean += curPt.getNormalVector3fMap ();
-        at_least_one_valid_point = true;
+        normal_mean += cur_pt.getNormalVector3fMap ();
       }
     }
 
-    if(!at_least_one_valid_point)
+    if(normal_mean.isZero())
       return false;
 
     normal_mean.normalize ();
