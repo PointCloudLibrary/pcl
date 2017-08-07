@@ -107,22 +107,21 @@ namespace pcl
     /** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector pointing from plane_origin to the projection of point on the plane.
       * 
       * \param[in] point Point projected on the plane
-	  * \param[in] plane_origin The plane origin
+      * \param[in] plane_origin The plane origin
       * \param[in] plane_normal The plane normal 
-      * \param[out] projectedAsUnitVector Unit vector pointing from plane_origin to the projection of point on the plane.
+      * \param[out] projected_as_unit_vector Unit vector pointing from plane_origin to the projection of point on the plane.
       * \ingroup geometry
       */
     inline void
     projectedAsUnitVector (Eigen::Vector3f const &point,
                            Eigen::Vector3f const &plane_origin,
                            Eigen::Vector3f const &plane_normal,
-                           Eigen::Vector3f &projectedAsUnitVector)
+                           Eigen::Vector3f &projected_as_unit_vector)
     {
       Eigen::Vector3f projection;
       project (point, plane_origin, plane_normal, projection);
-	  projectedAsUnitVector = projection - plane_origin;
-
-	  projectedAsUnitVector.normalize ();
+      projected_as_unit_vector = projection - plane_origin;
+      projected_as_unit_vector.normalize ();
     }
 
 
@@ -133,8 +132,8 @@ namespace pcl
       * \ingroup geometry
       */
     inline void
-    randomOrthogonalAxis ( Eigen::Vector3f const &axis,
-                           Eigen::Vector3f &rand_ortho_axis)
+    randomOrthogonalAxis (Eigen::Vector3f const &axis,
+                          Eigen::Vector3f &rand_ortho_axis)
     {
       rand_ortho_axis.setRandom();
       if (std::abs (axis.z ()) > 1E-8f)
