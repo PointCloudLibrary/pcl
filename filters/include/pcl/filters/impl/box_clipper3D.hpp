@@ -112,18 +112,19 @@ pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn, PointT& pointO
 template<typename PointT> bool
 pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  return  (fabs(transformation_.data () [0] * point.x +
-                transformation_.data () [1] * point.y +
-                transformation_.data () [2] * point.z +
-                transformation_.data () [3]) <= 1 &&
-           fabs(transformation_.data () [4] * point.x +
-                transformation_.data () [5] * point.y +
-                transformation_.data () [6] * point.z +
-                transformation_.data () [7]) <= 1 &&
-           fabs(transformation_.data () [8] * point.x +
-                transformation_.data () [9] * point.y +
-                transformation_.data () [10] * point.z +
-                transformation_.data () [11]) <= 1 );
+  Eigen::Matrix4f mat = transformation_.matrix(); 
+  return  (fabs(mat(0,0) * point.x +
+                mat(0,1) * point.y +
+                mat(0,2) * point.z +
+                mat(0,3)) <= 1 &&
+           fabs(mat(1,0) * point.x +
+                mat(1,1) * point.y +
+                mat(1,2) * point.z +
+                mat(1,3)) <= 1 &&
+           fabs(mat(2,0) * point.x +
+                mat(2,1) * point.y +
+                mat(2,2) * point.z +
+                mat(2,3)) <= 1 );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
