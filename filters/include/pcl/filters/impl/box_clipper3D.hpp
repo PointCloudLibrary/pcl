@@ -108,20 +108,21 @@ pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn, PointT& pointO
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ToDo use product on point.getVector3fMap () and transformatio_.col (i) to use the SSE advantages of eigen
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#an-introduction-to-matrices
 template<typename PointT> bool
 pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  return  (fabs(transformation_.data () [ 0] * point.x +
-                transformation_.data () [ 3] * point.y +
-                transformation_.data () [ 6] * point.z +
-                transformation_.data () [ 9]) <= 1 &&
-           fabs(transformation_.data () [ 1] * point.x +
-                transformation_.data () [ 4] * point.y +
-                transformation_.data () [ 7] * point.z +
-                transformation_.data () [10]) <= 1 &&
-           fabs(transformation_.data () [ 2] * point.x +
-                transformation_.data () [ 5] * point.y +
-                transformation_.data () [ 8] * point.z +
+  return  (fabs(transformation_.data () [0] * point.x +
+                transformation_.data () [1] * point.y +
+                transformation_.data () [2] * point.z +
+                transformation_.data () [3]) <= 1 &&
+           fabs(transformation_.data () [4] * point.x +
+                transformation_.data () [5] * point.y +
+                transformation_.data () [6] * point.z +
+                transformation_.data () [7]) <= 1 &&
+           fabs(transformation_.data () [8] * point.x +
+                transformation_.data () [9] * point.y +
+                transformation_.data () [10] * point.z +
                 transformation_.data () [11]) <= 1 );
 }
 
