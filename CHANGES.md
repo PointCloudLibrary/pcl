@@ -1,6 +1,6 @@
 # ChangeList
 
-## *= 1.8.1 (26.06.2017) =*
+## *= 1.8.1 (08.08.2017) =*
 
 * Replaced `make_shared` invocations on aligned allocated vars
   [[#1405]](https://github.com/PointCloudLibrary/pcl/pull/1405)
@@ -52,7 +52,7 @@
   issues between old versions of the CUDA Toolkit and new versions
   of gcc
   [[#1900]](https://github.com/PointCloudLibrary/pcl/pull/1900)
-* Implemented new versioning scheme for PCL, employing the sufix
+* Implemented new versioning scheme for PCL, employing the suffix
   `-dev` in between releases.
   [[#1905]](https://github.com/PointCloudLibrary/pcl/pull/1905)
 * Corrected search paths for Eigen on Windows
@@ -62,6 +62,10 @@
   [[#1917]](https://github.com/PointCloudLibrary/pcl/pull/1917)
 * Added support to dynamic linking against FLANN on Windows
   [[#1919]](https://github.com/PointCloudLibrary/pcl/pull/1919)
+* Add new search path for GTest to the finder script
+  [[#1920]](https://github.com/PointCloudLibrary/pcl/pull/1920)
+* Fix discovery of PCL deployed out of install path
+  [[#1923]](https://github.com/PointCloudLibrary/pcl/pull/1923)
 
 
 ### `libpcl_2d:`
@@ -104,6 +108,8 @@
   [[#1878]](https://github.com/PointCloudLibrary/pcl/pull/1878)
 * Improved support for mingw aligned allocation
   [[#1904]](https://github.com/PointCloudLibrary/pcl/pull/1904)
+* Added test for macro `_USE_MATH_DEFINES` to avoid warnings
+  [[#1956]](https://github.com/PointCloudLibrary/pcl/pull/1956)
 
 ### `libpcl_cuda:`
 
@@ -139,6 +145,8 @@
   [[#1824]](https://github.com/PointCloudLibrary/pcl/pull/1824)
 * Fixed compilation error in KinfuLS
   [[#1872]](https://github.com/PointCloudLibrary/pcl/pull/1872)
+* Fixed CUDA architecture check
+  [[#1872]](https://github.com/PointCloudLibrary/pcl/pull/1872)
 
 ### `libpcl_io:`
 
@@ -151,8 +159,6 @@
   [[#1569]](https://github.com/PointCloudLibrary/pcl/pull/1569)
 * Improved performance on saving PLY, OBJ and VTK files
   [[#1580]](https://github.com/PointCloudLibrary/pcl/pull/1580)
-* PLYReader should now be thread-safe
-  [[#1587]](https://github.com/PointCloudLibrary/pcl/pull/1587)
 * Added support to the transparency property `Tr` on pcl::MTLReader
   and fixed issue with parsing of the material's properties.
   [[#1599]](https://github.com/PointCloudLibrary/pcl/pull/1599)
@@ -309,6 +315,8 @@
 * Updated matrix transform tutorial and added cube.ply mesh
   [[#1894]](https://github.com/PointCloudLibrary/pcl/pull/1894)
   [[#1897]](https://github.com/PointCloudLibrary/pcl/pull/1897)
+* Updated Ensenso tutorial for Ensenso X devices
+  [[#1933]](https://github.com/PointCloudLibrary/pcl/pull/1933)
 
 ### `CI:`
 
