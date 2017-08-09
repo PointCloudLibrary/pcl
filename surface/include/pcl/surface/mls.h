@@ -52,6 +52,29 @@
 
 namespace pcl
 {
+  /** \brief Data structure used to store the results of the MLS fitting */
+  struct MLSResult
+  {
+    MLSResult () : num_neighbors (0), curvature (0.0f), valid (false) {}
+
+    MLSResult (const Eigen::Vector3d &a_mean,
+               const Eigen::Vector3d &a_plane_normal,
+               const Eigen::Vector3d &a_u,
+               const Eigen::Vector3d &a_v,
+               const Eigen::VectorXd a_c_vec,
+               const int a_num_neighbors,
+               const float &a_curvature);
+
+    Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
+    Eigen::Vector3d plane_normal; /**< \brief The normal of the local plane of the query point. */
+    Eigen::Vector3d u_axis;       /**< \brief The axis corresponding to the u-coordinates of the local plane of the query point. */
+    Eigen::Vector3d v_axis;       /**< \brief The axis corresponding to the v-coordinates of the local plane of the query point. */
+    Eigen::VectorXd c_vec;        /**< \brief The polynomial coefficients Example: z = c_vec[0] + c_vec[1]*v + c_vec[2]*v^2 + c_vec[3]*u + c_vec[4]*u*v + c_vec[5]*u^2 */
+    int num_neighbors;            /**< \brief The number of neighbors used to create the mls surface. */
+    float curvature;              /**< \brief The curvature at the query point. */
+    bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
+  };
+
   /** \brief MovingLeastSquares represent an implementation of the MLS (Moving Least Squares) algorithm 
     * for data smoothing and improved normal estimation. It also contains methods for upsampling the 
     * resulting cloud based on the parametric fit.
@@ -106,6 +129,7 @@ namespace pcl
                               upsampling_radius_ (0.0),
                               upsampling_step_ (0.0),
                               desired_num_points_in_radius_ (0),
+                              cache_mls_results_ (true),
                               mls_results_ (),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
@@ -139,7 +163,7 @@ namespace pcl
 
       /** \brief Get a pointer to the search method used. */
       inline KdTreePtr 
-      getSearchMethod () { return (tree_); }
+      getSearchMethod () const { return (tree_); }
 
       /** \brief Set the order of the polynomial to be fit.
         * \param[in] order the order of the polynomial
@@ -149,7 +173,7 @@ namespace pcl
 
       /** \brief Get the order of the polynomial to be fit. */
       inline int 
-      getPolynomialOrder () { return (order_); }
+      getPolynomialOrder () const { return (order_); }
 
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
@@ -159,7 +183,7 @@ namespace pcl
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
       inline bool 
-      getPolynomialFit () { return (polynomial_fit_); }
+      getPolynomialFit () const { return (polynomial_fit_); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
@@ -170,7 +194,7 @@ namespace pcl
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
       inline double 
-      getSearchRadius () { return (search_radius_); }
+      getSearchRadius () const { return (search_radius_); }
 
       /** \brief Set the parameter used for distance based weighting of neighbors (the square of the search radius works
         * best in general).
@@ -211,7 +235,7 @@ namespace pcl
 
       /** \brief Get the distinct cloud used for the DISTINCT_CLOUD upsampling method. */
       inline PointCloudInConstPtr
-      getDistinctCloud () { return distinct_cloud_; }
+      getDistinctCloud () const { return distinct_cloud_; }
 
 
       /** \brief Set the radius of the circle in the local point plane that will be sampled
@@ -225,7 +249,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingRadius () { return upsampling_radius_; }
+      getUpsamplingRadius () const { return upsampling_radius_; }
 
       /** \brief Set the step size for the local plane sampling
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
@@ -239,7 +263,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingStepSize () { return upsampling_step_; }
+      getUpsamplingStepSize () const { return upsampling_step_; }
 
       /** \brief Set the parameter that specifies the desired number of points within the search radius
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
@@ -254,7 +278,7 @@ namespace pcl
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
       inline int
-      getPointDensity () { return desired_num_points_in_radius_; }
+      getPointDensity () const { return desired_num_points_in_radius_; }
 
       /** \brief Set the voxel size for the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -268,7 +292,7 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline float
-      getDilationVoxelSize () { return voxel_size_; }
+      getDilationVoxelSize () const { return voxel_size_; }
 
       /** \brief Set the number of dilation steps of the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -281,7 +305,25 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline int
-      getDilationIterations () { return dilation_iteration_num_; }
+      getDilationIterations () const { return dilation_iteration_num_; }
+
+      /** \brief Set wether the mls results should be stored for each point in the input cloud
+        * \param[in] True if the mls results should be stored, otherwise false.
+        * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
+        * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
+        */
+      inline void
+      setCacheMLSResults (bool cache_mls_results) { cache_mls_results_ = cache_mls_results; }
+
+      /** \brief Get the cache_mls_results_ value (True if the mls results should be stored, otherwise false). */
+      inline bool
+      getCacheMLSResults () const { return cache_mls_results_; }
+
+      /** \brief Get the MLSResults for input cloud
+        * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
+        * \note This vector is align with the input cloud indicies, so use getCorrespondingIndices to get the correct results when using output cloud indicies.
+        */
+      inline const std::vector<MLSResult>& getMLSResults() const { return mls_results_; }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
@@ -293,7 +335,7 @@ namespace pcl
       /** \brief Get the set of indices with each point in output having the 
         * corresponding point in input */
       inline PointIndicesPtr
-      getCorrespondingIndices () { return (corresponding_input_indices_); }
+      getCorrespondingIndices () const { return (corresponding_input_indices_); }
 
     protected:
       /** \brief The point cloud that will hold the estimated normals, if set. */
@@ -341,28 +383,10 @@ namespace pcl
         */
       int desired_num_points_in_radius_;
 
-      
-      /** \brief Data structure used to store the results of the MLS fitting
-        * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
+      /** \brief True if the mls results for the input cloud should be stored
+        * \note This is forced to true when using upsampling methods VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         */
-      struct MLSResult
-      {
-        MLSResult () : mean (), plane_normal (), u_axis (), v_axis (), c_vec (), num_neighbors (), curvature (), valid (false) {}
-
-        MLSResult (const Eigen::Vector3d &a_mean,
-                   const Eigen::Vector3d &a_plane_normal,
-                   const Eigen::Vector3d &a_u,
-                   const Eigen::Vector3d &a_v,
-                   const Eigen::VectorXd a_c_vec,
-                   const int a_num_neighbors,
-                   const float &a_curvature);
-
-        Eigen::Vector3d mean, plane_normal, u_axis, v_axis;
-        Eigen::VectorXd c_vec;
-        int num_neighbors;
-        float curvature;
-        bool valid;
-      };
+      bool cache_mls_results_;
 
       /** \brief Stores the MLS result for each point in the input cloud
         * \note Used only in the case of VOXEL_GRID_DILATION or DISTINCT_CLOUD upsampling
@@ -541,14 +565,6 @@ namespace pcl
       typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
 
-      using PCLBase<PointInT>::input_;
-      using PCLBase<PointInT>::indices_;
-      using MovingLeastSquares<PointInT, PointOutT>::normals_;
-      using MovingLeastSquares<PointInT, PointOutT>::corresponding_input_indices_;
-      using MovingLeastSquares<PointInT, PointOutT>::nr_coeff_;
-      using MovingLeastSquares<PointInT, PointOutT>::order_;
-      using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
-      using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
       using MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION;
       using MovingLeastSquares<PointInT, PointOutT>::DISTINCT_CLOUD;
 
@@ -577,6 +593,16 @@ namespace pcl
       }
 
     protected:
+      using PCLBase<PointInT>::input_;
+      using PCLBase<PointInT>::indices_;
+      using MovingLeastSquares<PointInT, PointOutT>::normals_;
+      using MovingLeastSquares<PointInT, PointOutT>::corresponding_input_indices_;
+      using MovingLeastSquares<PointInT, PointOutT>::nr_coeff_;
+      using MovingLeastSquares<PointInT, PointOutT>::order_;
+      using MovingLeastSquares<PointInT, PointOutT>::compute_normals_;
+      using MovingLeastSquares<PointInT, PointOutT>::upsample_method_;
+      using MovingLeastSquares<PointInT, PointOutT>::cache_mls_results_;
+
       /** \brief Abstract surface reconstruction method.
         * \param[out] output the result of the reconstruction
         */
