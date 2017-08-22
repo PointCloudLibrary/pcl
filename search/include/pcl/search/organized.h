@@ -208,7 +208,7 @@ namespace pcl
         /** \brief test if point given by index is among the k NN in results to the query point.
           * \param[in] query query point
           * \param[in] k number of maximum nn interested in
-          * \param[in] queue priority queue with k NN
+          * \param[in,out] queue priority queue with k NN
           * \param[in] index index on point to be tested
           * \return whether the top element changed or not.
           */
