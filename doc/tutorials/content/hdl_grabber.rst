@@ -22,7 +22,7 @@ data for each of the lasers in the device.  The HDL-64e consists of
 
 The HDL-64e and HDL-32e, by default, produce UDP network packets
 on the 192.168.3 subnet.  Starting with the HDL-32e (Firmware Version 2),
-the user can customize this network subnet.  
+the user can customize this network subnet.
 
 The HDL can be connected either directly into your computer, or into a
 network switch (to include a network switch with a built-in Wireless Access Point).
@@ -85,7 +85,7 @@ So let's look at the code. The following represents a simplified version of *vis
 
 .. code-block:: cpp
    :linenos:
-   
+
    #include <pcl/point_cloud.h>
    #include <pcl/point_types.h>
    #include <pcl/io/hdl_grabber.h>
@@ -96,7 +96,7 @@ So let's look at the code. The following represents a simplified version of *vis
    using namespace std;
    using namespace pcl::console;
    using namespace pcl::visualization;
-   
+
    class SimpleHDLViewer
    {
      public:
@@ -116,7 +116,7 @@ So let's look at the code. The following represents a simplified version of *vis
          boost::mutex::scoped_lock lock (cloud_mutex_);
          cloud_ = cloud;
        }
-   
+
        void run ()
        {
          cloud_viewer_->addCoordinateSystem (3.0);
@@ -171,7 +171,7 @@ So let's look at the code. The following represents a simplified version of *vis
        CloudConstPtr cloud_;
        pcl::visualization::PointCloudColorHandler<pcl::PointXYZI> &handler_;
    };
-   
+
    int main (int argc, char ** argv)
    {
      std::string hdlCalibration, pcapFile;
@@ -204,9 +204,22 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. literalinclude:: sources/openni_grabber/CMakeLists.txt
-   :language: cmake
+.. code-block:: cmake
    :linenos:
+
+   cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
+
+   project(pcl_hdl_viewer_simple)
+
+   find_package(PCL 1.2 REQUIRED)
+
+   include_directories(${PCL_INCLUDE_DIRS})
+   link_directories(${PCL_LIBRARY_DIRS})
+   add_definitions(${PCL_DEFINITIONS})
+
+   add_executable(pcl_hdl_viewer_simple hdl_viewer_simple.cpp)
+   target_link_libraries(pcl_hdl_viewer_simple ${PCL_LIBRARIES})
+
 
 _`Disabling Reverse Path Filter`
 --------------------------------
@@ -267,20 +280,20 @@ returns the following details (some items removed for brevity)::
 
    em1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 192.168.128.108  netmask 255.255.255.0  broadcast 192.168.128.255
-   
+
    eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
         inet 192.168.3.1  netmask 255.255.255.0  broadcast 192.168.3.255
 
 Next, let's look at our routing table (again, some items removed for brevity)::
 
    $ route -n
-   
+
    Kernel IP routing table
    Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
    0.0.0.0         192.168.128.1   0.0.0.0         UG    0      0        0 em1
    192.168.3.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
    192.168.128.0   0.0.0.0         255.255.255.0   U     0      0        0 em1
-   
+
 To add a route to the HDL, assume that the HDL Source IP is 192.168.12.84.  You would use the
 following command::
 
@@ -289,14 +302,14 @@ following command::
 To verify that the route has been added, type the following::
 
    $ route -n
-   
+
    Kernel IP routing table
    Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
    0.0.0.0         192.168.128.1   0.0.0.0         UG    0      0        0 em1
    192.168.3.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0
    192.168.12.0    0.0.0.0         255.255.255.0   U     0      0        0 eth0
    192.168.128.0   0.0.0.0         255.255.255.0   U     0      0        0 em1
- 
+
 
 Now, there is a route back to the source IP address of the HDL on the same interface
 that the packet came from!
