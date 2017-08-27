@@ -1650,6 +1650,11 @@ namespace pcl
         void
         setShowFPS (bool show_fps);
 
+        /** Get the current rendering framerate.
+          * \see setShowFPS */
+        float
+        getFPS () const;
+
         /** \brief Renders a virtual scene as seen from the camera viewpoint and returns the rendered point cloud.
           * ATT: This method will only render the scene if only on viewport exists. Otherwise, returns an empty
           * point cloud and exits immediately.
@@ -1952,16 +1957,17 @@ namespace pcl
         {
           static FPSCallback *New () { return (new FPSCallback); }
 
-          FPSCallback () : actor (), pcl_visualizer (), decimated () {}
-          FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated) {}
-          FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; return (*this); }
+          FPSCallback () : actor (), pcl_visualizer (), decimated (), last_fps(0.0f) {}
+          FPSCallback (const FPSCallback& src) : vtkCommand (), actor (src.actor), pcl_visualizer (src.pcl_visualizer), decimated (src.decimated), last_fps (src.last_fps) {}
+          FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           virtual void 
           Execute (vtkObject*, unsigned long event_id, void*);
-            
+
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
           bool decimated;
+          float last_fps;
         };
 
         /** \brief The FPSCallback object for the current visualizer. */
