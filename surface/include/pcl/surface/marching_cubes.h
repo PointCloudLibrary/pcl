@@ -374,9 +374,13 @@ namespace pcl
       typedef typename pcl::KdTree<PointNT> KdTree;
       typedef typename pcl::KdTree<PointNT>::Ptr KdTreePtr;
 
-
       /** \brief Constructor. */
-      MarchingCubes ();
+      MarchingCubes (const float percentage_extend_grid = 0.0f,
+                     const float iso_level = 0.0f) :
+        percentage_extend_grid_ (percentage_extend_grid),
+        iso_level_ (iso_level) 
+      {
+      }
 
       /** \brief Destructor. */
       virtual ~MarchingCubes ();
@@ -402,7 +406,6 @@ namespace pcl
       inline void
       setGridResolution (int res_x, int res_y, int res_z)
       { res_x_ = res_x; res_y_ = res_y; res_z_ = res_z; }
-
 
       /** \brief Method to get the marching cubes grid resolution.
         * \param[in] res_x the resolution of the grid along the x-axis
@@ -437,8 +440,12 @@ namespace pcl
       /** \brief The grid resolution */
       int res_x_, res_y_, res_z_;
 
-      /** \brief Min and max data points. */
-      Eigen::Vector4f min_p_, max_p_;
+      /** \brief bounding box */
+      Eigen::Array3f upper_boundary_;
+      Eigen::Array3f lower_boundary_;
+
+      /** \brief size of voxels */
+      Eigen::Array3f size_voxel_;
 
       /** \brief Parameter that defines how much free space should be left inside the grid between
         * the bounding box of the point cloud and the grid limits, as a percentage of the bounding box.*/
@@ -447,7 +454,8 @@ namespace pcl
       /** \brief The iso level to be extracted. */
       float iso_level_;
 
-      /** \brief Convert the point cloud into voxel data. */
+      /** \brief Convert the point cloud into voxel data. 
+        */
       virtual void
       voxelizeData () = 0;
 
@@ -466,13 +474,14 @@ namespace pcl
         * \param leaf_node the leaf node to be checked
         * \param index_3d the 3d index of the leaf node to be checked
         * \param cloud point cloud to store the vertices of the polygon
-       */
+        */
       void
-      createSurface (std::vector<float> &leaf_node,
-                     Eigen::Vector3i &index_3d,
+      createSurface (const std::vector<float> &leaf_node,
+                     const Eigen::Vector3i &index_3d,
                      pcl::PointCloud<PointNT> &cloud);
 
-      /** \brief Get the bounding box for the input data points. */
+      /** \brief Get the bounding box for the input data points. 
+        */
       void
       getBoundingBox ();
 
