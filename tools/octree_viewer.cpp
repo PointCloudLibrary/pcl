@@ -338,6 +338,9 @@ private:
 
     for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
     {
+      if (tree_it.getCurrentOctreeDepth () != depth)
+        continue;
+
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds(tree_it, voxel_min, voxel_max);
 
