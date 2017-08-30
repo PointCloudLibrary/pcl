@@ -35,7 +35,7 @@
  *  \author Raphael Favier
  * */
 
-#include <pcl/io/pcd_io.h>
+#include <pcl/io/auto_io.h>
 #include <pcl/common/time.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/visualization/point_cloud_handlers.h>
@@ -174,9 +174,8 @@ private:
   {
     std::cout << "Loading file " << filename.c_str() << std::endl;
     //read cloud
-    if (pcl::io::loadPCDFile(filename, *cloud))
+    if (pcl::io::load (filename, *cloud))
     {
-      std::cerr << "ERROR: Cannot open file " << filename << "! Aborting..." << std::endl;
       return false;
     }
 
