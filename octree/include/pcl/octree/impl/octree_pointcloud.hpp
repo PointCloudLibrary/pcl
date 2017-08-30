@@ -129,13 +129,18 @@ pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT> bool
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::isVoxelOccupiedAtPoint (const PointT& point_arg) const
 {
+  if (!isPointWithinBoundingBox (point_arg))
+  {
+    return false;
+  }
+
   OctreeKey key;
 
   // generate key for point
   this->genOctreeKeyforPoint (point_arg, key);
 
   // search for key in octree
-  return (isPointWithinBoundingBox (point_arg) && this->existLeaf (key));
+  return (this->existLeaf (key));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,18 +159,25 @@ template<typename PointT, typename LeafContainerT, typename BranchContainerT, ty
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::isVoxelOccupiedAtPoint (
     const double point_x_arg, const double point_y_arg, const double point_z_arg) const
 {
-  OctreeKey key;
+  // create a new point with the argument coordinates
+  PointT point;
+  point.x = point_x_arg;
+  point.y = point_y_arg;
+  point.z = point_z_arg;
 
-  // generate key for point
-  this->genOctreeKeyforPoint (point_x_arg, point_y_arg, point_z_arg, key);
-
-  return (this->existLeaf (key));
+  // search for voxel at point in octree
+  return (this->isVoxelOccupiedAtPoint (point));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT, typename LeafContainerT, typename BranchContainerT, typename OctreeT> void
 pcl::octree::OctreePointCloud<PointT, LeafContainerT, BranchContainerT, OctreeT>::deleteVoxelAtPoint (const PointT& point_arg)
 {
+  if (!isPointWithinBoundingBox (point_arg))
+  {
+    return;
+  }
+
   OctreeKey key;
 
   // generate key for point
