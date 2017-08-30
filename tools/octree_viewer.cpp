@@ -49,6 +49,7 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
+#include <vtkCleanPolyData.h>
 //=============================
 // Displaying cubes is very long!
 // so we limit their numbers.
@@ -264,62 +265,68 @@ private:
     viz.removePointCloud("cloud");
   }
 
-  /* \brief Create a vtkSmartPointer object containing a cube
-   *
-   */
-  vtkSmartPointer<vtkPolyData> GetCuboid(double minX, double maxX, double minY, double maxY, double minZ, double maxZ)
-  {
-    vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New();
-    cube->SetBounds(minX, maxX, minY, maxY, minZ, maxZ);
-    return cube->GetOutput();
-  }
 
   /* \brief display octree cubes via vtk-functions
    *
    */
   void showCubes(double voxelSideLen)
   {
-    //get the renderer of the visualizer object
-    vtkRenderer *renderer = viz.getRenderWindow()->GetRenderers()->GetFirstRenderer();
+    vtkSmartPointer<vtkAppendPolyData> appendFilter = vtkSmartPointer<vtkAppendPolyData>::New ();
 
-    vtkSmartPointer<vtkAppendPolyData> treeWireframe = vtkSmartPointer<vtkAppendPolyData>::New();
-    size_t i;
+    // Create every cubes to be displayed
     double s = voxelSideLen / 2.0;
-    for (i = 0; i < displayCloud->points.size(); i++)
+    for (size_t i = 0; i < displayCloud->points.size (); i++)
     {
-
       double x = displayCloud->points[i].x;
       double y = displayCloud->points[i].y;
       double z = displayCloud->points[i].z;
 
+      vtkSmartPointer<vtkCubeSource> wk_cubeSource = vtkSmartPointer<vtkCubeSource>::New ();
+
+      wk_cubeSource->SetBounds (x - s, x + s, y - s, y + s, z - s, z + s);
+      wk_cubeSource->Update ();
+
 #if VTK_MAJOR_VERSION < 6
-      treeWireframe->AddInput(GetCuboid(x - s, x + s, y - s, y + s, z - s, z + s));
+      appendFilter->AddInput (wk_cubeSource->GetOutput ());
 #else
-      treeWireframe->AddInputData (GetCuboid (x - s, x + s, y - s, y + s, z - s, z + s));
+      appendFilter->AddInputData (wk_cubeSource->GetOutput ());
 #endif
     }
 
-    vtkSmartPointer<vtkActor> treeActor = vtkSmartPointer<vtkActor>::New();
+    // Remove any duplicate points
+    vtkSmartPointer<vtkCleanPolyData> cleanFilter = vtkSmartPointer<vtkCleanPolyData>::New ();
 
-    vtkSmartPointer<vtkDataSetMapper> mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-#if VTK_MAJOR_VERSION < 6
-    mapper->SetInput(treeWireframe->GetOutput());
-#else
-    mapper->SetInputData (treeWireframe->GetOutput ());
-#endif
-    treeActor->SetMapper(mapper);
+    cleanFilter->SetInputConnection (appendFilter->GetOutputPort ());
+    cleanFilter->Update ();
 
-    treeActor->GetProperty()->SetColor(1.0, 1.0, 1.0);
-    treeActor->GetProperty()->SetLineWidth(2);
-    if(wireframe)
+    //Create a mapper and actor
+    vtkSmartPointer<vtkPolyDataMapper> multiMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+
+    multiMapper->SetInputConnection (cleanFilter->GetOutputPort ());
+
+    vtkSmartPointer<vtkActor> multiActor = vtkSmartPointer<vtkActor>::New ();
+
+    multiActor->SetMapper (multiMapper);
+
+    multiActor->GetProperty ()->SetColor (1.0, 1.0, 1.0);
+    multiActor->GetProperty ()->SetAmbient (1.0);
+    multiActor->GetProperty ()->SetLineWidth (2);
+    if (wireframe)
     {
-      treeActor->GetProperty()->SetRepresentationToWireframe();
-      treeActor->GetProperty()->SetOpacity(0.35);
+      multiActor->GetProperty ()->SetRepresentationToWireframe ();
+      multiActor->GetProperty ()->EdgeVisibilityOn ();
+      multiActor->GetProperty ()->SetOpacity (1.0);
     }
     else
-      treeActor->GetProperty()->SetRepresentationToSurface();
+    {
+      multiActor->GetProperty ()->SetRepresentationToSurface ();
+    }
 
-    renderer->AddActor(treeActor);
+    // Add the actor to the scene
+    viz.getRenderWindow ()->GetRenderers ()->GetFirstRenderer ()->AddActor (multiActor);
+
+    // Render and interact
+    viz.getRenderWindow ()->Render ();
   }
 
   /* \brief Extracts all the points of depth = level from the octree
