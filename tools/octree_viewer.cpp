@@ -101,7 +101,6 @@ private:
   //========================================================
   //visualizer
   pcl::PointCloud<pcl::PointXYZ>::Ptr xyz;
-  pcl::PointCloud<pcl::PointXYZRGB>::Ptr xyz_rgb;
 
   pcl::visualization::PCLVisualizer viz;
   //original cloud
