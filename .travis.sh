@@ -7,8 +7,8 @@ DOC_DIR=$BUILD_DIR/doc/doxygen/html
 TUTORIALS_DIR=$BUILD_DIR/doc/tutorials/html
 ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 
-CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
-CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
+CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2 -UNDEBUG"
+CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2 -UNDEBUG"
 
 if [ "$TRAVIS_OS_NAME" == "linux" ]; then
   if [ "$CC" == "clang" ]; then
