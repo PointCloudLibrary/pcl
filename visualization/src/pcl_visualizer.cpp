@@ -3550,6 +3550,14 @@ pcl::visualization::PCLVisualizer::setShowFPS (bool show_fps)
 
 
 ///////////////////////////////////////////////////////////////////////////////////
+float
+pcl::visualization::PCLVisualizer::getFPS () const
+{
+  return (update_fps_->last_fps);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////
 void
 pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
                                                                int xres,
@@ -4522,9 +4530,9 @@ pcl::visualization::PCLVisualizer::FPSCallback::Execute (
     vtkObject* caller, unsigned long, void*)
 {
   vtkRenderer *ren = reinterpret_cast<vtkRenderer *> (caller);
-  float fps = 1.0f / static_cast<float> (ren->GetLastRenderTimeInSeconds ());
+  last_fps = 1.0f / static_cast<float> (ren->GetLastRenderTimeInSeconds ());
   char buf[128];
-  sprintf (buf, "%.1f FPS", fps);
+  sprintf (buf, "%.1f FPS", last_fps);
   actor->SetInput (buf);
 }
 
