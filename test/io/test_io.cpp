@@ -1207,7 +1207,8 @@ TEST (PCL, LZF)
   EXPECT_EQ (res, 0);
 
   PCDReader reader;
-  reader.read<PointXYZ> ("test_pcl_io_compressed.pcd", cloud2);
+  res = reader.read<PointXYZ> ("test_pcl_io_compressed.pcd", cloud2);
+  EXPECT_EQ (res, 0);
 
   EXPECT_EQ (cloud2.width, cloud.width);
   EXPECT_EQ (cloud2.height, cloud.height);
@@ -1272,8 +1273,77 @@ TEST (PCL, LZFExtended)
   EXPECT_EQ (res, 0);
 
   PCDReader reader;
-  reader.read<PointXYZRGBNormal> ("test_pcl_io_compressed.pcd", cloud2);
+  res = reader.read<PointXYZRGBNormal> ("test_pcl_io_compressed.pcd", cloud2);
+  EXPECT_EQ (res, 0);
 
+  EXPECT_EQ (cloud2.width, blob.width);
+  EXPECT_EQ (cloud2.height, blob.height);
+  EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
+  EXPECT_EQ (cloud2.points.size (), cloud.points.size ());
+
+  for (size_t i = 0; i < cloud2.points.size (); ++i)
+  {
+    EXPECT_EQ (cloud2.points[i].x, cloud.points[i].x);
+    EXPECT_EQ (cloud2.points[i].y, cloud.points[i].y);
+    EXPECT_EQ (cloud2.points[i].z, cloud.points[i].z);
+    EXPECT_EQ (cloud2.points[i].normal_x, cloud.points[i].normal_x);
+    EXPECT_EQ (cloud2.points[i].normal_y, cloud.points[i].normal_y);
+    EXPECT_EQ (cloud2.points[i].normal_z, cloud.points[i].normal_z);
+    EXPECT_EQ (cloud2.points[i].rgb, cloud.points[i].rgb);
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, LZFInMem)
+{
+  PointCloud<PointXYZRGBNormal> cloud;
+  cloud.width  = 640;
+  cloud.height = 480;
+  cloud.points.resize (cloud.width * cloud.height);
+  cloud.is_dense = true;
+
+  srand (static_cast<unsigned int> (time (NULL)));
+  size_t nr_p = cloud.points.size ();
+  // Randomly create a new point cloud
+  for (size_t i = 0; i < nr_p; ++i)
+  {
+    cloud.points[i].x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_x = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_y = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].normal_z = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+    cloud.points[i].rgb = static_cast<float> (1024 * rand () / (RAND_MAX + 1.0));
+  }
+
+  pcl::PCLPointCloud2 blob;
+  pcl::toPCLPointCloud2 (cloud, blob);
+
+  std::ostringstream oss;
+  PCDWriter writer;
+  int res = writer.writeBinaryCompressed (oss, blob);
+  EXPECT_EQ (res, 0);
+  std::string pcd_str = oss.str ();
+
+  Eigen::Vector4f origin;
+  Eigen::Quaternionf orientation;
+  int pcd_version = -1;
+  int data_type = -1;
+  unsigned int data_idx = 0;
+  std::istringstream iss (pcd_str, std::ios::binary);
+  PCDReader reader;
+  pcl::PCLPointCloud2 blob2;
+  res = reader.readHeader (iss, blob2, origin, orientation, pcd_version, data_type, data_idx);
+  EXPECT_EQ (res, 0);
+  EXPECT_EQ (blob2.width, blob.width);
+  EXPECT_EQ (blob2.height, blob.height);
+  EXPECT_EQ (data_type, 2); // since it was written by writeBinaryCompressed(), it should be compressed.
+
+  const unsigned char *data = reinterpret_cast<const unsigned char *> (pcd_str.data ());
+  res = reader.readBodyBinary (data, blob2, pcd_version, data_type == 2, data_idx);
+  PointCloud<PointXYZRGBNormal> cloud2;
+  pcl::fromPCLPointCloud2 (blob2, cloud2);
+  EXPECT_EQ (res, 0);
   EXPECT_EQ (cloud2.width, blob.width);
   EXPECT_EQ (cloud2.height, blob.height);
   EXPECT_EQ (cloud2.is_dense, cloud.is_dense);
