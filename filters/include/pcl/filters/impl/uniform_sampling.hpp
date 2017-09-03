@@ -79,15 +79,24 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
+  Filter<PointT>::removed_indices_->clear();
   // First pass: build a set of leaves with the point index closest to the leaf center
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
     if (!input_->is_dense)
+    {
       // Check if the point is invalid
       if (!pcl_isfinite (input_->points[(*indices_)[cp]].x) || 
           !pcl_isfinite (input_->points[(*indices_)[cp]].y) || 
           !pcl_isfinite (input_->points[(*indices_)[cp]].z))
+      {
+        if (Filter<PointT>::extract_removed_indices_)
+        {
+          Filter<PointT>::removed_indices_->push_back ((*indices_)[cp]);
+        }
         continue;
+      }
+    }
 
     Eigen::Vector4i ijk = Eigen::Vector4i::Zero ();
     ijk[0] = static_cast<int> (floor (input_->points[(*indices_)[cp]].x * inverse_leaf_size_[0]));
@@ -110,7 +119,14 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
 
     // If current point is closer, copy its index instead
     if (diff_cur < diff_prev)
+    {
+      if (Filter<PointT>::extract_removed_indices_)
+      {
+        Filter<PointT>::removed_indices_->push_back (leaf.idx);
+      }
+
       leaf.idx = (*indices_)[cp];
+    }
   }
 
   // Second pass: go over all leaves and copy data

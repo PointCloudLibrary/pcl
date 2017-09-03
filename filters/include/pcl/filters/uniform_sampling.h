@@ -72,7 +72,8 @@ namespace pcl
       typedef boost::shared_ptr<const UniformSampling<PointT> > ConstPtr;
 
       /** \brief Empty constructor. */
-      UniformSampling () :
+      UniformSampling (bool extract_removed_indices = false) :
+        Filter<PointT>(extract_removed_indices),
         leaves_ (),
         leaf_size_ (Eigen::Vector4f::Zero ()),
         inverse_leaf_size_ (Eigen::Vector4f::Zero ()),
