@@ -252,6 +252,23 @@ namespace pcl
                             const Eigen::Quaternionf &orientation);
 
       /** \brief Generate the header of a BINARY_COMPRESSED PCD file format
+        * \param[out] os the stream into which to write the header
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        *
+        * \return
+        *  * < 0 (-1) on error
+        *  * == 0 on success
+        */
+      int
+      generateHeaderBinaryCompressed (std::ostream &os,
+                                      const pcl::PCLPointCloud2 &cloud,
+                                      const Eigen::Vector4f &origin, 
+                                      const Eigen::Quaternionf &orientation);
+
+      /** \brief Generate the header of a BINARY_COMPRESSED PCD file format
+        * \param[out] os the stream into which to write the header
         * \param[in] cloud the point cloud data message
         * \param[in] origin the sensor acquisition origin
         * \param[in] orientation the sensor acquisition orientation
@@ -322,6 +339,17 @@ namespace pcl
       int 
       writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
                              const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (), 
+                             const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
+
+      /** \brief Save point cloud data to a std::ostream containing n-D points, in BINARY_COMPRESSED format
+        * \param[out] os the stream into which to write the data
+        * \param[in] cloud the point cloud data message
+        * \param[in] origin the sensor acquisition origin
+        * \param[in] orientation the sensor acquisition orientation
+        */
+      int
+      writeBinaryCompressed (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
+                             const Eigen::Vector4f &origin = Eigen::Vector4f::Zero (),
                              const Eigen::Quaternionf &orientation = Eigen::Quaternionf::Identity ());
 
       /** \brief Save point cloud data to a PCD file containing n-D points

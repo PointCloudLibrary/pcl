@@ -1258,15 +1258,15 @@ pcl::PCDWriter::generateHeaderBinary (const pcl::PCLPointCloud2 &cloud,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-std::string
-pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud,
+int
+pcl::PCDWriter::generateHeaderBinaryCompressed (std::ostream &os,
+                                                const pcl::PCLPointCloud2 &cloud,
                                                 const Eigen::Vector4f &origin, 
                                                 const Eigen::Quaternionf &orientation)
 {
-  std::ostringstream oss;
-  oss.imbue (std::locale::classic ());
+  os.imbue (std::locale::classic ());
 
-  oss << "# .PCD v0.7 - Point Cloud Data file format"
+  os <<  "# .PCD v0.7 - Point Cloud Data file format"
          "\nVERSION 0.7"
          "\nFIELDS";
 
@@ -1279,7 +1279,7 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
   if (fsize > cloud.point_step)
   {
     PCL_ERROR ("[pcl::PCDWriter::generateHeaderBinaryCompressed] The size of the fields (%d) is larger than point_step (%d)! Something is wrong here...\n", fsize, cloud.point_step);
-    return ("");
+    return (-1);
   }
 
   std::stringstream field_names, field_types, field_sizes, field_counts;
@@ -1296,18 +1296,29 @@ pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud
     if (count == 0) count = 1;  // check for 0 counts (coming from older converter code)
     field_counts << " " << count;
   }
-  oss << field_names.str ();
-  oss << "\nSIZE" << field_sizes.str () 
+  os  << field_names.str ();
+  os  << "\nSIZE" << field_sizes.str () 
       << "\nTYPE" << field_types.str () 
       << "\nCOUNT" << field_counts.str ();
-  oss << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
+  os  << "\nWIDTH " << cloud.width << "\nHEIGHT " << cloud.height << "\n";
 
-  oss << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
+  os  << "VIEWPOINT " << origin[0] << " " << origin[1] << " " << origin[2] << " " << orientation.w () << " " << 
                          orientation.x () << " " << orientation.y () << " " << orientation.z () << "\n";
   
-  oss << "POINTS " << cloud.width * cloud.height << "\n";
+  os  << "POINTS " << cloud.width * cloud.height << "\n";
 
-  return (oss.str ());
+  return (os ? 0 : -1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+std::string
+pcl::PCDWriter::generateHeaderBinaryCompressed (const pcl::PCLPointCloud2 &cloud,
+                                                const Eigen::Vector4f &origin, 
+                                                const Eigen::Quaternionf &orientation)
+{
+  std::ostringstream oss;
+  generateHeaderBinaryCompressed (oss, cloud, origin, orientation);
+  return oss.str ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1543,7 +1554,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name, const pcl::PCLPointCl
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
+pcl::PCDWriter::writeBinaryCompressed (std::ostream &os, const pcl::PCLPointCloud2 &cloud,
                                        const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
 {
   if (cloud.data.empty ())
@@ -1551,32 +1562,11 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
     PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Input point cloud has no data!\n");
     return (-1);
   }
-  std::streamoff data_idx = 0;
-  std::ostringstream oss;
-  oss.imbue (std::locale::classic ());
 
-  oss << generateHeaderBinaryCompressed (cloud, origin, orientation) << "DATA binary_compressed\n";
-  oss.flush ();
-  data_idx = oss.tellp ();
-
-#ifdef _WIN32
-  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if (h_native_file == INVALID_HANDLE_VALUE)
+  if (generateHeaderBinaryCompressed (os, cloud, origin, orientation))
   {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile (%s)!\n", file_name.c_str ());
     return (-1);
   }
-#else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
-  if (fd < 0)
-  {
-    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str());
-    return (-1);
-  }
-#endif
-  // Mandatory lock file
-  boost::interprocess::file_lock file_lock;
-  setLockingPermissions (file_name, file_lock);
 
   size_t fsize = 0;
   size_t data_size = 0;
@@ -1605,7 +1595,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   // data_size = nr_points * point_size 
   //           = nr_points * (sizeof_field_1 + sizeof_field_2 + ... sizeof_field_n)
   //           = sizeof_field_1 * nr_points + sizeof_field_2 * nr_points + ... sizeof_field_n * nr_points
-  char *only_valid_data = static_cast<char*> (malloc (data_size));
+  std::vector<char> only_valid_data (data_size);
 
   // Convert the XYZRGBXYZRGB structure to XXYYZZRGBRGB to aid compression. For
   // this, we need a vector of fields.size () (4 in this case), which points to
@@ -1634,35 +1624,68 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
     }
   }
 
-  char* temp_buf = static_cast<char*> (malloc (static_cast<size_t> (static_cast<float> (data_size) * 1.5f + 8.0f)));
+  std::vector<char> temp_buf (data_size * 3 / 2 + 2 * sizeof (unsigned int));
   // Compress the valid data
-  unsigned int compressed_size = pcl::lzfCompress (only_valid_data, 
+  unsigned int compressed_size = pcl::lzfCompress (&only_valid_data.front (), 
                                                    static_cast<unsigned int> (data_size), 
-                                                   &temp_buf[8], 
-                                                   static_cast<unsigned int> (static_cast<float> (data_size) * 1.5f));
-  unsigned int compressed_final_size = 0;
+                                                   &temp_buf[2*sizeof (unsigned int)], 
+                                                   data_size * 3 / 2);
   // Was the compression successful?
-  if (compressed_size)
+  if (compressed_size == 0)
   {
-    char *header = &temp_buf[0];
-    memcpy (&header[0], &compressed_size, sizeof (unsigned int));
-    memcpy (&header[4], &data_size, sizeof (unsigned int));
-    data_size = compressed_size + 8;
-    compressed_final_size = static_cast<unsigned int> (data_size + data_idx);
-  }
-  else
-  {
-#ifndef _WIN32
-    pcl_close (fd);
-#endif
-    resetLockingPermissions (file_name, file_lock);
-    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
     return (-1);
   }
 
+  memcpy (&temp_buf[0], &compressed_size, sizeof (unsigned int));
+  memcpy (&temp_buf[sizeof (unsigned int)], &data_size, sizeof (unsigned int));
+
+  os.imbue (std::locale::classic ());
+  os << "DATA binary_compressed\n";
+  std::copy (temp_buf.begin (), temp_buf.end (), std::ostream_iterator<char> (os));
+  os.flush ();
+
+  return (os ? 0 : -1);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::PCLPointCloud2 &cloud,
+                                       const Eigen::Vector4f &origin, const Eigen::Quaternionf &orientation)
+{
+  // Format output
+  std::ostringstream oss;
+  if (writeBinaryCompressed (oss, cloud, origin, orientation))
+  {
+    throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during compression!");
+    return (-1);
+  }
+  std::string ostr = oss.str ();
+
+#ifdef _WIN32
+  HANDLE h_native_file = CreateFile (file_name.c_str (), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  if (h_native_file == INVALID_HANDLE_VALUE)
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during CreateFile (%s)!\n", file_name.c_str ());
+    return (-1);
+  }
+#else
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+  if (fd < 0)
+  {
+    PCL_ERROR ("[pcl::PCDWriter::writeBinaryCompressed] Error during open (%s)!\n", file_name.c_str ());
+    return (-1);
+  }
+#endif
+  // Mandatory lock file
+  boost::interprocess::file_lock file_lock;
+  setLockingPermissions (file_name, file_lock);
+
 #ifndef _WIN32
   // Stretch the file size to the size of the data
-  off_t result = pcl_lseek (fd, getpagesize () + data_size - 1, SEEK_SET);
+  size_t page_size = getpagesize ();
+  size_t size_pages = ostr.size () / page_size;
+  size_t partial_pages = (size_pages * page_size < ostr.size ()) ? 1 : 0;
+  off_t result = pcl_lseek (fd, (size_pages + partial_pages) * page_size - 1, SEEK_SET);
   if (result < 0)
   {
     pcl_close (fd);
@@ -1684,12 +1707,12 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
 
   // Prepare the map
 #ifdef _WIN32
-  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, compressed_final_size, NULL);
-  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, compressed_final_size));
+  HANDLE fm = CreateFileMapping (h_native_file, NULL, PAGE_READWRITE, 0, ostr.size (), NULL);
+  char *map = static_cast<char*> (MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, ostr.size ()));
   CloseHandle (fm);
 
 #else
-  char *map = static_cast<char*> (mmap (0, compressed_final_size, PROT_WRITE, MAP_SHARED, fd, 0));
+  char *map = static_cast<char*> (mmap (0, ostr.size (), PROT_WRITE, MAP_SHARED, fd, 0));
   if (map == reinterpret_cast<char*> (-1))    // MAP_FAILED
   {
     pcl_close (fd);
@@ -1699,22 +1722,20 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
   }
 #endif
 
-  // copy header
-  memcpy (&map[0], oss.str ().c_str (), static_cast<size_t> (data_idx));
-  // Copy the compressed data
-  memcpy (&map[data_idx], temp_buf, data_size);
+  // copy header + compressed data
+  memcpy (map, ostr.data (), ostr.size ());
 
 #ifndef _WIN32
   // If the user set the synchronization flag on, call msync
   if (map_synchronization_)
-    msync (map, compressed_final_size, MS_SYNC);
+    msync (map, ostr.size (), MS_SYNC);
 #endif
 
   // Unmap the pages of memory
 #ifdef _WIN32
     UnmapViewOfFile (map);
 #else
-  if (munmap (map, (compressed_final_size)) == -1)
+  if (munmap (map, ostr.size ()) == -1)
   {
     pcl_close (fd);
     resetLockingPermissions (file_name, file_lock);
@@ -1730,8 +1751,6 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name, const pcl::
 #endif
   resetLockingPermissions (file_name, file_lock);
 
-  free (only_valid_data);
-  free (temp_buf);
   return (0);
 }
 
