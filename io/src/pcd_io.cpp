@@ -122,9 +122,9 @@ pcl::PCDWriter::resetLockingPermissions (const std::string &file_name,
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 int
-pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
+pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
                             Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
-                            int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
+                            int &pcd_version, int &data_type, unsigned int &data_idx)
 {
   // Default values
   data_idx = 0;
@@ -139,29 +139,9 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   //cloud.is_dense = true;
 
   int nr_points = 0;
-  std::ifstream fs;
   std::string line;
 
   int specified_channel_count = 0;
-
-  if (file_name == "" || !boost::filesystem::exists (file_name))
-  {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
-    return (-1);
-  }
-
-  // Open file in binary mode to avoid problem of 
-  // std::getline() corrupting the result of ifstream::tellg()
-  fs.open (file_name.c_str (), std::ios::binary);
-  if (!fs.is_open () || fs.fail ())
-  {
-    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror(errno)); 
-    fs.close ();
-    return (-1);
-  }
-
-  // Seek at the given offset
-  fs.seekg (offset, std::ios::beg);
 
   // field_sizes represents the size of one element in a field (e.g., float = 4, char = 1)
   // field_counts represents the number of elements in a field (e.g., x = 1, normal_x = 1, fpfh = 33)
@@ -358,7 +338,6 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   catch (const char *exception)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] %s\n", exception);
-    fs.close ();
     return (-1);
   }
 
@@ -366,7 +345,6 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   if (nr_points == 0)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] No points to read\n");
-    fs.close ();
     return (-1);
   }
   
@@ -392,7 +370,6 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
     if (cloud.width == 0 && nr_points != 0)
     {
       PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT given (%d) but no WIDTH!\n", cloud.height);
-      fs.close ();
       return (-1);
     }
   }
@@ -400,14 +377,45 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   if (int (cloud.width * cloud.height) != nr_points)
   {
     PCL_ERROR ("[pcl::PCDReader::readHeader] HEIGHT (%d) x WIDTH (%d) != number of points (%d)\n", cloud.height, cloud.width, nr_points);
+    return (-1);
+  }
+
+  return (0);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+int
+pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
+                            Eigen::Vector4f &origin, Eigen::Quaternionf &orientation, 
+                            int &pcd_version, int &data_type, unsigned int &data_idx, const int offset)
+{
+  if (file_name == "" || !boost::filesystem::exists (file_name))
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not find file '%s'.\n", file_name.c_str ());
+    return (-1);
+  }
+
+  // Open file in binary mode to avoid problem of 
+  // std::getline() corrupting the result of ifstream::tellg()
+  std::ifstream fs;
+  fs.open (file_name.c_str (), std::ios::binary);
+  if (!fs.is_open () || fs.fail ())
+  {
+    PCL_ERROR ("[pcl::PCDReader::readHeader] Could not open file '%s'! Error : %s\n", file_name.c_str (), strerror (errno)); 
     fs.close ();
     return (-1);
   }
 
+  // Seek at the given offset
+  fs.seekg (offset, std::ios::beg);
+
+  // Delegate parsing to the istream overload.
+  int result = readHeader (fs, cloud, origin, orientation, pcd_version, data_type, data_idx);
+
   // Close file
   fs.close ();
 
-  return (0);
+  return result;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -419,7 +427,8 @@ pcl::PCDReader::readHeader (const std::string &file_name, pcl::PCLPointCloud2 &c
   int pcd_version = 0;
   int data_type = 0;
   unsigned int data_idx = 0;
-  return this->readHeader (file_name, cloud, origin, orientation, pcd_version, data_type, data_idx, offset);
+
+  return readHeader (file_name, cloud, origin, orientation, pcd_version, data_type, data_idx, offset);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
