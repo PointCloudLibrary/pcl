@@ -1622,7 +1622,7 @@ namespace pcl
               if (num_pts > 0)
               {
                 //always sample at least one point
-                sample_points = sample_points > 0 ? sample_points : 1;
+                sample_points = sample_points > 1 ? sample_points : 1;
               }
               else
               {
@@ -1639,6 +1639,7 @@ namespace pcl
               random_sampler.setSample (static_cast<unsigned int> (sample_points));
 
               pcl::ExtractIndices<pcl::PCLPointCloud2> extractor;
+              extractor.setInputCloud (tmp_blob);
               
               pcl::IndicesPtr downsampled_cloud_indices (new std::vector<int> ());
               random_sampler.filter (*downsampled_cloud_indices);
