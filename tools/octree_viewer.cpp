@@ -42,6 +42,7 @@
 #include <pcl/visualization/common/common.h>
 
 #include <pcl/octree/octree_pointcloud_voxelcentroid.h>
+#include <pcl/common/centroid.h>
 
 #include <pcl/filters/filter.h>
 #include "boost.h"
@@ -68,8 +69,9 @@ public:
     wireframe (true),
     show_cubes_ (true),
     show_centroids_ (false),
-    show_original_points_ (false)
-    {
+    show_original_points_ (false),
+    point_size_ (1.0)
+  {
 
     //try to load the cloud
     if (!loadCloud(filename))
@@ -129,6 +131,7 @@ private:
   //bool to decide what should be display
   bool wireframe;
   bool show_cubes_, show_centroids_, show_original_points_;
+  float point_size_;
   //========================================================
 
   /* \brief Callback to interact with the keyboard
@@ -170,6 +173,16 @@ private:
     {
       if (wireframe)
         wireframe = false;
+      update ();
+    }
+    else if ((event.getKeyCode () == '-') && event.keyDown ())
+    {
+      point_size_ = std::max(1.0f, point_size_ * (1 / 2.0f));
+      update ();
+    }
+    else if ((event.getKeyCode () == '+') && event.keyDown ())
+    {
+      point_size_ *= 2.0f;
       update ();
     }
   }
@@ -217,7 +230,7 @@ private:
   /* \brief Helper function that draw info for the user on the viewer
    *
    */
-  void showLegend()
+  void showLegend ()
   {
     char dataDisplay[256];
     sprintf (dataDisplay, "Displaying octree cubes: %s", (show_cubes_) ? ("True") : ("False"));
@@ -238,8 +251,8 @@ private:
     viz.addText (level, 0, 30, 1.0, 0.0, 0.0, "level_t1");
 
     viz.removeShape ("level_t2");
-    sprintf (level, "Voxel size: %.4fm [%lu voxels]", sqrt(octree.getVoxelSquaredSideLen(displayedDepth)),
-             cloudVoxel->points.size());
+    sprintf (level, "Voxel size: %.4fm [%lu voxels]", std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)),
+             cloudVoxel->points.size ());
     viz.addText (level, 0, 15, 1.0, 0.0, 0.0, "level_t2");
   }
 
@@ -256,7 +269,7 @@ private:
     if (show_cubes_)
     {
       //show octree as cubes
-      showCubes (sqrt (octree.getVoxelSquaredSideLen (displayedDepth)));
+      showCubes (std::sqrt (octree.getVoxelSquaredSideLen (displayedDepth)));
     }
 
     if (show_centroids_)
@@ -264,6 +277,7 @@ private:
       //show centroid points
       pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloudVoxel, "x");
       viz.addPointCloud (cloudVoxel, color_handler, "cloud_centroid");
+      viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud_centroid");
     }
 
     if (show_original_points_)
@@ -271,6 +285,7 @@ private:
       //show origin point cloud
       pcl::visualization::PointCloudColorHandlerGenericField<pcl::PointXYZ> color_handler (cloud, "z");
       viz.addPointCloud (cloud, color_handler, "cloud");
+      viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, point_size_, "cloud");
     }
   }
 
@@ -385,33 +400,27 @@ private:
       cloudVoxel->points.push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
-      if ( octree.getTreeDepth() == depth ){
+      if (octree.getTreeDepth () == depth)
+      {
         pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
-        container->getContainer().getCentroid (pt_centroid);
+        container->getContainer ().getCentroid (pt_centroid);
       }
       // Else, compute the centroid of the LeafNode under the current BranchNode
-      else {
-        // Reset the current centroid coordinates
-        pt_centroid = pcl::PointXYZ(0, 0, 0);
-
+      else
+      {
         // Retrieve every centroid under the current BranchNode
         pcl::octree::OctreeKey dummy_key;
         pcl::PointCloud<pcl::PointXYZ>::VectorType voxelCentroids;
         octree.getVoxelCentroidsRecursive (static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::BranchNode*> (*tree_it), dummy_key, voxelCentroids);
 
         // Iterate over the leafs to compute the centroid of all of them
-        pcl::PointXYZ wk_pt_centroid;
+        pcl::CentroidPoint<pcl::PointXYZ> centroid;
         for (int j = 0; j < voxelCentroids.size (); ++j)
         {
-          wk_pt_centroid = voxelCentroids[j];
-          pt_centroid.x += wk_pt_centroid.x;
-          pt_centroid.y += wk_pt_centroid.y;
-          pt_centroid.z += wk_pt_centroid.z;
+          centroid.add (voxelCentroids[j]);
         }
-        pt_centroid.x /= voxelCentroids.size ();
-        pt_centroid.y /= voxelCentroids.size ();
-        pt_centroid.z /= voxelCentroids.size ();
+        centroid.get (pt_centroid);
       }
 
       displayCloud->points.push_back (pt_centroid);
