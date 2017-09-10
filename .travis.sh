@@ -74,7 +74,7 @@ function build_examples ()
         -DBUILD_apps=OFF \
         $PCL_DIR
   # Build
-  make -j2
+  make -j1
 }
 
 function build_tools ()
@@ -92,7 +92,7 @@ function build_tools ()
         -DBUILD_apps=OFF \
         $PCL_DIR
   # Build
-  make -j8
+  make -j1
 }
 
 function build_apps ()
