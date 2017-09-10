@@ -92,7 +92,7 @@ function build_tools ()
         -DBUILD_apps=OFF \
         $PCL_DIR
   # Build
-  make -j2
+  make -j8
 }
 
 function build_apps ()
