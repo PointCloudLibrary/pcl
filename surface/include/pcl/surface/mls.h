@@ -54,27 +54,32 @@
 namespace pcl
 {
 
-  const double MLS_PROJECTION_CONVERGENCE_TOLERANCE = 1e-8;
-  const double MLS_MINIMUM_PRINCIPLE_CURVATURE = 1e-5;
-
   /** \brief Data structure used to store the results of the MLS fitting */
   struct MLSResult
   {
+    enum ProjectionMethod
+    {
+      NONE,      /**< \brief Project to the mls plane. */
+      SIMPLE,    /**< \brief Project along the mls plans normal to the polynomial surface. */
+      ORTHOGONAL /**< \brief Project to the closest point on the polynonomial surface. */
+    };
 
     /** \brief Data structure used to store the MLS polynomial partial derivatives */
     struct PolynomialPartialDerivative
     {
-      double z;     /**< @brief The z component of the polynomial evaluated at z(u, v). */
-      double z_u;   /**< @brief The partial derivative dz/du. */
-      double z_v;   /**< @brief The partial derivative dz/dv. */
-      double z_uu;  /**< @brief The partial derivative d^2z/du^2. */
-      double z_vv;  /**< @brief The partial derivative d^2z/dv^2. */
-      double z_uv;  /**< @brief The partial derivative d^2z/dudv. */
+      double z;     /**< \brief The z component of the polynomial evaluated at z(u, v). */
+      double z_u;   /**< \brief The partial derivative dz/du. */
+      double z_v;   /**< \brief The partial derivative dz/dv. */
+      double z_uu;  /**< \brief The partial derivative d^2z/du^2. */
+      double z_vv;  /**< \brief The partial derivative d^2z/dv^2. */
+      double z_uv;  /**< \brief The partial derivative d^2z/dudv. */
     };
 
     /** \brief Data structure used to store the MLS projection results */
     struct MLSProjectionResults
     {
+      MLSProjectionResults () : u (0), v(0) {}
+
       double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
       double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
       Eigen::Vector3d point;  /**< \brief The projected point. */
@@ -91,8 +96,7 @@ namespace pcl
                const Eigen::VectorXd &a_c_vec,
                const int a_num_neighbors,
                const float a_curvature,
-               const int a_order,
-               const bool a_polynomial_fit);
+               const int a_order);
 
     /** \brief Given a point calculate it's 3D location in the MLS frame.
       * \param[in] pt The point
@@ -131,31 +135,53 @@ namespace pcl
       */
     Eigen::Vector2f calculatePrincipleCurvatures (const double u, const double v) const;
 
-   /** \brief Project a point orthogonal to the polynomial surface.
-     * \param[in] u The u-coordinate of the point in local MLS frame.
-     * \param[in] v The v-coordinate of the point in local MLS frame.
-     * \param[in] w The w-coordinate of the point in local MLS frame.
-     * \return The MLSProjectionResults for the input data.
-     * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
-     * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
-     * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
-     */
-   MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const;
+    /** \brief Project a point orthogonal to the polynomial surface.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \param[in] w The w-coordinate of the point in local MLS frame.
+      * \return The MLSProjectionResults for the input data.
+      * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+      * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
+      * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
+      */
+    MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const;
 
-   /** \brief Project a point onto the MLS plane.
-     * \param[in] u The u-coordinate of the point in local MLS frame.
-     * \param[in] v The v-coordinate of the point in local MLS frame.
-     * \return The MLSProjectionResults for the input data.
-     */
-   MLSProjectionResults projectPointToMLSPlane (const double u, const double v) const;
+    /** \brief Project a point onto the MLS plane.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The MLSProjectionResults for the input data.
+      */
+    MLSProjectionResults projectPointToMLSPlane (const double u, const double v) const;
 
-   /** \brief Project a point along the MLS plane normal to the polynomial surface.
-     * \param[in] u The u-coordinate of the point in local MLS frame.
-     * \param[in] v The v-coordinate of the point in local MLS frame.
+    /** \brief Project a point along the MLS plane normal to the polynomial surface.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The MLSProjectionResults for the input data.
+      * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+      */
+    MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v) const;
+
+    /**
+     * \brief Project a point using the specified method.
+     * \param[in] pt The point to be project.
+     * \param[in] method The projection method to be used.
+     * \param[in] required_neighbors The minimun number of neighbors required.
+     * \note If required_neighbors then any number of neighbors is allowed.
+     * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
-     * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
      */
-   MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v) const;
+    MLSProjectionResults projectPoint(const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
+
+    /**
+     * \brief Project the query point used to generate the mls surface about using the specified method.
+     * \param[in] method The projection method to be used.
+     * \param[in] required_neighbors The minimun number of neighbors required.
+     * \note If required_neighbors then any number of neighbors is allowed.
+     * \note If required_neighbors is not satisfied it projects to the mls plane.
+     * \return The MLSProjectionResults for the input data.
+     */
+    MLSProjectionResults projectQueryPoint(ProjectionMethod method, int required_neighbors = 0) const;
+
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
@@ -165,8 +191,7 @@ namespace pcl
     Eigen::VectorXd c_vec;        /**< \brief The polynomial coefficients Example: z = c_vec[0] + c_vec[1]*v + c_vec[2]*v^2 + c_vec[3]*u + c_vec[4]*u*v + c_vec[5]*u^2 */
     int num_neighbors;            /**< \brief The number of neighbors used to create the mls surface. */
     float curvature;              /**< \brief The curvature at the query point. */
-    int order;                    /**< \brief The order of the polynomial used if polynomial_fit = true */
-    bool polynomial_fit;          /**< \brief If True, a polynomial surface was fitted to the neighbors as the mls surface */
+    int order;                    /**< \brief The order of the polynomial. If order > 1 then use polynomial fit */
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
 
   };
@@ -236,8 +261,22 @@ namespace pcl
 
       typedef boost::function<int (int, double, std::vector<int> &, std::vector<float> &)> SearchMethod;
 
-      enum UpsamplingMethod {NONE, DISTINCT_CLOUD, SAMPLE_LOCAL_PLANE, RANDOM_UNIFORM_DENSITY, VOXEL_GRID_DILATION};
-      enum ProjectionMethod {SIMPLE, ORTHOGONAL};
+      enum UpsamplingMethod
+      {
+        NONE,                   /**< \brief No upsampling will be done, only the input points will be projected
+                                            to their own MLS surfaces. */
+        DISTINCT_CLOUD,         /**< \brief Project the points of the distinct cloud to the MLS surface. */
+        SAMPLE_LOCAL_PLANE,     /**< \brief The local plane of each input point will be sampled in a circular fashion
+                                            using the \ref upsampling_radius_ and the \ref upsampling_step_ parameters. */
+        RANDOM_UNIFORM_DENSITY, /**< \brief The local plane of each input point will be sampled using an uniform random
+                                            distribution such that the density of points is constant throughout the
+                                            cloud - given by the \ref desired_num_points_in_radius_ parameter. */
+        VOXEL_GRID_DILATION     /**< \brief The input cloud will be inserted into a voxel grid with voxels of
+                                            size \ref voxel_size_; this voxel grid will be dilated \ref dilation_iteration_num_
+                                            times and the resulting points will be projected to the MLS surface
+                                            of the closest point in the input cloud; the result is a point cloud
+                                            with filled holes and a constant point density. */
+      };
 
       /** \brief Empty constructor. */
       MovingLeastSquares () : CloudSurfaceProcessing<PointInT, PointOutT> (),
@@ -256,7 +295,7 @@ namespace pcl
                               desired_num_points_in_radius_ (0),
                               cache_mls_results_ (true),
                               mls_results_ (),
-                              projection_method_ (SIMPLE),
+                              projection_method_ (MLSResult::SIMPLE),
                               voxel_size_ (1.0),
                               dilation_iteration_num_ (0),
                               nr_coeff_ (),
@@ -295,7 +334,18 @@ namespace pcl
         * \param[in] order the order of the polynomial
         */
       inline void 
-      setPolynomialOrder (int order) { order_ = order; }
+      setPolynomialOrder (int order)
+      {
+        order_ = order;
+        if (order_ < 2)
+        {
+          polynomial_fit_ = false;
+        }
+        else
+        {
+          polynomial_fit_ = true;
+        }
+      }
 
       /** \brief Get the order of the polynomial to be fit. */
       inline int 
@@ -305,7 +355,21 @@ namespace pcl
         * \param[in] polynomial_fit set to true for polynomial fit
         */
       inline void 
-      setPolynomialFit (bool polynomial_fit) { polynomial_fit_ = polynomial_fit; }
+      setPolynomialFit (bool polynomial_fit)
+      {
+        polynomial_fit_ = polynomial_fit;
+        if (polynomial_fit_)
+        {
+          if (order_ < 2)
+          {
+            order_ = 2;
+          }
+        }
+        else
+        {
+          order_ = 0;
+        }
+      }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
       inline bool 
@@ -335,22 +399,6 @@ namespace pcl
 
       /** \brief Set the upsampling method to be used
         * \param method
-        * \note Options are: * NONE - no upsampling will be done, only the input points will be projected to their own
-        *                             MLS surfaces
-        *                    * DISTINCT_CLOUD - will project the points of the distinct cloud to the closest point on
-        *                                       the MLS surface
-        *                    * SAMPLE_LOCAL_PLANE - the local plane of each input point will be sampled in a circular
-        *                                           fashion using the \ref upsampling_radius_ and the \ref upsampling_step_
-        *                                           parameters
-        *                    * RANDOM_UNIFORM_DENSITY - the local plane of each input point will be sampled using an
-        *                                               uniform random distribution such that the density of points is
-        *                                               constant throughout the cloud - given by the \ref desired_num_points_in_radius_
-        *                                               parameter
-        *                    * VOXEL_GRID_DILATION - the input cloud will be inserted into a voxel grid with voxels of
-        *                                            size \ref voxel_size_; this voxel grid will be dilated \ref dilation_iteration_num_
-        *                                            times and the resulting points will be projected to the MLS surface
-        *                                            of the closest point in the input cloud; the result is a point cloud
-        *                                            with filled holes and a constant point density
         */
       inline void
       setUpsamplingMethod (UpsamplingMethod method) { upsample_method_ = method; }
@@ -448,15 +496,13 @@ namespace pcl
       /** \brief Set the method to be used when projection the point on to the MLS surface.
         * \param method
         * \note This is only used when polynomial fit is enabled.
-        * \note Options are: * SIMPLE - Project the point along the mls plane normal onto the polynomial surface.
-        *                    * ORTHONORMAL - Project the point to the closest point on the polynonomial surface.
         */
       inline void
-      setProjectionMethod (ProjectionMethod method) { projection_method_ = method; }
+      setProjectionMethod (MLSResult::ProjectionMethod method) { projection_method_ = method; }
 
 
       /** \brief Get the current projection method being used. */
-      inline ProjectionMethod
+      inline MLSResult::ProjectionMethod
       getProjectionMethod () const { return projection_method_; }
 
       /** \brief Get the MLSResults for input cloud
@@ -534,7 +580,7 @@ namespace pcl
       std::vector<MLSResult> mls_results_;
 
       /** \brief Parameter that specifies the projection method to be used. */
-      ProjectionMethod projection_method_;
+      MLSResult::ProjectionMethod projection_method_;
 
       
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
@@ -619,7 +665,6 @@ namespace pcl
       /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
         * \param[in] index the index of the query point in the input cloud
         * \param[in] nn_indices the set of nearest neighbors indices for pt
-        * \param[in] nn_sqr_dists the set of nearest neighbors squared distances for pt
         * \param[out] projected_points the set of points projected points around the query point
         * (in the case of upsampling method NONE, only the query point projected to its own fitted surface will be returned,
         * in the case of the other upsampling methods, multiple points will be returned)
