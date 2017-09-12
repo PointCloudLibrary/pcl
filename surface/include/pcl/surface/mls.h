@@ -60,7 +60,28 @@ namespace pcl
   /** \brief Data structure used to store the results of the MLS fitting */
   struct MLSResult
   {
-    MLSResult () : num_neighbors (0), curvature (0.0f), valid (false) {}
+
+    /** \brief Data structure used to store the MLS polynomial partial derivatives */
+    struct PolynomialPartialDerivative
+    {
+      double z;     /**< @brief The z component of the polynomial evaluated at z(u, v). */
+      double z_u;   /**< @brief The partial derivative dz/du. */
+      double z_v;   /**< @brief The partial derivative dz/dv. */
+      double z_uu;  /**< @brief The partial derivative d^2z/du^2. */
+      double z_vv;  /**< @brief The partial derivative d^2z/dv^2. */
+      double z_uv;  /**< @brief The partial derivative d^2z/dudv. */
+    };
+
+    /** \brief Data structure used to store the MLS projection results */
+    struct MLSProjectionResults
+    {
+      double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+      double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
+      Eigen::Vector3d point;  /**< \brief The projected point. */
+      Eigen::Vector3d normal; /**< \brief The projected point's normal. */
+    };
+
+    MLSResult () : num_neighbors (0), curvature (0.0f), order (0), valid (false) {}
 
     MLSResult (const Eigen::Vector3d &a_query_point,
                const Eigen::Vector3d &a_mean,
@@ -69,9 +90,72 @@ namespace pcl
                const Eigen::Vector3d &a_v,
                const Eigen::VectorXd &a_c_vec,
                const int a_num_neighbors,
-               const float &a_curvature,
+               const float a_curvature,
                const int a_order,
                const bool a_polynomial_fit);
+
+    /** \brief Given a point calculate it's 3D location in the MLS frame.
+      * \param[in] pt The point
+      * \param[out] u The u-coordinate of the point in local MLS frame.
+      * \param[out] v The v-coordinate of the point in local MLS frame.
+      * \param[out] w The w-coordinate of the point in local MLS frame.
+      */
+    void getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v, double &w) const;
+
+    /** \brief Given a point calculate it's 2D location in the MLS frame.
+      * \param[in] pt The point
+      * \param[out] u The u-coordinate of the point in local MLS frame.
+      * \param[out] v The v-coordinate of the point in local MLS frame.
+      */
+    void getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v) const;
+
+    /** \brief Calculate the polynomial
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The polynomial value at the provide uv coordinates.
+      */
+    double getPolynomialValue (const double u, const double v) const;
+
+    /** \brief Calculate the polynomial's first and second partial derivatives.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The polynomial partial derivatives at the provide uv coordinates.
+      */
+    PolynomialPartialDerivative getPolynomialPartialDerivative (const double u, const double v) const;
+
+    /** \brief Calculate the principle curvatures using the polynomial surface.
+      * \param[in] u The u-coordinate of the point in local MLS frame.
+      * \param[in] v The v-coordinate of the point in local MLS frame.
+      * \return The principle curvature [k1, k2] at the provided ub coordinates.
+      * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
+      */
+    Eigen::Vector2f calculatePrincipleCurvatures (const double u, const double v) const;
+
+   /** \brief Project a point orthogonal to the polynomial surface.
+     * \param[in] u The u-coordinate of the point in local MLS frame.
+     * \param[in] v The v-coordinate of the point in local MLS frame.
+     * \param[in] w The w-coordinate of the point in local MLS frame.
+     * \return The MLSProjectionResults for the input data.
+     * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+     * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
+     * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
+     */
+   MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const;
+
+   /** \brief Project a point onto the MLS plane.
+     * \param[in] u The u-coordinate of the point in local MLS frame.
+     * \param[in] v The v-coordinate of the point in local MLS frame.
+     * \return The MLSProjectionResults for the input data.
+     */
+   MLSProjectionResults projectPointToMLSPlane (const double u, const double v) const;
+
+   /** \brief Project a point along the MLS plane normal to the polynomial surface.
+     * \param[in] u The u-coordinate of the point in local MLS frame.
+     * \param[in] v The v-coordinate of the point in local MLS frame.
+     * \return The MLSProjectionResults for the input data.
+     * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
+     */
+   MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v) const;
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
@@ -86,97 +170,6 @@ namespace pcl
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
 
   };
-
-  /** \brief Data structure used to store the MLS polynomial partial derivatives */
-  struct PolynomialPartialDerivative
-  {
-    double z;     /**< @brief The z component of the polynomial evaluated at z(u, v). */
-    double z_u;   /**< @brief The partial derivative dz/du. */
-    double z_v;   /**< @brief The partial derivative dz/dv. */
-    double z_uu;  /**< @brief The partial derivative d^2z/du^2. */
-    double z_vv;  /**< @brief The partial derivative d^2z/dv^2. */
-    double z_uv;  /**< @brief The partial derivative d^2z/dudv. */
-  };
-
-  /** \brief Data structure used to store the MLS projection results */
-  struct MLSProjectionResults
-  {
-    double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
-    double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
-    Eigen::Vector3d point;  /**< \brief The projected point. */
-    Eigen::Vector3d normal; /**< \brief The projected point's normal. */
-  };
-
-  /** \brief Given a point calculate it's 3D location in the MLS frame.
-    * \param[in] pt The point
-    * \param[in] mls_result The MLS results data
-    * \param[out] u The u-coordinate of the point in local MLS frame.
-    * \param[out] v The v-coordinate of the point in local MLS frame.
-    * \param[out] w The w-coordinate of the point in local MLS frame.
-    */
-  void getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v, double &w);
-
-  /** \brief Given a point calculate it's 2D location in the MLS frame.
-    * \param[in] pt The point
-    * \param[in] mls_result The MLS results data
-    * \param[out] u The u-coordinate of the point in local MLS frame.
-    * \param[out] v The v-coordinate of the point in local MLS frame.
-    */
-  void getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v);
-
-  /** \brief Calculate the polynomial
-    * \param[in] u The u-coordinate of the point in local MLS frame.
-    * \param[in] v The v-coordinate of the point in local MLS frame.
-    * \param[in] mls_result The MLS results data
-    * \return The polynomial value at the provide uv coordinates.
-    */
-  double getPolynomialValue (const double u, const double v, const pcl::MLSResult &mls_result);
-
-  /** \brief Calculate the polynomial's first and second partial derivatives.
-    * \param[in] u The u-coordinate of the point in local MLS frame.
-    * \param[in] v The v-coordinate of the point in local MLS frame.
-    * \param[in] mls_result The MLS results data
-    * \return The polynomial partial derivatives at the provide uv coordinates.
-    */
-  PolynomialPartialDerivative getPolynomialPartialDerivative (const double u, const double v, const pcl::MLSResult &mls_result);
-
-  /** \brief Calculate the principle curvatures using the polynomial surface.
-    * \param[in] u The u-coordinate of the point in local MLS frame.
-    * \param[in] v The v-coordinate of the point in local MLS frame.
-    * \param[in] mls_result The MLS results data
-    * \return The principle curvature [k1, k2] at the provided ub coordinates.
-    * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
-    */
-  Eigen::Vector2f calculatePrincipleCurvatures (const double u, const double v, const pcl::MLSResult &mls_result);
-
- /** \brief Project a point orthogonal to the polynomial surface.
-   * \param[in] u The u-coordinate of the point in local MLS frame.
-   * \param[in] v The v-coordinate of the point in local MLS frame.
-   * \param[in] w The w-coordinate of the point in local MLS frame.
-   * \param[in] mls_result The mls results representing the surface.
-   * \return The MLSProjectionResults for the input data.
-   * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
-   * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
-   * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
-   */
- MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w, const pcl::MLSResult &mls_result);
-
- /** \brief Project a point onto the MLS plane.
-   * \param[in] u The u-coordinate of the point in local MLS frame.
-   * \param[in] v The v-coordinate of the point in local MLS frame.
-   * \param[in] mls_result The mls results representing the surface.
-   * \return The MLSProjectionResults for the input data.
-   */
- MLSProjectionResults projectPointToMLSPlane (const double u, const double v, const pcl::MLSResult &mls_result);
-
- /** \brief Project a point along the MLS plane normal to the polynomial surface.
-   * \param[in] u The u-coordinate of the point in local MLS frame.
-   * \param[in] v The v-coordinate of the point in local MLS frame.
-   * \param[in] mls_result The mls results representing the surface.
-   * \return The MLSProjectionResults for the input data.
-   * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
-   */
- MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v, const pcl::MLSResult &mls_result);
 
  /**
    * \brief The default weight function used when fitting a polynomial surface
@@ -457,8 +450,6 @@ namespace pcl
         * \note This is only used when polynomial fit is enabled.
         * \note Options are: * SIMPLE - Project the point along the mls plane normal onto the polynomial surface.
         *                    * ORTHONORMAL - Project the point to the closest point on the polynonomial surface.
-        *
-        *
         */
       inline void
       setProjectionMethod (ProjectionMethod method) { projection_method_ = method; }
