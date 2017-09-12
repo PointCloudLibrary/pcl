@@ -186,7 +186,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   {
     case (NONE):
     {
-      MLSProjectionResults proj;
+      MLSResult::MLSProjectionResults proj;
       proj.normal = mls_result.plane_normal;
       proj.point = mls_result.mean;
       if (polynomial_fit_)
@@ -208,8 +208,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         else if (projection_method_ == ORTHOGONAL)
         {
           double u, v, w;
-          getMLSCoordinates (mls_result.query_point, mls_result, u, v ,w);
-          proj = pcl::projectPointOrthogonalToPolynomialSurface (u, v, w, mls_result);
+          mls_result.getMLSCoordinates (mls_result.query_point, u, v ,w);
+          proj = mls_result.projectPointOrthogonalToPolynomialSurface (u, v, w);
         }
       }
 
@@ -225,8 +225,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
         for (float v_disp = -static_cast<float> (upsampling_radius_); v_disp <= upsampling_radius_; v_disp += static_cast<float> (upsampling_step_))
           if (u_disp*u_disp + v_disp*v_disp < upsampling_radius_*upsampling_radius_)
           {
-            MLSProjectionResults proj;
-            proj = projectPointSimpleToPolynomialSurface(u_disp, v_disp, mls_result);
+            MLSResult::MLSProjectionResults proj;
+            proj = mls_result.projectPointSimpleToPolynomialSurface(u_disp, v_disp);
 
             addProjectedPointNormal(index, proj.point, proj.normal, mls_result.curvature, projected_points, projected_points_normals, corresponding_input_indices);
           }
@@ -242,7 +242,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
       if (num_points_to_add <= 0)
       {
         // Just add the current point
-        MLSProjectionResults proj;
+        MLSResult::MLSProjectionResults proj;
         proj.normal = mls_result.plane_normal;
         proj.point = mls_result.mean;
         if (polynomial_fit_)
@@ -265,8 +265,8 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
           else if (projection_method_ == ORTHOGONAL)
           {
             double u, v, w;
-            getMLSCoordinates (mls_result.query_point, mls_result, u, v, w);
-            proj = pcl::projectPointOrthogonalToPolynomialSurface (u, v, w, mls_result);
+            mls_result.getMLSCoordinates (mls_result.query_point, u, v, w);
+            proj = mls_result.projectPointOrthogonalToPolynomialSurface (u, v, w);
             break;
           }
         }
@@ -285,11 +285,11 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
           if (u * u + v * v > search_radius_ * search_radius_/4)
             continue;
 
-          MLSProjectionResults proj;
+          MLSResult::MLSProjectionResults proj;
           if (polynomial_fit_ && mls_result.num_neighbors >= 5 * nr_coeff_)
-            proj = projectPointSimpleToPolynomialSurface (u, v, mls_result);
+            proj = mls_result.projectPointSimpleToPolynomialSurface (u, v);
           else
-            proj = projectPointToMLSPlane (u, v, mls_result);
+            proj = mls_result.projectPointToMLSPlane (u, v);
 
           addProjectedPointNormal(index, proj.point, proj.normal, mls_result.curvature, projected_points, projected_points_normals, corresponding_input_indices);
 
@@ -481,21 +481,21 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       Eigen::Vector3d add_point = distinct_cloud_->points[dp_i].getVector3fMap ().template cast<double> ();
       double u, v, w;
-      getMLSCoordinates (add_point, mls_results_[input_index], u, v, w);
+      mls_results_[input_index].getMLSCoordinates (add_point, u, v, w);
 
-      MLSProjectionResults proj;
+      MLSResult::MLSProjectionResults proj;
       if (polynomial_fit_ && mls_results_[input_index].num_neighbors >= 5 * nr_coeff_)
       {
         if (projection_method_ == SIMPLE)
-          proj = projectPointSimpleToPolynomialSurface (u, v, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointSimpleToPolynomialSurface (u, v);
         else if (projection_method_ == ORTHOGONAL)
-          proj = projectPointOrthogonalToPolynomialSurface (u, v, w, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointOrthogonalToPolynomialSurface (u, v, w);
         else
-          proj = projectPointToMLSPlane (u, v, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointToMLSPlane (u, v);
       }
       else
       {
-        proj = projectPointToMLSPlane(u, v, mls_results_[input_index]);
+        proj = mls_results_[input_index].projectPointToMLSPlane (u, v);
       }
 
       addProjectedPointNormal(input_index, proj.point, proj.normal, mls_results_[input_index].curvature, output, *normals_, *corresponding_input_indices_);
@@ -535,21 +535,21 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::performUpsampling (PointCloudOut &
 
       Eigen::Vector3d add_point = p.getVector3fMap ().template cast<double> ();
       double u, v, w;
-      getMLSCoordinates (add_point, mls_results_[input_index], u, v, w);
+      mls_results_[input_index].getMLSCoordinates (add_point, u, v, w);
 
-      MLSProjectionResults proj;
+      MLSResult::MLSProjectionResults proj;
       if (polynomial_fit_ && mls_results_[input_index].num_neighbors >= 5 * nr_coeff_)
       {
         if (projection_method_ == SIMPLE)
-          proj = projectPointSimpleToPolynomialSurface (u, v, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointSimpleToPolynomialSurface (u, v);
         else if (projection_method_ == ORTHOGONAL)
-          proj = projectPointOrthogonalToPolynomialSurface (u, v, w, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointOrthogonalToPolynomialSurface (u, v, w);
         else
-          proj = projectPointToMLSPlane (u, v, mls_results_[input_index]);
+          proj = mls_results_[input_index].projectPointToMLSPlane (u, v);
       }
       else
       {
-        proj = projectPointToMLSPlane (u, v, mls_results_[input_index]);
+        proj = mls_results_[input_index].projectPointToMLSPlane (u, v);
       }
 
       addProjectedPointNormal(input_index, proj.point, proj.normal, mls_results_[input_index].curvature, output, *normals_, *corresponding_input_indices_);
@@ -565,7 +565,7 @@ pcl::MLSResult::MLSResult (const Eigen::Vector3d &a_query_point,
                            const Eigen::Vector3d &a_v,
                            const Eigen::VectorXd &a_c_vec,
                            const int a_num_neighbors,
-                           const float &a_curvature,
+                           const float a_curvature,
                            const int a_order,
                            const bool a_polynomial_fit):
   query_point (a_query_point), mean (a_mean), plane_normal (a_plane_normal), u_axis (a_u), v_axis (a_v), c_vec (a_c_vec), num_neighbors (a_num_neighbors),
@@ -573,20 +573,22 @@ pcl::MLSResult::MLSResult (const Eigen::Vector3d &a_query_point,
 {
 }
 
-void pcl::getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v, double &w)
+void pcl::MLSResult::getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v, double &w) const
 {
-  u = (pt - mls_result.mean).dot (mls_result.u_axis);
-  v = (pt - mls_result.mean).dot (mls_result.v_axis);
-  w = (pt - mls_result.mean).dot (mls_result.plane_normal);
+  Eigen::Vector3d delta = pt - mean;
+  u = delta.dot (u_axis);
+  v = delta.dot (v_axis);
+  w = delta.dot (plane_normal);
 }
 
-void pcl::getMLSCoordinates (const Eigen::Vector3d &pt, const pcl::MLSResult &mls_result, double &u, double &v)
+void pcl::MLSResult::getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v) const
 {
-  u = (pt - mls_result.mean).dot (mls_result.u_axis);
-  v = (pt - mls_result.mean).dot (mls_result.v_axis);
+  Eigen::Vector3d delta = pt - mean;
+  u = delta.dot (u_axis);
+  v = delta.dot (v_axis);
 }
 
-double pcl::getPolynomialValue (const double u, const double v, const pcl::MLSResult &mls_result)
+double pcl::MLSResult::getPolynomialValue (const double u, const double v) const
 {
   // Compute the polynomial's terms at the current point
   // Example for second order: z = a + b*y + c*y^2 + d*x + e*x*y + f*x^2
@@ -594,12 +596,12 @@ double pcl::getPolynomialValue (const double u, const double v, const pcl::MLSRe
   int j = 0;
   u_pow = 1;
   result = 0;
-  for (int ui = 0; ui <= mls_result.order; ++ui)
+  for (int ui = 0; ui <= order; ++ui)
   {
     v_pow = 1;
-    for (int vi = 0; vi <= mls_result.order - ui; ++vi)
+    for (int vi = 0; vi <= order - ui; ++vi)
     {
-      result += mls_result.c_vec[j++] * u_pow * v_pow;
+      result += c_vec[j++] * u_pow * v_pow;
       v_pow *= v;
     }
     u_pow *= u;
@@ -608,38 +610,38 @@ double pcl::getPolynomialValue (const double u, const double v, const pcl::MLSRe
   return result;
 }
 
-pcl::PolynomialPartialDerivative pcl::getPolynomialPartialDerivative (const double u, const double v, const pcl::MLSResult &mls_result)
+pcl::MLSResult::PolynomialPartialDerivative pcl::MLSResult::getPolynomialPartialDerivative (const double u, const double v) const
 {
   // Compute the displacement along the normal using the fitted polynomial
   // and compute the partial derivatives needed for estimating the normal
   PolynomialPartialDerivative d;
-  Eigen::VectorXd u_pow(mls_result.order + 2), v_pow(mls_result.order + 2);
+  Eigen::VectorXd u_pow(order + 2), v_pow(order + 2);
   int j = 0;
 
   d.z = d.z_u = d.z_v = d.z_uu = d.z_vv = d.z_uv = 0;
   u_pow(0) = v_pow(0) = 1;
-  for (int ui = 0; ui <= mls_result.order; ++ui)
+  for (int ui = 0; ui <= order; ++ui)
   {
-    for (int vi = 0; vi <= mls_result.order - ui; ++vi)
+    for (int vi = 0; vi <= order - ui; ++vi)
     {
       // Compute displacement along normal
-      d.z += u_pow(ui) * v_pow(vi) * mls_result.c_vec[j];
+      d.z += u_pow(ui) * v_pow(vi) * c_vec[j];
 
       // Compute partial derivatives
       if (ui >= 1)
-        d.z_u += mls_result.c_vec[j] * ui * u_pow(ui - 1) * v_pow(vi);
+        d.z_u += c_vec[j] * ui * u_pow(ui - 1) * v_pow(vi);
 
       if (vi >= 1)
-        d.z_v += mls_result.c_vec[j] * vi * u_pow(ui) * v_pow(vi - 1);
+        d.z_v += c_vec[j] * vi * u_pow(ui) * v_pow(vi - 1);
 
       if (ui >= 1 && vi >= 1)
-        d.z_uv += mls_result.c_vec[j] * ui * u_pow(ui - 1) * vi * v_pow(vi - 1);
+        d.z_uv += c_vec[j] * ui * u_pow(ui - 1) * vi * v_pow(vi - 1);
 
       if (ui >= 2)
-        d.z_uu += mls_result.c_vec[j] * ui * (ui - 1) * u_pow(ui - 2) * v_pow(vi);
+        d.z_uu += c_vec[j] * ui * (ui - 1) * u_pow(ui - 2) * v_pow(vi);
 
       if (vi >= 2)
-        d.z_vv += mls_result.c_vec[j] * vi * (vi - 1) * u_pow(ui) * v_pow(vi - 2);
+        d.z_vv += c_vec[j] * vi * (vi - 1) * u_pow(ui) * v_pow(vi - 2);
 
       if (ui == 0)
         v_pow(vi + 1) = v_pow(vi) * v;
@@ -652,18 +654,17 @@ pcl::PolynomialPartialDerivative pcl::getPolynomialPartialDerivative (const doub
   return d;
 }
 
-Eigen::Vector2f pcl::calculatePrincipleCurvatures (const double u, const double v, const pcl::MLSResult &mls_result)
+Eigen::Vector2f pcl::MLSResult::calculatePrincipleCurvatures (const double u, const double v) const
 {
-  Eigen::Vector2f k;
+  Eigen::Vector2f k(MLS_MINIMUM_PRINCIPLE_CURVATURE, MLS_MINIMUM_PRINCIPLE_CURVATURE);
 
-  k << MLS_MINIMUM_PRINCIPLE_CURVATURE, MLS_MINIMUM_PRINCIPLE_CURVATURE;
   // Note: this use the Monge Patch to derive the Gaussian curvature and Mean Curvature found here http://mathworld.wolfram.com/MongePatch.html
   // Then:
   //      k1 = H + sqrt(H^2 - K)
   //      k1 = H - sqrt(H^2 - K)
-  if (mls_result.polynomial_fit && mls_result.c_vec.size () >= (mls_result.order + 1) * (mls_result.order + 2) / 2 && pcl_isfinite (mls_result.c_vec[0]))
+  if (polynomial_fit && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
   {
-    PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v, mls_result);
+    PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
     double Z = 1 + d.z_u * d.z_u + d.z_v * d.z_v;
     double Zlen = std::sqrt (Z);
     double K = (d.z_uu * d.z_vv - d.z_uv * d.z_uv) / (Z * Z);
@@ -684,17 +685,17 @@ Eigen::Vector2f pcl::calculatePrincipleCurvatures (const double u, const double 
   return k;
 }
 
-pcl::MLSProjectionResults pcl::projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w, const pcl::MLSResult &mls_result)
+pcl::MLSResult::MLSProjectionResults pcl::MLSResult::projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const
 {
   double gu = u;
   double gv = v;
   double gw = 0;
 
   MLSProjectionResults result;
-  result.normal = mls_result.plane_normal;
-  if (mls_result.polynomial_fit && mls_result.c_vec.size () >= (mls_result.order + 1) * (mls_result.order + 2) / 2 && pcl_isfinite (mls_result.c_vec[0]))
+  result.normal = plane_normal;
+  if (polynomial_fit && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
   {
-    PolynomialPartialDerivative d = getPolynomialPartialDerivative (gu, gv, mls_result);
+    PolynomialPartialDerivative d = getPolynomialPartialDerivative (gu, gv);
     gw = d.z;
     double err_total;
     double dist1 = std::abs (gw - w);
@@ -721,7 +722,7 @@ pcl::MLSProjectionResults pcl::projectPointOrthogonalToPolynomialSurface (const 
       gu -= update(0);
       gv -= update(1);
 
-      d = getPolynomialPartialDerivative (gu, gv, mls_result);
+      d = getPolynomialPartialDerivative (gu, gv);
       gw = d.z;
       dist2 = std::sqrt ((gu - u) * (gu - u) + (gv - v) * (gv - v) + (gw - w) * (gw - w));
 
@@ -733,46 +734,46 @@ pcl::MLSProjectionResults pcl::projectPointOrthogonalToPolynomialSurface (const 
     {
       gu = u;
       gv = v;
-      d = getPolynomialPartialDerivative (u, v, mls_result);
+      d = getPolynomialPartialDerivative (u, v);
       gw = d.z;
     }
 
-    result.normal -= (d.z_u * mls_result.u_axis + d.z_v * mls_result.v_axis);
+    result.normal -= (d.z_u * u_axis + d.z_v * v_axis);
     result.normal.normalize();
   }
 
-  result.point = mls_result.mean + gu * mls_result.u_axis + gv * mls_result.v_axis + gw * mls_result.plane_normal;
+  result.point = mean + gu * u_axis + gv * v_axis + gw * plane_normal;
 
   return result;
 }
 
-pcl::MLSProjectionResults pcl::projectPointToMLSPlane(const double u, const double v, const pcl::MLSResult &mls_result)
+pcl::MLSResult::MLSProjectionResults pcl::MLSResult::projectPointToMLSPlane(const double u, const double v) const
 {
   MLSProjectionResults result;
   result.u = u;
   result.v = v;
-  result.normal = mls_result.plane_normal;
-  result.point = mls_result.mean + u * mls_result.u_axis + v * mls_result.v_axis;
+  result.normal = plane_normal;
+  result.point = mean + u * u_axis + v * v_axis;
 
   return result;
 }
 
-pcl::MLSProjectionResults pcl::projectPointSimpleToPolynomialSurface (const double u, const double v, const pcl::MLSResult &mls_result)
+pcl::MLSResult::MLSProjectionResults pcl::MLSResult::projectPointSimpleToPolynomialSurface (const double u, const double v) const
 {
   MLSProjectionResults result;
   double w = 0;
 
-  result.normal = mls_result.plane_normal;
+  result.normal = plane_normal;
 
-  if (mls_result.polynomial_fit && mls_result.c_vec.size () >= (mls_result.order + 1) * (mls_result.order + 2) / 2 && pcl_isfinite (mls_result.c_vec[0]))
+  if (polynomial_fit && c_vec.size () >= (order + 1) * (order + 2) / 2 && pcl_isfinite (c_vec[0]))
   {
-    PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v, mls_result);
+    PolynomialPartialDerivative d = getPolynomialPartialDerivative (u, v);
     w = d.z;
-    result.normal -= (d.z_u * mls_result.u_axis + d.z_v * mls_result.v_axis);
+    result.normal -= (d.z_u * u_axis + d.z_v * v_axis);
     result.normal.normalize();
   }
 
-  result.point = mls_result.mean + u * mls_result.u_axis + v * mls_result.v_axis + w * mls_result.plane_normal;
+  result.point = mean + u * u_axis + v * v_axis + w * plane_normal;
 
   return result;
 }
