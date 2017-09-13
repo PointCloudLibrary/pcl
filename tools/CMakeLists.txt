@@ -12,6 +12,11 @@ if(NOT build)
   return()
 endif()
 
+IF(BUILD_surface_afront_debug)
+  add_definitions(-DAFRONTDEBUG)
+ENDIF(BUILD_surface_afront_debug)
+
+
 # to be filled with all targets the tools subsystem
 set(PCL_TOOLS_ALL_TARGETS)
 
@@ -155,6 +160,9 @@ target_link_libraries(pcl_local_max pcl_common pcl_io pcl_filters)
 
 PCL_ADD_EXECUTABLE(pcl_grid_min COMPONENT ${SUBSYS_NAME} SOURCES grid_min.cpp)
 target_link_libraries(pcl_grid_min pcl_common pcl_io pcl_filters)
+
+PCL_ADD_EXECUTABLE (pcl_advancing_front_reconstruction "${SUBSYS_NAME}" advancing_front_reconstruction.cpp)
+target_link_libraries (pcl_advancing_front_reconstruction pcl_common pcl_io pcl_surface)
 
 if(WITH_OPENNI)
   PCL_ADD_EXECUTABLE(pcl_oni2pcd COMPONENT ${SUBSYS_NAME} SOURCES oni2pcd.cpp)

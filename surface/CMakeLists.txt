@@ -1,6 +1,10 @@
 set(SUBSYS_NAME surface)
 set(SUBSYS_DESC "Point cloud surface library")
-set(SUBSYS_DEPS common search kdtree octree)
+if(BUILD_surface_afront_debug)
+  set(SUBSYS_DEPS common search kdtree octree geometry visualization)
+else(BUILD_surface_afront_debug)
+  set(SUBSYS_DEPS common search kdtree octree geometry)
+endif(BUILD_surface_afront_debug)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -127,6 +131,9 @@ set(incs
   "include/pcl/${SUBSYS_NAME}/surfel_smoothing.h"
   "include/pcl/${SUBSYS_NAME}/texture_mapping.h"
   "include/pcl/${SUBSYS_NAME}/poisson.h"
+  "include/pcl/${SUBSYS_NAME}/advancing_front.h"
+  "include/pcl/${SUBSYS_NAME}/advancing_front_utils.h"
+  "include/pcl/${SUBSYS_NAME}/advancing_front_point_type.h"
   ${HULL_INCLUDES}
 )
 
@@ -144,6 +151,7 @@ set(impl_incs
   "include/pcl/${SUBSYS_NAME}/impl/surfel_smoothing.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/texture_mapping.hpp"
   "include/pcl/${SUBSYS_NAME}/impl/poisson.hpp"
+  "include/pcl/${SUBSYS_NAME}/impl/advancing_front.hpp"
   ${HULL_IMPLS}
 )
 
