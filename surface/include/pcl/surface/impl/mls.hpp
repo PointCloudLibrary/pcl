@@ -180,7 +180,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
   // Note: this method is const because it needs to be thread-safe
   //       (MovingLeastSquaresOMP calls it from multiple threads)
 
-  pcl::computeMLSSurface<PointInT>(*input_, index, nn_indices, search_radius_, mls_result, polynomial_fit_, order_);
+  mls_result.computeMLSSurface<PointInT>(*input_, index, nn_indices, search_radius_, order_);
 
   switch (upsample_method_)
   {
@@ -742,14 +742,12 @@ pcl::MLSResult::MLSProjectionResults pcl::MLSResult::projectQueryPoint(Projectio
 }
 
 template <typename PointT>
-void pcl::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
-                             int index,
-                             const std::vector<int> &nn_indices,
-                             double search_radius,
-                             pcl::MLSResult &mls_result,
-                             bool polynomial_fit,
-                             int polynomial_order,
-                             boost::function<double(const double)> weight_func)
+void pcl::MLSResult::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
+                                        int index,
+                                        const std::vector<int> &nn_indices,
+                                        double search_radius,
+                                        int polynomial_order,
+                                        boost::function<double(const double)> weight_func)
 {
   // Compute the plane coefficients
   EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
@@ -768,76 +766,76 @@ void pcl::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
   model_coefficients[3] = -1 * model_coefficients.dot (xyz_centroid);
 
   // Projected query point
-  mls_result.valid = true;
-  mls_result.query_point = cloud.points[index].getVector3fMap ().template cast<double> ();
-  double distance = mls_result.query_point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
-  mls_result.mean = mls_result.query_point - distance * model_coefficients.head<3> ();
+  valid = true;
+  query_point = cloud.points[index].getVector3fMap ().template cast<double> ();
+  double distance = query_point.dot (model_coefficients.head<3> ()) + model_coefficients[3];
+  mean = query_point - distance * model_coefficients.head<3> ();
 
-  mls_result.curvature = covariance_matrix.trace ();
+  curvature = covariance_matrix.trace ();
   // Compute the curvature surface change
-  if (mls_result.curvature != 0)
-    mls_result.curvature = std::abs (eigen_value / mls_result.curvature);
+  if (curvature != 0)
+    curvature = std::abs (eigen_value / curvature);
 
   // Get a copy of the plane normal easy access
-  mls_result.plane_normal = model_coefficients.head<3> ();
+  plane_normal = model_coefficients.head<3> ();
 
   // Local coordinate system (Darboux frame)
-  mls_result.v_axis = mls_result.plane_normal.unitOrthogonal ();
-  mls_result.u_axis = mls_result.plane_normal.cross (mls_result.v_axis);
+  v_axis = plane_normal.unitOrthogonal ();
+  u_axis = plane_normal.cross (v_axis);
 
   // Perform polynomial fit to update point and normal
   ////////////////////////////////////////////////////
-  mls_result.num_neighbors = static_cast<int> (nn_indices.size ());
-  if (polynomial_fit)
+  num_neighbors = static_cast<int> (nn_indices.size ());
+  order = polynomial_order;
+  if (order > 1)
   {
-    mls_result.order = polynomial_order;
-    int nr_coeff = (polynomial_order + 1) * (polynomial_order + 2) / 2;
+    int nr_coeff = (order + 1) * (order + 2) / 2;
 
-    if (mls_result.num_neighbors >= nr_coeff)
+    if (num_neighbors >= nr_coeff)
     {
       // Note: The max_sq_radius parameter is only used if weight_func was not defined
       double max_sq_radius = 1;
       if (weight_func == 0)
       {
         max_sq_radius = search_radius * search_radius;
-        weight_func = boost::bind (&pcl::computeMLSWeight, _1 , max_sq_radius);
+        weight_func = boost::bind (&pcl::MLSResult::computeMLSWeight, this, _1 , max_sq_radius);
       }
 
       // Allocate matrices and vectors to hold the data used for the polynomial fit
-      Eigen::VectorXd weight_vec (mls_result.num_neighbors);
-      Eigen::MatrixXd P (nr_coeff, mls_result.num_neighbors);
-      Eigen::VectorXd f_vec (mls_result.num_neighbors);
+      Eigen::VectorXd weight_vec (num_neighbors);
+      Eigen::MatrixXd P (nr_coeff, num_neighbors);
+      Eigen::VectorXd f_vec (num_neighbors);
       Eigen::MatrixXd P_weight; // size will be (nr_coeff_, nn_indices.size ());
       Eigen::MatrixXd P_weight_Pt (nr_coeff, nr_coeff);
 
       // Update neighborhood, since point was projected, and computing relative
       // positions. Note updating only distances for the weights for speed
-      std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > de_meaned (mls_result.num_neighbors);
-      for (size_t ni = 0; ni < mls_result.num_neighbors; ++ni)
+      std::vector<Eigen::Vector3d, Eigen::aligned_allocator<Eigen::Vector3d> > de_meaned (num_neighbors);
+      for (size_t ni = 0; ni < num_neighbors; ++ni)
       {
-        de_meaned[ni][0] = cloud.points[nn_indices[ni]].x - mls_result.mean[0];
-        de_meaned[ni][1] = cloud.points[nn_indices[ni]].y - mls_result.mean[1];
-        de_meaned[ni][2] = cloud.points[nn_indices[ni]].z - mls_result.mean[2];
+        de_meaned[ni][0] = cloud.points[nn_indices[ni]].x - mean[0];
+        de_meaned[ni][1] = cloud.points[nn_indices[ni]].y - mean[1];
+        de_meaned[ni][2] = cloud.points[nn_indices[ni]].z - mean[2];
         weight_vec (ni) = weight_func (de_meaned[ni].dot (de_meaned[ni]));
       }
 
       // Go through neighbors, transform them in the local coordinate system,
       // save height and the evaluation of the polynome's terms
       double u_coord, v_coord, u_pow, v_pow;
-      for (size_t ni = 0; ni < mls_result.num_neighbors; ++ni)
+      for (size_t ni = 0; ni < num_neighbors; ++ni)
       {
         // Transforming coordinates
-        u_coord = de_meaned[ni].dot (mls_result.u_axis);
-        v_coord = de_meaned[ni].dot (mls_result.v_axis);
-        f_vec (ni) = de_meaned[ni].dot (mls_result.plane_normal);
+        u_coord = de_meaned[ni].dot (u_axis);
+        v_coord = de_meaned[ni].dot (v_axis);
+        f_vec (ni) = de_meaned[ni].dot (plane_normal);
 
         // Compute the polynomial's terms at the current point
         int j = 0;
         u_pow = 1;
-        for (int ui = 0; ui <= mls_result.order; ++ui)
+        for (int ui = 0; ui <= order; ++ui)
         {
           v_pow = 1;
-          for (int vi = 0; vi <= mls_result.order - ui; ++vi)
+          for (int vi = 0; vi <= order - ui; ++vi)
           {
             P (j++, ni) = u_pow * v_pow;
             v_pow *= v_coord;
@@ -849,8 +847,8 @@ void pcl::computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
       // Computing coefficients
       P_weight = P * weight_vec.asDiagonal ();
       P_weight_Pt = P_weight * P.transpose ();
-      mls_result.c_vec = P_weight * f_vec;
-      P_weight_Pt.llt ().solveInPlace (mls_result.c_vec);
+      c_vec = P_weight * f_vec;
+      P_weight_Pt.llt ().solveInPlace (c_vec);
     }
   }
 }
