@@ -1974,7 +1974,7 @@ namespace pcl
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           virtual void 
-          Execute (vtkObject*, unsigned long event_id, void*);
+          Execute (vtkObject*, unsigned long /*event_id*/, void*) { }
 
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
