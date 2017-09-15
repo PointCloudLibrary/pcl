@@ -1939,7 +1939,7 @@ namespace pcl
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 #endif
       private:
-        struct ExitMainLoopTimerCallback : public vtkCommand
+        struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
           static ExitMainLoopTimerCallback* New ()
           {
@@ -1952,7 +1952,7 @@ namespace pcl
           PCLVisualizer* pcl_visualizer;
         };
 
-        struct ExitCallback : public vtkCommand
+        struct PCL_EXPORTS ExitCallback : public vtkCommand
         {
           static ExitCallback* New ()
           {
@@ -1965,7 +1965,7 @@ namespace pcl
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////
-        struct FPSCallback : public vtkCommand
+        struct PCL_EXPORTS FPSCallback : public vtkCommand
         {
           static FPSCallback *New () { return (new FPSCallback); }
 
@@ -1974,7 +1974,7 @@ namespace pcl
           FPSCallback& operator = (const FPSCallback& src) { actor = src.actor; pcl_visualizer = src.pcl_visualizer; decimated = src.decimated; last_fps = src.last_fps; return (*this); }
 
           virtual void 
-          Execute (vtkObject*, unsigned long /*event_id*/, void*) { }
+          Execute (vtkObject*, unsigned long event_id, void*);
 
           vtkTextActor *actor;
           PCLVisualizer* pcl_visualizer;
