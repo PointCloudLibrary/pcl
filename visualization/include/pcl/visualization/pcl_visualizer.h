@@ -1939,7 +1939,7 @@ namespace pcl
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 #endif
       private:
-        struct ExitMainLoopTimerCallback : public vtkCommand
+        struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
           static ExitMainLoopTimerCallback* New ()
           {
@@ -1952,7 +1952,7 @@ namespace pcl
           PCLVisualizer* pcl_visualizer;
         };
 
-        struct ExitCallback : public vtkCommand
+        struct PCL_EXPORTS ExitCallback : public vtkCommand
         {
           static ExitCallback* New ()
           {
@@ -1965,7 +1965,7 @@ namespace pcl
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////
-        struct FPSCallback : public vtkCommand
+        struct PCL_EXPORTS FPSCallback : public vtkCommand
         {
           static FPSCallback *New () { return (new FPSCallback); }
 
