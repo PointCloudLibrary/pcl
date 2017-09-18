@@ -293,7 +293,6 @@ namespace pcl
                               search_method_ (),
                               tree_ (),
                               order_ (2),
-                              polynomial_fit_ (true),
                               search_radius_ (0.0),
                               sqr_gauss_param_ (0.0),
                               compute_normals_ (false),
@@ -340,20 +339,10 @@ namespace pcl
 
       /** \brief Set the order of the polynomial to be fit.
         * \param[in] order the order of the polynomial
+        * \note Setting order > 1 indicates using a plynomial fit.
         */
       inline void 
-      setPolynomialOrder (int order)
-      {
-        order_ = order;
-        if (order_ < 2)
-        {
-          polynomial_fit_ = false;
-        }
-        else
-        {
-          polynomial_fit_ = true;
-        }
-      }
+      setPolynomialOrder (int order) { order_ = order; }
 
       /** \brief Get the order of the polynomial to be fit. */
       inline int 
@@ -362,11 +351,11 @@ namespace pcl
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
+      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
       inline void 
       setPolynomialFit (bool polynomial_fit)
       {
-        polynomial_fit_ = polynomial_fit;
-        if (polynomial_fit_)
+        if (polynomial_fit)
         {
           if (order_ < 2)
           {
@@ -380,8 +369,9 @@ namespace pcl
       }
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
+      PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
       inline bool 
-      getPolynomialFit () const { return (polynomial_fit_); }
+      getPolynomialFit () const { return (order_ > 1); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
@@ -546,9 +536,6 @@ namespace pcl
 
       /** \brief The order of the polynomial to be fit. */
       int order_;
-
-      /** True if the surface and normal be approximated using a polynomial, false if tangent estimation is sufficient. */
-      bool polynomial_fit_;
 
       /** \brief The nearest neighbors search radius for each point. */
       double search_radius_;

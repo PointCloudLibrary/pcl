@@ -229,7 +229,7 @@ pcl::MovingLeastSquares<PointInT, PointOutT>::computeMLSPointNormal (int index,
             continue;
 
           MLSResult::MLSProjectionResults proj;
-          if (polynomial_fit_ && mls_result.num_neighbors >= 5 * nr_coeff_)
+          if (order_ > 1 && mls_result.num_neighbors >= 5 * nr_coeff_)
             proj = mls_result.projectPointSimpleToPolynomialSurface (u, v);
           else
             proj = mls_result.projectPointToMLSPlane (u, v);
