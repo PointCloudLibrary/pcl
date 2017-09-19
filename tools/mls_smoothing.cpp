@@ -49,7 +49,6 @@ using namespace pcl::io;
 using namespace pcl::console;
 
 int default_polynomial_order = 2;
-bool default_use_polynomial_fit = false;
 double default_search_radius = 0.0,
     default_sqr_gauss_param = 0.0;
 
@@ -63,9 +62,7 @@ printHelp (int, char **argv)
   print_value ("%f", default_search_radius); print_info (")\n");
   print_info ("                     -sqr_gauss_param X = parameter used for the distance based weighting of neighbors (recommended = search_radius^2) (default: ");
   print_value ("%f", default_sqr_gauss_param); print_info (")\n");
-  print_info ("                     -use_polynomial_fit X = decides whether the surface and normal are approximated using a polynomial or only via tangent estimation (default: ");
-  print_value ("%d", default_use_polynomial_fit); print_info (")\n");
-  print_info ("                     -polynomial_order X = order of the polynomial to be fit (implicitly, use_polynomial_fit = 1) (default: ");
+  print_info ("                     -polynomial_order X = order of the polynomial to be fit (polynomial_order > 1, indicates using a polynomial fit) (default: ");
   print_value ("%d", default_polynomial_order); print_info (")\n");
 }
 
@@ -85,9 +82,12 @@ loadCloud (const std::string &filename, pcl::PCLPointCloud2 &cloud)
 }
 
 void
-compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output,
-         double search_radius, bool sqr_gauss_param_set, double sqr_gauss_param,
-         bool use_polynomial_fit, int polynomial_order)
+compute (const pcl::PCLPointCloud2::ConstPtr &input,
+         pcl::PCLPointCloud2 &output,
+         double search_radius,
+         bool sqr_gauss_param_set,
+         double sqr_gauss_param,
+         int polynomial_order)
 {
 
   PointCloud<PointXYZ>::Ptr xyz_cloud_pre (new pcl::PointCloud<PointXYZ> ()),
@@ -111,7 +111,6 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   mls.setInputCloud (xyz_cloud);
   mls.setSearchRadius (search_radius);
   if (sqr_gauss_param_set) mls.setSqrGaussParam (sqr_gauss_param);
-  mls.setPolynomialFit (use_polynomial_fit);
   mls.setPolynomialOrder (polynomial_order);
 
 //  mls.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
@@ -128,8 +127,8 @@ compute (const pcl::PCLPointCloud2::ConstPtr &input, pcl::PCLPointCloud2 &output
   mls.setSearchMethod (tree);
   mls.setComputeNormals (true);
 
-  PCL_INFO ("Computing smoothed surface and normals with search_radius %f , sqr_gaussian_param %f, polynomial fitting %d, polynomial order %d\n",
-            mls.getSearchRadius(), mls.getSqrGaussParam(), mls.getPolynomialFit(), mls.getPolynomialOrder());
+  PCL_INFO ("Computing smoothed surface and normals with search_radius %f , sqr_gaussian_param %f, polynomial order %d\n",
+            mls.getSearchRadius(), mls.getSqrGaussParam(), mls.getPolynomialOrder());
   TicToc tt;
   tt.tic ();
   mls.process (*xyz_cloud_smoothed);
@@ -178,14 +177,11 @@ main (int argc, char** argv)
   double sqr_gauss_param = default_sqr_gauss_param;
   bool sqr_gauss_param_set = true;
   int polynomial_order = default_polynomial_order;
-  bool use_polynomial_fit = default_use_polynomial_fit;
 
   parse_argument (argc, argv, "-radius", search_radius);
+  parse_argument (argc, argv, "-polynomial_order", polynomial_order);
   if (parse_argument (argc, argv, "-sqr_gauss_param", sqr_gauss_param) == -1)
     sqr_gauss_param_set = false;
-  if (parse_argument (argc, argv, "-polynomial_order", polynomial_order) != -1 )
-    use_polynomial_fit = true;
-  parse_argument (argc, argv, "-use_polynomial_fit", use_polynomial_fit);
 
   // Load the first file
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
@@ -194,8 +190,7 @@ main (int argc, char** argv)
 
   // Do the smoothing
   pcl::PCLPointCloud2 output;
-  compute (cloud, output, search_radius, sqr_gauss_param_set, sqr_gauss_param,
-           use_polynomial_fit, polynomial_order);
+  compute (cloud, output, search_radius, sqr_gauss_param_set, sqr_gauss_param, polynomial_order);
 
   // Save into the second file
   saveCloud (argv[p_file_indices[1]], output);
