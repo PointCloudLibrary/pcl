@@ -72,7 +72,7 @@ TEST (PCL, MovingLeastSquares)
   // Set parameters
   mls.setInputCloud (cloud);
   mls.setComputeNormals (true);
-  mls.setPolynomialFit (true);
+  mls.setPolynomialOrder (2);
   mls.setSearchMethod (tree);
   mls.setSearchRadius (0.03);
 
@@ -92,7 +92,7 @@ TEST (PCL, MovingLeastSquares)
   MovingLeastSquaresOMP<PointXYZ, PointNormal> mls_omp;
   mls_omp.setInputCloud (cloud);
   mls_omp.setComputeNormals (true);
-  mls_omp.setPolynomialFit (true);
+  mls_omp.setPolynomialOrder (2);
   mls_omp.setSearchMethod (tree);
   mls_omp.setSearchRadius (0.03);
   mls_omp.setNumberOfThreads (4);
@@ -123,7 +123,7 @@ TEST (PCL, MovingLeastSquares)
   // Set parameters
   mls_upsampling.setInputCloud (cloud);
   mls_upsampling.setComputeNormals (true);
-  mls_upsampling.setPolynomialFit (true);
+  mls_upsampling.setPolynomialOrder (2);
   mls_upsampling.setSearchMethod (tree);
   mls_upsampling.setSearchRadius (0.03);
   mls_upsampling.setUpsamplingMethod (MovingLeastSquares<PointXYZ, PointNormal>::SAMPLE_LOCAL_PLANE);
