@@ -67,18 +67,18 @@ namespace pcl
     /** \brief Data structure used to store the MLS polynomial partial derivatives */
     struct PolynomialPartialDerivative
     {
-      double z;     /**< \brief The z component of the polynomial evaluated at z(u, v). */
-      double z_u;   /**< \brief The partial derivative dz/du. */
-      double z_v;   /**< \brief The partial derivative dz/dv. */
-      double z_uu;  /**< \brief The partial derivative d^2z/du^2. */
-      double z_vv;  /**< \brief The partial derivative d^2z/dv^2. */
-      double z_uv;  /**< \brief The partial derivative d^2z/dudv. */
+      double z;    /**< \brief The z component of the polynomial evaluated at z(u, v). */
+      double z_u;  /**< \brief The partial derivative dz/du. */
+      double z_v;  /**< \brief The partial derivative dz/dv. */
+      double z_uu; /**< \brief The partial derivative d^2z/du^2. */
+      double z_vv; /**< \brief The partial derivative d^2z/dv^2. */
+      double z_uv; /**< \brief The partial derivative d^2z/dudv. */
     };
 
     /** \brief Data structure used to store the MLS projection results */
     struct MLSProjectionResults
     {
-      MLSProjectionResults () : u (0), v(0) {}
+      MLSProjectionResults () : u (0), v (0) {}
 
       double u;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
       double v;               /**< \brief The u-coordinate of the projected point in local MLS frame. */
@@ -106,32 +106,32 @@ namespace pcl
       * \param[out] v The v-coordinate of the point in local MLS frame.
       * \param[out] w The w-coordinate of the point in local MLS frame.
       */
-    inline
-    void getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v, double &w) const;
+    inline void
+    getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v, double &w) const;
 
     /** \brief Given a point calculate it's 2D location in the MLS frame.
       * \param[in] pt The point
       * \param[out] u The u-coordinate of the point in local MLS frame.
       * \param[out] v The v-coordinate of the point in local MLS frame.
       */
-    inline
-    void getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v) const;
+    inline void
+    getMLSCoordinates (const Eigen::Vector3d &pt, double &u, double &v) const;
 
     /** \brief Calculate the polynomial
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
       * \return The polynomial value at the provide uv coordinates.
       */
-    inline
-    double getPolynomialValue (const double u, const double v) const;
+    inline double
+    getPolynomialValue (const double u, const double v) const;
 
     /** \brief Calculate the polynomial's first and second partial derivatives.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
       * \return The polynomial partial derivatives at the provide uv coordinates.
       */
-    inline
-    PolynomialPartialDerivative getPolynomialPartialDerivative (const double u, const double v) const;
+    inline PolynomialPartialDerivative
+    getPolynomialPartialDerivative (const double u, const double v) const;
 
     /** \brief Calculate the principle curvatures using the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
@@ -139,8 +139,8 @@ namespace pcl
       * \return The principle curvature [k1, k2] at the provided ub coordinates.
       * \note If an error occurs the MLS_MINIMUM_PRINCIPLE_CURVATURE is returned.
       */
-    inline
-    Eigen::Vector2f calculatePrincipleCurvatures (const double u, const double v) const;
+    inline Eigen::Vector2f
+    calculatePrincipleCurvatures (const double u, const double v) const;
 
     /** \brief Project a point orthogonal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
@@ -151,16 +151,16 @@ namespace pcl
       * \note If the optimization diverges it performs a simple projection on to the polynomial surface.
       * \note This was implemented based on this https://math.stackexchange.com/questions/1497093/shortest-distance-between-point-and-surface
       */
-    inline
-    MLSProjectionResults projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const;
+    inline MLSProjectionResults
+    projectPointOrthogonalToPolynomialSurface (const double u, const double v, const double w) const;
 
     /** \brief Project a point onto the MLS plane.
       * \param[in] u The u-coordinate of the point in local MLS frame.
       * \param[in] v The v-coordinate of the point in local MLS frame.
       * \return The MLSProjectionResults for the input data.
       */
-    inline
-    MLSProjectionResults projectPointToMLSPlane (const double u, const double v) const;
+    inline MLSProjectionResults
+    projectPointToMLSPlane (const double u, const double v) const;
 
     /** \brief Project a point along the MLS plane normal to the polynomial surface.
       * \param[in] u The u-coordinate of the point in local MLS frame.
@@ -168,8 +168,8 @@ namespace pcl
       * \return The MLSProjectionResults for the input data.
       * \note If the MLSResults does not contain polynomial data it projects the point onto the mls plane.
       */
-    inline
-    MLSProjectionResults projectPointSimpleToPolynomialSurface (const double u, const double v) const;
+    inline MLSProjectionResults
+    projectPointSimpleToPolynomialSurface (const double u, const double v) const;
 
     /**
      * \brief Project a point using the specified method.
@@ -180,8 +180,8 @@ namespace pcl
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
      */
-    inline
-    MLSProjectionResults projectPoint(const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
+    inline MLSProjectionResults
+    projectPoint(const Eigen::Vector3d &pt, ProjectionMethod method, int required_neighbors = 0) const;
 
     /**
      * \brief Project the query point used to generate the mls surface about using the specified method.
@@ -191,8 +191,8 @@ namespace pcl
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
      */
-    inline
-    MLSProjectionResults projectQueryPoint(ProjectionMethod method, int required_neighbors = 0) const;
+    inline MLSProjectionResults
+    projectQueryPoint(ProjectionMethod method, int required_neighbors = 0) const;
 
     /** \brief Smooth a given point and its neighborghood using Moving Least Squares.
       * \param[in] index the index of the query point in the input cloud
@@ -201,13 +201,13 @@ namespace pcl
       * \param[in] polynomial_order the order of the polynomial to fit to the nearest neighbors
       * \param[in] weight_func defines the weight function for the polynomial fit
       */
-    template <typename PointT>
-    void computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
-                            int index,
-                            const std::vector<int> &nn_indices,
-                            double search_radius,
-                            int polynomial_order = 2,
-                            boost::function<double(const double)> weight_func = 0);
+    template <typename PointT> void
+    computeMLSSurface (const pcl::PointCloud<PointT> &cloud,
+                       int index,
+                       const std::vector<int> &nn_indices,
+                       double search_radius,
+                       int polynomial_order = 2,
+                       boost::function<double(const double)> weight_func = 0);
 
     Eigen::Vector3d query_point;  /**< \brief The query point about which the mls surface was generated */
     Eigen::Vector3d mean;         /**< \brief The mean point of all the neighbors. */
@@ -220,15 +220,15 @@ namespace pcl
     int order;                    /**< \brief The order of the polynomial. If order > 1 then use polynomial fit */
     bool valid;                   /**< \brief If True, the mls results data is valid, otherwise False. */
 
-  private:
-    /**
-      * \brief The default weight function used when fitting a polynomial surface
-      * \param sq_dist the squared distance from a point to origin of the mls frame
-      * \param sq_mls_radius the squraed mls search radius used
-      * \return The weight for a point at squared distance from the origin of the mls frame
-      */
-    inline
-    double computeMLSWeight(const double sq_dist, const double sq_mls_radius) { return exp (-sq_dist / sq_mls_radius); }
+    private:
+      /**
+        * \brief The default weight function used when fitting a polynomial surface
+        * \param sq_dist the squared distance from a point to origin of the mls frame
+        * \param sq_mls_radius the squraed mls search radius used
+        * \return The weight for a point at squared distance from the origin of the mls frame
+        */
+      inline
+      double computeMLSWeight (const double sq_dist, const double sq_mls_radius) { return (exp (-sq_dist / sq_mls_radius)); }
 
   };
 
@@ -310,7 +310,7 @@ namespace pcl
                               rng_alg_ (),
                               rng_uniform_distribution_ ()
                               {};
-      
+
       /** \brief Empty destructor */
       virtual ~MovingLeastSquares () {}
 
@@ -334,25 +334,25 @@ namespace pcl
       }
 
       /** \brief Get a pointer to the search method used. */
-      inline KdTreePtr 
+      inline KdTreePtr
       getSearchMethod () const { return (tree_); }
 
       /** \brief Set the order of the polynomial to be fit.
         * \param[in] order the order of the polynomial
         * \note Setting order > 1 indicates using a plynomial fit.
         */
-      inline void 
+      inline void
       setPolynomialOrder (int order) { order_ = order; }
 
       /** \brief Get the order of the polynomial to be fit. */
-      inline int 
+      inline int
       getPolynomialOrder () const { return (order_); }
 
       /** \brief Sets whether the surface and normal are approximated using a polynomial, or only via tangent estimation.
         * \param[in] polynomial_fit set to true for polynomial fit
         */
       PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::setPolynomialFit] setPolynomialFit is deprecated. Please use setPolynomialOrder instead.")
-      inline void 
+      inline void
       setPolynomialFit (bool polynomial_fit)
       {
         if (polynomial_fit)
@@ -370,29 +370,29 @@ namespace pcl
 
       /** \brief Get the polynomial_fit value (true if the surface and normal are approximated using a polynomial). */
       PCL_DEPRECATED ("[pcl::surface::MovingLeastSquares::getPolynomialFit] getPolynomialFit is deprecated. Please use getPolynomialOrder instead.")
-      inline bool 
+      inline bool
       getPolynomialFit () const { return (order_ > 1); }
 
       /** \brief Set the sphere radius that is to be used for determining the k-nearest neighbors used for fitting.
         * \param[in] radius the sphere radius that is to contain all k-nearest neighbors
         * \note Calling this method resets the squared Gaussian parameter to radius * radius !
         */
-      inline void 
+      inline void
       setSearchRadius (double radius) { search_radius_ = radius; sqr_gauss_param_ = search_radius_ * search_radius_; }
 
       /** \brief Get the sphere radius used for determining the k-nearest neighbors. */
-      inline double 
+      inline double
       getSearchRadius () const { return (search_radius_); }
 
       /** \brief Set the parameter used for distance based weighting of neighbors (the square of the search radius works
         * best in general).
         * \param[in] sqr_gauss_param the squared Gaussian parameter
         */
-      inline void 
+      inline void
       setSqrGaussParam (double sqr_gauss_param) { sqr_gauss_param_ = sqr_gauss_param; }
 
       /** \brief Get the parameter for distance based weighting of neighbors. */
-      inline double 
+      inline double
       getSqrGaussParam () const { return (sqr_gauss_param_); }
 
       /** \brief Set the upsampling method to be used
@@ -407,7 +407,7 @@ namespace pcl
 
       /** \brief Get the distinct cloud used for the DISTINCT_CLOUD upsampling method. */
       inline PointCloudInConstPtr
-      getDistinctCloud () const { return distinct_cloud_; }
+      getDistinctCloud () const { return (distinct_cloud_); }
 
 
       /** \brief Set the radius of the circle in the local point plane that will be sampled
@@ -421,7 +421,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingRadius () const { return upsampling_radius_; }
+      getUpsamplingRadius () const { return (upsampling_radius_); }
 
       /** \brief Set the step size for the local plane sampling
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
@@ -435,7 +435,7 @@ namespace pcl
         * \note Used only in the case of SAMPLE_LOCAL_PLANE upsampling
         */
       inline double
-      getUpsamplingStepSize () const { return upsampling_step_; }
+      getUpsamplingStepSize () const { return (upsampling_step_); }
 
       /** \brief Set the parameter that specifies the desired number of points within the search radius
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
@@ -450,7 +450,7 @@ namespace pcl
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
       inline int
-      getPointDensity () const { return desired_num_points_in_radius_; }
+      getPointDensity () const { return (desired_num_points_in_radius_); }
 
       /** \brief Set the voxel size for the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -464,7 +464,7 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline float
-      getDilationVoxelSize () const { return voxel_size_; }
+      getDilationVoxelSize () const { return (voxel_size_); }
 
       /** \brief Set the number of dilation steps of the voxel grid
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
@@ -477,7 +477,7 @@ namespace pcl
         * \note Used only in the VOXEL_GRID_DILATION upsampling method
         */
       inline int
-      getDilationIterations () const { return dilation_iteration_num_; }
+      getDilationIterations () const { return (dilation_iteration_num_); }
 
       /** \brief Set wether the mls results should be stored for each point in the input cloud
         * \param[in] True if the mls results should be stored, otherwise false.
@@ -489,7 +489,7 @@ namespace pcl
 
       /** \brief Get the cache_mls_results_ value (True if the mls results should be stored, otherwise false). */
       inline bool
-      getCacheMLSResults () const { return cache_mls_results_; }
+      getCacheMLSResults () const { return (cache_mls_results_); }
 
       /** \brief Set the method to be used when projection the point on to the MLS surface.
         * \param method
@@ -501,22 +501,23 @@ namespace pcl
 
       /** \brief Get the current projection method being used. */
       inline MLSResult::ProjectionMethod
-      getProjectionMethod () const { return projection_method_; }
+      getProjectionMethod () const { return (projection_method_); }
 
       /** \brief Get the MLSResults for input cloud
         * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
         * \note This vector is align with the input cloud indicies, so use getCorrespondingIndices to get the correct results when using output cloud indicies.
         */
-      inline const std::vector<MLSResult>& getMLSResults() const { return mls_results_; }
+      inline const std::vector<MLSResult>&
+      getMLSResults () const { return (mls_results_); }
 
       /** \brief Base method for surface reconstruction for all points given in <setInputCloud (), setIndices ()>
         * \param[out] output the resultant reconstructed surface model
         */
-      void 
+      void
       process (PointCloudOut &output);
 
 
-      /** \brief Get the set of indices with each point in output having the 
+      /** \brief Get the set of indices with each point in output having the
         * corresponding point in input */
       inline PointIndicesPtr
       getCorrespondingIndices () const { return (corresponding_input_indices_); }
@@ -577,7 +578,7 @@ namespace pcl
       /** \brief Parameter that specifies the projection method to be used. */
       MLSResult::ProjectionMethod projection_method_;
 
-      
+
       /** \brief A minimalistic implementation of a voxel grid, necessary for the point cloud upsampling
         * \note Used only in the case of VOXEL_GRID_DILATION upsampling
         */
@@ -638,7 +639,7 @@ namespace pcl
       float voxel_size_;
 
       /** \brief Number of dilation steps for the VOXEL_GRID_DILATION upsampling method */
-      int dilation_iteration_num_; 
+      int dilation_iteration_num_;
 
       /** \brief Number of coefficients, to be computed from the requested order.*/
       int nr_coeff_;
@@ -700,15 +701,17 @@ namespace pcl
       copyMissingFields (const PointInT &point_in,
                          PointOutT &point_out) const;
 
-      /** \brief Abstract surface reconstruction method. 
+      /** \brief Abstract surface reconstruction method.
         * \param[out] output the result of the reconstruction 
         */
-      virtual void performProcessing (PointCloudOut &output);
+      virtual void
+      performProcessing (PointCloudOut &output);
 
       /** \brief Perform upsampling for the distinct-cloud and voxel-grid methods
         * \param[out] output the result of the reconstruction
        */
-      void performUpsampling (PointCloudOut &output);
+      void
+      performUpsampling (PointCloudOut &output);
 
     private:
       /** \brief Boost-based random number generator algorithm. */
@@ -717,13 +720,14 @@ namespace pcl
       /** \brief Random number generator using an uniform distribution of floats
         * \note Used only in the case of RANDOM_UNIFORM_DENSITY upsampling
         */
-      boost::shared_ptr<boost::variate_generator<boost::mt19937&, 
-                                                 boost::uniform_real<float> > 
+      boost::shared_ptr<boost::variate_generator<boost::mt19937&,
+                                                 boost::uniform_real<float> >
                        > rng_uniform_distribution_;
 
       /** \brief Abstract class get name method. */
-      std::string getClassName () const { return ("MovingLeastSquares"); }
-      
+      std::string
+      getClassName () const { return ("MovingLeastSquares"); }
+
     public:
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
   };
@@ -783,7 +787,8 @@ namespace pcl
       /** \brief Abstract surface reconstruction method.
         * \param[out] output the result of the reconstruction
         */
-      virtual void performProcessing (PointCloudOut &output);
+      virtual void
+      performProcessing (PointCloudOut &output);
 
       /** \brief The maximum number of threads the scheduler should use. */
       unsigned int threads_;
