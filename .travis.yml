@@ -69,9 +69,9 @@ jobs:
       compiler: clang
       env: TASK="build-examples"
       script: bash .travis.sh $TASK
-    - compiler: clang
-      env: TASK="build-tools"
-      script: bash .travis.sh $TASK
+    # - compiler: clang
+    #   env: TASK="build-tools"
+    #   script: bash .travis.sh $TASK
     # - compiler: clang
     #   env: TASK="build-apps"
     #   script: bash .travis.sh $TASK
