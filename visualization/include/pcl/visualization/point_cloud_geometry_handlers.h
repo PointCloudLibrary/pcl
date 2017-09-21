@@ -244,6 +244,7 @@ namespace pcl
                                          const std::string &x_field_name,
                                          const std::string &y_field_name,
                                          const std::string &z_field_name)
+          : pcl::visualization::PointCloudGeometryHandler<PointT>::PointCloudGeometryHandler (cloud)
         {
           field_x_idx_ = pcl::getFieldIndex (*cloud, x_field_name, fields_);
           if (field_x_idx_ == -1)
