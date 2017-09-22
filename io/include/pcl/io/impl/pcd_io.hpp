@@ -60,11 +60,13 @@
 # define pcl_open                    _open
 # define pcl_close(fd)               _close(fd)
 # define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
+# define pcl_read(fd,dest,size)      _read(fd,dest,size)
 #else
 # include <sys/mman.h>
 # define pcl_open                    open
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
+# define pcl_read(fd,dest,size)      ::read(fd,dest,size)
 #endif
 
 #include <pcl/io/lzf.h>
