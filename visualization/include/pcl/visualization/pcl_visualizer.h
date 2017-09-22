@@ -112,6 +112,26 @@ namespace pcl
           */
         PCLVisualizer (int &argc, char **argv, const std::string &name = "",
             PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (), const bool create_interactor = true);
+            
+        /** \brief PCL Visualizer constructor.
+          * \param[in] custom vtk renderer
+          * \param[in] custom vtk render window
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
+          */
+        PCLVisualizer(vtkRenderer* ren, vtkRenderWindow* wind, const std::string &name = "", const bool create_interactor = true);
+
+        /** \brief PCL Visualizer constructor.
+          * \param[in] argc
+          * \param[in] argv
+          * \param[in] custom vtk renderer
+          * \param[in] custom vtk render window
+          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
+          */
+        PCLVisualizer(int &argc, char **argv, vtkRenderer* ren, vtkRenderWindow* wind, const std::string &name = "",
+                      PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New(), 
+                      const bool create_interactor = true);
+
 
         /** \brief PCL Visualizer destructor. */
         virtual ~PCLVisualizer ();
