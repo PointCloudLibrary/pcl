@@ -48,6 +48,7 @@
 #include <pcl/point_cloud.h>
 
 #include <pcl/common/centroid.h>
+#include <pcl/common/normals.h>
 
 using namespace pcl;
 
@@ -140,6 +141,22 @@ TEST (PCL, Common)
   Eigen::Vector4f pt (1,0,0,0), line_pt (0,0,0,0), line_dir (1,1,0,0);
   double point2line_disance = sqrt (sqrPointToLineDistance (pt, line_pt, line_dir));
   EXPECT_NEAR (point2line_disance, sqrt(2.0)/2, 1e-4);
+
+  Eigen::Vector3f n1 (0.5, 0.5, 0.0), n1_neg (-0.5, -0.5, 0.0), n2 (0.75, 0.5, 0.0);
+  EXPECT_FALSE (alignNormals (n1, n2));
+  EXPECT_TRUE (n1.isApprox (Eigen::Vector3f(0.5, 0.5, 0.0)));
+
+
+  EXPECT_TRUE (alignNormals (n1_neg, n2));
+  EXPECT_TRUE (n1_neg.isApprox (Eigen::Vector3f(0.5, 0.5, 0.0)));
+
+  EXPECT_TRUE (checkNormalsEqual(n1, n2, 0.2094));
+  EXPECT_FALSE (checkNormalsEqual(n1, n2, 0.1920));
+
+  EXPECT_TRUE (checkNormalsEqual(-1.0 * n1, n2, 2.9496));
+  EXPECT_FALSE (checkNormalsEqual(-1.0 * n1, n2, 2.9321));
+
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

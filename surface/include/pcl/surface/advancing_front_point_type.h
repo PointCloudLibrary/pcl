@@ -49,55 +49,6 @@ namespace pcl
 {
   namespace afront
   {
-    struct EIGEN_ALIGN16 _AfrontGuidanceFieldPointType
-    {
-      PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
-      PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
-
-      union {
-        struct
-        {
-          float curvature;
-          float ideal_edge_length;
-        };
-        float data_c[4];
-      };
-      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-    };
-
-    struct AfrontGuidanceFieldPointType : public _AfrontGuidanceFieldPointType
-    {
-      inline AfrontGuidanceFieldPointType (const AfrontGuidanceFieldPointType &p)
-      {
-        x = p.x;
-        y = p.y;
-        z = p.z;
-        data[3] = 1.0f;
-        normal_x = p.normal_x;
-        normal_y = p.normal_y;
-        normal_z = p.normal_z;
-        data_n[3] = 0.0f;
-        curvature = p.curvature;
-        ideal_edge_length = p.ideal_edge_length;
-      }
-
-      inline AfrontGuidanceFieldPointType ()
-      {
-        x = y = z = 0.0f;
-        data[3] = 1.0f;
-        normal_x = normal_y = normal_z = data_n[3] = 0.0f;
-        curvature = 0.0f;
-        ideal_edge_length = 0.0f;
-      }
-
-      friend std::ostream &
-      operator<< (std::ostream &os, const AfrontGuidanceFieldPointType &p)
-      {
-        os << p.x << "\t" << p.y << "\t" << p.z;
-        return (os);
-      }
-    };
-
     struct EIGEN_ALIGN16 _AfrontVertexPointType
     {
       PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
@@ -144,6 +95,69 @@ namespace pcl
 
       friend std::ostream &
       operator<< (std::ostream &os, const AfrontVertexPointType &p)
+      {
+        os << p.x << "\t" << p.y << "\t" << p.z;
+        return (os);
+      }
+    };
+
+    struct EIGEN_ALIGN16 _AfrontGuidanceFieldPointType
+    {
+      PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
+      PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
+
+      union {
+        struct
+        {
+          float curvature;
+          float ideal_edge_length;
+        };
+        float data_c[4];
+      };
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    };
+
+    struct AfrontGuidanceFieldPointType : public _AfrontGuidanceFieldPointType
+    {
+      inline AfrontGuidanceFieldPointType (const AfrontGuidanceFieldPointType &p)
+      {
+        x = p.x;
+        y = p.y;
+        z = p.z;
+        data[3] = 1.0f;
+        normal_x = p.normal_x;
+        normal_y = p.normal_y;
+        normal_z = p.normal_z;
+        data_n[3] = 0.0f;
+        curvature = p.curvature;
+        ideal_edge_length = p.ideal_edge_length;
+      }
+
+      inline AfrontGuidanceFieldPointType(const AfrontVertexPointType &p, const double rho)
+      {
+        x = p.x;
+        y = p.y;
+        z = p.z;
+        data[3] = 1.0f;
+        normal_x = p.normal_x;
+        normal_y = p.normal_y;
+        normal_z = p.normal_z;
+        data_n[3] = 0.0f;
+        curvature = p.curvature;
+        ideal_edge_length = 2.0 * std::sin (rho / 2.0) / curvature;
+      }
+
+      inline AfrontGuidanceFieldPointType ()
+      {
+        x = y = z = 0.0f;
+        data[3] = 1.0f;
+        normal_x = normal_y = normal_z = data_n[3] = 0.0f;
+        curvature = 0.0f;
+        ideal_edge_length = 0.0f;
+      }
+
+      friend std::ostream &
+      operator<< (std::ostream &os, const AfrontGuidanceFieldPointType &p)
       {
         os << p.x << "\t" << p.y << "\t" << p.z;
         return (os);

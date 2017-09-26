@@ -42,6 +42,7 @@
 
 #include <pcl/surface/advancing_front.h>
 #include <pcl/geometry/mesh_conversion.h>
+#include <pcl/common/normals.h>
 
 #ifdef AFRONTDEBUG
 #include <pcl/surface/organized_fast_mesh.h>
@@ -156,7 +157,6 @@ pcl::AfrontMesher<PointNT>::computeGuidanceField ()
   mls_.setComputeNormals (true);
   mls_.setInputCloud (input_);
   mls_.setIndices (indices_);
-  mls_.setPolynomialFit (true);
   mls_.setPolynomialOrder (polynomial_order_);
   mls_.setSearchMethod (tree_);
   mls_.setSearchRadius (search_radius_);
@@ -302,10 +302,10 @@ pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
   viewer_->removeShape ("MLSProjection", 4);
 
   pcl::PointXYZ p1, p2, p3, p4;
-  p1 = pcl::afront::convertEigenToPCL (afront.next.tri.p[0]);
-  p2 = pcl::afront::convertEigenToPCL (afront.next.tri.p[1]);
-  p3 = pcl::afront::convertEigenToPCL (afront.next.tri.p[2]);
-  p4 = pcl::afront::convertEigenToPCL (afront.prev.tri.p[2]);
+  p1 = pcl::PointXYZ (afront.next.tri.p[0] (0), afront.next.tri.p[0] (1), afront.next.tri.p[0] (2));
+  p2 = pcl::PointXYZ (afront.next.tri.p[1] (0), afront.next.tri.p[1] (1), afront.next.tri.p[1] (2));
+  p3 = pcl::PointXYZ (afront.next.tri.p[2] (0), afront.next.tri.p[2] (1), afront.next.tri.p[2] (2));
+  p4 = pcl::PointXYZ (afront.next.tri.p[2] (0), afront.next.tri.p[2] (1), afront.next.tri.p[2] (2));
 
   viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p2, 0, 255, 0, "HalfEdge");          // Green
   viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p2, p3, 255, 0, 0, "NextHalfEdge", 1);   // Red
@@ -346,25 +346,25 @@ pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
     }
 
     Eigen::Vector3f cpt = (mls_cloud_->at (pvr.pv.closest)).getVector3fMap ();
-    viewer_->addSphere (pcl::afront::convertEigenToPCL (cpt), 0.1 * search_radius_, 255, 0, 0, "MLSClosest", 4);
+    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), 0.1 * search_radius_, 255, 0, 0, "MLSClosest", 4);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSClosest", 4);
 
     Eigen::Vector3f projected_pt = pvr.pv.point.getVector3fMap ();
-    viewer_->addSphere (pcl::afront::convertEigenToPCL (cpt), search_radius_, 0, 255, 128, "MLSRadius", 4);
+    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), search_radius_, 0, 255, 128, "MLSRadius", 4);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSRadius", 4);
 
-    pcl::PointXYZ mls_mean = pcl::afront::convertEigenToPCL (pvr.pv.mls.mean);
+    pcl::PointXYZ mls_mean = pcl::PointXYZ (pvr.pv.mls.mean (0), pvr.pv.mls.mean (1), pvr.pv.mls.mean (2));
     Eigen::Vector3d mls_xaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.u_axis;
     Eigen::Vector3d mls_yaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.v_axis;
     Eigen::Vector3d mls_zaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.plane_normal;
-    viewer_->addLine (mls_mean, pcl::afront::convertEigenToPCL (mls_xaxis), 255, 0, 0, "MLSXAxis", 4);
-    viewer_->addLine (mls_mean, pcl::afront::convertEigenToPCL (mls_yaxis), 0, 255, 0, "MLSYAxis", 4);
-    viewer_->addLine (mls_mean, pcl::afront::convertEigenToPCL (mls_zaxis), 0, 0, 255, "MLSZAxis", 4);
+    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_xaxis (0), mls_xaxis (1), mls_xaxis (2)), 255, 0, 0, "MLSXAxis", 4);
+    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_yaxis (0), mls_yaxis (1), mls_yaxis (2)), 0, 255, 0, "MLSYAxis", 4);
+    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_zaxis (0), mls_zaxis (1), mls_zaxis (2)), 0, 0, 255, "MLSZAxis", 4);
 
-    viewer_->addSphere (pcl::afront::convertEigenToPCL (projected_pt), 0.02 * search_radius_, 255, 128, 0, "MLSProjection", 4);
+    viewer_->addSphere (pcl::PointXYZ (projected_pt (0), projected_pt (1), projected_pt (2)), 0.02 * search_radius_, 255, 128, 0, "MLSProjection", 4);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSProjection", 4);
 
-    p3 = pcl::afront::convertEigenToPCL (pvr.tri.p[2]);
+    p3 = pcl::PointXYZ (pvr.tri.p[2] (0), pvr.tri.p[2] (1), pvr.tri.p[2] (2));
     viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p3, 0, 255, 0, "RightSide", 1); // Green
     viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p2, p3, 0, 255, 0, "LeftSide", 1);  // Green
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "RightSide", 1);
@@ -484,7 +484,7 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
   // search for the nearest neighbor
   std::vector<int> K;
   std::vector<float> K_dist;
-  mls_cloud_tree_->nearestKSearch (pcl::afront::convertAfrontPointTypeToAfrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
+  mls_cloud_tree_->nearestKSearch (pcl::afront::AfrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
 
   // use l1 and nearest neighbor to extend edge
   pcl::afront::AfrontGuidanceFieldPointType dp;
@@ -502,9 +502,9 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
   sp2.point.max_step_search_radius = sp1.point.max_step_search_radius + sp1.point.max_step;
   sp2.point.max_step = getMaxStep (p2, sp2.point.max_step_search_radius);
 
-  mp = pcl::afront::getMidPoint (p1, p2);
-  double d = pcl::afront::distPoint2Point (p1, p2);
-  max_edge_length_ = pcl::afront::distPoint2Point (p1, p2);
+  mp = (p1 + p2) / 2.0;
+  double d = (p2 - p1).norm ();
+  max_edge_length_ = (p2 - p1).norm ();
 
   v2 = norm.cross (v1).normalized ();
 
@@ -516,22 +516,22 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
   sp3.point.max_step_search_radius = std::max (sp1.point.max_step_search_radius, sp2.point.max_step_search_radius) + max_step;
   sp3.point.max_step = getMaxStep (p3, sp3.point.max_step_search_radius);
 
-  d = pcl::afront::distPoint2Point (p1, p3);
+  d = (p1 - p3).norm ();
   if (d > max_edge_length_)
     max_edge_length_ = d;
 
-  d = pcl::afront::distPoint2Point (p2, p3);
+  d = (p2 - p3).norm ();
   if (d > max_edge_length_)
     max_edge_length_ = d;
 
   // Align normals
-  pcl::afront::alignNormal (sp2.point, sp1.point);
-  pcl::afront::alignNormal (sp3.point, sp1.point);
+  pcl::alignNormals (sp2.point.getNormalVector3fMap (), sp1.point.getNormalVector3fMap ());
+  pcl::alignNormals (sp3.point.getNormalVector3fMap (), sp1.point.getNormalVector3fMap ());
 
   typename MeshTraits::FaceData fd;
   Eigen::Vector3f center = (p1 + p2 + p3) / 3;
   Eigen::Vector3f normal = ((p2 - p1).cross (p3 - p1)).normalized ();
-  pcl::afront::alignNormal (normal, sp1.point.getNormalVector3fMap ());
+  pcl::alignNormals (normal, sp1.point.getNormalVector3fMap ());
 
   fd.x = center (0);
   fd.y = center (1);
@@ -601,10 +601,10 @@ pcl::AfrontMesher<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_edg
   result.front.n[1] = p2.getNormalVector3fMap ();
 
   // Calculate the half edge length
-  result.front.length = pcl::afront::distPoint2Point (result.front.p[0], result.front.p[1]);
+  result.front.length = (result.front.p[0] - result.front.p[1]).norm ();
 
   // Get half edge midpoint
-  result.front.mp = pcl::afront::getMidPoint (result.front.p[0], result.front.p[1]);
+  result.front.mp = (result.front.p[0] + result.front.p[1]) / 2.0;
 
   // Calculate the grow direction vector
   result.front.d = getGrowDirection (result.front.p[0], result.front.mp, fd);
@@ -795,7 +795,7 @@ pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) con
     // Get predicted vertex
     Eigen::Vector3f p = front.mp + l * front.d;
     result.pv = samplePoint (p (0), p (1), p (2));
-    pcl::afront::alignNormal (result.pv.point, mesh_vertex_data_ptr_->at (afront.front.vi[0].get ()));
+    pcl::alignNormals (result.pv.point.getNormalVector3fMap (), mesh_vertex_data_ptr_->at (afront.front.vi[0].get ()).getNormalVector3fMap ());
     if (result.pv.mls.num_neighbors < required_neighbors_) // Maybe we should use the 5 * DOF that PCL uses
     {
       result.status = PredictVertexResults::InvalidMLSResults;
@@ -803,7 +803,7 @@ pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) con
     }
 
     // Check if the projected point is to far from the original point.
-    double dist = pcl::afront::distPoint2Point (result.pv.orig.getVector3fMap (), result.pv.point.getVector3fMap ());
+    double dist = (result.pv.orig.getVector3fMap () - result.pv.point.getVector3fMap ()).norm ();
     if (dist > front.max_step)
     {
       result.status = PredictVertexResults::InvalidProjection;
@@ -893,7 +893,7 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
 #ifdef AFRONTDEBUG
             fence_counter_ += 1;
             std::string fence_name = "fence" + static_cast<std::ostringstream *> (&(std::ostringstream () << fence_counter_))->str ();
-            viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (pcl::afront::convertEigenToPCL (chkpt), pcl::afront::convertEigenToPCL (endpt), 0, 255, 255, fence_name, 2); // orange
+            viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (pcl::PointXYZ (chkpt (0), chkpt (1), chkpt (2)), pcl::PointXYZ (endpt (0), endpt (1), endpt (2)), 0, 255, 255, fence_name, 2); // orange
             viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, fence_name, 2);
 #endif
           }
@@ -904,7 +904,7 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
       if (!chkpt_valid)
         continue;
 
-      double dist = pcl::afront::distPoint2Point (pvr.tri.p[2], chkpt);
+      double dist = (pvr.tri.p[2] - chkpt).norm ();
       results.verticies.push_back (vi);
       if (dist < 0.5 * pvr.afront.front.max_step)
       {
@@ -1024,7 +1024,7 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
         {
           // TODO: Should check if triangle is valid for these points. If both are then check distance
           //       otherwise use the one that creates a valid triangle.
-          if (pcl::afront::distPoint2Point (p1, pvr.tri.p[2]) < pcl::afront::distPoint2Point (p2, pvr.tri.p[2]))
+          if ((p1 - pvr.tri.p[2]).norm () < (p2 - pvr.tri.p[2]).norm ())
             index = 0;
           else
             index = 1;
@@ -1059,7 +1059,7 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
 #ifdef AFRONTDEBUG
   Eigen::Vector3f p;
   p = pvr.tri.p[2];
-  viewer_->addSphere (pcl::afront::convertEigenToPCL (p), AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step, 0, 255, 128, "ProxRadius", 1);
+  viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step, 0, 255, 128, "ProxRadius", 1);
   viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "ProxRadius", 1);
 #endif
 
@@ -1312,7 +1312,7 @@ pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) 
       if (results.found)
         p = results.tri.p[2];
 
-      viewer_->addSphere (pcl::afront::convertEigenToPCL (p), 0.1 * pvr.afront.front.max_step, 255, 255, 0, "Closest", 1);
+      viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), 0.1 * pvr.afront.front.max_step, 255, 255, 0, "Closest", 1);
 #endif
       return results;
     }
@@ -1591,11 +1591,11 @@ pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::
   area = 0.5 * top;
   result.aspect_ratio = (4.0 * area * std::sqrt (3)) / (result.A * result.A + result.B * result.B + result.C * result.C);
   result.normal = cross.normalized ();
-  pcl::afront::alignNormal (result.normal, front.n[0]);
+  pcl::alignNormals (result.normal, front.n[0]);
   assert (!std::isnan (result.normal[0]));
 
   // Lets check triangle and vertex normals
-  if (!pcl::afront::checkNormal (front.n[0], p3_normal, vertex_normal_tol_) || !pcl::afront::checkNormal (front.n[1], p3_normal, vertex_normal_tol_))
+  if (!pcl::checkNormalsEqual (front.n[0], p3_normal, vertex_normal_tol_) || !pcl::checkNormalsEqual (front.n[1], p3_normal, vertex_normal_tol_))
   {
     result.vertex_normals_valid = false;
     result.triangle_normal_valid = false;
@@ -1603,7 +1603,7 @@ pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::
   else
   {
     Eigen::Vector3f avg_normal = (front.n[0] + front.n[1] + p3_normal) / 3.0;
-    if (!pcl::afront::checkNormal (avg_normal, result.normal, triangle_normal_tol_))
+    if (!pcl::checkNormalsEqual (avg_normal, result.normal, triangle_normal_tol_))
       result.triangle_normal_valid = false;
   }
 

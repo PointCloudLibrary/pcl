@@ -115,6 +115,7 @@ set(common_incs
   include/pcl/common/projection_matrix.h
   include/pcl/common/colors.h
   include/pcl/common/feature_histogram.h
+  include/pcl/common/normals.h
 )
 
 set(common_incs_impl
@@ -141,6 +142,7 @@ set(common_incs_impl
   include/pcl/common/impl/generate.hpp
   include/pcl/common/impl/projection_matrix.hpp
   include/pcl/common/impl/accumulators.hpp
+  include/pcl/common/impl/normals.hpp
 )
 
 set(impl_incs
