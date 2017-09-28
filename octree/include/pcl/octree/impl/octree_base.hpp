@@ -79,7 +79,7 @@ namespace pcl
         assert(max_voxel_index_arg>0);
 
         // tree depth == bitlength of maxVoxels
-        tree_depth = std::max ( (std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (Log2 (max_voxel_index_arg))))), 0u);
+        tree_depth = std::min (static_cast<unsigned int> (OctreeKey::maxDepth), static_cast<unsigned int> (std::ceil (Log2 (max_voxel_index_arg))));
 
         // define depthMask_ by setting a single bit to 1 at bit position == tree depth
         depth_mask_ = (1 << (tree_depth - 1));
