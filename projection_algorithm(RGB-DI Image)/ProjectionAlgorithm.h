@@ -1,6 +1,7 @@
 #ifndef __ProjectionAlgorithm
 #define __ProjectionAlgorithm
 #include"header.h"
+
 class ProjectionAlgorithm
 {
 public:
