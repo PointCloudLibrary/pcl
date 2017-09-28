@@ -54,6 +54,7 @@ function build_lib ()
         -DBUILD_apps_modeler=OFF \
         -DBUILD_apps_optronic_viewer=OFF \
         -DBUILD_apps_point_cloud_editor=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -72,6 +73,7 @@ function build_examples ()
         -DBUILD_examples=ON \
         -DBUILD_tools=OFF \
         -DBUILD_apps=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -90,6 +92,7 @@ function build_tools ()
         -DBUILD_examples=OFF \
         -DBUILD_tools=ON \
         -DBUILD_apps=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -116,6 +119,7 @@ function build_apps ()
         -DBUILD_apps_modeler=ON \
         -DBUILD_apps_optronic_viewer=OFF \
         -DBUILD_apps_point_cloud_editor=ON \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -150,6 +154,7 @@ function build_lib_core ()
         -DBUILD_tools=OFF \
         -DBUILD_tracking=OFF \
         -DBUILD_visualization=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -205,6 +210,7 @@ function test_core ()
         -DBUILD_tests_segmentation=OFF \
         -DBUILD_tests_surface=OFF \
         -DBUILD_tests_visualization=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build and run tests
   make -j2 tests
@@ -260,6 +266,7 @@ function test_ext_1 ()
         -DBUILD_tests_segmentation=OFF \
         -DBUILD_tests_surface=ON \
         -DBUILD_tests_visualization=ON \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build and run tests
   make -j2 tests
@@ -315,6 +322,7 @@ function test_ext_2 ()
         -DBUILD_tests_segmentation=ON \
         -DBUILD_tests_surface=OFF \
         -DBUILD_tests_visualization=OFF \
+        -DWITH_VTK=OFF \
         $PCL_DIR
   # Build and run tests
   make -j2 tests
