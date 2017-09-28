@@ -1,6 +1,5 @@
 #include "ProjectionAlgorithm.h"
 
-
 ProjectionAlgorithm::ProjectionAlgorithm()
 :m_bx(0), m_by(0), m_bz(0)
 {
@@ -42,7 +41,7 @@ void ProjectionAlgorithm::fun0(const string &LaserPoints6D)
 		}
 	}
 	else
-		cout << "load data txt failure£¡" << endl;
+		cout << "load data txt failureÂ£Â¡" << endl;
 	number_Txt = m_vTxtPoints.size();
 	pcl::PointCloud<pcl::PointXYZRGB> cloudtmp;
 
@@ -129,7 +128,7 @@ void ProjectionAlgorithm::fun1(const string &LaserPoints6D)
 		}
 	}
 	else
-		cout << "load data txt failure£¡" << endl;
+		cout << "load data txt failureÂ£Â¡" << endl;
 	number_Txt = m_vTxtPoints.size();
 	pcl::PointCloud<pcl::PointXYZRGB> cloudtmp;
 
@@ -216,7 +215,7 @@ void ProjectionAlgorithm::fun2(const string &LaserPoints6D)
 		}
 	}
 	else
-		cout << "load data txt failure£¡" << endl;
+		cout << "load data txt failureÂ£Â¡" << endl;
 	number_Txt = m_vTxtPoints.size();
 	pcl::PointCloud<pcl::PointXYZRGB> cloudtmp;
 
