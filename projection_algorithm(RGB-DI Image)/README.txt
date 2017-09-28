@@ -2,10 +2,14 @@
 RGB-DI Image Generation Based on Point Cloud Projection Algorithm 
 ------------------------------------------------------------------------------------------------
 
-Author: Zengshuai Qiu
+Author: Zengshuai Qiu 
+		Yan Zhuang
+		Fei Yan
 
 Copyright :
       Zengshuai Qiu: ai_qzs@mail.dlut.edu.cn
+	  Yan Zhuang: zhuang@dlut.edu.cn
+	  Fei Yan: fyan@dlut.edu.cn
 
 Last update :
       20/09/2017
