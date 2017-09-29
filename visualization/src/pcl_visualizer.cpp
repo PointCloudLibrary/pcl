@@ -136,7 +136,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct(vtkSmartPointer<vtkRenderer>::New(), vtkSmartPointer<vtkRenderWindow>::New(), name, create_interactor);
+  construct (vtkSmartPointer<vtkRenderer>::New (), vtkSmartPointer<vtkRenderWindow>::New (), name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,12 +158,12 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct(argc, argv, vtkSmartPointer<vtkRenderer>::New(), vtkSmartPointer<vtkRenderWindow>::New(), name, style, create_interactor);
+  construct (argc, argv, vtkSmartPointer<vtkRenderer>::New (), vtkSmartPointer<vtkRenderWindow>::New (), name, style, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer(vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
-                                                 const std::string &name, const bool create_interactor)
+pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
+                                                  const std::string &name, const bool create_interactor)
   : interactor_ ()
   , update_fps_ (vtkSmartPointer<FPSCallback>::New ())
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
@@ -181,12 +181,12 @@ pcl::visualization::PCLVisualizer::PCLVisualizer(vtkSmartPointer<vtkRenderer> re
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct(ren, wind, name, create_interactor);
+  construct (ren, wind, name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-pcl::visualization::PCLVisualizer::PCLVisualizer(int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
-                                                 const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
+pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
+                                                  const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor)
   : interactor_ ()
   , update_fps_ (vtkSmartPointer<FPSCallback>::New ())
 #if !((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
@@ -204,7 +204,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer(int &argc, char **argv, vtkSmar
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct(argc, argv, ren, wind, name, style, create_interactor);
+  construct (argc, argv, ren, wind, name, style, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,139 +315,92 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct(vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, const bool create_interactor)
+void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, const bool create_interactor)
 {
   if (!ren)
-    PCL_ERROR("Passed pointer to renderer is 0");
+    PCL_ERROR ("Passed pointer to renderer is 0");
 
   if (!wind)
-    PCL_ERROR("Passed pointer to render window is 0");
+    PCL_ERROR ("Passed pointer to render window is 0");
   // Create a Renderer
-  ren->AddObserver(vtkCommand::EndEvent, update_fps_);
+  ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
-  rens_->AddItem(ren);
+  rens_->AddItem (ren);
 
   // FPS callback
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New();
+  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
   update_fps_->actor = txt;
   update_fps_->pcl_visualizer = this;
   update_fps_->decimated = false;
-  ren->AddActor(txt);
-  txt->SetInput("0 FPS");
+  ren->AddActor (txt);
+  txt->SetInput ("0 FPS");
 
   win_ = wind;
-  win_->SetWindowName(name.c_str());
+  win_->SetWindowName (name.c_str ());
 
   // Get screen size
-  int scr_size_x = win_->GetScreenSize()[0];
-  int scr_size_y = win_->GetScreenSize()[1];
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
   // Set the window size as 1/2 of the screen size
-  win_->SetSize(scr_size_x / 2, scr_size_y / 2);
+  win_->SetSize (scr_size_x / 2, scr_size_y / 2);
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
 
   // Add all renderers to the window
-  rens_->InitTraversal();
+  rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem()) != NULL)
-    win_->AddRenderer(renderer);
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+    win_->AddRenderer (renderer);
 
   // Set renderer window in case no interactor is created
-  style_->setRenderWindow(win_);
+  style_->setRenderWindow (win_);
 
   // Create the interactor style
-  style_->Initialize();
-  style_->setRendererCollection(rens_);
-  style_->setCloudActorMap(cloud_actor_map_);
-  style_->setShapeActorMap(shape_actor_map_);
-  style_->UseTimersOn();
-  style_->setUseVbos(use_vbos_);
+  style_->Initialize ();
+  style_->setRendererCollection (rens_);
+  style_->setCloudActorMap (cloud_actor_map_);
+  style_->setShapeActorMap (shape_actor_map_);
+  style_->UseTimersOn ();
+  style_->setUseVbos (use_vbos_);
 
   if (create_interactor)
-    createInteractor();
-
-  win_->SetWindowName(name.c_str());
+    createInteractor ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct(int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, PCLVisualizerInteractorStyle * style, const bool create_interactor)
+void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, PCLVisualizerInteractorStyle * style, const bool create_interactor)
 {
-  if (!ren)
-    PCL_ERROR("Passed pointer to renderer is 0");
-
-  if (!wind)
-    PCL_ERROR("Passed pointer to render window is 0");
-  ren->AddObserver(vtkCommand::EndEvent, update_fps_);
-  // Add it to the list of renderers
-  rens_->AddItem(ren);
-
-  // FPS callback
-  vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New();
-  update_fps_->actor = txt;
-  update_fps_->pcl_visualizer = this;
-  update_fps_->decimated = false;
-  ren->AddActor(txt);
-  txt->SetInput("0 FPS");
-
-  win_ = wind;
-  win_->SetWindowName(name.c_str());
-
-  // By default, don't use vertex buffer objects
-  use_vbos_ = false;
-
-  // Add all renderers to the window
-  rens_->InitTraversal();
-  vtkRenderer* renderer = NULL;
-  while ((renderer = rens_->GetNextItem()) != NULL)
-    win_->AddRenderer(renderer);
-
-  // Set renderer window in case no interactor is created
-  style_->setRenderWindow(wind);
-
-  // Create the interactor style
-  style_->Initialize();
-  style_->setRendererCollection(rens_);
-  style_->setCloudActorMap(cloud_actor_map_);
-  style_->setShapeActorMap(shape_actor_map_);
-  style_->UseTimersOn();
-
-  // Get screen size
-  int scr_size_x = win_->GetScreenSize()[0];
-  int scr_size_y = win_->GetScreenSize()[1];
-
+  construct (ren, wind, name, create_interactor);
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
   // Set default camera parameters
-  initCameraParameters();
+  initCameraParameters ();
 
   // Parse the camera settings and update the internal camera
-  camera_set_ = getCameraParameters(argc, argv);
+  camera_set_ = getCameraParameters (argc, argv);
   // Calculate unique camera filename for camera parameter saving/restoring
   if (!camera_set_)
   {
-    std::string camera_file = getUniqueCameraFile(argc, argv);
-    if (!camera_file.empty())
+    std::string camera_file = getUniqueCameraFile (argc, argv);
+    if (!camera_file.empty ())
     {
-      if (boost::filesystem::exists(camera_file) && style_->loadCameraParameters(camera_file))
+      if (boost::filesystem::exists (camera_file) && style_->loadCameraParameters (camera_file))
       {
         camera_file_loaded_ = true;
       }
       else
       {
-        style_->setCameraFile(camera_file);
+        style_->setCameraFile (camera_file);
       }
     }
   }
   // Set the window size as 1/2 of the screen size or the user given parameter
   if (!camera_set_ && !camera_file_loaded_)
   {
-    win_->SetSize(scr_size_x / 2, scr_size_y / 2);
-    win_->SetPosition(0, 0);
+    win_->SetSize (scr_size_x / 2, scr_size_y / 2);
+    win_->SetPosition (0, 0);
   }
-
-  if (create_interactor)
-    createInteractor();
-
-  win_->SetWindowName(name.c_str());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////

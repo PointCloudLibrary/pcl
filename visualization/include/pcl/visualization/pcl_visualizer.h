@@ -118,7 +118,7 @@ namespace pcl
           * \param[in] custom vtk render window
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
-        PCLVisualizer(vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "", const bool create_interactor = true);
+        PCLVisualizer (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "", const bool create_interactor = true);
 
         /** \brief PCL Visualizer constructor.
           * \param[in] argc
@@ -128,9 +128,9 @@ namespace pcl
           * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
           * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
-        PCLVisualizer(int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "",
-                      PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New(), 
-                      const bool create_interactor = true);
+        PCLVisualizer (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string &name = "",
+                       PCLVisualizerInteractorStyle* style = PCLVisualizerInteractorStyle::New (),
+                       const bool create_interactor = true);
 
 
         /** \brief PCL Visualizer destructor. */
@@ -1964,19 +1964,19 @@ namespace pcl
         * \param[in] custom vtk render window
         * \param[in] create_interactor if true (default), create an interactor, false otherwise
         */
-        void construct(vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, 
-                       const std::string &name, const bool create_interactor);
+        void construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
+                        const std::string &name, const bool create_interactor);
 
-      /** \brief Internal function for object construction
-        * \param[in] argc
-        * \param[in] argv
-        * \param[in] custom vtk renderer
-        * \param[in] custom vtk render window
-        * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
-        * \param[in] create_interactor if true (default), create an interactor, false otherwise
-        */
-        void construct(int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, 
-                       const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor );
+        /** \brief Internal function for object construction
+          * \param[in] argc
+          * \param[in] argv
+          * \param[in] custom vtk renderer
+          * \param[in] custom vtk render window
+          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
+          */
+        void construct (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
+                        const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
