@@ -315,7 +315,8 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, const bool create_interactor)
+void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, 
+                                                   const std::string & name, const bool create_interactor, const bool resize_window)
 {
   if (!ren)
     PCL_ERROR ("Passed pointer to renderer is 0");
@@ -337,12 +338,15 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
 
   win_ = wind;
   win_->SetWindowName (name.c_str ());
+  if (resize_window)
+  {
+    int scr_size_x = win_->GetScreenSize ()[0],
+      scr_size_y = win_->GetScreenSize ()[1];
+    win_->SetSize (scr_size_x / 2, scr_size_y / 2);
+    win_->SetPosition (0, 0);
+  }
+  // Set default camera parameters
 
-  // Get screen size
-  int scr_size_x = win_->GetScreenSize ()[0];
-  int scr_size_y = win_->GetScreenSize ()[1];
-  // Set the window size as 1/2 of the screen size
-  win_->SetSize (scr_size_x / 2, scr_size_y / 2);
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
@@ -371,10 +375,7 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
 /////////////////////////////////////////////////////////////////////////////////////////////
 void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, PCLVisualizerInteractorStyle * style, const bool create_interactor)
 {
-  construct (ren, wind, name, create_interactor);
-  int scr_size_x = win_->GetScreenSize ()[0];
-  int scr_size_y = win_->GetScreenSize ()[1];
-  // Set default camera parameters
+  construct (ren, wind, name, create_interactor, false);
   initCameraParameters ();
 
   // Parse the camera settings and update the internal camera
@@ -395,9 +396,10 @@ void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtk
       }
     }
   }
-  // Set the window size as 1/2 of the screen size or the user given parameter
   if (!camera_set_ && !camera_file_loaded_)
   {
+    int scr_size_x = win_->GetScreenSize ()[0],
+      scr_size_y = win_->GetScreenSize ()[1];
     win_->SetSize (scr_size_x / 2, scr_size_y / 2);
     win_->SetPosition (0, 0);
   }

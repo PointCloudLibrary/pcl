@@ -1965,7 +1965,7 @@ namespace pcl
         * \param[in] create_interactor if true (default), create an interactor, false otherwise
         */
         void construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
-                        const std::string &name, const bool create_interactor);
+                        const std::string &name, const bool create_interactor, const bool resize_window = true);
 
         /** \brief Internal function for object construction
           * \param[in] argc
