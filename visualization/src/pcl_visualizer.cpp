@@ -136,7 +136,15 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (vtkSmartPointer<vtkRenderer>::New (), name, create_interactor);
+  vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
+  setupRenderer (ren);
+  setupFPSCallback (ren);
+  setupRenderWindow (name);
+  setDefaultWindowSizeAndPos ();
+  setupStyle ();
+
+  if (create_interactor)
+    createInteractor ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,7 +166,21 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (argc, argv, vtkSmartPointer<vtkRenderer>::New (), name, create_interactor);
+  vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New ();
+  setupRenderer (ren);
+  setupFPSCallback (ren);
+  setupRenderWindow (name);
+  setupStyle ();
+  setupCamera (argc, argv);
+
+  if(!camera_set_ && !camera_file_loaded_)
+    setDefaultWindowSizeAndPos ();
+
+  if (create_interactor)
+    createInteractor ();
+
+  //window name should be reset due to its reset somewhere in camera initialization
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +203,14 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> r
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (ren, name, create_interactor);
+  setupRenderer (ren);
+  setupFPSCallback (ren);
+  setupRenderWindow (name);
+  setDefaultWindowSizeAndPos ();
+  setupStyle ();
+
+  if (create_interactor)
+    createInteractor ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +233,18 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSma
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (argc, argv, ren, name, create_interactor);
+  setupRenderer (ren);
+  setupFPSCallback (ren);
+  setupRenderWindow (name);
+  setupStyle ();
+  setupCamera (argc, argv);
+  if (!camera_set_ && !camera_file_loaded_)
+    setDefaultWindowSizeAndPos ();
+  if (create_interactor)
+    createInteractor ();
+
+  //window name should be reset due to its reset somewhere in camera initialization
+  win_->SetWindowName (name.c_str ());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,19 +355,21 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, 
-                                                   const std::string & name, const bool create_interactor, const bool resize_window)
+void pcl::visualization::PCLVisualizer::setupRenderer (vtkSmartPointer<vtkRenderer> ren)
 {
   if (!ren)
-    PCL_ERROR ("Passed pointer to renderer is 0");
+    PCL_ERROR ("Passed pointer to renderer is null");
 
-  if (!win_)
-    PCL_ERROR ("Pointer to render window is 0");
-  // Create a Renderer
   ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
   rens_->AddItem (ren);
+}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+void pcl::visualization::PCLVisualizer::setupFPSCallback (const vtkSmartPointer<vtkRenderer>& ren)
+{
+  if (!ren)
+    PCL_ERROR ("Passed pointer to renderer is null");
   // FPS callback
   vtkSmartPointer<vtkTextActor> txt = vtkSmartPointer<vtkTextActor>::New ();
   update_fps_->actor = txt;
@@ -335,17 +377,15 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
   update_fps_->decimated = false;
   ren->AddActor (txt);
   txt->SetInput ("0 FPS");
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void pcl::visualization::PCLVisualizer::setupRenderWindow (const std::string& name)
+{
+  if (!win_)
+    PCL_ERROR ("Pointer to render window is null");
 
   win_->SetWindowName (name.c_str ());
-  if (resize_window)
-  {
-    int scr_size_x = win_->GetScreenSize ()[0],
-      scr_size_y = win_->GetScreenSize ()[1];
-    win_->SetSize (scr_size_x / 2, scr_size_y / 2);
-    win_->SetPosition (0, 0);
-  }
-  // Set default camera parameters
-
 
   // By default, don't use vertex buffer objects
   use_vbos_ = false;
@@ -355,8 +395,15 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
   vtkRenderer* renderer = NULL;
   while ((renderer = rens_->GetNextItem ()) != NULL)
     win_->AddRenderer (renderer);
+}
 
-  // Set renderer window in case no interactor is created
+/////////////////////////////////////////////////////////////////////////////////////////////
+void pcl::visualization::PCLVisualizer::setupStyle ()
+{
+  if (!style_)
+    PCL_ERROR ("Pointer to style is null");
+
+  // Set rend erer window in case no interactor is created
   style_->setRenderWindow (win_);
 
   // Create the interactor style
@@ -366,15 +413,22 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
   style_->setShapeActorMap (shape_actor_map_);
   style_->UseTimersOn ();
   style_->setUseVbos (use_vbos_);
-
-  if (create_interactor)
-    createInteractor ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, const std::string & name, const bool create_interactor)
+void pcl::visualization::PCLVisualizer::setDefaultWindowSizeAndPos ()
 {
-  construct (ren, name, create_interactor, false);
+  if (!win_)
+    PCL_ERROR ("Pointer to render window is null");
+  int scr_size_x = win_->GetScreenSize ()[0],
+    scr_size_y = win_->GetScreenSize ()[1];
+  win_->SetSize (scr_size_x / 2, scr_size_y / 2);
+  win_->SetPosition (0, 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+void pcl::visualization::PCLVisualizer::setupCamera (int &argc, char **argv)
+{
   initCameraParameters ();
 
   // Parse the camera settings and update the internal camera
@@ -394,13 +448,6 @@ void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtk
         style_->setCameraFile (camera_file);
       }
     }
-  }
-  if (!camera_set_ && !camera_file_loaded_)
-  {
-    int scr_size_x = win_->GetScreenSize ()[0],
-      scr_size_y = win_->GetScreenSize ()[1];
-    win_->SetSize (scr_size_x / 2, scr_size_y / 2);
-    win_->SetPosition (0, 0);
   }
 }
 
