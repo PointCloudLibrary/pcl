@@ -128,7 +128,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , exit_main_loop_timer_callback_ ()
   , exit_callback_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ ()
+  , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
@@ -136,7 +136,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (const std::string &name, const
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (vtkSmartPointer<vtkRenderer>::New (), vtkSmartPointer<vtkRenderWindow>::New (), name, create_interactor);
+  construct (vtkSmartPointer<vtkRenderer>::New (), name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , exit_main_loop_timer_callback_ ()
   , exit_callback_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ ()
+  , win_ (vtkSmartPointer<vtkRenderWindow>::New ())
   , style_ (style)
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
@@ -158,7 +158,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (argc, argv, vtkSmartPointer<vtkRenderer>::New (), vtkSmartPointer<vtkRenderWindow>::New (), name, style, create_interactor);
+  construct (argc, argv, vtkSmartPointer<vtkRenderer>::New (), name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +173,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> r
   , exit_main_loop_timer_callback_ ()
   , exit_callback_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ ()
+  , win_ (wind)
   , style_ (vtkSmartPointer<pcl::visualization::PCLVisualizerInteractorStyle>::New ())
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
@@ -181,7 +181,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (vtkSmartPointer<vtkRenderer> r
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (ren, wind, name, create_interactor);
+  construct (ren, name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +196,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSma
   , exit_main_loop_timer_callback_ ()
   , exit_callback_ ()
   , rens_ (vtkSmartPointer<vtkRendererCollection>::New ())
-  , win_ ()
+  , win_ (wind)
   , style_ (style)
   , cloud_actor_map_ (new CloudActorMap)
   , shape_actor_map_ (new ShapeActorMap)
@@ -204,7 +204,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, vtkSma
   , camera_set_ ()
   , camera_file_loaded_ (false)
 {
-  construct (argc, argv, ren, wind, name, style, create_interactor);
+  construct (argc, argv, ren, name, create_interactor);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,14 +315,14 @@ pcl::visualization::PCLVisualizer::setupInteractor (
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, 
+void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> ren, 
                                                    const std::string & name, const bool create_interactor, const bool resize_window)
 {
   if (!ren)
     PCL_ERROR ("Passed pointer to renderer is 0");
 
-  if (!wind)
-    PCL_ERROR ("Passed pointer to render window is 0");
+  if (!win_)
+    PCL_ERROR ("Pointer to render window is 0");
   // Create a Renderer
   ren->AddObserver (vtkCommand::EndEvent, update_fps_);
   // Add it to the list of renderers
@@ -336,7 +336,6 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
   ren->AddActor (txt);
   txt->SetInput ("0 FPS");
 
-  win_ = wind;
   win_->SetWindowName (name.c_str ());
   if (resize_window)
   {
@@ -373,9 +372,9 @@ void pcl::visualization::PCLVisualizer::construct (vtkSmartPointer<vtkRenderer> 
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind, const std::string & name, PCLVisualizerInteractorStyle * style, const bool create_interactor)
+void pcl::visualization::PCLVisualizer::construct (int & argc, char ** argv, vtkSmartPointer<vtkRenderer> ren, const std::string & name, const bool create_interactor)
 {
-  construct (ren, wind, name, create_interactor, false);
+  construct (ren, name, create_interactor, false);
   initCameraParameters ();
 
   // Parse the camera settings and update the internal camera

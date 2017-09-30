@@ -1965,7 +1965,7 @@ namespace pcl
         * \param[in] create_interactor if true, create an interactor, false otherwise
         * \param[in] resize_window if true(default), resize window size to half of screen width and height and position to (0, 0), false otherwise
         */
-        void construct (vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
+        void construct (vtkSmartPointer<vtkRenderer> ren,
                         const std::string &name, const bool create_interactor, const bool resize_window = true);
 
         /** \brief Internal function for object construction
@@ -1974,10 +1974,10 @@ namespace pcl
           * \param[in] custom vtk renderer
           * \param[in] custom vtk render window
           * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
-          * \param[in] create_interactor if true , create an interactor, false otherwise
+          * \param[in] create_interactor if true (default), create an interactor, false otherwise
           */
-        void construct (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren, vtkSmartPointer<vtkRenderWindow> wind,
-                        const std::string &name, PCLVisualizerInteractorStyle* style, const bool create_interactor);
+        void construct (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren,
+                        const std::string &name, const bool create_interactor);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
