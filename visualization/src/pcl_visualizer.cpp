@@ -420,8 +420,8 @@ void pcl::visualization::PCLVisualizer::setDefaultWindowSizeAndPos ()
 {
   if (!win_)
     PCL_ERROR ("Pointer to render window is null");
-  int scr_size_x = win_->GetScreenSize ()[0],
-    scr_size_y = win_->GetScreenSize ()[1];
+  int scr_size_x = win_->GetScreenSize ()[0];
+  int scr_size_y = win_->GetScreenSize ()[1];
   win_->SetSize (scr_size_x / 2, scr_size_y / 2);
   win_->SetPosition (0, 0);
 }
