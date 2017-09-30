@@ -106,17 +106,15 @@ pcl::BilateralUpsampling<PointInT, PointOutT>::performProcessing (PointCloudOut 
         for (int x_w = start_window_x; x_w < end_window_x; ++ x_w)
           for (int y_w = start_window_y; y_w < end_window_y; ++ y_w)
           {
-            float dx = float (x - x_w),
-                dy = float (y - y_w);
-
-            float val_exp_depth = val_exp_depth_matrix(dx+window_size_, dy+window_size_);
-
-            float d_color = static_cast<float> (
+            float val_exp_depth = val_exp_depth_matrix (static_cast<Eigen::MatrixXf::Index> (x - x_w + window_size_),
+                                                        static_cast<Eigen::MatrixXf::Index> (y - y_w + window_size_));
+            
+            Eigen::VectorXf::Index d_color = static_cast<Eigen::VectorXf::Index> (
                 abs (input_->points[y_w * input_->width + x_w].r - input_->points[y * input_->width + x].r) +
                 abs (input_->points[y_w * input_->width + x_w].g - input_->points[y * input_->width + x].g) +
                 abs (input_->points[y_w * input_->width + x_w].b - input_->points[y * input_->width + x].b));
 
-            float val_exp_rgb = val_exp_rgb_vector (static_cast<Eigen::VectorXf::Index> (d_color));
+            float val_exp_rgb = val_exp_rgb_vector (d_color);
 
             if (pcl_isfinite (input_->points[y_w*input_->width + x_w].z))
             {
