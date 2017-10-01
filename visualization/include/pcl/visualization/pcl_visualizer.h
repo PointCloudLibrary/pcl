@@ -1959,25 +1959,34 @@ namespace pcl
         vtkSmartPointer<vtkRenderWindowInteractor> interactor_;
 #endif
       private:
-      /** \brief Internal function for object construction
-        * \param[in] custom vtk renderer
-        * \param[in] custom vtk render window
-        * \param[in] create_interactor if true, create an interactor, false otherwise
-        * \param[in] resize_window if true(default), resize window size to half of screen width and height and position to (0, 0), false otherwise
-        */
-        void construct (vtkSmartPointer<vtkRenderer> ren,
-                        const std::string &name, const bool create_interactor, const bool resize_window = true);
+        /** \brief Internal function for renderer setup
+         * \param[in] vtk renderer
+         */
+        void setupRenderer (vtkSmartPointer<vtkRenderer> ren);
 
-        /** \brief Internal function for object construction
-          * \param[in] argc
-          * \param[in] argv
-          * \param[in] custom vtk renderer
-          * \param[in] custom vtk render window
-          * \param[in] style interactor style (defaults to PCLVisualizerInteractorStyle)
-          * \param[in] create_interactor if true (default), create an interactor, false otherwise
-          */
-        void construct (int &argc, char **argv, vtkSmartPointer<vtkRenderer> ren,
-                        const std::string &name, const bool create_interactor);
+        /** \brief Internal function for setting up FPS callback
+         * \param[in] vtk renderer
+         */
+        void setupFPSCallback (const vtkSmartPointer<vtkRenderer>& ren);
+
+        /** \brief Internal function for setting up render window
+         * \param[in] name the window name
+         */
+        void setupRenderWindow (const std::string& name);
+
+        /** \brief Internal function for setting up interactor style
+         */
+        void setupStyle ();
+
+        /** \brief Internal function for setting the default render window size and position on screen
+         */
+        void setDefaultWindowSizeAndPos ();
+
+        /** \brief Internal function for setting up camera parameters
+         * \param[in] argc
+         * \param[in] argv
+         */
+        void setupCamera (int &argc, char **argv);
 
         struct PCL_EXPORTS ExitMainLoopTimerCallback : public vtkCommand
         {
