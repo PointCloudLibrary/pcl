@@ -72,14 +72,14 @@ TEST (BoxClipper3D, Filters)
   ExtractIndices<PointXYZ> extract_indices;
   vector<int> indices;
 
-  BoxClipper3D<PointXYZ> boxClipper3D(Affine3f::Identity());
-  boxClipper3D.clipPointCloud3D(*input, indices);
+  BoxClipper3D<PointXYZ> boxClipper3D (Affine3f::Identity ());
+  boxClipper3D.clipPointCloud3D (*input, indices);
 
   PointCloud<PointXYZ> cloud_out;
 
-  extract_indices.setInputCloud(input);
-  extract_indices.setIndices(boost::make_shared<vector<int> >(indices));
-  extract_indices.filter(cloud_out);
+  extract_indices.setInputCloud (input);
+  extract_indices.setIndices (boost::make_shared<vector<int> > (indices));
+  extract_indices.filter (cloud_out);
 
   EXPECT_EQ (int (indices.size ()), 9);
   EXPECT_EQ (int (cloud_out.size ()), 9);
@@ -87,28 +87,28 @@ TEST (BoxClipper3D, Filters)
   EXPECT_EQ (int (cloud_out.height), 1);
 
   // Translate points by 1 in Y-axis ...
-  Affine3f t(Translation3f(0.0f, 1.0f, 0.0f));
-  boxClipper3D.setTransformation(t);
-  boxClipper3D.clipPointCloud3D(*input, indices);
+  Affine3f t (Translation3f (0.0f, 1.0f, 0.0f));
+  boxClipper3D.setTransformation (t);
+  boxClipper3D.clipPointCloud3D (*input, indices);
 
   EXPECT_EQ (int (indices.size ()), 5);
 
   // ... then rotate points +45 in Y-Axis
-  t.rotate(AngleAxisf(45.0f * float (M_PI) / 180.0f, Vector3f::UnitY()));
-  boxClipper3D.setTransformation(t);
-  boxClipper3D.clipPointCloud3D(*input, indices);
+  t.rotate (AngleAxisf (45.0f * float (M_PI) / 180.0f, Vector3f::UnitY ()));
+  boxClipper3D.setTransformation (t);
+  boxClipper3D.clipPointCloud3D (*input, indices);
   EXPECT_EQ (int (indices.size ()), 1);
 
   // ... then rotate points -45 in Z-axis
-  t.rotate(AngleAxisf(-45.0f * float (M_PI) / 180.0f, Vector3f::UnitZ()));
-  boxClipper3D.setTransformation(t);
-  boxClipper3D.clipPointCloud3D(*input, indices);
+  t.rotate (AngleAxisf (-45.0f * float (M_PI) / 180.0f, Vector3f::UnitZ ()));
+  boxClipper3D.setTransformation (t);
+  boxClipper3D.clipPointCloud3D (*input, indices);
   EXPECT_EQ (int (indices.size ()), 3);
 
   // ... then scale points by 2
-  t.scale(2.0f);
-  boxClipper3D.setTransformation(t);
-  boxClipper3D.clipPointCloud3D(*input, indices);
+  t.scale (2.0f);
+  boxClipper3D.setTransformation (t);
+  boxClipper3D.clipPointCloud3D (*input, indices);
   EXPECT_EQ (int (indices.size ()), 1);
 }
 

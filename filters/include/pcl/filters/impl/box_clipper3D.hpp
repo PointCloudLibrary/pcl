@@ -110,9 +110,9 @@ pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn, PointT& pointO
 template<typename PointT> bool
 pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  Eigen::Vector4f point_coordinates(transformation_.matrix()
-    * point.getVector4fMap());
-  return (point_coordinates.array().abs() <= 1).all();
+  Eigen::Vector4f point_coordinates (transformation_.matrix ()
+    * point.getVector4fMap ());
+  return (point_coordinates.array ().abs () <= 1).all ();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -195,7 +195,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 template<typename PointT> void
 pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
 {
-  clipped.clear();
+  clipped.clear ();
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());
