@@ -107,24 +107,12 @@ pcl::BoxClipper3D<PointT>::transformPoint (const PointT& pointIn, PointT& pointO
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ToDo use product on point.getVector3fMap () and transformatio_.col (i) to use the SSE advantages of eigen
-// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/#an-introduction-to-matrices
 template<typename PointT> bool
 pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
 {
-  Eigen::Matrix4f mat = transformation_.matrix(); 
-  return  (fabs(mat(0,0) * point.x +
-                mat(0,1) * point.y +
-                mat(0,2) * point.z +
-                mat(0,3)) <= 1 &&
-           fabs(mat(1,0) * point.x +
-                mat(1,1) * point.y +
-                mat(1,2) * point.z +
-                mat(1,3)) <= 1 &&
-           fabs(mat(2,0) * point.x +
-                mat(2,1) * point.y +
-                mat(2,2) * point.z +
-                mat(2,3)) <= 1 );
+  Eigen::Vector4f point_coordinates(transformation_.matrix()
+    * point.getVector4fMap());
+  return (point_coordinates.array().abs() <= 1).all();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -207,6 +195,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 template<typename PointT> void
 pcl::BoxClipper3D<PointT>::clipPointCloud3D (const pcl::PointCloud<PointT>& cloud_in, std::vector<int>& clipped, const std::vector<int>& indices) const
 {
+  clipped.clear();
   if (indices.empty ())
   {
     clipped.reserve (cloud_in.size ());

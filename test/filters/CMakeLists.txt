@@ -46,6 +46,9 @@ if (build)
                      FILES test_filters.cpp
                      LINK_WITH pcl_gtest pcl_filters pcl_io pcl_sample_consensus pcl_kdtree pcl_features pcl_segmentation
                      ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/milk_cartoon_all_small_clorox.pcd")
+        PCL_ADD_TEST(filters_clipper test_clipper
+                     FILES test_clipper.cpp
+                     LINK_WITH pcl_gtest pcl_filters)
       endif (BUILD_segmentation)
     endif (BUILD_features)
   endif (BUILD_io)
