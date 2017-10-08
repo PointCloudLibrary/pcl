@@ -75,7 +75,7 @@ below:
 .. image:: images/vfh_recognition/scene_segmented.jpg
 
 
-Since we're only trying to cover the explicity training/testing of VFH
+Since we're only trying to cover the explicit training/testing of VFH
 signatures in this tutorial, we provide a set of datasets already collected at:
 `vfh_recognition_tutorial_data.tbz
 <https://raw.github.com/PointCloudLibrary/data/master/tutorials/vfh_recognition/vfh_recognition_tutorial_data.tbz>`_.
