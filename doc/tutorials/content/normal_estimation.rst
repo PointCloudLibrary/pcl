@@ -144,7 +144,7 @@ representation. To better illustrate this issue, the figure below presents the
 effects of selecting a smaller scale (i.e., small **r** or **k**) versus a
 larger scale (i.e., large **r** or **k**). The left part of the figures depicts
 a reasonable well chosen scale factor, with estimated surface normals
-approximatively perpendicular for the two planar surfaces and small edges
+approximately perpendicular for the two planar surfaces and small edges
 visible all across the table. If the scale factor however is too big (right
 part), and thus the set of neighbors is larger covering points from adjacent
 surfaces, the estimated point feature representations get distorted, with

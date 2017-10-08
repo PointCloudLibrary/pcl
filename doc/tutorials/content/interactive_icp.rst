@@ -29,7 +29,7 @@ Subdivide the original mesh to make it more dense :
 .. image:: images/interactive_icp/add_sub.png
   :height: 500
 
-Configure the subdivision to 2 or 3 for example : dont forget to apply the modifier
+Configure the subdivision to 2 or 3 for example : don't forget to apply the modifier
 
 .. image:: images/interactive_icp/sub2.png
   :height: 203
@@ -73,7 +73,7 @@ The bool will help us know when the user asks for the next iteration of ICP
    :language: cpp
    :lines: 14-24
 
-This functions takes the reference of a 4x4 matrix and prints the rigid transformation in an human 
+This function takes the reference of a 4x4 matrix and prints the rigid transformation in an human
 readable way.
 
 .. literalinclude:: sources/interactive_icp/interactive_icp.cpp
@@ -182,7 +182,7 @@ and we set max iterations to 1 in lines 90-93.
 As before we check if ICP as converged, if not we exit the program.
 **printf("\033[11A");** is a little trick to go up 11 lines in the terminal to write
 over the last matrix displayed. In short it allows to replace text instead of writing
-new lines; making the ouptut more readable.
+new lines; making the output more readable.
 We increment **iterations** to update the text value in the visualizer.
 
 Now we want to display the rigid transformation from the original transformed point cloud to
