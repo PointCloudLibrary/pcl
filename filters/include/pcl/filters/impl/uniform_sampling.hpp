@@ -48,7 +48,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[pcl::%s::detectKeypoints] No input dataset given!\n", getClassName ().c_str ());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
     output.points.clear ();
     return;
@@ -79,7 +79,7 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
   // Set up the division multiplier
   divb_mul_ = Eigen::Vector4i (1, div_b_[0], div_b_[0] * div_b_[1], 0);
 
-  Filter<PointT>::removed_indices_->clear();
+  Filter<PointT>::removed_indices_->clear ();
   // First pass: build a set of leaves with the point index closest to the leaf center
   for (size_t cp = 0; cp < indices_->size (); ++cp)
   {
@@ -126,6 +126,10 @@ pcl::UniformSampling<PointT>::applyFilter (PointCloud &output)
       }
 
       leaf.idx = (*indices_)[cp];
+    }
+    else if (Filter<PointT>::extract_removed_indices_)
+    {
+      Filter<PointT>::removed_indices_->push_back ((*indices_)[cp]);
     }
   }
 
