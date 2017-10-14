@@ -61,6 +61,18 @@
 # define pcl_close(fd)               _close(fd)
 # define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
 # define pcl_read(fd,dest,size)      _read(fd,dest,size)
+/* ssize_t is also not available (copy/paste from MinGW) */
+#ifdef _MSC_VER
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
+#undef ssize_t
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
+typedef int ssize_t;
+#endif /* _WIN64 */
+#endif /* _SSIZE_T_DEFINED */
+#endif /* _MSC_VER */
 #else
 # include <sys/mman.h>
 # define pcl_open                    open

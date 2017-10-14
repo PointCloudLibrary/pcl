@@ -62,11 +62,6 @@
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
 #endif
-
-#ifdef _MSC_VER
-typedef SSIZE_T ssize_t;
-#endif
-
 #include <boost/version.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
