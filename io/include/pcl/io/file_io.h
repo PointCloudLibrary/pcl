@@ -45,7 +45,6 @@
 #include <sstream>
 #include <pcl/PolygonMesh.h>
 #include <pcl/TextureMesh.h>
-#include <boost/algorithm/string.hpp>
 
 namespace pcl
 {

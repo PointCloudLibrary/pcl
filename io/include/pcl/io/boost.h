@@ -73,7 +73,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>
-#include <boost/interprocess/sync/file_lock.hpp>
 #if BOOST_VERSION >= 104900
 #include <boost/interprocess/permissions.hpp>
 #endif
@@ -82,6 +81,10 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #endif
+#endif
+#ifndef Q_MOC_RUN
+#include <boost/algorithm/string.hpp>
+#include <boost/interprocess/sync/file_lock.hpp>
 #endif
 #endif    // _PCL_IO_BOOST_H_
 
