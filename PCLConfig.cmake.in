@@ -183,6 +183,10 @@ endmacro(find_qhull)
 
 #remove this as soon as libopenni is shipped with FindOpenni.cmake
 macro(find_openni)
+  if(PCL_FIND_QUIETLY)
+    set(openni_FIND_QUIETLY TRUE)
+  endif()
+
   if(NOT OPENNI_ROOT AND ("@HAVE_OPENNI@" STREQUAL "TRUE"))
     set(OPENNI_INCLUDE_DIRS_HINT "@OPENNI_INCLUDE_DIRS@")
     get_filename_component(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@" PATH)
