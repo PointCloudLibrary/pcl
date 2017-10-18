@@ -41,9 +41,9 @@
 #if defined __GNUC__
 #  pragma GCC system_header 
 #endif
-#ifndef __CUDACC__
 //https://bugreports.qt-project.org/browse/QTBUG-22829
 #ifndef Q_MOC_RUN
+#ifndef __CUDACC__
 #include <boost/version.hpp>
 #include <boost/numeric/conversion/cast.hpp>
 #include <boost/thread/mutex.hpp>
@@ -63,17 +63,13 @@
 #include <boost/mpl/joint_view.hpp>
 #include <boost/mpl/transform.hpp>
 #include <boost/mpl/vector.hpp>
-#include <boost/algorithm/string.hpp>
-#ifndef Q_MOC_RUN
 #include <boost/date_time/posix_time/posix_time.hpp>
-#endif
 #if BOOST_VERSION >= 104700
 #include <boost/chrono.hpp>
 #endif
 #include <boost/tokenizer.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_array.hpp>
-#include <boost/interprocess/sync/file_lock.hpp>
 #if BOOST_VERSION >= 104900
 #include <boost/interprocess/permissions.hpp>
 #endif
@@ -82,6 +78,8 @@
 #include <boost/signals2.hpp>
 #include <boost/signals2/slot.hpp>
 #endif
+#include <boost/algorithm/string.hpp>
+#include <boost/interprocess/sync/file_lock.hpp>
 #endif
 #endif    // _PCL_IO_BOOST_H_
 
