@@ -1,5 +1,5 @@
 ### ---[ PCL global CMake
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
 if(POLICY CMP0017)
   # Do not include files in CMAKE_MODULE_PATH from files
@@ -101,12 +101,14 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
 # C++11 support
-option(PCL_ENABLE_C++11 "Enable C++11 features" FALSE)
-if(PCL_ENABLE_C++11)
-  set (CMAKE_CXX_STANDARD 11)
-  set (CMAKE_CXX_STANDARD_REQUIRED ON)
-  set (HAVE_CXX11 ON)
-endif(PCL_ENABLE_C++11)
+if (CMAKE_VERSION VERSION_GREATER "3.1.0" OR CMAKE_VERSION VERSION_EQUAL "3.1.0")
+  option(PCL_ENABLE_C++11 "Enable C++11 features" FALSE)
+  if(PCL_ENABLE_C++11)
+    set (CMAKE_CXX_STANDARD 11)
+    set (CMAKE_CXX_STANDARD_REQUIRED ON)
+    set (HAVE_CXX11 ON)
+  endif(PCL_ENABLE_C++11)
+endif ()
 
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
