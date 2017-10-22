@@ -197,9 +197,9 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
       const uint32_t& sv_label = sv_adjacency_list_[*sv_itr];
       current_seg_label = sv_label_to_seg_label_map_[sv_label];
       largest_neigh_seg_label = current_seg_label;
-      largest_neigh_size = seg_label_to_sv_list_map_[current_seg_label].size ();
+      largest_neigh_size = static_cast<uint32_t>(seg_label_to_sv_list_map_[current_seg_label].size ());
 
-      const uint32_t& nr_neighbors = seg_label_to_neighbor_set_map_[current_seg_label].size ();
+      const uint32_t& nr_neighbors = static_cast<uint32_t>(seg_label_to_neighbor_set_map_[current_seg_label].size ());
       if (nr_neighbors == 0)
         continue;
 
@@ -215,7 +215,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
           if (seg_label_to_sv_list_map_[*neighbors_itr].size () >= largest_neigh_size)
           {
             largest_neigh_seg_label = *neighbors_itr;
-            largest_neigh_size = seg_label_to_sv_list_map_[*neighbors_itr].size ();
+            largest_neigh_size = static_cast<uint32_t>(seg_label_to_sv_list_map_[*neighbors_itr].size ());
           }
         }
 

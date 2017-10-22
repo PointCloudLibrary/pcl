@@ -228,7 +228,7 @@ namespace pcl
             for (size_t i = 0; i < weights.size (); ++i)
             {
               if (weights[i] > std::numeric_limits<double>::epsilon ())
-                model_pt_indices_->push_back (i);
+                model_pt_indices_->push_back (static_cast<int>(i));
             }
             use_directed_weights_ = directed_weights;
           }

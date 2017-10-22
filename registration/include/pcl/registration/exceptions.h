@@ -42,6 +42,8 @@
 
 #include <pcl/exceptions.h>
 
+#pragma warning(disable: 4275)
+
 namespace pcl
 {
   /** \class SolverDidntConvergeException

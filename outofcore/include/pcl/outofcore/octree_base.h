@@ -146,7 +146,7 @@ namespace pcl
      *
      */
     template<typename ContainerT = OutofcoreOctreeDiskContainer<pcl::PointXYZ>, typename PointT = pcl::PointXYZ>
-    class OutofcoreOctreeBase
+    class OutofcoreOctreeBase : private boost::noncopyable
     {
       friend class OutofcoreOctreeBaseNode<ContainerT, PointT>;
       friend class pcl::outofcore::OutofcoreIteratorBase<PointT, ContainerT>;
@@ -569,16 +569,6 @@ namespace pcl
       protected:
         void
         init (const boost::uint64_t& depth, const Eigen::Vector3d& min, const Eigen::Vector3d& max, const boost::filesystem::path& root_name, const std::string& coord_sys);
-
-        OutofcoreOctreeBase (OutofcoreOctreeBase &rval);
-
-        OutofcoreOctreeBase (const OutofcoreOctreeBase &rval);
-
-        OutofcoreOctreeBase&
-        operator= (OutofcoreOctreeBase &rval);
-
-        OutofcoreOctreeBase&
-        operator= (const OutofcoreOctreeBase &rval);
 
         inline OutofcoreNodeType*
         getRootNode ()

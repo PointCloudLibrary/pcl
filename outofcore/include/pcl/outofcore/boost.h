@@ -54,5 +54,6 @@
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/core/noncopyable.hpp>
 
 #endif //PCL_OUTOFCORE_BOOST_H_

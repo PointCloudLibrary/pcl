@@ -854,7 +854,7 @@ pcl::transformPlane (const pcl::ModelCoefficients::Ptr plane_in,
   pcl::transformPlane (v_plane_in, v_plane_in, transformation);
   plane_out->values.resize (4);
   for (int i = 0; i < 4; i++)
-    plane_in->values[i] = v_plane_in[i];
+    plane_in->values[i] = static_cast<float>(v_plane_in[i]);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

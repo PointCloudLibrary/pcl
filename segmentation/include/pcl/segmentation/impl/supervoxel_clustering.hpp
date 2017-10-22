@@ -361,7 +361,7 @@ pcl::SupervoxelClustering<PointT>::createSupervoxelHelpers (std::vector<int> &se
   supervoxel_helpers_.clear ();
   for (size_t i = 0; i < seed_indices.size (); ++i)
   {
-    supervoxel_helpers_.push_back (new SupervoxelHelper(i+1,this));
+    supervoxel_helpers_.push_back (new SupervoxelHelper(static_cast<uint32_t>(i+1),this));
     //Find which leaf corresponds to this seed index
     LeafContainerT* seed_leaf = adjacency_octree_->at(seed_indices[i]);//adjacency_octree_->getLeafContainerAtPoint (seed_points[i]);
     if (seed_leaf)

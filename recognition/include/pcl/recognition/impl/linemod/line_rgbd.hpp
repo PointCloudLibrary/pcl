@@ -62,7 +62,7 @@ template <typename PointXYZT, typename PointRGBT> bool
 pcl::LineRGBD<PointXYZT, PointRGBT>::readLTMHeader (int fd, pcl::io::TARHeader &header)
 {
   // Read in the header
-  int result = static_cast<int> (::read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
+  int result = static_cast<int> (::_read (fd, reinterpret_cast<char*> (&header.file_name[0]), 512));
   if (result == -1)
     return (false);
 
@@ -128,7 +128,7 @@ pcl::LineRGBD<PointXYZT, PointRGBT>::loadTemplates (const std::string &file_name
 
       unsigned int fsize = ltm_header.getFileSize ();
       char *buffer = new char[fsize];
-      int result = static_cast<int> (::read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
+      int result = static_cast<int> (::_read (ltm_fd, reinterpret_cast<char*> (&buffer[0]), fsize));
       if (result == -1)
       {
         delete [] buffer;

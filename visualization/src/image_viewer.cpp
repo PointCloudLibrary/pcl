@@ -1093,22 +1093,22 @@ pcl::visualization::ImageViewerInteractorStyle::OnChar ()
   }
 
   vtkImageProperty *property = image_prop->GetProperty ();
-#endif
 
   switch (Interactor->GetKeyCode ())
   {
-#if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION > 10))
     case 'r':
     case 'R':
       property->SetColorLevel (127.5);
       property->SetColorWindow (255);
       this->Interactor->Render ();
       break;
-#endif
     default:
       Superclass::OnChar ();
       break;
   }
+#else
+  Superclass::OnChar ();
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

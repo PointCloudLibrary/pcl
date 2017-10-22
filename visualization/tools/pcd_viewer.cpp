@@ -621,12 +621,12 @@ main (int argc, char** argv)
       {
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
         {
-          rgb_idx = f + 1;
+          rgb_idx = int(f + 1);
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
         }
         else if (cloud->fields[f].name == "label")
         {
-          label_idx = f + 1;
+          label_idx = int(f + 1);
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud, !use_optimal_l_colors));
         }
         else
