@@ -37,6 +37,7 @@
 #define PCL_CLOUD_VIEWER_H_
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis
+#include <boost/move/unique_ptr.hpp> // unique ptr for pre-C++11
 
 #include <string>
 
@@ -199,7 +200,7 @@ namespace pcl
       private:
         /** \brief Private implementation. */
         struct CloudViewer_impl;
-        std::unique_ptr<CloudViewer_impl> impl_;
+	boost::movelib::unique_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
