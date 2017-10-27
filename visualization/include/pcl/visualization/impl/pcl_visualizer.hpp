@@ -715,6 +715,71 @@ pcl::visualization::PCLVisualizer::addText3D (
   return (true);
 }
 
+//////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::addText3D (
+  const std::string &text,
+  const PointT& position,
+  double orientation[3],
+  double textScale,
+  double r,
+  double g,
+  double b,
+  const std::string &id,
+  int viewport)
+{
+  std::string tid;
+  if (id.empty ())
+    tid = text;
+  else
+    tid = id;
+
+  if (contains (tid))
+  {
+    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
+  textSource->SetText (text.c_str());
+  textSource->Update ();
+
+  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  textMapper->SetInputConnection (textSource->GetOutputPort ());
+
+  // Since each follower may follow a different camera, we need different followers
+  rens_->InitTraversal ();
+  vtkRenderer* renderer = NULL;
+  int i = 0;
+  while ((renderer = rens_->GetNextItem ()) != NULL)
+  {
+    // Should we add the actor to all renderers or just to i-nth renderer?
+    if (viewport == 0 || viewport == i)
+    {
+      vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
+      textActor->SetMapper (textMapper);
+      textActor->SetPosition (position.x, position.y, position.z);
+      textActor->SetScale (textScale);
+      textActor->GetProperty ()->SetColor (r, g, b);
+      textActor->SetOrientation (orientation);
+
+      renderer->AddActor (textActor);
+      renderer->Render ();
+
+      // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
+      // for multiple viewport
+      std::string alternate_tid = tid;
+      alternate_tid.append(i, '*');
+
+      (*shape_actor_map_)[(viewport == 0) ? tid : alternate_tid] = textActor;
+    }
+
+    ++i;
+  }
+
+  return (true);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointNT> bool
 pcl::visualization::PCLVisualizer::addPointCloudNormals (
