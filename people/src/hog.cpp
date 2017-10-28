@@ -418,7 +418,8 @@ pcl::people::HOG::acosTable () const
 {
   int i, n=25000, n2=n/2; float t, ni;
   static float a[25000]; static bool init=false;
-  if( init ) return a+n2; ni = 2.02f/(float) n;
+  if( init ) return a+n2;
+  ni = 2.02f/(float) n;
   for( i=0; i<n; i++ ) {
     t = i*ni - 1.01f;
     t = t<-1 ? -1 : (t>1 ? 1 : t);

@@ -96,13 +96,13 @@ namespace pcl
       template<typename T> void
       expandBoundingBoxToContainPoint (T bbox[6], const T p[3])
       {
-             if ( p[0] < bbox[0] ) bbox[0] = p[0];
+        if      ( p[0] < bbox[0] ) bbox[0] = p[0];
         else if ( p[0] > bbox[1] ) bbox[1] = p[0];
 
-             if ( p[1] < bbox[2] ) bbox[2] = p[1];
+        if      ( p[1] < bbox[2] ) bbox[2] = p[1];
         else if ( p[1] > bbox[3] ) bbox[3] = p[1];
 
-             if ( p[2] < bbox[4] ) bbox[4] = p[2];
+        if      ( p[2] < bbox[4] ) bbox[4] = p[2];
         else if ( p[2] > bbox[5] ) bbox[5] = p[2];
       }
 
