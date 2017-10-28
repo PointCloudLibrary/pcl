@@ -263,6 +263,10 @@ namespace pcl
     out = in;
   }
 
+  /** \brief Convert a XYZRGB point type to a XYZI
+  * \param[in] in the input XYZRGB point
+  * \param[out] out the output XYZI point
+  */
   template<> inline void
   ConvertPoint (const PointXYZRGB& in,
                 PointXYZI&         out)
@@ -321,7 +325,7 @@ namespace pcl
   */
   template<> inline void
   ConvertPoint (const PointXYZRGBA& in,
-                  PointXYZHSV&      out)
+                PointXYZHSV&        out)
   {
     PointXYZRGBAtoXYZHSV (in, out);
   }
@@ -341,29 +345,20 @@ namespace pcl
   * \param[in] in the input PointInT point cloud
   * \param[out] out the output PointOutT point cloud
   */
-  template<class PointInT, class PointOutT>
-  inline void
+  template<class PointInT, class PointOutT> inline void
   ConvertPointCloud (const PointCloud<PointInT>& in,
-                      PointCloud<PointOutT>&     out)
+                     PointCloud<PointOutT>&      out)
   {
     out.width = in.width;
     out.height = in.height;
-    out.points.reserve (out.width * out.height);
-#ifdef HAVE_CXX11
-    for (auto const& p_in : in)
+    out.sensor_orientation_ = in.sensor_orientation_;
+    out.sensor_origin_ = in.sensor_origin_;
+    out.is_dense = in.is_dense;
+    out.points.resize (out.width * out.height);
+    for (size_t i = 0; i < in.points.size (); ++i)
     {
-      PointOutT p_out;
-      ConvertPoint (p_in, p_out);
-      out.points.push_back (std::move (p_out));
+      ConvertPoint (in.points[i], out.points[i]);
     }
-#else
-    for (size_t i = 0; i < in.points.size (); i++)
-    {
-      PointOutT p_out;
-      ConvertPoint (in.points[i], p_out);
-      out.points.push_back (p_out);
-    }
-#endif
   }
 
   /** \brief Convert a RGB point cloud to a Intensity

@@ -3211,7 +3211,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -3224,7 +3224,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
         continue;
 
       lookup[i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
       ptr += 3;
     }

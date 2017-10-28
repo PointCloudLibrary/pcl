@@ -236,38 +236,8 @@ namespace pcl
         , mapping_ ()
       {}
 
-#ifdef HAVE_CXX11
-      PointCloud (PointCloud<PointT>&& pc)
-      {
-        *this = std::move (pc);
-        pc.width = 0;
-        pc.height = 0;
-        pc.is_dense = true;
-        pc.sensor_origin_ = Eigen::Vector4f::Zero ();
-        pc.sensor_orientation_ = Eigen::Quaternionf::Identity ();
-        pc.mapping_ = nullptr;
-      }
-
-      inline PointCloud& operator = (PointCloud<PointT>&& rhs)
-      {
-        *this = std::move (rhs);
-        rhs.width = 0;
-        rhs.height = 0;
-        rhs.is_dense = true;
-        rhs.sensor_origin_ = Eigen::Vector4f::Zero ();
-        rhs.sensor_orientation_ = Eigen::Quaternionf::Identity ();
-        rhs.mapping_ = nullptr;
-        return *this;
-      }
-
-      inline PointCloud& operator = (const PointCloud<PointT>& rhs) = default;
-
-      /** \brief Destructor. */
-      virtual ~PointCloud () = default;
-#else
       /** \brief Destructor. */
       virtual ~PointCloud () {}
-#endif
 
       /** \brief Add a point cloud to the current cloud.
         * \param[in] rhs the cloud to add to the current cloud
@@ -513,16 +483,6 @@ namespace pcl
         width = static_cast<uint32_t> (points.size ());
         height = 1;
       }
-
-#ifdef HAVE_CXX11
-      inline void
-      push_back (PointT&& pt)
-      {
-        points.push_back (pt);
-        width = static_cast<uint32_t> (points.size ());
-        height = 1;
-      }
-#endif
 
       /** \brief Insert a new point in the cloud, given an iterator.
         * \note This breaks the organized structure of the cloud by setting the height to 1!

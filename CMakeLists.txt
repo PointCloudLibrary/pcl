@@ -100,14 +100,6 @@ if(CMAKE_TIMING_VERBOSE AND UNIX)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CMAKE_SOURCE_DIR}/cmake/custom_output.sh")
 endif(CMAKE_TIMING_VERBOSE AND UNIX)
 
-# C++11 support
-option(PCL_ENABLE_C++11 "Enable C++11 features" FALSE)
-if(PCL_ENABLE_C++11)
-  set (CMAKE_CXX_STANDARD 11)
-  set (CMAKE_CXX_STANDARD_REQUIRED ON)
-  set (HAVE_CXX11 ON)
-endif(PCL_ENABLE_C++11)
-
 # check for SSE flags
 include("${PCL_SOURCE_DIR}/cmake/pcl_find_sse.cmake")
 if (PCL_ENABLE_SSE)
