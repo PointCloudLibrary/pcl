@@ -44,8 +44,6 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <boost/static_assert.hpp>
-
 namespace pcl
 {
   // r,g,b, i values are from 0 to 1
@@ -249,10 +247,7 @@ namespace pcl
   */
   template<class PointInT, class PointOutT> inline void
   ConvertPoint (const PointInT&    in,
-                PointOutT&         out)
-  {
-    BOOST_STATIC_ASSERT_MSG (false, "Conversion from PointInT to PointOutT is not implemented.");
-  }
+                PointOutT&         out);
 
   /* \brief Conversion method for same point types, provided for consistency
   * \param[in] in the input PointT point
