@@ -44,6 +44,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <boost/static_assert.hpp>
+
 namespace pcl
 {
   // r,g,b, i values are from 0 to 1
@@ -336,7 +338,7 @@ namespace pcl
   */
   template<> inline void
   ConvertPoint (const PointXYZHSV&  in,
-                  PointXYZRGB&      out)
+                PointXYZRGB&      out)
   {
     PointXYZHSVtoXYZRGB (in, out);
   }
