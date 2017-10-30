@@ -174,12 +174,14 @@ namespace pcl
           return (pcl::PCLPointField::INT8);
         if (type == 'U')
           return (pcl::PCLPointField::UINT8);
+	break;
 
       case 2:
         if (type == 'I')
           return (pcl::PCLPointField::INT16);
         if (type == 'U')
           return (pcl::PCLPointField::UINT16);
+	break;
 
       case 4:
         if (type == 'I')
@@ -188,12 +190,15 @@ namespace pcl
           return (pcl::PCLPointField::UINT32);
         if (type == 'F')
           return (pcl::PCLPointField::FLOAT32);
+	break;
 
       case 8:
         return (pcl::PCLPointField::FLOAT64);
 
       default:
-        return (-1);
+	break;
+
+      return (-1);
     }
   }
 
