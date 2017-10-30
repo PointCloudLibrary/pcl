@@ -354,11 +354,13 @@ pcl::EnsensoGrabber::grabSinglePairOfImages (boost::shared_ptr<PairOfImages> &im
     double timestamp;
     camera_[itmImages][itmRaw][itmLeft].getBinaryDataInfo (0, 0, 0, 0, 0, &timestamp);
     images->first.header.stamp = images->second.header.stamp = getPCLStamp (timestamp);
+    images->first.is_bigendian = false;
+    images->first.step = 0;
 
     int width, height, channels, bpe;
     bool isFlt;
 
-    char item(itmRectified);
+    const char *item = itmRectified;
     if (!rectify)
       item = itmRaw;
     else
@@ -370,6 +372,8 @@ pcl::EnsensoGrabber::grabSinglePairOfImages (boost::shared_ptr<PairOfImages> &im
     images->first.data.resize (width * height * sizeof (float));
     images->second.data.resize (width * height * sizeof (float));
     images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+    images->first.is_bigendian = false;
+    images->first.step = 0;
 
     camera_[itmImages][item][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
     camera_[itmImages][item][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
@@ -412,7 +416,7 @@ pcl::EnsensoGrabber::initExtrinsicCalibration (const int grid_spacing) const
 bool
 pcl::EnsensoGrabber::clearCalibrationPatternBuffer () const
 {
-  if (!device_open_ || runing_)
+  if (!device_open_ || running_)
     return (false);
 
   try
@@ -1032,6 +1036,8 @@ pcl::EnsensoGrabber::processGrabbing ()
             images->first.data.resize (width * height * sizeof(float));
             images->second.data.resize (width * height * sizeof(float));
             images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+            images->first.is_bigendian = false;
+            images->first.step = 0;
 
             camera_[itmImages][itmWithOverlay][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
             camera_[itmImages][itmWithOverlay][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
@@ -1045,6 +1051,8 @@ pcl::EnsensoGrabber::processGrabbing ()
             images->first.data.resize (width * height * sizeof(float));
             images->second.data.resize (width * height * sizeof(float));
             images->first.encoding = images->second.encoding = getOpenCVType (channels, bpe, isFlt);
+            images->first.is_bigendian = false;
+            images->first.step = 0;
 
             camera_[itmImages][itmRaw][itmLeft].getBinaryData (images->first.data.data (), images->first.data.size (), 0, 0);
             camera_[itmImages][itmRaw][itmRight].getBinaryData (images->second.data.data (), images->second.data.size (), 0, 0);
