@@ -65,8 +65,6 @@ TEST (PCL, FLARELocalReferenceFrameEstimation)
 
   const float mesh_res = 0.005f;
 
-  boost::shared_ptr<std::vector<int> > indices_ptr (new std::vector<int> (indices));
-
   // Compute normals
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
 
@@ -74,7 +72,6 @@ TEST (PCL, FLARELocalReferenceFrameEstimation)
   ne.setViewPoint (1, 1, 10);
   ne.setInputCloud (cloud);
   ne.setSearchMethod (tree);
-  ne.setIndices (indices_ptr);
 
   ne.compute (*normals);
 
@@ -88,7 +85,6 @@ TEST (PCL, FLARELocalReferenceFrameEstimation)
   lrf_estimator.setSearchSurface (cloud);
   lrf_estimator.setInputNormals (normals);
   lrf_estimator.setSearchMethod (tree);
-  lrf_estimator.setIndices (indices_ptr);
   lrf_estimator.setSearchMethodForSampledSurface (sampled_tree);
   lrf_estimator.setSearchSampledSurface (sampled_cloud);
 

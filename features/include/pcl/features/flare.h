@@ -75,18 +75,18 @@ namespace pcl
       using Feature<PointInT, PointOutT>::fake_surface_;
       using Feature<PointInT, PointOutT>::getClassName;
 
-      typedef typename Feature<PointInT, PointOutT>::PointCloudIn PointCloudIn;
-      typedef typename Feature<PointInT, PointOutT>::PointCloudOut PointCloudOut;
+      using Feature<PointInT, PointOutT>::PointCloudIn;
+      using Feature<PointInT, PointOutT>::PointCloudOut;
+
+      using Feature<PointInT, PointOutT>::PointCloudInConstPtr;
+
+      using Feature<PointInT, PointOutT>::KdTreePtr;
 
       typedef typename pcl::PointCloud<SignedDistanceT> PointCloudSignedDistance;
       typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
 
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-
       typedef boost::shared_ptr<FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const FLARELocalReferenceFrameEstimation<PointInT, PointNT, PointOutT> > ConstPtr;
-
-      typedef typename pcl::search::Search<PointInT>::Ptr KdTreePtr;
 
     public:
       /** \brief Constructor. */
@@ -101,10 +101,6 @@ namespace pcl
       {
         feature_name_ = "FLARELocalReferenceFrameEstimation";
       }
-
-      /** \brief Empty destructor */
-      virtual
-      ~FLARELocalReferenceFrameEstimation () {}
 
       //Getters/Setters
 

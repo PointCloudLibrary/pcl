@@ -162,7 +162,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   if (n_neighbours < min_neighbors_for_tangent_axis_)
   {
     //set X axis as a random axis
-    pcl::geometry::randomOrthogonalAxis (fitted_normal, x_axis);
+    x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
     y_axis = fitted_normal.cross (x_axis);
 
     lrf.row (0).matrix () = x_axis;
@@ -179,9 +179,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   Eigen::Vector3f best_margin_point;
 
-  float radius2 = tangent_radius_ * tangent_radius_;
+  const float radius2 = tangent_radius_ * tangent_radius_;
 
-  float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
+  const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
 
 
   Vector3fMapConst feature_point = (*input_)[index].getVector3fMap ();
@@ -210,7 +210,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   if (best_shape_index == -1)
   {
-    pcl::geometry::randomOrthogonalAxis (fitted_normal, x_axis);
+    x_axis = pcl::geometry::randomOrthogonalAxis (fitted_normal);
     y_axis = fitted_normal.cross (x_axis);
 
     lrf.row (0).matrix () = x_axis;
@@ -220,7 +220,7 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   }
 
   //find orthogonal axis directed to best_shape_index point projection on plane with fittedNormal as axis
-  pcl::geometry::projectedAsUnitVector (sampled_surface_->at (best_shape_index).getVector3fMap (), feature_point, fitted_normal, x_axis);
+  x_axis = pcl::geometry::projectedAsUnitVector (sampled_surface_->at (best_shape_index).getVector3fMap (), feature_point, fitted_normal);
 
   y_axis = fitted_normal.cross (x_axis);
 

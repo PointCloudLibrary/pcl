@@ -109,32 +109,32 @@ namespace pcl
       * \param[in] point Point projected on the plane
       * \param[in] plane_origin The plane origin
       * \param[in] plane_normal The plane normal 
-      * \param[out] projected_as_unit_vector Unit vector pointing from plane_origin to the projection of point on the plane.
+      * \return unit vector pointing from plane_origin to the projection of point on the plane.
       * \ingroup geometry
       */
-    inline void
+    inline Eigen::Vector3f
     projectedAsUnitVector (Eigen::Vector3f const &point,
                            Eigen::Vector3f const &plane_origin,
-                           Eigen::Vector3f const &plane_normal,
-                           Eigen::Vector3f &projected_as_unit_vector)
+                           Eigen::Vector3f const &plane_normal)
     {
       Eigen::Vector3f projection;
       project (point, plane_origin, plane_normal, projection);
-      projected_as_unit_vector = projection - plane_origin;
+      Eigen::Vector3f projected_as_unit_vector = projection - plane_origin;
       projected_as_unit_vector.normalize ();
+      return projected_as_unit_vector;
     }
 
 
     /** \brief Define a random unit vector orthogonal to axis.
       * 
       * \param[in] axis Axis
-      * \param[out] rand_ortho_axis Random unit vector orthogonal to axis
+      * \return random unit vector orthogonal to axis
       * \ingroup geometry
       */
-    inline void
-    randomOrthogonalAxis (Eigen::Vector3f const &axis,
-                          Eigen::Vector3f &rand_ortho_axis)
+    inline Eigen::Vector3f
+    randomOrthogonalAxis (Eigen::Vector3f const &axis)
     {
+      Eigen::Vector3f rand_ortho_axis;
       rand_ortho_axis.setRandom();
       if (std::abs (axis.z ()) > 1E-8f)
       {
@@ -154,6 +154,7 @@ namespace pcl
       }
 
       rand_ortho_axis.normalize ();
+      return rand_ortho_axis;
     }
 
 

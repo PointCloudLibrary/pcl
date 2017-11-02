@@ -210,13 +210,13 @@ namespace pcl
     {
       const PointNT& cur_pt = normal_cloud[normal_indices[i]];
 
-      if (pcl::isFinite(cur_pt))
+      if (pcl::isFinite (cur_pt))
       {
         normal_mean += cur_pt.getNormalVector3fMap ();
       }
     }
 
-    if(normal_mean.isZero())
+    if(normal_mean.isZero ())
       return false;
 
     normal_mean.normalize ();
