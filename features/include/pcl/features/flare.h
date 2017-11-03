@@ -75,12 +75,12 @@ namespace pcl
       using Feature<PointInT, PointOutT>::fake_surface_;
       using Feature<PointInT, PointOutT>::getClassName;
 
-      using Feature<PointInT, PointOutT>::PointCloudIn;
-      using Feature<PointInT, PointOutT>::PointCloudOut;
+      using typename Feature<PointInT, PointOutT>::PointCloudIn;
+      using typename Feature<PointInT, PointOutT>::PointCloudOut;
 
-      using Feature<PointInT, PointOutT>::PointCloudInConstPtr;
+      using typename Feature<PointInT, PointOutT>::PointCloudInConstPtr;
 
-      using Feature<PointInT, PointOutT>::KdTreePtr;
+      using typename Feature<PointInT, PointOutT>::KdTreePtr;
 
       typedef typename pcl::PointCloud<SignedDistanceT> PointCloudSignedDistance;
       typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
