@@ -12,6 +12,8 @@
 #                                   www.pointclouds.org
 #------------------------------------------------------------------------------------
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
+
 ### ---[ some useful macros
 macro(pcl_report_not_found _reason)
   unset(PCL_FOUND)
@@ -117,16 +119,7 @@ macro(find_eigen)
   elseif(NOT EIGEN_ROOT)
     get_filename_component(EIGEN_ROOT "@EIGEN_INCLUDE_DIRS@" ABSOLUTE)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_EIGEN eigen3)
-  endif(PKG_CONFIG_FOUND)
-  find_path(EIGEN_INCLUDE_DIRS Eigen/Core
-    HINTS ${PC_EIGEN_INCLUDEDIR} ${PC_EIGEN_INCLUDE_DIRS} 
-          "${EIGEN_ROOT}" "$ENV{EIGEN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/Eigen3" "$ENV{PROGRAMW6432}/Eigen3"
-          "$ENV{PROGRAMFILES}/Eigen" "$ENV{PROGRAMW6432}/Eigen"   
-    PATH_SUFFIXES eigen3 include/eigen3 include)
-  find_package_handle_standard_args(eigen DEFAULT_MSG EIGEN_INCLUDE_DIRS)
+  find_package(Eigen)
   set(EIGEN_DEFINITIONS ${EIGEN_DEFINITIONS})
 endmacro(find_eigen)
 
@@ -137,48 +130,8 @@ macro(find_qhull)
   elseif(NOT QHULL_ROOT)
     get_filename_component(QHULL_ROOT "@QHULL_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  set(QHULL_MAJOR_VERSION 6)
 
-  find_path(QHULL_INCLUDE_DIRS
-    NAMES libqhull/libqhull.h qhull.h
-    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
-    PATH_SUFFIXES qhull src/libqhull libqhull include)
-
-  # Most likely we are on windows so prefer static libraries over shared ones (Mourad's recommend)
-  find_library(QHULL_LIBRARY 
-    NAMES "@QHULL_LIBRARY_NAME@"
-    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
-    PATH_SUFFIXES project build bin lib)
-  
-  find_library(QHULL_LIBRARY_DEBUG 
-    NAMES "@QHULL_LIBRARY_DEBUG_NAME@"
-    HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/qhull" "$ENV{PROGRAMW6432}/qhull" 
-    PATH_SUFFIXES project build bin lib)
-  
-  find_package_handle_standard_args(qhull DEFAULT_MSG QHULL_LIBRARY QHULL_INCLUDE_DIRS)
-
-  if(QHULL_FOUND)
-    get_filename_component(QHULL_LIBRARY_PATH ${QHULL_LIBRARY} PATH)
-    if(QHULL_LIBRARY_DEBUG)
-      set(QHULL_LIBRARIES optimized ${QHULL_LIBRARY} debug ${QHULL_LIBRARY_DEBUG})
-      get_filename_component(QHULL_LIBRARY_DEBUG_PATH ${QHULL_LIBRARY_DEBUG} PATH)
-      set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH} ${QHULL_LIBRARY_DEBUG_PATH}) 
-    else(QHULL_LIBRARY_DEBUG)
-      set(QHULL_LIBRARIES ${QHULL_LIBRARY})
-      set(QHULL_LIBRARY_DIRS ${QHULL_LIBRARY_PATH}) 
-    endif(QHULL_LIBRARY_DEBUG)
-    set(QHULL_DEFINITIONS)
-    get_filename_component(qhull_lib ${QHULL_LIBRARY} NAME_WE)
-    if(NOT "${qhull_lib}" MATCHES "qhullstatic")
-      set(QHULL_DEFINITIONS ${QHULL_DEFINITIONS} -Dqh_QHpointer)
-      if(MSVC)
-        set(QHULL_DEFINITIONS ${QHULL_DEFINITIONS} -Dqh_QHpointer_dllimport)
-      endif(MSVC)
-    endif(NOT "${qhull_lib}" MATCHES "qhullstatic")
-  endif(QHULL_FOUND)
+  find_package(Qhull)
 endmacro(find_qhull)
 
 #remove this as soon as libopenni is shipped with FindOpenni.cmake
@@ -192,33 +145,7 @@ macro(find_openni)
     get_filename_component(OPENNI_LIBRARY_HINT "@OPENNI_LIBRARY@" PATH)
   endif()
 
-  if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_OPENNI libopenni)
-  endif(PKG_CONFIG_FOUND)
-  find_path(OPENNI_INCLUDE_DIRS XnStatus.h
-    HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} 
-          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-    PATHS "$ENV{OPEN_NI_INCLUDE}" "${OPENNI_INCLUDE_DIRS_HINT}"
-    PATH_SUFFIXES include/openni Include)
-  #add a hint so that it can find it without the pkg-config
-  set(OPENNI_SUFFIX)
-  if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(OPENNI_SUFFIX 64)
-  endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-  find_library(OPENNI_LIBRARY 
-    NAMES OpenNI64 OpenNI 
-    HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} 
-          "${OPENNI_ROOT}" "$ENV{OPENNI_ROOT}"
-    PATHS "$ENV{OPEN_NI_LIB${OPENNI_SUFFIX}}" "${OPENNI_LIBRARY_HINT}"
-    PATH_SUFFIXES lib Lib Lib64)
-
-  find_package_handle_standard_args(OpenNI DEFAULT_MSG OPENNI_LIBRARY OPENNI_INCLUDE_DIRS)
-
-  if(OPENNI_FOUND)
-    get_filename_component(OPENNI_LIBRARY_PATH ${OPENNI_LIBRARY} PATH)
-    set(OPENNI_LIBRARY_DIRS ${OPENNI_LIBRARY_PATH}) 
-    set(OPENNI_LIBRARIES "${OPENNI_LIBRARY}")
-  endif(OPENNI_FOUND)
+  find_package(OpenNI)
 endmacro(find_openni)
 
 #remove this as soon as libopenni2 is shipped with FindOpenni2.cmake
@@ -232,39 +159,7 @@ macro(find_openni2)
     get_filename_component(OPENNI2_LIBRARY_HINT "@OPENNI2_LIBRARY@" PATH)
   endif()
 
-  set(OPENNI2_SUFFIX)
-  if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(OPENNI2_SUFFIX 64)
-  endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
-  
-  if(PKG_CONFIG_FOUND)
-	if(PCL_FIND_QUIETLY)
-    	pkg_check_modules(PC_OPENNI2 QUIET libopenni2)
-	else()
-		pkg_check_modules(PC_OPENNI2 libopenni2)
-	endif()
-  endif(PKG_CONFIG_FOUND)
-  
-  find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
-          HINTS /usr/include/openni2 /usr/include/ni2 /usr/local/include/openni2 /usr/local/include/ni2
-          PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}" "${OPENNI2_INCLUDE_DIRS_HINT}"
-          PATH_SUFFIXES openni openni2 include Include)
-  
-  find_library(OPENNI2_LIBRARY 
-             NAMES OpenNI2	# No suffix needed on Win64
-             HINTS /usr/lib /usr/local/lib/ni2
-             PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}" "${OPENNI2_LIBRARY_HINT}"
-             PATH_SUFFIXES lib Lib Lib64)	
-  
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(OpenNI2 DEFAULT_MSG OPENNI2_LIBRARY OPENNI2_INCLUDE_DIRS)
-  
-  if(OPENNI2_FOUND)
-    get_filename_component(OPENNI2_LIBRARY_PATH ${OPENNI2_LIBRARY} PATH)
-    set(OPENNI2_LIBRARY_DIRS ${OPENNI2_LIBRARY_PATH}) 
-    set(OPENNI2_LIBRARIES "${OPENNI2_LIBRARY}")
-    set(OPENNI2_REDIST_DIR $ENV{OPENNI2_REDIST${OPENNI2_SUFFIX}})
-  endif(OPENNI2_FOUND)
+  find_package(OpenNI2)
 endmacro(find_openni2)
 
 #remove this as soon as the Ensenso SDK is shipped with FindEnsenso.cmake
@@ -277,28 +172,7 @@ macro(find_ensenso)
     get_filename_component(ENSENSO_ABI_HINT "@ENSENSO_INCLUDE_DIR@" PATH)
   endif()
 
-  find_path(ENSENSO_INCLUDE_DIR nxLib.h
-            HINTS ${ENSENSO_ABI_HINT}
-            /opt/ensenso/development/c
-            "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
-            PATH_SUFFIXES include/)
-
-  find_library(ENSENSO_LIBRARY QUIET NAMES NxLib64 NxLib32 nxLib64 nxLib32
-               HINTS ${ENSENSO_ABI_HINT}
-               "$ENV{PROGRAMFILES}/Ensenso/development/c" "$ENV{PROGRAMW6432}/Ensenso/development/c"
-               PATH_SUFFIXES lib/)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(ensenso DEFAULT_MSG
-                                    ENSENSO_LIBRARY ENSENSO_INCLUDE_DIR)
-
-  if(ENSENSO_FOUND)
-    get_filename_component(ENSENSO_LIBRARY_PATH ${ENSENSO_LIBRARY} PATH)
-    set(ENSENSO_INCLUDE_DIRS ${ENSENSO_INCLUDE_DIR})
-    set(ENSENSO_LIBRARY_DIRS ${ENSENSO_LIBRARY_PATH})
-    set(ENSENSO_LIBRARIES "${ENSENSO_LIBRARY}")
-    set(ENSENSO_REDIST_DIR $ENV{ENSENSO_REDIST${ENSENSO_SUFFIX}})
-  endif(ENSENSO_FOUND)
+  find_package(Ensenso)
 endmacro(find_ensenso)
 
 #remove this as soon as the davidSDK is shipped with FinddavidSDK.cmake
@@ -311,28 +185,7 @@ macro(find_davidSDK)
     get_filename_component(DAVIDSDK_ABI_HINT @DAVIDSDK_INCLUDE_DIR@ PATH)
   endif()
 
-  find_path(DAVIDSDK_INCLUDE_DIR david.h
-            HINTS ${DAVIDSDK_ABI_HINT}
-            /usr/local/include/davidSDK
-            "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
-            PATH_SUFFIXES include/)
-
-  find_library(DAVIDSDK_LIBRARY QUIET NAMES davidSDK
-               HINTS ${DAVIDSDK_ABI_HINT}
-               "$ENV{PROGRAMFILES}/davidSDK" "$ENV{PROGRAMW6432}/davidSDK"
-               PATH_SUFFIXES lib/)
-
-  include(FindPackageHandleStandardArgs)
-  find_package_handle_standard_args(DAVIDSDK DEFAULT_MSG
-                                    DAVIDSDK_LIBRARY DAVIDSDK_INCLUDE_DIR)
-
-  if(DAVIDSDK_FOUND)
-    get_filename_component(DAVIDSDK_LIBRARY_PATH ${DAVIDSDK_LIBRARY} PATH)
-    set(DAVIDSDK_INCLUDE_DIRS ${DAVIDSDK_INCLUDE_DIR})
-    set(DAVIDSDK_LIBRARY_DIRS ${DAVIDSDK_LIBRARY_PATH})
-    set(DAVIDSDK_LIBRARIES "${DAVIDSDK_LIBRARY}")
-    set(DAVIDSDK_REDIST_DIR $ENV{DAVIDSDK_REDIST${DAVIDSDK_SUFFIX}})
-  endif(DAVIDSDK_FOUND)
+  find_package(davidSDK)
 endmacro(find_davidSDK)
 
 macro(find_dssdk)
@@ -342,36 +195,8 @@ macro(find_dssdk)
   if(NOT DSSDK_DIR AND ("@HAVE_DSSDK@" STREQUAL "TRUE"))
     get_filename_component(DSSDK_DIR_HINT "@DSSDK_INCLUDE_DIRS@" PATH)
   endif()
-  find_path(DSSDK_DIR include/DepthSenseVersion.hxx
-            HINTS ${DSSDK_DIR_HINT}
-                  "$ENV{DEPTHSENSESDK32}"
-                  "$ENV{DEPTHSENSESDK64}"
-            PATHS "$ENV{PROGRAMFILES}/SoftKinetic/DepthSenseSDK"
-                  "$ENV{PROGRAMW6432}/SoftKinetic/DepthSenseSDK"
-                  "C:/Program Files (x86)/SoftKinetic/DepthSenseSDK"
-                  "C:/Program Files/SoftKinetic/DepthSenseSDK"
-                  "/opt/softkinetic/DepthSenseSDK"
-            DOC "DepthSense SDK directory")
-  set(_DSSDK_INCLUDE_DIRS ${DSSDK_DIR}/include)
-  if(MSVC)
-    set(DSSDK_LIBRARIES_NAMES DepthSense)
-  else()
-    set(DSSDK_LIBRARIES_NAMES DepthSense DepthSensePlugins turbojpeg)
-  endif()
-  foreach(LIB ${DSSDK_LIBRARIES_NAMES})
-    find_library(DSSDK_LIBRARY_${LIB}
-                 NAMES "${LIB}"
-                 PATHS "${DSSDK_DIR}/lib/" NO_DEFAULT_PATH)
-    list(APPEND _DSSDK_LIBRARIES ${DSSDK_LIBRARY_${LIB}})
-    mark_as_advanced(DSSDK_LIBRARY_${LIB})
-  endforeach()
-  find_package_handle_standard_args(DSSDK DEFAULT_MSG _DSSDK_LIBRARIES _DSSDK_INCLUDE_DIRS)
-  if(DSSDK_FOUND)
-    set(DSSDK_LIBRARIES ${_DSSDK_LIBRARIES})
-    mark_as_advanced(DSSDK_LIBRARIES)
-    set(DSSDK_INCLUDE_DIRS ${_DSSDK_INCLUDE_DIRS})
-    mark_as_advanced(DSSDK_INCLUDE_DIRS)
-  endif()
+
+  find_package(DSSDK)
 endmacro(find_dssdk)
 
 macro(find_rssdk)
@@ -381,41 +206,8 @@ macro(find_rssdk)
   if(NOT RSSDK_DIR AND ("@HAVE_RSSDK@" STREQUAL "TRUE"))
     get_filename_component(RSSDK_DIR_HINT "@RSSDK_INCLUDE_DIRS@" PATH)
   endif()
-  find_path(RSSDK_DIR include/pxcversion.h
-            HINTS ${RSSDK_DIR_HINT}
-            PATHS "$ENV{RSSDK_DIR}"
-                  "$ENV{PROGRAMFILES}/Intel/RSSDK"
-                  "$ENV{PROGRAMW6432}/Intel/RSSDK"
-                  "C:/Program Files (x86)/Intel/RSSDK"
-                  "C:/Program Files/Intel/RSSDK"
-            DOC "RealSense SDK directory")
-  set(_RSSDK_INCLUDE_DIRS ${RSSDK_DIR}/include)
-  set(RSSDK_RELEASE_NAME libpxc.lib)
-  set(RSSDK_DEBUG_NAME libpxc_d.lib)
-  set(RSSDK_SUFFIX Win32)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(RSSDK_SUFFIX x64)
-  endif()
-  find_library(RSSDK_LIBRARY
-               NAMES ${RSSDK_RELEASE_NAME}
-               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
-               PATH_SUFFIXES ${RSSDK_SUFFIX})
-  find_library(RSSDK_LIBRARY_DEBUG
-               NAMES ${RSSDK_DEBUG_NAME} ${RSSDK_RELEASE_NAME}
-               PATHS "${RSSDK_DIR}/lib/" NO_DEFAULT_PATH
-               PATH_SUFFIXES ${RSSDK_SUFFIX})
-  if(NOT RSSDK_LIBRARY_DEBUG)
-    set(RSSDK_LIBRARY_DEBUG ${RSSDK_LIBRARY})
-  endif()
-  set(_RSSDK_LIBRARIES optimized ${RSSDK_LIBRARY} debug ${RSSDK_LIBRARY_DEBUG})
-  mark_as_advanced(RSSDK_LIBRARY RSSDK_LIBRARY_DEBUG)
-  find_package_handle_standard_args(RSSDK DEFAULT_MSG _RSSDK_LIBRARIES _RSSDK_INCLUDE_DIRS)
-  if(RSSDK_FOUND)
-    set(RSSDK_LIBRARIES ${_RSSDK_LIBRARIES})
-    mark_as_advanced(RSSDK_LIBRARIES)
-    set(RSSDK_INCLUDE_DIRS ${_RSSDK_INCLUDE_DIRS})
-    mark_as_advanced(RSSDK_INCLUDE_DIRS)
-  endif()
+
+  find_package(RSSDK)
 endmacro(find_rssdk)
 
 #remove this as soon as flann is shipped with FindFlann.cmake
@@ -425,46 +217,8 @@ macro(find_flann)
   elseif(NOT FLANN_ROOT)
     get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
-  if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_FLANN flann)
-  endif(PKG_CONFIG_FOUND)
 
-  find_path(FLANN_INCLUDE_DIRS flann/flann.hpp
-    HINTS ${PC_FLANN_INCLUDEDIR} ${PC_FLANN_INCLUDE_DIRS} 
-          "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9"
-          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
-    PATH_SUFFIXES include)
-
-  find_library(FLANN_LIBRARY
-    NAMES flann_cpp_s flann_cpp
-    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
-          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
-    PATH_SUFFIXES lib)
-
-  find_library(FLANN_LIBRARY_DEBUG 
-    NAMES flann_cpp_s-gd flann_cpp-gd flann_cpp_s flann_cpp
-    HINTS ${PC_FLANN_LIBDIR} ${PC_FLANN_LIBRARY_DIRS} "${FLANN_ROOT}" "$ENV{FLANN_ROOT}"
-    PATHS "$ENV{PROGRAMFILES}/flann 1.6.9" "$ENV{PROGRAMW6432}/flann 1.6.9" 
-          "$ENV{PROGRAMFILES}/flann" "$ENV{PROGRAMW6432}/flann"
-    PATH_SUFFIXES lib)
-
-  find_package_handle_standard_args(Flann DEFAULT_MSG FLANN_LIBRARY FLANN_INCLUDE_DIRS)
-  if(FLANN_FOUND)
-    get_filename_component(FLANN_LIBRARY_PATH ${FLANN_LIBRARY} PATH)
-    if(FLANN_LIBRARY_DEBUG)
-      get_filename_component(FLANN_LIBRARY_DEBUG_PATH ${FLANN_LIBRARY_DEBUG} PATH)
-      set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH} ${FLANN_LIBRARY_DEBUG_PATH}) 
-      set(FLANN_LIBRARIES optimized ${FLANN_LIBRARY} debug ${FLANN_LIBRARY_DEBUG})
-    else(FLANN_LIBRARY_DEBUG)
-      set(FLANN_LIBRARY_DIRS ${FLANN_LIBRARY_PATH}) 
-      set(FLANN_LIBRARIES ${FLANN_LIBRARY})
-    endif(FLANN_LIBRARY_DEBUG)
-    if("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
-      set(FLANN_DEFINITIONS ${FLANN_DEFINITIONS} -DFLANN_STATIC)
-    endif("${FLANN_LIBRARY}" MATCHES "flann_cpp_s")
-  endif(FLANN_FOUND)
+  find_package(FLANN)
 endmacro(find_flann)
 
 macro(find_VTK)
@@ -497,105 +251,7 @@ macro(find_libusb)
 endmacro(find_libusb)
 
 macro(find_glew)
-IF (WIN32)
-
-  IF(CYGWIN)
-
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h)
-
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY glew32
-      ${OPENGL_LIBRARY_DIR}
-      /usr/lib/w32api
-      /usr/X11R6/lib
-    )
-
-
-  ELSE(CYGWIN)
-
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      $ENV{GLEW_ROOT}/include
-    )
-
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY
-      NAMES glew glew32 glew32s
-      PATHS
-      $ENV{GLEW_ROOT}/lib
-      ${OPENGL_LIBRARY_DIR}
-    )
-
-  ENDIF(CYGWIN)
-
-ELSE (WIN32)
-
-  IF (APPLE)
-  
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      /usr/local/include
-      /System/Library/Frameworks/GLEW.framework/Versions/A/Headers
-      ${OPENGL_LIBRARY_DIR}
-    )
-
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY GLEW
-      /usr/local/lib
-      /usr/openwin/lib
-      /usr/X11R6/lib
-    )
-
-    if(NOT GLEW_GLEW_LIBRARY)
-        SET(GLEW_GLEW_LIBRARY "-framework GLEW" CACHE STRING "GLEW library for OSX")
-        SET(GLEW_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
-    endif()
-  ELSE (APPLE)
-
-    FIND_PATH( GLEW_INCLUDE_DIR GL/glew.h
-      /usr/include/GL
-      /usr/openwin/share/include
-      /usr/openwin/include
-      /usr/X11R6/include
-      /usr/include/X11
-      /opt/graphics/OpenGL/include
-      /opt/graphics/OpenGL/contrib/libglew
-    )
-
-    FIND_LIBRARY( GLEW_GLEW_LIBRARY GLEW
-      /usr/openwin/lib
-      /usr/X11R6/lib
-    )
-
-  ENDIF (APPLE)
-
-ENDIF (WIN32)
-
-SET( GLEW_FOUND FALSE )
-IF(GLEW_INCLUDE_DIR)
-  IF(GLEW_GLEW_LIBRARY)
-    # Is -lXi and -lXmu required on all platforms that have it?
-    # If not, we need some way to figure out what platform we are on.
-    SET( GLEW_LIBRARIES
-      ${GLEW_GLEW_LIBRARY}
-      ${GLEW_cocoa_LIBRARY}
-    )
-    SET( GLEW_FOUND TRUE )
-
-#The following deprecated settings are for backwards compatibility with CMake1.4
-    SET (GLEW_LIBRARY ${GLEW_LIBRARIES})
-    SET (GLEW_INCLUDE_PATH ${GLEW_INCLUDE_DIR})
-
-  ENDIF(GLEW_GLEW_LIBRARY)
-ENDIF(GLEW_INCLUDE_DIR)
-
-IF(GLEW_FOUND)
-  IF(NOT GLEW_FIND_QUIETLY)
-    MESSAGE(STATUS "Found Glew: ${GLEW_LIBRARIES}")
-  ENDIF(NOT GLEW_FIND_QUIETLY)
-  IF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-    list(APPEND PCL_DEFINITIONS "-DGLEW_STATIC")
-  ENDIF(GLEW_GLEW_LIBRARY MATCHES glew32s)
-ELSE(GLEW_FOUND)
-  IF(GLEW_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Could not find Glew")
-  ENDIF(GLEW_FIND_REQUIRED)
-ENDIF(GLEW_FOUND)
+  find_package(GLEW)
 endmacro(find_glew)
 
 # Finds each component external libraries if any
