@@ -48,7 +48,6 @@ typedef pcl::search::KdTree<pcl::PointXYZ>::Ptr KdTreePtr;
 typedef pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudPtr;
 
 PointCloudPtr cloud;
-std::vector<int> indices;
 KdTreePtr tree;
 
 //sampled surface for the computation of tangent X axis
@@ -91,8 +90,6 @@ TEST (PCL, FLARELocalReferenceFrameEstimation)
   lrf_estimator.compute (bunny_LRF);
 
   // TESTS
-  EXPECT_EQ (indices.size (), bunny_LRF.size ());
-
   EXPECT_TRUE (bunny_LRF.is_dense);
 
   // Expected Results
@@ -157,10 +154,6 @@ main (int argc, char** argv)
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-
-  indices.resize (cloud->points.size ());
-  for (size_t i = 0; i < indices.size (); ++i)
-    indices[i] = static_cast<int> (i);
 
   tree.reset (new pcl::search::KdTree<pcl::PointXYZ> (false));
   tree->setInputCloud (cloud);
