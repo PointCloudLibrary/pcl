@@ -39,10 +39,8 @@
 #ifndef PCL_FEATURES_IMPL_FLARE_H_
 #define PCL_FEATURES_IMPL_FLARE_H_
 
-
 #include <pcl/features/flare.h>
 #include <pcl/common/geometry.h>
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointInT, typename PointNT, typename PointOutT, typename SignedDistanceT> bool
@@ -133,12 +131,12 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     }
 
     //set z_axis as the normal of index point
-    fitted_normal = (*normals_)[index].getNormalVector3fMap();
+    fitted_normal = (*normals_)[index].getNormalVector3fMap ();
   }
   else
   {
     float plane_curvature;
-    normal_estimation_.computePointNormal(*surface_, neighbours_indices, fitted_normal(0), fitted_normal(1), fitted_normal(2), plane_curvature);
+    normal_estimation_.computePointNormal (*surface_, neighbours_indices, fitted_normal (0), fitted_normal (1), fitted_normal (2), plane_curvature);
 
     //disambiguate Z axis with normal mean
     if (!pcl::flipNormalTowardsNormalsMean<PointNT> (*normals_, neighbours_indices, fitted_normal))
@@ -152,7 +150,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
 
   //setting LRF Z axis
   lrf.row (2).matrix () = fitted_normal;
-
 
   //find X axis
 
@@ -180,17 +177,15 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   Eigen::Vector3f best_margin_point;
 
   const float radius2 = tangent_radius_ * tangent_radius_;
-
   const float margin_distance2 = margin_thresh_ * margin_thresh_ * radius2;
 
-
   Vector3fMapConst feature_point = (*input_)[index].getVector3fMap ();
-
 
   for (int curr_neigh = 0; curr_neigh < n_neighbours; ++curr_neigh)
   {
     const int& curr_neigh_idx = neighbours_indices[curr_neigh];
     const float& neigh_distance_sqr = neighbours_distances[curr_neigh];
+
     if (neigh_distance_sqr <= margin_distance2)
     {
       continue;
@@ -205,7 +200,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
       best_shape_index = curr_neigh_idx;
       best_shape_score = shape_score;
     }
-
   } //for each neighbor
 
   if (best_shape_index == -1)
@@ -239,9 +233,9 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
   //check whether used with search radius or search k-neighbors
   if (this->getKSearch () != 0)
   {
-    PCL_ERROR(
-      "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch(0) and setRadiusSearch( radius ) to use this class.\n",
-      getClassName().c_str());
+    PCL_ERROR (
+      "[pcl::%s::computeFeature] Error! Search method set to k-neighborhood. Call setKSearch (0) and setRadiusSearch (radius) to use this class.\n",
+      getClassName ().c_str ());
     return;
   }
 
@@ -263,7 +257,6 @@ template<typename PointInT, typename PointNT, typename PointOutT, typename Signe
     rf.getZAxisVector3fMap () = currentLrf.row (2);
   }
 }
-
 
 #define PCL_INSTANTIATE_FLARELocalReferenceFrameEstimation(T,NT,OutT,SdT) template class PCL_EXPORTS pcl::FLARELocalReferenceFrameEstimation<T,NT,OutT,SdT>;
 

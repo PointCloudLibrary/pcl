@@ -216,7 +216,7 @@ namespace pcl
       }
     }
 
-    if(normal_mean.isZero ())
+    if (normal_mean.isZero ())
       return false;
 
     normal_mean.normalize ();
