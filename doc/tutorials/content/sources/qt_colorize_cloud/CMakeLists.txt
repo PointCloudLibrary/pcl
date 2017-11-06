@@ -11,10 +11,10 @@ set(CMAKE_AUTOUIC ON) # UI files
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Find the QtWidgets library
-find_package (Qt5 REQUIRED Widgets)
+find_package(Qt5 REQUIRED Widgets)
 
-find_package (VTK REQUIRED)
-find_package (PCL 1.7.1 REQUIRED)
+find_package(VTK REQUIRED)
+find_package(PCL 1.7.1 REQUIRED)
 
 # Fix a compilation bug under ubuntu 16.04 (Xenial)
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
@@ -23,10 +23,10 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-set (project_SOURCES main.cpp pclviewer.cpp)
+set(project_SOURCES main.cpp pclviewer.cpp)
 
-add_executable (${PROJECT_NAME} ${project_SOURCES})
+add_executable(${PROJECT_NAME} ${project_SOURCES})
 
-target_link_libraries (${PROJECT_NAME} ${PCL_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
 
 qt5_use_modules(${PROJECT_NAME} Widgets)
