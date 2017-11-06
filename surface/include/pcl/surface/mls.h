@@ -743,8 +743,8 @@ namespace pcl
   class MovingLeastSquaresOMP: public MovingLeastSquares<PointInT, PointOutT>
   {
     public:
-      typedef boost::shared_ptr<MovingLeastSquares<PointInT, PointOutT> > Ptr;
-      typedef boost::shared_ptr<const MovingLeastSquares<PointInT, PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<MovingLeastSquaresOMP<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const MovingLeastSquaresOMP<PointInT, PointOutT> > ConstPtr;
 
       using MovingLeastSquares<PointInT, PointOutT>::VOXEL_GRID_DILATION;
       using MovingLeastSquares<PointInT, PointOutT>::DISTINCT_CLOUD;
