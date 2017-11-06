@@ -23,10 +23,10 @@ include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 
-set  (project_SOURCES main.cpp pclviewer.cpp)
+set (project_SOURCES main.cpp pclviewer.cpp)
 
-ADD_EXECUTABLE  (pcl_colorize_cloud ${project_SOURCES})
+add_executable (${PROJECT_NAME} ${project_SOURCES})
 
-TARGET_LINK_LIBRARIES (${PROJECT_NAME} ${QT_LIBRARIES} ${PCL_LIBRARIES})
+target_link_libraries (${PROJECT_NAME} ${PCL_LIBRARIES})
 
 qt5_use_modules(${PROJECT_NAME} Widgets)
