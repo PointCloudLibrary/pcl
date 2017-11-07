@@ -58,7 +58,7 @@ pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (bool sorted)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename Dist>
-pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT> &k) 
+pcl::KdTreeFLANN<PointT, Dist>::KdTreeFLANN (const KdTreeFLANN<PointT, Dist> &k) 
   : pcl::KdTree<PointT> (false)
   , flann_index_ (), cloud_ ()
   , index_mapping_ (), identity_mapping_ (false)
