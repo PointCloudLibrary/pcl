@@ -916,7 +916,9 @@ bool
 pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int viewport)
 {
   // Check to see if the given ID entry exists
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  std::string idToCheck(id);
+  if(viewport > 0) idToCheck.append(viewport, '*');
+  ShapeActorMap::iterator am_it = shape_actor_map_->find (idToCheck);
 
   if (am_it == shape_actor_map_->end ())
   {
