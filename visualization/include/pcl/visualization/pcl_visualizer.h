@@ -602,7 +602,10 @@ namespace pcl
         /** \brief Add a 3d text to the scene
           * \param[in] text the text to add
           * \param[in] position the world position where the text should be added
-          * \param[in] orientation the angles of rotation regarding x-, y-, z-axis for the text
+          * \param[in] orientation the angles of rotation of the text around X, Y and Z axis,
+                       in this order. The way the rotations are effectively done is the
+                       Z-X-Y intrinsic rotations:
+                       https://en.wikipedia.org/wiki/Euler_angles#Definition_by_intrinsic_rotations
           * \param[in] textScale the scale of the text to render
           * \param[in] r the red color value
           * \param[in] g the green color value
