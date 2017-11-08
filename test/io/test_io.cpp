@@ -90,7 +90,7 @@ TEST (PCL, ComplexPCDFileASCII)
   EXPECT_EQ (blob.fields[1].name, "_");
   EXPECT_EQ (blob.fields[1].offset, 4 * 33);
   EXPECT_EQ (blob.fields[1].count, 10);
-  EXPECT_EQ (blob.fields[1].datatype, pcl::PCLPointField::FLOAT32);
+  EXPECT_EQ (blob.fields[1].datatype, (uint8_t) -1);
   
   EXPECT_EQ (blob.fields[2].name, "x");
   EXPECT_EQ (blob.fields[2].offset, 4 * 33 + 10 * 1);
