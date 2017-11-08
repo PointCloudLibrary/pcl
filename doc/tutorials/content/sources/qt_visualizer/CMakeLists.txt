@@ -1,28 +1,31 @@
-cmake_minimum_required (VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.11)
 
-project      (pcl-visualizer)
-find_package (Qt4 REQUIRED)
-find_package (VTK REQUIRED)
-find_package (PCL 1.7.1 REQUIRED)
+project(pcl_visualizer)
 
-include_directories (${PCL_INCLUDE_DIRS})
-link_directories    (${PCL_LIBRARY_DIRS})
-add_definitions     (${PCL_DEFINITIONS})
+# init_qt: Let's do the CMake job for us
+set(CMAKE_AUTOMOC ON) # For meta object compiler
+set(CMAKE_AUTORCC ON) # Resource files
+set(CMAKE_AUTOUIC ON) # UI files
 
-set  (project_SOURCES main.cpp pclviewer.cpp)
-set  (project_HEADERS pclviewer.h)
-set  (project_FORMS   pclviewer.ui)
-set  (VTK_LIBRARIES   vtkRendering vtkGraphics vtkHybrid QVTK)
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-QT4_WRAP_CPP (project_HEADERS_MOC   ${project_HEADERS})
-QT4_WRAP_UI  (project_FORMS_HEADERS ${project_FORMS})
+# Find the QtWidgets library
+find_package(Qt5 REQUIRED Widgets)
 
-INCLUDE         (${QT_USE_FILE})
-ADD_DEFINITIONS (${QT_DEFINITIONS})
+find_package(VTK REQUIRED)
+find_package(PCL 1.7.1 REQUIRED)
 
-ADD_EXECUTABLE  (pcl_visualizer ${project_SOURCES}
-                                ${project_FORMS_HEADERS}
-                                ${project_HEADERS_MOC})
+# Fix a compilation bug under ubuntu 16.04 (Xenial)
+list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
-TARGET_LINK_LIBRARIES (pcl_visualizer ${QT_LIBRARIES} ${PCL_LIBRARIES} ${VTK_LIBRARIES})
+include_directories(${PCL_INCLUDE_DIRS})
+add_definitions(${PCL_DEFINITIONS})
 
+set(project_SOURCES main.cpp pclviewer.cpp)
+
+add_executable(${PROJECT_NAME} ${project_SOURCES})
+
+target_link_libraries(${PROJECT_NAME} ${PCL_LIBRARIES})
+
+qt5_use_modules(${PROJECT_NAME} Widgets)
