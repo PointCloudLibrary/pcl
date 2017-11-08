@@ -599,6 +599,28 @@ namespace pcl
                    double r = 1.0, double g = 1.0, double b = 1.0,
                    const std::string &id = "", int viewport = 0);
 
+        /** \brief Add a 3d text to the scene
+          * \param[in] text the text to add
+          * \param[in] position the world position where the text should be added
+          * \param[in] orientation the angles of rotation of the text around X, Y and Z axis,
+                       in this order. The way the rotations are effectively done is the
+                       Z-X-Y intrinsic rotations:
+                       https://en.wikipedia.org/wiki/Euler_angles#Definition_by_intrinsic_rotations
+          * \param[in] textScale the scale of the text to render
+          * \param[in] r the red color value
+          * \param[in] g the green color value
+          * \param[in] b the blue color value
+          * \param[in] id the text object id (default: equal to the "text" parameter)
+          * \param[in] viewport the view port (default: all)
+          */
+        template <typename PointT> bool
+        addText3D (const std::string &text,
+                   const PointT &position,
+                   double orientation[3],
+                   double textScale = 1.0,
+                   double r = 1.0, double g = 1.0, double b = 1.0,
+                   const std::string &id = "", int viewport = 0);
+
         /** \brief Check if the cloud, shape, or coordinate with the given id was already added to this visualizer.
           * \param[in] id the id of the cloud, shape, or coordinate to check
           * \return true if a cloud, shape, or coordinate with the specified id was found
