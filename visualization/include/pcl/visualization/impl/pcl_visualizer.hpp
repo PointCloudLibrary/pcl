@@ -747,35 +747,17 @@ pcl::visualization::PCLVisualizer::addText3D (
   vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
   textMapper->SetInputConnection (textSource->GetOutputPort ());
 
-  // Since each follower may follow a different camera, we need different followers
-  rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  int i = 0;
-  while ((renderer = rens_->GetNextItem ()) != NULL)
-  {
-    // Should we add the actor to all renderers or just to i-nth renderer?
-    if (viewport == 0 || viewport == i)
-    {
-      vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
-      textActor->SetMapper (textMapper);
-      textActor->SetPosition (position.x, position.y, position.z);
-      textActor->SetScale (textScale);
-      textActor->GetProperty ()->SetColor (r, g, b);
-      textActor->SetOrientation (orientation);
+  vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
+  textActor->SetMapper (textMapper);
+  textActor->SetPosition (position.x, position.y, position.z);
+  textActor->SetScale (textScale);
+  textActor->GetProperty ()->SetColor (r, g, b);
+  textActor->SetOrientation (orientation);
 
-      renderer->AddActor (textActor);
-      renderer->Render ();
+  addActorToRenderer (textActor, viewport);
 
-      // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
-      // for multiple viewport
-      std::string alternate_tid = tid;
-      alternate_tid.append(i, '*');
-
-      (*shape_actor_map_)[(viewport == 0) ? tid : alternate_tid] = textActor;
-    }
-
-    ++i;
-  }
+  // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
+  (*shape_actor_map_)[tid] = textActor;
 
   return (true);
 }
