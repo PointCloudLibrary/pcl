@@ -51,4 +51,6 @@ main (int , char **)
   p.spin ();
   p.addText3D ("text3D_to_remove", cloud->points[1], 1.0, 0.0, 1.0, 0.0, rightPort);
   p.spin ();
+  p.removeText3D ("text3D_to_remove", rightPort);
+  p.spin ();
 }
