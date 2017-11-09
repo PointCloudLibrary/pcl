@@ -387,7 +387,7 @@ private:
     for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
     {
       // If the iterator is not at the right depth, continue
-      if (tree_it.getCurrentOctreeDepth () != depth)
+      if (tree_it.getCurrentOctreeDepth () != (unsigned int) depth)
         continue;
 
       // Compute the point at the center of the voxel which represents the current OctreeNode
@@ -400,7 +400,7 @@ private:
       cloudVoxel->points.push_back (pt_voxel_center);
 
       // If the asked depth is the depth of the octree, retrieve the centroid at this LeafNode
-      if (octree.getTreeDepth () == depth)
+      if (octree.getTreeDepth () == (unsigned int) depth)
       {
         pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode* container = static_cast<pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::LeafNode*> (tree_it.getCurrentOctreeNode ());
 
@@ -416,7 +416,7 @@ private:
 
         // Iterate over the leafs to compute the centroid of all of them
         pcl::CentroidPoint<pcl::PointXYZ> centroid;
-        for (int j = 0; j < voxelCentroids.size (); ++j)
+        for (size_t j = 0; j < voxelCentroids.size (); ++j)
         {
           centroid.add (voxelCentroids[j]);
         }
