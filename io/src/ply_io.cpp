@@ -517,8 +517,7 @@ pcl::PLYReader::vertexListPropertyEndCallback () {}
 bool
 pcl::PLYReader::parse (const std::string& istream_filename)
 {
-  pcl::io::ply::ply_parser::flags_type ply_parser_flags = 0;
-  pcl::io::ply::ply_parser ply_parser (ply_parser_flags);
+  pcl::io::ply::ply_parser ply_parser;
 
   ply_parser.info_callback (boost::bind (&pcl::PLYReader::infoCallback, this, boost::ref (istream_filename), _1, _2));
   ply_parser.warning_callback (boost::bind (&pcl::PLYReader::warningCallback, this, boost::ref (istream_filename), _1, _2));
