@@ -51,11 +51,6 @@
 #include <vtkRenderWindow.h>
 #include <vtkCubeSource.h>
 #include <vtkCleanPolyData.h>
-//=============================
-// Displaying cubes is very long!
-// so we limit their numbers.
- const int MAX_DISPLAYED_CUBES(15000);
-//=============================
 
 class OctreeViewer
 {
