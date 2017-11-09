@@ -63,7 +63,7 @@
  * @param argv[in]
  */
 void
-displayHelp (int argc,
+displayHelp (int,
              char** argv)
 {
   PCL_INFO ("\nUsage: %s [OPTION] SOURCE DEST\n", argv[0]);
