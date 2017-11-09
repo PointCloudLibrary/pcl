@@ -616,7 +616,7 @@ pcl::visualization::PCLPlotter::computeHistogram (
     if (pcl_isfinite (data[i]))
     {
       unsigned int index = (unsigned int) (floor ((data[i] - min) / size));
-      if (index == nbins) index = nbins - 1; //including right boundary
+      if (index == (unsigned int) nbins) index = nbins - 1; //including right boundary
       histogram[index].second++;
     }
   }

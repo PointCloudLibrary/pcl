@@ -3459,7 +3459,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   int texture_units = tex_manager->GetNumberOfTextureUnits ();
   if ((mesh.tex_materials.size () > 1) && (texture_units > 1))
   {
-    if (texture_units < mesh.tex_materials.size ())
+    if ((size_t) texture_units < mesh.tex_materials.size ())
       PCL_WARN ("[PCLVisualizer::addTextureMesh] GPU texture units %d < mesh textures %d!\n",
                 texture_units, mesh.tex_materials.size ());
     // Load textures
