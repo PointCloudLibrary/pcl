@@ -304,8 +304,7 @@ namespace pcl
           typedef int flags_type;
           enum flags { };
 
-          ply_parser (flags_type flags = 0) : 
-            flags_ (flags), 
+          ply_parser () :
             comment_callback_ (), obj_info_callback_ (), end_header_callback_ (), 
             line_number_ (0), current_element_ ()
           {}
@@ -391,8 +390,6 @@ namespace pcl
             end_element_callback_type end_element_callback;
             std::vector<boost::shared_ptr<property> > properties;
           };
-
-          flags_type flags_;
           
           info_callback_type info_callback_;
           warning_callback_type warning_callback_;
