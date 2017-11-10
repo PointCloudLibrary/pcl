@@ -456,7 +456,7 @@ CPCSegmentation Parameters: \n\
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
     const unsigned char* convex_color     = bg_white ? black_color : white_color;
-    const unsigned char* color;
+    const unsigned char* color = NULL;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
     //This iterates through them, finding the edges
