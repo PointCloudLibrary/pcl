@@ -313,8 +313,8 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointInT, typename PointOutT> void
-  GASDColorEstimationBase<PointInT, PointOutT>::convertCloudColorRGBToHSV (const pcl::PointCloud<PointInT> &rgb_cloud,
-                                                                           pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud)
+  GASDColorEstimation<PointInT, PointOutT>::convertCloudColorRGBToHSV (const pcl::PointCloud<PointInT> &rgb_cloud,
+                                                                       pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud)
   {
     const bool xyz_available = pcl::traits::has_xyz < PointInT > ::value;
     const bool rgb_available = pcl::traits::has_color < PointInT > ::value;
@@ -326,29 +326,30 @@ namespace pcl
     }
 
     // RGB -> HSV conversion requires a PointXYZRGB point cloud
-    pcl::PointCloud < pcl::PointXYZRGB > temp_cloud;
+	const pcl::PointCloud<pcl::PointXYZRGB>* xyzrgb_ptr;
+	pcl::PointCloud<pcl::PointXYZRGB> temp_cloud;
 
-    pcl::copyPointCloud (rgb_cloud, temp_cloud);
+	if (pcl::isSamePointType<PointInT, pcl::PointXYZRGB> ())
+	{
+	  xyzrgb_ptr = &rgb_cloud;
+	}
+	else
+	{
+	  pcl::copyPointCloud (rgb_cloud, temp_cloud);
+	  xyzrgb_ptr = &temp_cloud;
+	}
 
     // perform RGB -> HSV conversion
-    pcl::PointCloudXYZRGBtoXYZHSV (temp_cloud, hsv_cloud);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointOutT> void
-  GASDColorEstimation<pcl::PointXYZRGB, PointOutT>::convertCloudColorRGBToHSV (const pcl::PointCloud<pcl::PointXYZRGB> &rgb_cloud,
-                                                                               pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud)
-  {
-    pcl::PointCloudXYZRGBtoXYZHSV (rgb_cloud, hsv_cloud);
+	pcl::PointCloudXYZRGBtoXYZHSV (*xyzrgb_ptr, hsv_cloud);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointInT, typename PointOutT> void
-  GASDColorEstimationBase<PointInT, PointOutT>::copyColorHistogramsToOutput (const size_t grid_size,
-                                                                             const size_t hists_size,
-                                                                             std::vector<Eigen::VectorXf> &hists,
-                                                                             PointCloudOut &output,
-                                                                             size_t &pos)
+  GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (const size_t grid_size,
+                                                                         const size_t hists_size,
+                                                                         std::vector<Eigen::VectorXf> &hists,
+                                                                         PointCloudOut &output,
+                                                                         size_t &pos)
   {
     for (size_t i = 0; i < grid_size; ++i)
     {
@@ -370,7 +371,7 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointInT, typename PointOutT> void
-  GASDColorEstimationBase<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
+  GASDColorEstimation<PointInT, PointOutT>::computeFeature (PointCloudOut &output)
   {
     // call shape feature computation
     GASDEstimation<PointInT, PointOutT>::computeFeature (output);

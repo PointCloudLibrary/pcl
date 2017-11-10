@@ -71,8 +71,8 @@ namespace pcl
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudIn;
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
-      typedef boost::shared_ptr<GASDEstimation<PointOutT> > Ptr;
-      typedef boost::shared_ptr<const GASDEstimation<PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<GASDEstimation<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const GASDEstimation<PointInT, PointOutT> > ConstPtr;
 
       /** \brief Different histogram interpolation methods.
        * <ul>
@@ -260,12 +260,12 @@ namespace pcl
    * \ingroup features
    */
   template <typename PointInT, typename PointOutT = GASDSignature984>
-  class GASDColorEstimationBase : public GASDEstimation<PointInT, PointOutT>
+  class GASDColorEstimation : public GASDEstimation<PointInT, PointOutT>
   {
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
-      typedef boost::shared_ptr<GASDColorEstimationBase<PointOutT> > Ptr;
-      typedef boost::shared_ptr<const GASDColorEstimationBase<PointOutT> > ConstPtr;
+      typedef boost::shared_ptr<GASDColorEstimation<PointInT, PointOutT> > Ptr;
+      typedef boost::shared_ptr<const GASDColorEstimation<PointInT, PointOutT> > ConstPtr;
 
       /** \brief Constructor.
        * \param[in] view_direction view direction
@@ -276,13 +276,13 @@ namespace pcl
        * \param[in] shape_interp shape histograms interpolation method
        * \param[in] color_interp color histograms interpolation method
        */
-      GASDColorEstimationBase (const Eigen::Vector3f &view_direction = Eigen::Vector3f (0.0f, 0.0f, 1.0f),
-                               const size_t shape_half_grid_size = 3,
-                               const size_t shape_hists_size = 1,
-                               const size_t color_half_grid_size = 2,
-                               const size_t color_hists_size = 12,
-                               const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod shape_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE,
-                               const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod color_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE) :
+      GASDColorEstimation (const Eigen::Vector3f &view_direction = Eigen::Vector3f (0.0f, 0.0f, 1.0f),
+                           const size_t shape_half_grid_size = 3,
+                           const size_t shape_hists_size = 1,
+                           const size_t color_half_grid_size = 2,
+                           const size_t color_hists_size = 12,
+                           const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod shape_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE,
+                           const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod color_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE) :
           GASDEstimation<PointInT, PointOutT> (view_direction, shape_half_grid_size, shape_hists_size, shape_interp),
           color_half_grid_size_ (color_half_grid_size),
           color_hists_size_ (color_hists_size),
@@ -368,48 +368,6 @@ namespace pcl
        */
       void
       computeFeature (PointCloudOut &output);
-  };
-
-  /** \brief GASDColorEstimation estimates the Globally Aligned Spatial Distribution (GASD) descriptor for a given
-   * point cloud dataset given XYZ and RGB data.
-   *
-   * The suggested PointOutT is pcl::GASDSignature984.
-   *
-   * \note If you use this code in any academic work, please cite:
-   *
-   *   - J. Lima, V. Teichrieb.
-   *     An Efficient Global Point Cloud Descriptor for Object Recognition and Pose Estimation.
-   *     In Proceedings of the 29th SIBGRAPI - Conference on Graphics, Patterns and Images,
-   *     Sao Jose dos Campos, Brazil, October 4-7 2016.
-   *
-   * \author Joao Paulo Lima
-   *
-   * Voxar Labs, Centro de Informatica, Universidade Federal de Pernambuco, Brazil
-   *
-   * Departamento de Estatistica e Informatica, Universidade Federal Rural de Pernambuco, Brazil
-   *
-   * \ingroup features
-   */
-  template <typename PointInT, typename PointOutT = GASDSignature984>
-  class GASDColorEstimation : public GASDColorEstimationBase<PointInT, PointOutT>
-  {
-    public:
-      typedef boost::shared_ptr<GASDColorEstimation<PointOutT> > Ptr;
-      typedef boost::shared_ptr<const GASDColorEstimation<PointOutT> > ConstPtr;
-  };
-
-  /** \brief GASDColorEstimation partial specialization for PointInT as pcl::PointXYZRGB. */
-  template <typename PointOutT>
-  class GASDColorEstimation<pcl::PointXYZRGB, PointOutT> : public GASDColorEstimationBase<pcl::PointXYZRGB, PointOutT>
-  {
-    private:
-      /** \brief Function specialization for pcl::PointXYZRGB type.
-      * \param[in] rgb_cloud aligned point cloud with pcl::PointXYZRGB point type
-      * \param[out] hsv_cloud point cloud with HSV colors
-      */
-      void
-      convertCloudColorRGBToHSV (const pcl::PointCloud<pcl::PointXYZRGB> &rgb_cloud,
-                                 pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud);
   };
 }  // namespace pcl
 
