@@ -46,20 +46,6 @@
 #include <pcl/exceptions.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////
-/** \brief Constructor with direct computation
-  * \param[in] cloud input m*n matrix (ie n vectors of R(m))
-  * \param[in] basis_only flag to compute only the PCA basis
-  */
-template<typename PointT>
-pcl::PCA<PointT>::PCA (const pcl::PointCloud<PointT> &cloud, bool basis_only)
-{
-  Base ();
-  basis_only_ = basis_only;
-  setInputCloud (cloud.makeShared ());
-  compute_done_ = initCompute ();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////
 template<typename PointT> bool
 pcl::PCA<PointT>::initCompute () 
 {
