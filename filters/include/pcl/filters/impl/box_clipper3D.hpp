@@ -120,7 +120,7 @@ pcl::BoxClipper3D<PointT>::clipPoint3D (const PointT& point) const
  * @attention untested code
  */
 template<typename PointT> bool
-pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) const
+pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT&, PointT&) const
 {
   /*
   PointT pt1, pt2;
@@ -165,6 +165,7 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) co
     return true;
   }
   */
+  throw std::logic_error ("Not implemented");
   return false;
 }
 
@@ -173,10 +174,11 @@ pcl::BoxClipper3D<PointT>::clipLineSegment3D (PointT& point1, PointT& point2) co
  * @attention untested code
  */
 template<typename PointT> void
-pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >& polygon, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const
+pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (const std::vector<PointT, Eigen::aligned_allocator<PointT> >&, std::vector<PointT, Eigen::aligned_allocator<PointT> >& clipped_polygon) const
 {
   // not implemented -> clip everything
   clipped_polygon.clear ();
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -188,6 +190,7 @@ pcl::BoxClipper3D<PointT>::clipPlanarPolygon3D (std::vector<PointT, Eigen::align
 {
   // not implemented -> clip everything
   polygon.clear ();
+  throw std::logic_error ("Not implemented");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
