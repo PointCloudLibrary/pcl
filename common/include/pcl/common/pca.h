@@ -93,13 +93,6 @@ namespace pcl
         , mean_ ()
         , eigenvalues_  ()
       {}
-      
-      /** \brief Constructor with direct computation
-        * X input m*n matrix (ie n vectors of R(m))
-        * basis_only flag to compute only the PCA basis
-        */
-      PCL_DEPRECATED ("Use PCA (bool basis_only); setInputCloud (X.makeShared ()); instead")
-      PCA (const pcl::PointCloud<PointT>& X, bool basis_only = false);
 
       /** Copy Constructor
         * \param[in] pca PCA object
