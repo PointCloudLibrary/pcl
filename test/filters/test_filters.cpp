@@ -895,11 +895,10 @@ TEST (VoxelGrid_RGB, Filters)
   for (int i = 0; i < 10; ++i)
   {
     PointXYZRGB pt;
-    int rgb = (col_r[i] << 16) | (col_g[i] << 8) | col_b[i];
-    pt.x = 0.0f;
-    pt.y = 0.0f;
-    pt.z = 0.0f;
-    pt.rgb = *reinterpret_cast<float*> (&rgb);
+    pt.a = 0xffu;
+    pt.r = col_r[i];
+    pt.g = col_g[i];
+    pt.b = col_b[i];
     cloud_rgb_.points.push_back (pt);
   }
 
