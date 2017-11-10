@@ -71,7 +71,7 @@ main (int argc, char **argv)
   double loopDist = 5.0;
   pcl::console::parse_argument (argc, argv, "-D", loopDist);
 
-  int loopCount = 20;
+  unsigned int loopCount = 20;
   pcl::console::parse_argument (argc, argv, "-c", loopCount);
 
   pcl::registration::LUM<PointType> lum;
