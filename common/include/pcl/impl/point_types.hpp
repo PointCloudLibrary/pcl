@@ -1615,7 +1615,7 @@ namespace pcl
   {
     inline PointDEM (const _PointDEM &p)
     {
-      x = p.x; y = p.y; x = p.z; data[3] = 1.0f;
+      x = p.x; y = p.y; z = p.z; data[3] = 1.0f;
       intensity = p.intensity;
       intensity_variance = p.intensity_variance;
       height_variance = p.height_variance;
