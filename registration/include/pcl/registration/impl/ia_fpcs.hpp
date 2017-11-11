@@ -787,7 +787,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   {
     float dist_sqr_1 = pcl::squaredEuclideanDistance (target_->points[*it_base], centre_pt_base);
     float best_diff_sqr = FLT_MAX;
-    int best_index;
+    int best_index = -1;
 
     for (it_match = copy.begin (); it_match != it_match_e; it_match++)
     {

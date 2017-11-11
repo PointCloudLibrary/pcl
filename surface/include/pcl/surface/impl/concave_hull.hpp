@@ -131,7 +131,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 {
   Eigen::Vector4d xyz_centroid;
   compute3DCentroid (*input_, *indices_, xyz_centroid);
-  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix;
+  EIGEN_ALIGN16 Eigen::Matrix3d covariance_matrix = Eigen::Matrix3d::Zero ();
   computeCovarianceMatrixNormalized (*input_, *indices_, xyz_centroid, covariance_matrix);
 
   // Check if the covariance matrix is finite or not.
