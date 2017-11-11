@@ -895,7 +895,6 @@ TEST (VoxelGrid_RGB, Filters)
   for (int i = 0; i < 10; ++i)
   {
     PointXYZRGB pt;
-    pt.a = 0xffu;
     pt.r = col_r[i];
     pt.g = col_g[i];
     pt.b = col_b[i];

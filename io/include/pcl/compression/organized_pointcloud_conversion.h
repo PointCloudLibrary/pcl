@@ -444,14 +444,12 @@ namespace pcl
                 if (monoImage_arg)
                 {
                   // Define point color
-                  newPoint.a = 0xffu;
                   newPoint.r = rgbData_arg[i];
                   newPoint.g = rgbData_arg[i];
                   newPoint.b = rgbData_arg[i];
                 } else
                 {
                   // Define point color
-                  newPoint.a = 0xffu;
                   newPoint.r = rgbData_arg[i*3+0];
                   newPoint.g = rgbData_arg[i*3+1];
                   newPoint.b = rgbData_arg[i*3+2];
@@ -551,14 +549,12 @@ namespace pcl
                 if (monoImage_arg)
                 {
                   // Define point color
-                  newPoint.a = 0xffu;
                   newPoint.r = rgbData_arg[i];
                   newPoint.g = rgbData_arg[i];
                   newPoint.b = rgbData_arg[i];
                 } else
                 {
                   // Define point color
-                  newPoint.a = 0xffu;
                   newPoint.r = rgbData_arg[i*3+0];
                   newPoint.g = rgbData_arg[i*3+1];
                   newPoint.b = rgbData_arg[i*3+2];

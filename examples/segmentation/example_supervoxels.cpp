@@ -230,7 +230,6 @@ main (int argc, char ** argv)
           new_point.z = depth;
         }
         
-        new_point.a = 0xffu;
         new_point.r = color_pixel[0];
         new_point.g = color_pixel[1];
         new_point.b = color_pixel[2];
