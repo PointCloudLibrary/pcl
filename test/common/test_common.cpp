@@ -57,15 +57,13 @@ TEST (PCL, PointXYZRGB)
   PointXYZRGB p;
 
   uint8_t r = 127, g = 64, b = 254;
-  uint32_t rgb = (static_cast<uint32_t> (r) << 16 | 
-                  static_cast<uint32_t> (g) << 8 | 
-                  static_cast<uint32_t> (b));
-  p.rgb = *reinterpret_cast<float*>(&rgb);
+  p.r = r;
+  p.g = g;
+  p.b = b;
 
-  rgb = *reinterpret_cast<int*>(&p.rgb);
-  uint8_t rr = (rgb >> 16) & 0x0000ff;
-  uint8_t gg = (rgb >> 8)  & 0x0000ff;
-  uint8_t bb = (rgb)       & 0x0000ff;
+  uint8_t rr = (p.rgba >> 16) & 0x0000ff;
+  uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
+  uint8_t bb = (p.rgba)       & 0x0000ff;
 
   EXPECT_EQ (r, rr);
   EXPECT_EQ (g, gg);
@@ -75,7 +73,7 @@ TEST (PCL, PointXYZRGB)
   EXPECT_EQ (bb, 254);
 
   p.r = 0; p.g = 127; p.b = 0;
-  rgb = *reinterpret_cast<int*>(&p.rgb);
+  uint32_t rgb = p.rgba;
   rr = (rgb >> 16) & 0x0000ff;
   gg = (rgb >> 8)  & 0x0000ff;
   bb = (rgb)       & 0x0000ff;
@@ -94,12 +92,11 @@ TEST (PCL, PointXYZRGBNormal)
   uint32_t rgb = (static_cast<uint32_t> (r) << 16 | 
                   static_cast<uint32_t> (g) << 8 | 
                   static_cast<uint32_t> (b));
-  p.rgb = *reinterpret_cast<float*>(&rgb);
+  p.rgba = rgb;
 
-  rgb = *reinterpret_cast<int*>(&p.rgb);
-  uint8_t rr = (rgb >> 16) & 0x0000ff;
-  uint8_t gg = (rgb >> 8)  & 0x0000ff;
-  uint8_t bb = (rgb)       & 0x0000ff;
+  uint8_t rr = (p.rgba >> 16) & 0x0000ff;
+  uint8_t gg = (p.rgba >> 8)  & 0x0000ff;
+  uint8_t bb = (p.rgba)       & 0x0000ff;
 
   EXPECT_EQ (r, rr);
   EXPECT_EQ (g, gg);
@@ -109,7 +106,7 @@ TEST (PCL, PointXYZRGBNormal)
   EXPECT_EQ (bb, 254);
 
   p.r = 0; p.g = 127; p.b = 0;
-  rgb = *reinterpret_cast<int*>(&p.rgb);
+  rgb = p.rgba;
   rr = (rgb >> 16) & 0x0000ff;
   gg = (rgb >> 8)  & 0x0000ff;
   bb = (rgb)       & 0x0000ff;
@@ -413,7 +410,8 @@ TEST (PCL, CopyIfFieldExists)
   EXPECT_EQ (z_val, 3.0);
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "rgb", is_rgb, rgb_val));
   EXPECT_EQ (is_rgb, true);
-  int rgb = *reinterpret_cast<int*>(&rgb_val);
+  uint32_t rgb;
+  std::memcpy (&rgb, &rgb_val, sizeof(rgb_val));
   EXPECT_EQ (rgb, 0xff7f40fe);      // alpha is 255
   pcl::for_each_type<FieldList> (CopyIfFieldExists<PointXYZRGBNormal, float> (p, "normal_x", is_normal_x, normal_x_val));
   EXPECT_EQ (is_normal_x, true);

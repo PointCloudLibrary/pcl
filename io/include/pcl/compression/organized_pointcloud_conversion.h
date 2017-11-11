@@ -324,20 +324,17 @@ namespace pcl
             if (convertToMono)
             {
               // Encode point color
-              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
-              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * static_cast<float>((rgb >> 16) & 0x0000ff) +
-                                                       0.5870 * static_cast<float>((rgb >> 8)  & 0x0000ff) +
-                                                       0.1140 * static_cast<float>((rgb >> 0)  & 0x0000ff));
+              uint8_t grayvalue = static_cast<uint8_t>(0.2989 * point.r
+                                                        + 0.5870 * point.g
+                                                        + 0.1140 * point.b);
 
               rgbData_arg.push_back (grayvalue);
             } else
             {
               // Encode point color
-              const uint32_t rgb = *reinterpret_cast<const int*> (&point.rgb);
-
-              rgbData_arg.push_back ( (rgb >> 16) & 0x0000ff);
-              rgbData_arg.push_back ( (rgb >> 8) & 0x0000ff);
-              rgbData_arg.push_back ( (rgb >> 0) & 0x0000ff);
+              rgbData_arg.push_back (point.r);
+              rgbData_arg.push_back (point.g);
+              rgbData_arg.push_back (point.b);
             }
 
 
@@ -446,35 +443,22 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i];
-                  const uint8_t& pixel_g = rgbData_arg[i];
-                  const uint8_t& pixel_b = rgbData_arg[i];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i];
+                  newPoint.g = rgbData_arg[i];
+                  newPoint.b = rgbData_arg[i];
                 } else
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i*3+0];
+                  newPoint.g = rgbData_arg[i*3+1];
+                  newPoint.b = rgbData_arg[i*3+2];
                 }
 
               } else
               {
                 // Set white point color
-                uint32_t rgb = (static_cast<uint32_t>(255) << 16
-                              | static_cast<uint32_t>(255) << 8
-                              | static_cast<uint32_t>(255));
-                newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                newPoint.rgba = 0xffffffffu;
               }
             } else
             {
@@ -564,35 +548,22 @@ namespace pcl
               {
                 if (monoImage_arg)
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i];
-                  const uint8_t& pixel_g = rgbData_arg[i];
-                  const uint8_t& pixel_b = rgbData_arg[i];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i];
+                  newPoint.g = rgbData_arg[i];
+                  newPoint.b = rgbData_arg[i];
                 } else
                 {
-                  const uint8_t& pixel_r = rgbData_arg[i*3+0];
-                  const uint8_t& pixel_g = rgbData_arg[i*3+1];
-                  const uint8_t& pixel_b = rgbData_arg[i*3+2];
-
                   // Define point color
-                  uint32_t rgb = (static_cast<uint32_t>(pixel_r) << 16
-                                | static_cast<uint32_t>(pixel_g) << 8
-                                | static_cast<uint32_t>(pixel_b));
-                  newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                  newPoint.r = rgbData_arg[i*3+0];
+                  newPoint.g = rgbData_arg[i*3+1];
+                  newPoint.b = rgbData_arg[i*3+2];
                 }
 
               } else
               {
                 // Set white point color
-                uint32_t rgb = (static_cast<uint32_t>(255) << 16
-                              | static_cast<uint32_t>(255) << 8
-                              | static_cast<uint32_t>(255));
-                newPoint.rgb = *reinterpret_cast<float*>(&rgb);
+                newPoint.rgba = 0xffffffffu;
               }
             } else
             {
