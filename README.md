@@ -14,6 +14,7 @@ Continuous integration
 [license]: https://github.com/PointCloudLibrary/pcl/blob/master/LICENSE.txt
 
 [![Build Status](https://travis-ci.org/PointCloudLibrary/pcl.svg?branch=master)](https://travis-ci.org/PointCloudLibrary/pcl)
+[![Build Status](https://ci.appveyor.com/api/projects/status/oiep6oktpmuap7qr/branch/master?svg=true)](https://ci.appveyor.com/project/PointCloudLibrary/pcl/branch/master)
 
 Description
 -----------
