@@ -113,20 +113,6 @@ namespace pcl
           *
           * \param[in] cloud the input point cloud source
           */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceEstimationBase::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-        void
-        setInputCloud (const PointCloudSourceConstPtr &cloud);
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceEstimationBase::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-        PointCloudSourceConstPtr const
-        getInputCloud ();
-
-        /** \brief Provide a pointer to the input source 
-          * (e.g., the point cloud that we want to align to the target)
-          *
-          * \param[in] cloud the input point cloud source
-          */
         inline void 
         setInputSource (const PointCloudSourceConstPtr &cloud)
         {

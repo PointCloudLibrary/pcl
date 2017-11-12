@@ -83,7 +83,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_normal_shooting.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_backprojection.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_estimation_organized_projection.hpp"
-        "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_distance.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_median_distance.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/correspondence_rejection_surface_normal.hpp"
