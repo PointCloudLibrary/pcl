@@ -146,11 +146,6 @@ if(build)
         include/pcl/impl/cloud_iterator.hpp
         )
 
-    set(ros_incs 
-        include/pcl/ros/conversions.h
-        include/pcl/ros/register_point_struct.h
-        )
-
     set(tools_incs 
         include/pcl/console/parse.h
         include/pcl/console/print.h
@@ -168,8 +163,7 @@ if(build)
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
-    PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
-    #PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${common_incs} ${impl_incs} ${ros_incs} ${tools_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
+    PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${kissfft_srcs} ${incs} ${common_incs} ${impl_incs} ${tools_incs} ${kissfft_incs} ${common_incs_impl} ${range_image_incs} ${range_image_incs_impl})
     PCL_MAKE_PKGCONFIG("${LIB_NAME}" "${SUBSYS_NAME}" "${SUBSYS_DESC}" "" ""
         "" "" "")
 
@@ -179,7 +173,6 @@ if(build)
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/fft ${kissfft_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" common/impl ${common_incs_impl})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" impl ${impl_incs})
-    PCL_ADD_INCLUDES("${SUBSYS_NAME}" ros ${ros_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" console ${tools_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image ${range_image_incs})
     PCL_ADD_INCLUDES("${SUBSYS_NAME}" range_image/impl ${range_image_incs_impl})
