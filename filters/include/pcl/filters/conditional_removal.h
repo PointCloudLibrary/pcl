@@ -622,21 +622,6 @@ namespace pcl
         filter_name_ = "ConditionalRemoval";
       }
 
-      /** \brief a constructor that includes the condition.  
-        * \param condition the condition that each point must satisfy to avoid
-        * being removed by the filter
-        * \param extract_removed_indices extract filtered indices from indices vector
-        */
-      PCL_DEPRECATED ("ConditionalRemoval(ConditionBasePtr condition, bool extract_removed_indices = false) is deprecated, "
-      "please use the setCondition (ConditionBasePtr condition) function instead.")
-      ConditionalRemoval (ConditionBasePtr condition, bool extract_removed_indices = false) :
-        Filter<PointT>::Filter (extract_removed_indices), capable_ (false), keep_organized_ (false), condition_ (),
-        user_filter_value_ (std::numeric_limits<float>::quiet_NaN ())
-      {
-        filter_name_ = "ConditionalRemoval";
-        setCondition (condition);
-      }
-
       /** \brief Set whether the filtered points should be kept and set to the
         * value given through \a setUserFilterValue (default: NaN), or removed
         * from the PointCloud, thus potentially breaking its organized
