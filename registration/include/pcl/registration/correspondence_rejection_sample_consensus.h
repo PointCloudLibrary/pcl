@@ -100,18 +100,6 @@ namespace pcl
         /** \brief Provide a source point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
           */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-        virtual void
-        setInputCloud (const PointCloudConstPtr &cloud);
-
-        /** \brief Get a pointer to the input point cloud dataset target. */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-        PointCloudConstPtr const
-        getInputCloud ();
-
-        /** \brief Provide a source point cloud dataset (must contain XYZ data!)
-          * \param[in] cloud a cloud containing XYZ data
-          */
         virtual inline void 
         setInputSource (const PointCloudConstPtr &cloud) 
         { 
@@ -121,13 +109,6 @@ namespace pcl
         /** \brief Get a pointer to the input point cloud dataset target. */
         inline PointCloudConstPtr const 
         getInputSource () { return (input_); }
-
-        /** \brief Provide a target point cloud dataset (must contain XYZ data!)
-          * \param[in] cloud a cloud containing XYZ data
-          */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setTargetCloud] setTargetCloud is deprecated. Please use setInputTarget instead.")
-        virtual void
-        setTargetCloud (const PointCloudConstPtr &cloud);
 
         /** \brief Provide a target point cloud dataset (must contain XYZ data!)
           * \param[in] cloud a cloud containing XYZ data
@@ -184,22 +165,8 @@ namespace pcl
         /** \brief Set the maximum number of iterations.
           * \param[in] max_iterations Maximum number if iterations to run
           */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::setMaxIterations] setMaxIterations is deprecated. Please use setMaximumIterations instead.")
-        void
-        setMaxIterations (int max_iterations);
-
-        /** \brief Set the maximum number of iterations.
-          * \param[in] max_iterations Maximum number if iterations to run
-          */
         inline void 
         setMaximumIterations (int max_iterations) { max_iterations_ = std::max (max_iterations, 0); }
-
-        /** \brief Get the maximum number of iterations.
-          * \return max_iterations Maximum number if iterations to run
-          */
-        PCL_DEPRECATED ("[pcl::registration::CorrespondenceRejectorSampleConsensus::getMaxIterations] getMaxIterations is deprecated. Please use getMaximumIterations instead.")
-        int
-        getMaxIterations ();
 
         /** \brief Get the maximum number of iterations.
           * \return max_iterations Maximum number if iterations to run

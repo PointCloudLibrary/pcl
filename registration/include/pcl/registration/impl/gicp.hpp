@@ -43,14 +43,6 @@
 #include <pcl/registration/boost.h>
 #include <pcl/registration/exceptions.h>
 
-///////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointSource, typename PointTarget> void
-pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::setInputCloud (
-    const typename pcl::GeneralizedIterativeClosestPoint<PointSource, PointTarget>::PointCloudSourceConstPtr &cloud)
-{
-  setInputSource (cloud);
-}
-
 ////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget>
 template<typename PointT> void
