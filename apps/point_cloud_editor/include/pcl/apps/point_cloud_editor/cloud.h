@@ -418,10 +418,6 @@ class Cloud : public Statistics
     /// (false) when displaying the cloud
     bool use_color_ramp_;
 
-    /// Flag that indicates whether the cloud should be colored with its own
-    /// color
-    bool use_native_color_;
-
     /// The axis which the color ramp is to be applied when drawing the cloud
     Axis color_ramp_axis_;
 
