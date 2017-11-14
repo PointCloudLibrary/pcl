@@ -295,7 +295,7 @@ template<template<class > class Distance, typename PointInT, typename FeatureT>
               nearestKSearch (single_categories_index_[it->second], histogram, NN_, indices, distances);
               //gather NN-search results
               double score = 0;
-              for (size_t i = 0; i < NN_; ++i)
+              for (size_t i = 0; i < (size_t) NN_; ++i)
               {
                 score = distances[0][i];
                 index_score is;

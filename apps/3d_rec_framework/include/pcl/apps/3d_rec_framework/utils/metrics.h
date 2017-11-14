@@ -121,7 +121,7 @@ namespace Metrics
        */
       template<typename U, typename V>
         inline ResultType
-        accum_dist (const U& a, const V& b, int dim) const
+        accum_dist (const U& a, const V& b, int) const
         {
           //printf("New code being used, accum_dist\n");
           ResultType min0;
