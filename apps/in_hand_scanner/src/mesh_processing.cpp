@@ -93,7 +93,7 @@ pcl::ihs::MeshProcessing::processBoundary (Mesh& mesh, const std::vector <HalfEd
       //                  \ /          //
       //                   5           //
 
-      for (int i=0; i<boundary.size (); ++i)
+      for (size_t i=0; i<boundary.size (); ++i)
       {
         // The vertices on the boundary
         vi_a = mesh.getOriginatingVertexIndex (boundary [i]);
