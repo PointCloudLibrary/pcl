@@ -3,6 +3,7 @@
  *
  * Point Cloud Library (PCL) - www.pointclouds.org
  * Copyright (c) 2017-, Southwest Research Institute
+ * Copyright (c) 2017-, Open Perception, Inc.
  *
  * All rights reserved.
  *
