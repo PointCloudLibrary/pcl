@@ -55,6 +55,4 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 option(BUILD_tools "Useful PCL-based command line tools" ON)
 
-option(BUILD_surface_afront_debug "Enable afront mesher debug interface" OFF)
-
 option(WITH_DOCS "Build doxygen documentation" OFF)

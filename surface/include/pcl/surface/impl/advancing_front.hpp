@@ -44,11 +44,6 @@
 #include <pcl/geometry/mesh_conversion.h>
 #include <pcl/common/normals.h>
 
-#ifdef AFRONTDEBUG
-#include <pcl/surface/organized_fast_mesh.h>
-#include <sstream>
-#endif
-
 #include <eigen3/Eigen/LU>
 
 #include <boost/lambda/lambda.hpp>
@@ -80,10 +75,6 @@ pcl::AfrontMesher<PointNT>::initialize ()
   boundary_.clear ();
   mesh_.clear ();
 
-#ifdef AFRONTDEBUG
-  fence_counter_ = 0;
-#endif
-
   // Check the only parameter that does not have a default.
   if (search_radius_ <= 0)
   {
@@ -106,39 +97,6 @@ pcl::AfrontMesher<PointNT>::initialize ()
   createFirstTriangle (rand () % mls_cloud_->size ());
 
   initialized_ = true;
-
-#ifdef AFRONTDEBUG
-  viewer_ = pcl::visualization::PCLVisualizer::Ptr (new pcl::visualization::PCLVisualizer ("3D Viewer"));
-  viewer_->initCameraParameters ();
-  viewer_->setBackgroundColor (0, 0, 0);
-  pcl::PolygonMesh out_mesh;
-  pcl::geometry::toFaceVertexMesh (mesh_, out_mesh);
-  viewer_->addPolygonMesh (out_mesh);
-
-  int v1 = 1;
-  viewer_->createViewPort (0.0, 0.5, 0.5, 1.0, v1);
-  pcl::visualization::PointCloudColorHandlerCustom<PointNT> single_color (input_, 0, 255, 0);
-  viewer_->addPointCloud<PointNT> (input_, single_color, "sample cloud", v1);
-
-  //Show just mesh
-  int v2 = 2;
-  viewer_->createViewPort (0.5, 0.5, 1.0, 1.0, v2);
-
-  //Show Final mesh results over the mls point cloud
-  int v3 = 3;
-  viewer_->createViewPort (0.0, 0.0, 0.5, 0.5, v3);
-  pcl::visualization::PointCloudColorHandlerGenericField<pcl::afront::AfrontGuidanceFieldPointType> handler_k (mls_cloud_, "curvature");
-  viewer_->addPointCloud<pcl::afront::AfrontGuidanceFieldPointType> (mls_cloud_, handler_k, "mls_cloud", v3);
-
-  //Show mls information
-  int v4 = 4;
-  viewer_->createViewPort (0.5, 0.0, 1.0, 0.5, v4);
-  pcl::visualization::PointCloudColorHandlerCustom<pcl::afront::AfrontGuidanceFieldPointType> single_color2 (mls_cloud_, 0, 255, 0);
-  viewer_->addPointCloud<pcl::afront::AfrontGuidanceFieldPointType> (mls_cloud_, single_color2, "mls_cloud2", v4);
-
-  viewer_->registerKeyboardCallback (&pcl::AfrontMesher<PointNT>::keyboardEventOccurred, *this);
-  viewer_->spin ();
-#endif
 
   return true;
 }
@@ -267,7 +225,7 @@ pcl::AfrontMesher<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &poi
   PCL_INFO ("Meshing Finished!\n");
 }
 
-template <typename PointNT> void
+template <typename PointNT> typename pcl::AfrontMesher<PointNT>::PredictVertexResults
 pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
 {
   HalfEdgeIndex half_edge = queue_.front ();
@@ -275,56 +233,10 @@ pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
 
   AdvancingFrontData afront = getAdvancingFrontData (half_edge);
 
-#ifdef AFRONTDEBUG
-  std::printf ("\x1B[35mAdvancing Front: %lu\x1B[0m\n", id);
+  PredictVertexResults pvr = predictVertex (afront);
 
-  // Remove previous fence from viewer
-  for (long unsigned int j = 1; j <= fence_counter_; ++j)
-    viewer_->removeShape ("fence" + static_cast<std::ostringstream *> (&(std::ostringstream () << j))->str (), 2);
-  fence_counter_ = 0;
-
-  // remove previouse iterations objects
-  viewer_->removeShape ("HalfEdge");
-  viewer_->removeShape ("NextHalfEdge", 1);
-  viewer_->removeShape ("PrevHalfEdge", 1);
-  viewer_->removeShape ("LeftSide", 1);
-  viewer_->removeShape ("RightSide", 1);
-  viewer_->removeShape ("Closest", 1);
-  viewer_->removeShape ("ProxRadius", 1);
-  viewer_->removePointCloud ("Mesh_Vertex_Cloud", 2);
-  viewer_->removePointCloud ("Mesh_Vertex_Cloud_Normals", 4);
-  viewer_->removeShape ("MLSSurface", 4);
-  viewer_->removeShape ("MLSClosest", 4);
-  viewer_->removeShape ("MLSRadius", 4);
-  viewer_->removeShape ("MLSXAxis", 4);
-  viewer_->removeShape ("MLSYAxis", 4);
-  viewer_->removeShape ("MLSZAxis", 4);
-  viewer_->removeShape ("MLSProjection", 4);
-
-  pcl::PointXYZ p1, p2, p3, p4;
-  p1 = pcl::PointXYZ (afront.next.tri.p[0] (0), afront.next.tri.p[0] (1), afront.next.tri.p[0] (2));
-  p2 = pcl::PointXYZ (afront.next.tri.p[1] (0), afront.next.tri.p[1] (1), afront.next.tri.p[1] (2));
-  p3 = pcl::PointXYZ (afront.next.tri.p[2] (0), afront.next.tri.p[2] (1), afront.next.tri.p[2] (2));
-  p4 = pcl::PointXYZ (afront.next.tri.p[2] (0), afront.next.tri.p[2] (1), afront.next.tri.p[2] (2));
-
-  viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p2, 0, 255, 0, "HalfEdge");          // Green
-  viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p2, p3, 255, 0, 0, "NextHalfEdge", 1);   // Red
-  viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p4, 255, 0, 255, "PrevHalfEdge", 1); // Magenta
-  viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "HalfEdge");
-  viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "NextHalfEdge", 1);
-  viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "PrevHalfEdge", 1);
-
-  typename pcl::visualization::PointCloudColorHandlerCustom<typename MeshTraits::VertexData> single_color (mesh_vertex_data_ptr_, 255, 128, 0);
-  viewer_->addPointCloud<typename MeshTraits::VertexData> (mesh_vertex_data_ptr_, single_color, "Mesh_Vertex_Cloud", 2);
-
-  viewer_->addPointCloudNormals<typename MeshTraits::VertexData> (mesh_vertex_data_ptr_, 1, 0.005, "Mesh_Vertex_Cloud_Normals", 4);
-#endif
-
-  if (mesh_.getOppositeFaceIndex (afront.next.secondary) != mesh_.getOppositeFaceIndex (afront.prev.secondary) && afront.next.vi[2] == afront.prev.vi[2]) // This indicates a closed area
+  if (pvr.status == PredictVertexResults::InvalidClosedArea)
   {
-#ifdef AFRONTDEBUG
-    std::printf ("\x1B[34m  Closing Area\x1B[0m\n");
-#endif
     typename MeshTraits::FaceData new_fd = createFaceData (afront.next.tri);
     // TODO: Need to check face normal to vertex normal. If not consistant to merge triangles together.
     //       This function has not been written yet. But it should look at the surrounding triangle and
@@ -334,127 +246,51 @@ pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
     removeFromQueue (afront.prev.secondary, afront.next.secondary);
     removeFromBoundary (afront.prev.secondary, afront.next.secondary);
   }
-  else
+  else if (pvr.status == PredictVertexResults::InvalidMLSResults)
   {
-    PredictVertexResults pvr = predictVertex (afront);
-
-#ifdef AFRONTDEBUG
-    if (pvr.status == PredictVertexResults::Valid)
-    {
-      pcl::PolygonMesh mls_surface = getPolynomialSurface (pvr, search_radius_ / 50);
-      viewer_->addPolygonMesh (mls_surface, "MLSSurface", 4);
-    }
-
-    Eigen::Vector3f cpt = (mls_cloud_->at (pvr.pv.closest)).getVector3fMap ();
-    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), 0.1 * search_radius_, 255, 0, 0, "MLSClosest", 4);
-    viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSClosest", 4);
-
-    Eigen::Vector3f projected_pt = pvr.pv.point.getVector3fMap ();
-    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), search_radius_, 0, 255, 128, "MLSRadius", 4);
-    viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSRadius", 4);
-
-    pcl::PointXYZ mls_mean = pcl::PointXYZ (pvr.pv.mls.mean (0), pvr.pv.mls.mean (1), pvr.pv.mls.mean (2));
-    Eigen::Vector3d mls_xaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.u_axis;
-    Eigen::Vector3d mls_yaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.v_axis;
-    Eigen::Vector3d mls_zaxis = pvr.pv.mls.mean + 0.1 * search_radius_ * pvr.pv.mls.plane_normal;
-    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_xaxis (0), mls_xaxis (1), mls_xaxis (2)), 255, 0, 0, "MLSXAxis", 4);
-    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_yaxis (0), mls_yaxis (1), mls_yaxis (2)), 0, 255, 0, "MLSYAxis", 4);
-    viewer_->addLine (mls_mean, pcl::PointXYZ (mls_zaxis (0), mls_zaxis (1), mls_zaxis (2)), 0, 0, 255, "MLSZAxis", 4);
-
-    viewer_->addSphere (pcl::PointXYZ (projected_pt (0), projected_pt (1), projected_pt (2)), 0.02 * search_radius_, 255, 128, 0, "MLSProjection", 4);
-    viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSProjection", 4);
-
-    p3 = pcl::PointXYZ (pvr.tri.p[2] (0), pvr.tri.p[2] (1), pvr.tri.p[2] (2));
-    viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p3, 0, 255, 0, "RightSide", 1); // Green
-    viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p2, p3, 0, 255, 0, "LeftSide", 1);  // Green
-    viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "RightSide", 1);
-    viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "LeftSide", 1);
-#endif
-
-    if (pvr.status == PredictVertexResults::InvalidMLSResults)
-    {
-#ifdef AFRONTDEBUG
-      std::printf ("\x1B[31m  Invalid MLS Results for nearest point!\x1B[0m\n");
-#endif
-      boundary_.push_back (afront.front.he);
-    }
-    else if (pvr.status == PredictVertexResults::InvalidProjection)
-    {
-#ifdef AFRONTDEBUG
-      std::printf ("\x1B[31m  Invalid Projection!\x1B[0m\n");
-#endif
-      boundary_.push_back (afront.front.he);
-    }
-    else if (pvr.status == PredictVertexResults::AtBoundary)
-    {
-#ifdef AFRONTDEBUG
-      std::printf ("\x1B[36m  At Point Cloud Boundary!\x1B[0m\n");
-#endif
-      boundary_.push_back (afront.front.he);
-    }
-    else if (pvr.status == PredictVertexResults::InvalidStepSize)
-    {
-#ifdef AFRONTDEBUG
-      std::printf ("\x1B[31m  Calculated Invalid Step Size!\x1B[0m\n");
-#endif
-      boundary_.push_back (afront.front.he);
-    }
-    else
-    {
-      TriangleToCloseResults ttcr = isTriangleToClose (pvr);
-      if (!ttcr.found)
-      {
-        if (pvr.status == PredictVertexResults::Valid)
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[32m  Performed Grow Opperation\x1B[0m\n");
-#endif
-          grow (pvr);
-        }
-        else if (pvr.status == PredictVertexResults::InvalidVertexNormal)
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[31m  Projection point has inconsistant vertex normal!\x1B[0m\n");
-#endif
-          boundary_.push_back (afront.front.he);
-        }
-        else if (pvr.status == PredictVertexResults::InvalidTriangleNormal)
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[31m  Projection point triangle normal is inconsistant with vertex normals!\x1B[0m\n");
-#endif
-          boundary_.push_back (afront.front.he);
-        }
-      }
-      else
-      {
-        if (!ttcr.tri.vertex_normals_valid)
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[31m  Closest point has inconsistant vertex normal!\x1B[0m\n");
-#endif
-          boundary_.push_back (afront.front.he);
-        }
-        else if (!ttcr.tri.triangle_normal_valid)
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[31m  Closest point triangle normal is inconsistant with vertex normals!\x1B[0m\n");
-#endif
-          boundary_.push_back (afront.front.he);
-        }
-        else
-        {
-#ifdef AFRONTDEBUG
-          std::printf ("\x1B[33m  Performed Topology Event Opperation\x1B[0m\n");
-#endif
-          merge (ttcr);
-        }
-      }
-    }
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::InvalidProjection)
+  {
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::AtBoundary)
+  {
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::InvalidStepSize)
+  {
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::InvalidVertexNormal || pvr.status == PredictVertexResults::InvalidCloseProximityVertexNormal)
+  {
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::InvalidTriangleNormal || pvr.status == PredictVertexResults::InvalidCloseProximityTriangleNormal)
+  {
+    boundary_.push_back (afront.front.he);
+  }
+  else if (pvr.status == PredictVertexResults::ForcePrevEarCut)
+  {
+    cutEar (pvr.afront.prev);
+  }
+  else if (pvr.status == PredictVertexResults::ForceNextEarCut)
+  {
+    cutEar (pvr.afront.next);
+  }
+  else if (pvr.status == PredictVertexResults::Valid)
+  {
+    grow (pvr);
+  }
+  else if (pvr.status == PredictVertexResults::ValidCloseProximity)
+  {
+    merge (pvr);
   }
 
   if (queue_.size () == 0 || (samples_ != 0 && id >= samples_))
     finished_ = true;
+
+  return pvr;
 }
 
 template <typename PointNT> void
@@ -786,6 +622,13 @@ pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) con
   result.status = PredictVertexResults::Valid;
   result.afront = afront;
 
+  // If closed area do not predict a vertex.
+  if (mesh_.getOppositeFaceIndex (afront.next.secondary) != mesh_.getOppositeFaceIndex (afront.prev.secondary) && afront.next.vi[2] == afront.prev.vi[2])
+  {
+    result.status = PredictVertexResults::InvalidClosedArea;
+    return result;
+  }
+
   // Get new point for growing a triangle to be projected onto the mls surface
   double l = std::sqrt (pow (front.max_step, 2.0) - pow (front.length / 2.0, 2.0)); // Calculate the height of the triangle
 
@@ -821,11 +664,46 @@ pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) con
     // Get triangle Data
     result.tri = getTriangleData (front, result.pv.point);
     if (!result.tri.point_valid)
+    {
       result.status = PredictVertexResults::InvalidProjection;
-    else if (!result.tri.vertex_normals_valid)
+      return result;
+    }
+
+    if (!result.tri.vertex_normals_valid)
       result.status = PredictVertexResults::InvalidVertexNormal;
     else if (!result.tri.triangle_normal_valid)
       result.status = PredictVertexResults::InvalidTriangleNormal;
+
+    result.ttcr = isTriangleToClose (result);
+    if (result.ttcr.found)
+    {
+      assert (result.ttcr.closest != result.afront.front.vi[0]);
+      assert (result.ttcr.closest != result.afront.front.vi[1]);
+
+      if (!result.ttcr.tri.vertex_normals_valid)
+      {
+        result.status = PredictVertexResults::InvalidCloseProximityVertexNormal;
+      }
+      else if (!result.ttcr.tri.triangle_normal_valid)
+      {
+        result.status = PredictVertexResults::InvalidCloseProximityTriangleNormal;
+      }
+      else
+      {
+        if (result.ttcr.closest == result.afront.prev.vi[2])
+        {
+          result.status = PredictVertexResults::ForcePrevEarCut;
+        }
+        else if (result.ttcr.closest == result.afront.next.vi[2])
+        {
+          result.status = PredictVertexResults::ForceNextEarCut;
+        }
+        else
+        {
+          result.status = PredictVertexResults::ValidCloseProximity;
+        }
+      }
+    }
 
     return result;
   }
@@ -889,13 +767,6 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
           if (std::find (results.fences.begin (), results.fences.end (), he) == results.fences.end ())
           {
             results.fences.push_back (he);
-
-#ifdef AFRONTDEBUG
-            fence_counter_ += 1;
-            std::string fence_name = "fence" + static_cast<std::ostringstream *> (&(std::ostringstream () << fence_counter_))->str ();
-            viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (pcl::PointXYZ (chkpt (0), chkpt (1), chkpt (2)), pcl::PointXYZ (endpt (0), endpt (1), endpt (2)), 0, 255, 255, fence_name, 2); // orange
-            viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, fence_name, 2);
-#endif
           }
         }
 
@@ -1056,13 +927,6 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
     }
   }
 
-#ifdef AFRONTDEBUG
-  Eigen::Vector3f p;
-  p = pvr.tri.p[2];
-  viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step, 0, 255, 128, "ProxRadius", 1);
-  viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "ProxRadius", 1);
-#endif
-
   return results;
 }
 
@@ -1213,13 +1077,13 @@ template <typename PointNT> typename pcl::AfrontMesher<PointNT>::TriangleToClose
 pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) const
 {
   TriangleToCloseResults results;
-  results.pvr = pvr;
 
   // Check if new vertex is in close proximity to exising mesh verticies
   CloseProximityResults cpr = isCloseProximity (pvr);
 
   results.found = cpr.found;
   results.tri = pvr.tri;
+  results.fences = cpr.fences;
   if (results.found)
   {
     results.closest = cpr.closest;
@@ -1266,12 +1130,7 @@ pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) 
     if (fvr.found)
     {
       results.found = true;
-
-#ifdef AFRONTDEBUG
-      assert (fence_counter_ != 0);
-      std::string fence_name = "fence" + static_cast<std::ostringstream *> (&(std::ostringstream () << (fvr.index + 1)))->str ();
-      viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_COLOR, 255, 140, 0, fence_name, 1);
-#endif
+      results.fence_index = fvr.index;
 
       VertexIndex fvi[2];
       Eigen::Vector3f fp[2];
@@ -1307,13 +1166,6 @@ pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) 
     }
     else
     {
-#ifdef AFRONTDEBUG
-      Eigen::Vector3f p = pvr.tri.p[2];
-      if (results.found)
-        p = results.tri.p[2];
-
-      viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), 0.1 * pvr.afront.front.max_step, 255, 255, 0, "Closest", 1);
-#endif
       return results;
     }
   }
@@ -1443,39 +1295,19 @@ pcl::AfrontMesher<PointNT>::grow (const PredictVertexResults &pvr)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::merge (const TriangleToCloseResults &ttcr)
+pcl::AfrontMesher<PointNT>::merge (const PredictVertexResults &pvr)
 {
-  assert (ttcr.closest != ttcr.pvr.afront.front.vi[0]);
-  assert (ttcr.closest != ttcr.pvr.afront.front.vi[1]);
-  // Need to make sure at lease one vertex of the half edge is in the grow direction
-  if (ttcr.closest == ttcr.pvr.afront.prev.vi[2])
-  {
-#ifdef AFRONTDEBUG
-    std::printf ("\x1B[32m\tAborting Merge, Forced Ear Cut Opperation with Previous Half Edge!\x1B[0m\n");
-#endif
-    cutEar (ttcr.pvr.afront.prev);
-    return;
-  }
-  else if (ttcr.closest == ttcr.pvr.afront.next.vi[2])
-  {
-#ifdef AFRONTDEBUG
-    std::printf ("\x1B[32m\tAborting Merge, Forced Ear Cut Opperation with Next Half Edge!\x1B[0m\n");
-#endif
-    cutEar (ttcr.pvr.afront.next);
-    return;
-  }
+  if (pvr.ttcr.tri.B > max_edge_length_)
+    max_edge_length_ = pvr.ttcr.tri.B;
 
-  if (ttcr.tri.B > max_edge_length_)
-    max_edge_length_ = ttcr.tri.B;
+  if (pvr.ttcr.tri.C > max_edge_length_)
+    max_edge_length_ = pvr.ttcr.tri.C;
 
-  if (ttcr.tri.C > max_edge_length_)
-    max_edge_length_ = ttcr.tri.C;
-
-  typename MeshTraits::FaceData new_fd = createFaceData (ttcr.tri);
-  FaceIndex fi = mesh_.addFace (ttcr.pvr.afront.front.vi[0], ttcr.pvr.afront.front.vi[1], ttcr.closest, new_fd);
+  typename MeshTraits::FaceData new_fd = createFaceData (pvr.ttcr.tri);
+  FaceIndex fi = mesh_.addFace (pvr.afront.front.vi[0], pvr.afront.front.vi[1], pvr.ttcr.closest, new_fd);
 
   if (!addToQueue (fi))
-    addToBoundary (ttcr.pvr.afront.front.he);
+    addToBoundary (pvr.afront.front.he);
 }
 
 template <typename PointNT> Eigen::Vector3f
@@ -1748,81 +1580,6 @@ pcl::AfrontMesher<PointNT>::printFace (const FaceIndex &idx_face) const
   } while (++circ != circ_end);
   std::cout << std::endl;
 }
-
-#ifdef AFRONTDEBUG
-template <typename PointNT> pcl::PolygonMesh
-pcl::AfrontMesher<PointNT>::getPolynomialSurface (const PredictVertexResults &pvr, const double step) const
-{
-  pcl::PointCloud<pcl::PointXYZ>::Ptr poly (new pcl::PointCloud<pcl::PointXYZ> ());
-
-  int wh = 2 * search_radius_ / step + 1;
-  poly->width = wh;
-  poly->height = wh;
-  poly->points.resize (wh * wh);
-  int npoints = 0;
-  double u, v;
-  for (int i = 0; i < wh; i++)
-  {
-    u = i * step - search_radius_;
-    for (int j = 0; j < wh; j++)
-    {
-      v = j * step - search_radius_;
-      double w = pvr.pv.mls.getPolynomialValue (u, v);
-      poly->points[npoints].x = static_cast<float> (pvr.pv.mls.mean[0] + pvr.pv.mls.u_axis[0] * u + pvr.pv.mls.v_axis[0] * v + pvr.pv.mls.plane_normal[0] * w);
-      poly->points[npoints].y = static_cast<float> (pvr.pv.mls.mean[1] + pvr.pv.mls.u_axis[1] * u + pvr.pv.mls.v_axis[1] * v + pvr.pv.mls.plane_normal[1] * w);
-      poly->points[npoints].z = static_cast<float> (pvr.pv.mls.mean[2] + pvr.pv.mls.u_axis[2] * u + pvr.pv.mls.v_axis[2] * v + pvr.pv.mls.plane_normal[2] * w);
-      npoints++;
-    }
-  }
-
-  pcl::PolygonMesh output;
-  pcl::OrganizedFastMesh<pcl::PointXYZ> ofm;
-  ofm.setInputCloud (poly);
-  ofm.setMaxEdgeLength (2 * step);
-  ofm.setTriangulationType (pcl::OrganizedFastMesh<pcl::PointXYZ>::QUAD_MESH);
-  ofm.reconstruct (output);
-  return output;
-}
-
-template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void *)
-{
-  static long unsigned int cnt = 0;
-  if (event.keyUp ())
-  {
-    std::string k = event.getKeySym ();
-    if (isdigit (k[0]))
-    {
-      int num;
-      std::stringstream (k) >> num;
-      int length = std::pow (10, num);
-      if (!isFinished ())
-      {
-        for (int i = 0; i < length; ++i)
-        {
-          try
-          {
-            stepReconstruction (++cnt);
-          }
-          catch (const std::exception &e)
-          {
-            std::printf ("\x1B[31m\tFailed to step mesh!\x1B[0m\n");
-            break;
-          }
-
-          if (isFinished ())
-            break;
-        }
-      }
-      viewer_->removePolygonMesh ();
-      pcl::PolygonMesh out_mesh;
-      pcl::geometry::toFaceVertexMesh (mesh_, out_mesh);
-      viewer_->addPolygonMesh (out_mesh);
-      return;
-    }
-  }
-}
-#endif
 
 #define PCL_INSTANTIATE_AfrontMesher(T) template class PCL_EXPORTS pcl::AfrontMesher<T>;
 

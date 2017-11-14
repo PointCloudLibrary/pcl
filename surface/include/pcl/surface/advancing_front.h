@@ -47,11 +47,6 @@
 #include <pcl/surface/advancing_front_utils.h>
 #include <pcl/surface/mls.h>
 
-#ifdef AFRONTDEBUG
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/visualization/impl/point_cloud_geometry_handlers.hpp>
-#endif
-
 namespace pcl
 {
 
@@ -77,6 +72,7 @@ namespace pcl
   template <typename PointNT>
   class AfrontMesher : public SurfaceReconstruction<PointNT>
   {
+  protected:
     struct MeshTraits
     {
       typedef pcl::afront::AfrontVertexPointType VertexData;
@@ -104,6 +100,10 @@ namespace pcl
     typedef typename Mesh::VertexAroundFaceCirculator VAFC;
     typedef typename Mesh::InnerHalfEdgeAroundFaceCirculator IHEAFC;
     typedef typename Mesh::OuterHalfEdgeAroundFaceCirculator OHEAFC;
+
+  public:
+    typedef boost::shared_ptr<AfrontMesher<PointNT> > Ptr;
+    typedef boost::shared_ptr<const AfrontMesher<PointNT> > ConstPtr;
 
     struct SamplePointResults
     {
@@ -179,24 +179,42 @@ namespace pcl
       CutEarData next; /**< \brief The results using the next half edge */
     };
 
+    struct TriangleToCloseResults
+    {
+      TriangleToCloseResults () : fence_index(-1), found (false) {}
+
+      VertexIndex closest;                /**< \brief The closest vertex index */
+      std::vector<HalfEdgeIndex> fences;  /**< \brief The list of half edges in close proximity */
+      int fence_index;                    /**< \brief The index of the fence violated, if less than 0 no fence was violated. */
+      TriangleData tri;                   /**< \brief The Triangle information */
+      bool found;                         /**< \brief True if triangle is close, otherwise false */
+    };
+
     struct PredictVertexResults
     {
       enum PredictVertexTypes
       {
-        Valid = 0,                 /**< \brief The project point is valid. */
-        AtBoundary = 1,            /**< \brief At the point cloud boundary. */
-        InvalidStepSize = 2,       /**< \brief The step size is invalid for the given half edge (2 * step size < front.length). */
-        InvalidVertexNormal = 3,   /**< \brief The projected points normal is not consistant with the other triangle normals. */
-        InvalidTriangleNormal = 4, /**< \brief The triangle normal created by the project point is not consistant with the vertex normals. */
-        InvalidMLSResults = 5,     /**< \brief The nearest points mls results are invalid. */
-        InvalidProjection = 6      /**< \brief The projected point is not in the grow direction */
+        Valid = 0,                                /**< \brief The project point is valid. */
+        AtBoundary = 1,                           /**< \brief At the point cloud boundary. */
+        InvalidStepSize = 2,                      /**< \brief The step size is invalid for the given half edge (2 * step size < front.length). */
+        InvalidVertexNormal = 3,                  /**< \brief The projected points normal is not consistant with the other vertex normals. */
+        InvalidTriangleNormal = 4,                /**< \brief The triangle normal created by the project point is not consistant with the vertex normals. */
+        InvalidMLSResults = 5,                    /**< \brief The nearest points mls results are invalid. */
+        InvalidProjection = 6,                    /**< \brief The projected point is not in the grow direction */
+        InvalidClosedArea = 7,                    /**< \brief The next and previouse half edge create a closed area */
+        ValidCloseProximity = 8,                  /**< \brief The point within close proximity is valid. */
+        InvalidCloseProximityVertexNormal = 9,    /**< \brief The point within close proximity is not consistant with the other vertex normals. */
+        InvalidCloseProximityTriangleNormal = 10, /**< \brief The triangle normal created by the close proximity point is not consistant with the vertex normals. */
+        ForcePrevEarCut = 11,                     /**< \brief The close proximity is the previouse half edge so force ear cut operaiton. */
+        ForceNextEarCut = 12                      /**< \brief The close proximity is the next half edge so force ear cut operaiton. */
       };
 
-      AdvancingFrontData afront; /**< \brief Advancing front data */
-      TriangleData tri;          /**< \brief The proposed triangle data */
-      SamplePointResults pv;     /**< \brief The predicted point projected on the mls surface */
-      Eigen::Vector2d k;         /**< \brief The principal curvature using the polynomial */
-      PredictVertexTypes status; /**< \brief The predicted vertex is near the boundry of the point cloud. Don't Create Triangle */
+      AdvancingFrontData afront;   /**< \brief Advancing front data */
+      TriangleData tri;            /**< \brief The proposed triangle data */
+      SamplePointResults pv;       /**< \brief The predicted point projected on the mls surface */
+      Eigen::Vector2d k;           /**< \brief The principal curvature using the polynomial */
+      TriangleToCloseResults ttcr; /**< \brief The results of checking if the predicted vertex is to close to the existing mesh */
+      PredictVertexTypes status;   /**< \brief The predicted vertex is near the boundry of the point cloud. Don't Create Triangle */
     };
 
     struct CloseProximityResults
@@ -213,7 +231,7 @@ namespace pcl
 
     struct FenceViolationResults
     {
-      FenceViolationResults () : dist (0.0), found (false) {}
+      FenceViolationResults () : index (-1), dist (0.0), found (false) {}
 
       HalfEdgeIndex he;                               /**< \brief The half edge index that was violated. */
       int index;                                      /**< \brief The index in the array CloseProximityResults.fences. */
@@ -221,18 +239,6 @@ namespace pcl
       double dist;                                    /**< \brief The distance from the intersection point and the advancing front. */
       bool found;                                     /**< \brief If a mesh half edge was violated. */
     };
-
-    struct TriangleToCloseResults
-    {
-      TriangleToCloseResults () : found (false) {}
-
-      PredictVertexResults pvr; /**< \brief The predicted vertex information provided */
-      VertexIndex closest;      /**< \brief The closest vertex index */
-      TriangleData tri;         /**< \brief The Triangle information */
-      bool found;               /**< \brief True if triangle is close, otherwise false */
-    };
-
-  public:
 
 #ifdef _OPENMP
     static const int    AFRONT_DEFAULT_THREADS = 1;
@@ -262,15 +268,6 @@ namespace pcl
     /** \brief Get the mesh vertex normals */
     pcl::PointCloud<pcl::Normal>::ConstPtr
     getMeshVertexNormals () const;
-
-#ifdef AFRONTDEBUG
-    /**  \brief Get the internal viewer */
-    pcl::visualization::PCLVisualizer::Ptr
-    getViewer ()
-    {
-      return viewer_;
-    }
-#endif
 
     /** \brief Set the primary variable used to control mesh triangulation size. (0 > rho < M_PI_2) */
     inline void
@@ -445,9 +442,9 @@ namespace pcl
     void
     printFace (const FaceIndex &idx_face) const;
 
-  private:
+  protected:
     /** \brief This will process the input parameters and comput the guidance field */
-    bool
+    virtual bool
     initialize ();
 
     /** \brief Extract the surface.
@@ -465,7 +462,7 @@ namespace pcl
                            std::vector<pcl::Vertices> &polygons);
 
     /** \brief Advance the mesh by adding one triangle */
-    void
+    virtual PredictVertexResults
     stepReconstruction (const long unsigned int id);
 
     /** \brief Indicates if it has finished meshing the surface */
@@ -537,7 +534,7 @@ namespace pcl
 
     /** \brief Merge triangle with the existing mesh */
     void
-    merge (const TriangleToCloseResults &ttcr);
+    merge (const PredictVertexResults &pvr);
 
     /** \brief Perform an ear cut operation */
     void
@@ -648,20 +645,6 @@ namespace pcl
     bool
     isBoundaryPoint (const int index) const;
 
-#ifdef AFRONTDEBUG
-    /** \brief Generate a plygon mesh that represent the mls polynomial surface. */
-    pcl::PolygonMesh
-    getPolynomialSurface (const PredictVertexResults &pvr, const double step) const;
-
-    /**
-     * \brief keyboardEventOccurred
-     * \param event
-     * \return
-     */
-    void
-    keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void *);
-#endif
-
     // User defined data
     using SurfaceReconstruction<PointNT>::input_;
     using SurfaceReconstruction<PointNT>::indices_;
@@ -708,11 +691,6 @@ namespace pcl
     bool finished_;
     bool initialized_;
 
-#ifdef AFRONTDEBUG
-    // Debug
-    mutable long unsigned int fence_counter_;
-    pcl::visualization::PCLVisualizer::Ptr viewer_;
-#endif
   };
 } // namespace pcl
 

@@ -16,7 +16,6 @@ IF(BUILD_surface_afront_debug)
   add_definitions(-DAFRONTDEBUG)
 ENDIF(BUILD_surface_afront_debug)
 
-
 # to be filled with all targets the tools subsystem
 set(PCL_TOOLS_ALL_TARGETS)
 

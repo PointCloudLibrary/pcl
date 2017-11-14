@@ -1,10 +1,6 @@
 set(SUBSYS_NAME surface)
 set(SUBSYS_DESC "Point cloud surface library")
-if(BUILD_surface_afront_debug)
-  set(SUBSYS_DEPS common search kdtree octree geometry visualization)
-else(BUILD_surface_afront_debug)
-  set(SUBSYS_DEPS common search kdtree octree geometry)
-endif(BUILD_surface_afront_debug)
+set(SUBSYS_DEPS common search kdtree octree geometry)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -188,3 +184,4 @@ endif()
 if(WIN32)
   target_link_libraries("${LIB_NAME}" Rpcrt4.lib)
 endif()
+
