@@ -43,8 +43,6 @@
 #include <pcl/apps/point_cloud_editor/cloudTransformTool.h>
 #include <pcl/apps/point_cloud_editor/cloud.h>
 
-const float DEG_2_RADS = M_PI / 180.0f;
-
 const float CloudTransformTool::DEFAULT_SCALE_FACTOR_ = 1.14;
 const float CloudTransformTool::DEFAULT_TRANSLATE_FACTOR_ = 0.001f;
 

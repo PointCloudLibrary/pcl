@@ -102,12 +102,12 @@ Cloud::Cloud (const Cloud &copy)
   use_color_ramp_(copy.use_color_ramp_),
   color_ramp_axis_(copy.color_ramp_axis_),
   display_scale_(copy.display_scale_),
+  partitioned_indices_(copy.partitioned_indices_),
   point_size_(copy.point_size_),
   selected_point_size_(copy.selected_point_size_),
   select_translate_x_(copy.select_translate_x_),
   select_translate_y_(copy.select_translate_y_),
-  select_translate_z_(copy.select_translate_z_),
-  partitioned_indices_(copy.partitioned_indices_)
+  select_translate_z_(copy.select_translate_z_)
 {
   std::copy(copy.center_xyz_, copy.center_xyz_+XYZ_SIZE, center_xyz_);
   std::copy(copy.cloud_matrix_, copy.cloud_matrix_+MATRIX_SIZE, cloud_matrix_);
