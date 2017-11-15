@@ -100,22 +100,66 @@ protected:
 
     int v1 = 1;
     viewer_->createViewPort (0.0, 0.5, 0.5, 1.0, v1);
+    viewer_->addText("Title:\n"
+                     "Green Lines:\n"
+                     "Red Line:\n"
+                     "Magenta Line:\n"
+                     "Cyan Sphere:",
+                     0, 0, "view_1a_legend", v1);
+    viewer_->addText("Original Cloud\n"
+                     "Proposed Triangle\n"
+                     "Next Half Edge\n"
+                     "Prev Half Edge\n"
+                     "Close Proximity Sphere",
+                     80, 0, "view_1b_legend", v1);
+
+
     pcl::visualization::PointCloudColorHandlerCustom<PointNT> single_color (this->input_, 0, 255, 0);
     viewer_->addPointCloud<PointNT> (this->input_, single_color, "sample cloud", v1);
 
     //Show just mesh
     int v2 = 2;
     viewer_->createViewPort (0.5, 0.5, 1.0, 1.0, v2);
+    viewer_->addText("Title:\n"
+                     "Green Line:\n"
+                     "Cyan Lines:\n"
+                     "Yellow Line:",
+                     0, 0, "view_2a_legend", v2);
+    viewer_->addText("Advancing Front Mesh\n"
+                     "Advancing Front\n"
+                     "Fences within Proximity\n"
+                     "Fence Violation",
+                     80, 0, "view_2b_legend", v2);
 
     //Show Final mesh results over the mls point cloud
     int v3 = 3;
     viewer_->createViewPort (0.0, 0.0, 0.5, 0.5, v3);
+    viewer_->addText("Title:\n"
+                     "Green Line:",
+                     0, 0, "view_3a_legend", v3);
+    viewer_->addText("MLS PointCloud with Guidance Field (Curvature)\n"
+                     "Advancing Front",
+                     80, 0, "view_3b_legend", v3);
     pcl::visualization::PointCloudColorHandlerGenericField<pcl::AdvancingFrontGuidanceFieldPointType> handler_k (this->mls_cloud_, "curvature");
     viewer_->addPointCloud<pcl::AdvancingFrontGuidanceFieldPointType> (this->mls_cloud_, handler_k, "mls_cloud", v3);
 
     //Show mls information
     int v4 = 4;
     viewer_->createViewPort (0.5, 0.0, 1.0, 0.5, v4);
+    viewer_->addText("Title:\n"
+                     "Green Line: \n"
+                     "Yellow Sphere:\n"
+                     "Cyan Sphere:x\n"
+                     "Red Sphere:\n"
+                     "Axis:",
+                     0, 0, "view_4a_legend", v4);
+    viewer_->addText("MLS PointCloud with Advancing Front Mesh\n"
+                     "Advancing Front\n"
+                     "Proposed Vertex\n"
+                     "MLS radius for closest point to proposed vertex\n"
+                     "Closest point to proposed vertex\n"
+                     "MLS surface axis system",
+                     80, 0, "view_4b_legend", v4);
     pcl::visualization::PointCloudColorHandlerCustom<pcl::AdvancingFrontGuidanceFieldPointType> single_color2 (this->mls_cloud_, 0, 255, 0);
     viewer_->addPointCloud<pcl::AdvancingFrontGuidanceFieldPointType> (this->mls_cloud_, single_color2, "mls_cloud2", v4);
 
@@ -169,7 +213,7 @@ protected:
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "NextHalfEdge", 1);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 8, "PrevHalfEdge", 1);
 
-    typename pcl::visualization::PointCloudColorHandlerCustom<typename MeshTraits::VertexData> single_color (this->mesh_vertex_data_ptr_, 255, 128, 0);
+    typename pcl::visualization::PointCloudColorHandlerCustom<typename MeshTraits::VertexData> single_color (this->mesh_vertex_data_ptr_, 255, 255, 0);
     viewer_->addPointCloud<typename MeshTraits::VertexData> (this->mesh_vertex_data_ptr_, single_color, "Mesh_Vertex_Cloud", 2);
 
     viewer_->addPointCloudNormals<typename MeshTraits::VertexData> (this->mesh_vertex_data_ptr_, 1, 0.005, "Mesh_Vertex_Cloud_Normals", 4);
@@ -185,7 +229,7 @@ protected:
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSClosest", 4);
 
     Eigen::Vector3f projected_pt = pvr.pv.point.getVector3fMap ();
-    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), this->search_radius_, 0, 255, 128, "MLSRadius", 4);
+    viewer_->addSphere (pcl::PointXYZ (cpt (0), cpt (1), cpt (2)), this->search_radius_, 0, 255, 255, "MLSRadius", 4);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSRadius", 4);
 
     pcl::PointXYZ mls_mean = pcl::PointXYZ (pvr.pv.mls.mean (0), pvr.pv.mls.mean (1), pvr.pv.mls.mean (2));
@@ -196,7 +240,7 @@ protected:
     viewer_->addLine (mls_mean, pcl::PointXYZ (mls_yaxis (0), mls_yaxis (1), mls_yaxis (2)), 0, 255, 0, "MLSYAxis", 4);
     viewer_->addLine (mls_mean, pcl::PointXYZ (mls_zaxis (0), mls_zaxis (1), mls_zaxis (2)), 0, 0, 255, "MLSZAxis", 4);
 
-    viewer_->addSphere (pcl::PointXYZ (projected_pt (0), projected_pt (1), projected_pt (2)), 0.02 * this->search_radius_, 255, 128, 0, "MLSProjection", 4);
+    viewer_->addSphere (pcl::PointXYZ (projected_pt (0), projected_pt (1), projected_pt (2)), 0.02 * this->search_radius_, 255, 255, 0, "MLSProjection", 4);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "MLSProjection", 4);
 
     p3 = pcl::PointXYZ (pvr.tri.p[2] (0), pvr.tri.p[2] (1), pvr.tri.p[2] (2));
@@ -277,7 +321,7 @@ protected:
 
     Eigen::Vector3f p;
     p = pvr.tri.p[2];
-    viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), this->AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step, 0, 255, 128, "ProxRadius", 1);
+    viewer_->addSphere (pcl::PointXYZ (p (0), p (1), p (2)), this->AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step, 0, 255, 255, "ProxRadius", 1);
     viewer_->setShapeRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, 0.2, "ProxRadius", 1);
 
     return pvr;
