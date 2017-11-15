@@ -512,8 +512,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
       iprev_point[0] = floor (prev_pt[0]);
       iprev_point[1] = floor (prev_pt[1]);
 
-      if (iprev_point[0] < -track_width_ || iprev_point[0] >= grad_x.width ||
-          iprev_point[1] < -track_height_ || iprev_point[1] >= grad_y.height)
+      if (iprev_point[0] < -track_width_ || (uint32_t) iprev_point[0] >= grad_x.width ||
+          iprev_point[1] < -track_height_ || (uint32_t) iprev_point[1] >= grad_y.height)
       {
         if (level == 0)
           status [ptidx] = -1;
@@ -544,13 +544,13 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
       next_pt -= half_win;
 
       Eigen::Array2f prev_delta;
-      for (int j = 0; j < max_iterations_; j++)
+      for (unsigned int j = 0; j < max_iterations_; j++)
       {
         inext_pt[0] = floor (next_pt[0]);
         inext_pt[1] = floor (next_pt[1]);
 
-        if (inext_pt[0] < -track_width_ || inext_pt[0] >= next.width ||
-            inext_pt[1] < -track_height_ || inext_pt[1] >= next.height)
+        if (inext_pt[0] < -track_width_ || (uint32_t) inext_pt[0] >= next.width ||
+            inext_pt[1] < -track_height_ || (uint32_t) inext_pt[1] >= next.height)
         {
           if (level == 0)
             status[ptidx] = -1;
@@ -595,8 +595,8 @@ pcl::tracking::PyramidalKLTTracker<PointInT, IntensityT>::track (const PointClou
         inext_point[0] = floor (next_point[0]);
         inext_point[1] = floor (next_point[1]);
 
-        if (inext_point[0] < -track_width_ || inext_point[0] >= next.width ||
-            inext_point[1] < -track_height_ || inext_point[1] >= next.height)
+        if (inext_point[0] < -track_width_ || (uint32_t) inext_point[0] >= next.width ||
+            inext_point[1] < -track_height_ || (uint32_t) inext_point[1] >= next.height)
         {
           status[ptidx] = -1;
           continue;

@@ -117,7 +117,7 @@ template<template<class > class DistT, typename PointT, typename FeatureT>
       {
         std::cout << files[i] << std::endl;
         if (scene != -1)
-          if (scene != i)
+          if ((size_t) scene != i)
             continue;
 
         std::stringstream file;
