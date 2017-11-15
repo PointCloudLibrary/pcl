@@ -108,7 +108,7 @@ pcl::AfrontMesher<PointNT>::computeGuidanceField ()
   PCL_INFO ("Computing Guidance Field Started!\n");
 
   // Calculate MLS
-  mls_cloud_ = pcl::PointCloud<pcl::afront::AfrontGuidanceFieldPointType>::Ptr (new pcl::PointCloud<pcl::afront::AfrontGuidanceFieldPointType> ());
+  mls_cloud_ = pcl::PointCloud<pcl::AfrontGuidanceFieldPointType>::Ptr (new pcl::PointCloud<pcl::AfrontGuidanceFieldPointType> ());
 
 #ifdef _OPENMP
   mls_.setNumberOfThreads (threads_);
@@ -152,7 +152,7 @@ pcl::AfrontMesher<PointNT>::computeGuidanceField ()
       min_curvature_ = k;
   }
 
-  mls_cloud_tree_ = pcl::search::KdTree<pcl::afront::AfrontGuidanceFieldPointType>::Ptr (new pcl::search::KdTree<pcl::afront::AfrontGuidanceFieldPointType> ());
+  mls_cloud_tree_ = pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType>::Ptr (new pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType> ());
   mls_cloud_tree_->setSortedResults (true); // Need to figure out how to use unsorted. Must rewrite getMaxStep.
   mls_cloud_tree_->setInputCloud (mls_cloud_);
 
@@ -300,7 +300,7 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const double &x, const double &
   std::vector<int> K;
   std::vector<float> K_dist;
 
-  pcl::afront::AfrontGuidanceFieldPointType middle_pt;
+  pcl::AfrontGuidanceFieldPointType middle_pt;
   middle_pt.x = x;
   middle_pt.y = y;
   middle_pt.z = z;
@@ -321,10 +321,10 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
   // search for the nearest neighbor
   std::vector<int> K;
   std::vector<float> K_dist;
-  mls_cloud_tree_->nearestKSearch (pcl::afront::AfrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
+  mls_cloud_tree_->nearestKSearch (pcl::AfrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
 
   // use l1 and nearest neighbor to extend edge
-  pcl::afront::AfrontGuidanceFieldPointType dp;
+  pcl::AfrontGuidanceFieldPointType dp;
   SamplePointResults sp2, sp3;
   Eigen::Vector3f p2, p3, v1, v2, mp, norm, proj;
 
@@ -462,7 +462,7 @@ pcl::AfrontMesher<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_edg
 }
 
 template <typename PointNT> typename pcl::AfrontMesher<PointNT>::SamplePointResults
-pcl::AfrontMesher<PointNT>::samplePoint (const pcl::afront::AfrontGuidanceFieldPointType &pt) const
+pcl::AfrontMesher<PointNT>::samplePoint (const pcl::AfrontGuidanceFieldPointType &pt) const
 {
   if (!pcl_isfinite (pt.x))
     PCL_ERROR ("MLS Sample point is not finite\n");
@@ -516,7 +516,7 @@ pcl::AfrontMesher<PointNT>::samplePoint (const pcl::afront::AfrontGuidanceFieldP
 template <typename PointNT> typename pcl::AfrontMesher<PointNT>::SamplePointResults
 pcl::AfrontMesher<PointNT>::samplePoint (float x, float y, float z) const
 {
-  pcl::afront::AfrontGuidanceFieldPointType search_pt;
+  pcl::AfrontGuidanceFieldPointType search_pt;
   search_pt.x = x;
   search_pt.y = y;
   search_pt.z = z;
@@ -1190,7 +1190,7 @@ pcl::AfrontMesher<PointNT>::isPointValid (const FrontData &front, const Eigen::V
 template <typename PointNT> bool
 pcl::AfrontMesher<PointNT>::isBoundaryPoint (const int index) const
 {
-  pcl::afront::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
+  pcl::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
 
   Eigen::Vector4f u;
   Eigen::Vector4f v;
@@ -1257,7 +1257,7 @@ pcl::AfrontMesher<PointNT>::isBoundaryPoint (const int index) const
 template <typename PointNT> bool
 pcl::AfrontMesher<PointNT>::nearBoundary (const FrontData &front, const int index) const
 {
-  pcl::afront::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
+  pcl::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
 
   Eigen::Vector3f v1 = (front.p[1] - front.mp).normalized ();
   Eigen::Vector3f v2 = closest.getVector3fMap () - front.mp;
@@ -1330,7 +1330,7 @@ pcl::AfrontMesher<PointNT>::getGrowDirection (const Eigen::Vector3f &p, const Ei
 template <typename PointNT> double
 pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_found) const
 {
-  pcl::afront::AfrontGuidanceFieldPointType pn;
+  pcl::AfrontGuidanceFieldPointType pn;
   std::vector<int> k;
   std::vector<float> k_dist;
   pn.x = p (0);
@@ -1360,7 +1360,7 @@ pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_
       if (neighbors < required_neighbors_)
         continue;
 
-      pcl::afront::AfrontGuidanceFieldPointType &gp = mls_cloud_->at (k[i]);
+      pcl::AfrontGuidanceFieldPointType &gp = mls_cloud_->at (k[i]);
       radius = sqrt (k_dist[i]);
 
       double step_required = (1.0 - reduction_) * radius + reduction_ * gp.ideal_edge_length;
@@ -1387,7 +1387,7 @@ pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_
 }
 
 template <typename PointNT> typename pcl::AfrontMesher<PointNT>::TriangleData
-pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::afront::AfrontVertexPointType &p) const
+pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::AfrontVertexPointType &p) const
 {
   TriangleData result;
   Eigen::Vector3f v1, v2, v3, cross;

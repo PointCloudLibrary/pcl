@@ -110,14 +110,14 @@ protected:
     //Show Final mesh results over the mls point cloud
     int v3 = 3;
     viewer_->createViewPort (0.0, 0.0, 0.5, 0.5, v3);
-    pcl::visualization::PointCloudColorHandlerGenericField<pcl::afront::AfrontGuidanceFieldPointType> handler_k (this->mls_cloud_, "curvature");
-    viewer_->addPointCloud<pcl::afront::AfrontGuidanceFieldPointType> (this->mls_cloud_, handler_k, "mls_cloud", v3);
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::AfrontGuidanceFieldPointType> handler_k (this->mls_cloud_, "curvature");
+    viewer_->addPointCloud<pcl::AfrontGuidanceFieldPointType> (this->mls_cloud_, handler_k, "mls_cloud", v3);
 
     //Show mls information
     int v4 = 4;
     viewer_->createViewPort (0.5, 0.0, 1.0, 0.5, v4);
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::afront::AfrontGuidanceFieldPointType> single_color2 (this->mls_cloud_, 0, 255, 0);
-    viewer_->addPointCloud<pcl::afront::AfrontGuidanceFieldPointType> (this->mls_cloud_, single_color2, "mls_cloud2", v4);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::AfrontGuidanceFieldPointType> single_color2 (this->mls_cloud_, 0, 255, 0);
+    viewer_->addPointCloud<pcl::AfrontGuidanceFieldPointType> (this->mls_cloud_, single_color2, "mls_cloud2", v4);
 
     viewer_->registerKeyboardCallback (&AfrontMesherDebugTool<PointNT>::keyboardEventOccurred, *this);
     viewer_->spin ();

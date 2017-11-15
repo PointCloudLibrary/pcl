@@ -76,7 +76,7 @@ namespace pcl
   protected:
     struct MeshTraits
     {
-      typedef pcl::afront::AfrontVertexPointType VertexData;
+      typedef pcl::AfrontVertexPointType VertexData;
       typedef int HalfEdgeData;
       typedef int EdgeData;
       typedef pcl::PointNormal FaceData;
@@ -109,7 +109,7 @@ namespace pcl
     struct SamplePointResults
     {
       pcl::PointXYZ orig;                       /**< \brief The point to be projected on to the MLS surface */
-      pcl::afront::AfrontVertexPointType point; /**< \brief The point projected on to the MLS surface */
+      pcl::AfrontVertexPointType point; /**< \brief The point projected on to the MLS surface */
       int closest;                              /**< \brief The closest point index on the MLS surface to the project point */
       pcl::MLSResult mls;                       /**< \brief The MLS Results for the closest point */
       double dist;                              /**< \brief The distance squared between point and closest */
@@ -544,7 +544,7 @@ namespace pcl
     SamplePointResults
     samplePoint (float x, float y, float z) const;
     SamplePointResults
-    samplePoint (const pcl::afront::AfrontGuidanceFieldPointType &pt) const;
+    samplePoint (const pcl::AfrontGuidanceFieldPointType &pt) const;
 
     /** \brief Used to get the next half edge */
     CutEarData
@@ -624,7 +624,7 @@ namespace pcl
       * \return Returns information about the triangle: angles, edge lengths, etc.
       */
     TriangleData
-    getTriangleData (const FrontData &front, const pcl::afront::AfrontVertexPointType &p) const;
+    getTriangleData (const FrontData &front, const pcl::AfrontVertexPointType &p) const;
 
     /** \brief Update the allowed triangle tolerances. */
     void
@@ -669,13 +669,13 @@ namespace pcl
     double boundary_angle_threshold_; /**< \brief The boundary angle threshold */
 
     // Guidance field data
-    pcl::PointCloud<pcl::afront::AfrontGuidanceFieldPointType>::Ptr mls_cloud_;
-    pcl::search::KdTree<pcl::afront::AfrontGuidanceFieldPointType>::Ptr mls_cloud_tree_;
+    pcl::PointCloud<pcl::AfrontGuidanceFieldPointType>::Ptr mls_cloud_;
+    pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType>::Ptr mls_cloud_tree_;
     pcl::PointIndicesPtr mls_corresponding_input_indices_;
 #ifdef _OPENMP
-    pcl::MovingLeastSquaresOMP<PointNT, pcl::afront::AfrontGuidanceFieldPointType> mls_;
+    pcl::MovingLeastSquaresOMP<PointNT, pcl::AfrontGuidanceFieldPointType> mls_;
 #else
-    pcl::MovingLeastSquares<PointNT, pcl::afront::AfrontGuidanceFieldPointType> mls_;
+    pcl::MovingLeastSquares<PointNT, pcl::AfrontGuidanceFieldPointType> mls_;
 #endif
     double max_curvature_;
     double min_curvature_;
