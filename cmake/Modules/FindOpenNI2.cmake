@@ -51,6 +51,7 @@ endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 find_path(OPENNI2_INCLUDE_DIR OpenNI.h
           PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"  # Win64 needs '64' suffix
                 "/usr/include/openni2"                    # common path for deb packages
+          PATH_SUFFIXES include/openni2
 )
 
 find_library(OPENNI2_LIBRARY

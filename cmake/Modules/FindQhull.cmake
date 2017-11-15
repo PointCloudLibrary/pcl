@@ -55,7 +55,7 @@ find_library(QHULL_LIBRARY_DEBUG
              NAMES ${QHULL_DEBUG_NAME} ${QHULL_RELEASE_NAME}
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
-             PATH_SUFFIXES project build bin lib)
+             PATH_SUFFIXES project build bin lib debug/lib)
 
 if(NOT QHULL_LIBRARY_DEBUG)
   set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
