@@ -51,7 +51,7 @@
 #include <boost/make_shared.hpp>
 
 template <typename PointNT>
-pcl::AfrontMesher<PointNT>::AfrontMesher () : search_radius_ (0.0)
+pcl::AdvancingFront<PointNT>::AdvancingFront () : search_radius_ (0.0)
 {
   pcl::PointCloud<typename MeshTraits::VertexData> &mesh_data = mesh_.getVertexDataCloud ();
   mesh_vertex_data_ptr_ = typename pcl::PointCloud<typename MeshTraits::VertexData>::Ptr (&mesh_data, boost::bind (std::plus<int> (), 0, 0));
@@ -68,7 +68,7 @@ pcl::AfrontMesher<PointNT>::AfrontMesher () : search_radius_ (0.0)
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::initialize ()
+pcl::AdvancingFront<PointNT>::initialize ()
 {
   initialized_ = false;
   finished_ = false;
@@ -103,12 +103,12 @@ pcl::AfrontMesher<PointNT>::initialize ()
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::computeGuidanceField ()
+pcl::AdvancingFront<PointNT>::computeGuidanceField ()
 {
   PCL_INFO ("Computing Guidance Field Started!\n");
 
   // Calculate MLS
-  mls_cloud_ = pcl::PointCloud<pcl::AfrontGuidanceFieldPointType>::Ptr (new pcl::PointCloud<pcl::AfrontGuidanceFieldPointType> ());
+  mls_cloud_ = pcl::PointCloud<pcl::AdvancingFrontGuidanceFieldPointType>::Ptr (new pcl::PointCloud<pcl::AdvancingFrontGuidanceFieldPointType> ());
 
 #ifdef _OPENMP
   mls_.setNumberOfThreads (threads_);
@@ -152,7 +152,7 @@ pcl::AfrontMesher<PointNT>::computeGuidanceField ()
       min_curvature_ = k;
   }
 
-  mls_cloud_tree_ = pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType>::Ptr (new pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType> ());
+  mls_cloud_tree_ = pcl::search::KdTree<pcl::AdvancingFrontGuidanceFieldPointType>::Ptr (new pcl::search::KdTree<pcl::AdvancingFrontGuidanceFieldPointType> ());
   mls_cloud_tree_->setSortedResults (true); // Need to figure out how to use unsorted. Must rewrite getMaxStep.
   mls_cloud_tree_->setInputCloud (mls_cloud_);
 
@@ -161,7 +161,7 @@ pcl::AfrontMesher<PointNT>::computeGuidanceField ()
 }
 
 template <typename PointNT> pcl::PointCloud<pcl::Normal>::ConstPtr
-pcl::AfrontMesher<PointNT>::getMeshVertexNormals () const
+pcl::AdvancingFront<PointNT>::getMeshVertexNormals () const
 {
   pcl::PointCloud<pcl::Normal>::Ptr pn (new pcl::PointCloud<pcl::Normal> ());
   ;
@@ -171,7 +171,7 @@ pcl::AfrontMesher<PointNT>::getMeshVertexNormals () const
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::performReconstruction (pcl::PolygonMesh &output)
+pcl::AdvancingFront<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 {
   if (!initialize ())
   {
@@ -190,7 +190,7 @@ pcl::AfrontMesher<PointNT>::performReconstruction (pcl::PolygonMesh &output)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
+pcl::AdvancingFront<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &points,
                                                     std::vector<pcl::Vertices> &polygons)
 {
   if (!initialize ())
@@ -226,8 +226,8 @@ pcl::AfrontMesher<PointNT>::performReconstruction (pcl::PointCloud<PointNT> &poi
   PCL_INFO ("Meshing Finished!\n");
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::PredictVertexResults
-pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::PredictVertexResults
+pcl::AdvancingFront<PointNT>::stepReconstruction (const long unsigned int id)
 {
   HalfEdgeIndex half_edge = queue_.front ();
   queue_.pop_front ();
@@ -295,12 +295,12 @@ pcl::AfrontMesher<PointNT>::stepReconstruction (const long unsigned int id)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::createFirstTriangle (const double &x, const double &y, const double &z)
+pcl::AdvancingFront<PointNT>::createFirstTriangle (const double &x, const double &y, const double &z)
 {
   std::vector<int> K;
   std::vector<float> K_dist;
 
-  pcl::AfrontGuidanceFieldPointType middle_pt;
+  pcl::AdvancingFrontGuidanceFieldPointType middle_pt;
   middle_pt.x = x;
   middle_pt.y = y;
   middle_pt.z = z;
@@ -309,7 +309,7 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const double &x, const double &
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
+pcl::AdvancingFront<PointNT>::createFirstTriangle (const int &index)
 {
   SamplePointResults sp1 = samplePoint (mls_cloud_->points[index]);
   Eigen::Vector3f p1 = sp1.point.getVector3fMap ();
@@ -321,10 +321,10 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
   // search for the nearest neighbor
   std::vector<int> K;
   std::vector<float> K_dist;
-  mls_cloud_tree_->nearestKSearch (pcl::AfrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
+  mls_cloud_tree_->nearestKSearch (pcl::AdvancingFrontGuidanceFieldPointType (sp1.point, rho_), 2, K, K_dist);
 
   // use l1 and nearest neighbor to extend edge
-  pcl::AfrontGuidanceFieldPointType dp;
+  pcl::AdvancingFrontGuidanceFieldPointType dp;
   SamplePointResults sp2, sp3;
   Eigen::Vector3f p2, p3, v1, v2, mp, norm, proj;
 
@@ -392,7 +392,7 @@ pcl::AfrontMesher<PointNT>::createFirstTriangle (const int &index)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::cutEar (const CutEarData &ccer)
+pcl::AdvancingFront<PointNT>::cutEar (const CutEarData &ccer)
 {
   assert (ccer.tri.point_valid);
   if (ccer.tri.B > max_edge_length_)
@@ -415,8 +415,8 @@ pcl::AfrontMesher<PointNT>::cutEar (const CutEarData &ccer)
   }
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::AdvancingFrontData
-pcl::AfrontMesher<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_edge) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::AdvancingFrontData
+pcl::AdvancingFront<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_edge) const
 {
   AdvancingFrontData result;
   result.front.he = half_edge;
@@ -461,8 +461,8 @@ pcl::AfrontMesher<PointNT>::getAdvancingFrontData (const HalfEdgeIndex &half_edg
   return result;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::SamplePointResults
-pcl::AfrontMesher<PointNT>::samplePoint (const pcl::AfrontGuidanceFieldPointType &pt) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::SamplePointResults
+pcl::AdvancingFront<PointNT>::samplePoint (const pcl::AdvancingFrontGuidanceFieldPointType &pt) const
 {
   if (!pcl_isfinite (pt.x))
     PCL_ERROR ("MLS Sample point is not finite\n");
@@ -513,10 +513,10 @@ pcl::AfrontMesher<PointNT>::samplePoint (const pcl::AfrontGuidanceFieldPointType
   return result;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::SamplePointResults
-pcl::AfrontMesher<PointNT>::samplePoint (float x, float y, float z) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::SamplePointResults
+pcl::AdvancingFront<PointNT>::samplePoint (float x, float y, float z) const
 {
-  pcl::AfrontGuidanceFieldPointType search_pt;
+  pcl::AdvancingFrontGuidanceFieldPointType search_pt;
   search_pt.x = x;
   search_pt.y = y;
   search_pt.z = z;
@@ -524,8 +524,8 @@ pcl::AfrontMesher<PointNT>::samplePoint (float x, float y, float z) const
   return samplePoint (search_pt);
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::CutEarData
-pcl::AfrontMesher<PointNT>::getNextHalfEdge (const FrontData &front) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::CutEarData
+pcl::AdvancingFront<PointNT>::getNextHalfEdge (const FrontData &front) const
 {
   CutEarData next;
   next.primary = front.he;
@@ -568,8 +568,8 @@ pcl::AfrontMesher<PointNT>::getNextHalfEdge (const FrontData &front) const
   return next;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::CutEarData
-pcl::AfrontMesher<PointNT>::getPrevHalfEdge (const FrontData &front) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::CutEarData
+pcl::AdvancingFront<PointNT>::getPrevHalfEdge (const FrontData &front) const
 {
   CutEarData prev;
   prev.primary = front.he;
@@ -613,8 +613,8 @@ pcl::AfrontMesher<PointNT>::getPrevHalfEdge (const FrontData &front) const
   return prev;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::PredictVertexResults
-pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::PredictVertexResults
+pcl::AdvancingFront<PointNT>::predictVertex (const AdvancingFrontData &afront) const
 {
   // Local Variables
   PredictVertexResults result;
@@ -715,8 +715,8 @@ pcl::AfrontMesher<PointNT>::predictVertex (const AdvancingFrontData &afront) con
   }
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::CloseProximityResults
-pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::CloseProximityResults
+pcl::AdvancingFront<PointNT>::isCloseProximity (const PredictVertexResults &pvr) const
 {
   CloseProximityResults results;
   std::vector<int> K;
@@ -932,7 +932,7 @@ pcl::AfrontMesher<PointNT>::isCloseProximity (const PredictVertexResults &pvr) c
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::checkPrevNextHalfEdge (const AdvancingFrontData &afront, TriangleData &tri, VertexIndex &closest) const
+pcl::AdvancingFront<PointNT>::checkPrevNextHalfEdge (const AdvancingFrontData &afront, TriangleData &tri, VertexIndex &closest) const
 {
   if (mesh_.isValid (closest) && closest == afront.prev.vi[2])
     if (afront.next.tri.point_valid && tri.c >= afront.next.tri.c)
@@ -997,7 +997,7 @@ pcl::AfrontMesher<PointNT>::checkPrevNextHalfEdge (const AdvancingFrontData &afr
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::afront::IntersectionLine2PlaneResults &lpr) const
+pcl::AdvancingFront<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::afront::IntersectionLine2PlaneResults &lpr) const
 {
   // Check for fence intersection
   Eigen::Vector3f he_p1, he_p2;
@@ -1024,8 +1024,8 @@ pcl::AfrontMesher<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const Ei
   return false;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::FenceViolationResults
-pcl::AfrontMesher<PointNT>::isFencesViolated (const VertexIndex &vi, const Eigen::Vector3f &p, const std::vector<HalfEdgeIndex> &fences, const VertexIndex &closest, const PredictVertexResults &pvr) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::FenceViolationResults
+pcl::AdvancingFront<PointNT>::isFencesViolated (const VertexIndex &vi, const Eigen::Vector3f &p, const std::vector<HalfEdgeIndex> &fences, const VertexIndex &closest, const PredictVertexResults &pvr) const
 {
   // Now need to check for fence violation
   FenceViolationResults results;
@@ -1074,8 +1074,8 @@ pcl::AfrontMesher<PointNT>::isFencesViolated (const VertexIndex &vi, const Eigen
   return results;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::TriangleToCloseResults
-pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::TriangleToCloseResults
+pcl::AdvancingFront<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) const
 {
   TriangleToCloseResults results;
 
@@ -1176,7 +1176,7 @@ pcl::AfrontMesher<PointNT>::isTriangleToClose (const PredictVertexResults &pvr) 
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::isPointValid (const FrontData &front, const Eigen::Vector3f p) const
+pcl::AdvancingFront<PointNT>::isPointValid (const FrontData &front, const Eigen::Vector3f p) const
 {
   Eigen::Vector3f v = p - front.mp;
   double dot = v.dot (front.d);
@@ -1188,9 +1188,9 @@ pcl::AfrontMesher<PointNT>::isPointValid (const FrontData &front, const Eigen::V
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::isBoundaryPoint (const int index) const
+pcl::AdvancingFront<PointNT>::isBoundaryPoint (const int index) const
 {
-  pcl::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
+  pcl::AdvancingFrontGuidanceFieldPointType closest = mls_cloud_->at (index);
 
   Eigen::Vector4f u;
   Eigen::Vector4f v;
@@ -1255,9 +1255,9 @@ pcl::AfrontMesher<PointNT>::isBoundaryPoint (const int index) const
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::nearBoundary (const FrontData &front, const int index) const
+pcl::AdvancingFront<PointNT>::nearBoundary (const FrontData &front, const int index) const
 {
-  pcl::AfrontGuidanceFieldPointType closest = mls_cloud_->at (index);
+  pcl::AdvancingFrontGuidanceFieldPointType closest = mls_cloud_->at (index);
 
   Eigen::Vector3f v1 = (front.p[1] - front.mp).normalized ();
   Eigen::Vector3f v2 = closest.getVector3fMap () - front.mp;
@@ -1274,7 +1274,7 @@ pcl::AfrontMesher<PointNT>::nearBoundary (const FrontData &front, const int inde
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::grow (const PredictVertexResults &pvr)
+pcl::AdvancingFront<PointNT>::grow (const PredictVertexResults &pvr)
 {
   // Add new face
   typename MeshTraits::FaceData new_fd = createFaceData (pvr.tri);
@@ -1296,7 +1296,7 @@ pcl::AfrontMesher<PointNT>::grow (const PredictVertexResults &pvr)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::merge (const PredictVertexResults &pvr)
+pcl::AdvancingFront<PointNT>::merge (const PredictVertexResults &pvr)
 {
   if (pvr.ttcr.tri.B > max_edge_length_)
     max_edge_length_ = pvr.ttcr.tri.B;
@@ -1312,7 +1312,7 @@ pcl::AfrontMesher<PointNT>::merge (const PredictVertexResults &pvr)
 }
 
 template <typename PointNT> Eigen::Vector3f
-pcl::AfrontMesher<PointNT>::getGrowDirection (const Eigen::Vector3f &p, const Eigen::Vector3f &mp, const typename MeshTraits::FaceData &fd) const
+pcl::AdvancingFront<PointNT>::getGrowDirection (const Eigen::Vector3f &p, const Eigen::Vector3f &mp, const typename MeshTraits::FaceData &fd) const
 {
   Eigen::Vector3f v1, v2, v3, norm;
   v1 = mp - p;
@@ -1328,9 +1328,9 @@ pcl::AfrontMesher<PointNT>::getGrowDirection (const Eigen::Vector3f &p, const Ei
 }
 
 template <typename PointNT> double
-pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_found) const
+pcl::AdvancingFront<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_found) const
 {
-  pcl::AfrontGuidanceFieldPointType pn;
+  pcl::AdvancingFrontGuidanceFieldPointType pn;
   std::vector<int> k;
   std::vector<float> k_dist;
   pn.x = p (0);
@@ -1360,7 +1360,7 @@ pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_
       if (neighbors < required_neighbors_)
         continue;
 
-      pcl::AfrontGuidanceFieldPointType &gp = mls_cloud_->at (k[i]);
+      pcl::AdvancingFrontGuidanceFieldPointType &gp = mls_cloud_->at (k[i]);
       radius = sqrt (k_dist[i]);
 
       double step_required = (1.0 - reduction_) * radius + reduction_ * gp.ideal_edge_length;
@@ -1386,8 +1386,8 @@ pcl::AfrontMesher<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radius_
   return len;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::TriangleData
-pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::AfrontVertexPointType &p) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::TriangleData
+pcl::AdvancingFront<PointNT>::getTriangleData (const FrontData &front, const pcl::AdvancingFrontVertexPointType &p) const
 {
   TriangleData result;
   Eigen::Vector3f v1, v2, v3, cross;
@@ -1459,8 +1459,8 @@ pcl::AfrontMesher<PointNT>::getTriangleData (const FrontData &front, const pcl::
   return result;
 }
 
-template <typename PointNT> typename pcl::AfrontMesher<PointNT>::MeshTraits::FaceData
-pcl::AfrontMesher<PointNT>::createFaceData (const TriangleData &tri) const
+template <typename PointNT> typename pcl::AdvancingFront<PointNT>::MeshTraits::FaceData
+pcl::AdvancingFront<PointNT>::createFaceData (const TriangleData &tri) const
 {
   typename MeshTraits::FaceData center_pt;
   Eigen::Vector3f cp = (tri.p[0] + tri.p[1] + tri.p[2]) / 3.0;
@@ -1476,14 +1476,14 @@ pcl::AfrontMesher<PointNT>::createFaceData (const TriangleData &tri) const
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::addToQueueHelper (const HalfEdgeIndex &half_edge)
+pcl::AdvancingFront<PointNT>::addToQueueHelper (const HalfEdgeIndex &half_edge)
 {
   assert (std::find (queue_.begin (), queue_.end (), half_edge) == queue_.end ());
   queue_.push_back (half_edge);
 }
 
 template <typename PointNT> bool
-pcl::AfrontMesher<PointNT>::addToQueue (const FaceIndex &face)
+pcl::AdvancingFront<PointNT>::addToQueue (const FaceIndex &face)
 {
   // This occures if the face is non-manifold.
   // It appears that non-manifold vertices are allowed but not faces.
@@ -1509,38 +1509,38 @@ pcl::AfrontMesher<PointNT>::addToQueue (const FaceIndex &face)
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::removeFromQueue (const HalfEdgeIndex &half_edge)
+pcl::AdvancingFront<PointNT>::removeFromQueue (const HalfEdgeIndex &half_edge)
 {
   queue_.erase (std::remove_if (queue_.begin (), queue_.end (), boost::lambda::_1 == half_edge), queue_.end ());
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::removeFromQueue (const HalfEdgeIndex &half_edge1, const HalfEdgeIndex &half_edge2)
+pcl::AdvancingFront<PointNT>::removeFromQueue (const HalfEdgeIndex &half_edge1, const HalfEdgeIndex &half_edge2)
 {
   queue_.erase (std::remove_if (queue_.begin (), queue_.end (), (boost::lambda::_1 == half_edge1 || boost::lambda::_1 == half_edge2)), queue_.end ());
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::addToBoundary (const HalfEdgeIndex &half_edge)
+pcl::AdvancingFront<PointNT>::addToBoundary (const HalfEdgeIndex &half_edge)
 {
   assert (std::find (boundary_.begin (), boundary_.end (), half_edge) == boundary_.end ());
   boundary_.push_back (half_edge);
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::removeFromBoundary (const HalfEdgeIndex &half_edge)
+pcl::AdvancingFront<PointNT>::removeFromBoundary (const HalfEdgeIndex &half_edge)
 {
   boundary_.erase (std::remove_if (boundary_.begin (), boundary_.end (), boost::lambda::_1 == half_edge), boundary_.end ());
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::removeFromBoundary (const HalfEdgeIndex &half_edge1, const HalfEdgeIndex &half_edge2)
+pcl::AdvancingFront<PointNT>::removeFromBoundary (const HalfEdgeIndex &half_edge1, const HalfEdgeIndex &half_edge2)
 {
   boundary_.erase (std::remove_if (boundary_.begin (), boundary_.end (), (boost::lambda::_1 == half_edge1 || boost::lambda::_1 == half_edge2)), boundary_.end ());
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::printVertices () const
+pcl::AdvancingFront<PointNT>::printVertices () const
 {
   std::cout << "Vertices:\n   ";
   for (unsigned int i = 0; i < mesh_.sizeVertices (); ++i)
@@ -1551,7 +1551,7 @@ pcl::AfrontMesher<PointNT>::printVertices () const
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::printFaces () const
+pcl::AdvancingFront<PointNT>::printFaces () const
 {
   std::cout << "Faces:\n";
   for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
@@ -1559,7 +1559,7 @@ pcl::AfrontMesher<PointNT>::printFaces () const
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::printEdge (const HalfEdgeIndex &half_edge) const
+pcl::AdvancingFront<PointNT>::printEdge (const HalfEdgeIndex &half_edge) const
 {
   std::cout << "  "
             << mesh_vertex_data_ptr_->at (mesh_.getOriginatingVertexIndex (half_edge).get ())
@@ -1569,7 +1569,7 @@ pcl::AfrontMesher<PointNT>::printEdge (const HalfEdgeIndex &half_edge) const
 }
 
 template <typename PointNT> void
-pcl::AfrontMesher<PointNT>::printFace (const FaceIndex &idx_face) const
+pcl::AdvancingFront<PointNT>::printFace (const FaceIndex &idx_face) const
 {
   // Circulate around all vertices in the face
   VAFC circ = mesh_.getVertexAroundFaceCirculator (idx_face);
@@ -1582,6 +1582,6 @@ pcl::AfrontMesher<PointNT>::printFace (const FaceIndex &idx_face) const
   std::cout << std::endl;
 }
 
-#define PCL_INSTANTIATE_AfrontMesher(T) template class PCL_EXPORTS pcl::AfrontMesher<T>;
+#define PCL_INSTANTIATE_AdvancingFront(T) template class PCL_EXPORTS pcl::AdvancingFront<T>;
 
 #endif // PCL_SURFACE_IMPL_ADVANCING_FRONT_H_

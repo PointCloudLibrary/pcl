@@ -44,4 +44,4 @@
 #include <pcl/surface/impl/advancing_front.hpp>
 
 // Instantiations of specific point types
-PCL_INSTANTIATE(AfrontMesher, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
+PCL_INSTANTIATE(AdvancingFront, (pcl::PointXYZ)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))

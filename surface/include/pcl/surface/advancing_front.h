@@ -71,12 +71,12 @@ namespace pcl
     * \group surface
     */
   template <typename PointNT>
-  class AfrontMesher : public SurfaceReconstruction<PointNT>
+  class AdvancingFront : public SurfaceReconstruction<PointNT>
   {
   protected:
     struct MeshTraits
     {
-      typedef pcl::AfrontVertexPointType VertexData;
+      typedef pcl::AdvancingFrontVertexPointType VertexData;
       typedef int HalfEdgeData;
       typedef int EdgeData;
       typedef pcl::PointNormal FaceData;
@@ -103,13 +103,13 @@ namespace pcl
     typedef typename Mesh::OuterHalfEdgeAroundFaceCirculator OHEAFC;
 
   public:
-    typedef boost::shared_ptr<AfrontMesher<PointNT> > Ptr;
-    typedef boost::shared_ptr<const AfrontMesher<PointNT> > ConstPtr;
+    typedef boost::shared_ptr<AdvancingFront<PointNT> > Ptr;
+    typedef boost::shared_ptr<const AdvancingFront<PointNT> > ConstPtr;
 
     struct SamplePointResults
     {
       pcl::PointXYZ orig;                       /**< \brief The point to be projected on to the MLS surface */
-      pcl::AfrontVertexPointType point; /**< \brief The point projected on to the MLS surface */
+      pcl::AdvancingFrontVertexPointType point; /**< \brief The point projected on to the MLS surface */
       int closest;                              /**< \brief The closest point index on the MLS surface to the project point */
       pcl::MLSResult mls;                       /**< \brief The MLS Results for the closest point */
       double dist;                              /**< \brief The distance squared between point and closest */
@@ -253,11 +253,11 @@ namespace pcl
     static const double AFRONT_CLOSE_PROXIMITY_FACTOR = 0.5;
     static const double AFRONT_FENCE_HEIGHT_FACTOR = 2.0;
 
-    /** \brief AfrontMesher Constructor */
-    AfrontMesher ();
+    /** \brief AdvancingFront Constructor */
+    AdvancingFront ();
 
-    /** \brief AfrontMesher Destructor */
-    ~AfrontMesher () {}
+    /** \brief AdvancingFront Destructor */
+    ~AdvancingFront () {}
 
     /** \brief Get the current polygon mesh */
     inline Mesh
@@ -544,7 +544,7 @@ namespace pcl
     SamplePointResults
     samplePoint (float x, float y, float z) const;
     SamplePointResults
-    samplePoint (const pcl::AfrontGuidanceFieldPointType &pt) const;
+    samplePoint (const pcl::AdvancingFrontGuidanceFieldPointType &pt) const;
 
     /** \brief Used to get the next half edge */
     CutEarData
@@ -624,7 +624,7 @@ namespace pcl
       * \return Returns information about the triangle: angles, edge lengths, etc.
       */
     TriangleData
-    getTriangleData (const FrontData &front, const pcl::AfrontVertexPointType &p) const;
+    getTriangleData (const FrontData &front, const pcl::AdvancingFrontVertexPointType &p) const;
 
     /** \brief Update the allowed triangle tolerances. */
     void
@@ -669,13 +669,13 @@ namespace pcl
     double boundary_angle_threshold_; /**< \brief The boundary angle threshold */
 
     // Guidance field data
-    pcl::PointCloud<pcl::AfrontGuidanceFieldPointType>::Ptr mls_cloud_;
-    pcl::search::KdTree<pcl::AfrontGuidanceFieldPointType>::Ptr mls_cloud_tree_;
+    pcl::PointCloud<pcl::AdvancingFrontGuidanceFieldPointType>::Ptr mls_cloud_;
+    pcl::search::KdTree<pcl::AdvancingFrontGuidanceFieldPointType>::Ptr mls_cloud_tree_;
     pcl::PointIndicesPtr mls_corresponding_input_indices_;
 #ifdef _OPENMP
-    pcl::MovingLeastSquaresOMP<PointNT, pcl::AfrontGuidanceFieldPointType> mls_;
+    pcl::MovingLeastSquaresOMP<PointNT, pcl::AdvancingFrontGuidanceFieldPointType> mls_;
 #else
-    pcl::MovingLeastSquares<PointNT, pcl::AfrontGuidanceFieldPointType> mls_;
+    pcl::MovingLeastSquares<PointNT, pcl::AdvancingFrontGuidanceFieldPointType> mls_;
 #endif
     double max_curvature_;
     double min_curvature_;

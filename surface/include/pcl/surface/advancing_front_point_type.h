@@ -46,7 +46,7 @@
 
 namespace pcl
 {
-  struct EIGEN_ALIGN16 _AfrontVertexPointType
+  struct EIGEN_ALIGN16 _AdvancingFrontVertexPointType
   {
     PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -63,9 +63,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
-  struct AfrontVertexPointType : public _AfrontVertexPointType
+  struct AdvancingFrontVertexPointType : public _AdvancingFrontVertexPointType
   {
-    inline AfrontVertexPointType (const AfrontVertexPointType &p)
+    inline AdvancingFrontVertexPointType (const AdvancingFrontVertexPointType &p)
     {
       x = p.x;
       y = p.y;
@@ -80,7 +80,7 @@ namespace pcl
       max_step_search_radius = p.max_step_search_radius;
     }
 
-    inline AfrontVertexPointType ()
+    inline AdvancingFrontVertexPointType ()
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
@@ -91,7 +91,7 @@ namespace pcl
     }
 
     friend std::ostream &
-    operator<< (std::ostream &os, const AfrontVertexPointType &p)
+    operator<< (std::ostream &os, const AdvancingFrontVertexPointType &p)
     {
       os << p.x << "\t" << p.y << "\t" << p.z << "\t"
          << p.normal_x << "\t" << p.normal_y << "\t" << p.normal_z << "\t"
@@ -101,7 +101,7 @@ namespace pcl
     }
   };
 
-  struct EIGEN_ALIGN16 _AfrontGuidanceFieldPointType
+  struct EIGEN_ALIGN16 _AdvancingFrontGuidanceFieldPointType
   {
     PCL_ADD_POINT4D;  // This adds the members x,y,z which can also be accessed using the point (which is float[4])
     PCL_ADD_NORMAL4D; // This adds the member normal[3] which can also be accessed using the point (which is float[4])
@@ -117,9 +117,9 @@ namespace pcl
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
   };
 
-  struct AfrontGuidanceFieldPointType : public _AfrontGuidanceFieldPointType
+  struct AdvancingFrontGuidanceFieldPointType : public _AdvancingFrontGuidanceFieldPointType
   {
-    inline AfrontGuidanceFieldPointType (const AfrontGuidanceFieldPointType &p)
+    inline AdvancingFrontGuidanceFieldPointType (const AdvancingFrontGuidanceFieldPointType &p)
     {
       x = p.x;
       y = p.y;
@@ -133,7 +133,7 @@ namespace pcl
       ideal_edge_length = p.ideal_edge_length;
     }
 
-    inline AfrontGuidanceFieldPointType(const AfrontVertexPointType &p, const double rho)
+    inline AdvancingFrontGuidanceFieldPointType(const AdvancingFrontVertexPointType &p, const double rho)
     {
       x = p.x;
       y = p.y;
@@ -147,7 +147,7 @@ namespace pcl
       ideal_edge_length = 2.0 * std::sin (rho / 2.0) / curvature;
     }
 
-    inline AfrontGuidanceFieldPointType ()
+    inline AdvancingFrontGuidanceFieldPointType ()
     {
       x = y = z = 0.0f;
       data[3] = 1.0f;
@@ -157,7 +157,7 @@ namespace pcl
     }
 
     friend std::ostream &
-    operator<< (std::ostream &os, const AfrontGuidanceFieldPointType &p)
+    operator<< (std::ostream &os, const AdvancingFrontGuidanceFieldPointType &p)
     {
       os << p.x << "\t" << p.y << "\t" << p.z << "\t"
          << p.normal_x << "\t" << p.normal_y << "\t" << p.normal_z << "\t"
@@ -168,7 +168,7 @@ namespace pcl
   };
 } // namespace pcl
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::AfrontVertexPointType,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::AdvancingFrontVertexPointType,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)
@@ -179,7 +179,7 @@ POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::AfrontVertexPointType,
                                    (float, max_step, max_step)
                                    (float, max_step_search_radius, max_step_search_radius))
 
-POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::AfrontGuidanceFieldPointType,
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::AdvancingFrontGuidanceFieldPointType,
                                    (float, x, x)
                                    (float, y, y)
                                    (float, z, z)

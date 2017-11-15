@@ -41,7 +41,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/surface/advancing_front.h>
 
-TEST (PCL, AfrontDistPoint2Line)
+TEST (PCL, AdvancingFrontDistPoint2Line)
 {
   using pcl::afront::DistPoint2LineResults;
   using pcl::afront::distPoint2Line;
@@ -54,7 +54,7 @@ TEST (PCL, AfrontDistPoint2Line)
   EXPECT_TRUE (results.p.isApprox (Eigen::Vector3f (0.5, 0.0, 0.0), 1e-10));
 }
 
-TEST (PCL, AfrontDistPoint2LineLeftBound)
+TEST (PCL, AdvancingFrontDistPoint2LineLeftBound)
 {
   using pcl::afront::DistPoint2LineResults;
   using pcl::afront::distPoint2Line;
@@ -67,7 +67,7 @@ TEST (PCL, AfrontDistPoint2LineLeftBound)
   EXPECT_TRUE (results.p.isApprox (lp1, 1e-10));
 }
 
-TEST (PCL, AfrontDistPoint2LineRightBound)
+TEST (PCL, AdvancingFrontDistPoint2LineRightBound)
 {
   using pcl::afront::DistPoint2LineResults;
   using pcl::afront::distPoint2Line;
@@ -80,7 +80,7 @@ TEST (PCL, AfrontDistPoint2LineRightBound)
   EXPECT_TRUE (results.p.isApprox (lp2, 1e-10));
 }
 
-TEST (PCL, AfrontDistLine2Line)
+TEST (PCL, AdvancingFrontDistLine2Line)
 {
   using pcl::afront::DistLine2LineResults;
   using pcl::afront::distLine2Line;
@@ -102,7 +102,7 @@ TEST (PCL, AfrontDistLine2Line)
   EXPECT_FALSE (results.parallel);
 }
 
-TEST (PCL, AfrontDistLine2LineParallel)
+TEST (PCL, AdvancingFrontDistLine2LineParallel)
 {
   using pcl::afront::DistLine2LineResults;
   using pcl::afront::distLine2Line;
@@ -124,7 +124,7 @@ TEST (PCL, AfrontDistLine2LineParallel)
   EXPECT_TRUE (results.parallel);
 }
 
-TEST (PCL, AfrontIntersectionLine2Plane)
+TEST (PCL, AdvancingFrontIntersectionLine2Plane)
 {
   using pcl::afront::IntersectionLine2PlaneResults;
   using pcl::afront::intersectionLine2Plane;
@@ -146,7 +146,7 @@ TEST (PCL, AfrontIntersectionLine2Plane)
   EXPECT_FALSE (results.parallel);
 }
 
-TEST (PCL, AfrontIntersectionLine2PlaneParallel)
+TEST (PCL, AdvancingFrontIntersectionLine2PlaneParallel)
 {
   using pcl::afront::IntersectionLine2PlaneResults;
   using pcl::afront::intersectionLine2Plane;
@@ -183,7 +183,7 @@ TEST (PCL, AdvancingFront)
   }
   cloud.is_dense = false;
 
-  pcl::AfrontMesher<pcl::PointXYZ> mesher;
+  pcl::AdvancingFront<pcl::PointXYZ> mesher;
   pcl::PointCloud<pcl::PointXYZ>::Ptr in_cloud (new pcl::PointCloud<pcl::PointXYZ> (cloud));
   pcl::PolygonMesh output;
 

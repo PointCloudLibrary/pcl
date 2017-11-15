@@ -60,17 +60,17 @@ using namespace pcl::console;
   * \group surface
   */
 template <typename PointNT>
-class AfrontMesherDebugTool : public AfrontMesher<PointNT>
+class AdvancingFrontDebugTool : public AdvancingFront<PointNT>
 {
 public:
 
-  /** \brief AfrontMesher Constructor */
-  AfrontMesherDebugTool () : AfrontMesher<PointNT> ()
+  /** \brief AdvancingFront Constructor */
+  AdvancingFrontDebugTool () : AdvancingFront<PointNT> ()
   {
   }
 
-  /** \brief AfrontMesher Destructor */
-  ~AfrontMesherDebugTool () {}
+  /** \brief AdvancingFront Destructor */
+  ~AdvancingFrontDebugTool () {}
 
   /**  \brief Get the internal viewer */
   pcl::visualization::PCLVisualizer::Ptr
@@ -80,13 +80,13 @@ public:
   }
 
 protected:
-  typedef typename  AfrontMesher<PointNT>::PredictVertexResults PredictVertexResults;
-  typedef typename  AfrontMesher<PointNT>::MeshTraits MeshTraits;
+  typedef typename  AdvancingFront<PointNT>::PredictVertexResults PredictVertexResults;
+  typedef typename  AdvancingFront<PointNT>::MeshTraits MeshTraits;
 
   virtual bool
   initialize ()
   {
-    if (!AfrontMesher<PointNT>::initialize())
+    if (!AdvancingFront<PointNT>::initialize())
       return false;
 
     fence_counter_ = 0;
@@ -110,16 +110,16 @@ protected:
     //Show Final mesh results over the mls point cloud
     int v3 = 3;
     viewer_->createViewPort (0.0, 0.0, 0.5, 0.5, v3);
-    pcl::visualization::PointCloudColorHandlerGenericField<pcl::AfrontGuidanceFieldPointType> handler_k (this->mls_cloud_, "curvature");
-    viewer_->addPointCloud<pcl::AfrontGuidanceFieldPointType> (this->mls_cloud_, handler_k, "mls_cloud", v3);
+    pcl::visualization::PointCloudColorHandlerGenericField<pcl::AdvancingFrontGuidanceFieldPointType> handler_k (this->mls_cloud_, "curvature");
+    viewer_->addPointCloud<pcl::AdvancingFrontGuidanceFieldPointType> (this->mls_cloud_, handler_k, "mls_cloud", v3);
 
     //Show mls information
     int v4 = 4;
     viewer_->createViewPort (0.5, 0.0, 1.0, 0.5, v4);
-    pcl::visualization::PointCloudColorHandlerCustom<pcl::AfrontGuidanceFieldPointType> single_color2 (this->mls_cloud_, 0, 255, 0);
-    viewer_->addPointCloud<pcl::AfrontGuidanceFieldPointType> (this->mls_cloud_, single_color2, "mls_cloud2", v4);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::AdvancingFrontGuidanceFieldPointType> single_color2 (this->mls_cloud_, 0, 255, 0);
+    viewer_->addPointCloud<pcl::AdvancingFrontGuidanceFieldPointType> (this->mls_cloud_, single_color2, "mls_cloud2", v4);
 
-    viewer_->registerKeyboardCallback (&AfrontMesherDebugTool<PointNT>::keyboardEventOccurred, *this);
+    viewer_->registerKeyboardCallback (&AdvancingFrontDebugTool<PointNT>::keyboardEventOccurred, *this);
     viewer_->spin ();
 
     return true;
@@ -130,7 +130,7 @@ protected:
   {
     std::printf ("\x1B[35mAdvancing Front: %lu\x1B[0m\n", id);
 
-    PredictVertexResults pvr = AfrontMesher<PointNT>::stepReconstruction(id);
+    PredictVertexResults pvr = AdvancingFront<PointNT>::stepReconstruction(id);
 
     // Remove previous fence from viewer
     for (long unsigned int j = 1; j <= fence_counter_; ++j)
@@ -375,18 +375,18 @@ printHelp (int, char **argv)
   print_info ("  where options are:\n");
   print_info ("                     -radius X         = radius used for local surface reconstruction at each point. (Required)\n");
   print_info ("                     -order X          = the polynomial order for local surface reconstruction at each point. (default: ");
-  print_value ("%d", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_POLYNOMIAL_ORDER); print_info (")\n");
+  print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_POLYNOMIAL_ORDER); print_info (")\n");
   print_info ("                     -rho X            = used to control mesh triangle size (0 > rho > 1.570796). (default: ");
-  print_value ("%f", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_RHO); print_info (")\n");
+  print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_RHO); print_info (")\n");
   print_info ("                     -reduction X      = defines how fast the mesh triangles can grow and shrink (0 > reduction < 1). (default: ");
-  print_value ("%f", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_REDUCTION); print_info (")\n");
+  print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_REDUCTION); print_info (")\n");
   print_info ("                     -boundary_angle X = threshold used to determine if a point is on the boundary of the point cloud. (default: ");
-  print_value ("%f", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD); print_info (")\n");
+  print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD); print_info (")\n");
   print_info ("                     -sample_size X    = the number of sample triangles to generate. (default: ");
-  print_value ("%d", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_SAMPLE_SIZE); print_info (")\n");
+  print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_SAMPLE_SIZE); print_info (")\n");
 #ifdef _OPENMP
   print_info ("                     -threads X        = the number of threads to use. (default: ");
-  print_value ("%d", AfrontMesher<PointXYZ>::AFRONT_DEFAULT_THREADS); print_info (")\n");
+  print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_THREADS); print_info (")\n");
 #endif
   print_info ("                     -debug            = launch debug tool.\n");
 }
@@ -473,28 +473,28 @@ main (int argc, char** argv)
   }
   print_info ("Setting a radius of: "); print_value ("%f\n", radius);
 
-  int order = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_POLYNOMIAL_ORDER;
+  int order = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_POLYNOMIAL_ORDER;
   parse_argument (argc, argv, "-order", order);
   print_info ("Setting a polynomial order of: "); print_value ("%d\n", order);
 
-  double rho = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_RHO;
+  double rho = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_RHO;
   parse_argument (argc, argv, "-rho", rho);
   print_info ("Setting a rho of: "); print_value ("%f\n", rho);
 
-  double reduction = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_REDUCTION;
+  double reduction = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_REDUCTION;
   parse_argument (argc, argv, "-reduction", reduction);
   print_info ("Setting a reduction of: "); print_value ("%f\n", reduction);
 
-  double boundary_angle = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD;
+  double boundary_angle = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD;
   parse_argument (argc, argv, "-boundary_angle", boundary_angle);
   print_info ("Setting a boundary angle threshold of: "); print_value ("%f\n", boundary_angle);
 
-  int sample_size = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_SAMPLE_SIZE;
+  int sample_size = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_SAMPLE_SIZE;
   parse_argument (argc, argv, "-sample_size", sample_size);
   print_info ("Setting a sample size of: "); print_value ("%d\n", sample_size);
 
 #ifdef _OPENMP
-  int threads = AfrontMesher<PointXYZ>::AFRONT_DEFAULT_THREADS;
+  int threads = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_THREADS;
   parse_argument (argc, argv, "-threads", threads);
   print_info ("Setting a number of threads of: "); print_value ("%d\n", threads);
 #endif
@@ -515,14 +515,14 @@ main (int argc, char** argv)
 
   // Apply the marching cubes algorithm
   PolygonMesh output;
-  AfrontMesher<PointXYZ>::Ptr mesher;
+  AdvancingFront<PointXYZ>::Ptr mesher;
   if (debug)
   {
-      mesher = AfrontMesher<PointXYZ>::Ptr(new AfrontMesherDebugTool<PointXYZ> ());
+      mesher = AdvancingFront<PointXYZ>::Ptr(new AdvancingFrontDebugTool<PointXYZ> ());
   }
   else
   {
-      mesher = AfrontMesher<PointXYZ>::Ptr(new AfrontMesher<PointXYZ> ());
+      mesher = AdvancingFront<PointXYZ>::Ptr(new AdvancingFront<PointXYZ> ());
   }
 
   mesher->setRho (rho);
