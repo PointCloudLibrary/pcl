@@ -576,6 +576,89 @@ TEST (PCL, GetMaxDistance)
   test::EXPECT_EQ_VECTORS (max_exp_pt, max_pt);
 }
 
+TEST (PCL, pointToLineSegmentDistance)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (0.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, 1.0);
+  EXPECT_FLOAT_EQ (results.mu, 0.5);
+  EXPECT_TRUE (results.p.isApprox (Eigen::Vector3f (0.5, 0.0, 0.0), 1e-10));
+}
+
+TEST (PCL, pointToLineSegmentDistanceLeftBound)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (-0.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, std::sqrt (1.0 * 1.0 + 0.5 * 0.5));
+  EXPECT_FLOAT_EQ (results.mu, 0.0);
+  EXPECT_TRUE (results.p.isApprox (lp1, 1e-10));
+}
+
+TEST (PCL, pointToLineSegmentDistanceRightBound)
+{
+  using pcl::PointToLineSegmentDistanceResults;
+  using pcl::pointToLineSegmentDistance;
+  Eigen::Vector3f lp1 (0.0, 0.0, 0.0);
+  Eigen::Vector3f lp2 (1.0, 0.0, 0.0);
+  Eigen::Vector3f p (1.5, 1.0, 0.0);
+  PointToLineSegmentDistanceResults results = pointToLineSegmentDistance (lp1, lp2, p);
+  EXPECT_FLOAT_EQ (results.d, std::sqrt (1.0 * 1.0 + 0.5 * 0.5));
+  EXPECT_FLOAT_EQ (results.mu, 1.0);
+  EXPECT_TRUE (results.p.isApprox (lp2, 1e-10));
+}
+
+TEST (PCL, lineSegmentToLineSegmentDistance)
+{
+  using pcl::LineSegmentToLineSegmentDistanceResults;
+  using pcl::lineSegmentToLineSegmentDistance;
+
+  Eigen::Vector3f l1[2], l2[2];
+
+  l1[0] << 0.0, 0.0, 0.0;
+  l1[1] << 1.0, 0.0, 0.0;
+
+  l2[0] << 0.0, -0.5, 0.5;
+  l2[1] << 0.0, 0.5, 0.5;
+
+  LineSegmentToLineSegmentDistanceResults results = lineSegmentToLineSegmentDistance (l1[0], l1[1], l2[0], l2[1]);
+  EXPECT_FLOAT_EQ (results.mu[0], 0.0);
+  EXPECT_FLOAT_EQ (results.mu[1], 0.5);
+
+  EXPECT_TRUE (results.p[0].isApprox (l1[0], 1e-10));
+  EXPECT_TRUE (results.p[1].isApprox (Eigen::Vector3f (0.0, 0.0, 0.5), 1e-10));
+  EXPECT_FALSE (results.parallel);
+}
+
+TEST (PCL, lineSegmentToLineSegmentDistanceParallel)
+{
+  using pcl::LineSegmentToLineSegmentDistanceResults;
+  using pcl::lineSegmentToLineSegmentDistance;
+
+  Eigen::Vector3f l1[2], l2[2];
+
+  l1[0] << 0.0, 0.0, 0.0;
+  l1[1] << 1.0, 0.0, 0.0;
+
+  l2[0] << -0.5, 0.0, 0.5;
+  l2[1] << 0.5, 0.0, 0.5;
+
+  LineSegmentToLineSegmentDistanceResults results = lineSegmentToLineSegmentDistance (l1[0], l1[1], l2[0], l2[1]);
+  EXPECT_FLOAT_EQ (results.mu[0], 0.0);
+  EXPECT_FLOAT_EQ (results.mu[1], 0.5);
+
+  EXPECT_TRUE (results.p[0].isApprox (l1[0], 1e-10));
+  EXPECT_TRUE (results.p[1].isApprox (Eigen::Vector3f (0.0, 0.0, 0.5), 1e-10));
+  EXPECT_TRUE (results.parallel);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

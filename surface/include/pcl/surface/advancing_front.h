@@ -44,9 +44,10 @@
 #define PCL_NO_PRECOMPILE
 #include <deque>
 #include <pcl/surface/reconstruction.h>
-#include <pcl/geometry/polygon_mesh.h>
-#include <pcl/surface/advancing_front_utils.h>
+#include <pcl/surface/advancing_front_point_type.h>
 #include <pcl/surface/mls.h>
+#include <pcl/geometry/polygon_mesh.h>
+#include <pcl/common/intersections.h>
 
 namespace pcl
 {
@@ -234,11 +235,11 @@ namespace pcl
     {
       FenceViolationResults () : index (-1), dist (0.0), found (false) {}
 
-      HalfEdgeIndex he;                               /**< \brief The half edge index that was violated. */
-      int index;                                      /**< \brief The index in the array CloseProximityResults.fences. */
-      pcl::afront::IntersectionLine2PlaneResults lpr; /**< \brief The line to plane intersection results for fence violations. */
-      double dist;                                    /**< \brief The distance from the intersection point and the advancing front. */
-      bool found;                                     /**< \brief If a mesh half edge was violated. */
+      HalfEdgeIndex he;                          /**< \brief The half edge index that was violated. */
+      int index;                                 /**< \brief The index in the array CloseProximityResults.fences. */
+      pcl::LineWithPlaneIntersectionResults lpr; /**< \brief The line to plane intersection results for fence violations. */
+      double dist;                               /**< \brief The distance from the intersection point and the advancing front. */
+      bool found;                                /**< \brief If a mesh half edge was violated. */
     };
 
 #ifdef _OPENMP
@@ -497,7 +498,7 @@ namespace pcl
       * \return True if line interesects fence, otherwise false
       */
     bool
-    isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::afront::IntersectionLine2PlaneResults &lpr) const;
+    isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::LineWithPlaneIntersectionResults &lpr) const;
 
     /**
       * \brief Check if a line intersects a list of fences.

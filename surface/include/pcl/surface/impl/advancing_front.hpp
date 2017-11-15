@@ -44,6 +44,7 @@
 #include <pcl/surface/advancing_front.h>
 #include <pcl/geometry/mesh_conversion.h>
 #include <pcl/common/normals.h>
+#include <pcl/common/distances.h>
 
 #include <eigen3/Eigen/LU>
 
@@ -806,8 +807,8 @@ pcl::AdvancingFront<PointNT>::isCloseProximity (const PredictVertexResults &pvr)
   // If either the prev or next half edge vertice is with in tolerance default to it
   // over closest point.
   // TODO: Should we be checking if triangle normals are valid?
-  double prev_dist = pcl::afront::distPoint2Line (pvr.afront.prev.tri.p[0], pvr.afront.prev.tri.p[2], pvr.tri.p[2]).d;
-  double next_dist = pcl::afront::distPoint2Line (pvr.afront.next.tri.p[1], pvr.afront.next.tri.p[2], pvr.tri.p[2]).d;
+  double prev_dist = pcl::pointToLineSegmentDistance (pvr.afront.prev.tri.p[0], pvr.afront.prev.tri.p[2], pvr.tri.p[2]).d;
+  double next_dist = pcl::pointToLineSegmentDistance (pvr.afront.next.tri.p[1], pvr.afront.next.tri.p[2], pvr.tri.p[2]).d;
   if (pvr.afront.prev.tri.point_valid && pvr.afront.next.tri.point_valid)
   {
     if (pvr.afront.prev.tri.aspect_ratio >= AFRONT_ASPECT_RATIO_TOLERANCE || pvr.afront.next.tri.aspect_ratio >= AFRONT_ASPECT_RATIO_TOLERANCE)
@@ -885,7 +886,7 @@ pcl::AdvancingFront<PointNT>::isCloseProximity (const PredictVertexResults &pvr)
       Eigen::Vector3f p1 = mesh_vertex_data_ptr_->at (vi[0].get ()).getVector3fMap ();
       Eigen::Vector3f p2 = mesh_vertex_data_ptr_->at (vi[1].get ()).getVector3fMap ();
 
-      pcl::afront::DistPoint2LineResults dist = pcl::afront::distPoint2Line (p1, p2, pvr.tri.p[2]);
+      pcl::PointToLineSegmentDistanceResults dist = pcl::pointToLineSegmentDistance (p1, p2, pvr.tri.p[2]);
       if (dist.d < AFRONT_CLOSE_PROXIMITY_FACTOR * pvr.afront.front.max_step)
       {
 
@@ -978,7 +979,7 @@ pcl::AdvancingFront<PointNT>::checkPrevNextHalfEdge (const AdvancingFrontData &a
     return true;
   }
 
-  pcl::afront::IntersectionLine2PlaneResults lpr;
+  pcl::LineWithPlaneIntersectionResults lpr;
   if (afront.next.tri.point_valid && isFenceViolated (afront.front.p[0], tri.p[2], afront.next.secondary, AFRONT_FENCE_HEIGHT_FACTOR * afront.next.tri.B * hausdorff_error_, lpr))
   {
     closest = afront.next.vi[2];
@@ -997,7 +998,7 @@ pcl::AdvancingFront<PointNT>::checkPrevNextHalfEdge (const AdvancingFrontData &a
 }
 
 template <typename PointNT> bool
-pcl::AdvancingFront<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::afront::IntersectionLine2PlaneResults &lpr) const
+pcl::AdvancingFront<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const Eigen::Vector3f &ep, const HalfEdgeIndex &fence, const double fence_height, pcl::LineWithPlaneIntersectionResults &lpr) const
 {
   // Check for fence intersection
   Eigen::Vector3f he_p1, he_p2;
@@ -1013,7 +1014,7 @@ pcl::AdvancingFront<PointNT>::isFenceViolated (const Eigen::Vector3f &sp, const 
   // Project the line on to the triangle plane. Note this is different from the paper
   Eigen::Vector3f sp_proj = sp - (sp - he_p1).dot (n) * n;
   Eigen::Vector3f ep_proj = ep - (ep - he_p1).dot (n) * n;
-  lpr = pcl::afront::intersectionLine2Plane (sp_proj, ep_proj, he_p1, u, v);
+  lpr = pcl::lineWithPlaneIntersection (sp_proj, ep_proj, he_p1, u, v);
 
   if (!lpr.parallel)                     // May need to add additional check if parallel
     if (lpr.mw <= 1 && lpr.mw >= 0)      // This checks if line segement intersects the plane
@@ -1043,7 +1044,7 @@ pcl::AdvancingFront<PointNT>::isFencesViolated (const VertexIndex &vi, const Eig
       if (closest == mesh_.getOriginatingVertexIndex (fences[i]) || closest == mesh_.getTerminatingVertexIndex (fences[i]))
         continue;
 
-    pcl::afront::IntersectionLine2PlaneResults lpr;
+    pcl::LineWithPlaneIntersectionResults lpr;
     double fence_height = 2.0 * pvr.afront.front.max_step * hausdorff_error_;
     bool fence_violated = isFenceViolated (sp, p, fences[i], fence_height, lpr);
 
@@ -1148,8 +1149,8 @@ pcl::AdvancingFront<PointNT>::isTriangleToClose (const PredictVertexResults &pvr
       {
         // TODO: Should check if triangle is valid for these points. If both are then check distance
         //       otherwise use the one that creates a valid triangle.
-        double dist1 = pcl::afront::distPoint2Line (pvr.afront.front.p[0], pvr.afront.front.p[1], fp[0]).d;
-        double dist2 = pcl::afront::distPoint2Line (pvr.afront.front.p[0], pvr.afront.front.p[1], fp[1]).d;
+        double dist1 = pcl::pointToLineSegmentDistance (pvr.afront.front.p[0], pvr.afront.front.p[1], fp[0]).d;
+        double dist2 = pcl::pointToLineSegmentDistance (pvr.afront.front.p[0], pvr.afront.front.p[1], fp[1]).d;
         if (dist1 < dist2)
           index = 0;
         else
