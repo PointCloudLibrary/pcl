@@ -37,6 +37,7 @@
 #define PCL_CLOUD_VIEWER_H_
 
 #include <pcl/visualization/pcl_visualizer.h> //pcl vis
+#include <boost/scoped_ptr.hpp> // scoped_ptr for pre-C++11
 
 #include <string>
 
@@ -199,7 +200,7 @@ namespace pcl
       private:
         /** \brief Private implementation. */
         struct CloudViewer_impl;
-        std::auto_ptr<CloudViewer_impl> impl_;
+	boost::scoped_ptr<CloudViewer_impl> impl_;
         
         boost::signals2::connection 
         registerMouseCallback (boost::function<void (const pcl::visualization::MouseEvent&)>);
