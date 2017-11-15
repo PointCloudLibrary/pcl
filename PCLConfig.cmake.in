@@ -131,6 +131,7 @@ macro(find_qhull)
     get_filename_component(QHULL_ROOT "@QHULL_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
 
+  set(QHULL_USE_STATIC @QHULL_USE_STATIC@)
   find_package(Qhull)
 endmacro(find_qhull)
 
@@ -218,6 +219,7 @@ macro(find_flann)
     get_filename_component(FLANN_ROOT "@FLANN_INCLUDE_DIRS@" PATH)
   endif(PCL_ALL_IN_ONE_INSTALLER)
 
+  set(FLANN_USE_STATIC @FLANN_USE_STATIC@)
   find_package(FLANN)
 endmacro(find_flann)
 
