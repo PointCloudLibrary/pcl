@@ -245,7 +245,7 @@ namespace pcl
 #ifdef _OPENMP
     static const int    AFRONT_DEFAULT_THREADS;
 #endif
-    static const int    AFRONT_DEFAULT_SAMPLE_SIZE;
+    static const size_t AFRONT_DEFAULT_SAMPLE_SIZE;
     static const int    AFRONT_DEFAULT_POLYNOMIAL_ORDER;
     static const double AFRONT_DEFAULT_REDUCTION;
     static const double AFRONT_DEFAULT_RHO;
@@ -363,7 +363,7 @@ namespace pcl
       * \note num_samples = 0 will mesh the entire PointCloud.
       */
     inline void
-    setSampleSize (const int num_samples)
+    setSampleSize (const size_t num_samples)
     {
       if (num_samples < 0)
       {
@@ -377,7 +377,7 @@ namespace pcl
     }
 
     /** \brief Get the number of sample triangles to generate. */
-    inline int
+    inline size_t
     getSampleSize () const
     {
       return samples_;
@@ -679,7 +679,7 @@ namespace pcl
     double reduction_;               /**< \brief The allowed percent reduction from triangle to triangle. */
     double search_radius_;           /**< \brief The search radius used by mls */
     int polynomial_order_;           /**< \brief The degree of the polynomial used by mls */
-    int samples_;                    /**< \brief The number of sample triangle to create. */
+    size_t samples_;                 /**< \brief The number of sample triangle to create. */
     double max_allowed_edge_length_; /**< \brief The maximum allowed edge length of any given triangle. */
 #ifdef _OPENMP
     int threads_;                    /**< \brief The number of threads to be used by mls */
@@ -688,7 +688,7 @@ namespace pcl
     // Algorithm Data
     double hausdorff_error_;
     double max_edge_length_;          /**< \brief This can be used to calculate the max error fo the reconstruction (max_edge_length_ * hausdorff_error_) */
-    int required_neighbors_;          /**< \brief This the required number of neighbors for a given point found during the MLS. */
+    size_t required_neighbors_;       /**< \brief This the required number of neighbors for a given point found during the MLS. */
     double vertex_normal_tol_;        /**< \brief The angle tolerance for vertex normals for a given triangle */
     double triangle_normal_tol_;      /**< \brief The angle tolerance for the triangle normal relative to vertex normals */
     double boundary_angle_threshold_; /**< \brief The boundary angle threshold */
@@ -724,7 +724,7 @@ namespace pcl
   const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_THREADS = 1;
 #endif
   template <typename PointNT>
-  const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_SAMPLE_SIZE = 0;
+  const size_t AdvancingFront<PointNT>::AFRONT_DEFAULT_SAMPLE_SIZE = 0;
   template <typename PointNT>
   const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_POLYNOMIAL_ORDER = 2;
   template <typename PointNT>

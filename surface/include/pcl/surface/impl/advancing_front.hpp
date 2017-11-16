@@ -1342,8 +1342,8 @@ pcl::AdvancingFront<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radiu
   // What is shown in the afront paper. Need to figure out how to transverse the kdtree.
   double len = max_allowed_edge_length_;
   double radius = 0;
-  int j = 1;
-  int pcnt = 0;
+  size_t j = 1;
+  size_t pcnt = 0;
   bool finished = false;
   double search_radius = search_radius_;
 
@@ -1355,8 +1355,8 @@ pcl::AdvancingFront<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radiu
 
   while (pcnt < (mls_cloud_->points.size () - 1))
   {
-    int cnt = mls_cloud_tree_->radiusSearch (pn, j * search_radius, k, k_dist);
-    for (int i = pcnt; i < cnt; ++i)
+    size_t cnt = mls_cloud_tree_->radiusSearch (pn, j * search_radius, k, k_dist);
+    for (size_t i = pcnt; i < cnt; ++i)
     {
       int neighbors = mls_.getMLSResults ()[i].num_neighbors;
       if (neighbors < required_neighbors_)
