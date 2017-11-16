@@ -250,6 +250,7 @@ namespace pcl
     static const double AFRONT_DEFAULT_REDUCTION;
     static const double AFRONT_DEFAULT_RHO;
     static const double AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD;
+    static const double AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH;
     static const double AFRONT_ASPECT_RATIO_TOLERANCE;
     static const double AFRONT_CLOSE_PROXIMITY_FACTOR;
     static const double AFRONT_FENCE_HEIGHT_FACTOR;
@@ -394,6 +395,28 @@ namespace pcl
       else
       {
         boundary_angle_threshold_ = angle;
+      }
+    }
+
+    /** \brief Get the maximum allowed triangle edge length. */
+    inline double
+    getMaxAllowedEdgeLength () const
+    {
+      return max_allowed_edge_length_;
+    }
+
+    /** \brief Set the maximum allowed triangle edge length. This is useful if the data is on a plane. */
+    inline void
+    setMaxAllowedEdgeLength (const double length)
+    {
+      if (length <= 0)
+      {
+        PCL_ERROR ("AFront max allowed triangle edge length must be greater than 0. Using default value.\n");
+        max_allowed_edge_length_ = AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH;
+      }
+      else
+      {
+        max_allowed_edge_length_ = length;
       }
     }
 
@@ -652,13 +675,14 @@ namespace pcl
     using SurfaceReconstruction<PointNT>::indices_;
     using SurfaceReconstruction<PointNT>::tree_;
 
-    double rho_;           /**< \brief The angle of the osculating circle where a triangle edge should optimally subtend */
-    double reduction_;     /**< \brief The allowed percent reduction from triangle to triangle. */
-    double search_radius_; /**< \brief The search radius used by mls */
-    int polynomial_order_; /**< \brief The degree of the polynomial used by mls */
-    int samples_;          /**< \brief The number of sample triangle to create. */
+    double rho_;                     /**< \brief The angle of the osculating circle where a triangle edge should optimally subtend */
+    double reduction_;               /**< \brief The allowed percent reduction from triangle to triangle. */
+    double search_radius_;           /**< \brief The search radius used by mls */
+    int polynomial_order_;           /**< \brief The degree of the polynomial used by mls */
+    int samples_;                    /**< \brief The number of sample triangle to create. */
+    double max_allowed_edge_length_; /**< \brief The maximum allowed edge length of any given triangle. */
 #ifdef _OPENMP
-    int threads_;          /**< \brief The number of threads to be used by mls */
+    int threads_;                    /**< \brief The number of threads to be used by mls */
 #endif
 
     // Algorithm Data
@@ -709,6 +733,8 @@ namespace pcl
   const double AdvancingFront<PointNT>::AFRONT_DEFAULT_RHO = 0.9;
   template <typename PointNT>
   const double AdvancingFront<PointNT>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD = M_PI_2;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH = std::numeric_limits<double>::max();
   template <typename PointNT>
   const double AdvancingFront<PointNT>::AFRONT_ASPECT_RATIO_TOLERANCE = 0.85;
   template <typename PointNT>

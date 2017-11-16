@@ -66,6 +66,7 @@ pcl::AdvancingFront<PointNT>::AdvancingFront () : search_radius_ (0.0)
   setPolynomialOrder (AFRONT_DEFAULT_POLYNOMIAL_ORDER);
   setBoundaryAngleThreshold (AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD);
   setSampleSize(AFRONT_DEFAULT_SAMPLE_SIZE);
+  setMaxAllowedEdgeLength(AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH);
 }
 
 template <typename PointNT> bool
@@ -1339,7 +1340,7 @@ pcl::AdvancingFront<PointNT>::getMaxStep (const Eigen::Vector3f &p, float &radiu
   pn.z = p (2);
 
   // What is shown in the afront paper. Need to figure out how to transverse the kdtree.
-  double len = std::numeric_limits<double>::max ();
+  double len = max_allowed_edge_length_;
   double radius = 0;
   int j = 1;
   int pcnt = 0;

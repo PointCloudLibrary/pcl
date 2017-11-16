@@ -204,7 +204,7 @@ protected:
     p1 = pcl::PointXYZ (pvr.afront.next.tri.p[0] (0), pvr.afront.next.tri.p[0] (1), pvr.afront.next.tri.p[0] (2));
     p2 = pcl::PointXYZ (pvr.afront.next.tri.p[1] (0), pvr.afront.next.tri.p[1] (1), pvr.afront.next.tri.p[1] (2));
     p3 = pcl::PointXYZ (pvr.afront.next.tri.p[2] (0), pvr.afront.next.tri.p[2] (1), pvr.afront.next.tri.p[2] (2));
-    p4 = pcl::PointXYZ (pvr.afront.next.tri.p[2] (0), pvr.afront.next.tri.p[2] (1), pvr.afront.next.tri.p[2] (2));
+    p4 = pcl::PointXYZ (pvr.afront.prev.tri.p[2] (0), pvr.afront.prev.tri.p[2] (1), pvr.afront.prev.tri.p[2] (2));
 
     viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p1, p2, 0, 255, 0, "HalfEdge");          // Green
     viewer_->addLine<pcl::PointXYZ, pcl::PointXYZ> (p2, p3, 255, 0, 0, "NextHalfEdge", 1);   // Red
@@ -417,22 +417,24 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.pcd output.vtk <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -radius X         = radius used for local surface reconstruction at each point. (Required)\n");
-  print_info ("                     -order X          = the polynomial order for local surface reconstruction at each point. (default: ");
+  print_info ("                     -radius X          = radius used for local surface reconstruction at each point. (Required)\n");
+  print_info ("                     -order X           = the polynomial order for local surface reconstruction at each point. (default: ");
   print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_POLYNOMIAL_ORDER); print_info (")\n");
-  print_info ("                     -rho X            = used to control mesh triangle size (0 > rho > 1.570796). (default: ");
+  print_info ("                     -rho X             = used to control mesh triangle size (0 > rho > 1.570796). (default: ");
   print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_RHO); print_info (")\n");
-  print_info ("                     -reduction X      = defines how fast the mesh triangles can grow and shrink (0 > reduction < 1). (default: ");
+  print_info ("                     -reduction X       = defines how fast the mesh triangles can grow and shrink (0 > reduction < 1). (default: ");
   print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_REDUCTION); print_info (")\n");
-  print_info ("                     -boundary_angle X = threshold used to determine if a point is on the boundary of the point cloud. (default: ");
+  print_info ("                     -boundary_angle X  = threshold used to determine if a point is on the boundary of the point cloud. (default: ");
   print_value ("%f", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD); print_info (")\n");
-  print_info ("                     -sample_size X    = the number of sample triangles to generate. (default: ");
+  print_info ("                     -sample_size X     = the number of sample triangles to generate. (default: ");
   print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_SAMPLE_SIZE); print_info (")\n");
+  print_info ("                     -max_edge_length X = the maximum allowed triangle edge length. (default: ");
+  print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH); print_info (")\n");
 #ifdef _OPENMP
-  print_info ("                     -threads X        = the number of threads to use. (default: ");
+  print_info ("                     -threads X         = the number of threads to use. (default: ");
   print_value ("%d", AdvancingFront<PointXYZ>::AFRONT_DEFAULT_THREADS); print_info (")\n");
 #endif
-  print_info ("                     -debug            = launch debug tool.\n");
+  print_info ("                     -debug             = launch debug tool.\n");
 }
 
 bool
@@ -537,6 +539,10 @@ main (int argc, char** argv)
   parse_argument (argc, argv, "-sample_size", sample_size);
   print_info ("Setting a sample size of: "); print_value ("%d\n", sample_size);
 
+  double max_edge_length = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_MAX_ALLOWED_EDGE_LENGTH;
+  parse_argument (argc, argv, "-max_edge_length", max_edge_length);
+  print_info ("Setting a max allowed edge length of: "); print_value ("%f\n", max_edge_length);
+
 #ifdef _OPENMP
   int threads = AdvancingFront<PointXYZ>::AFRONT_DEFAULT_THREADS;
   parse_argument (argc, argv, "-threads", threads);
@@ -547,7 +553,7 @@ main (int argc, char** argv)
   if (find_argument (argc, argv, "-debug") > 0)
     debug = true;
 
-  print_info ("Setting debug to: "); print_info (debug ? "true" : "false");
+  print_info ("Setting debug to: "); print_info (debug ? "true\n" : "false\n");
 
   // Load the first file
   pcl::PCLPointCloud2::Ptr cloud (new pcl::PCLPointCloud2);
@@ -576,6 +582,7 @@ main (int argc, char** argv)
   mesher->setBoundaryAngleThreshold (boundary_angle);
   mesher->setInputCloud (xyz_cloud);
   mesher->setSampleSize (sample_size);
+  mesher->setMaxAllowedEdgeLength (max_edge_length);
 #ifdef _OPENMP
   mesher->setNumberOfThreads (threads);
 #endif
