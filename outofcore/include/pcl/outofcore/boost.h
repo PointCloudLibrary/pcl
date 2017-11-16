@@ -54,5 +54,10 @@
 #include <boost/random/bernoulli_distribution.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#if BOOST_VERSION / 100 > 1055
+#include <boost/core/noncopyable.hpp>
+#else
+#include <boost/noncopyable.hpp>
+#endif
 
 #endif //PCL_OUTOFCORE_BOOST_H_

@@ -735,7 +735,7 @@ mets::swap_elements::operator==(const mets::mana_move& o) const
     const mets::swap_elements& other = 
       dynamic_cast<const mets::swap_elements&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
-  } catch (std::bad_cast& e) {
+  } catch (std::bad_cast&) {
     return false;
   }
 }
@@ -785,7 +785,7 @@ mets::invert_subsequence::operator==(const mets::mana_move& o) const
     const mets::invert_subsequence& other = 
       dynamic_cast<const mets::invert_subsequence&>(o);
     return (this->p1 == other.p1 && this->p2 == other.p2);
-  } catch (std::bad_cast& e) {
+  } catch (std::bad_cast&) {
     return false;
   }
 }

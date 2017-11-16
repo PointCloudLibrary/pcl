@@ -56,7 +56,7 @@ namespace pcl
       * \author Dirk Holz
       * \ingroup registration
       */
-    class CorrespondenceRejector
+    class PCL_EXPORTS CorrespondenceRejector
     {
       public:
         typedef boost::shared_ptr<CorrespondenceRejector> Ptr;
@@ -123,7 +123,8 @@ namespace pcl
         {
           if (!input_correspondences_ || input_correspondences_->empty ())
           {
-            PCL_WARN ("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences not set (lookup of rejected correspondences _not_ possible).\n", getClassName ().c_str ());
+            PCL_WARN ("[pcl::registration::%s::getRejectedQueryIndices] Input correspondences not set (lookup of rejected correspondences _not_ possible).\n", 
+                      getClassName ().c_str ());
             return;
           }
 

@@ -546,7 +546,7 @@ pcl::visualization::PointCloudColorHandlerLabelField<PointT>::getColor (vtkSmart
     // Assign Glasbey colors in ascending order of labels
     size_t color = 0;
     for (std::set<uint32_t>::iterator iter = labels.begin (); iter != labels.end (); ++iter, ++color)
-      colormap[*iter] = GlasbeyLUT::at (color % GlasbeyLUT::size ());
+      colormap[*iter] = GlasbeyLUT::at (static_cast<unsigned int>(color % GlasbeyLUT::size ()));
   }
 
   int j = 0;

@@ -206,7 +206,7 @@ pcl::io::LZFImageWriter::writeParameter (const double &parameter,
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put (tag, parameter);
@@ -225,7 +225,7 @@ pcl::io::LZFDepth16ImageWriter::writeParameters (const pcl::io::CameraParameters
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put ("depth.focal_length_x", parameters.focal_length_x);
@@ -285,7 +285,7 @@ pcl::io::LZFRGB24ImageWriter::writeParameters (const pcl::io::CameraParameters &
   {
     boost::property_tree::xml_parser::read_xml (filename, pt, boost::property_tree::xml_parser::trim_whitespace);
   }
-  catch (std::exception& e)
+  catch (std::exception&)
   {}
 
   pt.put ("rgb.focal_length_x", parameters.focal_length_x);

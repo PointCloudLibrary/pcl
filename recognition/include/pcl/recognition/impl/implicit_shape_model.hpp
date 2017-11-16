@@ -719,7 +719,7 @@ pcl::ism::ImplicitShapeModelEstimation<FeatureSize, PointT, NormalT>::trainISM (
   std::vector<unsigned int> vec;
   trained_model->clusters_.resize (number_of_clusters_, vec);
   for (size_t i_label = 0; i_label < locations.size (); i_label++)
-    trained_model->clusters_[labels (i_label)].push_back (i_label);
+    trained_model->clusters_[labels (i_label)].push_back (static_cast<flann::lsh::FeatureIndex>(i_label));
 
   calculateSigmas (trained_model->sigmas_);
 

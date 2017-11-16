@@ -155,8 +155,8 @@ namespace pcl
       applyFilter (std::vector<int> &indices);
 
       static bool
-      sort_dot_list_function (std::pair<int, double> a,
-                              std::pair<int, double> b)
+      sort_dot_list_function (const std::pair<size_t, double>& a,
+                              const std::pair<size_t, double>& b)
       { return (a.second > b.second); }
 
     public:

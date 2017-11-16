@@ -2332,7 +2332,7 @@ namespace pcl
                 (*vertexCount)[key1].second--;
                 (*vertexCount)[key2].second++;
               }
-              else fprintf( stderr , "Bad Edge 1: %d %d\n" , ri1.key , ri2.key );
+              else fprintf( stderr , "Bad Edge 1: %lld %lld\n" , ri1.key , ri2.key );
       }
     }
 
@@ -3497,14 +3497,14 @@ namespace pcl
                 {
                   int r1 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+k] );
                   int r2 = MarchingCubes::HasEdgeRoots( node->nodeData.mcIndex , isoTri[j*3+((k+1)%3)] );
-                  fprintf( stderr , "Bad Edge 2: %d %d\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
+                  fprintf( stderr , "Bad Edge 2: %lld %lld\t%d %d\n" , ri1.key , ri2.key , r1 , r2 );
                 }
         }
       }
       for( int i=0 ; i<int(edges.size()) ; i++ )
       {
         iter = vertexCount.find( edges[i].first.key );
-        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].first );
+        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].first.key );
         else if( vertexCount[ edges[i].first.key ].second )
         {
           RootInfo ri;
@@ -3526,7 +3526,7 @@ namespace pcl
         }
 
         iter = vertexCount.find( edges[i].second.key );
-        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].second );
+        if( iter==vertexCount.end() ) printf( "Could not find vertex: %lld\n" , edges[i].second.key );
         else if( vertexCount[edges[i].second.key].second )
         {
           RootInfo ri;

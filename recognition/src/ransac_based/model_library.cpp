@@ -111,7 +111,7 @@ ModelLibrary::addModel (const PointCloudIn& points, const PointCloudN& normals, 
 #endif
 
   // Try to insert a new model entry
-  pair<map<string,Model*>::iterator, bool> result = models_.insert (pair<string,Model*> (object_name, static_cast<Model*> (NULL)));
+  pair<map<string,Model*>::iterator, bool> result = models_.insert (std::make_pair (object_name, static_cast<Model*> (NULL)));
 
   // Check if 'object_name' is unique
   if (!result.second)
@@ -177,7 +177,7 @@ ModelLibrary::addToHashTable (Model* model, const ORROctree::Node::Data* data1, 
   HashTableCell* cell = hash_table_.getVoxel (key);
 
   // Insert the pair (data1,data2) belonging to 'model'
-  (*cell)[model].push_back (std::pair<const ORROctree::Node::Data*, const ORROctree::Node::Data*> (data1, data2));
+  (*cell)[model].push_back (std::make_pair (data1, data2));
 
   return (true);
 }

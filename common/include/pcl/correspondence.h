@@ -106,7 +106,7 @@ namespace pcl
     * from the order in \b correspondences_before this pre-processing step can be disabled
     * in order to gain efficiency. In order to disable pre-sorting set \a presorting_requered to false.
     */
-  void
+  PCL_EXPORTS void
   getRejectedQueryIndices (const pcl::Correspondences &correspondences_before,
                            const pcl::Correspondences &correspondences_after,
                            std::vector<int>& indices,

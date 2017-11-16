@@ -45,7 +45,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ndt_2d.h"
         "include/pcl/${SUBSYS_NAME}/ppf_registration.h"
 
-        "include/pcl/${SUBSYS_NAME}/impl/pairwise_graph_registration.hpp"
+        #"include/pcl/${SUBSYS_NAME}/impl/pairwise_graph_registration.hpp"
 
         "include/pcl/${SUBSYS_NAME}/pyramid_feature_matching.h"
         "include/pcl/${SUBSYS_NAME}/registration.h"

@@ -388,7 +388,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
     sgurf (centroids_dominant_orientations_[i], dominant_normals_[i], processed, transformations, grid, cluster_indices[i]);
 
     // Make a note of how many transformations correspond to each cluster
-    cluster_axes_[i] = transformations.size ();
+    cluster_axes_[i] = static_cast<short>(transformations.size ());
     
     for (size_t t = 0; t < transformations.size (); t++)
     {
@@ -526,7 +526,7 @@ pcl::OURCVFHEstimation<PointInT, PointNT, PointOutT>::computeRFAndShapeDistribut
       }
 
       ourcvfh_output.points.push_back (vfh_signature.points[0]);
-      ourcvfh_output.width = ourcvfh_output.points.size ();
+      ourcvfh_output.width = static_cast<uint32_t>(ourcvfh_output.points.size ());
       delete[] weights;
     }
   }

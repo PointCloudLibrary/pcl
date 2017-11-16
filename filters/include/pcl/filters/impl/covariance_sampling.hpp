@@ -204,7 +204,7 @@ pcl::CovarianceSampling<PointT, PointNT>::applyFilter (std::vector<int> &sampled
 
 
   // Set up the lists to be sorted
-  std::vector<std::list<std::pair<int, double> > > L;
+  std::vector<std::list<std::pair<size_t, double> > > L;
   L.resize (6);
 
   for (size_t i = 0; i < 6; ++i)

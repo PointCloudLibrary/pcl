@@ -74,17 +74,18 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
   vtkIdType nr_points = cloud_->points.size ();
 
   // Add all points
-  vtkIdType j = 0;    // true point index
   float* pts = static_cast<float*> (malloc (nr_points * 3 * sizeof (float)));
 
   // If the dataset has no invalid values, just copy all of them
   if (cloud_->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
+    typename pcl::PointCloud<PointT>::const_iterator cloud_it = cloud_->points.begin();
+    const typename pcl::PointCloud<PointT>::const_iterator end = cloud_->points.end();
+    for (vtkIdType i = 0; cloud_it != end; ++cloud_it, i += 3)
     {
-      pts[i * 3 + 0] = cloud_->points[i].x;
-      pts[i * 3 + 1] = cloud_->points[i].y;
-      pts[i * 3 + 2] = cloud_->points[i].z;
+      pts[i    ] = cloud_it->x;
+      pts[i + 1] = cloud_it->y;
+      pts[i + 2] = cloud_it->z;
     }
     data->SetArray (&pts[0], nr_points * 3, 0);
     points->SetData (data);
@@ -92,17 +93,16 @@ pcl::visualization::PointCloudGeometryHandlerXYZ<PointT>::getGeometry (vtkSmartP
   // Need to check for NaNs, Infs, ec
   else
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
+    const typename pcl::PointCloud<PointT>::const_iterator end = cloud_->points.end();
+    vtkIdType j = 0;    // true point index
+    for (typename pcl::PointCloud<PointT>::const_iterator cloud_it = cloud_->points.begin (); cloud_it != end; ++cloud_it)
     {
-      // Check if the point is invalid
-      if (!pcl_isfinite (cloud_->points[i].x) || !pcl_isfinite (cloud_->points[i].y) || !pcl_isfinite (cloud_->points[i].z))
+      if (!pcl_isfinite(cloud_it->x) || !pcl_isfinite(cloud_it->y) || !pcl_isfinite(cloud_it->z))
         continue;
-
-      pts[j * 3 + 0] = cloud_->points[i].x;
-      pts[j * 3 + 1] = cloud_->points[i].y;
-      pts[j * 3 + 2] = cloud_->points[i].z;
-      // Set j and increment
-      j++;
+      pts[j    ] = cloud_it->x;
+      pts[j + 1] = cloud_it->y;
+      pts[j + 2] = cloud_it->z;
+      ++j;
     }
     data->SetArray (&pts[0], j * 3, 0);
     points->SetData (data);
