@@ -243,16 +243,16 @@ namespace pcl
     };
 
 #ifdef _OPENMP
-    static const int    AFRONT_DEFAULT_THREADS = 1;
+    static const int    AFRONT_DEFAULT_THREADS;
 #endif
-    static const int    AFRONT_DEFAULT_SAMPLE_SIZE = 0;
-    static const int    AFRONT_DEFAULT_POLYNOMIAL_ORDER = 2;
-    static const double AFRONT_DEFAULT_REDUCTION = 0.8;
-    static const double AFRONT_DEFAULT_RHO = 0.9;
-    static const double AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD = M_PI_2;
-    static const double AFRONT_ASPECT_RATIO_TOLERANCE = 0.85;
-    static const double AFRONT_CLOSE_PROXIMITY_FACTOR = 0.5;
-    static const double AFRONT_FENCE_HEIGHT_FACTOR = 2.0;
+    static const int    AFRONT_DEFAULT_SAMPLE_SIZE;
+    static const int    AFRONT_DEFAULT_POLYNOMIAL_ORDER;
+    static const double AFRONT_DEFAULT_REDUCTION;
+    static const double AFRONT_DEFAULT_RHO;
+    static const double AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD;
+    static const double AFRONT_ASPECT_RATIO_TOLERANCE;
+    static const double AFRONT_CLOSE_PROXIMITY_FACTOR;
+    static const double AFRONT_FENCE_HEIGHT_FACTOR;
 
     /** \brief AdvancingFront Constructor */
     AdvancingFront ();
@@ -694,6 +694,28 @@ namespace pcl
     bool initialized_;
 
   };
+
+#ifdef _OPENMP
+  template <typename PointNT>
+  const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_THREADS = 1;
+#endif
+  template <typename PointNT>
+  const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_SAMPLE_SIZE = 0;
+  template <typename PointNT>
+  const int    AdvancingFront<PointNT>::AFRONT_DEFAULT_POLYNOMIAL_ORDER = 2;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_DEFAULT_REDUCTION = 0.8;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_DEFAULT_RHO = 0.9;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_DEFAULT_BOUNDARY_ANGLE_THRESHOLD = M_PI_2;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_ASPECT_RATIO_TOLERANCE = 0.85;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_CLOSE_PROXIMITY_FACTOR = 0.5;
+  template <typename PointNT>
+  const double AdvancingFront<PointNT>::AFRONT_FENCE_HEIGHT_FACTOR = 2.0;
+
 } // namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE

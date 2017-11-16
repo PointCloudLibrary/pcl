@@ -302,7 +302,7 @@ protected:
       std::printf ("\x1B[33m  Performed Topology Event Opperation\x1B[0m\n");
     }
 
-    for (int i = 0; i < pvr.ttcr.fences.size (); ++i)
+    for (size_t i = 0; i < pvr.ttcr.fences.size (); ++i)
     {
       fence_counter_ += 1;
       Eigen::Vector3f start_pt, end_pt;

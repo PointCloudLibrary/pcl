@@ -132,7 +132,7 @@ pcl::AdvancingFront<PointNT>::computeGuidanceField ()
   // Calculate the max principle curvature using mls result polynomial data
   max_curvature_ = std::numeric_limits<double>::min ();
   min_curvature_ = std::numeric_limits<double>::max ();
-  for (int i = 0; i < mls_cloud_->size (); ++i)
+  for (size_t i = 0; i < mls_cloud_->size (); ++i)
   {
     Eigen::Vector3d point = mls_cloud_->at (i).getVector3fMap ().template cast<double> ();
     int index = mls_corresponding_input_indices_->indices[i];
@@ -730,7 +730,7 @@ pcl::AdvancingFront<PointNT>::isCloseProximity (const PredictVertexResults &pvr)
   results.found = false;
 
   // First check for closest proximity violation
-  for (int i = 0; i < K.size (); ++i)
+  for (size_t i = 0; i < K.size (); ++i)
   {
     typename MeshTraits::VertexData &data = mesh_vertex_data_ptr_->at (K[i]);
     VertexIndex vi = mesh_.getVertexIndex (data);
@@ -870,7 +870,7 @@ pcl::AdvancingFront<PointNT>::isCloseProximity (const PredictVertexResults &pvr)
   // If nothing was found check and make sure new vertex is not close to a fence
   if (!results.found)
   {
-    for (int i = 0; i < results.fences.size (); ++i)
+    for (size_t i = 0; i < results.fences.size (); ++i)
     {
       HalfEdgeIndex he = results.fences[i];
 
@@ -1033,7 +1033,7 @@ pcl::AdvancingFront<PointNT>::isFencesViolated (const VertexIndex &vi, const Eig
   results.found = false;
   Eigen::Vector3f sp = mesh_vertex_data_ptr_->at (vi.get ()).getVector3fMap ();
 
-  for (int i = 0; i < fences.size (); ++i)
+  for (size_t i = 0; i < fences.size (); ++i)
   {
     // The list of fences should not include any that are associated to the requesting vi
     assert (vi != mesh_.getOriginatingVertexIndex (fences[i]));
@@ -1098,7 +1098,7 @@ pcl::AdvancingFront<PointNT>::isTriangleToClose (const PredictVertexResults &pvr
 
   // Check if any fences are violated.
   FenceViolationResults fvr;
-  for (int i = 0; i < cpr.fences.size (); ++i)
+  for (size_t i = 0; i < cpr.fences.size (); ++i)
   {
     if (results.found && results.closest == pvr.afront.prev.vi[2])
     {
@@ -1544,7 +1544,7 @@ template <typename PointNT> void
 pcl::AdvancingFront<PointNT>::printVertices () const
 {
   std::cout << "Vertices:\n   ";
-  for (unsigned int i = 0; i < mesh_.sizeVertices (); ++i)
+  for (size_t i = 0; i < mesh_.sizeVertices (); ++i)
   {
     std::cout << mesh_vertex_data_ptr_->at (i) << " ";
   }
@@ -1555,7 +1555,7 @@ template <typename PointNT> void
 pcl::AdvancingFront<PointNT>::printFaces () const
 {
   std::cout << "Faces:\n";
-  for (unsigned int i = 0; i < mesh_.sizeFaces (); ++i)
+  for (size_t i = 0; i < mesh_.sizeFaces (); ++i)
     printFace (FaceIndex (i));
 }
 
