@@ -340,14 +340,6 @@ namespace pcl
       /** \brief Interpolation method to be used while computing the color descriptor. */
       typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod color_interp_;
 
-      /** \brief Convert color information in the aligned input point cloud from the RGB color space to the HSV color space.
-       * \param[in] rgb_cloud aligned point cloud with RGB colors
-       * \param[out] hsv_cloud point cloud with HSV colors
-       */
-      void
-      convertCloudColorRGBToHSV (const pcl::PointCloud<PointInT> &rgb_cloud,
-                                 pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud);
-
       /** \brief copy computed color histograms to output descriptor point cloud
        * \param[in] grid_size size of the regular grid used to compute the descriptor
        * \param[in] hists_size size of the color histograms

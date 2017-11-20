@@ -313,38 +313,6 @@ namespace pcl
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   template <typename PointInT, typename PointOutT> void
-  GASDColorEstimation<PointInT, PointOutT>::convertCloudColorRGBToHSV (const pcl::PointCloud<PointInT> &rgb_cloud,
-                                                                       pcl::PointCloud<pcl::PointXYZHSV> &hsv_cloud)
-  {
-    const bool xyz_available = pcl::traits::has_xyz < PointInT > ::value;
-    const bool rgb_available = pcl::traits::has_color < PointInT > ::value;
-
-    if (!xyz_available || !rgb_available)
-    {
-      PCL_ERROR ("[pcl::%s::computeFeature] No input dataset containing xyz and/or rgb was given!\n", getClassName ().c_str ());
-      return;
-    }
-
-    // RGB -> HSV conversion requires a PointXYZRGB point cloud
-	const pcl::PointCloud<pcl::PointXYZRGB>* xyzrgb_ptr;
-	pcl::PointCloud<pcl::PointXYZRGB> temp_cloud;
-
-	if (pcl::isSamePointType<PointInT, pcl::PointXYZRGB> ())
-	{
-	  xyzrgb_ptr = &rgb_cloud;
-	}
-	else
-	{
-	  pcl::copyPointCloud (rgb_cloud, temp_cloud);
-	  xyzrgb_ptr = &temp_cloud;
-	}
-
-    // perform RGB -> HSV conversion
-	pcl::PointCloudXYZRGBtoXYZHSV (*xyzrgb_ptr, hsv_cloud);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////
-  template <typename PointInT, typename PointOutT> void
   GASDColorEstimation<PointInT, PointOutT>::copyColorHistogramsToOutput (const size_t grid_size,
                                                                          const size_t hists_size,
                                                                          std::vector<Eigen::VectorXf> &hists,
@@ -382,18 +350,53 @@ namespace pcl
     std::vector < Eigen::VectorXf
         > color_hists ( (color_grid_size + 2) * (color_grid_size + 2) * (color_grid_size + 2), Eigen::VectorXf::Zero (color_hists_size_ + 2));
 
-    pcl::PointCloud < pcl::PointXYZHSV > color_samples;
-
-    convertCloudColorRGBToHSV (shape_samples_, color_samples);
-
     // for each sample
-    for (size_t i = 0; i < color_samples.size (); ++i)
+    for (size_t i = 0; i < shape_samples_.size (); ++i)
     {
       // compute shape histogram array coord based on distance between sample and centroid
-      const Eigen::Vector4f p (color_samples[i].x, color_samples[i].y, color_samples[i].z, 0.0f);
+      const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);
+
+      // compute hue value
+      float hue;
+
+	  const unsigned char max = std::max (shape_samples_[i].r, std::max (shape_samples_[i].g, shape_samples_[i].b));
+      const unsigned char min = std::min (shape_samples_[i].r, std::min (shape_samples_[i].g, shape_samples_[i].b));
+
+      if (max == 0) // division by zero
+      {
+        hue = 0.f;
+      }
+      else
+      {
+        if (min == max) // diff == 0 -> division by zero
+        {
+          hue = 0;
+        }
+        else
+        {
+          const float diff = static_cast <float> (max - min);
+
+          if (max == shape_samples_[i].r)
+          {
+            hue = 60.f * (static_cast <float> (shape_samples_[i].g - shape_samples_[i].b) / diff);
+          }
+          else if (max == shape_samples_[i].g)
+          {
+            hue = 60.f * (2.f + static_cast <float> (shape_samples_[i].b - shape_samples_[i].r) / diff);
+          }
+          else
+          {
+            hue = 60.f * (4.f + static_cast <float> (shape_samples_[i].r - shape_samples_[i].g) / diff); // max == b
+          }
+
+          if (hue < 0.f)
+          {
+            hue += 360.f;
+          }
+        }
+      }      
 
       // compute color histogram array coord based on hue value
-      const float hue = color_samples.points[i].h;
       const float hbin = (hue / 360) * color_hists_size_;
 
       // add sample to color histograms, optionally performing interpolation

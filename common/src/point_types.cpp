@@ -379,7 +379,7 @@ namespace pcl
   operator << (std::ostream& os, const GASDSignature512& p)
   {
     for (int i = 0; i < 512; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 511 ? ", " : ")");
+      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 511 ? ", " : ")");
     return (os);
   }
 
@@ -387,7 +387,7 @@ namespace pcl
   operator << (std::ostream& os, const GASDSignature984& p)
   {
     for (int i = 0; i < 984; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 983 ? ", " : ")");
+      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 983 ? ", " : ")");
     return (os);
   }
 
@@ -395,7 +395,7 @@ namespace pcl
   operator << (std::ostream& os, const GASDSignature7992& p)
   {
     for (int i = 0; i < 7992; ++i)
-    os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 7991 ? ", " : ")");
+      os << (i == 0 ? "(" : "") << p.histogram[i] << (i < 7991 ? ", " : ")");
     return (os);
   }
 
