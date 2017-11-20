@@ -65,21 +65,6 @@ namespace pcl
 
   struct AdvancingFrontVertexPointType : public _AdvancingFrontVertexPointType
   {
-    inline AdvancingFrontVertexPointType (const AdvancingFrontVertexPointType &p)
-    {
-      x = p.x;
-      y = p.y;
-      z = p.z;
-      data[3] = 1.0f;
-      normal_x = p.normal_x;
-      normal_y = p.normal_y;
-      normal_z = p.normal_z;
-      data_n[3] = 0.0f;
-      curvature = p.curvature;
-      max_step = p.max_step;
-      max_step_search_radius = p.max_step_search_radius;
-    }
-
     inline AdvancingFrontVertexPointType ()
     {
       x = y = z = 0.0f;
@@ -119,20 +104,6 @@ namespace pcl
 
   struct AdvancingFrontGuidanceFieldPointType : public _AdvancingFrontGuidanceFieldPointType
   {
-    inline AdvancingFrontGuidanceFieldPointType (const AdvancingFrontGuidanceFieldPointType &p)
-    {
-      x = p.x;
-      y = p.y;
-      z = p.z;
-      data[3] = 1.0f;
-      normal_x = p.normal_x;
-      normal_y = p.normal_y;
-      normal_z = p.normal_z;
-      data_n[3] = 0.0f;
-      curvature = p.curvature;
-      ideal_edge_length = p.ideal_edge_length;
-    }
-
     inline AdvancingFrontGuidanceFieldPointType(const AdvancingFrontVertexPointType &p, const double rho)
     {
       x = p.x;
