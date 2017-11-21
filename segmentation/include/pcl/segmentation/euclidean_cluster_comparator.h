@@ -45,13 +45,8 @@
 
 namespace pcl
 {
-  /** \brief EuclideanClusterComparator is a comparator used for finding clusters supported by planar surfaces.
-    * This needs to be run as a second pass after extracting planar surfaces, using MultiPlaneSegmentation for example.
-    *
-    * \author Alex Trevor
-    */
   template<typename PointT, typename PointLT = pcl::Label>
-  class EuclideanClusterComparator: public Comparator<PointT>
+  class EuclideanClusterComparator2: public Comparator<PointT>
   {
     protected:
 
@@ -65,26 +60,12 @@ namespace pcl
       typedef typename PointCloudL::Ptr PointCloudLPtr;
       typedef typename PointCloudL::ConstPtr PointCloudLConstPtr;
 
-      typedef boost::shared_ptr<EuclideanClusterComparator<PointT, PointLT> > Ptr;
-      typedef boost::shared_ptr<const EuclideanClusterComparator<PointT, PointLT> > ConstPtr;
+      typedef boost::shared_ptr<EuclideanClusterComparator2<PointT, PointLT> > Ptr;
+      typedef boost::shared_ptr<const EuclideanClusterComparator2<PointT, PointLT> > ConstPtr;
 
       typedef std::map<uint32_t, bool> ExcludeLabelMap;
       typedef boost::shared_ptr<ExcludeLabelMap> ExcludeLabelMapPtr;
       typedef boost::shared_ptr<const ExcludeLabelMap> ExcludeLabelMapConstPtr;
-
-      /** \brief Empty constructor for EuclideanClusterComparator. */
-      EuclideanClusterComparator ()
-        : distance_threshold_ (0.005f)
-        , depth_dependent_ ()
-        , z_axis_ ()
-      {
-      }
-      
-      /** \brief Destructor for EuclideanClusterComparator. */
-      virtual
-      ~EuclideanClusterComparator ()
-      {
-      }
 
       virtual void 
       setInputCloud (const PointCloudConstPtr& cloud)
@@ -173,6 +154,14 @@ namespace pcl
       
     protected:
 
+      /** \brief Default constructor for EuclideanClusterComparator2. */
+      EuclideanClusterComparator2 ()
+        : distance_threshold_ (0.005f)
+        , depth_dependent_ ()
+        , z_axis_ ()
+      {}
+
+
       /** \brief Set of labels with similar size as the input point cloud,
         * aggregating points into groups based on a similar label identifier.
         *
@@ -193,6 +182,82 @@ namespace pcl
       bool depth_dependent_;
 
       Eigen::Vector3f z_axis_;
+  };
+
+  /** \brief EuclideanClusterComparator is a comparator used for finding clusters based on euclidian distance.
+    *
+    * \author Alex Trevor
+    */
+  PCL_PRAGMA_WARNING ("EuclideanClusterComparator will no longer be templated on a PointNormal type in future minor release")
+  template<typename PointT, typename PointNT, typename PointLT = pcl::Label>
+  class EuclideanClusterComparator: public EuclideanClusterComparator2<PointT, PointLT>
+  {
+    protected:
+
+      using EuclideanClusterComparator2<PointT, PointLT>::exclude_labels_;
+
+    public:
+
+      typedef typename pcl::PointCloud<PointNT> PointCloudN;
+      typedef typename PointCloudN::Ptr PointCloudNPtr;
+      typedef typename PointCloudN::ConstPtr PointCloudNConstPtr;
+
+      typedef boost::shared_ptr<EuclideanClusterComparator<PointT, PointNT, PointLT> > Ptr;
+      typedef boost::shared_ptr<const EuclideanClusterComparator<PointT, PointNT, PointLT> > ConstPtr;
+
+      using EuclideanClusterComparator2<PointT, PointLT>::setExcludeLabels;
+
+      /** \brief Empty constructor for EuclideanClusterComparator. */
+      EuclideanClusterComparator ()
+        : normals_ ()
+        , angular_threshold_ (0.0f)
+      {}
+
+      /** \brief Provide a pointer to the input normals.
+       * \param[in] normals the input normal cloud
+       */
+      inline void
+      PCL_DEPRECATED ("EuclideanClusterComparator no longer makes use of normals.")
+      setInputNormals (const PointCloudNConstPtr& normals) { normals_ = normals; }
+
+      /** \brief Get the input normals. */
+      inline PointCloudNConstPtr
+      PCL_DEPRECATED ("EuclideanClusterComparator no longer makes use of normals.")
+      getInputNormals () const { return (normals_); }
+
+      /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
+        * \param[in] angular_threshold the tolerance in radians
+        */
+      inline void
+      PCL_DEPRECATED ("EuclideanClusterComparator no longer makes use of the angular threshold.")
+      setAngularThreshold (float angular_threshold)
+      {
+        angular_threshold_ = std::cos (angular_threshold);
+      }
+
+      /** \brief Get the angular threshold in radians for difference in normal direction between neighboring points, to be considered part of the same plane. */
+      inline float
+      PCL_DEPRECATED ("EuclideanClusterComparator no longer makes use of the angular threshold.")
+      getAngularThreshold () const { return (std::acos (angular_threshold_) ); }
+
+      /** \brief Set labels in the label cloud to exclude.
+        * \param[in] exclude_labels a vector of bools corresponding to whether or not a given label should be considered
+        */
+      void
+      PCL_DEPRECATED ("Use setExcludeLabels (const ExcludeLabelSetConstPtr &) instead")
+      setExcludeLabels (const std::vector<bool>& exclude_labels)
+      {
+        exclude_labels_ = boost::make_shared<std::set<uint32_t> > ();
+        for (uint32_t i = 0; i < exclude_labels.size (); ++i)
+          if (exclude_labels[i])
+            exclude_labels_->insert (i);
+      }
+
+    protected:
+
+      PointCloudNConstPtr normals_;
+
+      float angular_threshold_;
   };
 }
 

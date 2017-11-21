@@ -254,7 +254,7 @@ OrganizedSegmentationDemo::OrganizedSegmentationDemo (pcl::Grabber& grabber) : g
   euclidean_comparator_.reset (new pcl::EuclideanPlaneCoefficientComparator<PointT, pcl::Normal> ());
   rgb_comparator_.reset (new pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> ());
   edge_aware_comparator_.reset (new pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal> ());
-  euclidean_cluster_comparator_ = pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
+  euclidean_cluster_comparator_ = pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr (new pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> ());
 
   // Set up Organized Multi Plane Segmentation
   mps.setMinInliers (10000);
