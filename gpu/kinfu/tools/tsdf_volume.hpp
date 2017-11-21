@@ -161,7 +161,7 @@ pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::Point
   int sy = header_.resolution(1);
   int sz = header_.resolution(2);
 
-  const int step = 2;
+  const int step = 1;
   const int cloud_size = header_.getVolumeSize() / (step*step*step);
 
   cloud->clear();
