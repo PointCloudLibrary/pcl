@@ -63,9 +63,9 @@ namespace pcl
       typedef boost::shared_ptr<EuclideanClusterComparator2<PointT, PointLT> > Ptr;
       typedef boost::shared_ptr<const EuclideanClusterComparator2<PointT, PointLT> > ConstPtr;
 
-      typedef std::map<uint32_t, bool> ExcludeLabelMap;
-      typedef boost::shared_ptr<ExcludeLabelMap> ExcludeLabelMapPtr;
-      typedef boost::shared_ptr<const ExcludeLabelMap> ExcludeLabelMapConstPtr;
+      typedef std::set<uint32_t> ExcludeLabelSet;
+      typedef boost::shared_ptr<ExcludeLabelSet> ExcludeLabelSetPtr;
+      typedef boost::shared_ptr<const ExcludeLabelSet> ExcludeLabelSetConstPtr;
 
       virtual void 
       setInputCloud (const PointCloudConstPtr& cloud)
@@ -102,7 +102,7 @@ namespace pcl
         labels_ = labels;
       }
 
-      const ExcludeLabelMapConstPtr&
+      const ExcludeLabelSetConstPtr&
       getExcludeLabels () const
       {
         return exclude_labels_;
@@ -112,7 +112,7 @@ namespace pcl
         * \param exclude_labels a vector of bools corresponding to whether or not a given label should be considered
         */
       void
-      setExcludeLabels (const ExcludeLabelMapConstPtr &exclude_labels)
+      setExcludeLabels (const ExcludeLabelSetConstPtr &exclude_labels)
       {
         exclude_labels_ = exclude_labels;
       }
@@ -130,12 +130,12 @@ namespace pcl
           const uint32_t &label1 = (*labels_)[idx1].label;
           const uint32_t &label2 = (*labels_)[idx2].label;
 
-          const std::map<uint32_t, bool>::const_iterator it1 = exclude_labels_->find (label1);
-          if ((it1 == exclude_labels_->end ()) || it1->second)
+          const std::set<uint32_t>::const_iterator it1 = exclude_labels_->find (label1);
+          if (it1 == exclude_labels_->end ())
             return false;
 
-          const std::map<uint32_t, bool>::const_iterator it2 = exclude_labels_->find (label2);
-          if ((it2 == exclude_labels_->end ()) || it2->second)
+          const std::set<uint32_t>::const_iterator it2 = exclude_labels_->find (label2);
+          if (it2 == exclude_labels_->end ())
             return false;
         }
         
@@ -175,7 +175,7 @@ namespace pcl
         * If a label is not specified, it's assumed by default that it's
         * intended be excluded
         */
-      ExcludeLabelMapConstPtr exclude_labels_;
+      ExcludeLabelSetConstPtr exclude_labels_;
 
       float distance_threshold_;
 

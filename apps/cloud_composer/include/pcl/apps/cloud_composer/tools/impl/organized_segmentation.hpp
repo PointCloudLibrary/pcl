@@ -103,9 +103,10 @@
      std::vector<pcl::PointIndices> boundary_indices;
      mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
      
-     boost::shared_ptr<std::map<uint32_t, bool> > plane_labels = boost::make_shared<std::map<uint32_t, bool> > ();
+     boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
      for (size_t i = 0; i < label_indices.size (); ++i)
-       (*plane_labels)[i] = (label_indices[i].indices.size () > (size_t) min_plane_size);
+      if (label_indices[i].indices.size () > (size_t) min_plane_size)
+        plane_labels->insert (i);
      typename PointCloud<PointT>::CloudVectorType clusters;
      
      typename EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator =
