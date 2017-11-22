@@ -54,12 +54,9 @@ pcl::registration::DefaultConvergenceCriteria<Scalar>::hasConverged ()
   {
     if (failure_after_max_iter_)
       return (false);
-    else
-    {
-      convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
-      return (true);
-    }
-    return (failure_after_max_iter_ ? false : true);
+    
+    convergence_state_ = CONVERGENCE_CRITERIA_ITERATIONS;
+    return (true);
   }
 
   // 2. The epsilon (difference) between the previous transformation and the current estimated transformation

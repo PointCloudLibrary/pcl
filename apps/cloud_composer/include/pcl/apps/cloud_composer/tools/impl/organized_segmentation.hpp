@@ -103,18 +103,12 @@
      std::vector<pcl::PointIndices> boundary_indices;
      mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
      
-     std::vector<bool> plane_labels;
-     plane_labels.resize (label_indices.size (), false);
-     for (size_t i = 0; i < label_indices.size (); i++)
-     {
-       if (label_indices[i].indices.size () > min_plane_size)
-       {
-         plane_labels[i] = true;
-       }
-     }
+     boost::shared_ptr<std::map<uint32_t, bool> > plane_labels = boost::make_shared<std::map<uint32_t, bool> > ();
+     for (size_t i = 0; i < label_indices.size (); ++i)
+       (*plane_labels)[i] = (label_indices[i].indices.size () > (size_t) min_plane_size);
      typename PointCloud<PointT>::CloudVectorType clusters;
      
-     typename EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator = boost::make_shared <EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> > ();
+     typename EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator = boost::make_shared <EuclideanClusterComparator<PointT, pcl::Label> > ();
      euclidean_cluster_comparator->setInputCloud (input_cloud);
      euclidean_cluster_comparator->setLabels (labels);
      euclidean_cluster_comparator->setExcludeLabels (plane_labels);
@@ -129,7 +123,7 @@
      pcl::IndicesPtr extracted_indices (new std::vector<int> ());
      for (size_t i = 0; i < euclidean_label_indices.size (); i++)
      {
-       if (euclidean_label_indices[i].indices.size () >= min_cluster_size)
+       if (euclidean_label_indices[i].indices.size () >= (size_t) min_cluster_size)
        {
          typename PointCloud<PointT>::Ptr cluster = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,euclidean_label_indices[i].indices,*cluster);
@@ -144,7 +138,7 @@
      
      for (size_t i = 0; i < label_indices.size (); i++)
      {
-       if (label_indices[i].indices.size () >= min_plane_size)
+       if (label_indices[i].indices.size () >= (size_t) min_plane_size)
        {
          typename PointCloud<PointT>::Ptr plane = boost::shared_ptr<PointCloud<PointT> > (new PointCloud<PointT>);
          pcl::copyPointCloud (*input_cloud,label_indices[i].indices,*plane);

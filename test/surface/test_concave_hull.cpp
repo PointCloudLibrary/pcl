@@ -122,10 +122,6 @@ TEST (PCL, ConcaveHull_planar_bunny)
   PointCloud<PointXYZ> hull_3d;
   concave_hull_3d.reconstruct (hull_3d);
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-  EXPECT_EQ (concave_hull_3d.getDim (), 3);         // test for PCL_DEPRECATED
-#pragma GCC diagnostic pop
   EXPECT_EQ (concave_hull_3d.getDimension (), 3);
 
   ModelCoefficients::Ptr plane_coefficients (new ModelCoefficients ());

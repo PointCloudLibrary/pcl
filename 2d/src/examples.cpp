@@ -38,10 +38,10 @@
 
 #include <pcl/point_types.h>
 
-#include <pcl/2d/Convolution.h>
-#include <pcl/2d/Edge.h>
-#include <pcl/2d/Kernel.h>
-#include <pcl/2d/Morphology.h>
+#include <pcl/2d/convolution.h>
+#include <pcl/2d/edge.h>
+#include <pcl/2d/kernel.h>
+#include <pcl/2d/morphology.h>
 #include <pcl/pcl_base.h>
 
 using namespace pcl;

@@ -5,13 +5,12 @@
 #include <pcl/tracking/tracker.h>
 #include <pcl/tracking/coherence.h>
 #include <pcl/filters/passthrough.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_pointcloud_changedetector.h>
 
 #include <Eigen/Dense>
 
 namespace pcl
 {
-
   namespace tracking
   {
     /** \brief @b ParticleFilterTracker tracks the PointCloud which is given by

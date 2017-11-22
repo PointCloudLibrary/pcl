@@ -356,7 +356,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
           continue;
         const Eigen::Vector3f& surface_change_direction = surface_change_directions[index2];
         
-        float distance = sqrtf (distance_squared);
+        float distance = std::sqrt (distance_squared);
         float distance_factor = radius_reciprocal*distance;
         float positive_score, current_negative_score;
         nkdGetScores (distance_factor, surface_change_score, pixelDistance,
@@ -392,7 +392,7 @@ NarfKeypoint::calculateCompleteInterestImage ()
                                          normalized_angle_diff,   angle_change_value);
         }
       }
-      angle_change_value = sqrtf (angle_change_value);
+      angle_change_value = std::sqrt (angle_change_value);
       interest_value = negative_score * angle_change_value;
       
       if (parameters_.add_points_on_straight_edges)
@@ -572,7 +572,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                        normalized_angle_diff,   angle_change_value);
       }
     }
-    angle_change_value = sqrtf (angle_change_value);
+    angle_change_value = std::sqrt (angle_change_value);
     float maximum_interest_value = angle_change_value;
     
     if (parameters_.add_points_on_straight_edges)
@@ -680,7 +680,7 @@ NarfKeypoint::calculateSparseInterestImage ()
                                                                normalized_angle_diff);
           }
         }
-        angle_change_value = sqrtf (angle_change_value);
+        angle_change_value = std::sqrt (angle_change_value);
         interest_value = negative_score * angle_change_value;
         if (parameters_.add_points_on_straight_edges)
         {

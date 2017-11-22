@@ -40,9 +40,8 @@
 #define PCL_OCTREE_SEARCH_H_
 
 #include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {
@@ -602,8 +601,6 @@ namespace pcl
 
 #ifdef PCL_NO_PRECOMPILE
 #include <pcl/octree/impl/octree_search.hpp>
-#else
-#define PCL_INSTANTIATE_OctreePointCloudSearch(T) template class PCL_EXPORTS pcl::octree::OctreePointCloudSearch<T>;
-#endif    // PCL_NO_PRECOMPILE
+#endif
 
 #endif    // PCL_OCTREE_SEARCH_H_

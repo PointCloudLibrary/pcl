@@ -62,7 +62,7 @@ namespace pcl
         virtual ~CloudViewer();
         ProjectModel* getModel () const;
 
-      public slots:
+      public Q_SLOTS:
         void 
         addModel (ProjectModel* new_model);
         
@@ -72,7 +72,7 @@ namespace pcl
         void
         addNewProject (ProjectModel* new_model);
         
-      signals:
+      Q_SIGNALS:
         void
         newModelSelected (ProjectModel *new_model);
 

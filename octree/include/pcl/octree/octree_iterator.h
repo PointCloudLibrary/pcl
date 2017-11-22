@@ -43,11 +43,8 @@
 #include <vector>
 #include <deque>
 
-#include "octree_nodes.h"
-#include "octree_key.h"
-
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
+#include <pcl/octree/octree_nodes.h>
+#include <pcl/octree/octree_key.h>
 
 #include <iterator>
 
@@ -618,6 +615,11 @@ namespace pcl
 
   }
 }
+
+/*
+ * Note: Since octree iterators depend on octrees, don't precompile them.
+ */
+#include <pcl/octree/impl/octree_iterator.hpp>
 
 #endif
 

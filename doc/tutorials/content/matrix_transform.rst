@@ -131,7 +131,9 @@ Add the following lines to your CMakeLists.txt file:
    :language: cmake
    :linenos:
 
-After you have made the executable, you can run it. Simply do::
+After you have made the executable, run it passing a path to a PCD or PLY file.
+To reproduce the results shown below, you can download the `cube.ply
+<https://raw.github.com/PointCloudLibrary/pcl/master/test/cube.ply>`_ file::
 
   $ ./matrix_transform cube.ply
 

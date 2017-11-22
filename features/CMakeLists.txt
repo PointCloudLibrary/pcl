@@ -15,6 +15,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/boost.h"
         "include/pcl/${SUBSYS_NAME}/eigen.h"
         "include/pcl/${SUBSYS_NAME}/board.h"
+        "include/pcl/${SUBSYS_NAME}/flare.h"
         "include/pcl/${SUBSYS_NAME}/brisk_2d.h"
         "include/pcl/${SUBSYS_NAME}/cppf.h"
         "include/pcl/${SUBSYS_NAME}/cvfh.h"
@@ -66,6 +67,7 @@ if(build)
 
     set(impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/board.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/flare.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/cppf.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/cvfh.hpp"
@@ -114,6 +116,7 @@ if(build)
 
     set(srcs
         src/board.cpp
+        src/flare.cpp
         src/brisk_2d.cpp
         src/boundary.cpp
         src/cppf.cpp

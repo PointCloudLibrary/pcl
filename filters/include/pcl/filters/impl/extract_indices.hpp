@@ -58,7 +58,7 @@ pcl::ExtractIndices<PointT>::filterDirectly (PointCloudPtr &cloud)
   pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
   for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
   {
-    int pt_index = (*removed_indices_)[rii];
+    size_t pt_index = (size_t) (*removed_indices_)[rii];
     if (pt_index >= input_->points.size ())
     {
       PCL_ERROR ("[pcl::%s::filterDirectly] The index exceeds the size of the input. Do nothing.\n",
@@ -91,7 +91,7 @@ pcl::ExtractIndices<PointT>::applyFilter (PointCloud &output)
     pcl::for_each_type<FieldList> (pcl::detail::FieldAdder<PointT> (fields));
     for (int rii = 0; rii < static_cast<int> (removed_indices_->size ()); ++rii)  // rii = removed indices iterator
     {
-      int pt_index = (*removed_indices_)[rii];
+      size_t pt_index = (size_t)(*removed_indices_)[rii];
       if (pt_index >= input_->points.size ())
       {
         PCL_ERROR ("[pcl::%s::applyFilter] The index exceeds the size of the input. Do nothing.\n",

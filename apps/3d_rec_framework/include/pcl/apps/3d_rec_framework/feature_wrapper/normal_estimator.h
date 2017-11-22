@@ -44,7 +44,7 @@ namespace pcl
 
             float avg_dist_neighbours = 0.0;
             for (size_t j = 1; j < nn_indices.size (); j++)
-              avg_dist_neighbours += sqrtf (nn_distances[j]);
+              avg_dist_neighbours += std::sqrt (nn_distances[j]);
 
             avg_dist_neighbours /= static_cast<float> (nn_indices.size ());
 

@@ -456,7 +456,7 @@ CPCSegmentation Parameters: \n\
     const unsigned char concave_color [3] = {255,  0,  0};
     const unsigned char cut_color     [3] = {  0,255,  0};
     const unsigned char* convex_color     = bg_white ? black_color : white_color;
-    const unsigned char* color;
+    const unsigned char* color = NULL;
 
     //The vertices in the supervoxel adjacency list are the supervoxel centroids
     //This iterates through them, finding the edges
@@ -489,9 +489,13 @@ CPCSegmentation Parameters: \n\
           color = concave_color;
 
         // two times since we add also two points per edge
+#if (VTK_MAJOR_VERSION < 7) || (VTK_MAJOR_VERSION == 7 && VTK_MINOR_VERSION == 0)
         colors->InsertNextTupleValue (color);
         colors->InsertNextTupleValue (color);
-
+#else       
+        colors->InsertNextTypedTuple (color);
+        colors->InsertNextTypedTuple (color);
+#endif      
         pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (sv_label);
         pcl::PointXYZRGBA vert_curr = supervoxel->centroid_;
 

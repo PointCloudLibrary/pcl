@@ -120,13 +120,6 @@ namespace pcl
           boost::bind (&GeneralizedIterativeClosestPoint<PointSource, PointTarget>::estimateRigidTransformationBFGS, 
                        this, _1, _2, _3, _4, _5); 
       }
-      
-      /** \brief Provide a pointer to the input dataset
-        * \param cloud the const boost shared pointer to a PointCloud message
-        */
-      PCL_DEPRECATED ("[pcl::registration::GeneralizedIterativeClosestPoint::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-      void
-      setInputCloud (const PointCloudSourceConstPtr &cloud);
 
       /** \brief Provide a pointer to the input dataset
         * \param cloud the const boost shared pointer to a PointCloud message

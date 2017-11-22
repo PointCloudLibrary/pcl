@@ -46,6 +46,13 @@
 #include <vtkImageShiftScale.h>
 #include <vtkPNGWriter.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
 pcl::io::loadPolygonFile (const std::string &file_name, pcl::PolygonMesh& mesh)

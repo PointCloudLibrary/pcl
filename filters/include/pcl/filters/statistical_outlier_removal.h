@@ -198,13 +198,13 @@ namespace pcl
     * \ingroup filters
     */
   template<>
-  class PCL_EXPORTS StatisticalOutlierRemoval<pcl::PCLPointCloud2> : public Filter<pcl::PCLPointCloud2>
+  class PCL_EXPORTS StatisticalOutlierRemoval<pcl::PCLPointCloud2> : public FilterIndices<pcl::PCLPointCloud2>
   {
-    using Filter<pcl::PCLPointCloud2>::filter_name_;
-    using Filter<pcl::PCLPointCloud2>::getClassName;
+    using FilterIndices<pcl::PCLPointCloud2>::filter_name_;
+    using FilterIndices<pcl::PCLPointCloud2>::getClassName;
 
-    using Filter<pcl::PCLPointCloud2>::removed_indices_;
-    using Filter<pcl::PCLPointCloud2>::extract_removed_indices_;
+    using FilterIndices<pcl::PCLPointCloud2>::removed_indices_;
+    using FilterIndices<pcl::PCLPointCloud2>::extract_removed_indices_;
 
     typedef pcl::search::Search<pcl::PointXYZ> KdTree;
     typedef pcl::search::Search<pcl::PointXYZ>::Ptr KdTreePtr;
@@ -216,8 +216,8 @@ namespace pcl
     public:
       /** \brief Empty constructor. */
       StatisticalOutlierRemoval (bool extract_removed_indices = false) :
-        Filter<pcl::PCLPointCloud2>::Filter (extract_removed_indices), mean_k_ (2),
-        std_mul_ (0.0), tree_ (), negative_ (false)
+        FilterIndices<pcl::PCLPointCloud2>::FilterIndices (extract_removed_indices), mean_k_ (2),
+        std_mul_ (0.0), tree_ ()
       {
         filter_name_ = "StatisticalOutlierRemoval";
       }
@@ -257,25 +257,6 @@ namespace pcl
         return (std_mul_);
       }
 
-      /** \brief Set whether the indices should be returned, or all points \e except the indices.
-        * \param negative true if all points \e except the input indices will be returned, false otherwise
-        */
-      inline void
-      setNegative (bool negative)
-      {
-        negative_ = negative;
-      }
-
-      /** \brief Get the value of the internal #negative_ parameter. If
-        * true, all points \e except the input indices will be returned.
-        * \return The value of the "negative" flag
-        */
-      inline bool
-      getNegative ()
-      {
-        return (negative_);
-      }
-
     protected:
       /** \brief The number of points to use for mean distance estimation. */
       int mean_k_;
@@ -288,11 +269,19 @@ namespace pcl
       /** \brief A pointer to the spatial search object. */
       KdTreePtr tree_;
 
-      /** \brief If true, the outliers will be returned instead of the inliers (default: false). */
-      bool negative_;
+      virtual void
+      applyFilter (std::vector<int> &indices);
 
-      void
+      virtual void
       applyFilter (PCLPointCloud2 &output);
+
+      /**
+       * \brief Compute the statistical values used in both applyFilter methods.
+       *
+       * This method tries to avoid duplicate code.
+       */
+      virtual void
+      generateStatistics (double& mean, double& variance, double& stddev, std::vector<float>& distances);
   };
 }
 

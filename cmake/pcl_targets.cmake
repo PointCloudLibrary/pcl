@@ -116,6 +116,12 @@ macro(PCL_SUBSYS_DEPEND _var _name)
             endif(NOT ${EXT_DEP_FOUND} OR (NOT (${EXT_DEP_FOUND} STREQUAL "TRUE")))
         endforeach(_dep)
         endif(SUBSYS_EXT_DEPS)
+        if(SUBSYS_OPT_DEPS)
+        foreach(_dep ${SUBSYS_OPT_DEPS})
+            PCL_GET_SUBSYS_INCLUDE_DIR(_include_dir ${_dep})
+            include_directories(${PROJECT_SOURCE_DIR}/${_include_dir}/include)
+        endforeach(_dep)
+        endif(SUBSYS_OPT_DEPS)
     endif(${_var} AND (NOT ("${subsys_status}" STREQUAL "AUTO_OFF")))
 endmacro(PCL_SUBSYS_DEPEND)
 
@@ -196,12 +202,12 @@ macro(PCL_ADD_LIBRARY _name _component)
       target_link_libraries(${_name} gomp)
     endif()
 	
-	if(MSVC90 OR MSVC10)
+	if(MSVC)
 	  target_link_libraries(${_name} delayimp.lib)  # because delay load is enabled for openmp.dll
 	endif()
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}.${PCL_MINOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
@@ -234,7 +240,7 @@ macro(PCL_CUDA_ADD_LIBRARY _name _component)
     target_link_libraries(${_name} ${Boost_LIBRARIES})
 
     set_target_properties(${_name} PROPERTIES
-        VERSION ${PCL_VERSION}
+        VERSION ${PCL_VERSION_PLAIN}
         SOVERSION ${PCL_MAJOR_VERSION}
         DEFINE_SYMBOL "PCLAPI_EXPORTS")
     if(USE_PROJECT_FOLDERS)
@@ -862,3 +868,11 @@ macro(PCL_ADD_GRABBER_DEPENDENCY _name _description)
       endif()
     endif()
 endmacro(PCL_ADD_GRABBER_DEPENDENCY)
+
+###############################################################################
+# Set the dependencies for a specific test module on the provided variable
+# _var The variable to be filled with the dependencies
+# _module The module name
+macro(PCL_SET_TEST_DEPENDENCIES _var _module)
+    set(${_var} global_tests ${_module} ${PCL_SUBSYS_DEPS_${_module}})
+endmacro(PCL_SET_TEST_DEPENDENCIES)

@@ -41,6 +41,9 @@
 
 #include <limits>
 
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 namespace pcl
 {
   // r,g,b, i values are from 0 to 1

@@ -43,6 +43,7 @@
 #endif
 
 #include <Eigen/Core>
+#include <pcl/console/print.h>
 
 /**
   * \file common/geometry.h
@@ -101,6 +102,62 @@ namespace pcl
       float lambda = plane_normal.dot(po);
       projected = point - (lambda * plane_normal);
     }
+
+
+    /** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector pointing from plane_origin to the projection of point on the plane.
+      * 
+      * \param[in] point Point projected on the plane
+      * \param[in] plane_origin The plane origin
+      * \param[in] plane_normal The plane normal 
+      * \return unit vector pointing from plane_origin to the projection of point on the plane.
+      * \ingroup geometry
+      */
+    inline Eigen::Vector3f
+    projectedAsUnitVector (Eigen::Vector3f const &point,
+                           Eigen::Vector3f const &plane_origin,
+                           Eigen::Vector3f const &plane_normal)
+    {
+      Eigen::Vector3f projection;
+      project (point, plane_origin, plane_normal, projection);
+      Eigen::Vector3f projected_as_unit_vector = projection - plane_origin;
+      projected_as_unit_vector.normalize ();
+      return projected_as_unit_vector;
+    }
+
+
+    /** \brief Define a random unit vector orthogonal to axis.
+      * 
+      * \param[in] axis Axis
+      * \return random unit vector orthogonal to axis
+      * \ingroup geometry
+      */
+    inline Eigen::Vector3f
+    randomOrthogonalAxis (Eigen::Vector3f const &axis)
+    {
+      Eigen::Vector3f rand_ortho_axis;
+      rand_ortho_axis.setRandom();
+      if (std::abs (axis.z ()) > 1E-8f)
+      {
+        rand_ortho_axis.z () = -(axis.x () * rand_ortho_axis.x () + axis.y () * rand_ortho_axis.y ()) / axis.z ();
+      }
+      else if (std::abs (axis.y ()) > 1E-8f)
+      {
+        rand_ortho_axis.y () = -(axis.x () * rand_ortho_axis.x () + axis.z () * rand_ortho_axis.z ()) / axis.y ();
+      }
+      else if (std::abs (axis.x ()) > 1E-8f)
+      {
+        rand_ortho_axis.x () = -(axis.y () * rand_ortho_axis.y () + axis.z () * rand_ortho_axis.z ()) / axis.x ();
+      }
+      else
+      {
+        PCL_WARN ("[pcl::randomOrthogonalAxis] provided axis has norm < 1E-8f");
+      }
+
+      rand_ortho_axis.normalize ();
+      return rand_ortho_axis;
+    }
+
+
   }
 }
 

@@ -182,7 +182,7 @@ template <typename PointInT, typename PointNT, typename PointOutT> void
 pcl::VFHEstimation<PointInT, PointNT, PointOutT>::computeFeature (PointCloudOut &output)
 {
   // ---[ Step 1a : compute the centroid in XYZ space
-  Eigen::Vector4f xyz_centroid;
+  Eigen::Vector4f xyz_centroid (0, 0, 0, 0);
 
   if (use_given_centroid_) 
     xyz_centroid = centroid_to_use_;

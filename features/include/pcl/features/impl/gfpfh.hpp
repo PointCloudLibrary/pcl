@@ -42,7 +42,6 @@
 #define PCL_FEATURES_IMPL_GFPFH_H_
 
 #include <pcl/features/gfpfh.h>
-#include <pcl/octree/octree.h>
 #include <pcl/octree/octree_search.h>
 #include <pcl/common/eigen.h>
 

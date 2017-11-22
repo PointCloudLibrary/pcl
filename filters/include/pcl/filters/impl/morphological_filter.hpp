@@ -50,7 +50,7 @@
 #include <pcl/common/common.h>
 #include <pcl/common/io.h>
 #include <pcl/filters/morphological_filter.h>
-#include <pcl/octree/octree.h>
+#include <pcl/octree/octree_search.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> void

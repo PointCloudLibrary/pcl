@@ -944,7 +944,7 @@ struct KinFuLSApp
     {                             
       //std::cout << "Giving colors1\n";
       boost::mutex::scoped_try_lock lock(data_ready_mutex_);
-      std::cout << lock << std::endl;
+      //std::cout << lock << std::endl; //causes compile errors 
       if (exit_ || !lock)
         return;
       //std::cout << "Giving colors2\n";

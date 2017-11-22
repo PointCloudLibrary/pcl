@@ -100,7 +100,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
       x = curr_x + directions [nIdx].d_x;
       y = curr_y + directions [nIdx].d_y;
       index = curr_idx + directions [nIdx].d_index;
-      if (x >= 0 && y < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
+      if (x >= 0 && x < int(labels->width) && y >= 0 && y < int(labels->height) && labels->points[index].label == label)
         break;
     }
     

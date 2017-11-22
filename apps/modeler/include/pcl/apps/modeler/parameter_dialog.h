@@ -75,7 +75,7 @@ namespace pcl
         std::map<std::string, Parameter*>       name_parameter_map_;
         ParameterModel*                         parameter_model_;
 
-      protected slots:
+      protected Q_SLOTS:
         void
         reset();
     };

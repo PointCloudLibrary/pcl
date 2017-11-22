@@ -79,7 +79,7 @@ namespace pcl
       void
       setNumberOfPartitionBins (unsigned int number_of_bins);
 
-      /** \brief Returns the nmber of partition bins. */
+      /** \brief Returns the number of partition bins. */
       unsigned int
       getNumberOfPartitionBins () const;
 

@@ -64,6 +64,13 @@
 
 #include <pcl/visualization/common/shapes.h>
 
+// Support for VTK 7.1 upwards
+#ifdef vtkGenericDataArray_h
+#define SetTupleValue SetTypedTuple
+#define InsertNextTupleValue InsertNextTypedTuple
+#define GetTupleValue GetTypedTuple
+#endif
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> bool
 pcl::visualization::PCLVisualizer::addPointCloud (
@@ -678,7 +685,7 @@ pcl::visualization::PCLVisualizer::addText3D (
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
   vtkRenderer* renderer = NULL;
-  int i = 1;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -704,6 +711,53 @@ pcl::visualization::PCLVisualizer::addText3D (
 
     ++i;
   }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::addText3D (
+  const std::string &text,
+  const PointT& position,
+  double orientation[3],
+  double textScale,
+  double r,
+  double g,
+  double b,
+  const std::string &id,
+  int viewport)
+{
+  std::string tid;
+  if (id.empty ())
+    tid = text;
+  else
+    tid = id;
+
+  if (contains (tid))
+  {
+    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
+  }
+
+  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
+  textSource->SetText (text.c_str());
+  textSource->Update ();
+
+  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  textMapper->SetInputConnection (textSource->GetOutputPort ());
+
+  vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
+  textActor->SetMapper (textMapper);
+  textActor->SetPosition (position.x, position.y, position.z);
+  textActor->SetScale (textScale);
+  textActor->GetProperty ()->SetColor (r, g, b);
+  textActor->SetOrientation (orientation);
+
+  addActorToRenderer (textActor, viewport);
+
+  // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
+  (*shape_actor_map_)[tid] = textActor;
 
   return (true);
 }
@@ -1842,5 +1896,11 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
 
   return (true);
 }
+
+#ifdef vtkGenericDataArray_h
+#undef SetTupleValue
+#undef InsertNextTupleValue
+#undef GetTupleValue
+#endif
 
 #endif

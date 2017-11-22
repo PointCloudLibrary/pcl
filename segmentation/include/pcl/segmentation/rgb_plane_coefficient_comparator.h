@@ -116,7 +116,7 @@ namespace pcl
         float dx = input_->points[idx1].x - input_->points[idx2].x;
         float dy = input_->points[idx1].y - input_->points[idx2].y;
         float dz = input_->points[idx1].z - input_->points[idx2].z;
-        float dist = sqrtf (dx*dx + dy*dy + dz*dz);
+        float dist = std::sqrt (dx*dx + dy*dy + dz*dz);
         int dr = input_->points[idx1].r - input_->points[idx2].r;
         int dg = input_->points[idx1].g - input_->points[idx2].g;
         int db = input_->points[idx1].b - input_->points[idx2].b;

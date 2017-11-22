@@ -42,9 +42,6 @@
 #include <cstddef>
 
 #include <assert.h>
-#include <cstring>
-
-#include <string.h>
 
 #include <Eigen/Core>
 

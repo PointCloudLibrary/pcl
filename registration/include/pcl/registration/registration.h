@@ -110,6 +110,7 @@ namespace pcl
         , transformation_ (Matrix4::Identity ())
         , previous_transformation_ (Matrix4::Identity ())
         , transformation_epsilon_ (0.0)
+        , transformation_rotation_epsilon_(0.0)
         , euclidean_fitness_epsilon_ (-std::numeric_limits<double>::max ())
         , corr_dist_threshold_ (std::sqrt (std::numeric_limits<double>::max ()))
         , inlier_threshold_ (0.05)
@@ -172,20 +173,6 @@ namespace pcl
         */
       void
       setCorrespondenceEstimation (const CorrespondenceEstimationPtr &ce) { correspondence_estimation_ = ce; }
-
-      /** \brief Provide a pointer to the input source 
-        * (e.g., the point cloud that we want to align to the target)
-        *
-        * \param[in] cloud the input point cloud source
-        */
-      PCL_DEPRECATED ("[pcl::registration::Registration::setInputCloud] setInputCloud is deprecated. Please use setInputSource instead.")
-      void
-      setInputCloud (const PointCloudSourceConstPtr &cloud);
-
-      /** \brief Get a pointer to the input point cloud dataset target. */
-      PCL_DEPRECATED ("[pcl::registration::Registration::getInputCloud] getInputCloud is deprecated. Please use getInputSource instead.")
-      PointCloudSourceConstPtr const
-      getInputCloud ();
 
       /** \brief Provide a pointer to the input source 
         * (e.g., the point cloud that we want to align to the target)
@@ -326,7 +313,7 @@ namespace pcl
       inline double 
       getMaxCorrespondenceDistance () { return (corr_dist_threshold_); }
 
-      /** \brief Set the transformation epsilon (maximum allowable difference between two consecutive 
+      /** \brief Set the transformation epsilon (maximum allowable translation squared difference between two consecutive
         * transformations) in order for an optimization to be considered as having converged to the final 
         * solution.
         * \param[in] epsilon the transformation epsilon in order for an optimization to be considered as having 
@@ -335,11 +322,26 @@ namespace pcl
       inline void 
       setTransformationEpsilon (double epsilon) { transformation_epsilon_ = epsilon; }
 
-      /** \brief Get the transformation epsilon (maximum allowable difference between two consecutive 
+      /** \brief Get the transformation epsilon (maximum allowable translation squared difference between two consecutive
         * transformations) as set by the user.
         */
       inline double 
       getTransformationEpsilon () { return (transformation_epsilon_); }
+
+      /** \brief Set the transformation rotation epsilon (maximum allowable rotation difference between two consecutive
+        * transformations) in order for an optimization to be considered as having converged to the final
+        * solution.
+        * \param[in] epsilon the transformation rotation epsilon in order for an optimization to be considered as having
+        * converged to the final solution (epsilon is the cos(angle) in a axis-angle representation).
+        */
+      inline void
+      setTransformationRotationEpsilon (double epsilon) { transformation_rotation_epsilon_ = epsilon; }
+
+      /** \brief Get the transformation rotation epsilon (maximum allowable difference between two consecutive
+        * transformations) as set by the user (epsilon is the cos(angle) in a axis-angle representation).
+        */
+      inline double
+      getTransformationRotationEpsilon () { return (transformation_rotation_epsilon_); }
 
       /** \brief Set the maximum allowed Euclidean error between two consecutive steps in the ICP loop, before 
         * the algorithm is considered to have converged. 
@@ -348,7 +350,6 @@ namespace pcl
         * \param[in] epsilon the maximum allowed distance error before the algorithm will be considered to have
         * converged
         */
-
       inline void 
       setEuclideanFitnessEpsilon (double epsilon) { euclidean_fitness_epsilon_ = epsilon; }
 
@@ -514,6 +515,11 @@ namespace pcl
         * (user defined). 
         */
       double transformation_epsilon_;
+
+      /** \brief The maximum rotation difference between two consecutive transformations in order to consider convergence
+        * (user defined).
+        */
+      double transformation_rotation_epsilon_;
 
       /** \brief The maximum allowed Euclidean error between two consecutive steps in the ICP loop, before the 
         * algorithm is considered to have converged. The error is estimated as the sum of the differences between 

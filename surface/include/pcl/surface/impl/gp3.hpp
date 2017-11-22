@@ -226,7 +226,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               break;
             if (sfn_[nnIdx[doubleEdges[j].index]] != nnIdx[i])
               visibility = isVisible(uvn_nn[i], uvn_nn[doubleEdges[j].index], doubleEdges[j].second, Eigen::Vector2f::Zero());
-            if (!visibility == false)
+            if (!visibility)
               break;
           }
           angles_[i].visible = visibility;
@@ -420,7 +420,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::reconstructPolygons (std::vector<p
               angleMax = angle1;
             }
             double angleR = angles_[i].angle + M_PI;
-            if (angleR >= 2*M_PI)
+            if (angleR >= M_PI)
               angleR -= 2*M_PI;
             if ((source_[nnIdx[i]] == ffn_[nnIdx[i]]) || (source_[nnIdx[i]] == sfn_[nnIdx[i]]))
             {
@@ -1479,7 +1479,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::connectPoint (
                     neighbor_update = sfn_[next_index];
 
                     /* sfn[next_index] */
-                    if ((ffn_[sfn_[next_index]] = ffn_[current_index_]) || (sfn_[sfn_[next_index]] == ffn_[current_index_]))
+                    if ((ffn_[sfn_[next_index]] == ffn_[current_index_]) || (sfn_[sfn_[next_index]] == ffn_[current_index_]))
                     {
                       state_[sfn_[next_index]] = COMPLETED;
                     }
@@ -1669,7 +1669,7 @@ pcl::GreedyProjectionTriangulation<PointInT>::getTriangleList (const pcl::Polygo
 
   for (size_t i=0; i < input.polygons.size (); ++i)
     for (size_t j=0; j < input.polygons[i].vertices.size (); ++j)
-      triangleList[j].push_back (i);
+      triangleList[input.polygons[i].vertices[j]].push_back (i);
   return (triangleList);
 }
 

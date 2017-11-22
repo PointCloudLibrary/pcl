@@ -54,7 +54,11 @@
 typedef unsigned int LZF_HSLOT;
 typedef unsigned int LZF_STATE[1 << (HLOG)];
 
-#define STRICT_ALIGN !(defined(__i386) || defined (__amd64))
+#if !(defined(__i386) || defined (__amd64))
+# define STRICT_ALIGN 1
+#else
+# define STRICT_ALIGN 0
+#endif
 #if !STRICT_ALIGN
 /* for unaligned accesses we need a 16 bit datatype. */
 # if USHRT_MAX == 65535

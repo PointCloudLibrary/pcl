@@ -39,16 +39,12 @@
 #ifndef PCL_OCTREE_POINTCLOUD_H
 #define PCL_OCTREE_POINTCLOUD_H
 
-#include "octree_base.h"
-//#include "octree2buf_base.h"
+#include <pcl/octree/octree_base.h>
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <queue>
 #include <vector>
-#include <algorithm>
-#include <iostream>
 
 namespace pcl
 {

@@ -1,13 +1,14 @@
 ###############################################################################
-# Find OpenNI 2
+# Find OpenNI2
 #
-# This sets the following variables:
-# OPENNI2_FOUND - True if OPENNI 2 was found.
-# OPENNI2_INCLUDE_DIRS - Directories containing the OPENNI 2 include files.
-# OPENNI2_LIBRARIES - Libraries needed to use OPENNI 2.
-# OPENNI2_DEFINITIONS - Compiler flags for OPENNI 2.
+#     find_package(OpenNI2)
 #
-# For libusb-1.0, add USB_10_ROOT if not found
+# Variables defined by this module:
+#
+#  OPENNI2_FOUND               True if OpenNI2 was found
+#  OPENNI2_INCLUDE_DIRS        The location(s) of OpenNI2 headers
+#  OPENNI2_LIBRARIES           Libraries needed to use OpenNI2
+#  OPENNI2_DEFINITIONS         Compiler flags for OpenNI2
 
 find_package(PkgConfig QUIET)
 
@@ -47,34 +48,46 @@ if(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(OPENNI2_SUFFIX 64)
 endif(WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-find_path(OPENNI2_INCLUDE_DIRS OpenNI.h
-    PATHS
-    "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"  # Win64 needs '64' suffix
-    /usr/include/openni2  # common path for deb packages
+find_path(OPENNI2_INCLUDE_DIR OpenNI.h
+          PATHS "$ENV{OPENNI2_INCLUDE${OPENNI2_SUFFIX}}"  # Win64 needs '64' suffix
+                "/usr/include/openni2"                    # common path for deb packages
+          PATH_SUFFIXES include/openni2
 )
 
 find_library(OPENNI2_LIBRARY
-             NAMES OpenNI2  # No suffix needed on Win64
-             libOpenNI2     # Linux
-             PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}"  # Windows default path, Win64 needs '64' suffix
-             "$ENV{OPENNI2_REDIST}"                      # Linux install does not use a separate 'lib' directory
-             )
+             NAMES OpenNI2      # No suffix needed on Win64
+                   libOpenNI2   # Linux
+             PATHS "$ENV{OPENNI2_LIB${OPENNI2_SUFFIX}}"   # Windows default path, Win64 needs '64' suffix
+                   "$ENV{OPENNI2_REDIST}"                 # Linux install does not use a separate 'lib' directory
+)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY} ${LIBUSB_1_LIBRARIES})
-else()
-  set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY})
+if(OPENNI2_INCLUDE_DIR AND OPENNI2_LIBRARY)
+
+  # Include directories
+  set(OPENNI2_INCLUDE_DIRS ${OPENNI2_INCLUDE_DIR})
+  unset(OPENNI2_INCLUDE_DIR)
+  mark_as_advanced(OPENNI2_INCLUDE_DIRS)
+
+  # Libraries
+  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY} ${LIBUSB_1_LIBRARIES})
+  else()
+    set(OPENNI2_LIBRARIES ${OPENNI2_LIBRARY})
+  endif()
+  unset(OPENNI2_LIBRARY)
+  mark_as_advanced(OPENNI2_LIBRARIES)
+
+  set(OPENNI2_REDIST_DIR $ENV{OPENNI2_REDIST${OPENNI2_SUFFIX}})
+  mark_as_advanced(OPENNI2_REDIST_DIR)
+
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(OpenNI2 DEFAULT_MSG OPENNI2_LIBRARY OPENNI2_INCLUDE_DIRS)
-
-mark_as_advanced(OPENNI2_LIBRARY OPENNI2_INCLUDE_DIRS)
+find_package_handle_standard_args(OpenNI2
+  FOUND_VAR OPENNI2_FOUND
+  REQUIRED_VARS OPENNI2_LIBRARIES OPENNI2_INCLUDE_DIRS
+)
 
 if(OPENNI2_FOUND)
-  # Add the include directories
-  set(OPENNI2_INCLUDE_DIRS ${OPENNI2_INCLUDE_DIR})
-  set(OPENNI2_REDIST_DIR $ENV{OPENNI2_REDIST${OPENNI2_SUFFIX}})
-  message(STATUS "OpenNI 2 found (include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARY}, redist: ${OPENNI2_REDIST_DIR})")
-endif(OPENNI2_FOUND)
-
+  message(STATUS "OpenNI2 found (include: ${OPENNI2_INCLUDE_DIRS}, lib: ${OPENNI2_LIBRARIES})")
+endif()

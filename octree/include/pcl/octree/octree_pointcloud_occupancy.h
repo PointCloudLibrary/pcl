@@ -39,7 +39,7 @@
 #ifndef PCL_OCTREE_OCCUPANCY_H
 #define PCL_OCTREE_OCCUPANCY_H
 
-#include "octree_pointcloud.h"
+#include <pcl/octree/octree_pointcloud.h>
 
 namespace pcl
 {

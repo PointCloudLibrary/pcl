@@ -61,11 +61,11 @@ class StatisticsDialog : public QDialog
     /// @brief Destructor
     ~StatisticsDialog ();
     
-  public slots:
+  public Q_SLOTS:
     /// @brief update the dialog box.
     void update ();
     
-  private slots:
+  private Q_SLOTS:
     void accept ();
     
   private:

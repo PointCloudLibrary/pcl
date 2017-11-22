@@ -58,7 +58,7 @@ namespace pcl
         ItemInspector (QWidget* parent = 0);
         virtual ~ItemInspector();
       
-      public slots:
+      public Q_SLOTS:
         void 
         setModel (ProjectModel* new_model);
         void 

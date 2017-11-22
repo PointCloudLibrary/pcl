@@ -6,7 +6,7 @@ libdir=${prefix}/@LIB_INSTALL_DIR@
 includedir=${prefix}/include/@PROJECT_NAME_LOWER@-@PCL_MAJOR_VERSION@.@PCL_MINOR_VERSION@
 Name: @PKG_NAME@
 Description: @PKG_DESC@
-Version: @PCL_VERSION@
+Version: @PCL_VERSION_PLAIN@
 Requires: @PKG_EXTERNAL_DEPS@
 Libs: 
 Cflags: -I${includedir} @PKG_CFLAGS@

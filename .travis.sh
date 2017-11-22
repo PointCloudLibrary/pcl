@@ -10,40 +10,123 @@ ADVANCED_DIR=$BUILD_DIR/doc/advanced/html
 CMAKE_C_FLAGS="-Wall -Wextra -Wabi -O2"
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
-DOWNLOAD_DIR=$HOME/download
+if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+  if [ "$CC" == "clang" ]; then
+    CMAKE_C_FLAGS="$CMAKE_C_FLAGS -Qunused-arguments"
+    CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS -Qunused-arguments"
+  fi
+fi
 
-export FLANN_ROOT=$HOME/flann
-export VTK_DIR=$HOME/vtk
-export QHULL_ROOT=$HOME/qhull
-export DOXYGEN_DIR=$HOME/doxygen
+function before_install ()
+{
+  if [ "$TRAVIS_OS_NAME" == "linux" ]; then
+    if [ "$CC" == "clang" ]; then
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang
+      sudo ln -s ../../bin/ccache /usr/lib/ccache/clang++
+    fi
+  fi
+}
 
 function build ()
 {
   case $CC in
-    clang ) build_clang;;
-    gcc ) build_gcc;;
+    clang ) build_lib;;
+    gcc ) build_lib_core;;
   esac
 }
 
-function build_clang ()
+function build_lib ()
 {
   # A complete build
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_QT_VERSION=4 \
+        -DBUILD_simulation=ON \
         -DBUILD_global_tests=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_tools=OFF \
+        -DBUILD_apps=OFF \
+        -DBUILD_apps_3d_rec_framework=OFF \
+        -DBUILD_apps_cloud_composer=OFF \
+        -DBUILD_apps_in_hand_scanner=OFF \
+        -DBUILD_apps_modeler=OFF \
+        -DBUILD_apps_optronic_viewer=OFF \
+        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
 }
 
-function build_gcc ()
+function build_examples ()
+{
+  # A complete build
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_QT_VERSION=4 \
+        -DBUILD_simulation=ON \
+        -DBUILD_global_tests=OFF \
+        -DBUILD_examples=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_apps=OFF \
+        $PCL_DIR
+  # Build
+  make -j2
+}
+
+function build_tools ()
+{
+  # A complete build
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_QT_VERSION=4 \
+        -DBUILD_simulation=ON \
+        -DBUILD_global_tests=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_tools=ON \
+        -DBUILD_apps=OFF \
+        $PCL_DIR
+  # Build
+  make -j2
+}
+
+function build_apps ()
+{
+  # A complete build
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_QT_VERSION=4 \
+        -DBUILD_simulation=OFF \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=OFF \
+        -DBUILD_global_tests=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_tools=OFF \
+        -DBUILD_apps=ON \
+        -DBUILD_apps_3d_rec_framework=ON \
+        -DBUILD_apps_cloud_composer=ON \
+        -DBUILD_apps_in_hand_scanner=ON \
+        -DBUILD_apps_modeler=ON \
+        -DBUILD_apps_optronic_viewer=OFF \
+        -DBUILD_apps_point_cloud_editor=ON \
+        $PCL_DIR
+  # Build
+  make -j2
+}
+
+function build_lib_core ()
 {
   # A reduced build, only pcl_common
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
         -DBUILD_2d=OFF \
         -DBUILD_features=OFF \
@@ -72,27 +155,177 @@ function build_gcc ()
   make -j2
 }
 
-function test ()
+function test_core ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake -DCMAKE_C_FLAGS=$CMAKE_C_FLAGS \
-        -DCMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS \
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
         -DPCL_ONLY_CORE_POINT_TYPES=ON \
-        -DBUILD_global_tests=ON \
         -DPCL_NO_PRECOMPILE=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_apps=OFF \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=ON \
+        -DBUILD_ml=OFF \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=OFF \
+        -DBUILD_recognition=OFF \
+        -DBUILD_registration=OFF \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=OFF \
+        -DBUILD_simulation=OFF \
+        -DBUILD_stereo=OFF \
+        -DBUILD_surface=OFF \
+        -DBUILD_tracking=OFF \
+        -DBUILD_visualization=OFF \
+        -DBUILD_global_tests=ON \
+        -DBUILD_tests_2d=ON \
+        -DBUILD_tests_common=ON \
+        -DBUILD_tests_features=ON \
+        -DBUILD_tests_filters=OFF \
+        -DBUILD_tests_geometry=ON \
+        -DBUILD_tests_io=OFF \
+        -DBUILD_tests_kdtree=ON \
+        -DBUILD_tests_keypoints=ON \
+        -DBUILD_tests_octree=ON \
+        -DBUILD_tests_outofcore=OFF \
+        -DBUILD_tests_people=OFF \
+        -DBUILD_tests_recognition=OFF \
+        -DBUILD_tests_registration=OFF \
+        -DBUILD_tests_sample_consensus=ON \
+        -DBUILD_tests_search=ON \
+        -DBUILD_tests_segmentation=OFF \
+        -DBUILD_tests_surface=OFF \
+        -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
-  make tests
+  make -j2 tests
+}
+
+function test_ext_1 ()
+{
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_NO_PRECOMPILE=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_apps=OFF \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=OFF \
+        -DBUILD_ml=OFF \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=ON \
+        -DBUILD_people=OFF \
+        -DBUILD_recognition=OFF \
+        -DBUILD_registration=ON \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=OFF \
+        -DBUILD_simulation=OFF \
+        -DBUILD_stereo=OFF \
+        -DBUILD_surface=ON \
+        -DBUILD_tracking=OFF \
+        -DBUILD_visualization=ON \
+        -DBUILD_global_tests=ON \
+        -DBUILD_tests_2d=OFF \
+        -DBUILD_tests_common=OFF \
+        -DBUILD_tests_features=OFF \
+        -DBUILD_tests_filters=OFF \
+        -DBUILD_tests_geometry=OFF \
+        -DBUILD_tests_io=ON \
+        -DBUILD_tests_kdtree=OFF \
+        -DBUILD_tests_keypoints=OFF \
+        -DBUILD_tests_octree=OFF \
+        -DBUILD_tests_outofcore=ON \
+        -DBUILD_tests_people=OFF \
+        -DBUILD_tests_recognition=OFF \
+        -DBUILD_tests_registration=ON \
+        -DBUILD_tests_sample_consensus=OFF \
+        -DBUILD_tests_search=OFF \
+        -DBUILD_tests_segmentation=OFF \
+        -DBUILD_tests_surface=ON \
+        -DBUILD_tests_visualization=ON \
+        $PCL_DIR
+  # Build and run tests
+  make -j2 tests
+}
+
+function test_ext_2 ()
+{
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DPCL_NO_PRECOMPILE=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_apps=OFF \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=OFF \
+        -DBUILD_ml=ON \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=ON \
+        -DBUILD_recognition=ON \
+        -DBUILD_registration=ON \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=ON \
+        -DBUILD_simulation=OFF \
+        -DBUILD_stereo=OFF \
+        -DBUILD_surface=OFF \
+        -DBUILD_tracking=OFF \
+        -DBUILD_visualization=ON \
+        -DBUILD_global_tests=ON \
+        -DBUILD_tests_2d=OFF \
+        -DBUILD_tests_common=OFF \
+        -DBUILD_tests_features=OFF \
+        -DBUILD_tests_filters=ON \
+        -DBUILD_tests_geometry=OFF \
+        -DBUILD_tests_io=OFF \
+        -DBUILD_tests_kdtree=OFF \
+        -DBUILD_tests_keypoints=OFF \
+        -DBUILD_tests_octree=OFF \
+        -DBUILD_tests_outofcore=OFF \
+        -DBUILD_tests_people=ON \
+        -DBUILD_tests_recognition=ON \
+        -DBUILD_tests_registration=OFF \
+        -DBUILD_tests_sample_consensus=OFF \
+        -DBUILD_tests_search=OFF \
+        -DBUILD_tests_segmentation=ON \
+        -DBUILD_tests_surface=OFF \
+        -DBUILD_tests_visualization=OFF \
+        $PCL_DIR
+  # Build and run tests
+  make -j2 tests
 }
 
 function doc ()
 {
   # Do not generate documentation for pull requests
   if [[ $TRAVIS_PULL_REQUEST != 'false' ]]; then exit; fi
-  # Add installed doxygen to path and install sphinx
-  export PATH=$DOXYGEN_DIR/bin:$PATH
-  pip install --user sphinx sphinxcontrib-doxylink
+  # Install sphinx
+  pip install --user sphinx pyparsing==2.1.9 sphinxcontrib-doxylink
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake -DDOXYGEN_USE_SHORT_NAMES=OFF \
@@ -128,206 +361,21 @@ function doc ()
     # Commit and push
     cd $DOC_DIR
     git add --all
-    git commit --amend -m "Documentation for commit $TRAVIS_COMMIT" -q
+    git commit --amend --reset-author -m "Documentation for commit $TRAVIS_COMMIT" -q
     git push --force
   else
     exit 2
   fi
 }
 
-function install_flann()
-{
-  local pkg_ver=1.8.4
-  local pkg_file="flann-${pkg_ver}-src"
-  local pkg_url="http://people.cs.ubc.ca/~mariusm/uploads/FLANN/${pkg_file}.zip"
-  local pkg_md5sum="a0ecd46be2ee11a68d2a7d9c6b4ce701"
-  local FLANN_DIR=$HOME/flann
-  local config=$FLANN_DIR/include/flann/config.h
-  echo "Installing FLANN ${pkg_ver}"
-  if [[ -d $FLANN_DIR ]]; then
-    if [[ -e ${config} ]]; then
-      local version=`grep -Po "(?<=FLANN_VERSION_ \").*(?=\")" ${config}`
-      if [[ "$version" = "$pkg_ver" ]]; then
-        local modified=`stat -c %y ${config} | cut -d ' ' -f1`
-        echo " > Found cached installation of FLANN"
-        echo " > Version ${pkg_ver}, built on ${modified}"
-        return 0
-      fi
-    fi
-  fi
-  download ${pkg_url} ${pkg_md5sum}
-  if [[ $? -ne 0 ]]; then
-    return $?
-  fi
-  unzip -qq pkg
-  cd ${pkg_file}
-  mkdir build && cd build
-  cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=$FLANN_DIR \
-    -DBUILD_MATLAB_BINDINGS=OFF \
-    -DBUILD_PYTHON_BINDINGS=OFF \
-    -DBUILD_CUDA_LIB=OFF \
-    -DBUILD_C_BINDINGS=OFF \
-    -DUSE_OPENMP=OFF
-  make -j2 && make install && touch ${config}
-  return $?
-}
-
-function install_vtk()
-{
-  local pkg_ver=5.10.1
-  local pkg_file="vtk-${pkg_ver}"
-  local pkg_url="http://www.vtk.org/files/release/${pkg_ver:0:4}/${pkg_file}.tar.gz"
-  local pkg_md5sum="264b0052e65bd6571a84727113508789"
-  local VTK_DIR=$HOME/vtk
-  local config=$VTK_DIR/include/vtk-${pkg_ver:0:4}/vtkConfigure.h
-  echo "Installing VTK ${pkg_ver}"
-  if [[ -d $VTK_DIR ]]; then
-    if [[ -e ${config} ]]; then
-      local version=`grep -Po "(?<=VTK_VERSION \").*(?=\")" ${config}`
-      if [[ "$version" = "$pkg_ver" ]]; then
-        local modified=`stat -c %y ${config} | cut -d ' ' -f1`
-        echo " > Found cached installation of VTK"
-        echo " > Version ${pkg_ver}, built on ${modified}"
-        return 0
-      fi
-    fi
-  fi
-  download ${pkg_url} ${pkg_md5sum}
-  if [[ $? -ne 0 ]]; then
-    return $?
-  fi
-  tar xzf pkg
-  cd "VTK${pkg_ver}"
-  mkdir build && cd build
-  cmake .. \
-    -Wno-dev \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=ON \
-    -DCMAKE_INSTALL_PREFIX=$VTK_DIR \
-    -DBUILD_DOCUMENTATION=OFF \
-    -DBUILD_EXAMPLES=OFF \
-    -DBUILD_TESTING=OFF \
-    -DVTK_USE_BOOST=ON \
-    -DVTK_USE_CHARTS=ON \
-    -DVTK_USE_VIEWS=ON \
-    -DVTK_USE_RENDERING=ON \
-    -DVTK_USE_CHEMISTRY=OFF \
-    -DVTK_USE_HYBRID=OFF \
-    -DVTK_USE_PARALLEL=OFF \
-    -DVTK_USE_PATENTED=OFF \
-    -DVTK_USE_INFOVIS=ON \
-    -DVTK_USE_GL2PS=OFF \
-    -DVTK_USE_MYSQL=OFF \
-    -DVTK_USE_FFMPEG_ENCODER=OFF \
-    -DVTK_USE_TEXT_ANALYSIS=OFF \
-    -DVTK_WRAP_JAVA=OFF \
-    -DVTK_WRAP_PYTHON=OFF \
-    -DVTK_WRAP_TCL=OFF \
-    -DVTK_USE_QT=OFF \
-    -DVTK_USE_GUISUPPORT=OFF \
-    -DVTK_USE_SYSTEM_ZLIB=ON \
-    -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS"
-  make -j2 && make install && touch ${config}
-  return $?
-}
-
-function install_qhull()
-{
-  local pkg_ver=2012.1
-  local pkg_file="qhull-${pkg_ver}"
-  local pkg_url="http://www.qhull.org/download/${pkg_file}-src.tgz"
-  local pkg_md5sum="d0f978c0d8dfb2e919caefa56ea2953c"
-  local QHULL_DIR=$HOME/qhull
-  local announce=$QHULL_DIR/share/doc/qhull/Announce.txt
-  echo "Installing QHull ${pkg_ver}"
-  if [[ -d $QHULL_DIR ]]; then
-    if [[ -e ${announce} ]]; then
-      local version=`grep -Po "(?<=Qhull )[0-9.]*(?= )" ${announce}`
-      if [[ "$version" = "$pkg_ver" ]]; then
-        local modified=`stat -c %y ${announce} | cut -d ' ' -f1`
-        echo " > Found cached installation of QHull"
-        echo " > Version ${pkg_ver}, built on ${modified}"
-        return 0
-      fi
-    fi
-  fi
-  download ${pkg_url} ${pkg_md5sum}
-  if [[ $? -ne 0 ]]; then
-    return $?
-  fi
-  tar xzf pkg
-  cd ${pkg_file}
-  mkdir -p build && cd build
-  cmake .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS=-fPIC \
-    -DCMAKE_C_FLAGS=-fPIC \
-    -DCMAKE_INSTALL_PREFIX=$QHULL_DIR
-  make -j2 && make install && touch ${announce}
-  return $?
-}
-
-function install_doxygen()
-{
-  local pkg_ver=1.8.9.1
-  local pkg_file="doxygen-${pkg_ver}"
-  local pkg_url="http://ftp.stack.nl/pub/users/dimitri/${pkg_file}.src.tar.gz"
-  local pkg_md5sum="3d1a5c26bef358c10a3894f356a69fbc"
-  local DOXYGEN_EXE=$DOXYGEN_DIR/bin/doxygen
-  echo "Installing Doxygen ${pkg_ver}"
-  if [[ -d $DOXYGEN_DIR ]]; then
-    if [[ -e $DOXYGEN_EXE ]]; then
-      local version=`$DOXYGEN_EXE --version`
-      if [[ "$version" = "$pkg_ver" ]]; then
-        local modified=`stat -c %y $DOXYGEN_EXE | cut -d ' ' -f1`
-        echo " > Found cached installation of Doxygen"
-        echo " > Version ${pkg_ver}, built on ${modified}"
-        return 0
-      fi
-    fi
-  fi
-  download ${pkg_url} ${pkg_md5sum}
-  if [[ $? -ne 0 ]]; then
-    return $?
-  fi
-  tar xzf pkg
-  cd ${pkg_file}
-  ./configure --prefix $DOXYGEN_DIR
-  make -j2 && make install
-  return $?
-}
-
-function install_dependencies()
-{
-  install_flann
-  install_vtk
-  install_qhull
-  install_doxygen
-}
-
-function download()
-{
-  mkdir -p $DOWNLOAD_DIR && cd $DOWNLOAD_DIR && rm -rf *
-  wget --output-document=pkg $1
-  if [[ $? -ne 0 ]]; then
-    return $?
-  fi
-  if [[ $# -ge 2 ]]; then
-    echo "$2  pkg" > "md5"
-    md5sum -c "md5" --quiet --status
-    if [[ $? -ne 0 ]]; then
-      echo "MD5 mismatch"
-      return 1
-    fi
-  fi
-  return 0
-}
-
 case $1 in
-  install ) install_dependencies;;
+  before-install ) before_install;;
   build ) build;;
-  test ) test;;
+  build-examples ) build_examples;;
+  build-tools ) build_tools;;
+  build-apps ) build_apps;;
+  test-core ) test_core;;
+  test-ext-1 ) test_ext_1;;
+  test-ext-2 ) test_ext_2;;
   doc ) doc;;
 esac

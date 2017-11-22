@@ -60,11 +60,25 @@
 # define pcl_open                    _open
 # define pcl_close(fd)               _close(fd)
 # define pcl_lseek(fd,offset,origin) _lseek(fd,offset,origin)
+# define pcl_read(fd,dest,size)      _read(fd,dest,size)
+/* ssize_t is also not available (copy/paste from MinGW) */
+#ifdef _MSC_VER
+#ifndef _SSIZE_T_DEFINED
+#define _SSIZE_T_DEFINED
+#undef ssize_t
+#ifdef _WIN64
+typedef __int64 ssize_t;
+#else
+typedef int ssize_t;
+#endif /* _WIN64 */
+#endif /* _SSIZE_T_DEFINED */
+#endif /* _MSC_VER */
 #else
 # include <sys/mman.h>
 # define pcl_open                    open
 # define pcl_close(fd)               close(fd)
 # define pcl_lseek(fd,offset,origin) lseek(fd,offset,origin)
+# define pcl_read(fd,dest,size)      ::read(fd,dest,size)
 #endif
 
 #include <pcl/io/lzf.h>
@@ -148,7 +162,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");
@@ -286,7 +300,7 @@ pcl::PCDWriter::writeBinaryCompressed (const std::string &file_name,
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinaryCompressed] Error during open!");
@@ -661,7 +675,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
     return (-1);
   }
 #else
-  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, static_cast<mode_t> (0600));
+  int fd = pcl_open (file_name.c_str (), O_RDWR | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
   if (fd < 0)
   {
     throw pcl::IOException ("[pcl::PCDWriter::writeBinary] Error during open!");

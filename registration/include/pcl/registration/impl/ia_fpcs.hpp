@@ -10,7 +10,6 @@
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met
  *
- *   * The use for research only (no for any commercial application).
  *   * Redistributions of source code must retain the above copyright
  *     notice, this list of conditions and the following disclaimer.
  *   * Redistributions in binary form must reproduce the above
@@ -788,7 +787,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   {
     float dist_sqr_1 = pcl::squaredEuclideanDistance (target_->points[*it_base], centre_pt_base);
     float best_diff_sqr = FLT_MAX;
-    int best_index;
+    int best_index = -1;
 
     for (it_match = copy.begin (); it_match != it_match_e; it_match++)
     {

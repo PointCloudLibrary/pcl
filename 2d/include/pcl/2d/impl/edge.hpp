@@ -78,8 +78,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeSobel (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -121,8 +121,8 @@ pcl::Edge<PointInT, PointOutT>::sobelMagnitudeDirection (
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -160,8 +160,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgePrewitt (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
@@ -199,8 +199,8 @@ pcl::Edge<PointInT, PointOutT>::detectEdgeRoberts (pcl::PointCloud<PointOutT> &o
     output[i].magnitude_x = (*magnitude_x)[i].intensity;
     output[i].magnitude_y = (*magnitude_y)[i].intensity;
     output[i].magnitude = 
-      sqrtf ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
-             (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
+      std::sqrt ((*magnitude_x)[i].intensity * (*magnitude_x)[i].intensity + 
+                 (*magnitude_y)[i].intensity * (*magnitude_y)[i].intensity);
     output[i].direction = 
       atan2f ((*magnitude_y)[i].intensity, (*magnitude_x)[i].intensity);
   }
