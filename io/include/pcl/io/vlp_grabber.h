@@ -80,7 +80,10 @@ namespace pcl
       virtual std::string
       getName () const;
 
-      /** \brief Allows one to customize the colors used for each of the lasers. */
+      /** \brief Allows one to customize the colors used by each laser.
+       * \param[in] color RGB color to set
+       * \param[in] laserNumber Number of laser to set color
+       */
       void
       setLaserColorRGB (const pcl::RGB& color,
                         uint8_t laserNumber);
@@ -88,17 +91,9 @@ namespace pcl
     protected:
       static const uint8_t VLP_MAX_NUM_LASERS = 16;
       static const uint8_t VLP_DUAL_MODE = 0x39;
+      pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
 
     private:
-      /** \brief Allows one to customize the colors used for each number of the lasers. */
-      void
-      setLaserColorRGB (const pcl::RGB& color,
-                        unsigned int laserNumber);
-
-      /** \brief Allows one to customize the colors used for each of the lasers. */
-      void
-      setLaserColorRGB (const pcl::RGB (&colors)[VLP_MAX_NUM_LASERS]);
-
       virtual void
       toPointClouds (HDLDataPacket *dataPacket);
 

@@ -365,7 +365,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
       PointXYZ xyz;
       PointXYZI xyzi;
-      PointXYZRGBA xyzrgb;
+      PointXYZRGBA xyzrgba;
 
       computeXYZI (xyzi, firing_data.rotationalPosition, firing_data.laserReturns[j], laser_corrections_[j + offset]);
 
@@ -600,13 +600,6 @@ pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
     return;
 
   laser_rgb_mapping_[laserNumber] = color;
-}
-
-/////////////////////////////////////////////////////////////////////////////
-void
-pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB (&colors)[HDL_MAX_NUM_LASERS])
-{
-  laser_rgb_mapping_ = colors;
 }
 
 /////////////////////////////////////////////////////////////////////////////

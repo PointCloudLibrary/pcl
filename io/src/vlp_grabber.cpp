@@ -233,12 +233,3 @@ pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB& color,
 
   laser_rgb_mapping_[laserNumber] = color;
 }
-
-
-/////////////////////////////////////////////////////////////////////////////
-void
-pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB (&colors)[VLP_MAX_NUM_LASERS])
-{
-  laser_rgb_mapping_ = colors;
-}
-

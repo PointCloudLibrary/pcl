@@ -152,16 +152,23 @@ namespace pcl
       filterPackets (const boost::asio::ip::address& ipAddress,
                      const unsigned short port = 443);
 
-      /** \brief Allows one to customize the colors used for each number of the lasers.
+      /** \brief Allows one to customize the colors used by each laser.
+       * \param[in] color RGB color to set
+       * \param[in] laserNumber Number of laser to set color
        */
       void
       setLaserColorRGB (const pcl::RGB& color,
                         unsigned int laserNumber);
 
       /** \brief Allows one to customize the colors used for each of the lasers.
+       * \param[in] begin begin iterator of RGB color array
+       * \param[in] end end iterator of RGB color array
        */
-      void
-      pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB (&colors)[HDL_MAX_NUM_LASERS]);
+      template<typename IterT> void
+      setLaserColorRGB( const IterT& begin, const IterT& end )
+      {
+          std::copy( begin, end, laser_rgb_mapping_ );
+      }
 
       /** \brief Any returns from the HDL with a distance less than this are discarded.
        *         This value is in meters
@@ -194,6 +201,7 @@ namespace pcl
       static const int HDL_LASER_PER_FIRING = 32;
       static const int HDL_MAX_NUM_LASERS = 64;
       static const int HDL_FIRING_PER_PKT = 12;
+      pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
 
       enum HDLBlock
       {
@@ -274,7 +282,6 @@ namespace pcl
       boost::thread *queue_consumer_thread_;
       boost::thread *hdl_read_packet_thread_;
       bool terminate_read_packet_thread_;
-      pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
       float min_distance_threshold_;
       float max_distance_threshold_;
 
