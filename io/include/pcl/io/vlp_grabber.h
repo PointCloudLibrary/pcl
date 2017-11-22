@@ -88,12 +88,23 @@ namespace pcl
       setLaserColorRGB (const pcl::RGB& color,
                         uint8_t laserNumber);
 
+      /** \brief Allows one to customize the colors used for each of the lasers.
+      * \param[in] begin begin iterator of RGB color array
+      * \param[in] end end iterator of RGB color array
+      */
+      template<typename IterT> void
+      setLaserColorRGB (const IterT& begin, const IterT& end)
+      {
+          std::copy (begin, end, laser_rgb_mapping_);
+      }
+
     protected:
       static const uint8_t VLP_MAX_NUM_LASERS = 16;
       static const uint8_t VLP_DUAL_MODE = 0x39;
-      pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
 
     private:
+      pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
+
       virtual void
       toPointClouds (HDLDataPacket *dataPacket);
 

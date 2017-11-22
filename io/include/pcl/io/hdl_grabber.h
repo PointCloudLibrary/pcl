@@ -165,9 +165,9 @@ namespace pcl
        * \param[in] end end iterator of RGB color array
        */
       template<typename IterT> void
-      setLaserColorRGB( const IterT& begin, const IterT& end )
+      setLaserColorRGB (const IterT& begin, const IterT& end)
       {
-          std::copy( begin, end, laser_rgb_mapping_ );
+          std::copy (begin, end, laser_rgb_mapping_);
       }
 
       /** \brief Any returns from the HDL with a distance less than this are discarded.
@@ -201,7 +201,6 @@ namespace pcl
       static const int HDL_LASER_PER_FIRING = 32;
       static const int HDL_MAX_NUM_LASERS = 64;
       static const int HDL_FIRING_PER_PKT = 12;
-      pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
 
       enum HDLBlock
       {
@@ -282,6 +281,7 @@ namespace pcl
       boost::thread *queue_consumer_thread_;
       boost::thread *hdl_read_packet_thread_;
       bool terminate_read_packet_thread_;
+      pcl::RGB laser_rgb_mapping_[HDL_MAX_NUM_LASERS];
       float min_distance_threshold_;
       float max_distance_threshold_;
 
