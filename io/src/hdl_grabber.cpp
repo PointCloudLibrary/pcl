@@ -63,13 +63,13 @@ pcl::HDLGrabber::HDLGrabber (const std::string& correctionsFile,
     current_sweep_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ()),
     current_scan_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ()),
     current_sweep_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ()),
-    current_scan_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
-    current_sweep_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
+    current_scan_xyzrgba_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
+    current_sweep_xyzrgba_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
     sweep_xyz_signal_ (),
-    sweep_xyzrgb_signal_ (),
+    sweep_xyzrgba_signal_ (),
     sweep_xyzi_signal_ (),
     scan_xyz_signal_ (),
-    scan_xyzrgb_signal_ (),
+    scan_xyzrgba_signal_ (),
     scan_xyzi_signal_ (),
     hdl_data_ (),
     udp_listener_endpoint_ (),
@@ -95,13 +95,13 @@ pcl::HDLGrabber::HDLGrabber (const boost::asio::ip::address& ipAddress,
     current_sweep_xyz_ (new pcl::PointCloud<pcl::PointXYZ> ()),
     current_scan_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ()),
     current_sweep_xyzi_ (new pcl::PointCloud<pcl::PointXYZI> ()),
-    current_scan_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
-    current_sweep_xyzrgb_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
+    current_scan_xyzrgba_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
+    current_sweep_xyzrgba_ (new pcl::PointCloud<pcl::PointXYZRGBA> ()),
     sweep_xyz_signal_ (),
-    sweep_xyzrgb_signal_ (),
+    sweep_xyzrgba_signal_ (),
     sweep_xyzi_signal_ (),
     scan_xyz_signal_ (),
-    scan_xyzrgb_signal_ (),
+    scan_xyzrgba_signal_ (),
     scan_xyzi_signal_ (),
     hdl_data_ (),
     udp_listener_endpoint_ (ipAddress, port),
@@ -124,10 +124,10 @@ pcl::HDLGrabber::~HDLGrabber () throw ()
   stop ();
 
   disconnect_all_slots<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
-  disconnect_all_slots<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb> ();
+  disconnect_all_slots<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba> ();
   disconnect_all_slots<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi> ();
   disconnect_all_slots<sig_cb_velodyne_hdl_scan_point_cloud_xyz> ();
-  disconnect_all_slots<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb> ();
+  disconnect_all_slots<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba> ();
   disconnect_all_slots<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
 }
 
@@ -156,10 +156,10 @@ pcl::HDLGrabber::initialize (const std::string& correctionsFile)
     laser_corrections_[i].cosVertOffsetCorrection = correction.verticalOffsetCorrection * correction.cosVertCorrection;
   }
   sweep_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz> ();
-  sweep_xyzrgb_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb> ();
+  sweep_xyzrgba_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba> ();
   sweep_xyzi_signal_ = createSignal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi> ();
   scan_xyz_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyz> ();
-  scan_xyzrgb_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb> ();
+  scan_xyzrgba_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba> ();
   scan_xyzi_signal_ = createSignal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi> ();
 
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ>);
@@ -320,7 +320,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
     return;
 
   current_scan_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-  current_scan_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+  current_scan_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
   current_scan_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
 
   time_t system_time;
@@ -328,10 +328,10 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
   time_t velodyne_time = (system_time & 0x00000000ffffffffl) << 32 | dataPacket->gpsTimestamp;
 
   current_scan_xyz_->header.stamp = velodyne_time;
-  current_scan_xyzrgb_->header.stamp = velodyne_time;
+  current_scan_xyzrgba_->header.stamp = velodyne_time;
   current_scan_xyzi_->header.stamp = velodyne_time;
   current_scan_xyz_->header.seq = scan_counter;
-  current_scan_xyzrgb_->header.seq = scan_counter;
+  current_scan_xyzrgba_->header.seq = scan_counter;
   current_scan_xyzi_->header.seq = scan_counter;
   scan_counter++;
 
@@ -344,14 +344,14 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
     {
       if (firing_data.rotationalPosition < last_azimuth_)
       {
-        if (current_sweep_xyzrgb_->size () > 0)
+        if (current_sweep_xyzrgba_->size () > 0)
         {
-          current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense = current_sweep_xyzi_->is_dense = false;
+          current_sweep_xyz_->is_dense = current_sweep_xyzrgba_->is_dense = current_sweep_xyzi_->is_dense = false;
           current_sweep_xyz_->header.stamp = velodyne_time;
-          current_sweep_xyzrgb_->header.stamp = velodyne_time;
+          current_sweep_xyzrgba_->header.stamp = velodyne_time;
           current_sweep_xyzi_->header.stamp = velodyne_time;
           current_sweep_xyz_->header.seq = sweep_counter;
-          current_sweep_xyzrgb_->header.seq = sweep_counter;
+          current_sweep_xyzrgba_->header.seq = sweep_counter;
           current_sweep_xyzi_->header.seq = sweep_counter;
 
           sweep_counter++;
@@ -359,7 +359,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
           fireCurrentSweep ();
         }
         current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-        current_sweep_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+        current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
         current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
       }
 
@@ -369,11 +369,11 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
       computeXYZI (xyzi, firing_data.rotationalPosition, firing_data.laserReturns[j], laser_corrections_[j + offset]);
 
-      xyz.x = xyzrgb.x = xyzi.x;
-      xyz.y = xyzrgb.y = xyzi.y;
-      xyz.z = xyzrgb.z = xyzi.z;
+      xyz.x = xyzrgba.x = xyzi.x;
+      xyz.y = xyzrgba.y = xyzi.y;
+      xyz.z = xyzrgba.z = xyzi.z;
 
-      xyzrgb.rgba = laser_rgb_mapping_[j + offset].rgba;
+      xyzrgba.rgba = laser_rgb_mapping_[j + offset].rgba;
       if (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z))
       {
         continue;
@@ -381,17 +381,17 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
       current_scan_xyz_->push_back (xyz);
       current_scan_xyzi_->push_back (xyzi);
-      current_scan_xyzrgb_->push_back (xyzrgb);
+      current_scan_xyzrgba_->push_back (xyzrgba);
 
       current_sweep_xyz_->push_back (xyz);
       current_sweep_xyzi_->push_back (xyzi);
-      current_sweep_xyzrgb_->push_back (xyzrgb);
+      current_sweep_xyzrgba_->push_back (xyzrgba);
 
       last_azimuth_ = firing_data.rotationalPosition;
     }
   }
 
-  current_scan_xyz_->is_dense = current_scan_xyzrgb_->is_dense = current_scan_xyzi_->is_dense = true;
+  current_scan_xyz_->is_dense = current_scan_xyzrgba_->is_dense = current_scan_xyzi_->is_dense = true;
   fireCurrentScan (dataPacket->firingData[0].rotationalPosition, dataPacket->firingData[11].rotationalPosition);
 }
 
@@ -445,8 +445,8 @@ pcl::HDLGrabber::fireCurrentSweep ()
   if (sweep_xyz_signal_ != NULL && sweep_xyz_signal_->num_slots () > 0)
     sweep_xyz_signal_->operator() (current_sweep_xyz_);
 
-  if (sweep_xyzrgb_signal_ != NULL && sweep_xyzrgb_signal_->num_slots () > 0)
-    sweep_xyzrgb_signal_->operator() (current_sweep_xyzrgb_);
+  if (sweep_xyzrgba_signal_ != NULL && sweep_xyzrgba_signal_->num_slots () > 0)
+    sweep_xyzrgba_signal_->operator() (current_sweep_xyzrgba_);
 
   if (sweep_xyzi_signal_ != NULL && sweep_xyzi_signal_->num_slots () > 0)
     sweep_xyzi_signal_->operator() (current_sweep_xyzi_);
@@ -463,8 +463,8 @@ pcl::HDLGrabber::fireCurrentScan (const unsigned short startAngle,
   if (scan_xyz_signal_->num_slots () > 0)
     scan_xyz_signal_->operator () (current_scan_xyz_, start, end);
 
-  if (scan_xyzrgb_signal_->num_slots () > 0)
-    scan_xyzrgb_signal_->operator () (current_scan_xyzrgb_, start, end);
+  if (scan_xyzrgba_signal_->num_slots () > 0)
+    scan_xyzrgba_signal_->operator () (current_scan_xyzrgba_, start, end);
 
   if (scan_xyzi_signal_->num_slots () > 0)
     scan_xyzi_signal_->operator() (current_scan_xyzi_, start, end);
@@ -600,6 +600,13 @@ pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB& color,
     return;
 
   laser_rgb_mapping_[laserNumber] = color;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB (&colors)[HDL_MAX_NUM_LASERS])
+{
+  laser_rgb_mapping_ = colors;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -147,12 +147,12 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       {
         if (current_sweep_xyz_->size () > 0)
         {
-          current_sweep_xyz_->is_dense = current_sweep_xyzrgb_->is_dense = current_sweep_xyzi_->is_dense = false;
+          current_sweep_xyz_->is_dense = current_sweep_xyzrgba_->is_dense = current_sweep_xyzi_->is_dense = false;
           current_sweep_xyz_->header.stamp = velodyne_time;
-          current_sweep_xyzrgb_->header.stamp = velodyne_time;
+          current_sweep_xyzrgba_->header.stamp = velodyne_time;
           current_sweep_xyzi_->header.stamp = velodyne_time;
           current_sweep_xyz_->header.seq = sweep_counter;
-          current_sweep_xyzrgb_->header.seq = sweep_counter;
+          current_sweep_xyzrgba_->header.seq = sweep_counter;
           current_sweep_xyzi_->header.seq = sweep_counter;
 
           sweep_counter++;
@@ -160,40 +160,40 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
           HDLGrabber::fireCurrentSweep ();
         }
         current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
-        current_sweep_xyzrgb_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
+        current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
         current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
       }
 
       PointXYZ xyz;
       PointXYZI xyzi;
-      PointXYZRGBA xyzrgb;
+      PointXYZRGBA xyzrgba;
       PointXYZ dual_xyz;
       PointXYZI dual_xyzi;
-      PointXYZRGBA dual_xyzrgb;
+      PointXYZRGBA dual_xyzrgba;
 
       HDLGrabber::computeXYZI (xyzi, current_azimuth, firing_data.laserReturns[j], laser_corrections_[j % VLP_MAX_NUM_LASERS]);
 
-      xyz.x = xyzrgb.x = xyzi.x;
-      xyz.y = xyzrgb.y = xyzi.y;
-      xyz.z = xyzrgb.z = xyzi.z;
+      xyz.x = xyzrgba.x = xyzi.x;
+      xyz.y = xyzrgba.y = xyzi.y;
+      xyz.z = xyzrgba.z = xyzi.z;
 
-      xyzrgb.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
+      xyzrgba.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
 
       if (dataPacket->mode == VLP_DUAL_MODE)
       {
         HDLGrabber::computeXYZI (dual_xyzi, current_azimuth, dataPacket->firingData[i + 1].laserReturns[j], laser_corrections_[j % VLP_MAX_NUM_LASERS]);
 
-        dual_xyz.x = dual_xyzrgb.x = dual_xyzi.x;
-        dual_xyz.y = dual_xyzrgb.y = dual_xyzi.y;
-        dual_xyz.z = dual_xyzrgb.z = dual_xyzi.z;
+        dual_xyz.x = dual_xyzrgba.x = dual_xyzi.x;
+        dual_xyz.y = dual_xyzrgba.y = dual_xyzi.y;
+        dual_xyz.z = dual_xyzrgba.z = dual_xyzi.z;
 
-        dual_xyzrgb.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
+        dual_xyzrgba.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
       }
 
       if (! (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z)))
       {
         current_sweep_xyz_->push_back (xyz);
-        current_sweep_xyzrgb_->push_back (xyzrgb);
+        current_sweep_xyzrgba_->push_back (xyzrgba);
         current_sweep_xyzi_->push_back (xyzi);
 
         last_azimuth_ = current_azimuth;
@@ -204,7 +204,7 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
             && ! (pcl_isnan (dual_xyz.x) || pcl_isnan (dual_xyz.y) || pcl_isnan (dual_xyz.z)))
         {
           current_sweep_xyz_->push_back (dual_xyz);
-          current_sweep_xyzrgb_->push_back (dual_xyzrgb);
+          current_sweep_xyzrgba_->push_back (dual_xyzrgba);
           current_sweep_xyzi_->push_back (dual_xyzi);
         }
       }
@@ -232,5 +232,13 @@ pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB& color,
     return;
 
   laser_rgb_mapping_[laserNumber] = color;
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB (&colors)[VLP_MAX_NUM_LASERS])
+{
+  laser_rgb_mapping_ = colors;
 }
 

@@ -71,7 +71,7 @@ namespace pcl
        *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a different RGB
        */
       typedef void
-      (sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&,
+      (sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&,
                                                      float,
                                                      float);
       /** \brief Signal used for a single sector
@@ -98,7 +98,7 @@ namespace pcl
        *         This signal is sent when the Velodyne passes angle "0".  Each laser has a different RGB
        */
       typedef void
-      (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
+      (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
@@ -152,11 +152,16 @@ namespace pcl
       filterPackets (const boost::asio::ip::address& ipAddress,
                      const unsigned short port = 443);
 
-      /** \brief Allows one to customize the colors used for each of the lasers.
+      /** \brief Allows one to customize the colors used for each number of the lasers.
        */
       void
       setLaserColorRGB (const pcl::RGB& color,
                         unsigned int laserNumber);
+
+      /** \brief Allows one to customize the colors used for each of the lasers.
+       */
+      void
+      pcl::HDLGrabber::setLaserColorRGB (const pcl::RGB (&colors)[HDL_MAX_NUM_LASERS]);
 
       /** \brief Any returns from the HDL with a distance less than this are discarded.
        *         This value is in meters
@@ -235,12 +240,12 @@ namespace pcl
       unsigned int last_azimuth_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZ> > current_scan_xyz_, current_sweep_xyz_;
       boost::shared_ptr<pcl::PointCloud<pcl::PointXYZI> > current_scan_xyzi_, current_sweep_xyzi_;
-      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgb_, current_sweep_xyzrgb_;
+      boost::shared_ptr<pcl::PointCloud<pcl::PointXYZRGBA> > current_scan_xyzrgba_, current_sweep_xyzrgba_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyz>* sweep_xyz_signal_;
-      boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb>* sweep_xyzrgb_signal_;
+      boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba>* sweep_xyzrgba_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_sweep_point_cloud_xyzi>* sweep_xyzi_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyz>* scan_xyz_signal_;
-      boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb>* scan_xyzrgb_signal_;
+      boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba>* scan_xyzrgba_signal_;
       boost::signals2::signal<sig_cb_velodyne_hdl_scan_point_cloud_xyzi>* scan_xyzi_signal_;
 
       void

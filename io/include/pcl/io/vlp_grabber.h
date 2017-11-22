@@ -90,8 +90,14 @@ namespace pcl
       static const uint8_t VLP_DUAL_MODE = 0x39;
 
     private:
-      /** \brief Lookup table of Colors for coloring each of the lasers. */
-      pcl::RGB laser_rgb_mapping_[VLP_MAX_NUM_LASERS];
+      /** \brief Allows one to customize the colors used for each number of the lasers. */
+      void
+      setLaserColorRGB (const pcl::RGB& color,
+                        unsigned int laserNumber);
+
+      /** \brief Allows one to customize the colors used for each of the lasers. */
+      void
+      setLaserColorRGB (const pcl::RGB (&colors)[VLP_MAX_NUM_LASERS]);
 
       virtual void
       toPointClouds (HDLDataPacket *dataPacket);
