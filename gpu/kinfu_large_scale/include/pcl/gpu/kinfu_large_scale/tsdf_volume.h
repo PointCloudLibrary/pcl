@@ -243,9 +243,13 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
           return header_.getVolumeSize ();          
         }
         
-        /** \brief Converts volume stored on host to cloud of TSDF values*/
+        /** \brief Converts volume stored on host to cloud of TSDF values
+          * \param[ou] cloud - the output point cloud
+          * \param[in] step - the decimation step to use
+          */
         void
-        convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const;
+        convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
+                            const unsigned step = 2) const;
         
         /** \brief Returns the voxel grid resolution */
         inline const Eigen::Vector3i &
