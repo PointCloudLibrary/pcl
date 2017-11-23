@@ -67,13 +67,18 @@ namespace pcl
       (sig_cb_velodyne_hdl_scan_point_cloud_xyz) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&,
                                                   float,
                                                   float);
+
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne.  Each laser has a different RGB
        */
       typedef void
       (sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&,
-                                                     float,
-                                                     float);
+                                                      float,
+                                                      float);
+
+      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba' instead")
+      sig_cb_velodyne_hdl_scan_point_cloud_xyzrgba sig_cb_velodyne_hdl_scan_point_cloud_xyzrgb;
+
       /** \brief Signal used for a single sector
        *         Represents 1 corrected packet from the HDL Velodyne with the returned intensity.
        */
@@ -81,24 +86,30 @@ namespace pcl
       (sig_cb_velodyne_hdl_scan_point_cloud_xyzi) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&,
                                                    float startAngle,
                                                    float);
+
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0"
        */
       typedef void
       (sig_cb_velodyne_hdl_sweep_point_cloud_xyz) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ> >&);
+
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne with the returned intensity
        *         This signal is sent when the Velodyne passes angle "0"
        */
       typedef void
       (sig_cb_velodyne_hdl_sweep_point_cloud_xyzi) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI> >&);
+
       /** \brief Signal used for a 360 degree sweep
        *         Represents multiple corrected packets from the HDL Velodyne
        *         This signal is sent when the Velodyne passes angle "0".  Each laser has a different RGB
        */
       typedef void
       (sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA> >&);
+
+      typedef PCL_DEPRECATED ("Use 'sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba' instead")
+      sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgba sig_cb_velodyne_hdl_sweep_point_cloud_xyzrgb;
 
       /** \brief Constructor taking an optional path to an HDL corrections file.  The Grabber will listen on the default IP/port for data packets [192.168.3.255/2368]
        * \param[in] correctionsFile Path to a file which contains the correction parameters for the HDL.  This parameter is mandatory for the HDL-64, optional for the HDL-32
