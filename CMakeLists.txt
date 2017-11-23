@@ -114,7 +114,7 @@ endif()
 # ---[ Unix/Darwin/Windows specific flags
 if(CMAKE_COMPILER_IS_GNUCXX)
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS}")
+    SET(CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unknown-pragmas -fno-strict-aliasing -Wno-format-extra-args -Wno-sign-compare -Wno-invalid-offsetof -Wno-conversion ${SSE_FLAGS_STR}")
 
     # Enable -Wabi for GCC > 4.3, and -Wno-deprecated for GCC < 4.3
     # to disable a lot of warnings which are not fixable
@@ -153,7 +153,7 @@ if(CMAKE_COMPILER_IS_MSVC)
   add_definitions("-DBOOST_ALL_NO_LIB -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DNOMINMAX -DPCL_ONLY_CORE_POINT_TYPES /bigobj ${SSE_DEFINITIONS}")
 
   if("${CMAKE_CXX_FLAGS}" STREQUAL "/DWIN32 /D_WINDOWS /W3 /GR /EHsc")	# Check against default flags
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS}")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj /fp:precise /wd4800 /wd4521 /wd4251 /wd4275 /wd4305 /wd4355 ${SSE_FLAGS_STR}")
 
     # Add extra code generation/link optimizations
     if(CMAKE_MSVC_CODE_LINK_OPTIMIZATION)
@@ -193,7 +193,7 @@ if(CMAKE_COMPILER_IS_CLANG)
     SET(CMAKE_C_FLAGS "-Qunused-arguments")
   endif()
   if("${CMAKE_CXX_FLAGS}" STREQUAL "")
-    SET(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
+    SET(CMAKE_CXX_FLAGS "-ftemplate-depth=1024 -Qunused-arguments -Wno-invalid-offsetof ${SSE_FLAGS_STR}") # Unfortunately older Clang versions do not have this: -Wno-unnamed-type-template-args
     if(APPLE AND WITH_CUDA AND CUDA_FOUND)
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
     endif()
