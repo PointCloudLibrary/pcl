@@ -86,7 +86,7 @@ namespace pcl
        */
       void
       setLaserColorRGB (const pcl::RGB& color,
-                        uint8_t laserNumber);
+                        const uint8_t laserNumber);
 
       /** \brief Allows one to customize the colors used for each of the lasers.
       * \param[in] begin begin iterator of RGB color array
@@ -97,6 +97,11 @@ namespace pcl
       {
           std::copy (begin, end, laser_rgb_mapping_);
       }
+
+      /** \brief Returns the maximum number of lasers
+      */
+      uint8_t
+      getMaximumNumberOfLasers ();
 
     protected:
       static const uint8_t VLP_MAX_NUM_LASERS = 16;

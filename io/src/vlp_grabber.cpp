@@ -226,10 +226,17 @@ pcl::VLPGrabber::getName () const
 /////////////////////////////////////////////////////////////////////////////
 void
 pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB& color,
-                                   uint8_t laserNumber)
+                                   const uint8_t laserNumber)
 {
   if (laserNumber >= VLP_MAX_NUM_LASERS)
     return;
 
   laser_rgb_mapping_[laserNumber] = color;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+uint8_t
+pcl::VLPGrabber::getMaximumNumberOfLasers ()
+{
+    return (VLP_MAX_NUM_LASERS);
 }
