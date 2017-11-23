@@ -354,13 +354,13 @@ pcl::gpu::kinfuLS::TsdfVolume::fetchNormals (const DeviceArray<PointType>& cloud
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const
+pcl::gpu::kinfuLS::TsdfVolume::convertToTsdfCloud ( pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
+                                                    const unsigned step) const
 {
   int sx = header_.resolution(0);
   int sy = header_.resolution(1);
   int sz = header_.resolution(2);
 
-  const int step = 2;
   const int cloud_size = static_cast<int> (header_.getVolumeSize() / (step*step*step));
 
   cloud->clear();

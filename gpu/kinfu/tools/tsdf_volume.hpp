@@ -155,13 +155,13 @@ pcl::TSDFVolume<VoxelT, WeightT>::save (const std::string &filename, bool binary
 
 
 template <typename VoxelT, typename WeightT> void
-pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud) const
+pcl::TSDFVolume<VoxelT, WeightT>::convertToTsdfCloud (pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
+                                                      const unsigned step) const
 {
   int sx = header_.resolution(0);
   int sy = header_.resolution(1);
   int sz = header_.resolution(2);
 
-  const int step = 2;
   const int cloud_size = header_.getVolumeSize() / (step*step*step);
 
   cloud->clear();
