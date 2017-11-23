@@ -645,7 +645,7 @@ pcl::HDLGrabber::getMinimumDistanceThreshold ()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-uint8_t
+static uint8_t
 pcl::HDLGrabber::getMaximumNumberOfLasers ()
 {
     return (HDL_MAX_NUM_LASERS);

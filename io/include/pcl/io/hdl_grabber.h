@@ -208,7 +208,7 @@ namespace pcl
 
       /** \brief Returns the maximum number of lasers
       */
-      uint8_t
+      static uint8_t
       getMaximumNumberOfLasers ();
 
     protected:

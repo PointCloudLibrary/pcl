@@ -235,7 +235,7 @@ pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB& color,
 }
 
 /////////////////////////////////////////////////////////////////////////////
-uint8_t
+static uint8_t
 pcl::VLPGrabber::getMaximumNumberOfLasers ()
 {
     return (VLP_MAX_NUM_LASERS);
