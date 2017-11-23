@@ -398,7 +398,7 @@ pcl::HDLGrabber::toPointClouds (HDLDataPacket *dataPacket)
 /////////////////////////////////////////////////////////////////////////////
 void
 pcl::HDLGrabber::computeXYZI (pcl::PointXYZI& point,
-                              uint32_t azimuth,
+                              uint16_t azimuth,
                               HDLLaserReturn laserReturn,
                               HDLLaserCorrection correction)
 {

@@ -279,7 +279,7 @@ namespace pcl
                        const uint16_t endAngle);
       void
       computeXYZI (pcl::PointXYZI& pointXYZI,
-                   uint32_t azimuth,
+                   uint16_t azimuth,
                    HDLLaserReturn laserReturn,
                    HDLLaserCorrection correction);
 
