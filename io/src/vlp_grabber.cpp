@@ -40,21 +40,20 @@
 
 using boost::asio::ip::udp;
 
-#define VLP_MAX_NUM_LASERS 16
-#define VLP_DUAL_MODE 0x39
-
 /////////////////////////////////////////////////////////////////////////////
 pcl::VLPGrabber::VLPGrabber (const std::string& pcapFile) :
     HDLGrabber ("", pcapFile)
 {
+  initializeLaserMapping ();
   loadVLP16Corrections ();
 }
 
 /////////////////////////////////////////////////////////////////////////////
 pcl::VLPGrabber::VLPGrabber (const boost::asio::ip::address& ipAddress,
-                             const unsigned short int port) :
+                             const uint16_t port) :
     HDLGrabber (ipAddress, port)
 {
+  initializeLaserMapping ();
   loadVLP16Corrections ();
 }
 
@@ -65,12 +64,21 @@ pcl::VLPGrabber::~VLPGrabber () throw ()
 
 /////////////////////////////////////////////////////////////////////////////
 void
+pcl::VLPGrabber::initializeLaserMapping ()
+{
+  for (uint8_t i = 0; i < VLP_MAX_NUM_LASERS / 2u; i++)
+  {
+     laser_rgb_mapping_[i * 2].b = static_cast<uint8_t> (i * 6 + 64);
+     laser_rgb_mapping_[i * 2 + 1].b = static_cast<uint8_t> ((i + 16) * 6 + 64);
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+void
 pcl::VLPGrabber::loadVLP16Corrections ()
 {
-  double vlp16_vertical_corrections[] = { -15, 1, -13, 3, -11, 5, -9, 7, -7, 9, -5, 11, -3, 13, -1, 15
-
-  };
-  for (int i = 0; i < VLP_MAX_NUM_LASERS; i++)
+  double vlp16_vertical_corrections[] = { -15, 1, -13, 3, -11, 5, -9, 7, -7, 9, -5, 11, -3, 13, -1, 15 };
+  for (uint8_t i = 0; i < VLP_MAX_NUM_LASERS; i++)
   {
     HDLGrabber::laser_corrections_[i].azimuthCorrection = 0.0;
     HDLGrabber::laser_corrections_[i].distanceCorrection = 0.0;
@@ -106,25 +114,25 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
 
   double interpolated_azimuth_delta;
 
-  int index = 1;
+  uint8_t index = 1;
   if (dataPacket->mode == VLP_DUAL_MODE)
   {
     index = 2;
   }
   if (dataPacket->firingData[index].rotationalPosition < dataPacket->firingData[0].rotationalPosition)
   {
-    interpolated_azimuth_delta = ( (dataPacket->firingData[index].rotationalPosition + 36000) - dataPacket->firingData[0].rotationalPosition) / 2.0;
+    interpolated_azimuth_delta = ((dataPacket->firingData[index].rotationalPosition + 36000) - dataPacket->firingData[0].rotationalPosition) / 2.0;
   }
   else
   {
     interpolated_azimuth_delta = (dataPacket->firingData[index].rotationalPosition - dataPacket->firingData[0].rotationalPosition) / 2.0;
   }
 
-  for (int i = 0; i < HDL_FIRING_PER_PKT; ++i)
+  for (uint8_t i = 0; i < HDL_FIRING_PER_PKT; ++i)
   {
     HDLFiringData firing_data = dataPacket->firingData[i];
 
-    for (int j = 0; j < HDL_LASER_PER_FIRING; j++)
+    for (uint8_t j = 0; j < HDL_LASER_PER_FIRING; j++)
     {
       double current_azimuth = firing_data.rotationalPosition;
       if (j >= VLP_MAX_NUM_LASERS)
@@ -139,10 +147,12 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
       {
         if (current_sweep_xyz_->size () > 0)
         {
-          current_sweep_xyz_->is_dense = current_sweep_xyzi_->is_dense = false;
+          current_sweep_xyz_->is_dense = current_sweep_xyzrgba_->is_dense = current_sweep_xyzi_->is_dense = false;
           current_sweep_xyz_->header.stamp = velodyne_time;
+          current_sweep_xyzrgba_->header.stamp = velodyne_time;
           current_sweep_xyzi_->header.stamp = velodyne_time;
           current_sweep_xyz_->header.seq = sweep_counter;
+          current_sweep_xyzrgba_->header.seq = sweep_counter;
           current_sweep_xyzi_->header.seq = sweep_counter;
 
           sweep_counter++;
@@ -150,43 +160,51 @@ pcl::VLPGrabber::toPointClouds (HDLDataPacket *dataPacket)
           HDLGrabber::fireCurrentSweep ();
         }
         current_sweep_xyz_.reset (new pcl::PointCloud<pcl::PointXYZ> ());
+        current_sweep_xyzrgba_.reset (new pcl::PointCloud<pcl::PointXYZRGBA> ());
         current_sweep_xyzi_.reset (new pcl::PointCloud<pcl::PointXYZI> ());
       }
 
       PointXYZ xyz;
       PointXYZI xyzi;
+      PointXYZRGBA xyzrgba;
       PointXYZ dual_xyz;
       PointXYZI dual_xyzi;
+      PointXYZRGBA dual_xyzrgba;
 
       HDLGrabber::computeXYZI (xyzi, current_azimuth, firing_data.laserReturns[j], laser_corrections_[j % VLP_MAX_NUM_LASERS]);
 
-      xyz.x = xyzi.x;
-      xyz.y = xyzi.y;
-      xyz.z = xyzi.z;
+      xyz.x = xyzrgba.x = xyzi.x;
+      xyz.y = xyzrgba.y = xyzi.y;
+      xyz.z = xyzrgba.z = xyzi.z;
+
+      xyzrgba.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
 
       if (dataPacket->mode == VLP_DUAL_MODE)
       {
         HDLGrabber::computeXYZI (dual_xyzi, current_azimuth, dataPacket->firingData[i + 1].laserReturns[j], laser_corrections_[j % VLP_MAX_NUM_LASERS]);
 
-        dual_xyz.x = dual_xyzi.x;
-        dual_xyz.y = dual_xyzi.y;
-        dual_xyz.z = dual_xyzi.z;
+        dual_xyz.x = dual_xyzrgba.x = dual_xyzi.x;
+        dual_xyz.y = dual_xyzrgba.y = dual_xyzi.y;
+        dual_xyz.z = dual_xyzrgba.z = dual_xyzi.z;
 
+        dual_xyzrgba.rgba = laser_rgb_mapping_[j % VLP_MAX_NUM_LASERS].rgba;
       }
 
       if (! (pcl_isnan (xyz.x) || pcl_isnan (xyz.y) || pcl_isnan (xyz.z)))
       {
         current_sweep_xyz_->push_back (xyz);
+        current_sweep_xyzrgba_->push_back (xyzrgba);
         current_sweep_xyzi_->push_back (xyzi);
 
         last_azimuth_ = current_azimuth;
       }
       if (dataPacket->mode == VLP_DUAL_MODE)
       {
-        if ( (dual_xyz.x != xyz.x || dual_xyz.y != xyz.y || dual_xyz.z != xyz.z)
+        if ((dual_xyz.x != xyz.x || dual_xyz.y != xyz.y || dual_xyz.z != xyz.z)
             && ! (pcl_isnan (dual_xyz.x) || pcl_isnan (dual_xyz.y) || pcl_isnan (dual_xyz.z)))
         {
           current_sweep_xyz_->push_back (dual_xyz);
+          current_sweep_xyzrgba_->push_back (dual_xyzrgba);
           current_sweep_xyzi_->push_back (dual_xyzi);
         }
       }
@@ -205,3 +223,20 @@ pcl::VLPGrabber::getName () const
   return (std::string ("Velodyne LiDAR (VLP) Grabber"));
 }
 
+/////////////////////////////////////////////////////////////////////////////
+void
+pcl::VLPGrabber::setLaserColorRGB (const pcl::RGB& color,
+                                   const uint8_t laserNumber)
+{
+  if (laserNumber >= VLP_MAX_NUM_LASERS)
+    return;
+
+  laser_rgb_mapping_[laserNumber] = color;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+uint8_t
+pcl::VLPGrabber::getMaximumNumberOfLasers () const
+{
+    return (VLP_MAX_NUM_LASERS);
+}
