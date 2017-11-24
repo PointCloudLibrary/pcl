@@ -21,3 +21,6 @@ PCL_ADD_EXAMPLE(pcl_example_rift_estimation FILES example_rift_estimation.cpp
 
 PCL_ADD_EXAMPLE(pcl_example_difference_of_normals FILES example_difference_of_normals.cpp
                 LINK_WITH pcl_common pcl_kdtree pcl_search pcl_features pcl_io pcl_segmentation pcl_sample_consensus)
+
+PCL_ADD_EXAMPLE(pcl_example_organized_edge_detection FILES example_organized_edge_detection.cpp
+                LINK_WITH pcl_common pcl_features pcl_io)
