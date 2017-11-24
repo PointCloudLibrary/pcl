@@ -263,8 +263,8 @@ namespace pcl
     const size_t shape_grid_size = shape_half_grid_size_ * 2;
 
     // each histogram dimension has 2 additional bins, 1 in each boundary, for performing interpolation
-    std::vector < Eigen::VectorXf
-        > shape_hists ( (shape_grid_size + 2) * (shape_grid_size + 2) * (shape_grid_size + 2), Eigen::VectorXf::Zero (shape_hists_size_ + 2));
+    std::vector<Eigen::VectorXf> shape_hists ((shape_grid_size + 2) * (shape_grid_size + 2) * (shape_grid_size + 2),
+                                               Eigen::VectorXf::Zero (shape_hists_size_ + 2));
 
     Eigen::Vector4f centroid_p = Eigen::Vector4f::Zero ();
 
@@ -347,8 +347,8 @@ namespace pcl
     const size_t color_grid_size = color_half_grid_size_ * 2;
 
     // each histogram dimension has 2 additional bins, 1 in each boundary, for performing interpolation
-    std::vector < Eigen::VectorXf
-        > color_hists ( (color_grid_size + 2) * (color_grid_size + 2) * (color_grid_size + 2), Eigen::VectorXf::Zero (color_hists_size_ + 2));
+    std::vector<Eigen::VectorXf> color_hists ((color_grid_size + 2) * (color_grid_size + 2) * (color_grid_size + 2),
+                                               Eigen::VectorXf::Zero (color_hists_size_ + 2));
 
     // for each sample
     for (size_t i = 0; i < shape_samples_.size (); ++i)
@@ -357,44 +357,33 @@ namespace pcl
       const Eigen::Vector4f p (shape_samples_[i].x, shape_samples_[i].y, shape_samples_[i].z, 0.0f);
 
       // compute hue value
-      float hue;
+      float hue = 0.f;
 
-	  const unsigned char max = std::max (shape_samples_[i].r, std::max (shape_samples_[i].g, shape_samples_[i].b));
+      const unsigned char max = std::max (shape_samples_[i].r, std::max (shape_samples_[i].g, shape_samples_[i].b));
       const unsigned char min = std::min (shape_samples_[i].r, std::min (shape_samples_[i].g, shape_samples_[i].b));
 
-      if (max == 0) // division by zero
+      const float diff_inv = 1.f / static_cast <float> (max - min);
+
+      if (pcl_isfinite (diff_inv))
       {
-        hue = 0.f;
-      }
-      else
-      {
-        if (min == max) // diff == 0 -> division by zero
+        if (max == shape_samples_[i].r)
         {
-          hue = 0;
+          hue = 60.f * (static_cast <float> (shape_samples_[i].g - shape_samples_[i].b) * diff_inv);
+        }
+        else if (max == shape_samples_[i].g)
+        {
+          hue = 60.f * (2.f + static_cast <float> (shape_samples_[i].b - shape_samples_[i].r) * diff_inv);
         }
         else
         {
-          const float diff = static_cast <float> (max - min);
-
-          if (max == shape_samples_[i].r)
-          {
-            hue = 60.f * (static_cast <float> (shape_samples_[i].g - shape_samples_[i].b) / diff);
-          }
-          else if (max == shape_samples_[i].g)
-          {
-            hue = 60.f * (2.f + static_cast <float> (shape_samples_[i].b - shape_samples_[i].r) / diff);
-          }
-          else
-          {
-            hue = 60.f * (4.f + static_cast <float> (shape_samples_[i].r - shape_samples_[i].g) / diff); // max == b
-          }
-
-          if (hue < 0.f)
-          {
-            hue += 360.f;
-          }
+          hue = 60.f * (4.f + static_cast <float> (shape_samples_[i].r - shape_samples_[i].g) * diff_inv); // max == b
         }
-      }      
+
+        if (hue < 0.f)
+        {
+          hue += 360.f;
+        }
+      }
 
       // compute color histogram array coord based on hue value
       const float hbin = (hue / 360) * color_hists_size_;

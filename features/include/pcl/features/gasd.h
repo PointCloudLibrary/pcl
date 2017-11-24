@@ -264,6 +264,7 @@ namespace pcl
   {
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
+      using typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod;
       typedef boost::shared_ptr<GASDColorEstimation<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const GASDColorEstimation<PointInT, PointOutT> > ConstPtr;
 
@@ -281,8 +282,8 @@ namespace pcl
                            const size_t shape_hists_size = 1,
                            const size_t color_half_grid_size = 2,
                            const size_t color_hists_size = 12,
-                           const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod shape_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE,
-                           const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod color_interp = GASDEstimation<PointInT, PointOutT>::INTERP_NONE) :
+                           const HistogramInterpolationMethod shape_interp = HistogramInterpolationMethod::INTERP_NONE,
+                           const HistogramInterpolationMethod color_interp = HistogramInterpolationMethod::INTERP_NONE) :
           GASDEstimation<PointInT, PointOutT> (view_direction, shape_half_grid_size, shape_hists_size, shape_interp),
           color_half_grid_size_ (color_half_grid_size),
           color_hists_size_ (color_hists_size),
@@ -313,7 +314,7 @@ namespace pcl
        * \param[in] interp color histograms interpolation method
        */
       inline void
-      setColorHistsInterpMethod (const typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod interp)
+      setColorHistsInterpMethod (const typename HistogramInterpolationMethod interp)
       {
         color_interp_ = interp;
       }
@@ -338,7 +339,7 @@ namespace pcl
       size_t color_hists_size_;
 
       /** \brief Interpolation method to be used while computing the color descriptor. */
-      typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod color_interp_;
+      typename HistogramInterpolationMethod color_interp_;
 
       /** \brief copy computed color histograms to output descriptor point cloud
        * \param[in] grid_size size of the regular grid used to compute the descriptor
