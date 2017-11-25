@@ -139,7 +139,7 @@ class OrganizedSegmentationDemo : public QMainWindow
     pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal>::Ptr rgb_comparator_;
     pcl::RGBPlaneCoefficientComparator<PointT, pcl::Normal> rgb_comp_;
     pcl::EdgeAwarePlaneComparator<PointT, pcl::Normal>::Ptr edge_aware_comparator_;
-    pcl::EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator_;
+    pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator_;
 
   public Q_SLOTS:
     void toggleCapturePressed()

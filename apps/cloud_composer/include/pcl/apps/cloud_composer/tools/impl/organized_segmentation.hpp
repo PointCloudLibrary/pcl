@@ -109,8 +109,8 @@
         plane_labels->insert (i);
      typename PointCloud<PointT>::CloudVectorType clusters;
      
-     typename EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label>::Ptr euclidean_cluster_comparator =
-        boost::make_shared <EuclideanClusterComparator<PointT, pcl::Normal, pcl::Label> > ();
+     typename EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator =
+        boost::make_shared <EuclideanClusterComparator<PointT, pcl::Label> > ();
      euclidean_cluster_comparator->setInputCloud (input_cloud);
      euclidean_cluster_comparator->setLabels (labels);
      euclidean_cluster_comparator->setExcludeLabels (plane_labels);
