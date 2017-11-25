@@ -669,9 +669,10 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  if (contains (tid))
+  std::string id_to_check = viewport > 0 ? tid.append (viewport, '*') : tid;
+  if (contains (id_to_check))
   {
-    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    PCL_WARN ("[addText3D] The id <%s> already exists in viewport [%d]! Please choose a different id and retry.\n", id.c_str (), viewport);
     return (false);
   }
 
