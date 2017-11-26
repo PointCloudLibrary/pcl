@@ -669,10 +669,26 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  if (contains (tid))
+  if (viewport < 0)
+    return false;
+
+  // check all or an individual viewport for a similar id
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
   {
-    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
-    return (false);
+    const std::string uid = tid + std::string (i, '*');
+    if (contains (uid))
+    {
+      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
+                  "Please choose a different id and retry.\n",
+                  tid.c_str (),
+                  i);
+      return false;
+    }
+
+    if (viewport > 0)
+      break;
   }
 
   vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
@@ -684,8 +700,8 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  int i = 0;
+  vtkRenderer* renderer = rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  int i = 1;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -703,10 +719,8 @@ pcl::visualization::PCLVisualizer::addText3D (
 
       // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
-      std::string alternate_tid = tid;
-      alternate_tid.append(i, '*');
-
-      (*shape_actor_map_)[(viewport == 0) ? tid : alternate_tid] = textActor;
+      const std::string uid = tid + std::string (i, '*');
+      (*shape_actor_map_)[uid] = textActor;
     }
 
     ++i;
@@ -734,10 +748,26 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  if (contains (tid))
+  if (viewport < 0)
+    return false;
+
+  // check all or an individual viewport for a similar id
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
   {
-    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
-    return (false);
+    const std::string uid = tid + std::string (i, '*');
+    if (contains (uid))
+    {
+      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
+                  "Please choose a different id and retry.\n",
+                  tid.c_str (),
+                  i);
+      return false;
+    }
+
+    if (viewport > 0)
+      break;
   }
 
   vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
@@ -754,10 +784,21 @@ pcl::visualization::PCLVisualizer::addText3D (
   textActor->GetProperty ()->SetColor (r, g, b);
   textActor->SetOrientation (orientation);
 
-  addActorToRenderer (textActor, viewport);
-
   // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
-  (*shape_actor_map_)[tid] = textActor;
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  int i = 1;
+  for ( vtkRenderer* renderer = rens_->GetNextItem ();
+        renderer != NULL;
+        renderer = rens_->GetNextItem (), ++i)
+  {
+    if (viewport == 0 || viewport == i)
+    {
+      renderer->AddActor (textActor);
+      const std::string uid = tid + std::string (i, '*');
+      (*shape_actor_map_)[uid] = textActor;
+    }
+  }
 
   return (true);
 }
