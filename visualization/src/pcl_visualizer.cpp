@@ -534,7 +534,8 @@ pcl::visualization::PCLVisualizer::spin ()
   resetStoppedFlag ();
   // Render the window before we start the interactor
   win_->Render ();
-  interactor_->Start ();
+  if (interactor_)
+    interactor_->Start ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,6 +551,9 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
       return;
     }
   #endif
+
+  if (!interactor_)
+    return;
 
   if (time <= 0)
     time = 1;
@@ -4457,14 +4461,18 @@ void
 pcl::visualization::PCLVisualizer::close ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  interactor_->stopped = true;
-  // This tends to close the window...
-  interactor_->stopLoop ();
+  if (interactor_)
+  {
+    interactor_->stopped = true;
+    // This tends to close the window...
+    interactor_->stopLoop ();
+  }
 #else
   stopped_ = true;
   // This tends to close the window...
   win_->Finalize ();
-  interactor_->TerminateApp ();
+  if (interactor_)
+    interactor_->TerminateApp ();
 #endif
 }
 
@@ -4556,10 +4564,11 @@ pcl::visualization::PCLVisualizer::ExitMainLoopTimerCallback::Execute (
   if (timer_id != right_timer_id)
     return;
   // Stop vtk loop and send notification to app to wake it up
+  if (pcl_visualizer->interactor_)
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  pcl_visualizer->interactor_->stopLoop ();
+    pcl_visualizer->interactor_->stopLoop ();
 #else
-  pcl_visualizer->interactor_->TerminateApp ();
+    pcl_visualizer->interactor_->TerminateApp ();
 #endif
 }
   
@@ -4571,13 +4580,17 @@ pcl::visualization::PCLVisualizer::ExitCallback::Execute (
   if (event_id != vtkCommand::ExitEvent)
     return;
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  pcl_visualizer->interactor_->stopped = true;
-  // This tends to close the window...
-  pcl_visualizer->interactor_->stopLoop ();
+  if (pcl_visualizer->interactor_)
+  {
+    pcl_visualizer->interactor_->stopped = true;
+    // This tends to close the window...
+    pcl_visualizer->interactor_->stopLoop ();
+  }
 #else
   pcl_visualizer->stopped_ = true;
   // This tends to close the window...
-  pcl_visualizer->interactor_->TerminateApp ();
+  if (pcl_visualizer->interactor_)
+    pcl_visualizer->interactor_->TerminateApp ();
 #endif
 }
 
