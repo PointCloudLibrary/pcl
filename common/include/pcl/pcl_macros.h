@@ -289,6 +289,25 @@ log2f (float x)
     #define PCLAPI(rettype) PCL_EXTERN_C PCL_EXPORTS rettype PCL_CDECL
 #endif
 
+// Macro for pragma operator
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA(x) _Pragma (#x)
+#elif _MSC_VER
+  #define PCL_PRAGMA(x) __pragma (#x)
+#else
+  #define PCL_PRAGMA
+#endif
+
+// Macro for emitting pragma warning
+#if (defined (__GNUC__) || defined(__clang__))
+  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (GCC warning x)
+#elif _MSC_VER
+  #define PCL_PRAGMA_WARNING(x) PCL_PRAGMA (warning (x))
+#else
+  #define PCL_PRAGMA_WARNING
+#endif
+
+
 // Macro to deprecate old functions
 //
 // Usage:

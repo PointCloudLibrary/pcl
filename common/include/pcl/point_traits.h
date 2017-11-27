@@ -61,6 +61,13 @@
 
 namespace pcl
 {
+  namespace deprecated
+  {
+    /** \class DeprecatedType
+    * \brief A dummy type to aid in template parameter deprecation
+    */
+    struct T {};
+  }
 
   namespace fields
   {

@@ -393,9 +393,10 @@ class HRCSSegmentation
         pcl::PointCloud<PointT>::CloudVectorType clusters;
         if (ground_cloud->points.size () > 0)
         {
-          boost::shared_ptr<std::map<uint32_t, bool> > plane_labels = boost::make_shared<std::map<uint32_t, bool> > ();
+          boost::shared_ptr<std::set<uint32_t> > plane_labels = boost::make_shared<std::set<uint32_t> > ();
           for (size_t i = 0; i < region_indices.size (); ++i)
-            (*plane_labels)[i] = (region_indices[i].indices.size () > mps.getMinInliers ());
+            if ((region_indices[i].indices.size () > mps.getMinInliers ()))
+              plane_labels->insert (i);
         
           pcl::EuclideanClusterComparator<PointT, pcl::Label>::Ptr euclidean_cluster_comparator_ (new pcl::EuclideanClusterComparator<PointT, pcl::Label> ());
           euclidean_cluster_comparator_->setInputCloud (cloud);
