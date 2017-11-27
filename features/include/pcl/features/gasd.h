@@ -282,8 +282,8 @@ namespace pcl
                            const size_t shape_hists_size = 1,
                            const size_t color_half_grid_size = 2,
                            const size_t color_hists_size = 12,
-                           const HistogramInterpolationMethod shape_interp = HistogramInterpolationMethod::INTERP_NONE,
-                           const HistogramInterpolationMethod color_interp = HistogramInterpolationMethod::INTERP_NONE) :
+                           const HistogramInterpolationMethod shape_interp = INTERP_NONE,
+                           const HistogramInterpolationMethod color_interp = INTERP_NONE) :
           GASDEstimation<PointInT, PointOutT> (view_direction, shape_half_grid_size, shape_hists_size, shape_interp),
           color_half_grid_size_ (color_half_grid_size),
           color_hists_size_ (color_hists_size),
