@@ -1414,10 +1414,10 @@ namespace pcl
   */
   struct GASDSignature512
   {
-	  float histogram[512];
-	  static int descriptorSize() { return 512; }
+    float histogram[512];
+    static int descriptorSize() { return 512; }
 
-	  friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
@@ -1426,10 +1426,10 @@ namespace pcl
   */
   struct GASDSignature984
   {
-	  float histogram[984];
-	  static int descriptorSize() { return 984; }
+    float histogram[984];
+    static int descriptorSize() { return 984; }
 
-	  friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
@@ -1438,10 +1438,10 @@ namespace pcl
   */
   struct GASDSignature7992
   {
-	  float histogram[7992];
-	  static int descriptorSize() { return 7992; }
+    float histogram[7992];
+    static int descriptorSize() { return 7992; }
 
-	  friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
   };
 
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);

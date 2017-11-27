@@ -148,7 +148,7 @@ namespace pcl
        * \param[out] trans transformation
        */
       const Eigen::Matrix4f&
-      getTransform ()
+      getTransform () const
       {
         return transform_;
       }
@@ -314,7 +314,7 @@ namespace pcl
        * \param[in] interp color histograms interpolation method
        */
       inline void
-      setColorHistsInterpMethod (const typename HistogramInterpolationMethod interp)
+      setColorHistsInterpMethod (const HistogramInterpolationMethod interp)
       {
         color_interp_ = interp;
       }
@@ -339,7 +339,7 @@ namespace pcl
       size_t color_hists_size_;
 
       /** \brief Interpolation method to be used while computing the color descriptor. */
-      typename HistogramInterpolationMethod color_interp_;
+      HistogramInterpolationMethod color_interp_;
 
       /** \brief copy computed color histograms to output descriptor point cloud
        * \param[in] grid_size size of the regular grid used to compute the descriptor
