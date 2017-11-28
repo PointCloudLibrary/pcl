@@ -617,22 +617,26 @@ main (int argc, char** argv)
     {
       int rgb_idx = 0;
       int label_idx = 0;
+      int invalid_fields_count = 0;
       for (size_t f = 0; f < cloud->fields.size (); ++f)
       {
+        if (!isValidFieldName (cloud->fields[f].name))
+        {
+          ++invalid_fields_count;
+          continue;
+        }
         if (cloud->fields[f].name == "rgb" || cloud->fields[f].name == "rgba")
         {
-          rgb_idx = f + 1;
+          rgb_idx = f - invalid_fields_count + 1 /* first is ColorHandlerRandom */;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerRGBField<pcl::PCLPointCloud2> (cloud));
         }
         else if (cloud->fields[f].name == "label")
         {
-          label_idx = f + 1;
+          label_idx = f - invalid_fields_count + 1;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerLabelField<pcl::PCLPointCloud2> (cloud, !use_optimal_l_colors));
         }
         else
         {
-          if (!isValidFieldName (cloud->fields[f].name))
-            continue;
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
