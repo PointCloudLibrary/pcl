@@ -2980,10 +2980,10 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
 
-  int color_handler_size = int (am_it->second.color_handlers.size ());
-  if (index >= color_handler_size)
+  size_t color_handler_size = am_it->second.color_handlers.size ();
+  if (!(size_t (index) < color_handler_size))
   {
-    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
+    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Index must be less than %d.\n", index, int (color_handler_size));
     return (false);
   }
   // Get the handler
