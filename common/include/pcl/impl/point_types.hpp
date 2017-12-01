@@ -1408,6 +1408,42 @@ namespace pcl
     friend std::ostream& operator << (std::ostream& os, const ESFSignature640& p);
   };
 
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
+  /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape descriptor.
+  * \ingroup common
+  */
+  struct GASDSignature512
+  {
+    float histogram[512];
+    static int descriptorSize() { return 512; }
+
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature512& p);
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+  /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.
+  * \ingroup common
+  */
+  struct GASDSignature984
+  {
+    float histogram[984];
+    static int descriptorSize() { return 984; }
+
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature984& p);
+  };
+
+  PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
+  /** \brief A point structure representing the Globally Aligned Spatial Distribution (GASD) shape and color descriptor.
+  * \ingroup common
+  */
+  struct GASDSignature7992
+  {
+    float histogram[7992];
+    static int descriptorSize() { return 7992; }
+
+    friend std::ostream& operator << (std::ostream& os, const GASDSignature7992& p);
+  };
+
   PCL_EXPORTS std::ostream& operator << (std::ostream& os, const GFPFHSignature16& p);
   /** \brief A point structure representing the GFPFH descriptor with 16 bins.
     * \ingroup common
