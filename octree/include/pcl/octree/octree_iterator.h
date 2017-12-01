@@ -103,27 +103,6 @@ namespace pcl
           this->reset ();
         }
 
-        /** \brief Copy constructor.
-         * \param[in] src the iterator to copy into this
-         * \param[in] max_depth_arg Depth limitation during traversal
-         */
-        OctreeIteratorBase (const OctreeIteratorBase& src, unsigned int max_depth_arg = 0) :
-            octree_ (src.octree_), current_state_(0), max_octree_depth_(max_depth_arg)
-        {
-        }
-
-        /** \brief Copy operator.
-         * \param[in] src the iterator to copy into this
-         */
-        inline OctreeIteratorBase&
-        operator = (const OctreeIteratorBase& src)
-        {
-          octree_ = src.octree_;
-          current_state_ = src.current_state_;
-          max_octree_depth_ = src.max_octree_depth_;
-          return (*this);
-        }
-
         /** \brief Empty deconstructor. */
         virtual
         ~OctreeIteratorBase ()
@@ -135,9 +114,12 @@ namespace pcl
          */
         bool operator==(const OctreeIteratorBase& other) const
         {
-          return (( octree_ ==other.octree_) &&
-                  ( current_state_ == other.current_state_) &&
-                  ( max_octree_depth_ == other.max_octree_depth_) );
+          return (this == &other) ||
+                    ((octree_ == other.octree_) &&
+                     (max_octree_depth_ == other.max_octree_depth_) &&
+                     ((current_state_ == other.current_state_) || // end state case
+                      (current_state_ && other.current_state_ &&  // null dereference protection
+                        (current_state_->key_ == other.current_state_->key_))));
         }
 
         /** \brief Inequal comparison operator
@@ -145,9 +127,7 @@ namespace pcl
          */
         bool operator!=(const OctreeIteratorBase& other) const
         {
-          return (( octree_ !=other.octree_) &&
-                  ( current_state_ != other.current_state_) &&
-                  ( max_octree_depth_ != other.max_octree_depth_) );
+          return !operator== (other);
         }
 
         /** \brief Reset iterator */
@@ -384,11 +364,17 @@ namespace pcl
         explicit
         OctreeDepthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0);
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeDepthFirstIterator ();
+        /** \brief Copy Constructor.
+         * \param[in] other Another OctreeDepthFirstIterator to copy from
+         */
+        OctreeDepthFirstIterator (const OctreeDepthFirstIterator& other)
+          : OctreeIteratorBase<OctreeT> (other)
+          , stack_ (other.stack_)
+        {
+          this->current_state_ = stack_.size ()? &stack_.back () : NULL;
+        }
 
-        /** \brief Copy operator.
+        /** \brief Copy assignment
          * \param[in] src the iterator to copy into this
          */
         inline OctreeDepthFirstIterator&
@@ -401,7 +387,7 @@ namespace pcl
 
           if (stack_.size())
           {
-            this->current_state_ = &stack_.back();
+            this->current_state_ = &stack_.back ();
           } else
           {
             this->current_state_ = 0;
@@ -470,9 +456,15 @@ namespace pcl
         explicit
         OctreeBreadthFirstIterator (OctreeT* octree_arg, unsigned int max_depth_arg = 0);
 
-        /** \brief Empty deconstructor. */
-        virtual
-        ~OctreeBreadthFirstIterator ();
+        /** \brief Copy Constructor.
+         * \param[in] other Another OctreeBreadthFirstIterator to copy from
+         */
+        OctreeBreadthFirstIterator (const OctreeBreadthFirstIterator& other)
+          : OctreeIteratorBase<OctreeT> (other)
+          , FIFO_ (other.FIFO_)
+        {
+          this->current_state_ = FIFO_.size()? &FIFO_.front () : NULL;
+        }
 
         /** \brief Copy operator.
          * \param[in] src the iterator to copy into this
