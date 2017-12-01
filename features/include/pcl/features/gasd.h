@@ -45,6 +45,18 @@
 
 namespace pcl
 {
+  /** \brief Different histogram interpolation methods.
+   * <ul>
+   *   <li><b>INTERP_NONE</b> - no interpolation.</li>
+   *   <li><b>INTERP_TRILINEAR</b> - trilinear interpolation.
+   *   <li><b>INTERP_QUADRILINEAR</b> - quadrilinear interpolation.
+   * </ul>
+   */
+  enum HistogramInterpolationMethod
+  {
+    INTERP_NONE, INTERP_TRILINEAR, INTERP_QUADRILINEAR
+  };
+
   /** \brief GASDEstimation estimates the Globally Aligned Spatial Distribution (GASD) descriptor for a given
    * point cloud dataset given XYZ data.
    *
@@ -73,18 +85,6 @@ namespace pcl
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
       typedef boost::shared_ptr<GASDEstimation<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const GASDEstimation<PointInT, PointOutT> > ConstPtr;
-
-      /** \brief Different histogram interpolation methods.
-       * <ul>
-       *   <li><b>INTERP_NONE</b> - no interpolation.</li>
-       *   <li><b>INTERP_TRILINEAR</b> - trilinear interpolation.
-       *   <li><b>INTERP_QUADRILINEAR</b> - quadrilinear interpolation.
-       * </ul>
-       */
-      enum HistogramInterpolationMethod
-      {
-        INTERP_NONE, INTERP_TRILINEAR, INTERP_QUADRILINEAR
-      };
 
       /** \brief Constructor.
        * \param[in] view_direction view direction
@@ -264,7 +264,6 @@ namespace pcl
   {
     public:
       using typename Feature<PointInT, PointOutT>::PointCloudOut;
-      using typename GASDEstimation<PointInT, PointOutT>::HistogramInterpolationMethod;
       typedef boost::shared_ptr<GASDColorEstimation<PointInT, PointOutT> > Ptr;
       typedef boost::shared_ptr<const GASDColorEstimation<PointInT, PointOutT> > ConstPtr;
 

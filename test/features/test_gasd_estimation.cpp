@@ -88,7 +88,7 @@ TEST (PCL, GASDShapeEstimationNoInterp)
 {
   pcl::GASDEstimation<pcl::PointXYZ, pcl::GASDSignature512> gasd;
   gasd.setInputCloud (cloud);
-  gasd.setShapeHistsInterpMethod (gasd.INTERP_NONE);
+  gasd.setShapeHistsInterpMethod (pcl::INTERP_NONE);
 
   pcl::PointCloud<pcl::GASDSignature512> descriptor;
   gasd.compute (descriptor);
@@ -232,7 +232,7 @@ TEST(PCL, GASDShapeAndColorEstimationQuadrilinearInterp)
 
   pcl::GASDColorEstimation<pcl::PointXYZRGBA, pcl::GASDSignature984> gasd;
   gasd.setInputCloud (cloudWithColors);
-  gasd.setColorHistsInterpMethod (gasd.INTERP_QUADRILINEAR);
+  gasd.setColorHistsInterpMethod (pcl::INTERP_QUADRILINEAR);
 
   pcl::PointCloud<pcl::GASDSignature984> descriptor;
   gasd.compute (descriptor);
