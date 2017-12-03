@@ -45,16 +45,12 @@
 
 namespace pcl
 {
-  /** \brief Different histogram interpolation methods.
-   * <ul>
-   *   <li><b>INTERP_NONE</b> - no interpolation.</li>
-   *   <li><b>INTERP_TRILINEAR</b> - trilinear interpolation.
-   *   <li><b>INTERP_QUADRILINEAR</b> - quadrilinear interpolation.
-   * </ul>
-   */
+  /// Different histogram interpolation methods
   enum HistogramInterpolationMethod
   {
-    INTERP_NONE, INTERP_TRILINEAR, INTERP_QUADRILINEAR
+    INTERP_NONE,         ///< no interpolation
+    INTERP_TRILINEAR,    ///< trilinear interpolation
+    INTERP_QUADRILINEAR  ///< quadrilinear interpolation
   };
 
   /** \brief GASDEstimation estimates the Globally Aligned Spatial Distribution (GASD) descriptor for a given
