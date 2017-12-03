@@ -44,6 +44,8 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
+#include <boost/static_assert.hpp>
+
 namespace pcl
 {
   // r,g,b, i values are from 0 to 1
@@ -241,10 +243,131 @@ namespace pcl
     }
   }
 
+  /** \brief Base template method for point type conversion, that is called when no suitable conversion defined.
+  * \param[in] in the input PointInT point
+  * \param[out] out the output PointOutT point
+  */
+  template<class PointInT, class PointOutT> inline void
+  ConvertPoint (const PointInT&    in,
+                PointOutT&         out)
+  {
+    BOOST_STATIC_ASSERT_MSG (false, "The specified conversion is not defined.");
+  }
+
+  /* \brief Conversion method for same point types, provided for consistency
+  * \param[in] in the input PointT point
+  * \param[out] out the output PointT point
+  */
+  template<class PointT> inline void
+  ConvertPoint (const PointT&       in,
+                PointT&             out)
+  {
+    out = in;
+  }
+
+  /** \brief Convert a XYZRGB point type to a XYZI
+  * \param[in] in the input XYZRGB point
+  * \param[out] out the output XYZI point
+  */
+  template<> inline void
+  ConvertPoint (const PointXYZRGB& in,
+                PointXYZI&         out)
+  {
+    PointXYZRGBtoXYZI (in, out);
+  }
+
+  /** \brief Convert a RGB point type to a I
+  * \param[in] in the input RGB point
+  * \param[out] out the output Intensity point
+  */
+  template<> inline void
+  ConvertPoint (const RGB&    in,
+                Intensity&    out)
+  {
+    PointRGBtoI (in, out);
+  }
+
+  /** \brief Convert a RGB point type to a I
+  * \param[in] in the input RGB point
+  * \param[out] out the output Intensity point
+  */
+  template<> inline void
+  ConvertPoint (const RGB&    in,
+                Intensity8u&  out)
+  {
+    PointRGBtoI (in, out);
+  }
+
+  /** \brief Convert a RGB point type to a I
+  * \param[in] in the input RGB point
+  * \param[out] out the output Intensity point
+  */
+  template<> inline void
+  ConvertPoint (const RGB&    in,
+                Intensity32u& out)
+  {
+    PointRGBtoI (in, out);
+  }
+
+  /** \brief Convert a XYZRGB point type to a XYZHSV
+  * \param[in] in the input XYZRGB point
+  * \param[out] out the output XYZHSV point
+  */
+  template<> inline void
+  ConvertPoint (const PointXYZRGB& in,
+                PointXYZHSV&       out)
+  {
+    PointXYZRGBtoXYZHSV (in, out);
+  }
+
+  /** \brief Convert a XYZRGB point type to a XYZHSV
+  * \param[in] in the input XYZRGB point
+  * \param[out] out the output XYZHSV point
+  * \todo include the A parameter but how?
+  */
+  template<> inline void
+  ConvertPoint (const PointXYZRGBA& in,
+                PointXYZHSV&        out)
+  {
+    PointXYZRGBAtoXYZHSV (in, out);
+  }
+
+  /* \brief Convert a XYZHSV point type to a XYZRGB
+  * \param[in] in the input XYZHSV point
+  * \param[out] out the output XYZRGB point
+  */
+  template<> inline void
+  ConvertPoint (const PointXYZHSV&  in,
+                PointXYZRGB&      out)
+  {
+    PointXYZHSVtoXYZRGB (in, out);
+  }
+
+  /** \brief Generic method for point cloud conversion
+  * \param[in] in the input PointInT point cloud
+  * \param[out] out the output PointOutT point cloud
+  */
+  template<class PointInT, class PointOutT> inline void
+  ConvertPointCloud (const PointCloud<PointInT>& in,
+                     PointCloud<PointOutT>&      out)
+  {
+    out.width = in.width;
+    out.height = in.height;
+    out.sensor_orientation_ = in.sensor_orientation_;
+    out.sensor_origin_ = in.sensor_origin_;
+    out.is_dense = in.is_dense;
+    out.points.resize (out.width * out.height);
+    for (size_t i = 0; i < in.points.size (); ++i)
+    {
+      ConvertPoint (in.points[i], out.points[i]);
+    }
+  }
+
   /** \brief Convert a RGB point cloud to a Intensity
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&  in,
                     PointCloud<Intensity>&  out)
@@ -263,6 +386,7 @@ namespace pcl
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&    in,
                     PointCloud<Intensity8u>&  out)
@@ -281,6 +405,7 @@ namespace pcl
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&     in,
                     PointCloud<Intensity32u>&  out)
@@ -299,6 +424,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
+  PCL_DEPRECATED ("[PointCloudXYZRGBtoXYZHSV] is deprecated, please use ConvertPointCloud instead.")
   inline void 
   PointCloudXYZRGBtoXYZHSV (const PointCloud<PointXYZRGB>& in,
                             PointCloud<PointXYZHSV>&       out)
@@ -308,7 +434,7 @@ namespace pcl
     for (size_t i = 0; i < in.points.size (); i++)
     {
       PointXYZHSV p;
-      PointXYZRGBtoXYZHSV (in.points[i], p);
+      ConvertPoint (in.points[i], p);
       out.points.push_back (p);
     }
   }
@@ -317,6 +443,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
+  PCL_DEPRECATED ("[PointCloudXYZRGBAtoXYZHSV] is deprecated, please use ConvertPointCloud instead.")
   inline void
   PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
                              PointCloud<PointXYZHSV>&        out)
@@ -335,7 +462,8 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZI point cloud
     */
-  inline void 
+  PCL_DEPRECATED("[PointCloudXYZRGBtoXYZI] is deprecated, please use ConvertPointCloud instead.") 
+  inline void
   PointCloudXYZRGBtoXYZI (const PointCloud<PointXYZRGB>& in,
                           PointCloud<PointXYZI>&         out)
   {
@@ -361,10 +489,10 @@ namespace pcl
                                   const float&                  focal,
                                   PointCloud<PointXYZRGBA>&     out)
   {
-    float bad_point = std::numeric_limits<float>::quiet_NaN();
+    static const float bad_point = std::numeric_limits<float>::quiet_NaN();
     size_t width_ = depth.width;
     size_t height_ = depth.height;
-    float constant_ = 1.0f / focal;
+    const float constant_ = 1.0f / focal;
 
     for (size_t v = 0; v < height_; v++)
     {
