@@ -294,7 +294,7 @@ namespace pcl
         /** \brief Disables the Orientatation Marker Widget so it is removed from the renderer */
         void
         removeOrientationMarkerWidgetAxes ();
-        
+
         /** \brief Adds 3D axes describing a coordinate system to screen at 0,0,0.
           * \param[in] scale the scale of the axes (default: 1)
           * \param[in] id the coordinate system object id (default: reference)
