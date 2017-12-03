@@ -245,10 +245,11 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // Set the points
+  vtkIdType ptr = 0;
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -261,7 +262,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
           !pcl_isfinite (cloud->points[i].z))
         continue;
 
-      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
     }
     nr_points = j;
@@ -600,7 +601,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->SetColor (r, g, b);
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   actor->GetMapper ()->ImmediateModeRenderingOn ();
+#endif
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
@@ -669,26 +672,10 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  if (viewport < 0)
-    return false;
-
-  // check all or an individual viewport for a similar id
-  rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
+  if (contains (tid))
   {
-    const std::string uid = tid + std::string (i, '*');
-    if (contains (uid))
-    {
-      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
-                  "Please choose a different id and retry.\n",
-                  tid.c_str (),
-                  i);
-      return false;
-    }
-
-    if (viewport > 0)
-      break;
+    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
+    return (false);
   }
 
   vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
@@ -700,8 +687,8 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  int i = 1;
+  vtkRenderer* renderer = NULL;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -719,85 +706,13 @@ pcl::visualization::PCLVisualizer::addText3D (
 
       // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
-      const std::string uid = tid + std::string (i, '*');
-      (*shape_actor_map_)[uid] = textActor;
+      std::string alternate_tid = tid;
+      alternate_tid.append(i, '*');
+
+      (*shape_actor_map_)[(viewport == 0) ? tid : alternate_tid] = textActor;
     }
 
     ++i;
-  }
-
-  return (true);
-}
-
-//////////////////////////////////////////////////
-template <typename PointT> bool
-pcl::visualization::PCLVisualizer::addText3D (
-  const std::string &text,
-  const PointT& position,
-  double orientation[3],
-  double textScale,
-  double r,
-  double g,
-  double b,
-  const std::string &id,
-  int viewport)
-{
-  std::string tid;
-  if (id.empty ())
-    tid = text;
-  else
-    tid = id;
-
-  if (viewport < 0)
-    return false;
-
-  // check all or an individual viewport for a similar id
-  rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
-  {
-    const std::string uid = tid + std::string (i, '*');
-    if (contains (uid))
-    {
-      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
-                  "Please choose a different id and retry.\n",
-                  tid.c_str (),
-                  i);
-      return false;
-    }
-
-    if (viewport > 0)
-      break;
-  }
-
-  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
-  textSource->SetText (text.c_str());
-  textSource->Update ();
-
-  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
-  textMapper->SetInputConnection (textSource->GetOutputPort ());
-
-  vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
-  textActor->SetMapper (textMapper);
-  textActor->SetPosition (position.x, position.y, position.z);
-  textActor->SetScale (textScale);
-  textActor->GetProperty ()->SetColor (r, g, b);
-  textActor->SetOrientation (orientation);
-
-  // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
-  rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  int i = 1;
-  for ( vtkRenderer* renderer = rens_->GetNextItem ();
-        renderer != NULL;
-        renderer = rens_->GetNextItem (), ++i)
-  {
-    if (viewport == 0 || viewport == i)
-    {
-      renderer->AddActor (textActor);
-      const std::string uid = tid + std::string (i, '*');
-      (*shape_actor_map_)[uid] = textActor;
-    }
   }
 
   return (true);
@@ -1516,7 +1431,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1552,7 +1469,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1588,14 +1507,14 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
+  float *data = (vtkFloatArray::SafeDownCast (points->GetData ()))->GetPointer (0);
 
-  int pts = 0;
+  vtkIdType pts = 0;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, pts += 3)
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[pts]);
   }
   else
   {
@@ -1605,8 +1524,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
       // Check if the point is invalid
       if (!isFinite (cloud->points[i]))
         continue;
-
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[pts]);
       pts += 3;
       j++;
     }
@@ -1627,8 +1545,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   scalars->GetRange (minmax);
   // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
-
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1668,17 +1587,16 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
-
-    pcl::RGB rgb_data;
+    uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;
-      memcpy (&rgb_data, reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset, sizeof (pcl::RGB));
+      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&cloud->points[i]) + offset);
       unsigned char color[3];
-      color[0] = rgb_data.r;
-      color[1] = rgb_data.g;
-      color[2] = rgb_data.b;
+      color[0] = rgb_data->r;
+      color[1] = rgb_data->g;
+      color[2] = rgb_data->b;
       colors->InsertNextTupleValue (color);
     }
   }
@@ -1692,13 +1610,13 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   // Get a pointer to the beginning of the data array
   float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
-  int ptr = 0;
+  vtkIdType ptr = 0;
   std::vector<int> lookup;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -1711,7 +1629,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
         continue;
 
       lookup[i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
       ptr += 3;
     }
@@ -1851,7 +1769,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -1864,7 +1782,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
         continue;
 
       lookup [i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
       ptr += 3;
     }
@@ -1883,19 +1801,17 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
   if (rgb_idx != -1 && colors)
   {
-    pcl::RGB rgb_data;
     int j = 0;
+    uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;
-      memcpy (&rgb_data, 
-              reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset,
-              sizeof (pcl::RGB));
+      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&cloud->points[i]) + offset);
       unsigned char color[3];
-      color[0] = rgb_data.r;
-      color[1] = rgb_data.g;
-      color[2] = rgb_data.b;
+      color[0] = rgb_data->r;
+      color[1] = rgb_data->g;
+      color[2] = rgb_data->b;
       colors->SetTupleValue (j++, color);
     }
   }
