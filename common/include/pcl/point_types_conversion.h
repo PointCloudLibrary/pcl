@@ -44,7 +44,7 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
-#include <boost/static_assert.hpp>
+#include <boost/mpl/assert.hpp>
 
 namespace pcl
 {
@@ -251,7 +251,7 @@ namespace pcl
   ConvertPoint (const PointInT&    in,
                 PointOutT&         out)
   {
-    BOOST_STATIC_ASSERT_MSG (false, "The specified conversion is not defined.");
+    BOOST_MPL_ASSERT_MSG ((false), FUNC_IS_NOT_DEFINED_FOR_POINT_IN_AND_POINT_OUT, (PointInT&, PointOutT&));
   }
 
   /* \brief Conversion method for same point types, provided for consistency
