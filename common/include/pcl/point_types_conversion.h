@@ -248,8 +248,8 @@ namespace pcl
   * \param[out] out the output PointOutT point
   */
   template<class PointInT, class PointOutT> inline void
-  ConvertPoint (const PointInT&    in,
-                PointOutT&         out)
+  ConvertPointColor (const PointInT&    in,
+                     PointOutT&         out)
   {
     BOOST_MPL_ASSERT_MSG ((false), FUNC_IS_NOT_DEFINED_FOR_POINT_IN_AND_POINT_OUT, (PointInT&, PointOutT&));
   }
@@ -259,8 +259,8 @@ namespace pcl
   * \param[out] out the output PointT point
   */
   template<class PointT> inline void
-  ConvertPoint (const PointT&       in,
-                PointT&             out)
+  ConvertPointColor (const PointT&       in,
+                     PointT&             out)
   {
     out = in;
   }
@@ -270,8 +270,8 @@ namespace pcl
   * \param[out] out the output XYZI point
   */
   template<> inline void
-  ConvertPoint (const PointXYZRGB& in,
-                PointXYZI&         out)
+  ConvertPointColor (const PointXYZRGB& in,
+                     PointXYZI&         out)
   {
     PointXYZRGBtoXYZI (in, out);
   }
@@ -281,8 +281,8 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPoint (const RGB&    in,
-                Intensity&    out)
+  ConvertPointColor (const RGB&    in,
+                     Intensity&    out)
   {
     PointRGBtoI (in, out);
   }
@@ -292,8 +292,8 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPoint (const RGB&    in,
-                Intensity8u&  out)
+  ConvertPointColor (const RGB&    in,
+                     Intensity8u&  out)
   {
     PointRGBtoI (in, out);
   }
@@ -303,8 +303,8 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPoint (const RGB&    in,
-                Intensity32u& out)
+  ConvertPointColor (const RGB&    in,
+                     Intensity32u& out)
   {
     PointRGBtoI (in, out);
   }
@@ -314,8 +314,8 @@ namespace pcl
   * \param[out] out the output XYZHSV point
   */
   template<> inline void
-  ConvertPoint (const PointXYZRGB& in,
-                PointXYZHSV&       out)
+  ConvertPointColor (const PointXYZRGB& in,
+                     PointXYZHSV&       out)
   {
     PointXYZRGBtoXYZHSV (in, out);
   }
@@ -326,8 +326,8 @@ namespace pcl
   * \todo include the A parameter but how?
   */
   template<> inline void
-  ConvertPoint (const PointXYZRGBA& in,
-                PointXYZHSV&        out)
+  ConvertPointColor (const PointXYZRGBA& in,
+                     PointXYZHSV&        out)
   {
     PointXYZRGBAtoXYZHSV (in, out);
   }
@@ -337,8 +337,8 @@ namespace pcl
   * \param[out] out the output XYZRGB point
   */
   template<> inline void
-  ConvertPoint (const PointXYZHSV&  in,
-                PointXYZRGB&      out)
+  ConvertPointColor (const PointXYZHSV&  in,
+                     PointXYZRGB&      out)
   {
     PointXYZHSVtoXYZRGB (in, out);
   }
@@ -348,8 +348,8 @@ namespace pcl
   * \param[out] out the output PointOutT point cloud
   */
   template<class PointInT, class PointOutT> inline void
-  ConvertPointCloud (const PointCloud<PointInT>& in,
-                     PointCloud<PointOutT>&      out)
+  ConvertPointCloudColor (const PointCloud<PointInT>& in,
+                          PointCloud<PointOutT>&      out)
   {
     out.width = in.width;
     out.height = in.height;
@@ -359,7 +359,7 @@ namespace pcl
     out.points.resize (out.width * out.height);
     for (size_t i = 0; i < in.points.size (); ++i)
     {
-      ConvertPoint (in.points[i], out.points[i]);
+      ConvertPointColor (in.points[i], out.points[i]);
     }
   }
 
