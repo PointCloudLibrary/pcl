@@ -104,7 +104,7 @@
 #include <boost/filesystem.hpp>
 #include <pcl/console/parse.h>
 
- // Support for VTK 7.1 upwards
+// Support for VTK 7.1 upwards
 #ifdef vtkGenericDataArray_h
 #define SetTupleValue SetTypedTuple
 #define InsertNextTupleValue InsertNextTypedTuple
@@ -173,7 +173,7 @@ pcl::visualization::PCLVisualizer::PCLVisualizer (int &argc, char **argv, const 
   setupStyle ();
   setupCamera (argc, argv);
 
-  if (!camera_set_ && !camera_file_loaded_)
+  if(!camera_set_ && !camera_file_loaded_)
     setDefaultWindowSizeAndPos ();
 
   if (create_interactor)
@@ -534,7 +534,8 @@ pcl::visualization::PCLVisualizer::spin ()
   resetStoppedFlag ();
   // Render the window before we start the interactor
   win_->Render ();
-  interactor_->Start ();
+  if (interactor_)
+    interactor_->Start ();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,6 +551,9 @@ pcl::visualization::PCLVisualizer::spinOnce (int time, bool force_redraw)
       return;
     }
   #endif
+
+  if (!interactor_)
+    return;
 
   if (time <= 0)
     time = 1;
@@ -603,31 +607,6 @@ pcl::visualization::PCLVisualizer::removeOrientationMarkerWidgetAxes ()
   {
     pcl::console::print_error ("Attempted to delete Orientation Widget Axes which does not exist!\n");
   }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, int viewport)
-{
-  addCoordinateSystem (scale, "reference", viewport);
-}
-
-void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, float x, float y, float z, int viewport)
-{
-  addCoordinateSystem (scale, x, y, z, "reference", viewport);
-}
-
-void
-pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eigen::Affine3f& t, int viewport)
-{
-  addCoordinateSystem (scale, t, "reference", viewport);
-}
-
-bool
-pcl::visualization::PCLVisualizer::removeCoordinateSystem (int viewport)
-{
-  return (removeCoordinateSystem ("reference", viewport));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -805,15 +784,15 @@ pcl::visualization::PCLVisualizer::addCoordinateSystem (double scale, const Eige
   axes_actor->SetPosition (t (0, 3), t(1, 3), t(2, 3));
 
   Eigen::Matrix3f m;
-  m = t.rotation ();
+  m =t.rotation();
   Eigen::Quaternionf rf;
-  rf = Eigen::Quaternionf (m);
+  rf = Eigen::Quaternionf(m);
   double r_angle;
   double r_axis[3];
-  quat_to_angle_axis (rf, r_angle, r_axis);
+  quat_to_angle_axis(rf,r_angle,r_axis);
   //
-  axes_actor->SetOrientation (0, 0, 0);
-  axes_actor->RotateWXYZ (r_angle * 180 / M_PI, r_axis[0], r_axis[1], r_axis[2]);
+  axes_actor->SetOrientation(0,0,0);
+  axes_actor->RotateWXYZ(r_angle*180/M_PI,r_axis[0],r_axis[1],r_axis[2]);
   //WAS:  axes_actor->SetOrientation (roll, pitch, yaw);
 
   // Save the ID and actor pair to the global actor map
@@ -887,7 +866,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
     if (removeActorFromRenderer (am_it->second, viewport))
     {
       bool update_LUT (true);
-      if (!style_->lut_actor_id_.empty () && am_it->first != style_->lut_actor_id_)
+      if (!style_->lut_actor_id_.empty() && am_it->first != style_->lut_actor_id_)
         update_LUT = false;
       shape_actor_map_->erase (am_it);
       if (update_LUT)
@@ -900,7 +879,7 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
     if (removeActorFromRenderer (ca_it->second.actor, viewport))
     {
       bool update_LUT (true);
-      if (!style_->lut_actor_id_.empty () && ca_it->first != style_->lut_actor_id_)
+      if (!style_->lut_actor_id_.empty() && ca_it->first != style_->lut_actor_id_)
         update_LUT = false;
       cloud_actor_map_->erase (ca_it);
       if (update_LUT)
@@ -915,23 +894,43 @@ pcl::visualization::PCLVisualizer::removeShape (const std::string &id, int viewp
 bool
 pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int viewport)
 {
-  // Check to see if the given ID entry exists
-  ShapeActorMap::iterator am_it = shape_actor_map_->find (id);
+  if (viewport < 0)
+    return false;
 
-  if (am_it == shape_actor_map_->end ())
+  bool success = true;
+
+  // check all or an individual viewport for a similar id
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
   {
-    //pcl::console::print_warn (stderr, "[removeSape] Could not find any shape with id <%s>!\n", id.c_str ());
-    return (false);
+    const std::string uid = id + std::string (i, '*');
+    ShapeActorMap::iterator am_it = shape_actor_map_->find (uid);
+
+    // was it found
+    if (am_it == shape_actor_map_->end ())
+    {
+      if (viewport > 0)
+        return (false);
+
+      continue;
+    }
+
+    // Remove it from all renderers
+    if (removeActorFromRenderer (am_it->second, i))
+    {
+      // Remove the pointer/ID pair to the global actor map
+      shape_actor_map_->erase (am_it);
+      if (viewport > 0)
+        return (true);
+
+      success &= true;
+    }
+    else
+      success = false;
   }
 
-  // Remove it from all renderers
-  if (removeActorFromRenderer (am_it->second, viewport))
-  {
-    // Remove the pointer/ID pair to the global actor map
-    shape_actor_map_->erase (am_it);
-    return (true);
-  }
-  return (false);
+  return success;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -940,7 +939,7 @@ pcl::visualization::PCLVisualizer::removeAllPointClouds (int viewport)
 {
   // Check to see if the given ID entry exists
   CloudActorMap::iterator am_it = cloud_actor_map_->begin ();
-  while (am_it != cloud_actor_map_->end ())
+  while (am_it != cloud_actor_map_->end () )
   {
     if (removePointCloud (am_it->first, viewport))
       am_it = cloud_actor_map_->begin ();
@@ -981,7 +980,7 @@ pcl::visualization::PCLVisualizer::removeAllCoordinateSystems (int viewport)
 {
   // Check to see if the given ID entry exists
   CoordinateActorMap::iterator am_it = coordinate_actor_map_->begin ();
-  while (am_it != coordinate_actor_map_->end ())
+  while (am_it != coordinate_actor_map_->end () )
   {
     if (removeCoordinateSystem (am_it->first, viewport))
       am_it = coordinate_actor_map_->begin ();
@@ -1388,20 +1387,20 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_COLOR:
-  {
-    if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
-      PCL_WARN ("[setPointCloudRenderingProperties] Colors go from 0.0 to 1.0!\n");
-    actor->GetProperty ()->SetColor (val1, val2, val3);
-    actor->GetMapper ()->ScalarVisibilityOff ();
-    actor->Modified ();
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
+    case PCL_VISUALIZER_COLOR:
+    {
+      if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
+        PCL_WARN ("[setPointCloudRenderingProperties] Colors go from 0.0 to 1.0!\n");
+      actor->GetProperty ()->SetColor (val1, val2, val3);
+      actor->GetMapper ()->ScalarVisibilityOff ();
+      actor->Modified ();
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
   }
   return (true);
 }
@@ -1426,34 +1425,34 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_LUT_RANGE:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    // Check that range values are correct
-    if (val1 >= val2)
+    case PCL_VISUALIZER_LUT_RANGE:
     {
-      PCL_WARN ("[setPointCloudRenderingProperties] Range max must be greater than range min!\n");
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      // Check that range values are correct
+      if (val1 >= val2)
+      {
+        PCL_WARN ("[setPointCloudRenderingProperties] Range max must be greater than range min!\n");
+        return (false);
+      }
+      
+      // Update LUT
+      actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
+      actor->GetMapper()->UseLookupTableScalarRangeOn ();
+      style_->updateLookUpTableDisplay (false);
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
-
-    // Update LUT
-    actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
-    actor->GetMapper ()->UseLookupTableScalarRangeOn ();
-    style_->updateLookUpTableDisplay (false);
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
   }
   return (true);
 }
@@ -1474,29 +1473,29 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int propert
 
   switch (property)
   {
-  case PCL_VISUALIZER_POINT_SIZE:
-  {
-    value = actor->GetProperty ()->GetPointSize ();
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_OPACITY:
-  {
-    value = actor->GetProperty ()->GetOpacity ();
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_LINE_WIDTH:
-  {
-    value = actor->GetProperty ()->GetLineWidth ();
-    actor->Modified ();
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
+    case PCL_VISUALIZER_POINT_SIZE:
+    {
+      value = actor->GetProperty ()->GetPointSize ();
+      actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_OPACITY:
+    {
+      value = actor->GetProperty ()->GetOpacity ();
+      actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_LINE_WIDTH:
+    {
+      value = actor->GetProperty ()->GetLineWidth ();
+      actor->Modified ();
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
   }
   return (true);
 }
@@ -1521,90 +1520,86 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_POINT_SIZE:
-  {
-    actor->GetProperty ()->SetPointSize (float (value));
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_OPACITY:
-  {
-    actor->GetProperty ()->SetOpacity (value);
-    actor->Modified ();
-    break;
-  }
-  // Turn on/off flag to control whether data is rendered using immediate
-  // mode or note. Immediate mode rendering tends to be slower but it can
-  // handle larger datasets. The default value is immediate mode off. If you
-  // are having problems rendering a large dataset you might want to consider
-  // using immediate more rendering.
-  case PCL_VISUALIZER_IMMEDIATE_RENDERING:
-  {
-#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
-    actor->GetMapper ()->SetImmediateModeRendering (int (value));
-    actor->Modified ();
-#else
-    PCL_WARN ("[RenderingProperties::PCL_VISUALIZER_IMMEDIATE_RENDERING] Has no effect when OpenGL version is ≥ 2\n");
-#endif
-    break;
-  }
-  case PCL_VISUALIZER_LINE_WIDTH:
-  {
-    actor->GetProperty ()->SetLineWidth (float (value));
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_LUT:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    // Get range limits from existing LUT
-    double *range;
-    range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
-
-    actor->GetMapper ()->ScalarVisibilityOn ();
-    actor->GetMapper ()->SetScalarRange (range[0], range[1]);
-    vtkSmartPointer<vtkLookupTable> table;
-    if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
-      break;
-    table->SetRange (range[0], range[1]);
-    actor->GetMapper ()->SetLookupTable (table);
-    style_->updateLookUpTableDisplay (false);
-    break;
-  }
-  case PCL_VISUALIZER_LUT_RANGE:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    switch (int (value))
+    case PCL_VISUALIZER_POINT_SIZE:
     {
-    case PCL_VISUALIZER_LUT_RANGE_AUTO:
-      double range[2];
-      actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
-      actor->GetMapper ()->GetLookupTable ()->SetRange (range[0], range[1]);
-      actor->GetMapper ()->UseLookupTableScalarRangeOn ();
+      actor->GetProperty ()->SetPointSize (float (value));
+      actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_OPACITY:
+    {
+      actor->GetProperty ()->SetOpacity (value);
+      actor->Modified ();
+      break;
+    }
+    // Turn on/off flag to control whether data is rendered using immediate
+    // mode or note. Immediate mode rendering tends to be slower but it can
+    // handle larger datasets. The default value is immediate mode off. If you
+    // are having problems rendering a large dataset you might want to consider
+    // using immediate more rendering.
+    case PCL_VISUALIZER_IMMEDIATE_RENDERING:
+    {
+      actor->GetMapper ()->SetImmediateModeRendering (int (value));
+      actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_LINE_WIDTH:
+    {
+      actor->GetProperty ()->SetLineWidth (float (value));
+      actor->Modified ();
+      break;
+    }
+    case PCL_VISUALIZER_LUT:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      // Get range limits from existing LUT
+      double *range;
+      range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
+      
+      actor->GetMapper ()->ScalarVisibilityOn ();
+      actor->GetMapper ()->SetScalarRange (range[0], range[1]);
+      vtkSmartPointer<vtkLookupTable> table;
+      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
+        break;
+      table->SetRange (range[0], range[1]);
+      actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
       break;
     }
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
+    case PCL_VISUALIZER_LUT_RANGE:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      switch (int(value))
+      {
+        case PCL_VISUALIZER_LUT_RANGE_AUTO:
+          double range[2];
+          actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+          actor->GetMapper ()->GetLookupTable ()->SetRange (range[0], range[1]);
+          actor->GetMapper ()->UseLookupTableScalarRangeOn ();
+          style_->updateLookUpTableDisplay (false);
+          break;
+      }
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
   }
   return (true);
 }
@@ -1661,29 +1656,29 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_COLOR:
-  {
-    if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
-      PCL_WARN ("[setShapeRenderingProperties] Colors go from 0.0 to 1.0!\n");
+    case PCL_VISUALIZER_COLOR:
+    {
+      if (val1 > 1.0 || val2 > 1.0 || val3 > 1.0)
+        PCL_WARN ("[setShapeRenderingProperties] Colors go from 0.0 to 1.0!\n");
 
-    actor->GetMapper ()->ScalarVisibilityOff ();
-    actor->GetProperty ()->SetColor (val1, val2, val3);
-    actor->GetProperty ()->SetEdgeColor (val1, val2, val3);
-    // The following 3 are set by SetColor automatically according to the VTK docs
-    //actor->GetProperty ()->SetAmbientColor  (val1, val2, val3);
-    //actor->GetProperty ()->SetDiffuseColor (val1, val2, val3);
-    //actor->GetProperty ()->SetSpecularColor (val1, val2, val3);
-    actor->GetProperty ()->SetAmbient (0.8);
-    actor->GetProperty ()->SetDiffuse (0.8);
-    actor->GetProperty ()->SetSpecular (0.8);
-    actor->Modified ();
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
+      actor->GetMapper ()->ScalarVisibilityOff ();
+      actor->GetProperty ()->SetColor (val1, val2, val3);
+      actor->GetProperty ()->SetEdgeColor (val1, val2, val3);
+      // The following 3 are set by SetColor automatically according to the VTK docs
+      //actor->GetProperty ()->SetAmbientColor  (val1, val2, val3);
+      //actor->GetProperty ()->SetDiffuseColor (val1, val2, val3);
+      //actor->GetProperty ()->SetSpecularColor (val1, val2, val3);
+      actor->GetProperty ()->SetAmbient (0.8);
+      actor->GetProperty ()->SetDiffuse (0.8);
+      actor->GetProperty ()->SetSpecular (0.8);
+      actor->Modified ();
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
   }
   return (true);
 }
@@ -1708,34 +1703,34 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_LUT_RANGE:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    // Check that range values are correct
-    if (val1 >= val2)
+    case PCL_VISUALIZER_LUT_RANGE:
     {
-      PCL_WARN ("[setShapeRenderingProperties] Range max must be greater than range min!\n");
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      // Check that range values are correct
+      if (val1 >= val2)
+      {
+        PCL_WARN ("[setShapeRenderingProperties] Range max must be greater than range min!\n");
+        return (false);
+      }
+      
+      // Update LUT
+      actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
+      actor->GetMapper()->UseLookupTableScalarRangeOn ();
+      style_->updateLookUpTableDisplay (false);
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
       return (false);
     }
-
-    // Update LUT
-    actor->GetMapper ()->GetLookupTable ()->SetRange (val1, val2);
-    actor->GetMapper ()->UseLookupTableScalarRangeOn ();
-    style_->updateLookUpTableDisplay (false);
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
   }
   return (true);
 }
@@ -1760,89 +1755,72 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
 
   switch (property)
   {
-  case PCL_VISUALIZER_POINT_SIZE:
-  {
-    actor->GetProperty ()->SetPointSize (float (value));
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_OPACITY:
-  {
-    actor->GetProperty ()->SetOpacity (value);
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_LINE_WIDTH:
-  {
-    actor->GetProperty ()->SetLineWidth (float (value));
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_FONT_SIZE:
-  {
-    vtkTextActor* text_actor = vtkTextActor::SafeDownCast (am_it->second);
-    if (!text_actor)
-      return (false);
-    vtkSmartPointer<vtkTextProperty> tprop = text_actor->GetTextProperty ();
-    tprop->SetFontSize (int (value));
-    text_actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_REPRESENTATION:
-  {
-    switch (int (value))
+    case PCL_VISUALIZER_POINT_SIZE:
     {
-    case PCL_VISUALIZER_REPRESENTATION_POINTS:
-    {
-      actor->GetProperty ()->SetRepresentationToPoints ();
+      actor->GetProperty ()->SetPointSize (float (value));
+      actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_REPRESENTATION_WIREFRAME:
+    case PCL_VISUALIZER_OPACITY:
     {
-      actor->GetProperty ()->SetRepresentationToWireframe ();
+      actor->GetProperty ()->SetOpacity (value);
+      actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_REPRESENTATION_SURFACE:
+    case PCL_VISUALIZER_LINE_WIDTH:
     {
-      actor->GetProperty ()->SetRepresentationToSurface ();
+      actor->GetProperty ()->SetLineWidth (float (value));
+      actor->Modified ();
       break;
     }
-    }
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_SHADING:
-  {
-    switch (int (value))
+    case PCL_VISUALIZER_FONT_SIZE:
     {
-    case PCL_VISUALIZER_SHADING_FLAT:
-    {
-      actor->GetProperty ()->SetInterpolationToFlat ();
+      vtkTextActor* text_actor = vtkTextActor::SafeDownCast (am_it->second);
+      if (!text_actor)
+        return (false);
+      vtkSmartPointer<vtkTextProperty> tprop = text_actor->GetTextProperty ();
+      tprop->SetFontSize (int (value));
+      text_actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_SHADING_GOURAUD:
+    case PCL_VISUALIZER_REPRESENTATION:
     {
-      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+      switch (int (value))
       {
-        PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Gouraud shading was requested. Estimating normals...\n");
-        vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
-#if VTK_MAJOR_VERSION < 6
-        normals->SetInput (actor->GetMapper ()->GetInput ());
-        vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInput (normals->GetOutput ());
-#else
-        normals->SetInputConnection (actor->GetMapper ()->GetInputAlgorithm ()->GetOutputPort ());
-        vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInputConnection (normals->GetOutputPort ());
-#endif
+        case PCL_VISUALIZER_REPRESENTATION_POINTS:
+        {
+          actor->GetProperty ()->SetRepresentationToPoints ();
+          break;
+        }
+        case PCL_VISUALIZER_REPRESENTATION_WIREFRAME:
+        {
+          actor->GetProperty ()->SetRepresentationToWireframe ();
+          break;
+        }
+        case PCL_VISUALIZER_REPRESENTATION_SURFACE:
+        {
+          actor->GetProperty ()->SetRepresentationToSurface ();
+          break;
+        }
       }
-      actor->GetProperty ()->SetInterpolationToGouraud ();
+      actor->Modified ();
       break;
     }
-    case PCL_VISUALIZER_SHADING_PHONG:
+    case PCL_VISUALIZER_SHADING:
     {
-      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+      switch (int (value))
       {
-        PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Phong shading was requested. Estimating normals...\n");
-        vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
+        case PCL_VISUALIZER_SHADING_FLAT:
+        {
+          actor->GetProperty ()->SetInterpolationToFlat ();
+          break;
+        }
+        case PCL_VISUALIZER_SHADING_GOURAUD:
+        {
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+          {
+            PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Gouraud shading was requested. Estimating normals...\n");
+            vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
 #if VTK_MAJOR_VERSION < 6
             normals->SetInput (actor->GetMapper ()->GetInput ());
             vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInput (normals->GetOutput ());
@@ -1850,64 +1828,81 @@ pcl::visualization::PCLVisualizer::setShapeRenderingProperties (
             normals->SetInputConnection (actor->GetMapper ()->GetInputAlgorithm ()->GetOutputPort ());
             vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInputConnection (normals->GetOutputPort ());
 #endif
+          }
+          actor->GetProperty ()->SetInterpolationToGouraud ();
+          break;
+        }
+        case PCL_VISUALIZER_SHADING_PHONG:
+        {
+          if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetNormals ())
+          {
+            PCL_INFO ("[pcl::visualization::PCLVisualizer::setShapeRenderingProperties] Normals do not exist in the dataset, but Phong shading was requested. Estimating normals...\n");
+            vtkSmartPointer<vtkPolyDataNormals> normals = vtkSmartPointer<vtkPolyDataNormals>::New ();
+#if VTK_MAJOR_VERSION < 6
+            normals->SetInput (actor->GetMapper ()->GetInput ());
+            vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInput (normals->GetOutput ());
+#else
+            normals->SetInputConnection (actor->GetMapper ()->GetInputAlgorithm ()->GetOutputPort ());
+            vtkDataSetMapper::SafeDownCast (actor->GetMapper ())->SetInputConnection (normals->GetOutputPort ());
+#endif
+          }
+          actor->GetProperty ()->SetInterpolationToPhong ();
+          break;
+        }
       }
-      actor->GetProperty ()->SetInterpolationToPhong ();
+      actor->Modified ();
       break;
     }
-    }
-    actor->Modified ();
-    break;
-  }
-  case PCL_VISUALIZER_LUT:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    // Get range limits from existing LUT
-    double *range;
-    range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
-
-    actor->GetMapper ()->ScalarVisibilityOn ();
-    actor->GetMapper ()->SetScalarRange (range[0], range[1]);
-    vtkSmartPointer<vtkLookupTable> table;
-    if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
-      break;
-    table->SetRange (range[0], range[1]);
-    actor->GetMapper ()->SetLookupTable (table);
-    style_->updateLookUpTableDisplay (false);
-  }
-  case PCL_VISUALIZER_LUT_RANGE:
-  {
-    // Check if the mapper has scalars
-    if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
-      break;
-
-    // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
-    if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
-      break;
-
-    switch (int (value))
+    case PCL_VISUALIZER_LUT:
     {
-    case PCL_VISUALIZER_LUT_RANGE_AUTO:
-      double range[2];
-      actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
-      actor->GetMapper ()->GetLookupTable ()->SetRange (range[0], range[1]);
-      actor->GetMapper ()->UseLookupTableScalarRangeOn ();
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+      
+      // Get range limits from existing LUT
+      double *range;
+      range = actor->GetMapper ()->GetLookupTable ()->GetRange ();
+      
+      actor->GetMapper ()->ScalarVisibilityOn ();
+      actor->GetMapper ()->SetScalarRange (range[0], range[1]);
+      vtkSmartPointer<vtkLookupTable> table;
+      if (!pcl::visualization::getColormapLUT (static_cast<LookUpTableRepresentationProperties>(static_cast<int>(value)), table))
+        break;
+      table->SetRange (range[0], range[1]);
+      actor->GetMapper ()->SetLookupTable (table);
       style_->updateLookUpTableDisplay (false);
-      break;
     }
-    break;
-  }
-  default:
-  {
-    pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
-    return (false);
-  }
+    case PCL_VISUALIZER_LUT_RANGE:
+    {
+      // Check if the mapper has scalars
+      if (!actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ())
+        break;
+      
+      // Check that scalars are not unisgned char (i.e. check if a LUT is used to colormap scalars assuming vtk ColorMode is Default)
+      if (actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->IsA ("vtkUnsignedCharArray"))
+        break;
+
+      switch (int(value))
+      {
+        case PCL_VISUALIZER_LUT_RANGE_AUTO:
+          double range[2];
+          actor->GetMapper ()->GetInput ()->GetPointData ()->GetScalars ()->GetRange (range);
+          actor->GetMapper ()->GetLookupTable ()->SetRange (range[0], range[1]);
+          actor->GetMapper ()->UseLookupTableScalarRangeOn ();
+          style_->updateLookUpTableDisplay (false);
+          break;
+      }
+      break;
+    }    
+    default:
+    {
+      pcl::console::print_error ("[setShapeRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
   }
   return (true);
 }
@@ -2109,7 +2104,7 @@ pcl::visualization::PCLVisualizer::getViewerPose (int viewport)
 
       return ret;
     }
-    viewport_i++;
+    viewport_i ++;
   }
 
   return ret;
@@ -2989,10 +2984,10 @@ pcl::visualization::PCLVisualizer::updateColorHandlerIndex (const std::string &i
     return (false);
   }
 
-  int color_handler_size = int (am_it->second.color_handlers.size ());
-  if (index >= color_handler_size)
+  size_t color_handler_size = am_it->second.color_handlers.size ();
+  if (!(size_t (index) < color_handler_size))
   {
-    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Maximum range is: 0-%lu.\n", index, static_cast<unsigned long> (am_it->second.color_handlers.size ()));
+    pcl::console::print_warn (stderr, "[updateColorHandlerIndex] Invalid index <%d> given! Index must be less than %d.\n", index, int (color_handler_size));
     return (false);
   }
   // Get the handler
@@ -3072,7 +3067,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
 
   bool has_color = false;
   vtkSmartPointer<vtkUnsignedCharArray> colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
-  if (pcl::getFieldIndex (poly_mesh.cloud, "rgb") != -1)
+  if (pcl::getFieldIndex(poly_mesh.cloud, "rgb") != -1)
   {
     has_color = true;
     colors->SetNumberOfComponents (3);
@@ -3349,21 +3344,21 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   // no texture materials --> exit
   if (mesh.tex_materials.size () == 0)
   {
-    PCL_ERROR ("[PCLVisualizer::addTextureMesh] No textures found!\n");
+    PCL_ERROR("[PCLVisualizer::addTextureMesh] No textures found!\n");
     return (false);
   }
   // polygons are mapped to texture materials
   if (mesh.tex_materials.size () != mesh.tex_polygons.size ())
   {
-    PCL_ERROR ("[PCLVisualizer::addTextureMesh] Materials number %lu differs from polygons number %lu!\n",
-      mesh.tex_materials.size (), mesh.tex_polygons.size ());
+    PCL_ERROR("[PCLVisualizer::addTextureMesh] Materials number %lu differs from polygons number %lu!\n",
+              mesh.tex_materials.size (), mesh.tex_polygons.size ());
     return (false);
   }
   // each texture material should have its coordinates set
   if (mesh.tex_materials.size () != mesh.tex_coordinates.size ())
   {
-    PCL_ERROR ("[PCLVisualizer::addTextureMesh] Coordinates number %lu differs from materials number %lu!\n",
-      mesh.tex_coordinates.size (), mesh.tex_materials.size ());
+    PCL_ERROR("[PCLVisualizer::addTextureMesh] Coordinates number %lu differs from materials number %lu!\n",
+              mesh.tex_coordinates.size (), mesh.tex_materials.size ());
     return (false);
   }
   // total number of vertices
@@ -3468,7 +3463,7 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
   int texture_units = tex_manager->GetNumberOfTextureUnits ();
   if ((mesh.tex_materials.size () > 1) && (texture_units > 1))
   {
-    if (texture_units < mesh.tex_materials.size ())
+    if ((size_t) texture_units < mesh.tex_materials.size ())
       PCL_WARN ("[PCLVisualizer::addTextureMesh] GPU texture units %d < mesh textures %d!\n",
                 texture_units, mesh.tex_materials.size ());
     // Load textures
@@ -3486,9 +3481,9 @@ pcl::visualization::PCLVisualizer::addTextureMesh (const pcl::TextureMesh &mesh,
       }
       // the first texture is in REPLACE mode others are in ADD mode
       if (tex_id == 0)
-        texture->SetBlendingMode (vtkTexture::VTK_TEXTURE_BLENDING_MODE_REPLACE);
+        texture->SetBlendingMode(vtkTexture::VTK_TEXTURE_BLENDING_MODE_REPLACE);
       else
-        texture->SetBlendingMode (vtkTexture::VTK_TEXTURE_BLENDING_MODE_ADD);
+        texture->SetBlendingMode(vtkTexture::VTK_TEXTURE_BLENDING_MODE_ADD);
       // add a texture coordinates array per texture
       vtkSmartPointer<vtkFloatArray> coordinates = vtkSmartPointer<vtkFloatArray>::New ();
       coordinates->SetNumberOfComponents (2);
@@ -4471,14 +4466,18 @@ void
 pcl::visualization::PCLVisualizer::close ()
 {
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  interactor_->stopped = true;
-  // This tends to close the window...
-  interactor_->stopLoop ();
+  if (interactor_)
+  {
+    interactor_->stopped = true;
+    // This tends to close the window...
+    interactor_->stopLoop ();
+  }
 #else
   stopped_ = true;
   // This tends to close the window...
   win_->Finalize ();
-  interactor_->TerminateApp ();
+  if (interactor_)
+    interactor_->TerminateApp ();
 #endif
 }
 
@@ -4585,13 +4584,17 @@ pcl::visualization::PCLVisualizer::ExitCallback::Execute (
   if (event_id != vtkCommand::ExitEvent)
     return;
 #if ((VTK_MAJOR_VERSION == 5) && (VTK_MINOR_VERSION <= 4))
-  pcl_visualizer->interactor_->stopped = true;
-  // This tends to close the window...
-  pcl_visualizer->interactor_->stopLoop ();
+  if (pcl_visualizer->interactor_)
+  {
+    pcl_visualizer->interactor_->stopped = true;
+    // This tends to close the window...
+    pcl_visualizer->interactor_->stopLoop ();
+  }
 #else
   pcl_visualizer->stopped_ = true;
   // This tends to close the window...
-  pcl_visualizer->interactor_->TerminateApp ();
+  if (pcl_visualizer->interactor_)
+    pcl_visualizer->interactor_->TerminateApp ();
 #endif
 }
 

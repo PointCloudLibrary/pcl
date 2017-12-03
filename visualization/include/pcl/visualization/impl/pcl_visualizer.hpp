@@ -672,10 +672,26 @@ pcl::visualization::PCLVisualizer::addText3D (
   else
     tid = id;
 
-  if (contains (tid))
+  if (viewport < 0)
+    return false;
+
+  // check all or an individual viewport for a similar id
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
   {
-    PCL_WARN ("[addText3D] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
-    return (false);
+    const std::string uid = tid + std::string (i, '*');
+    if (contains (uid))
+    {
+      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
+                  "Please choose a different id and retry.\n",
+                  tid.c_str (),
+                  i);
+      return false;
+    }
+
+    if (viewport > 0)
+      break;
   }
 
   vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
@@ -687,8 +703,8 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = NULL;
-  int i = 0;
+  vtkRenderer* renderer = rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  int i = 1;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -706,13 +722,85 @@ pcl::visualization::PCLVisualizer::addText3D (
 
       // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
       // for multiple viewport
-      std::string alternate_tid = tid;
-      alternate_tid.append(i, '*');
-
-      (*shape_actor_map_)[(viewport == 0) ? tid : alternate_tid] = textActor;
+      const std::string uid = tid + std::string (i, '*');
+      (*shape_actor_map_)[uid] = textActor;
     }
 
     ++i;
+  }
+
+  return (true);
+}
+
+//////////////////////////////////////////////////
+template <typename PointT> bool
+pcl::visualization::PCLVisualizer::addText3D (
+  const std::string &text,
+  const PointT& position,
+  double orientation[3],
+  double textScale,
+  double r,
+  double g,
+  double b,
+  const std::string &id,
+  int viewport)
+{
+  std::string tid;
+  if (id.empty ())
+    tid = text;
+  else
+    tid = id;
+
+  if (viewport < 0)
+    return false;
+
+  // check all or an individual viewport for a similar id
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
+  {
+    const std::string uid = tid + std::string (i, '*');
+    if (contains (uid))
+    {
+      PCL_ERROR ( "[addText3D] The id <%s> already exists in viewport [%d]! "
+                  "Please choose a different id and retry.\n",
+                  tid.c_str (),
+                  i);
+      return false;
+    }
+
+    if (viewport > 0)
+      break;
+  }
+
+  vtkSmartPointer<vtkVectorText> textSource = vtkSmartPointer<vtkVectorText>::New ();
+  textSource->SetText (text.c_str());
+  textSource->Update ();
+
+  vtkSmartPointer<vtkPolyDataMapper> textMapper = vtkSmartPointer<vtkPolyDataMapper>::New ();
+  textMapper->SetInputConnection (textSource->GetOutputPort ());
+
+  vtkSmartPointer<vtkActor> textActor = vtkSmartPointer<vtkActor>::New ();
+  textActor->SetMapper (textMapper);
+  textActor->SetPosition (position.x, position.y, position.z);
+  textActor->SetScale (textScale);
+  textActor->GetProperty ()->SetColor (r, g, b);
+  textActor->SetOrientation (orientation);
+
+  // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
+  rens_->InitTraversal ();
+  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
+  int i = 1;
+  for ( vtkRenderer* renderer = rens_->GetNextItem ();
+        renderer != NULL;
+        renderer = rens_->GetNextItem (), ++i)
+  {
+    if (viewport == 0 || viewport == i)
+    {
+      renderer->AddActor (textActor);
+      const std::string uid = tid + std::string (i, '*');
+      (*shape_actor_map_)[uid] = textActor;
+    }
   }
 
   return (true);
@@ -1507,7 +1595,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   points->SetNumberOfPoints (nr_points);
 
   // Get a pointer to the beginning of the data array
-  float *data = (vtkFloatArray::SafeDownCast (points->GetData ()))->GetPointer (0);
+  float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   vtkIdType pts = 0;
   // If the dataset is dense (no NaNs)
