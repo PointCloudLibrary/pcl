@@ -3060,7 +3060,8 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (const pcl::PolygonMesh &poly_
   pcl::fromPCLPointCloud2 (poly_mesh.cloud, *point_cloud);
   poly_points->SetNumberOfPoints (point_cloud->points.size ());
 
-  for (size_t i = 0; i < point_cloud->points.size (); ++i) {
+  for (size_t i = 0; i < point_cloud->points.size (); ++i) 
+  {
     const pcl::PointXYZ& p = point_cloud->points[i];
     poly_points->InsertPoint (i, p.x, p.y, p.z);
   }
