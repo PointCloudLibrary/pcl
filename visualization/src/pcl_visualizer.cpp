@@ -3984,43 +3984,43 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 #else
     //THIS CAN BE USED WHEN VTK >= 5.4 IS REQUIRED... vtkVisibleCellSelector is deprecated from VTK5.4
     vtkSmartPointer<vtkHardwareSelector> hardware_selector = vtkSmartPointer<vtkHardwareSelector>::New ();
-     hardware_selector->ClearBuffers();
-     vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
-     hardware_selector->SetRenderer (renderer);
-     hardware_selector->SetArea (0, 0, xres - 1, yres - 1);
-     hardware_selector->SetFieldAssociation(vtkDataObject::FIELD_ASSOCIATION_CELLS);
-     hdw_selection = hardware_selector->Select ();
-     if (!hdw_selection || !hdw_selection->GetNode (0) || !hdw_selection->GetNode (0)->GetSelectionList ())
-     {
-       PCL_WARN ("[renderViewTesselatedSphere] Invalid selection, skipping!\n");
-       continue;
-     }
+    hardware_selector->ClearBuffers ();
+    vtkSmartPointer<vtkSelection> hdw_selection = vtkSmartPointer<vtkSelection>::New ();
+    hardware_selector->SetRenderer (renderer);
+    hardware_selector->SetArea (0, 0, xres - 1, yres - 1);
+    hardware_selector->SetFieldAssociation (vtkDataObject::FIELD_ASSOCIATION_CELLS);
+    hdw_selection = hardware_selector->Select ();
+    if (!hdw_selection || !hdw_selection->GetNode (0) || !hdw_selection->GetNode (0)->GetSelectionList ())
+    {
+      PCL_WARN ("[renderViewTesselatedSphere] Invalid selection, skipping!\n");
+      continue;
+    }
 
-     vtkSmartPointer<vtkIdTypeArray> ids;
-     ids = vtkIdTypeArray::SafeDownCast(hdw_selection->GetNode(0)->GetSelectionList());
-     if (!ids)
-       return;
-     double visible_area = 0;
-     for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
-     {
-       int id_mesh = static_cast<int> (ids->GetValue (sel_id));
-       vtkCell * cell = polydata->GetCell (id_mesh);
-       vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
-       if (!triangle)
-       {
-         PCL_WARN ("[renderViewTesselatedSphere] Invalid triangle %d, skipping!\n", id_mesh);
-         continue;
-       }
+    vtkSmartPointer<vtkIdTypeArray> ids;
+    ids = vtkIdTypeArray::SafeDownCast (hdw_selection->GetNode (0)->GetSelectionList ());
+    if (!ids)
+      return;
+    double visible_area = 0;
+    for (int sel_id = 0; sel_id < (ids->GetNumberOfTuples ()); sel_id++)
+    {
+      int id_mesh = static_cast<int> (ids->GetValue (sel_id));
+      vtkCell * cell = polydata->GetCell (id_mesh);
+      vtkTriangle* triangle = dynamic_cast<vtkTriangle*> (cell);
+      if (!triangle)
+      {
+        PCL_WARN ("[renderViewTesselatedSphere] Invalid triangle %d, skipping!\n", id_mesh);
+        continue;
+      }
 
-       double p0[3];
-       double p1[3];
-       double p2[3];
-       triangle->GetPoints ()->GetPoint (0, p0);
-       triangle->GetPoints ()->GetPoint (1, p1);
-       triangle->GetPoints ()->GetPoint (2, p2);
-       area = vtkTriangle::TriangleArea (p0, p1, p2);
-       visible_area += area;
-     }
+      double p0[3];
+      double p1[3];
+      double p2[3];
+      triangle->GetPoints ()->GetPoint (0, p0);
+      triangle->GetPoints ()->GetPoint (1, p1);
+      triangle->GetPoints ()->GetPoint (2, p2);
+      area = vtkTriangle::TriangleArea (p0, p1, p2);
+      visible_area += area;
+    }
 #endif
 
     enthropies.push_back (static_cast<float> (visible_area / totalArea));
