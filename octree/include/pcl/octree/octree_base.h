@@ -61,7 +61,6 @@ namespace pcl
         typename BranchContainerT = OctreeContainerEmpty >
     class OctreeBase
     {
-
       public:
 
         typedef OctreeBase<LeafContainerT, BranchContainerT> OctreeT;
@@ -72,6 +71,35 @@ namespace pcl
         typedef BranchContainerT BranchContainer;
         typedef LeafContainerT LeafContainer;
 
+      protected:
+
+        ///////////////////////////////////////////////////////////////////////
+        // Members
+        ///////////////////////////////////////////////////////////////////////
+
+        /** \brief Amount of leaf nodes   **/
+        std::size_t leaf_count_;
+
+        /** \brief Amount of branch nodes   **/
+        std::size_t branch_count_;
+
+        /** \brief Pointer to root branch node of octree   **/
+        BranchNode* root_node_;
+
+        /** \brief Depth mask based on octree depth   **/
+        unsigned int depth_mask_;
+
+        /** \brief Octree depth */
+        unsigned int octree_depth_;
+
+        /** \brief Enable dynamic_depth **/
+        bool dynamic_depth_enabled_;
+
+        /** \brief key range */
+        OctreeKey max_key_;
+
+      public:
+
         // iterators are friends
         friend class OctreeIteratorBase<OctreeT> ;
         friend class OctreeDepthFirstIterator<OctreeT> ;
@@ -81,26 +109,58 @@ namespace pcl
         // Octree default iterators
         typedef OctreeDepthFirstIterator<OctreeT> Iterator;
         typedef const OctreeDepthFirstIterator<OctreeT> ConstIterator;
-        Iterator begin(unsigned int max_depth_arg = 0) {return Iterator(this, max_depth_arg);};
-        const Iterator end() {return Iterator();};
+
+        Iterator begin (unsigned int max_depth_arg = 0u)
+        {
+          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const Iterator end (unsigned int max_depth_arg = 0u)
+        {
+          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_ , NULL);
+        };
 
         // Octree leaf node iterators
         typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
         typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
-        LeafNodeIterator leaf_begin(unsigned int max_depth_arg = 0) {return LeafNodeIterator(this, max_depth_arg);};
-        const LeafNodeIterator leaf_end() {return LeafNodeIterator();};
+
+        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+        };
 
         // Octree depth-first iterators
         typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
         typedef const OctreeDepthFirstIterator<OctreeT> ConstDepthFirstIterator;
-        DepthFirstIterator depth_begin(unsigned int max_depth_arg = 0) {return DepthFirstIterator(this, max_depth_arg);};
-        const DepthFirstIterator depth_end() {return DepthFirstIterator();};
+
+        DepthFirstIterator depth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const DepthFirstIterator depth_end (unsigned int max_depth_arg = 0u)
+        {
+          return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+        };
 
         // Octree breadth-first iterators
         typedef OctreeBreadthFirstIterator<OctreeT> BreadthFirstIterator;
         typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
-        BreadthFirstIterator breadth_begin(unsigned int max_depth_arg = 0) {return BreadthFirstIterator(this, max_depth_arg);};
-        const BreadthFirstIterator breadth_end() {return BreadthFirstIterator();};
+
+        BreadthFirstIterator breadth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const BreadthFirstIterator breadth_end (unsigned int max_depth_arg = 0u)
+        {
+          return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+        };
 
 
         /** \brief Empty constructor. */
@@ -564,31 +624,6 @@ namespace pcl
         {
           return (true);
         }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Globals
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        /** \brief Amount of leaf nodes   **/
-        std::size_t leaf_count_;
-
-        /** \brief Amount of branch nodes   **/
-        std::size_t branch_count_;
-
-        /** \brief Pointer to root branch node of octree   **/
-        BranchNode* root_node_;
-
-        /** \brief Depth mask based on octree depth   **/
-        unsigned int depth_mask_;
-
-        /** \brief Octree depth */
-        unsigned int octree_depth_;
-
-        /** \brief Enable dynamic_depth **/
-        bool dynamic_depth_enabled_;
-
-        /** \brief key range */
-        OctreeKey max_key_;
     };
   }
 }
