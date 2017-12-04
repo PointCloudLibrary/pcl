@@ -41,3 +41,7 @@ Issues
 ------
 For general questions on how to use the PCL, please use the [pcl-users](http://www.pcl-users.org/) mailing list (do not forget to subscribe before posting).
 To report issues, please read [CONTRIBUTING.md#bug-reports](https://github.com/PointCloudLibrary/pcl/blob/master/CONTRIBUTING.md#bug-reports).
+
+API/ABI Compatibility Report
+------
+For details about API/ABI changes over the timeline please check PCL's page at [ABI Laboratory](https://abi-laboratory.pro/tracker/timeline/pcl/).
