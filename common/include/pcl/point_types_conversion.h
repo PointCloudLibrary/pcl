@@ -248,7 +248,7 @@ namespace pcl
   * \param[out] out the output PointOutT point
   */
   template<class PointInT, class PointOutT> inline void
-  ConvertPointColor (const PointInT&    in,
+  convertPointColor (const PointInT&    in,
                      PointOutT&         out)
   {
     BOOST_MPL_ASSERT_MSG ((false), FUNC_IS_NOT_DEFINED_FOR_POINT_IN_AND_POINT_OUT, (PointInT&, PointOutT&));
@@ -259,7 +259,7 @@ namespace pcl
   * \param[out] out the output PointT point
   */
   template<class PointT> inline void
-  ConvertPointColor (const PointT&       in,
+  convertPointColor (const PointT&       in,
                      PointT&             out)
   {
     out = in;
@@ -270,7 +270,7 @@ namespace pcl
   * \param[out] out the output XYZI point
   */
   template<> inline void
-  ConvertPointColor (const PointXYZRGB& in,
+  convertPointColor (const PointXYZRGB& in,
                      PointXYZI&         out)
   {
     PointXYZRGBtoXYZI (in, out);
@@ -281,7 +281,7 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPointColor (const RGB&    in,
+  convertPointColor (const RGB&    in,
                      Intensity&    out)
   {
     PointRGBtoI (in, out);
@@ -292,7 +292,7 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPointColor (const RGB&    in,
+  convertPointColor (const RGB&    in,
                      Intensity8u&  out)
   {
     PointRGBtoI (in, out);
@@ -303,7 +303,7 @@ namespace pcl
   * \param[out] out the output Intensity point
   */
   template<> inline void
-  ConvertPointColor (const RGB&    in,
+  convertPointColor (const RGB&    in,
                      Intensity32u& out)
   {
     PointRGBtoI (in, out);
@@ -314,7 +314,7 @@ namespace pcl
   * \param[out] out the output XYZHSV point
   */
   template<> inline void
-  ConvertPointColor (const PointXYZRGB& in,
+  convertPointColor (const PointXYZRGB& in,
                      PointXYZHSV&       out)
   {
     PointXYZRGBtoXYZHSV (in, out);
@@ -326,7 +326,7 @@ namespace pcl
   * \todo include the A parameter but how?
   */
   template<> inline void
-  ConvertPointColor (const PointXYZRGBA& in,
+  convertPointColor (const PointXYZRGBA& in,
                      PointXYZHSV&        out)
   {
     PointXYZRGBAtoXYZHSV (in, out);
@@ -337,7 +337,7 @@ namespace pcl
   * \param[out] out the output XYZRGB point
   */
   template<> inline void
-  ConvertPointColor (const PointXYZHSV&  in,
+  convertPointColor (const PointXYZHSV&  in,
                      PointXYZRGB&      out)
   {
     PointXYZHSVtoXYZRGB (in, out);
@@ -348,7 +348,7 @@ namespace pcl
   * \param[out] out the output PointOutT point cloud
   */
   template<class PointInT, class PointOutT> inline void
-  ConvertPointCloudColor (const PointCloud<PointInT>& in,
+  convertPointCloudColor (const PointCloud<PointInT>& in,
                           PointCloud<PointOutT>&      out)
   {
     out.width = in.width;
@@ -367,7 +367,7 @@ namespace pcl
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
-  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use convertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&  in,
                     PointCloud<Intensity>&  out)
@@ -386,7 +386,7 @@ namespace pcl
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
-  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use convertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&    in,
                     PointCloud<Intensity8u>&  out)
@@ -405,7 +405,7 @@ namespace pcl
     * \param[in] in the input RGB point cloud
     * \param[out] out the output Intensity point cloud
     */
-  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use ConvertPointCloud instead.")
+  PCL_DEPRECATED ("[PointCloudRGBtoI] is deprecated, please use convertPointCloud instead.")
   inline void
   PointCloudRGBtoI (const PointCloud<RGB>&     in,
                     PointCloud<Intensity32u>&  out)
@@ -424,7 +424,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
-  PCL_DEPRECATED ("[PointCloudXYZRGBtoXYZHSV] is deprecated, please use ConvertPointCloud instead.")
+  PCL_DEPRECATED ("[PointCloudXYZRGBtoXYZHSV] is deprecated, please use convertPointCloud instead.")
   inline void 
   PointCloudXYZRGBtoXYZHSV (const PointCloud<PointXYZRGB>& in,
                             PointCloud<PointXYZHSV>&       out)
@@ -443,7 +443,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZHSV point cloud
     */
-  PCL_DEPRECATED ("[PointCloudXYZRGBAtoXYZHSV] is deprecated, please use ConvertPointCloud instead.")
+  PCL_DEPRECATED ("[PointCloudXYZRGBAtoXYZHSV] is deprecated, please use convertPointCloud instead.")
   inline void
   PointCloudXYZRGBAtoXYZHSV (const PointCloud<PointXYZRGBA>& in,
                              PointCloud<PointXYZHSV>&        out)
@@ -462,7 +462,7 @@ namespace pcl
     * \param[in] in the input XYZRGB point cloud
     * \param[out] out the output XYZI point cloud
     */
-  PCL_DEPRECATED("[PointCloudXYZRGBtoXYZI] is deprecated, please use ConvertPointCloud instead.") 
+  PCL_DEPRECATED("[PointCloudXYZRGBtoXYZI] is deprecated, please use convertPointCloud instead.") 
   inline void
   PointCloudXYZRGBtoXYZI (const PointCloud<PointXYZRGB>& in,
                           PointCloud<PointXYZI>&         out)
