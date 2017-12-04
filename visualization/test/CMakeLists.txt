@@ -14,3 +14,6 @@ target_link_libraries(demo_shapes_multiport pcl_common pcl_io pcl_kdtree pcl_vis
 
 add_executable(demo_text_simple text_simple.cpp)
 target_link_libraries(demo_text_simple pcl_common pcl_visualization)
+
+add_executable(demo_text_simple_multiport text_simple_multiport.cpp)
+target_link_libraries(demo_text_simple_multiport pcl_common pcl_visualization)
