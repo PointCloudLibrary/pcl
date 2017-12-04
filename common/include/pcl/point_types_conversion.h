@@ -434,7 +434,7 @@ namespace pcl
     for (size_t i = 0; i < in.points.size (); i++)
     {
       PointXYZHSV p;
-      ConvertPoint (in.points[i], p);
+      PointXYZRGBtoXYZHSV (in.points[i], p);
       out.points.push_back (p);
     }
   }
