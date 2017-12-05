@@ -6,7 +6,7 @@ int
 main (int argc, char** argv)
 {
   pcl::visualization::PCLVisualizer viz ("Visualizator");
-  viz.addCoordinateSystem(1.0);
+  viz.addCoordinateSystem (1.0);
 
   viz.addText3D ("Following text", pcl::PointXYZ(0.0, 0.0, 0.0),
                  1.0, 1.0, 0.0, 0.0, "id_following");

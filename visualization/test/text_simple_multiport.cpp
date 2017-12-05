@@ -6,13 +6,13 @@ int
 main (int argc, char** argv)
 {
   pcl::visualization::PCLVisualizer viz ("Visualizator");
-  int leftPort(0);
-  int rightPort(0);
+  int leftPort (0);
+  int rightPort (0);
 
-  viz.createViewPort(0, 0, 0.5, 1, leftPort);
-  viz.createViewPort(0.5, 0, 1, 1, rightPort);
+  viz.createViewPort (0, 0, 0.5, 1, leftPort);
+  viz.createViewPort (0.5, 0, 1, 1, rightPort);
 
-  viz.addCoordinateSystem(1.0);
+  viz.addCoordinateSystem (1.0);
 
   viz.addText3D ("Following text", pcl::PointXYZ(0.0, 0.0, 0.0),
                  1.0, 1.0, 0.0, 0.0, "id_following", leftPort);
