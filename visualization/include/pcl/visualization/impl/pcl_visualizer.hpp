@@ -672,10 +672,18 @@ pcl::visualization::PCLVisualizer::addText3D (
   if (viewport < 0)
     return false;
 
+  // If there is no custom viewport and the viewport number is not 0, exit
+  if (rens_->GetNumberOfItems () <= viewport)
+  {
+    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+               viewport,
+               tid.c_str ());
+    return false;
+  }
+
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -700,8 +708,8 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // Since each follower may follow a different camera, we need different followers
   rens_->InitTraversal ();
-  vtkRenderer* renderer = rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  int i = 1;
+  vtkRenderer* renderer;
+  int i = 0;
   while ((renderer = rens_->GetNextItem ()) != NULL)
   {
     // Should we add the actor to all renderers or just to i-nth renderer?
@@ -751,10 +759,18 @@ pcl::visualization::PCLVisualizer::addText3D (
   if (viewport < 0)
     return false;
 
+  // If there is no custom viewport and the viewport number is not 0, exit
+  if (rens_->GetNumberOfItems () <= viewport)
+  {
+    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+               viewport,
+               tid.c_str ());
+    return false;
+  }
+
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
   {
     const std::string uid = tid + std::string (i, '*');
     if (contains (uid))
@@ -786,8 +802,7 @@ pcl::visualization::PCLVisualizer::addText3D (
 
   // Save the pointer/ID pair to the global actor map. If we are saving multiple vtkFollowers
   rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  int i = 1;
+  int i = 0;
   for ( vtkRenderer* renderer = rens_->GetNextItem ();
         renderer != NULL;
         renderer = rens_->GetNextItem (), ++i)

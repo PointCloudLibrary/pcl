@@ -899,10 +899,18 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
 
   bool success = true;
 
+  // If there is no custom viewport and the viewport number is not 0, exit
+  if (rens_->GetNumberOfItems () <= viewport)
+  {
+    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+               viewport,
+               id.c_str ());
+    return false;
+  }
+
   // check all or an individual viewport for a similar id
   rens_->InitTraversal ();
-  rens_->GetNextItem (); //discard first because it's not a renderer for the viewps
-  for (size_t i = std::max (viewport, 1); rens_->GetNextItem () != NULL; ++i)
+  for (size_t i = viewport; rens_->GetNextItem () != NULL; ++i)
   {
     const std::string uid = id + std::string (i, '*');
     ShapeActorMap::iterator am_it = shape_actor_map_->find (uid);
