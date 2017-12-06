@@ -27,6 +27,7 @@ addons:
       - libvtk5-qt4-dev
       - libglew-dev
       - libopenni-dev
+      - python3-pip
 before_install:
   - bash .travis.sh before-install
 
