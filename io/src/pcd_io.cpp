@@ -273,6 +273,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
           cloud.fields[i].offset = offset;
           int col_count;
           sstream >> col_count;
+          if (col_count < 1)
+            throw "Invalid COUNT value specified.";
           cloud.fields[i].count = col_count;
           offset += col_count * field_sizes[i];
         }
