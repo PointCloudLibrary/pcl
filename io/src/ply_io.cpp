@@ -294,6 +294,9 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
+    if (!pcl_isfinite (value))
+      cloud_->is_dense = false;
+
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (ContentType));
