@@ -902,7 +902,7 @@ pcl::visualization::PCLVisualizer::removeText3D (const std::string &id, int view
   // If there is no custom viewport and the viewport number is not 0, exit
   if (rens_->GetNumberOfItems () <= viewport)
   {
-    PCL_ERROR ("[addText3D] The viewport [%d] doesn't exist (id <%s>)! ",
+    PCL_ERROR ("[removeText3D] The viewport [%d] doesn't exist (id <%s>)! ",
                viewport,
                id.c_str ());
     return false;
