@@ -746,6 +746,10 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       PCL_ERROR ("[pcl::PCDReader::read] Failure to open file %s\n", file_name.c_str () );
       return (-1);
     }
+
+    // Infer file size
+    const size_t file_size = pcl_lseek (fd, 0, SEEK_END);
+    pcl_lseek (fd, 0, SEEK_SET);
     
     size_t mmap_size = offset + data_idx;   // ...because we mmap from the start of the file.
     if (data_type == 2)
@@ -767,7 +771,7 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
       {
         pcl_close (fd);
         PCL_ERROR ("[pcl::PCDReader::read] read errno: %d strerror: %s\n", errno, strerror (errno));
-        PCL_ERROR ("[pcl::PCDReader::read] Error during road()!\n");
+        PCL_ERROR ("[pcl::PCDReader::read] Error during read()!\n");
         return (-1);
       }
       mmap_size += compressed_size;
@@ -778,6 +782,13 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
     else
     {
       mmap_size += cloud.data.size ();
+    }
+
+    if (mmap_size > file_size)
+    {
+      pcl_close (fd);
+      PCL_ERROR ("[pcl::PCDReader::read] Corrupted PCD file. The file is smaller than expected!\n");
+      return (-1);
     }
 
     // Prepare the map
