@@ -42,241 +42,116 @@
 #include <pcl/point_types.h>
 
 
-/** \brief GOOD: a Global Orthographic Object Descriptor for 3D object recognition and manipulation.
-  * GOOD descriptor has been designed to be robust, descriptive and efficient to compute and use. 
-  * It has two outstanding characteristics: 
-  * 
-  * (1) Providing a good trade-off among :
-  *	- descriptiveness,
-  *	- robustness,
-  *	- computation time,
-  *	- memory usage.
-  * 
-  * (2) Allowing concurrent object recognition and pose estimation for manipulation.
-  * 
-  * \note This is an implementation of the GOOD descriptor which has been presented in the following papers:
-  * 
-  *	[1] Kasaei, S. Hamidreza,  Ana Maria Tomé, Luís Seabra Lopes, Miguel Oliveira 
-  *	"GOOD: A global orthographic object descriptor for 3D object recognition and manipulation." 
-  *	Pattern Recognition Letters 83 (2016): 312-320.http://dx.doi.org/10.1016/j.patrec.2016.07.006
-  *
-  *	[2] Kasaei, S. Hamidreza, Luís Seabra Lopes, Ana Maria Tomé, Miguel Oliveira 
-  * 	"An orthographic descriptor for 3D object learning and recognition." 
-  *	2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), Daejeon, 2016, 
-  *	pp. 4158-4163. doi: 10.1109/IROS.2016.7759612
-  * 
-  * Please adequately refer to this work any time this code is being used by citing above papers.
-  * If you do publish a paper where GOOD descriptor helped your research, we encourage you to cite the above papers in your publications.
-  * 
-  * \author Hamidreza Kasaei (Seyed.Hamidreza[at]ua[dot]pt  Kasaei.Hamidreza[at]gmail[dot]com )
-  */
-//////////////////////////////////////////////////////////////////////////////////////////////
+#include <numeric> ///std::accumulate
 
-template <typename PointInT, int NumberOfBins>
+//////////////////////////////////////////////////////////////////////////////////////////////  
+
+template <typename PointInT, int BinN> 
 void 
-pcl::GOODEstimation<PointInT, NumberOfBins>::computeBoundingBoxDimensions (PointCloudIn pc, pcl::PointXYZ &dimensions)
+pcl::GOODEstimation<PointInT, BinN>::computeBoundingBoxDimensions ()
 {
-  PointInT minimum_pt;
-  PointInT maximum_pt;
-  
-  pcl::getMinMax3D (*pc, minimum_pt, maximum_pt); // min max for bounding box
-  dimensions.x = (maximum_pt.x - minimum_pt.x); 
-  dimensions.y = (maximum_pt.y - minimum_pt.y); 
-  dimensions.z = (maximum_pt.z - minimum_pt.z); 	
-  //NOTE: I changed the above lines as follow, but I faced several error.
-  //dimensions = maximum_pt.getVector3fMap () - minimum_pt.getVector3fMap ();
-
+  PointInT minimum_pt, maximum_pt, dimensions;  
+  pcl::getMinMax3D (*transformed_point_cloud_, minimum_pt, maximum_pt); // min max for bounding box
+  dimensions.getVector3fMap () = maximum_pt.getVector3fMap () - minimum_pt.getVector3fMap ();
+  bbox_dimensions_ << dimensions.x, dimensions.y, dimensions.z;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::projectPointCloudToPlane (PointCloudIn pc_in, boost::shared_ptr<pcl::ModelCoefficients> coefficients, PointCloudIn pc_out)
+pcl::GOODEstimation<PointInT, BinN>::projectPointCloudToPlane (PointCloudInPtr pc_in, pcl::ModelCoefficients::Ptr coefficients, PointCloudInPtr pc_out)
 {
-  //Create the projection object
+  ///Create the projection object
   pcl::ProjectInliers<PointInT> projection;
-  projection.setModelType (pcl::SACMODEL_NORMAL_PLANE); //set model type
+  projection.setModelType (pcl::SACMODEL_NORMAL_PLANE); 
   projection.setInputCloud (pc_in);
   projection.setModelCoefficients (coefficients);
   projection.filter (*pc_out);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void 
-pcl::GOODEstimation<PointInT, NumberOfBins>::convert2DHistogramTo1DHistogram (std::vector<std::vector<unsigned int> >  histogram_2D, std::vector<unsigned int>  &histogram)
+pcl::GOODEstimation<PointInT, BinN>::convert2DHistogramTo1DHistogram (const std::vector<std::vector<unsigned int> >  histogram_2D, std::vector<unsigned int>  &histogram)
 {
-  for (size_t i = 0 ; i < histogram_2D.size(); i++)
+  for (size_t i = 0 ; i < BinN; i++)
   {   
-    for (size_t j = 0; j < histogram_2D.at(i).size(); j++)
+    for (size_t j = 0; j < BinN; j++)
     {
-      histogram.push_back (histogram_2D.at(i).at(j));
+      histogram.at (i * BinN + j) = histogram_2D.at(i).at(j);
     }
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::signDisambiguationXAxis (PointCloudIn  XoZ_projected_view, float threshold, int &sign )
+template <typename PointInT, int BinN> void
+pcl::GOODEstimation<PointInT, BinN>::signDisambiguation ( PointCloudInPtr &projected_view,  const int8_t axis, int8_t &sign) const
 {
-  unsigned Xpositive = 0; 
-  unsigned Xnegative = 0; 
-  unsigned threshold_overall = trunc (XoZ_projected_view -> points.size() / 10);
+  unsigned int positive = 0; 
+  unsigned int negative = 0; 
+  const unsigned int threshold_overall = std::max (1u, (unsigned int) trunc (projected_view->size ()/10));
 
-  //XoZ page
-  for (size_t i = 0; i < XoZ_projected_view -> points.size(); i++)
-  {	
-    if (XoZ_projected_view->points.at(i).x > threshold)
-    {
-      Xpositive ++;
-    }
-    else if (XoZ_projected_view->points.at(i).x < - threshold)
-    {
-      Xnegative ++;
-    }	  
-  }  
-  if ((Xpositive < Xnegative) and (Xnegative - Xpositive >= threshold_overall)) 
-  {
-    sign = -1;
+  for (size_t i = 0; i < projected_view->size(); ++i)
+  { 
+    if (projected_view->at(i).data[axis] > threshold_) //Not sure if data[axis] is valid since you're using the members x y z of the union
+      ++positive;
+    else if (projected_view->at(i).data[axis] < -threshold_)
+      ++negative;
   }
-  else 
-  {
-    sign = 1;
-  }		  
+  sign = ((int) (negative - positive) >= (int) threshold_overall)? -1 : 1;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
-void 
-pcl::GOODEstimation<PointInT, NumberOfBins>::signDisambiguationYAxis (PointCloudIn  YoZ_projected_view, float threshold, int &sign )
-{
-  unsigned int Ypositive =0; 
-  unsigned int Ynegative =0; 
-  unsigned int threshold_overall = trunc (YoZ_projected_view -> points.size() / 10);
-  //YoZ page
-  for (size_t i = 0; i < YoZ_projected_view -> points.size(); i++)
-  {	
-    if (YoZ_projected_view->points.at(i).y > threshold)
-    {
-      Ypositive ++;
-    }
-    else if (YoZ_projected_view->points.at(i).y < - threshold)
-    {
-      Ynegative ++;
-    }
-  }  
-  if ((Ypositive < Ynegative) and (Ynegative - Ypositive >= threshold_overall))
-  {
-    sign = -1;
-  }
-  else 
-  {
-    sign = 1;
-  }		  
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
- 
- 
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::create2DHistogramFromYOZProjection (PointCloudIn  YOZ_projected_view,
-			double largest_side, unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &YOZ_histogram)
-{
-  double y = largest_side / 2; 
-  double z = largest_side / 2; 
-  double interval_y = largest_side / number_of_bins; 
-  double interval_z = largest_side / number_of_bins; 
-  for (size_t i=0; i < YOZ_projected_view->points.size(); i++)
-  {
-    pcl::PointXYZ p;
-    p.y = sign * YOZ_projected_view->points.at(i).y + y;
-    p.z = YOZ_projected_view ->points.at(i).z + z;
-    
-    //if adaptive_support_lenght parameter == false, some points might be projected outside of the plane, we must discard them.
-    if ((trunc(p.y / interval_y) < YOZ_histogram.size()) and (trunc(p.z / interval_z) < YOZ_histogram.at(0).size())
-	  and (trunc(p.y / interval_y) >= 0) and (trunc(p.z / interval_z) >= 0))
-    {
-      YOZ_histogram.at(trunc(p.y / interval_y)).at(trunc(p.z / interval_z))++;
-    }
-  }    
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-void 
-pcl::GOODEstimation<PointInT, NumberOfBins>::create2DHistogramFromXOZProjection (PointCloudIn  XOZ_projected_view, double largest_side, 
-				      unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &XOZ_histogram)
+template <typename PointInT, int BinN> void 
+pcl::GOODEstimation<PointInT, BinN>::create2DHistogramFromProjection (const PointCloudInPtr &projected_view, const float largest_side, 
+									const int8_t axis_a, const int8_t axis_b, std::vector<std::vector<unsigned int> > &histogram) const
 {  
-  double x = largest_side / 2;
-  double z = largest_side / 2; 
-  double interval_x = largest_side / number_of_bins; 
-  double interval_z = largest_side / number_of_bins; 
-  for (size_t i = 0; i < XOZ_projected_view->points.size(); i++)
+  const float half = .5f * largest_side; 
+  const float interval = largest_side / (float) BinN; 
+  
+  for (size_t i = 0; i < projected_view->size (); ++i)
   {
-    pcl::PointXYZ p;
-    p.x = sign *  XOZ_projected_view->points.at(i).x +  x;    
-    p.z = XOZ_projected_view->points.at(i).z + z;		
+    const float a = sign_ *  projected_view->at (i).data[axis_a] + half;
+    float b ;
+    (axis_b == Y)? b = sign_ * projected_view->at (i).data[axis_b] + half : b = projected_view->at (i).data[axis_b] + half ;
     
-    if ((trunc(p.x / interval_x) < XOZ_histogram.size()) and (trunc(p.z / interval_z) < XOZ_histogram.at(0).size())
-	  and (trunc(p.x / interval_x) >= 0) and (trunc(p.z / interval_z) >= 0))
-    {
-      XOZ_histogram.at(trunc(p.x / interval_x)).at(trunc(p.z / interval_z))++;
-    }
+    const int idx_o = (int) trunc (a / interval); //outer index
+    const int idx_i = (int) trunc (b / interval); //inner index
+    if ((idx_o < BinN)
+          and (idx_i < BinN)
+          and (idx_o >= 0)
+          and (idx_i >= 0))
+      ++histogram[idx_o][idx_i];
   }  
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
-void 
-pcl::GOODEstimation<PointInT, NumberOfBins>::create2DHistogramFromXOYProjection (PointCloudIn  XOY_projected_view,	double largest_side,
-				      unsigned int number_of_bins, int sign, std::vector<std::vector<unsigned int> > &XOY_histogram)
-{    
-  double x = largest_side / 2; 
-  double y = largest_side / 2; 
-  double interval_x = largest_side / number_of_bins; 
-  double interval_y = largest_side / number_of_bins; 
-  for (size_t i = 0; i < XOY_projected_view->points.size(); i++)
-  {
-    pcl::PointXYZ p;
-    p.x = sign * XOY_projected_view->points.at(i).x + x;
-    p.y = sign * XOY_projected_view->points.at(i).y + y;        
-    if ((trunc(p.x / interval_x) < XOY_histogram.size()) and (trunc(p.y / interval_y) < XOY_histogram.at(0).size()) and 
-	  (trunc(p.x / interval_x) >= 0) and (trunc(p.y / interval_y) >= 0))
-    {
-	XOY_histogram.at(trunc(p.x / interval_x)).at(trunc(p.y / interval_y))++;
-    }
-  }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::normalizingHistogram (std::vector<unsigned int> histogram, std::vector<float> &normalized_histogram)
+pcl::GOODEstimation<PointInT, BinN>::normalizeHistogram (const std::vector<unsigned int> histogram, std::vector<float> &normalized_histogram)
 {
-  int sum_all_bins = 0;    
-  //compute sumation of all histogram's bins.
-  for(std::vector<unsigned int>::iterator it = histogram.begin(); it != histogram.end(); ++it)
-  {
-    sum_all_bins += *it;
-  }
+  ///compute sumation of all histogram's bins. 
+  float sum_all_bins = std::accumulate (histogram.begin (), histogram.end (), 0);
+  
   if (sum_all_bins != 0)
-  {  
-    for(std::vector<unsigned int>::iterator it = histogram.begin(); it != histogram.end(); ++it)
+  { 
+    size_t idx = 0; 
+    for(std::vector<unsigned int>::const_iterator it = histogram.begin(); it != histogram.end(); ++it)
     {
-      normalized_histogram.push_back (*it / float (sum_all_bins));
+      normalized_histogram.at (idx) = (*it / sum_all_bins);
+      idx++;
     }  
   }
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::viewpointEntropy (std::vector<float> normalized_histogram, float &entropy)
+pcl::GOODEstimation<PointInT, BinN>::viewpointEntropy (const std::vector<float> normalized_histogram, float &entropy)
 {
-  //http://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform
+  ///NOTE: http://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform
   entropy =0;  
-  for(std::vector<float>::iterator it = normalized_histogram.begin(); it != normalized_histogram.end(); ++it)
+  for(std::vector<float>::const_iterator it = normalized_histogram.begin(); it != normalized_histogram.end(); ++it)
   {
     if (*it != 0)
     {
@@ -288,80 +163,56 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::viewpointEntropy (std::vector<float
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::findMaxViewPointEntropy (std::vector <float> view_point_entropy, int &index)
+pcl::GOODEstimation<PointInT, BinN>::findMaxViewPointEntropy (const std::vector <float> view_point_entropy, int &index)
 {
   index = 0;
-  std::vector<float>::iterator it;
-  it=std::max_element (view_point_entropy.begin(), view_point_entropy.end());
+  std::vector<float>::const_iterator it;
+  it = std::max_element (view_point_entropy.begin(), view_point_entropy.end());
   index = it - view_point_entropy.begin ();
-  //std::cout << "\nindex ="<< it - view_point_entropy.begin() <<"\t , content = " << *it <<"\n";  
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::averageHistograms (std::vector<float> histogram1, std::vector<float> historam2, std::vector<float> historam3, std::vector<float> &average)
+pcl::GOODEstimation<PointInT, BinN>::varianceOfHistogram (const std::vector<float> histogram, float &variance)
 {
-  for (size_t i = 0; i < histogram1.size(); i++ )
-  {
-    average.push_back (float(histogram1.at(i) + historam2.at(i) + historam3.at(i)) / float(3.00));
-  }
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::meanOfHistogram (std::vector<float> histogram, float &mean)
-{ 	    
-  // http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm
-  float mu = 0;
+  ///NOTE: https://people.richland.edu/james/lecture/m170/ch06-prb.html
+  ///NOTE: http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm  
+  
+  float mean = 0;
   for (size_t i = 0; i < histogram.size(); i++)
   {
-    mu += (i+1) * histogram.at(i);
+    mean += (i+1) * histogram.at(i);
   }
-  mean = mu;  
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::varianceOfHistogram (std::vector<float> histogram, float mean, float &variance)
-{
-  //https://people.richland.edu/james/lecture/m170/ch06-prb.html
-  //http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm  
-  float variance_tmp = 0;
+  
   for (size_t i = 0; i < histogram.size(); i++)
   {
-    variance_tmp += pow ((i+1)-mean , 2) * histogram.at(i);
+    variance += std::pow ((i+1)-mean , 2) * histogram.at(i);
   }
-  variance = variance_tmp;
+  
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::objectViewHistogram (int maximum_entropy_index, std::vector<std::vector<float> > normalized_projected_views,
-		    std::vector<float> &sorted_normalized_projected_views,
-		    std::string &name_of_sorted_projected_plane /*debug*/)
+pcl::GOODEstimation<PointInT, BinN>::objectViewHistogram (int maximum_entropy_index, const std::vector<std::vector<float> > normalized_projected_views,
+							  std::vector<float> &sorted_normalized_projected_views, std::string &name_of_sorted_projected_plane)
 {
   float variance1 = 0;
   float variance2 = 0;
-  float mean = 0;
 
   sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(maximum_entropy_index).begin(), 
-			      normalized_projected_views.at(maximum_entropy_index).end());    
+					    normalized_projected_views.at(maximum_entropy_index).end());    
    
   switch (maximum_entropy_index)
   {
     case 0 :
       
       name_of_sorted_projected_plane += "YoZ - ";      
-      meanOfHistogram (normalized_projected_views.at(1), mean);
-      varianceOfHistogram (normalized_projected_views.at(1), mean, variance1);
-      meanOfHistogram (normalized_projected_views.at(2), mean);
-      varianceOfHistogram (normalized_projected_views.at(2), mean, variance2);
+      varianceOfHistogram (normalized_projected_views.at(1), variance1);      
+      varianceOfHistogram (normalized_projected_views.at(2), variance2);
       
       if (variance1 <= variance2)
       {
@@ -378,11 +229,9 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::objectViewHistogram (int maximum_en
       break;
       
     case 1 :
-      name_of_sorted_projected_plane += "XoZ - ";      
-      meanOfHistogram (normalized_projected_views.at(0), mean);
-      varianceOfHistogram (normalized_projected_views.at(0), mean, variance1);      
-      meanOfHistogram (normalized_projected_views.at(2), mean);
-      varianceOfHistogram (normalized_projected_views.at(2), mean, variance2);
+      name_of_sorted_projected_plane += "XoZ - ";            
+      varianceOfHistogram (normalized_projected_views.at(0), variance1);      
+      varianceOfHistogram (normalized_projected_views.at(2), variance2);
             
       if (variance1 <= variance2)
       {
@@ -399,11 +248,9 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::objectViewHistogram (int maximum_en
       break;
 	
     case 2 :
-      name_of_sorted_projected_plane += "XoY - ";		      
-      meanOfHistogram (normalized_projected_views.at(0), mean);
-      varianceOfHistogram (normalized_projected_views.at(0), mean, variance1);
-      meanOfHistogram (normalized_projected_views.at(1), mean);
-      varianceOfHistogram (normalized_projected_views.at(1), mean, variance2);
+      name_of_sorted_projected_plane += "XoY - ";		            
+      varianceOfHistogram (normalized_projected_views.at(0), variance1);
+      varianceOfHistogram (normalized_projected_views.at(1), variance2);
 
       if (variance1 <= variance2)
       {
@@ -425,73 +272,25 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::objectViewHistogram (int maximum_en
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int NumberOfBins>
+template <typename PointInT, int BinN>
 void
-pcl::GOODEstimation<PointInT, NumberOfBins>::computeLargestSideOfBoundingBox (pcl::PointXYZ dimensions, double &largest_side )
-{    
-  std::vector<double> tmp;
-  tmp.push_back (dimensions.x);  tmp.push_back (dimensions.y);  tmp.push_back (dimensions.z);  
-  std::vector<double>::iterator it;
-  it=std::max_element(tmp.begin(),tmp.end());
-  largest_side = *it;  
-  largest_side += 0.02;
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::computeDistanceBetweenProjections (std::vector<std::vector<float> > projection1, std::vector<std::vector<float> > projection2, float &distance)
-{
-  float sum  = 0 ;
-  for (size_t i = 0; i < projection1.size(); i++)
-  { for (size_t j = 0; j < projection1.size(); j++)
-    {
-      float d = projection1.at(i).at(j) - projection2.at(i).at(j);
-      sum += pow (d, 2);
-    }
-  } 
-  distance = sqrt (sum);  
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-inline std::vector<std::vector<unsigned int> > pcl::GOODEstimation<PointInT, NumberOfBins>::initializing2DHistogram (unsigned int number_of_bins)
-{
-  std::vector<unsigned int> row (number_of_bins, 0);
-  std::vector<std::vector<unsigned int> > histogram2D (number_of_bins, row);
-  return histogram2D;
-}
-//////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int NumberOfBins>
-void
-pcl::GOODEstimation<PointInT, NumberOfBins>::computeFeature (PointCloudOut &output )	
+pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )	
 {
   std::vector<float> object_description;
-  double largest_side = 0;
-  int  sign = 1;
-  std::vector <float> view_point_entropy;
+  float largest_side = 0;
+  std::vector <float> view_point_entropy (3);
   std::string name_of_sorted_projected_plane;
-  PointCloudIn initial_cloud_projection_along_x_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
-  PointCloudIn initial_cloud_projection_along_y_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
-  PointCloudIn initial_cloud_projection_along_z_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
+  PointCloudInPtr initial_cloud_projection_along_x_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
+  PointCloudInPtr initial_cloud_projection_along_y_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
+  PointCloudInPtr initial_cloud_projection_along_z_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
   pcl::PointXYZ pt; 
   
   /* __________________________
   |                            |
   | construct ORF based on PCA |
   |____________________________| */
-
-  ///////// the theory of new shape descriptor ///////////////////////////
-  // //NOTE  the PCA base reference frame construction basically does:
-  // 1) compute the centroid (c0, c1, c2) and the normalized covariance
-  // 2) compute the eigenvectors e0, e1, e2. The reference system will be (e0, e1, e0 X e1) --- note: e0 X e1 = +/- e2
-  // 3) move the points in that RF --- note: the transformation given by the rotation matrix (e0, e1, e0 X e1) & (c0, c1, c2) must be inverted
-  // 4) compute the max, the min and the center of the diagonal (mean_diag)
-  // 5) given a box centered at the origin with size (max_pt.x - min_pt.x, max_pt.y - min_pt.y, max_pt.z - min_pt.z) 
-  //    the transformation you have to apply is Rotation = (e0, e1, e0 X e1) & Translation = Rotation * mean_diag + (c0, c1, c2)
   
-  // compute principal directions	  
+  /// compute principal directions	  
   Eigen::Vector4f centroid;
   pcl::compute3DCentroid (*input_, centroid);
   Eigen::Matrix3f covariance;
@@ -499,52 +298,51 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::computeFeature (PointCloudOut &outp
   Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigen_solver (covariance, Eigen::ComputeEigenvectors);
   Eigen::Matrix3f eigen_vectors = eigen_solver.eigenvectors();
   eigen_vectors.col(2) = eigen_vectors.col(0).cross(eigen_vectors.col(1));
-  //std::cout << "eigen vectores :  \n " << eigen_vectors << std::endl;
-  
-  //Eigen::Vector3f eigen_values =  eigen_solver.eigenvalues();
-  //std::cout << "The eigenvalues of the covariance matrix before sorting are \n:" << eigen_values << endl;
-  
-  //sorting eigen vectors based on eigen values
-  eigen_vectors.col(0) = eigen_vectors.col(2);
-  eigen_vectors.col(2) = eigen_vectors.col(0).cross (eigen_vectors.col(1));
-  //std::cout << "eigen vectores cross product :  \n " << eigen_vectors << std::endl;
 
-  // move the points to the PCA based reference frame
+  ///sorting eigen vectors based on eigen values
+  eigen_vectors.col(0) = eigen_vectors.col(2);
+  eigen_vectors.col(2) = eigen_vectors.col(0).cross (eigen_vectors.col(1));  
+
+  /// move the points to the PCA based reference frame
   Eigen::Matrix4f p2w (Eigen::Matrix4f::Identity());
   p2w.block<3,3>(0,0) = eigen_vectors.transpose();
   p2w.block<3,1>(0,3) = -1.f * (p2w.block<3,3>(0,0) * centroid.head<3>());
   transformation_ = p2w;
   
-  PointCloudIn transformed_point_cloud (new pcl::PointCloud<PointInT>);
+  PointCloudInPtr transformed_point_cloud (new pcl::PointCloud<PointInT>);
   pcl::transformPointCloud (*input_, *transformed_point_cloud, p2w);
   transformed_point_cloud_ = transformed_point_cloud;
-  //compute the max, the min and the center of the diagonal (mean_diag)
+  ///compute the max, the min and the center of the diagonal (mean_diag)
   PointInT min_pt, max_pt;
   pcl::getMinMax3D (*transformed_point_cloud_, min_pt, max_pt);
   const Eigen::Vector3f mean_diag = 0.5f * (max_pt.getVector3fMap() + min_pt.getVector3fMap());
-  // centroid transform
-  Eigen::Quaternionf qfinal (eigen_vectors);//rotation matrix
+  
+  /// centroid transform
+  Eigen::Quaternionf qfinal (eigen_vectors); ///rotation matrix
   Eigen::Vector3f center_of_bbox = eigen_vectors*mean_diag + centroid.head<3>(); // Translation = Rotation * center_diag + (c0, c1, c2)
   center_of_bbox_.x = center_of_bbox(0,0);
   center_of_bbox_.y = center_of_bbox(1,0);
   center_of_bbox_.z = center_of_bbox(2,0);
-/* _________________________________
+  
+  /* _______________________________
   |                                 |
   | construct three projection view |
   |_________________________________| */
 		  
-  // ax+by+cz+d=0, where b=c=d=0, and a=1, or said differently, the YoZ plane.
+  const static float OFFSET_TO_THE_ORIGIN = 0.3;
+  
+  /// ax+by+cz+d=0, where b=c=d=0, and a=1, or said differently, the YoZ plane.
   pcl::ModelCoefficients::Ptr coefficients_x (new pcl::ModelCoefficients ());
   coefficients_x->values.resize (4);
   coefficients_x->values[0] = 1.0; coefficients_x->values[1] = 0; coefficients_x->values[2] = 0; coefficients_x->values[3] = 0;
   projectPointCloudToPlane (transformed_point_cloud_, coefficients_x, initial_cloud_projection_along_x_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_x_axis->points.size(); i++)
   {
-      initial_cloud_projection_along_x_axis->points.at(i).x = 0.25;
+      initial_cloud_projection_along_x_axis->points.at(i).x = OFFSET_TO_THE_ORIGIN;
   }
   vector_of_projected_views_.push_back (initial_cloud_projection_along_x_axis);
  
-  //ax+by+cz+d=0, where a=c=d=0, and b=1, or said differently, the XoZ plane.
+  ///ax+by+cz+d=0, where a=c=d=0, and b=1, or said differently, the XoZ plane.
   pcl::ModelCoefficients::Ptr coefficients_y (new pcl::ModelCoefficients ());
   coefficients_y->values.resize (4);
   coefficients_y->values[0] = 0.0; coefficients_y->values[1] = 1.0; coefficients_y->values[2] = 0; coefficients_y->values[3] = 0;
@@ -552,112 +350,102 @@ pcl::GOODEstimation<PointInT, NumberOfBins>::computeFeature (PointCloudOut &outp
   projectPointCloudToPlane (transformed_point_cloud_, coefficients_y, initial_cloud_projection_along_y_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_y_axis->points.size(); i++)
   {
-      initial_cloud_projection_along_y_axis->points.at(i).y = 0.3;
+      initial_cloud_projection_along_y_axis->points.at(i).y = OFFSET_TO_THE_ORIGIN;
   }
   vector_of_projected_views_.push_back (initial_cloud_projection_along_y_axis);
 
 	    
-  // ax+by+cz+d=0, where a=b=d=0, and c=1, or said differently, the XoY plane.
+  /// ax+by+cz+d=0, where a=b=d=0, and c=1, or said differently, the XoY plane.
   pcl::ModelCoefficients::Ptr coefficients_z (new pcl::ModelCoefficients ());
   coefficients_z->values.resize (4); 
   coefficients_z->values[0] = 0; coefficients_z->values[1] = 0; coefficients_z->values[2] = 1.0;   coefficients_z->values[3] = 0;
   projectPointCloudToPlane (transformed_point_cloud_, coefficients_z, initial_cloud_projection_along_z_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_z_axis->points.size(); i++)
   {
-      initial_cloud_projection_along_z_axis->points.at(i).z = 0.3;
+      initial_cloud_projection_along_z_axis->points.at(i).z = OFFSET_TO_THE_ORIGIN;
   }		
   vector_of_projected_views_.push_back (initial_cloud_projection_along_z_axis);
 
-  /* _________________________
-  |                           |
-  |  Axes sign disambiguation |
-  |___________________________| */
-		  
-  computeBoundingBoxDimensions (transformed_point_cloud_, bbox_dimensions_);	
-  computeLargestSideOfBoundingBox (bbox_dimensions_ ,largest_side);		
+  /// compute BoundingBox Dimensions
+  computeBoundingBoxDimensions ();	
+  largest_side = computeLargestSideOfBoundingBox ();		
 
   /* _________________________
   |                           |
   |  Axes sign disambiguation |
   |___________________________| */
 
-  int Sx=1, Sy=1;
-  signDisambiguationXAxis (initial_cloud_projection_along_y_axis, threshold_, Sx );//XoZ Plane
-  signDisambiguationYAxis (initial_cloud_projection_along_x_axis, threshold_, Sy );//YoZ Plane
-  sign = Sx * Sy;
-  sign_=sign;
+  int8_t sx = 1, sy = 1;
+  signDisambiguation (initial_cloud_projection_along_y_axis, X, sx); ///XoZ Plane
+  signDisambiguation (initial_cloud_projection_along_x_axis, Y, sy); ///YoZ Plane
+  sign_= sx * sy;    
+
   /* _______________________________________________________
   |                       				      |
   |  compute histograms of projection of the given object   |
   |_________________________________________________________| */
-    
-  std::vector<unsigned int> complete_object_histogram;
-  std::vector<unsigned int> complete_object_histogram_normalized;//each projection view is normalized sepreatly
-  std::vector<std::vector<unsigned int> > XOY_histogram = initializing2DHistogram (number_of_bins_);		
-  std::vector<std::vector<unsigned int> > XOZ_histogram = initializing2DHistogram (number_of_bins_);      
-  std::vector<std::vector<unsigned int> > YOZ_histogram = initializing2DHistogram (number_of_bins_);  
-  
-  std::vector<std::vector <float> > normalized_projected_views;
-  
-  //projection along X axis
-  create2DHistogramFromYOZProjection (initial_cloud_projection_along_x_axis, largest_side, number_of_bins_, sign,YOZ_histogram);
+      
+  ///initialize vectors
+  std::vector<unsigned int> complete_object_histogram (3 * BinN * BinN);
+  std::vector<float> complete_object_histogram_normalized (3 * BinN * BinN); ///each projection view is normalized sepreatly  
+  std::vector<std::vector<unsigned int> > XOY_histogram (BinN, std::vector<unsigned int> (BinN));
+  std::vector<std::vector<unsigned int> > XOZ_histogram (BinN, std::vector<unsigned int> (BinN));
+  std::vector<std::vector<unsigned int> > YOZ_histogram (BinN, std::vector<unsigned int> (BinN));  
+  std::vector<std::vector <float> > normalized_projected_views (3, std::vector <float> (BinN * BinN));
 
-  std::vector<unsigned int> histogramYOZ1D;
+  ///YOZ Projection
+  std::vector<unsigned int> histogramYOZ1D (BinN * BinN);
+  std::vector<float> normalized_histogramYoZ (BinN * BinN);
+  float YoZ_entropy = 0;  
+  create2DHistogramFromProjection (initial_cloud_projection_along_x_axis, largest_side, Y, Z, YOZ_histogram);
   convert2DHistogramTo1DHistogram (YOZ_histogram, histogramYOZ1D);
-  complete_object_histogram.insert (complete_object_histogram.end(), histogramYOZ1D.begin(), histogramYOZ1D.end());
-  std::vector<float> normalized_histogramYoZ;
-  normalizingHistogram (histogramYOZ1D, normalized_histogramYoZ);
-  normalized_projected_views.push_back (normalized_histogramYoZ);
-  
+  complete_object_histogram.insert (complete_object_histogram.end(), histogramYOZ1D.begin(), histogramYOZ1D.end());  
+  normalizeHistogram (histogramYOZ1D, normalized_histogramYoZ);
+  normalized_projected_views.at (0) = normalized_histogramYoZ;  
   complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramYoZ.begin(), normalized_histogramYoZ.end());
-  float YoZ_entropy = 0;
   viewpointEntropy (normalized_histogramYoZ, YoZ_entropy);
-  //viewpointEntropyNotNormalized(histogramYOZ1D, YoZ_entropy);
-  view_point_entropy.push_back (YoZ_entropy);
-
-  //projection along Y axis
-  create2DHistogramFromXOZProjection (initial_cloud_projection_along_y_axis, largest_side, number_of_bins_, sign,XOZ_histogram);
-
-  std::vector<unsigned int> histogramXOZ1D;
+  view_point_entropy.at (0) = YoZ_entropy;
+    
+  ///XOZ Projection  
+  std::vector<unsigned int> histogramXOZ1D (BinN * BinN);
+  std::vector<float> normalized_histogramXoZ (BinN * BinN);
+  float XoZ_entropy = 0;
+  create2DHistogramFromProjection (initial_cloud_projection_along_y_axis, largest_side, X, Z, XOZ_histogram);
   convert2DHistogramTo1DHistogram (XOZ_histogram, histogramXOZ1D);
   complete_object_histogram.insert (complete_object_histogram.end(), histogramXOZ1D.begin(), histogramXOZ1D.end());
-
-  std::vector<float> normalized_histogramXoZ;
-  normalizingHistogram (histogramXOZ1D, normalized_histogramXoZ);
-  normalized_projected_views.push_back (normalized_histogramXoZ);
-
-  complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramXoZ.begin(), normalized_histogramXoZ.end());
-  float XoZ_entropy = 0;
+  normalizeHistogram (histogramXOZ1D, normalized_histogramXoZ);
+  normalized_projected_views.at (1) = normalized_histogramXoZ;
+  complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramXoZ.begin(), normalized_histogramXoZ.end());  
   viewpointEntropy (normalized_histogramXoZ, XoZ_entropy);
-  view_point_entropy.push_back (XoZ_entropy);
+  view_point_entropy.at (1) = XoZ_entropy;
 
-  //projection along Z axis	
-  create2DHistogramFromXOYProjection (initial_cloud_projection_along_z_axis, largest_side, number_of_bins_, sign, XOY_histogram);
-
-  std::vector<unsigned int> histogramXOY1D;
+  ///XOY Projection
+  std::vector<unsigned int> histogramXOY1D (BinN * BinN);
+  std::vector<float> normalized_histogramXoY (BinN * BinN);
+  float XoY_entropy = 0;  
+  create2DHistogramFromProjection (initial_cloud_projection_along_z_axis, largest_side, X, Y, XOY_histogram);     
   convert2DHistogramTo1DHistogram (XOY_histogram, histogramXOY1D);
-  complete_object_histogram.insert (complete_object_histogram.end(), histogramXOY1D.begin(), histogramXOY1D.end());
-  
-  std::vector<float> normalized_histogramXoY;
-  normalizingHistogram (histogramXOY1D, normalized_histogramXoY);
-  normalized_projected_views.push_back (normalized_histogramXoY);
-
+  complete_object_histogram.insert (complete_object_histogram.end(), histogramXOY1D.begin(), histogramXOY1D.end());  
+  normalizeHistogram (histogramXOY1D, normalized_histogramXoY);
+  normalized_projected_views.at (2) = normalized_histogramXoY;
   complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramXoY.begin(), normalized_histogramXoY.end());
-  float XoY_entropy = 0;
   viewpointEntropy (normalized_histogramXoY, XoY_entropy);
-  view_point_entropy.push_back (XoY_entropy);
- 
-  std::vector<float> normalized_histogram;
-  normalizingHistogram (complete_object_histogram, normalized_histogram);
-   
-  int maximum_entropy_index = 0;
-  findMaxViewPointEntropy (view_point_entropy, maximum_entropy_index);
-
-  objectViewHistogram (maximum_entropy_index, normalized_projected_views, object_description, name_of_sorted_projected_plane);
-  order_of_projected_plane_ =  name_of_sorted_projected_plane;  
+  view_point_entropy.at (2) = XoY_entropy;
   
+  /* ____________________________________
+  |                                      |
+  |  producing a GOOD shape description  |
+  |______________________________________| */
+
+  ///NOTE: The ordering of the three distribution vectors is first by decreasing values of entropy. 
+  ///Afterwards the second and third vectors are sorted again by increasing values of variance.
+  
+  int maximum_entropy_index = 0;
+  findMaxViewPointEntropy (view_point_entropy, maximum_entropy_index);   
+  objectViewHistogram (maximum_entropy_index, normalized_projected_views, object_description, name_of_sorted_projected_plane);
+  order_of_projected_plane_ =  name_of_sorted_projected_plane;    
   for(size_t i =0; i < object_description.size(); i++)
-    output.points[0].histogram[i]=object_description.at(i);
+    output.points[0].histogram[i] = object_description.at(i);
     
 }
 
