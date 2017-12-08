@@ -85,7 +85,7 @@ The code
 	  |  Setup the GOOD descriptor  |
 	  |_____________________________| */   
 
-	  const int NUMBER_OF_BINS = 5; 
+	  const int NUMBER_OF_BINS = 15; 
 	  const unsigned int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
 	  pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
 
@@ -164,7 +164,7 @@ The following code will set up the GOOD descriptor; GOOD descriptor has two impo
 .. code-block:: cpp
    :linenos:
 
-	  const int NUMBER_OF_BINS = 5; 
+	  const int NUMBER_OF_BINS = 15; 
 	  const unsigned int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
 	  pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
 	  pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor ; 
@@ -231,28 +231,9 @@ The syntax for running the sample code is :
  
      ./pcl/build/bin/pcl_example_good_descriptor ../test/milk.pcd
 
-.. code-block:: bash
 
-    GOOD =(0, 0.0207239, 0.0786632, 0.0221833, 0, 0, 0.0754524, 0.129451, 0.0750876, 0, 0, 0.0650905, 0.101649,
-	 0.0682283, 0, 0, 0.0602014, 0.0890981, 0.0600555, 0, 0, 0.0412288, 0.068885, 0.0440018, 0, 0, 0, 0, 0, 0, 0, 0.0642148, 
-	0.198263, 0.000218914, 0, 0, 0.0207239, 0.358581, 0.0884413, 0, 0, 0.0212347, 0.248322, 0, 0, 0, 0, 0, 0, 0, 0, 0.0375073, 
-	0.084063, 0, 0, 0, 0.0106538, 0.22446, 0.0448774, 0, 0, 0.0146673, 0.180385, 0.0399154, 0, 0, 0.0215995, 0.183888, 
-	0.00386748, 0, 0, 0.0217455, 0.13237, 0, 0)
-
-
-	 transofrmation matrix =
-	-0.0108418   0.887046   0.461555  -0.236646
-	  0.998495 -0.0152106  0.0526872  0.0132545
-	 0.0537565   0.461432  -0.885546    0.75173
-		 0          0          0          1
-
-	 center_of_bounding_box = (-0.0624728,-0.140744,0.790559)
-
-	 bounding_box_dimensions = 0.257679
-	0.151612
-	0.111211
-
-	 order of projected planes = XoY - YoZ - XoZ 
+.. image:: images/output_good.jpg
+      :align: center
 
 
 CITING

@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   |  Setup the GOOD descriptor  |
   |_____________________________| */   
 
-  const int NUMBER_OF_BINS = 5; 
+  const int NUMBER_OF_BINS = 15; 
   const int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
   pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
 
