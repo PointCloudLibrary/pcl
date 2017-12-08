@@ -62,7 +62,6 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/usc.h"
         "include/pcl/${SUBSYS_NAME}/boundary.h"
         "include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h"
-        "include/pcl/${SUBSYS_NAME}/range_image_border_extractor.h"
         "include/pcl/${SUBSYS_NAME}/good.h"
         )
 

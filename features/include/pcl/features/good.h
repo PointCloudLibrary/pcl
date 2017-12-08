@@ -168,7 +168,7 @@ namespace pcl
      
       enum Axis { X, Y, Z};
 
-      /** \brief number of bins along one dimension; each projection plane is divided into number_of_bins ? number_of_bins square bins. 
+      /** \brief number of bins along one dimension; each projection plane is divided into BinN * BinN square bins. 
        * By default, the number_of_bins_ is set to 5.
        */
       

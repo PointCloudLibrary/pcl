@@ -95,14 +95,14 @@ int main(int argc, char* argv[])
   |_____________________________| */   
 
   const int NUMBER_OF_BINS = 5; 
-  const unsigned int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
+  const int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
   pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
 
   pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor ; 
-  test_GOOD_descriptor.setThreshold(0.0015);  
+  test_GOOD_descriptor.setThreshold (0.0015);  
   ///NOTE: GOOD descriptor can be setup in a line: pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
-  test_GOOD_descriptor.setInputCloud(object); // pass original point cloud
-  test_GOOD_descriptor.compute(object_description); // Actually compute the GOOD discriptor for the given object
+  test_GOOD_descriptor.setInputCloud (object); // pass original point cloud
+  test_GOOD_descriptor.compute (object_description); // Actually compute the GOOD discriptor for the given object
   
   ///Printing GOOD_descriptor for the given point cloud, 
   ///NOTE: the descriptor is only the first point.
@@ -113,7 +113,7 @@ int main(int argc, char* argv[])
   |  Usefull Functionalities for Object Manipulation  |
   |___________________________________________________| */   
   
-  ///NOTE: The following functinalities of GOOD descriptor are usefull for manipulation tasks:
+  ///NOTE: The following functionalities of the GOOD descriptor are useful for manipulation tasks:
   Eigen::Matrix4f transformation;
   pcl::PointXYZ center_of_bounding_box;
   Eigen::Vector3f bounding_box_dimensions;
@@ -143,8 +143,8 @@ int main(int argc, char* argv[])
   |   Visualizing orthographic projections   |
   |__________________________________________| */
   
-  ///NOTE: Pass the following point cloud to a pcl::visualization::PCLVisualizer forVisualizing the 
-  //transformed object, local reference fram and three orthographic projections
+  ///NOTE: Pass the following point cloud to a pcl::visualization::PCLVisualizer for Visualizing the 
+  ///transformed object, local reference fram and three orthographic projections
   
   //pcl::PointCloud<PointT>::Ptr transformed_object_and_projected_views (new pcl::PointCloud<PointT>);
   //*transformed_object_and_projected_views += *vector_of_projected_views.at(0);
