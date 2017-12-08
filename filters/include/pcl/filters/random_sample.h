@@ -232,7 +232,6 @@ namespace pcl
       unifRand ()
       {
         return (static_cast<float> (rand () / double (RAND_MAX)));
-        //return (((214013 * seed_ + 2531011) >> 16) & 0x7FFF);
       }
    };
 }
