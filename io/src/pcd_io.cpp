@@ -317,6 +317,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       // Get the number of points
       if (line_type.substr (0, 6) == "POINTS")
       {
+        if (!cloud.point_step)
+          throw "Number of POINTS specified before COUNT in header!";
         sstream >> nr_points;
         // Need to allocate: N * point_step
         cloud.data.resize (nr_points * cloud.point_step);
