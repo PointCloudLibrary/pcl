@@ -30,11 +30,7 @@ init:
   - cd %APPVEYOR_BUILD_FOLDER%
 
 install:
-  - vcpkg install boost:%PLATFORM%-windows
-                  eigen3:%PLATFORM%-windows
-                  flann:%PLATFORM%-windows
-                  qhull:%PLATFORM%-windows
-
+  - vcpkg install boost eigen3 flann qhull --triplet %PLATFORM%-windows
 
 build:
   parallel: true
