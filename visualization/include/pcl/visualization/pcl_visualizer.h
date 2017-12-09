@@ -1537,6 +1537,37 @@ namespace pcl
                  const std::string &id = "line",
                  int viewport = 0);
 
+        /** \brief Add a line from a set of given model coefficients
+          * \param[in] coefficients the model coefficients (point_on_line, direction)
+          * \param[in] id the line id/name (default: "line")
+          * \param[in] viewport (optional) the id of the new viewport (default: 0)
+          *
+          * \code
+          * // The following are given (or computed using sample consensus techniques)
+          * // See SampleConsensusModelLine for more information
+          * // Eigen::Vector3f point_on_line, line_direction;
+          *
+          * pcl::ModelCoefficients line_coeff;
+          * line_coeff.values.resize (6);    // We need 6 values
+          * line_coeff.values[0] = point_on_line.x ();
+          * line_coeff.values[1] = point_on_line.y ();
+          * line_coeff.values[2] = point_on_line.z ();
+          *
+          * line_coeff.values[3] = line_direction.x ();
+          * line_coeff.values[4] = line_direction.y ();
+          * line_coeff.values[5] = line_direction.z ();
+          *
+          * addLine (line_coeff);
+          * \endcode
+          */
+        bool
+        addLine (const pcl::ModelCoefficients &coefficients,
+                 const char *id = "line",
+                 int viewport = 0)
+        {
+          return addLine (coefficients, std::string (id), viewport);
+        }
+
         /** \brief Add a plane from a set of given model coefficients
           * \param[in] coefficients the model coefficients (a, b, c, d with ax+by+cz+d=0)
           * \param[in] id the plane id/name (default: "plane")
