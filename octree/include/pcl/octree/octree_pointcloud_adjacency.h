@@ -105,15 +105,29 @@ namespace pcl
         typedef OctreeDepthFirstIterator<OctreeAdjacencyT> Iterator;
         typedef const OctreeDepthFirstIterator<OctreeAdjacencyT> ConstIterator;
 
-        Iterator depth_begin (unsigned int max_depth_arg = 0) { return Iterator (this, max_depth_arg); }
-        const Iterator depth_end () { return Iterator (); }
+        Iterator depth_begin (unsigned int max_depth_arg = 0)
+        {
+          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        }
+
+        const Iterator depth_end (unsigned int max_depth_arg = 0)
+        {
+          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+        }
 
         // Octree leaf node iterators
         typedef OctreeLeafNodeIterator<OctreeAdjacencyT> LeafNodeIterator;
         typedef const OctreeLeafNodeIterator<OctreeAdjacencyT> ConstLeafNodeIterator;
 
-        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0) { return LeafNodeIterator (this, max_depth_arg); }
-        const LeafNodeIterator leaf_end () { return LeafNodeIterator (); }
+        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
+        {
+          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        }
+
+        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0)
+        {
+          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+        }
 
         // BGL graph
         typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float> VoxelAdjacencyList;
