@@ -65,15 +65,12 @@
   */
 
 #include <pcl/features/good.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/io/ply_io.h>
-#include <boost/filesystem.hpp>
 #include <pcl/io/auto_io.h>
 
 typedef pcl::PointXYZRGBA PointT;  
 typedef pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
 
-int main(int argc, char* argv[])
+int main (int argc, char* argv[])
 {  
   if (argc != 2) 
   {
@@ -81,11 +78,11 @@ int main(int argc, char* argv[])
     return 0;
   }
   
-  std::string object_path =  argv[1];  
+  std::string object_path = argv[1];  
   pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
-  if (pcl::io::load(object_path, *object)==-1)  
+  if (pcl::io::load (object_path, *object) == -1)  
   {
-    std::cerr << "\n file extension is not correct. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
+    std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
     return -1;
   }
        
@@ -93,12 +90,11 @@ int main(int argc, char* argv[])
   |                             |
   |  Setup the GOOD descriptor  |
   |_____________________________| */   
-
-  const int NUMBER_OF_BINS = 15; 
-  const int lengh_of_descriptor = 3 * NUMBER_OF_BINS * NUMBER_OF_BINS; 
-  pcl::PointCloud<pcl::Histogram<lengh_of_descriptor> > object_description;
-
-  pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor ; 
+  
+  const int NUMBER_OF_BINS = 15;     
+  typedef pcl::GOODEstimation<PointT, NUMBER_OF_BINS>::Descriptor Descriptor;
+  pcl::PointCloud<Descriptor> object_description;   
+  pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor;   
   test_GOOD_descriptor.setThreshold (0.0015);  
   ///NOTE: GOOD descriptor can be setup in a line: pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
   test_GOOD_descriptor.setInputCloud (object); // pass original point cloud
@@ -106,7 +102,7 @@ int main(int argc, char* argv[])
   
   ///Printing GOOD_descriptor for the given point cloud, 
   ///NOTE: the descriptor is only the first point.
-  std::cout <<"\n GOOD =" << object_description.points[0] <<std::endl; 
+  std::cout << "\n GOOD = " << object_description.points[0] << std::endl; 
 
   /*__________________________________________________
   |                                                   |
@@ -114,28 +110,23 @@ int main(int argc, char* argv[])
   |___________________________________________________| */   
   
   ///NOTE: The following functionalities of the GOOD descriptor are useful for manipulation tasks:
-  Eigen::Matrix4f transformation;
-  pcl::PointXYZ center_of_bounding_box;
-  Eigen::Vector3f bounding_box_dimensions;
-  std::string order_of_projected_planes;
-  std::vector<PointCloudInPtr> vector_of_projected_views;
-  PointCloudInPtr transformed_object (new pcl::PointCloud<PointT>);
-
+  
   /// Get objec point cloud in local reference frame
-  transformed_object = test_GOOD_descriptor.getTransformedObject ();
+  PointCloudInPtr transformed_object = test_GOOD_descriptor.getTransformedObject ();
+  
   /// Get three orthographic projects and transformation matrix 
-  vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
-  transformation = test_GOOD_descriptor.getTransformationMatrix ();
-  std::cout << "\n transofrmation matrix =\n"<<transformation << std::endl;  
+  std::vector<PointCloudInPtr> vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
+  Eigen::Matrix4f transformation = test_GOOD_descriptor.getTransformationMatrix ();
+  std::cout << "\n transofrmation matrix = \n" << transformation << std::endl;  
   
   /// Get object bounding box information 
-  center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
-  bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions();
-  std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box<<std::endl;
-  std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions <<std::endl;
+  pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
+  Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
+  std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
+  std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
   
   /// Get the order of the three projected planes 
-  order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes();
+  std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
   std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
 
   /*_________________________________________

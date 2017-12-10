@@ -44,67 +44,53 @@
 
 #include <numeric> ///std::accumulate
 
-//////////////////////////////////////////////////////////////////////////////////////////////  
-
-template <typename PointInT, int BinN> 
-void 
-pcl::GOODEstimation<PointInT, BinN>::computeBoundingBoxDimensions ()
-{
-  PointInT minimum_pt, maximum_pt, dimensions;  
-  pcl::getMinMax3D (*transformed_point_cloud_, minimum_pt, maximum_pt); // min max for bounding box
-  dimensions.getVector3fMap () = maximum_pt.getVector3fMap () - minimum_pt.getVector3fMap ();
-  bbox_dimensions_ << dimensions.x, dimensions.y, dimensions.z;
-}
 //////////////////////////////////////////////////////////////////////////////////////////////
-
-template <typename PointInT, int BinN>
-void
-pcl::GOODEstimation<PointInT, BinN>::projectPointCloudToPlane (PointCloudInPtr pc_in, pcl::ModelCoefficients::Ptr coefficients, PointCloudInPtr pc_out)
+template<typename PointInT, int BinN> void
+pcl::GOODEstimation<PointInT, BinN>::projectPointCloudToPlane (const PointCloudInConstPtr &pc_in, const pcl::ModelCoefficients::Ptr &coefficients, PointCloudIn &pc_out)
 {
   ///Create the projection object
   pcl::ProjectInliers<PointInT> projection;
   projection.setModelType (pcl::SACMODEL_NORMAL_PLANE); 
   projection.setInputCloud (pc_in);
   projection.setModelCoefficients (coefficients);
-  projection.filter (*pc_out);
+  projection.filter (pc_out);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void 
-pcl::GOODEstimation<PointInT, BinN>::convert2DHistogramTo1DHistogram (const std::vector<std::vector<unsigned int> >  histogram_2D, std::vector<unsigned int>  &histogram)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> std::vector<unsigned>
+pcl::GOODEstimation<PointInT, BinN>::convert2DHistogramTo1DHistogram (const std::vector<std::vector<unsigned> > &histogram_2D)
 {
-  for (size_t i = 0 ; i < BinN; i++)
-  {   
-    for (size_t j = 0; j < BinN; j++)
-    {
-      histogram.at (i * BinN + j) = histogram_2D.at(i).at(j);
-    }
-  }
+  std::vector<unsigned> histogram (BinN * BinN);
+  for (size_t i = 0, j = 0; i < BinN; ++i, j += BinN)
+    std::copy (histogram_2D[i].begin (), histogram_2D[i].end (), &histogram[j]);
+
+  return histogram;
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN> void
-pcl::GOODEstimation<PointInT, BinN>::signDisambiguation ( PointCloudInPtr &projected_view,  const int8_t axis, int8_t &sign) const
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> int8_t 
+pcl::GOODEstimation<PointInT, BinN>::signDisambiguation ( const PointCloudIn &projected_view,  const int8_t axis) const
 {
+  int8_t sign = 1;
   unsigned int positive = 0; 
   unsigned int negative = 0; 
-  const unsigned int threshold_overall = std::max (1u, (unsigned int) trunc (projected_view->size ()/10));
+  const unsigned int threshold_overall = std::max (1u, (unsigned int) trunc (projected_view.size ()/10));
 
-  for (size_t i = 0; i < projected_view->size(); ++i)
+  for (size_t i = 0; i < projected_view.size(); ++i)
   { 
-    if (projected_view->at(i).data[axis] > threshold_) //Not sure if data[axis] is valid since you're using the members x y z of the union
+    if (projected_view.at(i).data[axis] > threshold_) 
       ++positive;
-    else if (projected_view->at(i).data[axis] < -threshold_)
+    else if (projected_view.at(i).data[axis] < -threshold_)
       ++negative;
   }
   sign = ((int) (negative - positive) >= (int) threshold_overall)? -1 : 1;
+  return (sign);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN> void 
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> void 
 pcl::GOODEstimation<PointInT, BinN>::create2DHistogramFromProjection (const PointCloudInPtr &projected_view, const float largest_side, 
-									const int8_t axis_a, const int8_t axis_b, std::vector<std::vector<unsigned int> > &histogram) const
+                                                                      const int8_t axis_a, const int8_t axis_b, std::vector<std::vector<unsigned int> > &histogram) const
 {  
   const float half = .5f * largest_side; 
   const float interval = largest_side / (float) BinN; 
@@ -124,10 +110,9 @@ pcl::GOODEstimation<PointInT, BinN>::create2DHistogramFromProjection (const Poin
       ++histogram[idx_o][idx_i];
   }  
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> void
 pcl::GOODEstimation<PointInT, BinN>::normalizeHistogram (const std::vector<unsigned int> histogram, std::vector<float> &normalized_histogram)
 {
   ///compute sumation of all histogram's bins. 
@@ -143,14 +128,13 @@ pcl::GOODEstimation<PointInT, BinN>::normalizeHistogram (const std::vector<unsig
     }  
   }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
-pcl::GOODEstimation<PointInT, BinN>::viewpointEntropy (const std::vector<float> normalized_histogram, float &entropy)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> float
+pcl::GOODEstimation<PointInT, BinN>::viewpointEntropy (const std::vector<float> &normalized_histogram)
 {
   ///NOTE: http://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform
-  entropy =0;  
+  float entropy =0;  
   for(std::vector<float>::const_iterator it = normalized_histogram.begin(); it != normalized_histogram.end(); ++it)
   {
     if (*it != 0)
@@ -158,30 +142,30 @@ pcl::GOODEstimation<PointInT, BinN>::viewpointEntropy (const std::vector<float> 
       float entropy_tmp = *it * log2 (*it);
       entropy += entropy_tmp;
     }
-  }
-  entropy = -entropy;  
+  }  
+  return (-entropy); 
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
-pcl::GOODEstimation<PointInT, BinN>::findMaxViewPointEntropy (const std::vector <float> view_point_entropy, int &index)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> int 
+pcl::GOODEstimation<PointInT, BinN>::findMaxViewPointEntropy (const std::vector<float> &view_point_entropy)
 {
-  index = 0;
+  int index = 0;
   std::vector<float>::const_iterator it;
   it = std::max_element (view_point_entropy.begin(), view_point_entropy.end());
   index = it - view_point_entropy.begin ();
+  return (index);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
-pcl::GOODEstimation<PointInT, BinN>::varianceOfHistogram (const std::vector<float> histogram, float &variance)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> float
+pcl::GOODEstimation<PointInT, BinN>::varianceOfHistogram (const std::vector<float> &histogram)
 {
   ///NOTE: https://people.richland.edu/james/lecture/m170/ch06-prb.html
   ///NOTE: http://www.stat.yale.edu/Courses/1997-98/101/rvmnvar.htm  
   
   float mean = 0;
+  float variance = 0;
   for (size_t i = 0; i < histogram.size(); i++)
   {
     mean += (i+1) * histogram.at(i);
@@ -190,79 +174,80 @@ pcl::GOODEstimation<PointInT, BinN>::varianceOfHistogram (const std::vector<floa
   for (size_t i = 0; i < histogram.size(); i++)
   {
     variance += std::pow ((i+1)-mean , 2) * histogram.at(i);
-  }
-  
+  }  
+  return (variance);  
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
-pcl::GOODEstimation<PointInT, BinN>::objectViewHistogram (int maximum_entropy_index, const std::vector<std::vector<float> > normalized_projected_views,
-							  std::vector<float> &sorted_normalized_projected_views, std::string &name_of_sorted_projected_plane)
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> void
+pcl::GOODEstimation<PointInT, BinN>::objectViewHistogram (int maximum_entropy_index, 
+                                                          const std::vector<std::vector<float> > &normalized_projected_views,
+                                                          std::vector<float> &sorted_normalized_projected_views, 
+                                                          std::string &name_of_sorted_projected_plane)
 {
   float variance1 = 0;
   float variance2 = 0;
 
   sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(maximum_entropy_index).begin(), 
-					    normalized_projected_views.at(maximum_entropy_index).end());    
+                                            normalized_projected_views.at(maximum_entropy_index).end());    
    
   switch (maximum_entropy_index)
   {
     case 0 :
       
       name_of_sorted_projected_plane += "YoZ - ";      
-      varianceOfHistogram (normalized_projected_views.at(1), variance1);      
-      varianceOfHistogram (normalized_projected_views.at(2), variance2);
+      variance1 = varianceOfHistogram (normalized_projected_views.at(1));      
+      variance2 = varianceOfHistogram (normalized_projected_views.at(2));
       
       if (variance1 <= variance2)
       {
-	name_of_sorted_projected_plane += "XoZ - XoY ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());	
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
+        name_of_sorted_projected_plane += "XoZ - XoY ";
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());	
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
       }
       else
-      {		     
-	name_of_sorted_projected_plane += "XoY - XoZ ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
+      {
+        name_of_sorted_projected_plane += "XoY - XoZ ";
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
       }
       break;
       
     case 1 :
       name_of_sorted_projected_plane += "XoZ - ";            
-      varianceOfHistogram (normalized_projected_views.at(0), variance1);      
-      varianceOfHistogram (normalized_projected_views.at(2), variance2);
+      variance1 = varianceOfHistogram (normalized_projected_views.at(0));      
+      variance2 = varianceOfHistogram (normalized_projected_views.at(2));
             
       if (variance1 <= variance2)
       {
-	name_of_sorted_projected_plane += "YoZ - XoY ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
+        name_of_sorted_projected_plane += "YoZ - XoY ";
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
       }
       else
       {
         name_of_sorted_projected_plane += "XoY - YoZ ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
       }
       break;
-	
+
     case 2 :
       name_of_sorted_projected_plane += "XoY - ";		            
-      varianceOfHistogram (normalized_projected_views.at(0), variance1);
-      varianceOfHistogram (normalized_projected_views.at(1), variance2);
+      variance1 = varianceOfHistogram (normalized_projected_views.at(0));
+      variance2 = varianceOfHistogram (normalized_projected_views.at(1));
 
       if (variance1 <= variance2)
       {
-	name_of_sorted_projected_plane += "YoZ - XoZ ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
+        name_of_sorted_projected_plane += "YoZ - XoZ ";
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
       }
       else
       {
-	name_of_sorted_projected_plane += "XoZ - YoZ ";
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(), normalized_projected_views.at(1).end());
-	sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(), normalized_projected_views.at(0).end());
+        name_of_sorted_projected_plane += "XoZ - YoZ ";
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(), normalized_projected_views.at(1).end());
+        sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(), normalized_projected_views.at(0).end());
       }
       break;  
       
@@ -270,16 +255,14 @@ pcl::GOODEstimation<PointInT, BinN>::objectViewHistogram (int maximum_entropy_in
       break;
   }
 }
-//////////////////////////////////////////////////////////////////////////////////////////////
 
-template <typename PointInT, int BinN>
-void
+//////////////////////////////////////////////////////////////////////////////////////////////
+template<typename PointInT, int BinN> void
 pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )	
 {
   std::vector<float> object_description;
   float largest_side = 0;
   std::vector <float> view_point_entropy (3);
-  std::string name_of_sorted_projected_plane;
   PointCloudInPtr initial_cloud_projection_along_x_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
   PointCloudInPtr initial_cloud_projection_along_y_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
   PointCloudInPtr initial_cloud_projection_along_z_axis (new pcl::PointCloud<PointInT>);//Declare a boost share ptr to the pointCloud
@@ -328,14 +311,14 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   |                                 |
   | construct three projection view |
   |_________________________________| */
-		  
+  
   const static float OFFSET_TO_THE_ORIGIN = 0.3;
   
   /// ax+by+cz+d=0, where b=c=d=0, and a=1, or said differently, the YoZ plane.
   pcl::ModelCoefficients::Ptr coefficients_x (new pcl::ModelCoefficients ());
   coefficients_x->values.resize (4);
   coefficients_x->values[0] = 1.0; coefficients_x->values[1] = 0; coefficients_x->values[2] = 0; coefficients_x->values[3] = 0;
-  projectPointCloudToPlane (transformed_point_cloud_, coefficients_x, initial_cloud_projection_along_x_axis);
+  projectPointCloudToPlane (transformed_point_cloud_, coefficients_x, *initial_cloud_projection_along_x_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_x_axis->points.size(); i++)
   {
       initial_cloud_projection_along_x_axis->points.at(i).x = OFFSET_TO_THE_ORIGIN;
@@ -347,19 +330,18 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   coefficients_y->values.resize (4);
   coefficients_y->values[0] = 0.0; coefficients_y->values[1] = 1.0; coefficients_y->values[2] = 0; coefficients_y->values[3] = 0;
 
-  projectPointCloudToPlane (transformed_point_cloud_, coefficients_y, initial_cloud_projection_along_y_axis);
+  projectPointCloudToPlane (transformed_point_cloud_, coefficients_y, *initial_cloud_projection_along_y_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_y_axis->points.size(); i++)
   {
       initial_cloud_projection_along_y_axis->points.at(i).y = OFFSET_TO_THE_ORIGIN;
   }
   vector_of_projected_views_.push_back (initial_cloud_projection_along_y_axis);
-
-	    
+    
   /// ax+by+cz+d=0, where a=b=d=0, and c=1, or said differently, the XoY plane.
   pcl::ModelCoefficients::Ptr coefficients_z (new pcl::ModelCoefficients ());
   coefficients_z->values.resize (4); 
   coefficients_z->values[0] = 0; coefficients_z->values[1] = 0; coefficients_z->values[2] = 1.0;   coefficients_z->values[3] = 0;
-  projectPointCloudToPlane (transformed_point_cloud_, coefficients_z, initial_cloud_projection_along_z_axis);
+  projectPointCloudToPlane (transformed_point_cloud_, coefficients_z, *initial_cloud_projection_along_z_axis);
   for (size_t i = 0; i < initial_cloud_projection_along_z_axis->points.size(); i++)
   {
       initial_cloud_projection_along_z_axis->points.at(i).z = OFFSET_TO_THE_ORIGIN;
@@ -367,7 +349,8 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   vector_of_projected_views_.push_back (initial_cloud_projection_along_z_axis);
 
   /// compute BoundingBox Dimensions
-  computeBoundingBoxDimensions ();	
+  Eigen::Vector4f bbox_dimensions = getAxisAlignedBoundingBox(*transformed_point_cloud_);
+  bbox_dimensions_ = bbox_dimensions.head<3>();  
   largest_side = computeLargestSideOfBoundingBox ();		
 
   /* _________________________
@@ -376,12 +359,12 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   |___________________________| */
 
   int8_t sx = 1, sy = 1;
-  signDisambiguation (initial_cloud_projection_along_y_axis, X, sx); ///XoZ Plane
-  signDisambiguation (initial_cloud_projection_along_x_axis, Y, sy); ///YoZ Plane
+  sx = signDisambiguation (*initial_cloud_projection_along_y_axis, X); ///XoZ Plane
+  sy = signDisambiguation (*initial_cloud_projection_along_x_axis, Y); ///YoZ Plane
   sign_= sx * sy;    
 
   /* _______________________________________________________
-  |                       				      |
+  |                                                         |
   |  compute histograms of projection of the given object   |
   |_________________________________________________________| */
       
@@ -398,12 +381,12 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   std::vector<float> normalized_histogramYoZ (BinN * BinN);
   float YoZ_entropy = 0;  
   create2DHistogramFromProjection (initial_cloud_projection_along_x_axis, largest_side, Y, Z, YOZ_histogram);
-  convert2DHistogramTo1DHistogram (YOZ_histogram, histogramYOZ1D);
+  histogramYOZ1D = convert2DHistogramTo1DHistogram (YOZ_histogram);
   complete_object_histogram.insert (complete_object_histogram.end(), histogramYOZ1D.begin(), histogramYOZ1D.end());  
   normalizeHistogram (histogramYOZ1D, normalized_histogramYoZ);
   normalized_projected_views.at (0) = normalized_histogramYoZ;  
   complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramYoZ.begin(), normalized_histogramYoZ.end());
-  viewpointEntropy (normalized_histogramYoZ, YoZ_entropy);
+  YoZ_entropy = viewpointEntropy (normalized_histogramYoZ);
   view_point_entropy.at (0) = YoZ_entropy;
     
   ///XOZ Projection  
@@ -411,12 +394,12 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   std::vector<float> normalized_histogramXoZ (BinN * BinN);
   float XoZ_entropy = 0;
   create2DHistogramFromProjection (initial_cloud_projection_along_y_axis, largest_side, X, Z, XOZ_histogram);
-  convert2DHistogramTo1DHistogram (XOZ_histogram, histogramXOZ1D);
+  histogramXOZ1D = convert2DHistogramTo1DHistogram (XOZ_histogram);
   complete_object_histogram.insert (complete_object_histogram.end(), histogramXOZ1D.begin(), histogramXOZ1D.end());
   normalizeHistogram (histogramXOZ1D, normalized_histogramXoZ);
   normalized_projected_views.at (1) = normalized_histogramXoZ;
   complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramXoZ.begin(), normalized_histogramXoZ.end());  
-  viewpointEntropy (normalized_histogramXoZ, XoZ_entropy);
+  XoZ_entropy = viewpointEntropy (normalized_histogramXoZ);
   view_point_entropy.at (1) = XoZ_entropy;
 
   ///XOY Projection
@@ -424,12 +407,12 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   std::vector<float> normalized_histogramXoY (BinN * BinN);
   float XoY_entropy = 0;  
   create2DHistogramFromProjection (initial_cloud_projection_along_z_axis, largest_side, X, Y, XOY_histogram);     
-  convert2DHistogramTo1DHistogram (XOY_histogram, histogramXOY1D);
+  histogramXOY1D = convert2DHistogramTo1DHistogram (XOY_histogram);
   complete_object_histogram.insert (complete_object_histogram.end(), histogramXOY1D.begin(), histogramXOY1D.end());  
   normalizeHistogram (histogramXOY1D, normalized_histogramXoY);
   normalized_projected_views.at (2) = normalized_histogramXoY;
   complete_object_histogram_normalized.insert (complete_object_histogram_normalized.end(), normalized_histogramXoY.begin(), normalized_histogramXoY.end());
-  viewpointEntropy (normalized_histogramXoY, XoY_entropy);
+  XoY_entropy = viewpointEntropy (normalized_histogramXoY);
   view_point_entropy.at (2) = XoY_entropy;
   
   /* ____________________________________
@@ -440,8 +423,9 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
   ///NOTE: The ordering of the three distribution vectors is first by decreasing values of entropy. 
   ///Afterwards the second and third vectors are sorted again by increasing values of variance.
   
-  int maximum_entropy_index = 0;
-  findMaxViewPointEntropy (view_point_entropy, maximum_entropy_index);   
+  int maximum_entropy_index = findMaxViewPointEntropy (view_point_entropy);   
+
+  std::string name_of_sorted_projected_plane;
   objectViewHistogram (maximum_entropy_index, normalized_projected_views, object_description, name_of_sorted_projected_plane);
   order_of_projected_plane_ =  name_of_sorted_projected_plane;    
   for(size_t i =0; i < object_description.size(); i++)
