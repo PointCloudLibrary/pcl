@@ -194,58 +194,74 @@ pcl::GOODEstimation<PointInT, BinN>::objectViewHistogram (int maximum_entropy_in
   switch (maximum_entropy_index)
   {
     case 0 :
-      
+            
       name_of_sorted_projected_plane += "YoZ - ";      
+      order_of_projected_plane_[0] = YoZ;
+
       variance1 = varianceOfHistogram (normalized_projected_views.at(1));      
       variance2 = varianceOfHistogram (normalized_projected_views.at(2));
       
       if (variance1 <= variance2)
       {
         name_of_sorted_projected_plane += "XoZ - XoY ";
+        order_of_projected_plane_[1] = XoZ;
+        order_of_projected_plane_[2] = XoY;
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());	
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
       }
       else
       {
         name_of_sorted_projected_plane += "XoY - XoZ ";
+        order_of_projected_plane_[1] = XoY;
+        order_of_projected_plane_[2] = XoZ;
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
       }
       break;
       
     case 1 :
-      name_of_sorted_projected_plane += "XoZ - ";            
+      name_of_sorted_projected_plane += "XoZ - ";   
+      order_of_projected_plane_[0] = XoZ;
       variance1 = varianceOfHistogram (normalized_projected_views.at(0));      
       variance2 = varianceOfHistogram (normalized_projected_views.at(2));
             
       if (variance1 <= variance2)
       {
         name_of_sorted_projected_plane += "YoZ - XoY ";
+        order_of_projected_plane_[1] = YoZ;
+        order_of_projected_plane_[2] = XoY;	
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
       }
       else
       {
         name_of_sorted_projected_plane += "XoY - YoZ ";
+        order_of_projected_plane_[1] = XoY;
+        order_of_projected_plane_[2] = YoZ;
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(2).begin(),normalized_projected_views.at(2).end());
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
       }
       break;
 
     case 2 :
-      name_of_sorted_projected_plane += "XoY - ";		            
+      name_of_sorted_projected_plane += "XoY - ";
+      order_of_projected_plane_[0] = XoY;
       variance1 = varianceOfHistogram (normalized_projected_views.at(0));
       variance2 = varianceOfHistogram (normalized_projected_views.at(1));
 
       if (variance1 <= variance2)
       {
         name_of_sorted_projected_plane += "YoZ - XoZ ";
+        order_of_projected_plane_[1] = YoZ;
+        order_of_projected_plane_[2] = XoZ;
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(0).begin(),normalized_projected_views.at(0).end());
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(),normalized_projected_views.at(1).begin(),normalized_projected_views.at(1).end());
       }
       else
       {
         name_of_sorted_projected_plane += "XoZ - YoZ ";
+        order_of_projected_plane_[1] = XoZ;	
+        order_of_projected_plane_[2] = YoZ;
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(1).begin(), normalized_projected_views.at(1).end());
         sorted_normalized_projected_views.insert (sorted_normalized_projected_views.end(), normalized_projected_views.at(0).begin(), normalized_projected_views.at(0).end());
       }
@@ -427,7 +443,7 @@ pcl::GOODEstimation<PointInT, BinN>::computeFeature (PointCloudOut &output )
 
   std::string name_of_sorted_projected_plane;
   objectViewHistogram (maximum_entropy_index, normalized_projected_views, object_description, name_of_sorted_projected_plane);
-  order_of_projected_plane_ =  name_of_sorted_projected_plane;    
+  order_of_projected_plane_str_ =  name_of_sorted_projected_plane;    
   for(size_t i =0; i < object_description.size(); i++)
     output.points[0].histogram[i] = object_description.at(i);
     

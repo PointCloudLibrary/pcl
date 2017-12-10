@@ -144,7 +144,7 @@ namespace pcl
         * \return the resultant of order of projections
         */  
       inline const std::string&
-      getOrderOfProjectedPlanes () const { return order_of_projected_plane_; }
+      getOrderOfProjectedPlanes () const { return order_of_projected_plane_str_; }
       
 
       /** \brief get the transformation matrix from camera reference frame to object local reference frame
@@ -153,7 +153,15 @@ namespace pcl
       inline const Eigen::Matrix4f&
       getTransformationMatrix () const {return transformation_;}
       
-
+      /** \brief get the order of projection views programatically */
+      enum Projection
+      {
+        XoY,
+        XoZ,
+        YoZ
+       };
+       Projection order_of_projected_plane_[3];
+       
     protected:
 
       /** \brief Estimate the GOOD descriptor at a set of points given by setInputCloud() 
@@ -190,9 +198,9 @@ namespace pcl
       /** \brief vector of three point clouds containing orthographic projection views */
       std::vector <PointCloudInPtr> vector_of_projected_views_;
       
-      /** \brief get order of projection views e.g. XoY-XoZ-YoZ */
-      std::string order_of_projected_plane_;       
-            
+      /** \brief get order of projection views in string format e.g. XoY-XoZ-YoZ */
+      std::string order_of_projected_plane_str_;       
+
       /** \brief project point cloud to a plane
         * \param[in] pc_in pointer to a point cloud.
         * \param[in] coefficients pcl::ModelCoefficients

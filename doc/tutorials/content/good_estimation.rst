@@ -61,73 +61,78 @@ It should be noted that the corresponding code is provided as an example in the 
 
 .. code-block:: cpp
    :linenos:
-	#include <pcl/features/good.h>
-	#include <pcl/io/auto_io.h>
+      #include <pcl/features/good.h>
+      #include <pcl/io/auto_io.h>
 
-	typedef pcl::PointXYZRGBA PointT;  
-	typedef pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
+      typedef pcl::PointXYZRGBA PointT;  
+      typedef pcl::PointCloud<PointT>::Ptr PointCloudInPtr;
 
-	int main (int argc, char* argv[])
-	{  
-	  if (argc != 2) 
-	  {
-	    std::cerr << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
-	    return 0;
-	  }
-	  
-	  std::string object_path = argv[1];  
-	  pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
-	  if (pcl::io::load (object_path, *object) == -1)  
-	  {
-	    std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
-	    return -1;
-	  }
-	       
-	  /*____________________________
-	  |                             |
-	  |  Setup the GOOD descriptor  |
-	  |_____________________________| */   
+      int main (int argc, char* argv[])
+      {  
+        if (argc != 2) 
+        {
+          std::cerr << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
+          return 0;
+        }
 
-	  const int NUMBER_OF_BINS = 15;     
-	  typedef pcl::GOODEstimation<PointT, NUMBER_OF_BINS>::Descriptor Descriptor;
-	  pcl::PointCloud<Descriptor> object_description;   
-	  pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor;   
-	  test_GOOD_descriptor.setThreshold (0.0015);  
-	  ///NOTE: GOOD descriptor can be setup in a line: pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
-	  test_GOOD_descriptor.setInputCloud (object); // pass original point cloud
-	  test_GOOD_descriptor.compute (object_description); // Actually compute the GOOD discriptor for the given object
+        std::string object_path = argv[1];  
+        pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
+        if (pcl::io::load (object_path, *object) == -1)  
+        {
+          std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
+          return -1;
+        }
 
-	  ///Printing GOOD_descriptor for the given point cloud, 
-	  ///NOTE: the descriptor is only the first point.
-	  std::cout << "\n GOOD = " << object_description.points[0] << std::endl; 
+        /*____________________________
+        |                             |
+        |  Setup the GOOD descriptor  |
+        |_____________________________| */   
 
-	  /*__________________________________________________
-	  |                                                   |
-	  |  Usefull Functionalities for Object Manipulation  |
-	  |___________________________________________________| */   
-	  
-	  ///NOTE: The following functionalities of the GOOD descriptor are useful for manipulation tasks:
-	  
-	  /// Get objec point cloud in local reference frame
-	  PointCloudInPtr transformed_object = test_GOOD_descriptor.getTransformedObject ();
-	  
-	  /// Get three orthographic projects and transformation matrix 
-	  std::vector<PointCloudInPtr> vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
-	  Eigen::Matrix4f transformation = test_GOOD_descriptor.getTransformationMatrix ();
-	  std::cout << "\n transofrmation matrix = \n" << transformation << std::endl;  
-	  
-	  /// Get object bounding box information 
-	  pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
-	  Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
-	  std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
-	  std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
-	  
-	  /// Get the order of the three projected planes 
-	  std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
-	  std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
+        const int NUMBER_OF_BINS = 15;     
+        typedef pcl::GOODEstimation<PointT, NUMBER_OF_BINS>::Descriptor Descriptor;
+        pcl::PointCloud<Descriptor> object_description;   
+        pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor;   
+        test_GOOD_descriptor.setThreshold (0.0015);  
 
-	  return 0;
-	}
+        ///NOTE: GOOD descriptor can be setup in a line: pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
+        test_GOOD_descriptor.setInputCloud (object); // pass original point cloud
+        test_GOOD_descriptor.compute (object_description); // Actually compute the GOOD discriptor for the given object
+
+        ///Printing GOOD_descriptor for the given point cloud, 
+        ///NOTE: the descriptor is only the first point.
+        std::cout << "\n GOOD = " << object_description.points[0] << std::endl; 
+
+        /*__________________________________________________
+        |                                                   |
+        |  Usefull Functionalities for Object Manipulation  |
+        |___________________________________________________| */   
+        
+        ///NOTE: The following functionalities of the GOOD descriptor are useful for manipulation tasks:
+        
+        /// Get objec point cloud in local reference frame
+        PointCloudInPtr transformed_object = test_GOOD_descriptor.getTransformedObject ();
+
+        /// Get three orthographic projects and transformation matrix 
+        std::vector<PointCloudInPtr> vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
+        Eigen::Matrix4f transformation = test_GOOD_descriptor.getTransformationMatrix ();
+        std::cout << "\n transofrmation matrix = \n" << transformation << std::endl;  
+        
+        /// Get object bounding box information 
+        pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
+        Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
+        std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
+        std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
+        
+        /// Get the order of the three projection views as a string
+        std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
+        std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
+        
+        /// Get the order of projection views programatically
+        const char *plane_names [3][3] = {{"XoY", "YoZ", "XoZ"}};
+        std::cout << "\n order of projected planes - the first plane is " << *plane_names[test_GOOD_descriptor.order_of_projected_plane_[0]] << std::endl;
+
+        return 0;
+      }
 
 The explanation
 ---------------
@@ -136,20 +141,33 @@ Now let's study out what is the purpose of this code.
 The following lines are simply checking and loading the cloud from the .pcd or .ply file.
 
 .. code-block:: cpp
-   :linenos:
-	  if (argc != 2) 
-	  {
-	    std::cerr << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
-	    return 0;
-	  }
-	  
-	  std::string object_path = argv[1];  
-	  pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
-	  if (pcl::io::load (object_path, *object) == -1)  
-	  {
-	    std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
-	    return -1;
-	  }
+   :linenos:     
+     if (argc != 2) 
+     {
+       std::cerr << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
+       return 0;
+     }
+
+     std::string object_path = argv[1];  
+     pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
+     if (pcl::io::load (object_path, *object) == -1)  
+     {
+       std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
+       return -1;
+     }
+     if (argc != 2) 
+     {
+       std::cerr << "\n Syntax is: example_good_descriptor <path/file_name.pcd>" << std::endl;
+       return 0;
+     }
+     
+     std::string object_path = argv[1];  
+     pcl::PointCloud<PointT>::Ptr object (new pcl::PointCloud<PointT>);
+     if (pcl::io::load (object_path, *object) == -1)  
+     {
+       std::cerr << "\n Failed to parse the file provided. Syntax is: example_good_descriptor <path/file_name.pcd>  or example_good_descriptor <path/file_name.ply>" << std::endl;
+       return -1;
+     }
 
 The following code will set up the GOOD descriptor; GOOD descriptor has two important parameters including:
  
@@ -159,24 +177,24 @@ The following code will set up the GOOD descriptor; GOOD descriptor has two impo
 
 .. code-block:: cpp
    :linenos:
-	  const int NUMBER_OF_BINS = 15;     
-	  typedef pcl::GOODEstimation<PointT, NUMBER_OF_BINS>::Descriptor Descriptor;
-	  pcl::PointCloud<Descriptor> object_description;   
-	  pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor ;   
-	  test_GOOD_descriptor.setThreshold (0.0015);  
+      const int NUMBER_OF_BINS = 15;     
+      typedef pcl::GOODEstimation<PointT, NUMBER_OF_BINS>::Descriptor Descriptor;
+      pcl::PointCloud<Descriptor> object_description;   
+      pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor;   
+      test_GOOD_descriptor.setThreshold (0.0015);  
 
 Alternatively, the GOOD descriptor can be set up in a line: 
 
 .. code-block:: cpp
    :linenos:
-       pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
+      pcl::GOODEstimation<PointT, NUMBER_OF_BINS> test_GOOD_descriptor (0.0015); 
 
 Finally, we pass the input point cloud and compute the GOOD descriptor for the given point cloud.
 
 .. code-block:: cpp
    :linenos:	  
-	  test_GOOD_descriptor.setInputCloud(object); 
-	  test_GOOD_descriptor.compute(object_description); 
+      test_GOOD_descriptor.setInputCloud(object); 
+      test_GOOD_descriptor.compute(object_description); 
    
 GOOD also provides a set of functionalities that are useful for manipulation tasks. They are including:
  
@@ -188,23 +206,27 @@ To get more information about how to use the GOOD descriptor for manipulation pu
 
 .. code-block:: cpp
    :linenos:
-	  /// Get objec point cloud in local reference frame
-	  PointCloudInPtr transformed_object = test_GOOD_descriptor.getTransformedObject ();
-	  
-	  /// Get three orthographic projects and transformation matrix 
-	  std::vector<PointCloudInPtr> vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
-	  Eigen::Matrix4f transformation = test_GOOD_descriptor.getTransformationMatrix ();
-	  std::cout << "\n transofrmation matrix = \n" << transformation << std::endl;  
-	  
-	  /// Get object bounding box information 
-	  pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
-	  Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
-	  std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
-	  std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
-	  
-	  /// Get the order of the three projected planes 
-	  std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
-	  std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
+      /// Get objec point cloud in local reference frame
+      PointCloudInPtr transformed_object = test_GOOD_descriptor.getTransformedObject ();
+
+      /// Get three orthographic projects and transformation matrix 
+      std::vector<PointCloudInPtr> vector_of_projected_views = test_GOOD_descriptor.getOrthographicProjections ();  
+      Eigen::Matrix4f transformation = test_GOOD_descriptor.getTransformationMatrix ();
+      std::cout << "\n transofrmation matrix = \n" << transformation << std::endl;  
+        
+      /// Get object bounding box information 
+      pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
+      Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
+      std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
+      std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
+        
+      /// Get the order of the three projection views as a string
+      std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
+      std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
+        
+      /// Get the order of projection views programatically
+      const char *plane_names [3][3] = {{"XoY", "YoZ", "XoZ"}};
+      std::cout << "\n order of projected planes - the first plane is " << *plane_names[test_GOOD_descriptor.order_of_projected_plane_[0]] << std::endl;
 	  
 Output and Visualization
 ---------------------------------
@@ -212,7 +234,6 @@ We are almost at the end of this tutorial.
 The syntax for running the sample code is :
 
 .. code-block:: bash
- 
      ./pcl/build/bin/pcl_example_good_descriptor ../test/milk.pcd
 
 
@@ -227,34 +248,32 @@ The GOOD descriptor has been presented in the following papers. Please adequatel
 
 .. code-block:: bash
 
-	@article{GOODPRL,
-		title = "GOOD: A global orthographic object descriptor for 3D object recognition and manipulation",
-		journal = "Pattern Recognition Letters",
-		volume = "83",
-		pages = "312 - 320",
-		year = "2016",
-		note = "Efficient Shape Representation, Matching, Ranking, and its Applications",
-		issn = "0167-8655",
-		doi = "http://dx.doi.org/10.1016/j.patrec.2016.07.006",
-		url = "http://www.sciencedirect.com/science/article/pii/S0167865516301684",
-		author = "S. Hamidreza Kasaei and Ana Maria Tomé and Luís Seabra Lopes and Miguel Oliveira",}
+      @article{GOODPRL,
+            title = "GOOD: A global orthographic object descriptor for 3D object recognition and manipulation",
+            journal = "Pattern Recognition Letters",
+            volume = "83",
+            pages = "312 - 320",
+            year = "2016",
+            note = "Efficient Shape Representation, Matching, Ranking, and its Applications",
+            issn = "0167-8655",
+            doi = "http://dx.doi.org/10.1016/j.patrec.2016.07.006",
+            url = "http://www.sciencedirect.com/science/article/pii/S0167865516301684",
+            author = "S. Hamidreza Kasaei and Ana Maria Tomé and Luís Seabra Lopes and Miguel Oliveira",}
 
-		
-	@INPROCEEDINGS{GOODIROS, 
-		author={S. H. Kasaei and L. Seabra Lopes and A. M. Tomé and M. Oliveira}, 
-		booktitle={2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
-		title={An orthographic descriptor for 3D object learning and recognition}, 
-		year={2016}, 
-		pages={4158-4163}, 
-		doi={10.1109/IROS.2016.7759612}, 
-		url="http://ieeexplore.ieee.org/document/7759612/"
-		month={Oct},}
-	
-	
-	@inproceedings{GOODObjectManipulation,
-		title={Object learning and grasping capabilities for robotic home assistants},
-		author={Kasaei, S Hamidreza and Shafii, Nima and Lopes, Lu{\'\i}s Seabra and Tom{\'e}, Ana Maria},
-		booktitle={Robot World Cup},
-		pages={279--293},
-		year={2016},
-		organization={Springer}}
+      @INPROCEEDINGS{GOODIROS, 
+            author={S. H. Kasaei and L. Seabra Lopes and A. M. Tomé and M. Oliveira}, 
+            booktitle={2016 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
+            title={An orthographic descriptor for 3D object learning and recognition}, 
+            year={2016}, 
+            pages={4158-4163}, 
+            doi={10.1109/IROS.2016.7759612}, 
+            url="http://ieeexplore.ieee.org/document/7759612/"
+            month={Oct},}
+            
+      @inproceedings{GOODObjectManipulation,
+            title={Object learning and grasping capabilities for robotic home assistants},
+            author={Kasaei, S Hamidreza and Shafii, Nima and Lopes, Lu{\'\i}s Seabra and Tom{\'e}, Ana Maria},
+            booktitle={Robot World Cup},
+            pages={279--293},
+            year={2016},
+            organization={Springer}}
