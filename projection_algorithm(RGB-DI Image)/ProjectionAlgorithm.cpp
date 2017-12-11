@@ -328,9 +328,9 @@ void ProjectionAlgorithm::ProjectionMirror6D()
 #pragma omp parallel for reduction(+:distmp)
 			 for (int j = 0; j < m_feapicked.size(); j++)
 			 {
-				 distmp += sqrt((m_feapicked[j][0] - xpm)*(m_feapicked[j][0] - xpm) +
-					 (m_feapicked[j][1] - ypm)*(m_feapicked[j][1] - ypm) +
-					 (m_feapicked[j][2] - zpm)*(m_feapicked[j][2] - zpm));
+				 distmp += sqrt((xp[j] - xpm)*(xp[j] - xpm) +
+					 (yp[j] - ypm)*(yp[j] - ypm) +
+					 (zp[j]- zpm)*(zp[j] - zpm));
 			 }
 			 disVec[cnt] = distmp / m_feapicked.size();
 			 xp.clear(), yp.clear(), zp.clear();
