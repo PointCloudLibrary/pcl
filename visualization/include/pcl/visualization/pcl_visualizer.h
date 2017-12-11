@@ -1179,6 +1179,18 @@ namespace pcl
         getPointCloudRenderingProperties (int property, double &value,
                                           const std::string &id = "cloud");
         
+       /** \brief Get the rendering properties of a PointCloud
+         * \param[in] property the property type
+         * \param[out] val1 the resultant property value
+         * \param[out] val2 the resultant property value
+         * \param[out] val3 the resultant property value
+         * \param[in] id the point cloud object id (default: cloud)
+         * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
+         */
+        bool
+        getPointCloudRenderingProperties (int property, double &val1, double &val2, double &val3,
+                                          const std::string &id = "cloud");
+
         /** \brief Set whether the point cloud is selected or not 
          *  \param[in] selected whether the cloud is selected or not (true = selected)
          *  \param[in] id the point cloud object id (default: cloud)

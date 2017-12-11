@@ -1503,6 +1503,40 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int propert
   }
   return (true);
 }
+/////////////////////////////////////////////////////////////////////////////////////////////
+bool
+pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int property, double &val1, double &val2, double &val3, const std::string &id)
+{
+  // Check to see if this ID entry already exists (has it been already added to the visualizer?)
+  CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
+
+  if (am_it == cloud_actor_map_->end ())
+    return (false);
+  // Get the actor pointer
+  vtkLODActor* actor = vtkLODActor::SafeDownCast (am_it->second.actor);
+  if (!actor)
+    return (false);
+
+  switch (property)
+  {
+    case PCL_VISUALIZER_COLOR:
+    {
+      double rgb[3];
+      actor->GetProperty ()->GetColor (rgb);
+      actor->Modified ();
+      val1 = rgb[0];
+      val2 = rgb[1];
+      val3 = rgb[2];
+      break;
+    }
+    default:
+    {
+      pcl::console::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      return (false);
+    }
+  }
+  return (true);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
