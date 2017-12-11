@@ -216,7 +216,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormal (
 
     unsigned count = integral_image_XYZ_.getFiniteElementsCount (pos_x - (rect_width_2_), pos_y - (rect_height_2_), rect_width_, rect_height_);
 
-    // no valid points within the rectangular reagion?
+    // no valid points within the rectangular region?
     if (count == 0)
     {
       normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
@@ -481,7 +481,7 @@ pcl::IntegralImageNormalEstimation<PointInT, PointOutT>::computePointNormalMirro
     unsigned count = 0;
     sumArea<unsigned>(start_x, start_y, end_x, end_y, width, height, boost::bind(&IntegralImage2D<float, 3>::getFiniteElementsCountSE, &integral_image_XYZ_, _1, _2, _3, _4), count);
     
-    // no valid points within the rectangular reagion?
+    // no valid points within the rectangular region?
     if (count == 0)
     {
       normal.normal_x = normal.normal_y = normal.normal_z = normal.curvature = bad_point;
