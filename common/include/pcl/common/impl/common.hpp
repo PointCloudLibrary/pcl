@@ -424,12 +424,15 @@ pcl::calculatePolygonArea (const pcl::PointCloud<PointT> &polygon)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-template <typename PointT> Eigen::Vector4f
-pcl::getAxisAlignedBoundingBox (const pcl::PointCloud<PointT> &cloud)
+template <typename PointT> void
+pcl::getAxisAlignedBoundingBox (const pcl::PointCloud<PointT> &cloud,
+                                Eigen::Vector4f& center,
+                                Eigen::Vector4f& size)
 {
   Eigen::Vector4f min, max;
   getMinMax3D (cloud, min, max);
-  return (max - min);
+  size = max - min;
+  center = .5f * (max + min);
 }
 #endif  //#ifndef PCL_COMMON_IMPL_H_
 

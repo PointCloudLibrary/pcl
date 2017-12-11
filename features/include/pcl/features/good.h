@@ -79,12 +79,12 @@ namespace pcl
   class PCL_EXPORTS GOODEstimation : public Feature<PointInT, Histogram<3*BinN*BinN> >
   {
     public:     
-      typedef pcl::Histogram<3*BinN*BinN> Descriptor;     
-      typedef typename pcl::PointCloud<PointInT> PointCloudIn; 
-      typedef typename PointCloudIn::ConstPtr PointCloudInConstPtr;
-      typedef typename pcl::PointCloud<PointInT>::Ptr PointCloudInPtr;      
-      typedef typename Feature<PointInT, Descriptor>::PointCloudOut PointCloudOut;  
+      typedef pcl::Histogram<3*BinN*BinN> Descriptor;                    
+      typedef typename Feature<PointInT, Descriptor>::PointCloudOut PointCloudOut;
       
+      using typename Feature<PointInT, Descriptor>::PointCloudIn;
+      using typename Feature<PointInT, Descriptor>::PointCloudInPtr;
+      using typename Feature<PointInT, Descriptor>::PointCloudInConstPtr;            
       using Feature<PointInT, Descriptor>::feature_name_;
       using Feature<PointInT, Descriptor>::k_;
       using PCLBase<PointInT>::input_;
@@ -137,44 +137,47 @@ namespace pcl
       /** \brief get dimensions of bounding box of a set of points given by setInputCloud()
         * \return the resultant boundingbox dimensions
         */ 
-      inline const Eigen::Vector3f&
+      inline const Eigen::Vector4f&
       getObjectBoundingBoxDimensions () const { return bbox_dimensions_; }
-
-      /** \brief get the order of protection plans in constructing GOOD descriptor
-        * \return the resultant of order of projections
-        */  
-      inline const std::string&
-      getOrderOfProjectedPlanes () const { return order_of_projected_plane_str_; }
       
-
       /** \brief get the transformation matrix from camera reference frame to object local reference frame
         * \return the resultant transformation matrix
         */       
       inline const Eigen::Matrix4f&
       getTransformationMatrix () const {return transformation_;}
       
+      /** \brief get the index of Nth protection plan in constructed GOOD descriptor; Index can be [0 - 2] which is related to {"YoZ", "XoZ", "XoY"}
+      * \return the resultant index [0 - 2] which is related to {"YoZ", "XoZ", "XoY"}
+      */       
+      inline const char*
+      getNameOfNthProjectedPlane (size_t n) const 
+      {
+	const char *plane_name [3] = {"YoZ", "XoZ", "XoY"};
+	return (plane_name [order_of_projected_plane_ [n]]);
+      }
+      
+    protected:
+
       /** \brief get the order of projection views programatically */
       enum Projection
       {
-        XoY,
+        YoZ,
         XoZ,
-        YoZ
-       };
-       Projection order_of_projected_plane_[3];
-       
-    protected:
-
-      /** \brief Estimate the GOOD descriptor at a set of points given by setInputCloud() 
+        XoY        
+      };
+      Projection order_of_projected_plane_[3];
+      
+      /** \brief estimate the GOOD descriptor at a set of points given by setInputCloud() 
       * \param[out] output  the resultant GOOD descriptor representing the feature at the query point cloud
       */        
       virtual void
       computeFeature (PointCloudOut &output);
     
-
     private:
-     
+           
+      /** \brief use the axis programatically */
       enum Axis { X, Y, Z};
-      
+
       /** \brief threshold parameter is used in constructing local reference frame. 
        * By default, the threshold_ is set to 0.0015.
        */
@@ -190,23 +193,20 @@ namespace pcl
       Eigen::Matrix4f transformation_;
       
       /** \brief dimensions of boundingboxbox of given point cloud */
-      Eigen::Vector3f bbox_dimensions_;
+      Eigen::Vector4f bbox_dimensions_;
       
       /** \brief center of boundingboxbox of given point cloud */
       pcl::PointXYZ center_of_bbox_;
       
       /** \brief vector of three point clouds containing orthographic projection views */
-      std::vector <PointCloudInPtr> vector_of_projected_views_;
-      
-      /** \brief get order of projection views in string format e.g. XoY-XoZ-YoZ */
-      std::string order_of_projected_plane_str_;       
+      std::vector<PointCloudInPtr> vector_of_projected_views_;
 
       /** \brief project point cloud to a plane
         * \param[in] pc_in pointer to a point cloud.
         * \param[in] coefficients pcl::ModelCoefficients
         * \param[out] pc_out the resultant projected point cloud
         */ 
-      void
+      static void
       projectPointCloudToPlane (const PointCloudInConstPtr &pc_in, const pcl::ModelCoefficients::Ptr &coefficients, PointCloudIn &pc_out); 
 
       /** \brief convert 2D histogram to 1D histogram
@@ -229,19 +229,20 @@ namespace pcl
         * \param[in] largest_side largest side of object bounding box.
         * \param[in] number_of_bins  number of bins along one dimension.
         * \param[in] sign either 1 or -1.
-        * \param[out] histogram a 2D vector of unsigned int.
+        * \return histogram a 2D vector of unsigned int.
         */  
-      void 
-      create2DHistogramFromProjection (const PointCloudInPtr &projected_view, const float largest_side, 
-                                       const int8_t axis_a, const int8_t axis_b,
-                                       std::vector<std::vector<unsigned int> > &histogram) const;
+      std::vector<std::vector<unsigned int> >  
+      create2DHistogramFromProjection (const PointCloudInPtr &projected_view, 
+                                       const float largest_side, 
+                                       const int8_t axis_a, 
+                                       const int8_t axis_b) const;
              
       /** \brief normalizing a 1D histogram
         * \param[in] histogram 1D histogram (int).
         * \param[out] normalized_histogram the resultant normalized_histogram (float).
         */       
       static void
-      normalizeHistogram (const std::vector <unsigned int> histogram, std::vector <float> &normalized_histogram);
+      normalizeHistogram (const std::vector<unsigned int> &histogram, std::vector<float> &normalized_histogram);
 
       /** \brief compute viewpoint entropy used for concatenating projections
         * \param[in] normalized_histogram normalized_histogram (float).
@@ -254,7 +255,7 @@ namespace pcl
         * \param[in] view_point_entropy a vector of float contains three view entropies.
         * \return the resultant projection index.
         */  
-      int
+      size_t 
       findMaxViewPointEntropy (const std::vector<float> &view_point_entropy);
 
       /** \brief compute variance of a given histogram
@@ -269,15 +270,13 @@ namespace pcl
        * the histograms are consequently concatenated together using entropy and variance features, to form a single description for the given object. The ordering of the three
        * histograms is first by decreasing values of entropy. Afterwards the second and third vectors are sorted again by increasing values of variance.
        * \param[in] maximum_entropy_index index of orthographic projection that has maximum entropy.		
-       * \param[in] normalized_projected_views a vector of vector of float contains three normalized histogram of projected views
-       * \param[out] sorted_normalized_projected_views a vector of float representing the GOOD description for a set of points given by setInputCloud() 
+       * \param[in] normalized_projected_views a vector of vector of float contains three normalized histogram of projected views       
        * \param[out] name_of_sorted_projected_plane an string represents the order of concatenating projections.
+       * \return the resultant GOOD description (i.e. sorted_normalized_projected_views a vector of float representing the GOOD description for a set of points given by setInputCloud()) 
        */              
-      void
-      objectViewHistogram (int maximum_entropy_index, 
-                           const std::vector<std::vector<float> > &normalized_projected_views,
-                           std::vector<float> &sorted_normalized_projected_views,
-                           std::string &name_of_sorted_projected_plane);
+      std::vector<float>
+      objectViewHistogram (const size_t maximum_entropy_index, 
+                           const std::vector<std::vector<float> > &normalized_projected_views);
 
       /** \brief compute largest side of the computed boundingbox i.e. bbox_dimensions_
         * \return the resultant largest side.
@@ -286,6 +285,10 @@ namespace pcl
         */           
       inline float 
       computeLargestSideOfBoundingBox () const { return (bbox_dimensions_.maxCoeff() + 0.02) ;}      
+      
+    public:
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
   };
 }
 

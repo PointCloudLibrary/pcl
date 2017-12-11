@@ -201,13 +201,17 @@ namespace pcl
   PCL_EXPORTS void
   getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev);
 
-  /** \brief Compute get axis aligned boundingbox
-    * \param cloud the point cloud
+  /** \brief Compute the axis aligned bounding box.
+    * \param[in] cloud the point cloud
+    * \param[out] center the resultant center of bounding box.
+    * \param[out] size the resultant size of bounding box.
     * \return the resultant axis aligned boundingbox
     * \ingroup common
     */
-  template <typename PointT> Eigen::Vector4f
-  getAxisAlignedBoundingBox (const pcl::PointCloud<PointT> &cloud);
+  template <typename PointT> void
+  getAxisAlignedBoundingBox (const pcl::PointCloud<PointT> &cloud,
+                             Eigen::Vector4f& center,
+                             Eigen::Vector4f& size);
   
 }
 /*@}*/

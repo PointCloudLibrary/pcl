@@ -102,7 +102,7 @@ int main (int argc, char* argv[])
   
   ///Printing GOOD_descriptor for the given point cloud, 
   ///NOTE: the descriptor is only the first point.
-  std::cout << "\n GOOD = " << object_description.points[0] << std::endl; 
+  std::cout << "\n GOOD = " << object_description[0] << std::endl; 
 
   /*__________________________________________________
   |                                                   |
@@ -121,17 +121,13 @@ int main (int argc, char* argv[])
   
   /// Get object bounding box information 
   pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
-  Eigen::Vector3f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
+  Eigen::Vector4f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
   std::cout<<"\n center_of_bounding_box = " << center_of_bounding_box << std::endl;
   std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
     
-  /// Get the order of the three projection views as a string
-  std::string order_of_projected_planes = test_GOOD_descriptor.getOrderOfProjectedPlanes ();
-  std::cout << "\n order of projected planes = " << order_of_projected_planes << std::endl;
-
   /// Get the order of projection views programatically
-  const char *plane_names [3][3] = {{"XoY", "YoZ", "XoZ"}};
-  std::cout << "\n order of projected planes - the first plane is " << *plane_names[test_GOOD_descriptor.order_of_projected_plane_[0]] << std::endl;
+  const char *plane_name = test_GOOD_descriptor.getNameOfNthProjectedPlane (0);
+  std::cout << "\n the first plane is " << plane_name << std::endl;
 
   /*_________________________________________
   |                                          |
