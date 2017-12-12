@@ -1188,7 +1188,7 @@ namespace pcl
          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
-        getPointCloudRenderingProperties (int property, double &val1, double &val2, double &val3,
+        getPointCloudRenderingProperties (RenderingProperties property, double &val1, double &val2, double &val3,
                                           const std::string &id = "cloud");
 
         /** \brief Set whether the point cloud is selected or not 
