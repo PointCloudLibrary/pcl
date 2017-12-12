@@ -1523,7 +1523,6 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingPr
     {
       double rgb[3];
       actor->GetProperty ()->GetColor (rgb);
-      actor->Modified ();
       val1 = rgb[0];
       val2 = rgb[1];
       val3 = rgb[2];
