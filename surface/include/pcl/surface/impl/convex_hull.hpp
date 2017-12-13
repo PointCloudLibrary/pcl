@@ -182,6 +182,7 @@ pcl::ConvexHull<PointInT>::performReconstruction2D (PointCloud &hull, std::vecto
 #ifdef HAVE_QHULL_2015
   qhT qh_qh;
   qhT *qh= &qh_qh;
+  qh->qhmem.ferr = NULL;
   int exitcode = qh_new_qhull (qh, dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
 #else
   int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
@@ -354,6 +355,7 @@ pcl::ConvexHull<PointInT>::performReconstruction3D (
 #ifdef HAVE_QHULL_2015
   qhT qh_qh;
   qhT *qh= &qh_qh;
+  qh->qhmem.ferr = NULL;
   int exitcode = qh_new_qhull (qh, dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
 #else
   int exitcode = qh_new_qhull (dimension, static_cast<int> (indices_->size ()), points, ismalloc, const_cast<char*> (flags), outfile, errfile);
