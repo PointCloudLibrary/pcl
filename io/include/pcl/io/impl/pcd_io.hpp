@@ -199,7 +199,7 @@ pcl::PCDWriter::writeBinary (const std::string &file_name,
   HANDLE fm = CreateFileMappingA (h_native_file, NULL, PAGE_READWRITE, 0, (DWORD) (data_idx + data_size), NULL);
   if (fm == NULL)
   {
-      throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error during write ()!");
+      throw pcl::IOException("[pcl::PCDWriter::writeBinary] Error during memory map creation ()!");
       return (-1);
   }
   char *map = static_cast<char*>(MapViewOfFile (fm, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, data_idx + data_size));
