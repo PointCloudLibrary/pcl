@@ -126,8 +126,8 @@ int main (int argc, char* argv[])
   std::cout<<"\n bounding_box_dimensions = " << bounding_box_dimensions << std::endl;
     
   /// Get the order of projection views programatically
-  const char *plane_name = test_GOOD_descriptor.getNameOfNthProjectedPlane (0);
-  std::cout << "\n the first plane is " << plane_name << std::endl;
+  const char *plane_name = test_GOOD_descriptor.getNameOfNthProjectedPlane (0); // input param can be {0, 1, 2}
+  std::cout << "\n the first projection view is " << plane_name << std::endl;
 
   /*_________________________________________
   |                                          |

@@ -208,13 +208,6 @@ namespace pcl
         */ 
       static void
       projectPointCloudToPlane (const PointCloudInConstPtr &pc_in, const pcl::ModelCoefficients::Ptr &coefficients, PointCloudIn &pc_out); 
-
-      /** \brief convert 2D histogram to 1D histogram
-        * \param[in] histogram_2D a 2D vector of unsigned int 
-        * \return the resultant 1D vector of unsigned int 
-        */ 
-      static std::vector<unsigned>
-      convert2DHistogramTo1DHistogram (const std::vector<std::vector<unsigned> > &histogram_2D);
             
       /** \brief sign disambiguation
         * \param[in] projected_view pointer to a point cloud.
@@ -229,27 +222,20 @@ namespace pcl
         * \param[in] largest_side largest side of object bounding box.
         * \param[in] number_of_bins  number of bins along one dimension.
         * \param[in] sign either 1 or -1.
-        * \return histogram a 2D vector of unsigned int.
+        * \return histogram i.e. eigen array (float).
         */  
-      std::vector<std::vector<unsigned int> >  
-      create2DHistogramFromProjection (const PointCloudInPtr &projected_view, 
-                                       const float largest_side, 
-                                       const int8_t axis_a, 
-                                       const int8_t axis_b) const;
+      Eigen::Array<float, BinN * BinN, 1>
+      createNormalizedHistogramFromProjection (const PointCloudInPtr &projected_view, 
+                                               const float largest_side, 
+                                               const int8_t axis_a, 
+                                               const int8_t axis_b) const;
              
-      /** \brief normalizing a 1D histogram
-        * \param[in] histogram 1D histogram (int).
-        * \param[out] normalized_histogram the resultant normalized_histogram (float).
-        */       
-      static void
-      normalizeHistogram (const std::vector<unsigned int> &histogram, std::vector<float> &normalized_histogram);
-
       /** \brief compute viewpoint entropy used for concatenating projections
         * \param[in] normalized_histogram normalized_histogram (float).
         * \return the resultant view entropy.
         */   
       float
-      viewpointEntropy (const std::vector<float> &normalized_histogram);
+      viewpointEntropy (const Eigen::Array<float, BinN * BinN, 1> &normalized_histogram);
 
       /** \brief find max view point entropy used for concatenating projections
         * \param[in] view_point_entropy a vector of float contains three view entropies.
@@ -263,20 +249,19 @@ namespace pcl
         * \return variance the resultant variance.
         */        
       float
-      varianceOfHistogram (const std::vector<float> &histogram);
+      varianceOfHistogram (const Eigen::Array<float, BinN * BinN, 1> &histogram);
 
       /** \brief concatinating three orthographic projections
        * three histograms are obtained for the projections; afterwards, two statistic features including entropy and variance have been calculated for each distribution vector;
        * the histograms are consequently concatenated together using entropy and variance features, to form a single description for the given object. The ordering of the three
        * histograms is first by decreasing values of entropy. Afterwards the second and third vectors are sorted again by increasing values of variance.
        * \param[in] maximum_entropy_index index of orthographic projection that has maximum entropy.		
-       * \param[in] normalized_projected_views a vector of vector of float contains three normalized histogram of projected views       
-       * \param[out] name_of_sorted_projected_plane an string represents the order of concatenating projections.
-       * \return the resultant GOOD description (i.e. sorted_normalized_projected_views a vector of float representing the GOOD description for a set of points given by setInputCloud()) 
+       * \param[in] normalized_projected_views a vector of eigen array of float contains three normalized histogram of projected views.
+       * \return the resultant GOOD description (i.e. eigen array of float).
        */              
-      std::vector<float>
+      Eigen::Array<float, 3 * BinN * BinN, 1>
       objectViewHistogram (const size_t maximum_entropy_index, 
-                           const std::vector<std::vector<float> > &normalized_projected_views);
+                           const std::vector<Eigen::Array<float, BinN * BinN, 1> > &normalized_projected_views);
 
       /** \brief compute largest side of the computed boundingbox i.e. bbox_dimensions_
         * \return the resultant largest side.
