@@ -56,9 +56,9 @@
 #include <pcl/surface/qhull.h>
 
 //////////////////////////////////////////////////////////////////////////
-/** \brief Get dimension of concave hull  
+/** \brief Get dimension of concave hull
   * \return dimension
-  */                    
+  */
 template <typename PointInT> int
 pcl::ConcaveHull<PointInT>::getDim () const
 {
@@ -154,7 +154,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       dim_ = 2;
     else
       dim_ = 3;
-  } 
+  }
 
   if (dim_ == 2)
   {
@@ -176,7 +176,7 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   {
     transform1.setIdentity ();
   }
-  
+
   PointCloud cloud_transformed;
   pcl::demeanPointCloud (*input_, *indices_, xyz_centroid, cloud_transformed);
   pcl::transformPointCloud (cloud_transformed, cloud_transformed, transform1);
@@ -205,8 +205,13 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   }
 
   // Compute concave hull
+#ifdef HAVE_QHULL_2015
+  qhT qh_qh;
+  qhT *qh= &qh_qh;
+  exitcode = qh_new_qhull (qh, dim_, static_cast<int> (cloud_transformed.points.size ()), points, ismalloc, flags, outfile, errfile);
+#else
   exitcode = qh_new_qhull (dim_, static_cast<int> (cloud_transformed.points.size ()), points, ismalloc, flags, outfile, errfile);
-
+#endif
   if (exitcode != 0)
   {
     PCL_ERROR ("[pcl::%s::performReconstrution] ERROR: qhull was unable to compute a concave hull for the given point cloud (%lu)!\n", getClassName ().c_str (), cloud_transformed.points.size ());
@@ -234,16 +239,26 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
     alpha_shape.width = alpha_shape.height = 0;
     polygons.resize (0);
 
-    qh_freeqhull (!qh_ALL);
     int curlong, totlong;
+#ifdef HAVE_QHULL_2015
+    qh_freeqhull (qh, !qh_ALL);
+    qh_memfreeshort (qh, &curlong, &totlong);
+#else
+    qh_freeqhull (!qh_ALL);
     qh_memfreeshort (&curlong, &totlong);
+#endif
 
     return;
   }
 
+#ifdef HAVE_QHULL_2015
+  qh_setvoronoi_all (qh);
+  int num_vertices = qh->num_vertices;
+#else
   qh_setvoronoi_all ();
-
   int num_vertices = qh num_vertices;
+#endif
+
   alpha_shape.points.resize (num_vertices);
 
   vertexT *vertex;
@@ -260,12 +275,21 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   ++max_vertex_id;
   std::vector<int> qhid_to_pcidx (max_vertex_id);
 
+#ifdef HAVE_QHULL_2015
+  int num_facets = qh->num_facets;
+#else
   int num_facets = qh num_facets;
+#endif
+
   int dd = 0;
 
   if (dim_ == 3)
   {
+#ifdef HAVE_QHULL_2015
+    setT *triangles_set = qh_settemp (qh, 4 * num_facets);
+#else
     setT *triangles_set = qh_settemp (4 * num_facets);
+#endif
     if (voronoi_centers_)
       voronoi_centers_->points.resize (num_facets);
 
@@ -292,29 +316,48 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         if (r <= alpha_)
         {
           // all triangles in tetrahedron are good, add them all to the alpha shape (triangles_set)
-          qh_makeridges (facet);
-          facet->good = true;
+#ifdef HAVE_QHULL_2015
+          qh_makeridges (qh, facet);
+          facet->visitid = qh->visit_id;
+#else
+          qh_makeridges (qh, facet);
           facet->visitid = qh visit_id;
+#endif
+          facet->good = true;
           ridgeT *ridge, **ridgep;
           FOREACHridge_ (facet->ridges)
           {
             neighb = otherfacet_ (ridge, facet);
+#ifdef HAVE_QHULL_2015
+            if ((neighb->visitid != qh->visit_id))
+              qh_setappend (qh, &triangles_set, ridge);
+#else
             if ((neighb->visitid != qh visit_id))
               qh_setappend (&triangles_set, ridge);
+#endif
           }
         }
         else
         {
           // consider individual triangles from the tetrahedron...
           facet->good = false;
+#ifdef HAVE_QHULL_2015
+          facet->visitid = qh->visit_id;
+          qh_makeridges (qh, facet);
+#else
           facet->visitid = qh visit_id;
           qh_makeridges (facet);
+#endif
           ridgeT *ridge, **ridgep;
           FOREACHridge_ (facet->ridges)
           {
             facetT *neighb;
             neighb = otherfacet_ (ridge, facet);
+#ifdef HAVE_QHULL_2015
+            if ((neighb->visitid != qh->visit_id))
+#else
             if ((neighb->visitid != qh visit_id))
+#endif
             {
               // check if individual triangle is good and add it to triangles_set
 
@@ -331,7 +374,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
 
               double r = pcl::getCircumcircleRadius (a, b, c);
               if (r <= alpha_)
+#ifdef HAVE_QHULL_2015
+                qh_setappend (qh, &triangles_set, ridge);
+#else
                 qh_setappend (&triangles_set, ridge);
+#endif
             }
           }
         }
@@ -363,7 +410,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       {
         polygons[triangles].vertices.resize (3);
         int vertex_n, vertex_i;
+#ifdef HAVE_QHULL_2015
+        FOREACHvertex_i_ (qh, (*ridge).vertices)  //3 vertices per ridge!
+#else
         FOREACHvertex_i_ ((*ridge).vertices)  //3 vertices per ridge!
+#endif
         {
           if (!added_vertices[vertex->id])
           {
@@ -392,7 +443,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
   {
     // Compute the alpha complex for the set of points
     // Filters the delaunay triangles
+#ifdef HAVE_QHULL_2015
+    setT *edges_set = qh_settemp (qh, 3 * num_facets);
+#else
     setT *edges_set = qh_settemp (3 * num_facets);
+#endif
     if (voronoi_centers_)
       voronoi_centers_->points.resize (num_facets);
 
@@ -411,12 +466,20 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         if (r <= alpha_)
         {
           pcl::Vertices facet_vertices;   //TODO: is not used!!
+#ifdef HAVE_QHULL_2015
+          qh_makeridges (qh, facet);
+#else
           qh_makeridges (facet);
+#endif
           facet->good = true;
 
           ridgeT *ridge, **ridgep;
           FOREACHridge_ (facet->ridges)
+#ifdef HAVE_QHULL_2015
+          qh_setappend (qh, &edges_set, ridge);
+#else
           qh_setappend (&edges_set, ridge);
+#endif
 
           if (voronoi_centers_)
           {
@@ -446,7 +509,11 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
         std::vector<int> pcd_indices;
         pcd_indices.resize (2);
 
+#ifdef HAVE_QHULL_2015
+        FOREACHvertex_i_ (qh, (*ridge).vertices)  //in 2-dim, 2 vertices per ridge!
+#else
         FOREACHvertex_i_ ((*ridge).vertices)  //in 2-dim, 2 vertices per ridge!
+#endif
         {
           if (!added_vertices[vertex->id])
           {
@@ -549,9 +616,14 @@ pcl::ConcaveHull<PointInT>::performReconstruction (PointCloud &alpha_shape, std:
       voronoi_centers_->points.resize (dd);
   }
 
-  qh_freeqhull (!qh_ALL);
   int curlong, totlong;
+#ifdef HAVE_QHULL_2015
+  qh_freeqhull (qh, !qh_ALL);
+  qh_memfreeshort (qh, &curlong, &totlong);
+#else
+  qh_freeqhull (!qh_ALL);
   qh_memfreeshort (&curlong, &totlong);
+#endif
 
   Eigen::Affine3d transInverse = transform1.inverse ();
   pcl::transformPointCloud (alpha_shape, alpha_shape, transInverse);
