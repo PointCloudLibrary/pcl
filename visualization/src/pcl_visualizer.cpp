@@ -1505,7 +1505,11 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (int propert
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 bool
-pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingProperties property, double &val1, double &val2, double &val3, const std::string &id)
+pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingProperties property,
+                                                                     double &val1,
+                                                                     double &val2,
+                                                                     double &val3,
+                                                                     const std::string &id)
 {
   // Check to see if this ID entry already exists (has it been already added to the visualizer?)
   CloudActorMap::iterator am_it = cloud_actor_map_->find (id);
@@ -1530,7 +1534,10 @@ pcl::visualization::PCLVisualizer::getPointCloudRenderingProperties (RenderingPr
     }
     default:
     {
-      pcl::console::print_error ("[getPointCloudRenderingProperties] Unknown property (%d) specified!\n", property);
+      pcl::console::print_error ("[getPointCloudRenderingProperties] "
+                                 "Property (%d) is either unknown or it requires a different "
+                                 "number of variables to retrieve its contents.\n",
+                                 property);
       return (false);
     }
   }

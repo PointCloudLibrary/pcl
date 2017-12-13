@@ -1185,6 +1185,7 @@ namespace pcl
          * \param[out] val2 the resultant property value
          * \param[out] val3 the resultant property value
          * \param[in] id the point cloud object id (default: cloud)
+         * \return True if the property is effectively retrieved.
          * \note The list of properties can be found in \ref pcl::visualization::LookUpTableRepresentationProperties.
          */
         bool
