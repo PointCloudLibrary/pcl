@@ -93,8 +93,14 @@ pcl::io::openni2::OpenNI2Device::OpenNI2Device (const std::string& device_URI) :
     {
       setColorVideoMode (getDefaultColorMode ());
     }
-    setDepthVideoMode (getDefaultDepthMode ());
-    setIRVideoMode (getDefaultIRMode ());
+    if (openni_device_->hasSensor (openni::SENSOR_DEPTH))
+    {
+      setDepthVideoMode (getDefaultDepthMode ());
+    }
+    if (openni_device_->hasSensor (openni::SENSOR_IR))
+    {
+      setIRVideoMode (getDefaultIRMode ());
+    }
   }
 
   if (openni_device_->isFile ())
