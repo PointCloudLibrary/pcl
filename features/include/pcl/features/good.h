@@ -80,8 +80,7 @@ namespace pcl
   {
     public:     
       typedef pcl::Histogram<3*BinN*BinN> Descriptor;                    
-      typedef typename Feature<PointInT, Descriptor>::PointCloudOut PointCloudOut;
-      
+      using typename Feature<PointInT, Descriptor>::PointCloudOut;      
       using typename Feature<PointInT, Descriptor>::PointCloudIn;
       using typename Feature<PointInT, Descriptor>::PointCloudInPtr;
       using typename Feature<PointInT, Descriptor>::PointCloudInConstPtr;            
