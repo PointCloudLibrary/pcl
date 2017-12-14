@@ -89,7 +89,6 @@ namespace pcl
         typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
         typedef typename KdTreeReciprocal::PointRepresentationConstPtr ReciprocalPointRepresentationConstPtr;
 
-        
         /** \brief Empty constructor. */
         CorrespondenceEstimationBase () 
           : corr_name_ ("CorrespondenceEstimationBase")
@@ -110,6 +109,19 @@ namespace pcl
       
         /** \brief Empty destructor */
         virtual ~CorrespondenceEstimationBase () {}
+
+        /** \brief An alias to setInputSource
+          * \param[in] cloud the input point cloud source
+          */
+        void
+        setInputCloud (const PointCloudSourceConstPtr &cloud)
+        {
+          setInputSource (cloud);
+        }
+
+        /** \brief An alias to getInputSource. */
+        PointCloudSourceConstPtr const
+        getInputCloud () const { return getInputSource (); }
 
         /** \brief Provide a pointer to the input source 
           * (e.g., the point cloud that we want to align to the target)
@@ -281,11 +293,11 @@ namespace pcl
         {
           point_representation_ = point_representation;
         }
-        
-        /** \brief Provide a boost shared pointer to the PointRepresentation to be used 
+
+        /** \brief Provide a boost shared pointer to the PointRepresentation to be used
           * when searching for nearest neighbors in the source cloud (only needed for reciprocal).
           *
-          * \param[in] point_representation the PointRepresentation to be used by the 
+          * \param[in] point_representation the PointRepresentation to be used by the
           * source k-D tree for nearest neighbor search
           */
         inline void
@@ -320,7 +332,7 @@ namespace pcl
 
         /** \brief The point representation used for reciprocal search (internal). */
         ReciprocalPointRepresentationConstPtr point_representation_source_;
-        
+
         /** \brief The transformed input source point cloud dataset. */
         PointCloudTargetPtr input_transformed_;
 
@@ -334,7 +346,7 @@ namespace pcl
         /** \brief Internal computation initalization. */
         bool
         initCompute ();
-        
+
         /** \brief Internal computation initalization for reciprocal correspondences. */
         bool
         initComputeReciprocal ();
@@ -343,10 +355,12 @@ namespace pcl
          * This way, we avoid rebuilding the kd-tree for the target cloud every time the determineCorrespondences () method
          * is called. */
         bool target_cloud_updated_;
+
         /** \brief Variable that stores whether we have a new source cloud, meaning we need to pre-process it again.
          * This way, we avoid rebuilding the reciprocal kd-tree for the source cloud every time the determineCorrespondences () method
          * is called. */
         bool source_cloud_updated_;
+
         /** \brief A flag which, if set, means the tree operating on the target cloud 
          * will never be recomputed*/
         bool force_no_recompute_;
@@ -381,9 +395,7 @@ namespace pcl
     template <typename PointSource, typename PointTarget, typename Scalar = float>
     class CorrespondenceEstimation : public CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>
     {
-      public:
-        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> > Ptr;
-        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
+      protected:
 
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
@@ -392,26 +404,35 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::corr_name_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_indices_;
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::indices_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;
+
+      public:
+        typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> > Ptr;
+        typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
+
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
         using PCLBase<PointSource>::deinitCompute;
 
-        typedef pcl::search::KdTree<PointTarget> KdTree;
-        typedef typename pcl::search::KdTree<PointTarget>::Ptr KdTreePtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTreePtr;
 
-        typedef pcl::PointCloud<PointSource> PointCloudSource;
-        typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-        typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTreeReciprocal;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTreeReciprocalPtr;
 
-        typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-        typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-        typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSource;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourcePtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr;
 
-        typedef typename KdTree::PointRepresentationConstPtr PointRepresentationConstPtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudTarget;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudTargetPtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointCloudTargetConstPtr;
+
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::PointRepresentationConstPtr;
+        using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::ReciprocalPointRepresentationConstPtr;
 
         /** \brief Empty constructor. */
         CorrespondenceEstimation () 
@@ -450,6 +471,41 @@ namespace pcl
           return (copy);
         }
      };
+
+    namespace detail
+    {
+      // Copy is performed if PointSource is of different type than PointTarget
+      template<typename KdTree, typename PointSource, typename PointTarget, typename Enabled = void>
+      struct NearestKSearchHelper;
+
+      // Copy is performed if PointSource is of different type than PointTarget
+      template<typename KdTree, typename PointSource, typename PointTarget>
+      struct NearestKSearchHelper<KdTree, PointSource, PointTarget, typename boost::enable_if<boost::mpl::not_<boost::is_same<PointSource, PointTarget> > >::type>
+      {
+        NearestKSearchHelper (const KdTree& tree) : tree (tree) {}
+
+        int operator() (const PointSource& p_q, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
+        {
+          return tree.nearestKSearchT (p_q, k, k_indices, k_sqr_distances);
+        }
+
+        const KdTree& tree;
+      };
+
+      // No copy is performed if PointSource is of same type as PointTarget
+      template<typename KdTree, typename PointSource, typename PointTarget>
+      struct NearestKSearchHelper<KdTree, PointSource, PointTarget, typename boost::enable_if<boost::is_same<PointSource, PointTarget> >::type>
+      {
+        NearestKSearchHelper (const KdTree& tree) : tree (tree) {}
+
+        int operator() (const PointSource &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
+        {
+          return tree.nearestKSearch (p_q, k, k_indices, k_sqr_distances);
+        }
+
+        const KdTree& tree;
+      };
+    }
   }
 }
 
