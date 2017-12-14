@@ -5,14 +5,13 @@ cache:
 addons:
   apt:
     sources:
-      - kalakris-cmake
-      - boost-latest
-      - kubuntu-backports
-      - sourceline: 'ppa:kedazo/doxygen-updates-precise'
       - sourceline: 'ppa:v-launchpad-jochen-sprickerhof-de/pcl'
     packages:
       - cmake
-      - libboost1.55-all-dev
+      - libboost-filesystem1.54-dev
+      - libboost-iostreams1.54-dev
+      - libboost-thread1.54-dev
+      - libboost-chrono1.54-dev
       - libeigen3-dev
       - libgtest-dev
       - doxygen-latex
