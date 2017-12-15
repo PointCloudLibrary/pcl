@@ -49,7 +49,16 @@
 
 extern "C"
 {
-#ifdef HAVE_QHULL_2011
+#ifdef HAVE_QHULL_2015
+#  include "libqhull_r/libqhull_r.h"
+#  include "libqhull_r/mem_r.h"
+#  include "libqhull_r/qset_r.h"
+#  include "libqhull_r/geom_r.h"
+#  include "libqhull_r/merge_r.h"
+#  include "libqhull_r/poly_r.h"
+#  include "libqhull_r/io_r.h"
+#  include "libqhull_r/stat_r.h"
+#elif defined HAVE_QHULL_2011
 #  include "libqhull/libqhull.h"
 #  include "libqhull/mem.h"
 #  include "libqhull/qset.h"

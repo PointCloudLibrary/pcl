@@ -23,6 +23,8 @@
 
 #cmakedefine HAVE_QHULL_2011 1
 
+#cmakedefine HAVE_QHULL_2015 1
+
 #cmakedefine HAVE_CUDA 1
 
 #cmakedefine HAVE_FZAPI 1
