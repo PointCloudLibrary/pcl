@@ -110,8 +110,45 @@ TEST (PCL, PCLVisualizer_camera)
 //  cerr << "reset camera viewer pose:" << endl << viewer_pose << endl;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+TEST (PCL, PCLVisualizer_getPointCloudRenderingProperties)
+{
+  PCLVisualizer visualizer;
 
+  std::string cloud_id = "input_cloud";
+  visualizer.addPointCloud (cloud, cloud_id);
+  ASSERT_TRUE (visualizer.setPointCloudRenderingProperties (PCL_VISUALIZER_COLOR,
+                                                            1., 0., 0., cloud_id));
+  double r, g, b;
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_POINT_SIZE,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_OPACITY,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LINE_WIDTH,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_FONT_SIZE,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_REPRESENTATION,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_IMMEDIATE_RENDERING,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_SHADING,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LUT,
+                                                             r, g, b, cloud_id));
+  EXPECT_FALSE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_LUT_RANGE,
+                                                             r, g, b, cloud_id));
 
+  r = 666.;
+  g = 666.;
+  b = 666.;
+  EXPECT_TRUE (visualizer.getPointCloudRenderingProperties (PCL_VISUALIZER_COLOR,
+                                                            r, g, b, cloud_id));
+
+  EXPECT_EQ (r, 1.);
+  EXPECT_EQ (g, 0.);
+  EXPECT_EQ (b, 0.);
+}
 
 /* ---[ */
 int
