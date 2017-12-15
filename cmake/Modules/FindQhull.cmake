@@ -9,39 +9,48 @@
 # If QHULL_USE_STATIC is specified then look for static libraries ONLY else 
 # look for shared ones
 
-set(QHULL_MAJOR_VERSION 6)
-
 if(QHULL_USE_STATIC)
-  set(QHULL_RELEASE_NAME qhullstatic)
-  set(QHULL_DEBUG_NAME qhullstatic_d)
+  set(QHULL_RELEASE_NAME qhullstatic_r qhullstatic)
+  set(QHULL_DEBUG_NAME qhullstatic_rd qhullstatic_d)
 else(QHULL_USE_STATIC)
-  set(QHULL_RELEASE_NAME qhull_p qhull${QHULL_MAJOR_VERSION} qhull)
-  set(QHULL_DEBUG_NAME qhull_pd qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION} qhull_d)
+  set(QHULL_RELEASE_NAME qhull_r qhull_p qhull${QHULL_MAJOR_VERSION} qhull)
+  set(QHULL_DEBUG_NAME qhull_rd qhull_pd qhull${QHULL_MAJOR_VERSION}_d qhull_d${QHULL_MAJOR_VERSION} qhull_d)
 endif(QHULL_USE_STATIC)
 
 find_file(QHULL_HEADER
-          NAMES libqhull/libqhull.h qhull.h
+          NAMES libqhull_r/libqhull_r.h libqhull/libqhull.h qhull.h
           HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}" "${QHULL_INCLUDE_DIR}"
           PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
           PATH_SUFFIXES qhull src/libqhull libqhull include)
 
 set(QHULL_HEADER "${QHULL_HEADER}" CACHE INTERNAL "QHull header" FORCE )
 
+set(HAVE_QHULL_2011 OFF)
+set(HAVE_QHULL_2015 OFF)
+
 if(QHULL_HEADER)
   get_filename_component(qhull_header ${QHULL_HEADER} NAME_WE)
   if("${qhull_header}" STREQUAL "qhull")
+    set(QHULL_MAJOR_VERSION 6)
     set(HAVE_QHULL_2011 OFF)
+    set(HAVE_QHULL_2015 OFF)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
   elseif("${qhull_header}" STREQUAL "libqhull")
+    set(QHULL_MAJOR_VERSION 6)
     set(HAVE_QHULL_2011 ON)
+    set(HAVE_QHULL_2015 OFF)
+    get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
+    get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
+  elseif("${qhull_header}" STREQUAL "libqhull_r")
+    set(QHULL_MAJOR_VERSION 7)
+    set(HAVE_QHULL_2011 OFF)
+    set(HAVE_QHULL_2015 ON)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_HEADER} PATH)
     get_filename_component(QHULL_INCLUDE_DIR ${QHULL_INCLUDE_DIR} PATH)
   endif()
 else(QHULL_HEADER)
   set(QHULL_INCLUDE_DIR "QHULL_INCLUDE_DIR-NOTFOUND")
 endif(QHULL_HEADER)
-
-set(QHULL_INCLUDE_DIR "${QHULL_INCLUDE_DIR}" CACHE PATH "QHull include dir." FORCE)
 
 find_library(QHULL_LIBRARY 
              NAMES ${QHULL_RELEASE_NAME}
@@ -56,6 +65,17 @@ find_library(QHULL_LIBRARY_DEBUG
              HINTS "${QHULL_ROOT}" "$ENV{QHULL_ROOT}"
              PATHS "$ENV{PROGRAMFILES}/QHull" "$ENV{PROGRAMW6432}/QHull" 
              PATH_SUFFIXES project build bin lib debug/lib)
+
+if (QHULL_MAJOR_VERSION STREQUAL 7)
+  string(REGEX MATCH ".*r[d]?\\.so$" QHULLR_LIB_FOUND "${QHULL_LIBRARY_DEBUG}")
+  if("${QHULLR_LIB_FOUND}" STREQUAL "")
+    # Reentrant libraries cannot be found although headers are available.
+    # Use non-reentrant interface instead
+    set(QHULL_MAJOR_VERSION 6)
+    set(HAVE_QHULL_2011 ON)
+    set(HAVE_QHULL_2015 OFF)
+  endif()
+endif()
 
 if(NOT QHULL_LIBRARY_DEBUG)
   set(QHULL_LIBRARY_DEBUG ${QHULL_LIBRARY})
