@@ -1217,7 +1217,6 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->ScalarVisibilityOn ();
       }
     }
-    mapper->ImmediateModeRenderingOff ();
 
     actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
     actor->GetProperty ()->SetInterpolationToFlat ();
@@ -1297,7 +1296,6 @@ pcl::visualization::PCLVisualizer::createActorFromVTKDataSet (const vtkSmartPoin
         mapper->ScalarVisibilityOn ();
       }
     }
-    mapper->ImmediateModeRenderingOff ();
 
     //actor->SetNumberOfCloudPoints (int (std::max<vtkIdType> (1, data->GetNumberOfPoints () / 10)));
     actor->GetProperty ()->SetInterpolationToFlat ();
@@ -1583,7 +1581,6 @@ pcl::visualization::PCLVisualizer::setPointCloudRenderingProperties (
     // using immediate more rendering.
     case PCL_VISUALIZER_IMMEDIATE_RENDERING:
     {
-      actor->GetMapper ()->SetImmediateModeRendering (int (value));
       actor->Modified ();
       break;
     }
