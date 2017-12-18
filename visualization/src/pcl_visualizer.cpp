@@ -3985,7 +3985,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
       triangle->GetPoints ()->GetPoint (1, p1);
       triangle->GetPoints ()->GetPoint (2, p2);
       visible_area += vtkTriangle::TriangleArea (p0, p1, p2);
-  }
+    }
 
 #else
     //THIS CAN BE USED WHEN VTK >= 5.4 IS REQUIRED... vtkVisibleCellSelector is deprecated from VTK5.4
@@ -4085,7 +4085,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
 
     poses.push_back (pose_view);
 
-}
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
