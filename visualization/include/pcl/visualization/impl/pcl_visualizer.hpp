@@ -245,10 +245,11 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
   float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
   // Set the points
+  vtkIdType ptr = 0;
   if (cloud->is_dense)
   {
-    for (vtkIdType i = 0; i < nr_points; ++i)
-      memcpy (&data[i * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+    for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -261,7 +262,7 @@ pcl::visualization::PCLVisualizer::convertPointCloudToVTKPolyData (
           !pcl_isfinite (cloud->points[i].z))
         continue;
 
-      memcpy (&data[j * 3], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
     }
     nr_points = j;
@@ -600,7 +601,9 @@ pcl::visualization::PCLVisualizer::addSphere (const PointT &center, double radiu
   actor->GetProperty ()->SetRepresentationToSurface ();
   actor->GetProperty ()->SetInterpolationToFlat ();
   actor->GetProperty ()->SetColor (r, g, b);
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   actor->GetMapper ()->ImmediateModeRenderingOn ();
+#endif
   actor->GetMapper ()->StaticOn ();
   actor->GetMapper ()->ScalarVisibilityOff ();
   actor->GetMapper ()->Update ();
@@ -1531,7 +1534,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1567,7 +1572,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   double minmax[2];
   minmax[0] = std::numeric_limits<double>::min ();
   minmax[1] = std::numeric_limits<double>::max ();
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1605,12 +1612,12 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   // Get a pointer to the beginning of the data array
   float *data = (static_cast<vtkFloatArray*> (points->GetData ()))->GetPointer (0);
 
-  int pts = 0;
+  vtkIdType pts = 0;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, pts += 3)
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[pts]);
   }
   else
   {
@@ -1620,8 +1627,7 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
       // Check if the point is invalid
       if (!isFinite (cloud->points[i]))
         continue;
-
-      memcpy (&data[pts], &cloud->points[i].x, 12);    // sizeof (float) * 3
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[pts]);
       pts += 3;
       j++;
     }
@@ -1642,8 +1648,9 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   scalars->GetRange (minmax);
   // Update the data
   polydata->GetPointData ()->SetScalars (scalars);
-
+#if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
+#endif
   am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
@@ -1683,17 +1690,16 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
     colors = vtkSmartPointer<vtkUnsignedCharArray>::New ();
     colors->SetNumberOfComponents (3);
     colors->SetName ("Colors");
-
-    pcl::RGB rgb_data;
+    uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;
-      memcpy (&rgb_data, reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset, sizeof (pcl::RGB));
+      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&cloud->points[i]) + offset);
       unsigned char color[3];
-      color[0] = rgb_data.r;
-      color[1] = rgb_data.g;
-      color[2] = rgb_data.b;
+      color[0] = rgb_data->r;
+      color[1] = rgb_data->g;
+      color[2] = rgb_data->b;
       colors->InsertNextTupleValue (color);
     }
   }
@@ -1707,13 +1713,13 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
   // Get a pointer to the beginning of the data array
   float *data = static_cast<vtkFloatArray*> (points->GetData ())->GetPointer (0);
 
-  int ptr = 0;
+  vtkIdType ptr = 0;
   std::vector<int> lookup;
   // If the dataset is dense (no NaNs)
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -1726,7 +1732,7 @@ pcl::visualization::PCLVisualizer::addPolygonMesh (
         continue;
 
       lookup[i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
       ptr += 3;
     }
@@ -1866,7 +1872,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
   if (cloud->is_dense)
   {
     for (vtkIdType i = 0; i < nr_points; ++i, ptr += 3)
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
   }
   else
   {
@@ -1879,7 +1885,7 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
         continue;
 
       lookup [i] = static_cast<int> (j);
-      memcpy (&data[ptr], &cloud->points[i].x, sizeof (float) * 3);
+      std::copy (&cloud->points[i].x, &cloud->points[i].x + 3, &data[ptr]);
       j++;
       ptr += 3;
     }
@@ -1898,19 +1904,17 @@ pcl::visualization::PCLVisualizer::updatePolygonMesh (
     rgb_idx = pcl::getFieldIndex (*cloud, "rgba", fields);
   if (rgb_idx != -1 && colors)
   {
-    pcl::RGB rgb_data;
     int j = 0;
+    uint32_t offset = fields[rgb_idx].offset;
     for (size_t i = 0; i < cloud->size (); ++i)
     {
       if (!isFinite (cloud->points[i]))
         continue;
-      memcpy (&rgb_data, 
-              reinterpret_cast<const char*> (&cloud->points[i]) + fields[rgb_idx].offset,
-              sizeof (pcl::RGB));
+      const pcl::RGB* const rgb_data = reinterpret_cast<const pcl::RGB*>(reinterpret_cast<const char*> (&cloud->points[i]) + offset);
       unsigned char color[3];
-      color[0] = rgb_data.r;
-      color[1] = rgb_data.g;
-      color[2] = rgb_data.b;
+      color[0] = rgb_data->r;
+      color[1] = rgb_data->g;
+      color[2] = rgb_data->b;
       colors->SetTupleValue (j++, color);
     }
   }
