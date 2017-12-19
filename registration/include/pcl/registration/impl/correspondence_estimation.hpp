@@ -125,12 +125,9 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   pcl::Correspondence corr;
   unsigned int nr_valid_correspondences = 0;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  detail::NearestKSearchHelper<KdTree, PointSource, PointTarget> search (*tree_);
   for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
   {
-    search ((*input_)[*idx], 1, index, distance);
+    tree_->nearestKSearchT ((*input_)[*idx], 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
 
@@ -167,21 +164,16 @@ pcl::registration::CorrespondenceEstimation<PointSource, PointTarget, Scalar>::d
   unsigned int nr_valid_correspondences = 0;
   int target_idx = 0;
 
-  // Check if the template types are the same. If true, avoid a copy.
-  // Both point types MUST be registered using the POINT_CLOUD_REGISTER_POINT_STRUCT macro!
-  detail::NearestKSearchHelper<KdTree, PointSource, PointTarget> search (*tree_);
-  detail::NearestKSearchHelper<KdTreeReciprocal, PointTarget, PointSource> search_reciprocal (*tree_reciprocal_);
-
   // Iterate over the input set of source indices
   for (std::vector<int>::const_iterator idx = indices_->begin (); idx != indices_->end (); ++idx)
   {
-    search ((*input_)[*idx], 1, index, distance);
+    tree_->nearestKSearchT ((*input_)[*idx], 1, index, distance);
     if (distance[0] > max_dist_sqr)
       continue;
 
     target_idx = index[0];
 
-    search_reciprocal ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
+    tree_reciprocal_->nearestKSearchT ((*target_)[target_idx], 1, index_reciprocal, distance_reciprocal);
     if (distance_reciprocal[0] > max_dist_sqr || *idx != index_reciprocal[0])
       continue;
 

@@ -62,14 +62,16 @@ namespace pcl
     template <typename PointSource, typename PointTarget, typename Scalar = float>
     class CorrespondenceEstimationBase: public PCLBase<PointSource>
     {
+      protected:
+
+        using PCLBase<PointSource>::deinitCompute;
+        using PCLBase<PointSource>::input_;
+        using PCLBase<PointSource>::indices_;
+
       public:
         typedef boost::shared_ptr<CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > Ptr;
         typedef boost::shared_ptr<const CorrespondenceEstimationBase<PointSource, PointTarget, Scalar> > ConstPtr;
 
-        // using PCLBase<PointSource>::initCompute;
-        using PCLBase<PointSource>::deinitCompute;
-        using PCLBase<PointSource>::input_;
-        using PCLBase<PointSource>::indices_;
         using PCLBase<PointSource>::setIndices;
 
         typedef pcl::search::KdTree<PointTarget> KdTree;
@@ -397,6 +399,11 @@ namespace pcl
     {
       protected:
 
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
+        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
+        using PCLBase<PointSource>::deinitCompute;
+
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::point_representation_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_transformed_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_;
@@ -409,13 +416,9 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::input_fields_;
 
       public:
+
         typedef boost::shared_ptr<CorrespondenceEstimation<PointSource, PointTarget, Scalar> > Ptr;
         typedef boost::shared_ptr<const CorrespondenceEstimation<PointSource, PointTarget, Scalar> > ConstPtr;
-
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initCompute;
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::initComputeReciprocal;
-        using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::getClassName;
-        using PCLBase<PointSource>::deinitCompute;
 
         using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTree;
         using typename CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::KdTreePtr;
@@ -471,41 +474,6 @@ namespace pcl
           return (copy);
         }
      };
-
-    namespace detail
-    {
-      // Copy is performed if PointSource is of different type than PointTarget
-      template<typename KdTree, typename PointSource, typename PointTarget, typename Enabled = void>
-      struct NearestKSearchHelper;
-
-      // Copy is performed if PointSource is of different type than PointTarget
-      template<typename KdTree, typename PointSource, typename PointTarget>
-      struct NearestKSearchHelper<KdTree, PointSource, PointTarget, typename boost::enable_if<boost::mpl::not_<boost::is_same<PointSource, PointTarget> > >::type>
-      {
-        NearestKSearchHelper (const KdTree& tree) : tree (tree) {}
-
-        int operator() (const PointSource& p_q, int k, std::vector<int>& k_indices, std::vector<float>& k_sqr_distances)
-        {
-          return tree.nearestKSearchT (p_q, k, k_indices, k_sqr_distances);
-        }
-
-        const KdTree& tree;
-      };
-
-      // No copy is performed if PointSource is of same type as PointTarget
-      template<typename KdTree, typename PointSource, typename PointTarget>
-      struct NearestKSearchHelper<KdTree, PointSource, PointTarget, typename boost::enable_if<boost::is_same<PointSource, PointTarget> >::type>
-      {
-        NearestKSearchHelper (const KdTree& tree) : tree (tree) {}
-
-        int operator() (const PointSource &p_q, int k, std::vector<int> &k_indices, std::vector<float> &k_sqr_distances)
-        {
-          return tree.nearestKSearch (p_q, k, k_indices, k_sqr_distances);
-        }
-
-        const KdTree& tree;
-      };
-    }
   }
 }
 
