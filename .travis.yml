@@ -79,11 +79,5 @@ jobs:
       env: TASK="doc"
       script: bash .travis.sh $TASK
     - compiler: gcc
-      env: TASK="test-core"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-ext-1"
-      script: bash .travis.sh $TASK
-    - compiler: gcc
-      env: TASK="test-ext-2"
+      env: TASK="test"
       script: bash .travis.sh $TASK
