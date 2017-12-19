@@ -48,14 +48,6 @@
 
 namespace pcl
 {
-  namespace detail
-  {
-    //  Forward declaration of a helper class which helps specialize
-    //  nearestKSearchT and radiusSearchT
-    template<typename PointT, typename PointTDiff, typename Enabled = void>
-    class KdTreeHelper;
-  }
-
   /** \brief KdTree represents the base spatial locator class for kd-tree implementations.
     * \author Radu B Rusu, Bastian Steder, Michael Dixon
     * \ingroup kdtree

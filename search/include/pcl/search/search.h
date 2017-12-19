@@ -48,14 +48,6 @@ namespace pcl
 {
   namespace search
   {
-    namespace detail
-    {
-      //  Forward declaration of a helper class which helps specialize
-      //  nearestKSearchT and radiusSearchT
-      template<typename PointT, typename PointTDiff, typename Enabled = void>
-      class SearchHelper;
-    }
-
     /** \brief Generic search class. All search wrappers must inherit from this.
       *
       * Each search method must implement 2 different types of search:
