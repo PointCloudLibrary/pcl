@@ -99,6 +99,13 @@ The following code snippet will estimate a GASD shape + color descriptor for an 
 
      // Get the alignment transform
      Eigen::Matrix4f trans = gasd.getTransform (trans);
+
+     // descriptor.points.size () should be of size 1
+     // Unpack histogram bins
+     for (size_t i = 0; i < size_t( descriptor.points[0].descriptorSize ()); ++i)
+     {
+       descriptor.points[0].histogram[i];
+     }
    }
 
 The following code snippet will estimate a GASD shape only descriptor for an input point cloud.
@@ -126,6 +133,13 @@ The following code snippet will estimate a GASD shape only descriptor for an inp
 
      // Get the alignment transform
      Eigen::Matrix4f trans = gasd.getTransform (trans);
+
+     // descriptor.points.size () should be of size 1
+     // Unpack histogram bins
+     for (size_t i = 0; i < size_t( descriptor.points[0].descriptorSize ()); ++i)
+     {
+       descriptor.points[0].histogram[i];
+     }
    }
 
 .. [GASD] http://www.cin.ufpe.br/~jpsml/uploads/8/2/6/7/82675770/pid4349755.pdf
