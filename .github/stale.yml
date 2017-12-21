@@ -3,8 +3,8 @@
 # Number of days of inactivity before an Issue or Pull Request becomes stale
 daysUntilStale: 60
 # Number of days of inactivity before a stale Issue or Pull Request is closed
-# 2**32-1 until https://github.com/probot/stale/issues/79 is fixed
-daysUntilClose: 4294967295
+# 100 years until https://github.com/probot/stale/issues/79 is fixed
+daysUntilClose: 36500
 # Issues or Pull Requests with these labels will never be considered stale. Set to `[]` to disable
 exemptLabels:
   - "status: needs review"
