@@ -420,6 +420,71 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, BreadthEnd)
   EXPECT_NE (it_m_1, it_m_b_1);
 }
 
+TEST_F (OctreeBaseBeginEndIteratorsTest, ForLoop)
+{
+  // Useful types
+  typedef typename OctreeT::Iterator IteratorT;
+
+  // Default initialization
+  IteratorT it_a;
+  IteratorT it_a_end = oct_a_.end ();
+
+  unsigned int node_count = 0;
+  unsigned int branch_count = 0;
+  unsigned int leaf_count = 0;
+
+  // Iterate over every node of the octree oct_a_.
+  for (it_a = oct_a_.begin (); it_a != it_a_end; ++it_a)
+  {
+    // store node, branch and leaf count
+    const pcl::octree::OctreeNode* node = it_a.getCurrentOctreeNode ();
+    if (node->getNodeType () == pcl::octree::BRANCH_NODE)
+    {
+      branch_count++;
+    }
+    else if (node->getNodeType () == pcl::octree::LEAF_NODE)
+    {
+      leaf_count++;
+    }
+    node_count++;
+  }
+
+  // Check the node_count, branch_count and leaf_count values
+  ASSERT_EQ (leaf_count, 64);
+  ASSERT_EQ (branch_count, 9);
+  ASSERT_EQ (branch_count + leaf_count, node_count);
+  ASSERT_EQ (oct_a_.getLeafCount (), leaf_count);
+  ASSERT_EQ (oct_a_.getBranchCount (), branch_count);
+
+  // Iterate over the octree oct_a_ with a depth max of 1.
+  // As oct_a_ has a depth level of 2, we should only iterate
+  // over 9 branch node: the root node + 8 node at depth 1
+  node_count = 0;
+  branch_count = 0;
+  leaf_count = 0;
+  unsigned int max_depth = 1;
+  for (it_a = oct_a_.begin (max_depth); it_a != it_a_end; ++it_a)
+  {
+    // store node, branch and leaf count
+    const pcl::octree::OctreeNode* node = it_a.getCurrentOctreeNode ();
+    if (node->getNodeType () == pcl::octree::BRANCH_NODE)
+    {
+      branch_count++;
+    }
+    else if (node->getNodeType () == pcl::octree::LEAF_NODE)
+    {
+      leaf_count++;
+    }
+    node_count++;
+  }
+
+  // Check the node_count, branch_count and leaf_count values
+  ASSERT_EQ (leaf_count, 0);
+  ASSERT_EQ (branch_count, 9);
+  ASSERT_EQ (branch_count + leaf_count, node_count);
+  ASSERT_EQ (oct_a_.getBranchCount (), branch_count);
+}
+
 ////////////////////////////////////////////////////////
 //     OctreePointCloudAdjacency Begin/End Iterator Construction
 ////////////////////////////////////////////////////////
