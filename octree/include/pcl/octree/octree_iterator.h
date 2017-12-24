@@ -132,10 +132,10 @@ namespace pcl
         {
           return (this == &other) ||
                     ((octree_ == other.octree_) &&
-                     (max_octree_depth_ == other.max_octree_depth_) &&
-                     ((current_state_ == other.current_state_) || // end state case
-                      (current_state_ && other.current_state_ &&  // null dereference protection
-                        (current_state_->key_ == other.current_state_->key_))));
+                     ((!(current_state_) && !(other.current_state_)) || // end state case
+                      ((max_octree_depth_ == other.max_octree_depth_) &&
+                       (current_state_ && other.current_state_ &&  // null dereference protection
+                        (current_state_->key_ == other.current_state_->key_)))));
         }
 
         /** \brief Inequal comparison operator
