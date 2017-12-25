@@ -258,16 +258,6 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, End)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.end ();
-  IteratorT it_m_1 = oct_a_.end (1);
-  IteratorT it_m_2 = oct_a_.end (2);
-  IteratorT it_m_b_1 = oct_b_.end (1);
-
-  EXPECT_NE (it_m_1, it_m_2);
-  EXPECT_EQ (it_m_2, it_m); // tree depth is 2
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 TEST_F (OctreeBaseBeginEndIteratorsTest, LeafBegin)
@@ -308,16 +298,6 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, LeafEnd)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.leaf_end ();
-  IteratorT it_m_1 = oct_a_.leaf_end (1);
-  IteratorT it_m_2 = oct_a_.leaf_end (2);
-  IteratorT it_m_b_1 = oct_b_.leaf_end (1);
-
-  EXPECT_NE (it_m_1, it_m_2);
-  EXPECT_EQ (it_m_2, it_m); // tree depth is 2
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 TEST_F (OctreeBaseBeginEndIteratorsTest, DepthBegin)
@@ -358,16 +338,6 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, DepthEnd)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.depth_end ();
-  IteratorT it_m_1 = oct_a_.depth_end (1);
-  IteratorT it_m_2 = oct_a_.depth_end (2);
-  IteratorT it_m_b_1 = oct_b_.depth_end (1);
-
-  EXPECT_NE (it_m_1, it_m_2);
-  EXPECT_EQ (it_m_2, it_m); // tree depth is 2
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 TEST_F (OctreeBaseBeginEndIteratorsTest, BreadthBegin)
@@ -408,16 +378,6 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, BreadthEnd)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.breadth_end ();
-  IteratorT it_m_1 = oct_a_.breadth_end (1);
-  IteratorT it_m_2 = oct_a_.breadth_end (2);
-  IteratorT it_m_b_1 = oct_b_.breadth_end (1);
-
-  EXPECT_NE (it_m_1, it_m_2);
-  EXPECT_EQ (it_m_2, it_m); // tree depth is 2
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 TEST_F (OctreeBaseBeginEndIteratorsTest, ForLoop)
@@ -569,16 +529,6 @@ TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, DepthEnd)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.depth_end ();
-  IteratorT it_m_1 = oct_a_.depth_end (1);
-  IteratorT it_m_md = oct_a_.depth_end (oct_a_.getTreeDepth ());
-  IteratorT it_m_b_1 = oct_b_.depth_end (1);
-
-  EXPECT_NE (it_m_1, it_m_md);
-  EXPECT_EQ (it_m_md, it_m); // should default to tree depth
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, LeafBegin)
@@ -619,16 +569,6 @@ TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, LeafEnd)
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);
   EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.leaf_end ();
-  IteratorT it_m_1 = oct_a_.leaf_end (1);
-  IteratorT it_m_md = oct_a_.leaf_end (oct_a_.getTreeDepth ());
-  IteratorT it_m_b_1 = oct_b_.leaf_end (1);
-
-  EXPECT_NE (it_m_1, it_m_md);
-  EXPECT_EQ (it_m_md, it_m); // should default to tree depth
-  EXPECT_NE (it_m_1, it_m_b_1);
 }
 
 int
