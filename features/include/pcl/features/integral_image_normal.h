@@ -286,7 +286,13 @@ namespace pcl
           vpz_ = 0;
         }
       }
-      
+
+      /** \brief Initialize the scheduler and set the number of threads to use.
+        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
+        */
+      inline void
+      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
+
     protected:
 
       /** \brief Computes the normal for the complete cloud or only \a indices_ if provided.
@@ -314,12 +320,6 @@ namespace pcl
       /** \brief Initialize the data structures, based on the normal estimation method chosen. */
       void
       initData ();
-
-      /** \brief Initialize the scheduler and set the number of threads to use.
-        * \param nr_threads the number of hardware threads to use (0 sets the value back to automatic)
-        */
-      inline void 
-      setNumberOfThreads (unsigned int nr_threads = 0) { threads_ = nr_threads; }
 
     private:
 
