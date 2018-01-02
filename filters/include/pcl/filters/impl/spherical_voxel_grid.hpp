@@ -46,186 +46,6 @@
 #include <pcl/common/common.h>
 #include <pcl/common/centroid.h>
 
-template<typename PointT> inline void
-pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud,
-                     const std::string &distance_field_name, float min_distance, float max_distance,
-                     const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt, bool limit_negative)
-{
-  float max_dist = -FLT_MAX;
-  int max_idx = -1;
-  float dist;
-  const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
-
-  // Get the fields list and the distance field index
-  std::vector<pcl::PCLPointField> fields;
-  int distance_idx = pcl::getFieldIndex (cloud, distance_field_name, fields);
-
-  float distance_value;
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
-    {
-      // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud.points[i]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-      if (limit_negative)
-      {
-        // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
-      }
-
-      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
-      dist = (pivot_pt3 - pt).norm ();
-      if (dist > max_dist)
-      {
-        max_idx = int (i);
-        max_dist = dist;
-      }
-    }
-  }
-    // NaN or Inf values could exist => check for them
-  else
-  {
-    for (size_t i = 0; i < cloud.points.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[i].x) || !pcl_isfinite (cloud.points[i].y) || !pcl_isfinite (cloud.points[i].z))
-        continue;
-
-      // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud.points[i]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-      if (limit_negative)
-      {
-        // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
-      }
-
-      pcl::Vector3fMapConst pt = cloud.points[i].getVector3fMap ();
-      dist = (pivot_pt3 - pt).norm ();
-      if (dist > max_dist)
-      {
-        max_idx = int (i);
-        max_dist = dist;
-      }
-    }
-  }
-
-  if(max_idx != -1)
-    max_pt = cloud.points[max_idx].getVector4fMap ();
-  else
-    max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
-}
-
-template<typename PointT> inline void
-pcl::getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
-                     const std::string &distance_field_name, float min_distance, float max_distance,
-                     const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt, bool limit_negative)
-{
-  float max_dist = -FLT_MAX;
-  int max_idx = -1;
-  float dist;
-  const Eigen::Vector3f pivot_pt3 = pivot_pt.head<3> ();
-
-  // Get the fields list and the distance field index
-  std::vector<pcl::PCLPointField> fields;
-  int distance_idx = pcl::getFieldIndex (cloud, distance_field_name, fields);
-
-  float distance_value;
-
-  // If the data is dense, we don't need to check for NaN
-  if (cloud.is_dense)
-  {
-    for (size_t i = 0; i < indices.size (); ++i)
-    {
-      // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud.points[indices[i]]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-      if (limit_negative)
-      {
-        // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
-      }
-
-      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
-      dist = (pivot_pt3 - pt).norm ();
-      if (dist > max_dist)
-      {
-        max_idx = static_cast<int> (i);
-        max_dist = dist;
-      }
-    }
-  }
-    // NaN or Inf values could exist => check for them
-  else
-  {
-    for (size_t i = 0; i < indices.size (); ++i)
-    {
-      // Check if the point is invalid
-      if (!pcl_isfinite (cloud.points[indices[i]].x) ||
-          !pcl_isfinite (cloud.points[indices[i]].y) ||
-          !pcl_isfinite (cloud.points[indices[i]].z))
-        continue;
-
-      // Get the distance value
-      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&cloud.points[indices[i]]);
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
-
-      if (limit_negative)
-      {
-        // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < max_distance) && (distance_value > min_distance))
-          continue;
-      }
-      else
-      {
-        // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > max_distance) || (distance_value < min_distance))
-          continue;
-      }
-
-      pcl::Vector3fMapConst pt = cloud.points[indices[i]].getVector3fMap ();
-      dist = (pivot_pt3 - pt).norm ();
-      if (dist > max_dist)
-      {
-        max_idx = static_cast<int> (i);
-        max_dist = dist;
-      }
-    }
-  }
-
-  if(max_idx != -1)
-    max_pt = cloud.points[indices[max_idx]].getVector4fMap ();
-  else
-    max_pt = Eigen::Vector4f(std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN(),std::numeric_limits<float>::quiet_NaN());
-}
-
 struct cloud_point_index_idx
 {
   unsigned int idx;
@@ -262,18 +82,58 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
   Eigen::Vector4f max_p;
 
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
-    getMaxDistance<PointT> (*input_, *indices_, filter_field_name_, static_cast<float> (filter_limit_min_),
-                            static_cast<float> (filter_limit_max_), filter_origin_, max_p, filter_limit_negative_);
+  {
+    std::vector<int> indices_filtered;
+    indices_filtered.reserve(indices_->size());
+
+    // Get the distance field index
+    std::vector<pcl::PCLPointField> fields;
+    int filter_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    if (filter_idx == -1)
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), filter_idx);
+
+    for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
+    {
+      if (!input_->is_dense)
+        // Check if the point is invalid
+        if (!pcl_isfinite (input_->points[*it].x) ||
+            !pcl_isfinite (input_->points[*it].y) ||
+            !pcl_isfinite (input_->points[*it].z))
+          continue;
+
+      // Get the filter value
+      const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
+      float filter_value = 0;
+      memcpy (&filter_value, pt_data + fields[filter_idx].offset, sizeof (float));
+
+      if (filter_limit_negative_)
+      {
+        // Use a threshold for cutting out points which inside the interval
+        if ((filter_value < filter_limit_max_) && (filter_value > filter_limit_min_))
+          continue;
+      }
+      else
+      {
+        // Use a threshold for cutting out points which are too close/far away
+        if ((filter_value > filter_limit_max_) || (filter_value < filter_limit_min_))
+          continue;
+      }
+
+      indices_filtered.push_back (*it);
+    }
+
+    getMaxDistance<PointT> (*input_, indices_filtered, filter_origin_, max_p);
+  }
   else
-    getMaxDistance<PointT> (*input_, *indices_, filter_origin_, max_p);
+    getMaxDistance<PointT> (*input_, filter_origin_, max_p);
 
   // Find the number of radial layers required given the farthest point and resolution
   max_radius_ = (max_p - filter_origin_).norm ();
-  std::uint64_t rIdxNum = static_cast<std::uint64_t>(std::floor(max_radius_ / leaf_size_r_)) + 1;
+  uint64_t rIdxNum = static_cast<uint64_t>(std::floor(max_radius_ / leaf_size_r_)) + 1;
   leaf_r_divisions_ =  rIdxNum;
 
-  if (rIdxNum * static_cast<std::uint64_t> (leaf_theta_divisions_) * static_cast<std::uint64_t> (leaf_phi_divisions_)
-      > static_cast<std::uint64_t> (std::numeric_limits<int32_t>::max()))
+  if (rIdxNum * static_cast<uint64_t> (leaf_theta_divisions_) * static_cast<uint64_t> (leaf_phi_divisions_)
+      > static_cast<uint64_t> (std::numeric_limits<int32_t>::max()))
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
     output = *input_;
@@ -454,7 +314,5 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 }
 
 #define PCL_INSTANTIATE_SphericalVoxelGrid(T) template class PCL_EXPORTS pcl::SphericalVoxelGrid<T>;
-#define PCL_INSTANTIATE_getMaxDistance(T) template PCL_EXPORTS void pcl::getMaxDistance<T> (const pcl::PointCloud<T> &, const std::string &, float, float, const Eigen::Vector4f &, Eigen::Vector4f &, bool);
-
 
 #endif // PCL_FILTERS_SPHERICAL_VOXEL_GRID_IMPL_H_
