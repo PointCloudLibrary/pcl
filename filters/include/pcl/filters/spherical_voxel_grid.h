@@ -156,25 +156,25 @@ namespace pcl
 
       /** \brief Set the size of the spherically shaped voxels
         * \param[in] r the radial length of each voxel
-        * \param[in] theta_divisions the total number of vertical divisions of a single hemisphere
+        * \param[in] vertical_divisions the total number of vertical divisions of a single hemisphere
         * (on one side of z axis) in the spherical coordinate system
-        * \param[in] phi_divisions the total number of horizonal divisions of the spherical coordiante system
+        * \param[in] horizontal_divisions the total number of horizonal divisions of the spherical coordiante system
         */
       inline void
-      setLeafSize (float r, int theta_divisions, int phi_divisions)
+      setLeafSize (float r, int vertical_divisions, int horizontal_divisions)
       {
-        if (r <= 0 || theta_divisions < 1 || phi_divisions < 1)
+        if (r <= 0 || vertical_divisions < 1 || horizontal_divisions < 1)
         {
           PCL_WARN ("[pcl::%s::setLeafSize] Invalid leaf size\n", getClassName().c_str());
           return;
         }
 
         leaf_size_r_ = r;
-        leaf_size_theta_ = static_cast<float>(M_PI) /  theta_divisions;
-        leaf_size_phi_ = (2.0f * static_cast<float>(M_PI)) / phi_divisions;
+        leaf_size_theta_ = static_cast<float>(M_PI) /  vertical_divisions;
+        leaf_size_phi_ = (2.0f * static_cast<float>(M_PI)) / horizontal_divisions;
 
-        leaf_theta_divisions_ = theta_divisions;
-        leaf_phi_divisions_ = phi_divisions;
+        leaf_theta_divisions_ = vertical_divisions;
+        leaf_phi_divisions_ = horizontal_divisions;
       }
 
       /** \brief Get the radial size of the leaves
@@ -185,12 +185,12 @@ namespace pcl
       /** \brief Get the vertical angular size (radians) of the leaves
         */
       inline float
-      getLeafSizeTheta () { return (leaf_size_theta_); }
+      getLeafSizeVertical () { return (leaf_size_theta_); }
 
       /** \brief Get the horizontal angular size (radians) of the leaves
         */
       inline float
-      getLeafSizePhi () { return (leaf_size_phi_); }
+      getLeafSizeHorizontal () { return (leaf_size_phi_); }
 
       /** \brief Get the number of radial divisions
         */
@@ -200,12 +200,12 @@ namespace pcl
       /** \brief Get the number of vertical angular divisions
         */
       inline int
-      getDivisionsTheta () { return (leaf_theta_divisions_); }
+      getDivisionsVertical () { return (leaf_theta_divisions_); }
 
       /** \brief Get the number of horizontal angular divisions
         */
       inline int
-      getDivisionsPhi () { return (leaf_phi_divisions_); }
+      getDivisionsHorizontal () { return (leaf_phi_divisions_); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
         * \param[in] downsample the new value (true/false)
