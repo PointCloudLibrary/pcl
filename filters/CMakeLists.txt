@@ -35,12 +35,13 @@ if(build)
         src/covariance_sampling.cpp
         src/median_filter.cpp
         src/uniform_sampling.cpp
-	src/voxel_grid_occlusion_estimation.cpp
+        src/voxel_grid_occlusion_estimation.cpp
 	    src/normal_refinement.cpp
         src/grid_minimum.cpp
         src/morphological_filter.cpp
         src/local_maximum.cpp
         src/model_outlier_removal.cpp
+        src/spherical_voxel_grid.cpp
         )
 
     set(incs
@@ -81,6 +82,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/morphological_filter.h"
         "include/pcl/${SUBSYS_NAME}/local_maximum.h"
         "include/pcl/${SUBSYS_NAME}/model_outlier_removal.h"
+        "include/pcl/${SUBSYS_NAME}/spherical_voxel_grid.h"
         )
 
     set(impl_incs
@@ -118,6 +120,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/morphological_filter.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/local_maximum.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/model_outlier_removal.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/spherical_voxel_grid.hpp"
         )
 
     set(LIB_NAME "pcl_${SUBSYS_NAME}")
