@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -474,12 +475,11 @@ namespace pcl
     template<typename OctreeT>
       class OctreeBreadthFirstIterator : public OctreeIteratorBase<OctreeT>
       {
+      public:
         // public typedefs
         typedef typename OctreeIteratorBase<OctreeT>::BranchNode BranchNode;
         typedef typename OctreeIteratorBase<OctreeT>::LeafNode LeafNode;
 
-
-      public:
         /** \brief Empty constructor.
          * \param[in] max_depth_arg Depth limitation during traversal
          */
