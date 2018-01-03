@@ -186,7 +186,7 @@ TYPED_TEST (OctreeIteratorTest, CopyAssignment)
 }
 
 ////////////////////////////////////////////////////////
-//        Octree End Begin/End Iterator Construction
+//        OctreeBase Begin/End Iterator Construction
 ////////////////////////////////////////////////////////
 
 struct OctreeBaseBeginEndIteratorsTest : public testing::Test
@@ -421,7 +421,7 @@ TEST_F (OctreeBaseBeginEndIteratorsTest, BreadthEnd)
 }
 
 ////////////////////////////////////////////////////////
-//     OctreeBase End Begin/End Iterator Construction
+//     OctreePointCloudAdjacency Begin/End Iterator Construction
 ////////////////////////////////////////////////////////
 
 struct OctreePointCloudAdjacencyBeginEndIteratorsTest
