@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2018, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -45,65 +44,6 @@
 
 namespace pcl
 {
-  /** \brief Get the point at maximum distance from a given point and a given pointcloud subject to filter parameters
-    * \param cloud the point cloud data message
-    * \param distance_field_name the field to filter the input data
-    * \param min_distance the minimum filter value
-    * \param max_distance the maximum filter value
-    * \param pivot_pt the point from where to compute the distance
-    * \param max_pt the point in cloud that is the farthest point away from pivot_pt
-    * \param limit_negative use points that are not within the filter limits
-    */
-  template<typename PointT> inline void
-  getMaxDistance (const pcl::PointCloud<PointT> &cloud,
-                  const std::string &distance_field_name, float min_distance, float max_distance,
-                  const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt, bool limit_negative);
-
-  /** \brief Get the point at maximum distance from a given point and a given pointcloud subject to filter parameters
-    * \param cloud the point cloud data message
-    * \param indicies the indices used from the point cloud
-    * \param distance_field_name the field to filter the input data
-    * \param min_distance the minimum filter value
-    * \param max_distance the maximum filter value
-    * \param pivot_pt the point from where to compute the distance
-    * \param max_pt the point in cloud that is the farthest point away from pivot_pt
-    * \param limit_negative use points that are not within the filter limits
-    */
-  template<typename PointT> inline void
-  getMaxDistance (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &indices,
-                  const std::string &distance_field_name, float min_distance, float max_distance,
-                  const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt, bool limit_negative);
-
-  /** \brief Get the point at maximum distance from a given point and a given pointcloud subject to filter parameters
-    * \param cloud the point cloud data message
-    * \param x_idx the index of the x field in the point cloud
-    * \param y_idx the index of the y field in the point cloud
-    * \param z_idx the index of the z field in the point cloud
-    * \param distance_field_name the field to filter the input data
-    * \param min_distance the minimum filter value
-    * \param max_distance the maximum filter value
-    * \param pivot_pt the point from where to compute the distance
-    * \param max_pt the point in cloud that is the farthest point away from pivot_pt
-    * \param limit_negative use points that are not within the filter limits
-    */
-  PCL_EXPORTS void
-  getMaxDistance (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-                  const std::string &distance_field_name, float min_distance, float max_distance,
-                  const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt, bool limit_negative);
-
-
-  /** \brief Get the point at maximum distance from a given point and a given pointcloud
-    * \param cloud the point cloud data message
-    * \param x_idx the index of the x field in the point cloud
-    * \param y_idx the index of the y field in the point cloud
-    * \param z_idx the index of the z field in the point cloud
-    * \param pivot_pt the point from where to compute the distance
-    * \param max_pt the point in cloud that is the farthest point away from pivot_pt
-    */
-  PCL_EXPORTS void
-  getMaxDistance (const pcl::PCLPointCloud2ConstPtr &cloud, int x_idx, int y_idx, int z_idx,
-                  const Eigen::Vector4f &pivot_pt, Eigen::Vector4f &max_pt);
-
   /** \brief SphericalVoxelGrid assembles a local, spherically shaped 3D grid over a given PointCloud and downsamples + filters the data.
     *
     * The SphericalVoxelGrid class creates a *spherically* shaped 3D voxel grid. Its
@@ -180,32 +120,32 @@ namespace pcl
       /** \brief Get the radial size of the leaves
         */
       inline float
-      getLeafSizeR () { return (leaf_size_r_); }
+      getLeafSizeR () const { return (leaf_size_r_); }
 
       /** \brief Get the vertical angular size (radians) of the leaves
         */
       inline float
-      getLeafSizeVertical () { return (leaf_size_theta_); }
+      getLeafSizeVertical () const { return (leaf_size_theta_); }
 
       /** \brief Get the horizontal angular size (radians) of the leaves
         */
       inline float
-      getLeafSizeHorizontal () { return (leaf_size_phi_); }
+      getLeafSizeHorizontal () const { return (leaf_size_phi_); }
 
       /** \brief Get the number of radial divisions
         */
       inline int
-      getDivisionsR () { return (leaf_r_divisions_); }
+      getDivisionsR () const { return (leaf_r_divisions_); }
 
       /** \brief Get the number of vertical angular divisions
         */
       inline int
-      getDivisionsVertical () { return (leaf_theta_divisions_); }
+      getDivisionsVertical () const { return (leaf_theta_divisions_); }
 
       /** \brief Get the number of horizontal angular divisions
         */
       inline int
-      getDivisionsHorizontal () { return (leaf_phi_divisions_); }
+      getDivisionsHorizontal () const { return (leaf_phi_divisions_); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
         * \param[in] downsample the new value (true/false)
@@ -217,7 +157,7 @@ namespace pcl
         * all fields need to be downsampled, false if just XYZ).
         */
       inline bool
-      getDownsampleAllData () { return (downsample_all_data_); }
+      getDownsampleAllData () const { return (downsample_all_data_); }
 
       /** \brief Set the minimum number of points required for a voxel to be used.
         * \param[in] min_points_per_voxel the minimum number of points for required for a voxel to be used
@@ -228,24 +168,24 @@ namespace pcl
       /** \brief Return the minimum number of points required for a voxel to be used.
         */
       inline unsigned int
-      getMinimumPointsNumberPerVoxel () { return (min_points_per_voxel_); }
+      getMinimumPointsNumberPerVoxel () const { return (min_points_per_voxel_); }
 
       /** \brief Return the maximum radius of a point from the ceter,
         * i.e. the radius of the spherical voxel grid (after filtering)
         */
       inline float
-      getMaximumRadius () { return (max_radius_); }
+      getMaximumRadius () const { return (max_radius_); }
 
       /** \brief Set the cartesian origin used to build the spherical grid.
         * \param[in] origin the cartesian origin
         */
       inline void
-      setOrigin (const Eigen::Vector4f& origin) { filter_origin_ = origin; }
+      setOrigin (const Eigen::Vector3f& origin) { filter_origin_ << origin, 0; }
 
       /** \brief Get the cartesian origin used to build the spherical grid.
         */
       inline Eigen::Vector3f
-      getOrigin () { return (filter_origin_.head<3>()); }
+      getOrigin () const { return (filter_origin_.head<3>()); }
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
         * points having values outside this interval will be discarded.
@@ -256,7 +196,7 @@ namespace pcl
 
       /** \brief Get the name of the field used for filtering. */
       inline std::string const
-      getFilterFieldName () { return (filter_field_name_); }
+      getFilterFieldName () const { return (filter_field_name_); }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
         * \param[in] limit_min the minimum allowed field value
@@ -274,7 +214,7 @@ namespace pcl
         * \param[out] limit_max the maximum allowed field value
         */
       inline void
-      getFilterLimits (double &limit_min, double &limit_max)
+      getFilterLimits (double &limit_min, double &limit_max) const
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
@@ -291,13 +231,13 @@ namespace pcl
         * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline void
-      getFilterLimitsNegative (bool &limit_negative) { limit_negative = filter_limit_negative_; }
+      getFilterLimitsNegative (bool &limit_negative) const { limit_negative = filter_limit_negative_; }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline bool
-      getFilterLimitsNegative () { return (filter_limit_negative_); }
+      getFilterLimitsNegative () const { return (filter_limit_negative_); }
 
   protected:
       /** \brief The radial size of the voxels. */

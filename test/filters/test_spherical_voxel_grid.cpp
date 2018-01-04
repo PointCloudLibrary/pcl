@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
+ *  Copyright (c) 2018, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -63,7 +64,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
 
   voxel.setInputCloud(input_cloud);
   voxel.setLeafSize(1, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.filter(*output_cloud);
 
   EXPECT_EQ(int (output_cloud->points.size()), 8);
@@ -114,7 +115,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   /* Test not downsampling all data */
   voxel.setInputCloud(input_cloud);
   voxel.setLeafSize(1, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setDownsampleAllData(false);
   voxel.filter(*output_cloud);
 
@@ -158,7 +159,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   /* Test different leaf size */
   voxel.setInputCloud(input_cloud);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setDownsampleAllData(true);
   voxel.filter(*output_cloud);
 
@@ -202,7 +203,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
 
   voxel.setInputCloud(translated_input);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(5, 6, 7, 0));
+  voxel.setOrigin(Eigen::Vector3f(5, 6, 7));
   voxel.setDownsampleAllData(true);
   voxel.filter(*output_cloud);
 
@@ -242,7 +243,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   /* Test data filter */
   voxel.setInputCloud(input_cloud);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setFilterFieldName("intensity");
   voxel.setFilterLimits(15, 50);
   voxel.setDownsampleAllData(true);
@@ -277,7 +278,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   /* Test data filter negative */
   voxel.setInputCloud(input_cloud);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setFilterFieldName("intensity");
   voxel.setFilterLimits(15, 50);
   voxel.setFilterLimitsNegative(true);
@@ -338,7 +339,7 @@ TEST (SphericalVoxelGrid_RGB, SphericalVoxelGrid)
 
   voxel.setInputCloud(input_cloudrgb);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.filter(*output_cloud);
 
   EXPECT_EQ(int (output_cloud->points.size()), 4);
@@ -376,7 +377,7 @@ TEST (SphericalVoxelGrid_RGB, SphericalVoxelGrid)
 
   voxel.setInputCloud(input_cloudrgb);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setDownsampleAllData(false);
   voxel.filter(*output_cloud);
 
@@ -432,7 +433,7 @@ TEST (SphericalVoxelGrid_RGBA, SphericalVoxelGrid)
 
   voxel.setInputCloud(input_cloudrgba);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.filter(*output_cloud);
 
   EXPECT_EQ(int (output_cloud->points.size()), 4);
@@ -474,7 +475,7 @@ TEST (SphericalVoxelGrid_RGBA, SphericalVoxelGrid)
 
   voxel.setInputCloud(input_cloudrgba);
   voxel.setLeafSize(2, 1, 4);
-  voxel.setOrigin(Eigen::Vector4f(0, 0, 0, 0));
+  voxel.setOrigin(Eigen::Vector3f(0, 0, 0));
   voxel.setDownsampleAllData(false);
   voxel.filter(*output_cloud);
 

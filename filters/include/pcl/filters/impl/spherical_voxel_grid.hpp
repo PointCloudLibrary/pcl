@@ -2,8 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2009, Willow Garage, Inc.
- *  Copyright (c) 2012-, Open Perception, Inc.
+ *  Copyright (c) 2018, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -46,14 +45,22 @@
 #include <pcl/common/common.h>
 #include <pcl/common/centroid.h>
 
-struct cloud_point_index_idx
+namespace pcl
 {
-  unsigned int idx;
-  unsigned int cloud_point_index;
+  namespace detail
+  {
+    struct cloud_point_index_idx
+    {
+      int idx;
+      int cloud_point_index;
 
-  cloud_point_index_idx (unsigned int idx_, unsigned int cloud_point_index_) : idx (idx_), cloud_point_index (cloud_point_index_) {}
-  bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
-};
+      cloud_point_index_idx (int idx_, int cloud_point_index_)
+              : idx (idx_), cloud_point_index (cloud_point_index_) {}
+      bool operator < (const cloud_point_index_idx &p) const { return (idx < p.idx); }
+    };
+  }
+}
+
 
 template <typename PointT> void
 pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
@@ -90,15 +97,23 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     std::vector<pcl::PCLPointField> fields;
     int filter_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (filter_idx == -1)
+    {
       PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), filter_idx);
+      output = *input_;
+      return;
+    }
+    else if (fields[filter_idx].datatype != pcl::PCLPointField::FLOAT32)
+    {
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field type.\n", getClassName ().c_str ());
+      output = *input_;
+      return;
+    }
 
     for (std::vector<int>::const_iterator it = indices_->begin (); it != indices_->end (); ++it)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) ||
-            !pcl_isfinite (input_->points[*it].y) ||
-            !pcl_isfinite (input_->points[*it].z))
+        if (!pcl::isFinite(input_->points[*it]))
           continue;
 
       // Get the filter value
@@ -129,10 +144,12 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   // Find the number of radial layers required given the farthest point and resolution
   max_radius_ = (max_p - filter_origin_).norm ();
-  uint64_t rIdxNum = static_cast<uint64_t>(std::floor(max_radius_ / leaf_size_r_)) + 1;
-  leaf_r_divisions_ =  rIdxNum;
+  int r_idx_num = static_cast<int> (std::floor(max_radius_ / leaf_size_r_)) + 1;
+  leaf_r_divisions_ =  r_idx_num;
 
-  if (rIdxNum * static_cast<uint64_t> (leaf_theta_divisions_) * static_cast<uint64_t> (leaf_phi_divisions_)
+  if (static_cast<uint64_t> (r_idx_num) *
+      static_cast<uint64_t> (leaf_theta_divisions_) *
+      static_cast<uint64_t> (leaf_phi_divisions_)
       > static_cast<uint64_t> (std::numeric_limits<int32_t>::max()))
   {
     PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
@@ -141,16 +158,26 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
   }
 
   // Storage for mapping leaf and pointcloud indexes
-  std::vector<cloud_point_index_idx> index_vector;
+  std::vector<pcl::detail::cloud_point_index_idx> index_vector;
   index_vector.reserve (indices_->size ());
 
   if (!filter_field_name_.empty ())
   {
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
-    int distance_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
-    if (distance_idx == -1)
-      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), distance_idx);
+    int filter_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
+    if (filter_idx == -1)
+    {
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field name. Index is %d.\n", getClassName ().c_str (), filter_idx);
+      output = *input_;
+      return;
+    }
+    else if (fields[filter_idx].datatype != pcl::PCLPointField::FLOAT32)
+    {
+      PCL_WARN ("[pcl::%s::applyFilter] Invalid filter field type.\n", getClassName ().c_str ());
+      output = *input_;
+      return;
+    }
 
     // First pass: go over all points and insert them into the index_vector vector
     // with calculated idx. Points with the same idx value will contribute to the
@@ -159,39 +186,33 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) ||
-            !pcl_isfinite (input_->points[*it].y) ||
-            !pcl_isfinite (input_->points[*it].z))
+        if (!pcl::isFinite(input_->points[*it]))
           continue;
 
       // Get the distance value
       const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
-      float distance_value = 0;
-      memcpy (&distance_value, pt_data + fields[distance_idx].offset, sizeof (float));
+      float filter_value = 0;
+      memcpy (&filter_value, pt_data + fields[filter_idx].offset, sizeof (float));
 
       if (filter_limit_negative_)
       {
         // Use a threshold for cutting out points which inside the interval
-        if ((distance_value < filter_limit_max_) && (distance_value > filter_limit_min_))
+        if ((filter_value < filter_limit_max_) && (filter_value > filter_limit_min_))
           continue;
       }
       else
       {
         // Use a threshold for cutting out points which are too close/far away
-        if ((distance_value > filter_limit_max_) || (distance_value < filter_limit_min_))
+        if ((filter_value > filter_limit_max_) || (filter_value < filter_limit_min_))
           continue;
       }
 
       PointT shiftedPoint = input_->points[*it];
 
-      shiftedPoint.x -= filter_origin_[0];
-      shiftedPoint.y -= filter_origin_[1];
-      shiftedPoint.z -= filter_origin_[2];
+      shiftedPoint.getVector4fMap() -= filter_origin_;
 
       // Convert to spherical coordinates
-      float r = std::sqrt (shiftedPoint.x * shiftedPoint.x +
-                           shiftedPoint.y * shiftedPoint.y +
-                           shiftedPoint.z * shiftedPoint.z);
+      float r = shiftedPoint.getVector3fMap().norm();
 
       float theta = std::acos (shiftedPoint.z / r);
 
@@ -205,7 +226,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       int idx = ((thetaIdx * leaf_phi_divisions_) + phiIdx) + (leaf_theta_divisions_ * leaf_phi_divisions_ * rIdx);
 
-      index_vector.push_back (cloud_point_index_idx (idx, *it));
+      index_vector.push_back (pcl::detail::cloud_point_index_idx (idx, *it));
     }
   }
   else
@@ -217,21 +238,15 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl_isfinite (input_->points[*it].x) ||
-            !pcl_isfinite (input_->points[*it].y) ||
-            !pcl_isfinite (input_->points[*it].z))
+        if (!pcl::isFinite(input_->points[*it]))
           continue;
 
       PointT shiftedPoint = input_->points[*it];
 
-      shiftedPoint.x -= filter_origin_[0];
-      shiftedPoint.y -= filter_origin_[1];
-      shiftedPoint.z -= filter_origin_[2];
+      shiftedPoint.getVector4fMap() -= filter_origin_;
 
       // Convert to spherical coordinates
-      float r = std::sqrt (shiftedPoint.x * shiftedPoint.x +
-                           shiftedPoint.y * shiftedPoint.y +
-                           shiftedPoint.z * shiftedPoint.z);
+      float r = shiftedPoint.getVector3fMap().norm();
 
       float theta = std::acos (shiftedPoint.z / r);
 
@@ -245,13 +260,13 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       int idx = ((thetaIdx * leaf_phi_divisions_) + phiIdx) + (leaf_theta_divisions_ * leaf_phi_divisions_ * rIdx);
 
-      index_vector.push_back (cloud_point_index_idx (idx, *it));
+      index_vector.push_back (pcl::detail::cloud_point_index_idx (idx, *it));
     }
   }
 
   // Second pass: sort the index_vector vector using value representing target cell as index
   // in effect all points belonging to the same output cell will be next to each other
-  std::sort (index_vector.begin (), index_vector.end (), std::less<cloud_point_index_idx> ());
+  std::sort (index_vector.begin (), index_vector.end (), std::less<pcl::detail::cloud_point_index_idx> ());
 
   // Third pass: count output cells
   // we need to skip all the same, adjacenent idx values
