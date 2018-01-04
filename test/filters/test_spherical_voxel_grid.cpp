@@ -50,7 +50,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr input_cloud (new pcl::PointCloud<pcl::Point
 
 TEST (SphericalVoxelGrid, SphericalVoxelGrid)
 {
-  for (int i = 0; i < input_cloud->points.size(); i++)
+  for (std::size_t i = 0; i < input_cloud->points.size(); i++)
   {
     if (input_cloud->points[i].z > 0)
       input_cloud->points[i].intensity = 20;
@@ -194,7 +194,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   pcl::PointCloud<pcl::PointXYZI>::Ptr translated_input (new pcl::PointCloud<pcl::PointXYZI>);
   *translated_input = *input_cloud;
 
-  for (int i = 0; i < translated_input->points.size(); i++)
+  for (std::size_t i = 0; i < translated_input->points.size(); i++)
   {
     translated_input->points[i].x += 5;
     translated_input->points[i].y += 6;
@@ -207,7 +207,7 @@ TEST (SphericalVoxelGrid, SphericalVoxelGrid)
   voxel.setDownsampleAllData(true);
   voxel.filter(*output_cloud);
 
-  for (int i = 0; i < output_cloud->points.size(); i++)
+  for (std::size_t i = 0; i < output_cloud->points.size(); i++)
   {
     output_cloud->points[i].x -= 5;
     output_cloud->points[i].y -= 6;
@@ -317,7 +317,7 @@ TEST (SphericalVoxelGrid_RGB, SphericalVoxelGrid)
 
   pcl::copyPointCloud(*input_cloud, *input_cloudrgb);
 
-  for (int i = 0; i < input_cloudrgb->points.size(); i++)
+  for (std::size_t i = 0; i < input_cloudrgb->points.size(); i++)
   {
     if (input_cloudrgb->points[i].z > 0)
     {
@@ -409,7 +409,7 @@ TEST (SphericalVoxelGrid_RGBA, SphericalVoxelGrid)
 
   pcl::copyPointCloud(*input_cloud, *input_cloudrgba);
 
-  for (int i = 0; i < input_cloudrgba->points.size(); i++)
+  for (std::size_t i = 0; i < input_cloudrgba->points.size(); i++)
   {
     if (input_cloudrgba->points[i].z > 0)
     {
