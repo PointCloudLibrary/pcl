@@ -68,9 +68,9 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
   // Has the input dataset been set already?
   if (!input_)
   {
-    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName().c_str());
+    PCL_WARN ("[pcl::%s::applyFilter] No input dataset given!\n", getClassName ().c_str ());
     output.width = output.height = 0;
-    output.points.clear();
+    output.points.clear ();
     return;
   }
 
@@ -80,7 +80,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   if (leaf_size_r_ <= 0 || leaf_size_theta_ <= 0 || leaf_size_phi_ <= 0)
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size improperly set.", getClassName().c_str());
+    PCL_WARN ("[pcl::%s::applyFilter] Leaf size improperly set.", getClassName ().c_str ());
     output = *input_;
     return;
   }
@@ -91,7 +91,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
   if (!filter_field_name_.empty ()) // If we don't want to process the entire cloud...
   {
     std::vector<int> indices_filtered;
-    indices_filtered.reserve(indices_->size());
+    indices_filtered.reserve (indices_->size ());
 
     // Get the distance field index
     std::vector<pcl::PCLPointField> fields;
@@ -113,7 +113,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl::isFinite(input_->points[*it]))
+        if (!pcl::isFinite (input_->points[*it]))
           continue;
 
       // Get the filter value
@@ -144,15 +144,15 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   // Find the number of radial layers required given the farthest point and resolution
   max_radius_ = (max_p - filter_origin_).norm ();
-  int r_idx_num = static_cast<int> (std::floor(max_radius_ / leaf_size_r_)) + 1;
+  int r_idx_num = static_cast<int> (std::floor (max_radius_ / leaf_size_r_)) + 1;
   leaf_r_divisions_ =  r_idx_num;
 
   if (static_cast<uint64_t> (r_idx_num) *
       static_cast<uint64_t> (leaf_theta_divisions_) *
       static_cast<uint64_t> (leaf_phi_divisions_)
-      > static_cast<uint64_t> (std::numeric_limits<int32_t>::max()))
+      > static_cast<uint64_t> (std::numeric_limits<int32_t>::max ()))
   {
-    PCL_WARN("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
+    PCL_WARN ("[pcl::%s::applyFilter] Leaf size is too small for the input dataset. Integer indices would overflow.", getClassName().c_str());
     output = *input_;
     return;
   }
@@ -163,7 +163,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
   if (!filter_field_name_.empty ())
   {
-    // Get the distance field index
+    // Get the filter field index
     std::vector<pcl::PCLPointField> fields;
     int filter_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (filter_idx == -1)
@@ -186,10 +186,10 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl::isFinite(input_->points[*it]))
+        if (!pcl::isFinite (input_->points[*it]))
           continue;
 
-      // Get the distance value
+      // Get the filter value
       const uint8_t* pt_data = reinterpret_cast<const uint8_t*> (&input_->points[*it]);
       float filter_value = 0;
       memcpy (&filter_value, pt_data + fields[filter_idx].offset, sizeof (float));
@@ -209,10 +209,10 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
 
       PointT shiftedPoint = input_->points[*it];
 
-      shiftedPoint.getVector4fMap() -= filter_origin_;
+      shiftedPoint.getVector4fMap () -= filter_origin_;
 
       // Convert to spherical coordinates
-      float r = shiftedPoint.getVector3fMap().norm();
+      float r = shiftedPoint.getVector3fMap ().norm ();
 
       float theta = std::acos (shiftedPoint.z / r);
 
@@ -238,15 +238,15 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     {
       if (!input_->is_dense)
         // Check if the point is invalid
-        if (!pcl::isFinite(input_->points[*it]))
+        if (!pcl::isFinite (input_->points[*it]))
           continue;
 
       PointT shiftedPoint = input_->points[*it];
 
-      shiftedPoint.getVector4fMap() -= filter_origin_;
+      shiftedPoint.getVector4fMap () -= filter_origin_;
 
       // Convert to spherical coordinates
-      float r = shiftedPoint.getVector3fMap().norm();
+      float r = shiftedPoint.getVector3fMap ().norm ();
 
       float theta = std::acos (shiftedPoint.z / r);
 

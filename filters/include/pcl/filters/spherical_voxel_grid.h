@@ -110,8 +110,8 @@ namespace pcl
         }
 
         leaf_size_r_ = r;
-        leaf_size_theta_ = static_cast<float>(M_PI) /  vertical_divisions;
-        leaf_size_phi_ = (2.0f * static_cast<float>(M_PI)) / horizontal_divisions;
+        leaf_size_theta_ = static_cast<float> (M_PI) /  vertical_divisions;
+        leaf_size_phi_ = (2.0f * static_cast<float> (M_PI)) / horizontal_divisions;
 
         leaf_theta_divisions_ = vertical_divisions;
         leaf_phi_divisions_ = horizontal_divisions;
@@ -185,7 +185,7 @@ namespace pcl
       /** \brief Get the cartesian origin used to build the spherical grid.
         */
       inline Eigen::Vector3f
-      getOrigin () const { return (filter_origin_.head<3>()); }
+      getOrigin () const { return (filter_origin_.head<3> ()); }
 
       /** \brief Provide the name of the field to be used for filtering data. In conjunction with  \a setFilterLimits,
         * points having values outside this interval will be discarded.
