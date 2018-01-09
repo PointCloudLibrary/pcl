@@ -130,12 +130,17 @@ namespace pcl
          */
         bool operator==(const OctreeIteratorBase& other) const
         {
-          return (this == &other) ||
-                    ((octree_ == other.octree_) &&
-                     (max_octree_depth_ == other.max_octree_depth_) &&
-                     ((current_state_ == other.current_state_) || // end state case
-                      (current_state_ && other.current_state_ &&  // null dereference protection
-                        (current_state_->key_ == other.current_state_->key_))));
+          if (this == &other)  // same object
+            return true;
+          if (octree_ != other.octree_)  // refer to different octrees
+            return false;
+          if (!current_state_ && !other.current_state_)  // both are end iterators
+            return true;
+          if (max_octree_depth_ == other.max_octree_depth_ &&
+              current_state_ && other.current_state_ &&  // null dereference protection
+              current_state_->key_ == other.current_state_->key_)
+            return true;
+          return false;
         }
 
         /** \brief Inequal comparison operator
