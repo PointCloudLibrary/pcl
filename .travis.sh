@@ -48,12 +48,6 @@ function build_lib ()
         -DBUILD_examples=OFF \
         -DBUILD_tools=OFF \
         -DBUILD_apps=OFF \
-        -DBUILD_apps_3d_rec_framework=OFF \
-        -DBUILD_apps_cloud_composer=OFF \
-        -DBUILD_apps_in_hand_scanner=OFF \
-        -DBUILD_apps_modeler=OFF \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=OFF \
         $PCL_DIR
   # Build
   make -j2
@@ -110,12 +104,6 @@ function build_apps ()
         -DBUILD_examples=OFF \
         -DBUILD_tools=OFF \
         -DBUILD_apps=ON \
-        -DBUILD_apps_3d_rec_framework=ON \
-        -DBUILD_apps_cloud_composer=ON \
-        -DBUILD_apps_in_hand_scanner=ON \
-        -DBUILD_apps_modeler=ON \
-        -DBUILD_apps_optronic_viewer=OFF \
-        -DBUILD_apps_point_cloud_editor=ON \
         $PCL_DIR
   # Build
   make -j2
@@ -155,7 +143,7 @@ function build_lib_core ()
   make -j2
 }
 
-function test_all ()
+function test_core ()
 {
   # Configure
   mkdir $BUILD_DIR && cd $BUILD_DIR
@@ -168,6 +156,97 @@ function test_all ()
         -DBUILD_stereo=OFF \
         -DBUILD_tracking=OFF \
         -DBUILD_global_tests=ON \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=ON \
+        -DBUILD_ml=OFF \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=ON \
+        -DBUILD_people=OFF \
+        -DBUILD_recognition=OFF \
+        -DBUILD_registration=OFF \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=OFF \
+        -DBUILD_simulation=OFF \
+        -DBUILD_surface=OFF \
+        -DBUILD_visualization=ON \
+        -DBUILD_tests_2d=ON \
+        -DBUILD_tests_common=ON \
+        -DBUILD_tests_features=ON \
+        -DBUILD_tests_filters=OFF \
+        -DBUILD_tests_geometry=ON \
+        -DBUILD_tests_io=ON \
+        -DBUILD_tests_kdtree=ON \
+        -DBUILD_tests_keypoints=ON \
+        -DBUILD_tests_octree=ON \
+        -DBUILD_tests_outofcore=ON \
+        -DBUILD_tests_people=OFF \
+        -DBUILD_tests_recognition=OFF \
+        -DBUILD_tests_registration=OFF \
+        -DBUILD_tests_sample_consensus=ON \
+        -DBUILD_tests_search=ON \
+        -DBUILD_tests_segmentation=OFF \
+        -DBUILD_tests_surface=OFF \
+        -DBUILD_tests_visualization=ON \
+        $PCL_DIR
+  # Build and run tests
+  make -j2 tests
+}
+
+function test_ext ()
+{
+  # Configure
+  mkdir $BUILD_DIR && cd $BUILD_DIR
+  cmake -DCMAKE_C_FLAGS="$CMAKE_C_FLAGS" -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+        -DPCL_ONLY_CORE_POINT_TYPES=ON \
+        -DBUILD_tools=OFF \
+        -DBUILD_examples=OFF \
+        -DBUILD_apps=OFF \
+        -DBUILD_simulation=OFF \
+        -DBUILD_stereo=OFF \
+        -DBUILD_tracking=OFF \
+        -DBUILD_global_tests=ON \
+        -DBUILD_2d=ON \
+        -DBUILD_features=ON \
+        -DBUILD_filters=ON \
+        -DBUILD_geometry=ON \
+        -DBUILD_io=ON \
+        -DBUILD_kdtree=ON \
+        -DBUILD_keypoints=OFF \
+        -DBUILD_ml=ON \
+        -DBUILD_octree=ON \
+        -DBUILD_outofcore=OFF \
+        -DBUILD_people=ON \
+        -DBUILD_recognition=ON \
+        -DBUILD_registration=ON \
+        -DBUILD_sample_consensus=ON \
+        -DBUILD_search=ON \
+        -DBUILD_segmentation=ON \
+        -DBUILD_surface=ON \
+        -DBUILD_visualization=ON \
+        -DBUILD_tests_2d=OFF \
+        -DBUILD_tests_common=OFF \
+        -DBUILD_tests_features=OFF \
+        -DBUILD_tests_filters=ON \
+        -DBUILD_tests_geometry=OFF \
+        -DBUILD_tests_io=OFF \
+        -DBUILD_tests_kdtree=OFF \
+        -DBUILD_tests_keypoints=OFF \
+        -DBUILD_tests_octree=OFF \
+        -DBUILD_tests_outofcore=OFF \
+        -DBUILD_tests_people=ON \
+        -DBUILD_tests_recognition=ON \
+        -DBUILD_tests_registration=ON \
+        -DBUILD_tests_sample_consensus=OFF \
+        -DBUILD_tests_search=OFF \
+        -DBUILD_tests_segmentation=ON \
+        -DBUILD_tests_surface=ON \
+        -DBUILD_tests_visualization=OFF \
         $PCL_DIR
   # Build and run tests
   make -j2 tests
@@ -227,6 +306,8 @@ case $1 in
   build-examples ) build_examples;;
   build-tools ) build_tools;;
   build-apps ) build_apps;;
-  test ) test_all;;
+  test-core ) test_core;;
+  test-ext ) test_ext;;
   doc ) doc;;
 esac
+
