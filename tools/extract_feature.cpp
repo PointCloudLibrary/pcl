@@ -199,7 +199,8 @@ main (int argc, char** argv)
   else if (feature_name == "VFHEstimation")
     computeFeatureViaNormals< VFHEstimation<PointXYZ, Normal, VFHSignature308>, PointXYZ, Normal, VFHSignature308>
     (cloud, output, argc, argv, false);
-  else {
+  else
+  {
     print_error ("Valid feature names are PFHEstimation, FPFHEstimation, VFHEstimation.\n");
     return (-1);
   }
