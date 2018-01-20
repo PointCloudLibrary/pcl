@@ -39,6 +39,7 @@
 #ifndef PCL_COMMON_CENTROID_H_
 #define PCL_COMMON_CENTROID_H_
 
+#include <pcl/common/common.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_traits.h>
 #include <pcl/PointIndices.h>
@@ -964,7 +965,7 @@ namespace pcl
     std::vector<float> Xs (n_points);
     std::vector<float> Ys (n_points);
     std::vector<float> Zs (n_points);
-    for (int po = 0; po < n_points; po++)
+    for (size_t po = 0; po < n_points; po++)
     {
       Xs[po] = cloud[po].x;
       Ys[po] = cloud[po].y;
