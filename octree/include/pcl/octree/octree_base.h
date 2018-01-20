@@ -115,9 +115,9 @@ namespace pcl
           return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const Iterator end (unsigned int max_depth_arg = 0u)
+        const Iterator end ()
         {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_ , NULL);
+          return Iterator (this, 0, NULL);
         };
 
         // Octree leaf node iterators
@@ -129,9 +129,9 @@ namespace pcl
           return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0u)
+        const LeafNodeIterator leaf_end ()
         {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return LeafNodeIterator (this, 0, NULL);
         };
 
         // Octree depth-first iterators
@@ -143,9 +143,9 @@ namespace pcl
           return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const DepthFirstIterator depth_end (unsigned int max_depth_arg = 0u)
+        const DepthFirstIterator depth_end ()
         {
-          return DepthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return DepthFirstIterator (this, 0, NULL);
         };
 
         // Octree breadth-first iterators
@@ -157,9 +157,9 @@ namespace pcl
           return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
         };
 
-        const BreadthFirstIterator breadth_end (unsigned int max_depth_arg = 0u)
+        const BreadthFirstIterator breadth_end ()
         {
-          return BreadthFirstIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
+          return BreadthFirstIterator (this, 0, NULL);
         };
 
 

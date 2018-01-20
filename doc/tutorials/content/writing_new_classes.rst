@@ -181,7 +181,7 @@ Assuming that we want the new algorithm to be part of the PCL Filtering library,
 
 We also need a name for our new class. Let's call it `BilateralFilter`.
 
-.. [*] The PCL Filtering API specifies that two definitions and implementations must be available for every algorithm: one operating on PointCloud<T> and another one operating on PCLPointCloud2. For the purpose of this tutorial, we will concentrate only on the former.
+.. [*] Some PCL filter algorithms provide two implementations: one for PointCloud<T> types and another one operating on legacy PCLPointCloud2 types. This is no longer required.
 
 bilateral.h
 ===========
