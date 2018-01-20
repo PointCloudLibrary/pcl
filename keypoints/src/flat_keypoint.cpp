@@ -2,8 +2,7 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2010-2012, Willow Garage, Inc.
-*  Copyright (c) 2012-, Open Perception, Inc.
+*  Copyright (c) 2016-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -35,6 +34,7 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *
 */
+
 #include <pcl/keypoints/impl/flat_keypoint.hpp>
 
 #ifndef PCL_NO_PRECOMPILE
@@ -42,8 +42,8 @@
 #include <pcl/impl/instantiate.hpp>
 // Instantiations of specific point types
 #ifdef PCL_ONLY_CORE_POINT_TYPES
-PCL_INSTANTIATE_PRODUCT(FlatKeypoint, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal)))
+PCL_INSTANTIATE_PRODUCT (FlatKeypoint, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))((pcl::Normal)))
 #else
-PCL_INSTANTIATE_PRODUCT(FlatKeypoint, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
+PCL_INSTANTIATE_PRODUCT (FlatKeypoint, (PCL_XYZ_POINT_TYPES)(PCL_XYZ_POINT_TYPES)(PCL_NORMAL_POINT_TYPES))
 #endif
 #endif    // PCL_NO_PRECOMPILE
