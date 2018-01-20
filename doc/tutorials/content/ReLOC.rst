@@ -41,67 +41,67 @@ Now, let's breakdown the code piece by piece.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 1-12
+   :lines: 39-45
 
 These are the header files that contain the definitions for all of the classes which we will use.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 16-32
+   :lines: 50-66
 
-As a first step, `bun0.ply` is loaded as the target point cloud, whereas `bun4.ply` is loaded as the source cloud (i.e. the point cloud aligned against the target by the estimated rigid motion).
+The tutorial loads, through command line parameters, two pcd files as target and source clouds (the last one as the point cloud aligned against the target by the estimated rigid motion). This tutorial has been devised to work with `bun0.pcd` (as target cloud) and `bun4.pcd` (as source cloud) that can be found in `pcl/test` folder.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 34-50
+   :lines: 68-78
 
 As ReLOC requires the computation of point normals, suitable rigid motions are applied to both the target and source point clouds so as to obtain better disambiguations of normals signs.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 53-54
+   :lines: 81-82
 
 As the paper suggests the algorithm parameters in units of `mesh resolution` (i.e. the average distance between adjacent points of the clouds), it is recommended to estimate the mesh resolution in order to obtain better results. 
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 57-73
+   :lines: 85-101
 
 These lines compute the point normals for both the target and source clouds.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 77-82
+   :lines: 105-110
 
 This creates an instance of an ReLOCInitialAlignment and set source and target clouds, as well as their respective normals. 
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 84-89
+   :lines: 112-117
 
 These lines show how to set the parameters of the `FlatKeyPoint <http://docs.pointclouds.org/trunk/classpcl_1_1_flat_keypoint.html>`_ detector. 
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 90-93
+   :lines: 118-120
 
 As `bun0.ply` and `bun4.ply` are low-resolution clouds composed by a small amount of points, a more trivial random detection is more suited. These lines switch to an extraction of 300 random points from both the source and target clouds. 
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 95-98
+   :lines: 122-125
 
 Set the parameters for the computation of the local reference frames. In the case of high-density points clouds, the computation of the local reference frames can be speeded up by performing a subsampling of the support points through the `setFlareXsupportSamplingPerc` method. 
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 100-102
+   :lines: 127-129
 
 These lines set the parameters of the `Hough voting` and `RANSAC` methods.
 
 .. literalinclude:: sources/ReLOC/ReLOC.cpp
    :language: cpp
-   :lines: 104-107
+   :lines: 131-137
 
-Finally, the rigid motion is estimated and applied to the source cloud.
+Finally, the rigid motion is estimated, applied to the source cloud and printed to screen.
    
