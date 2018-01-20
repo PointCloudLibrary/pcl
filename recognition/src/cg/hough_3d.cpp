@@ -41,7 +41,6 @@
 #include "pcl/impl/instantiate.hpp"
 #include "pcl/recognition/impl/cg/hough_3d.hpp"
 
-
 PCL_INSTANTIATE_PRODUCT(Hough3DGrouping, ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
                                          ((pcl::PointXYZ)(pcl::PointXYZI)(pcl::PointXYZRGB)(pcl::PointXYZRGBA))
                                          ((pcl::ReferenceFrame))((pcl::ReferenceFrame)))

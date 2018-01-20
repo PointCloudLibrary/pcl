@@ -63,7 +63,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ransac_based/simple_octree.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h"
-	)
+        )
 
     set(hv_incs
         "include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h"
@@ -96,7 +96,7 @@ if(build)
     set(ransac_based_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp"
-	)
+        )
 
     set(hv_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp"
