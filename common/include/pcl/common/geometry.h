@@ -103,7 +103,6 @@ namespace pcl
       projected = point - (lambda * plane_normal);
     }
 
-
     /** \brief Given a plane defined by plane_origin and plane_normal, find the unit vector pointing from plane_origin to the projection of point on the plane.
       * 
       * \param[in] point Point projected on the plane
@@ -123,7 +122,6 @@ namespace pcl
       projected_as_unit_vector.normalize ();
       return projected_as_unit_vector;
     }
-
 
     /** \brief Define a random unit vector orthogonal to axis.
       * 
@@ -157,6 +155,32 @@ namespace pcl
       return rand_ortho_axis;
     }
 
+    /** \brief Extend the bounding box by factor_X, factor_Y and factor_Z w.r.t. the 3 coordinates.
+      *
+      * \param[in] bbox input bounding box
+      * \param[in] factor_X extension factor of x coordinates
+      * \param[in] factor_Y extension factor of y coordinates
+      * \param[in] factor_Z extension factor of z coordinates
+      * \ingroup geometry
+      */
+    template<typename T> inline void
+    extendBBox (T* bbox, const T factor_X, const T factor_Y, const T factor_Z)
+    {
+      T size_X = bbox[1] - bbox[0];
+      T size_Y = bbox[3] - bbox[2];
+      T size_Z = bbox[5] - bbox[4];
+
+      T ext2_X = (size_X * factor_X - size_X) / 2.0;
+      T ext2_Y = (size_Y * factor_Y - size_Y) / 2.0;
+      T ext2_Z = (size_Z * factor_Z - size_Z) / 2.0;
+
+      bbox[0] = bbox[0] - ext2_X;
+      bbox[1] = bbox[1] + ext2_X;
+      bbox[2] = bbox[2] - ext2_Y;
+      bbox[3] = bbox[3] + ext2_Y;
+      bbox[4] = bbox[4] - ext2_Z;
+      bbox[5] = bbox[5] + ext2_Z;
+    }
 
   }
 }

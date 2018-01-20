@@ -1,40 +1,39 @@
 /*
- * Software License Agreement (BSD License)
- *
- *  Point Cloud Library (PCL) - www.pointclouds.org
- *  Copyright (c) 2014-, Open Perception, Inc.
- *  Copyright (C) 2008 Ben Gurion University of the Negev, Beer Sheva, Israel.
- *
- *  All rights reserved
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions are met
- *
- *   * The use for research only (no for any commercial application).
- *   * Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above
- *     copyright notice, this list of conditions and the following
- *     disclaimer in the documentation and/or other materials provided
- *     with the distribution.
- *   * Neither the name of the copyright holder(s) nor the names of its
- *     contributors may be used to endorse or promote products derived
- *     from this software without specific prior written permission.
- *
-  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- *  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
- *  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- *  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
- *  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- *  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- *  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
- *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- *  POSSIBILITY OF SUCH DAMAGE.
- *
- */
+* Software License Agreement (BSD License)
+*
+*  Point Cloud Library (PCL) - www.pointclouds.org
+*  Copyright (c) 2016-, Open Perception, Inc.
+*
+*  All rights reserved.
+*
+*  Redistribution and use in source and binary forms, with or without
+*  modification, are permitted provided that the following conditions
+*  are met:
+*
+*   * Redistributions of source code must retain the above copyright
+*     notice, this list of conditions and the following disclaimer.
+*   * Redistributions in binary form must reproduce the above
+*     copyright notice, this list of conditions and the following
+*     disclaimer in the documentation and/or other materials provided
+*     with the distribution.
+*   * Neither the name of the copyright holder(s) nor the names of its
+*     contributors may be used to endorse or promote products derived
+*     from this software without specific prior written permission.
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+*  FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+*  COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+*  INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+*  BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+*  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+*  CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+*  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+*  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+*  POSSIBILITY OF SUCH DAMAGE.
+*
+*/
 
 #ifndef PCL_REGISTRATION_IA_RELOC_H_
 #define PCL_REGISTRATION_IA_RELOC_H_
@@ -45,64 +44,37 @@
 
 namespace pcl
 {
-
-  /** \brief Compute the bounding box of the cloud centered in the centroid of the cloud and extended 2 x sigmaFactor x standard deviations of the 3 coordinates.
-  * 
-  * \param[in] cloud input cloud 
-  * \param[in] sigmaFactor extension factor of the bounding box
-  * \param[out] bbox bounding box of cloud as (p1_x, p1_y, p1_z, p2_x, p2_y, p2_z)
-  * \ingroup registration
-  */
-  template <typename PointInT> void
-    computeBBoxFromStddev(const pcl::PointCloud<PointInT> &cloud, std::vector<double> &bbox, const float sigmaFactor = 2.0);
-
-  /** \brief Extend the bounding box by factor_X, factor_Y and factor_Z w.r.t. the 3 coordinates.
-  * 
-  * \param[in] bbox input bounding box
-  * \param[in] factor_X extension factor of x coordinates
-  * \param[in] factor_Y extension factor of y coordinates
-  * \param[in] factor_Z extension factor of z coordinates
-  * \ingroup registration
-  */
-  template<typename T> void 
-    extendBBox(T* bbox, const T factor_X, const T factor_Y, const T factor_Z);
-
-
-  /** \brief Sort a vector of indeces w.r.t. values in vector f */
-  class SortIdsWrtFloatDecr
-  {
-  public:
-    SortIdsWrtFloatDecr(std::vector<float> &f) : _f(f) {}
-    bool operator()(int i, int j) {
-      return _f[i] > _f[j];
-    }
-  private:
-    std::vector<float> & _f;
-  };
-
   namespace registration
   {
-
     /** \brief ReLOC initial alignment algorithm proposed in:
-    * Petrelli A., Di Stefano L., "Pairwise registration by local orientation cues", Computer Graphics Forum, 2015.
-    * 
-    * The algorithm can be evaluated through the benchmark proposed in the same paper and downloadable from <a href="https://github.com/aliosciapetrelli/Pairwise3DRegistrationEvaluation">here</a>.
-    * This <a href="https://github.com/aliosciapetrelli/ReLOC/blob/master/Pcl_ReLOC_benchmarkmain.cpp">examplecpp</a> shows how to apply the benchmark.
-    * \author A. Petrelli
-    * \ingroup registration
-    */
-    template <typename PointSource, typename PointTarget, typename NormalT = pcl::Normal, typename Scalar = float>
-    class ReLOCInitialAlignment : public Registration <PointSource, PointTarget, Scalar>
+      * Petrelli A., Di Stefano L., "Pairwise registration by local orientation cues", Computer Graphics Forum, 2015.
+      *
+      * The algorithm can be evaluated through the benchmark proposed in the same paper and downloadable from <a href="https://github.com/aliosciapetrelli/Pairwise3DRegistrationEvaluation">here</a>.
+      * This <a href="https://github.com/aliosciapetrelli/ReLOC/blob/master/Pcl_ReLOC_benchmarkmain.cpp">examplecpp</a> shows how to apply the benchmark.
+      * \author A. Petrelli
+      * \ingroup registration
+      */
+    template<typename PointSource, typename PointTarget, typename NormalT = pcl::Normal, typename Scalar = float>
+    class ReLOCInitialAlignment : public Registration<PointSource, PointTarget, Scalar>
     {
-    public:
+    protected:
+      using PCLBase<PointSource>::input_;
+      using PCLBase<PointSource>::indices_;
 
-      typedef pcl::PointCloud<PointSource> PointCloudSource;
-      typedef typename PointCloudSource::Ptr PointCloudSourcePtr;
-      typedef typename PointCloudSource::ConstPtr PointCloudSourceConstPtr;
+      using Registration<PointSource, PointTarget, Scalar>::reg_name_;
+      using Registration<PointSource, PointTarget, Scalar>::target_;
+      using Registration<PointSource, PointTarget, Scalar>::final_transformation_;
+      using Registration<PointSource, PointTarget, Scalar>::target_cloud_updated_;
+      using Registration<PointSource, PointTarget, Scalar>::source_cloud_updated_;
+      using Registration<PointSource, PointTarget, Scalar>::getClassName;
 
-      typedef pcl::PointCloud<PointTarget> PointCloudTarget;
-      typedef typename PointCloudTarget::Ptr PointCloudTargetPtr;
-      typedef typename PointCloudTarget::ConstPtr PointCloudTargetConstPtr;
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudSource;
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudSourcePtr;
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudSourceConstPtr;
+
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudTarget;
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudTargetPtr;
+      using typename Registration<PointSource, PointTarget, Scalar>::PointCloudTargetConstPtr;
 
       typedef pcl::PointCloud <NormalT> Normals;
       typedef typename Normals::ConstPtr NormalsConstPtr;
@@ -114,355 +86,533 @@ namespace pcl
       typedef typename PointCloudSignedDistance::Ptr PointCloudSignedDistancePtr;
       typedef typename PointCloudSignedDistance::ConstPtr PointCloudSignedDistanceConstPtr;
 
-
-      /** \brief Constructor.
-      */
+    public:
+      /** \brief Constructor. */
       ReLOCInitialAlignment ();
 
       /** \brief Destructor. */
-      virtual ~ReLOCInitialAlignment ()
-      {};
+      virtual ~ReLOCInitialAlignment (){};
 
       /** \brief Set the normals of the source cloud.
-      * \param[in] normals normals of source cloud.
-      */
+        *
+        * \param[in] normals normals of source cloud.
+        */
       inline void
-        setSourceNormals (const NormalsConstPtr &source_normals)
+      setSourceNormals (const NormalsConstPtr &source_normals)
       {
         source_normals_ = source_normals;
-      };
+      }
 
-      /** \return the normals of the source point cloud. */
+      /** \brief Get the normals of the source point cloud.
+        *
+        * \return the normals of the source point cloud.
+        */
       inline NormalsConstPtr
-        getSourceNormals () const
+      getSourceNormals () const
       {
-        return (source_normals_);
-      };
+        return source_normals_;
+      }
 
       /** \brief Set the normals of the target cloud.
-      * \param[in] normals normals of target cloud.
-      */
+        *
+        * \param[in] normals normals of target cloud.
+        */
       inline void
-        setTargetNormals (const NormalsConstPtr &target_normals)
+      setTargetNormals (const NormalsConstPtr &target_normals)
       {
         target_normals_ = target_normals;
-      };
+      }
 
-      /** \return the normals of the target point cloud. */
+      /** \brief Get the normals of the target point cloud.
+        *
+        * \return the normals of the target point cloud.
+        */
       inline NormalsConstPtr
-        getTargetNormals () const
+      getTargetNormals () const
       {
-        return (target_normals_);
-      };
+        return target_normals_;
+      }
 
       /** \brief Set seed of random functions.
-      * \param seed
-      */
+        *
+        * \param[in] seed seed of random functions.
+        */
       inline void
-        setSeed (unsigned int seed)
+      setSeed (unsigned int seed)
       {
         seed_ = seed;
       }
 
       /** \brief Get the value of the internal \a seed parameter.
-      */
+        *
+        * \return seed of random functions.
+        */
       inline unsigned int
-        getSeed ()
+      getSeed ()
       {
-        return (seed_);
+        return seed_;
       }
 
-      /** \bries If true, use random detector, otherwise use FlatKeypoint detector. */
+      /** \bries If true, use random detector, otherwise use FlatKeypoint detector.
+        *
+        * \param[in] use_random_detector if true, use random detector, otherwise use FlatKeypoint detector.
+        */
       inline void
-        useRandomDetector(const bool use_random_detector){use_random_detector_ = use_random_detector;}
+      setUseRandomDetector (const bool use_random_detector)
+      {
+        use_random_detector_ = use_random_detector;
+      }
 
-      /** \brief Set the minimum number of neighbors that has to be found while applying the radius searches during the FlatKeypoint detection.
-      * \param[in] flat_keypoint_min_neighbors the minimum number of neighbors required
+      /** \brief If true, use random detector, otherwise use FlatKeypoint detector.
+      *
+      * \return true if random detector is used, false in the case of FlatKeypoint detector.
       */
+      inline bool
+        getUseRandomDetector () const
+      {
+        return use_random_detector_;
+      }
+
+      /** \brief Set the minimum number of neighbors that has to be found in radius searches during the FlatKeypoint detection.
+        *
+        * \param[in] flat_keypoint_min_neighbors the minimum number of neighbors that has to be found in radius searches during the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointMinNeighbors (int flat_keypoint_min_neighbors){flat_keypoint_min_neighbors_ = flat_keypoint_min_neighbors;};
+      setFlatKeypointMinNeighbors (int flat_keypoint_min_neighbors)
+      {
+        flat_keypoint_min_neighbors_ = flat_keypoint_min_neighbors;
+      }
+
+      /** \brief Get the minimum number of neighbors that has to be found in radius searches during the FlatKeypoint detection.
+        *
+        * \return the minimum number of neighbors that has to be found in radius searches during the FlatKeypoint detection.
+        */
+      inline int
+      getFlatKeypointMinNeighbors () const
+      {
+        return flat_keypoint_min_neighbors_;
+      }
 
       /** \brief Set the radius used to compute flatness during the FlatKeypoint detection.
-      * \param[in] flat_keypoint_Rf the radius to compute flatness.
-      */
+        *
+        * \param[in] flat_keypoint_Rf the radius used to compute flatness during the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointRf (double flat_keypoint_Rf){flat_keypoint_Rf_ = flat_keypoint_Rf;};
+      setFlatKeypointRf (double flat_keypoint_Rf)
+      { 
+        flat_keypoint_Rf_ = flat_keypoint_Rf;
+      }
 
-      /** \brief Set the radius used to discard points around seed and selected flat points  during the FlatKeypoint detection.
-      * \param[in] flat_keypoint_R_discard the radius used to discard points around seed and selected flat points.
-      */
+      /** \brief Get the radius used to compute flatness during the FlatKeypoint detection.
+        *
+        * \return the radius used to compute flatness during the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointRf () const
+      {
+        return flat_keypoint_Rf_;
+      }
+
+      /** \brief Set the radius used to discard points around seed and selected flat points during the FlatKeypoint detection.
+        *
+        * \param[in] flat_keypoint_R_discard the radius used to discard points around seed and selected flat points.
+        */
       inline void
-        setFlatKeypointRdiscard (double flat_keypoint_R_discard){flat_keypoint_R_discard_ = flat_keypoint_R_discard;};
+      setFlatKeypointRdiscard (double flat_keypoint_R_discard)
+      {
+        flat_keypoint_R_discard_ = flat_keypoint_R_discard;
+      }
+
+      /** \brief Get the radius used to discard points around seed and selected flat points during the FlatKeypoint detection.
+        *
+        * \return the radius used to discard points around seed and selected flat points during the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointRdiscard () const
+      {
+        return flat_keypoint_R_discard_;
+      }
 
       /** \brief Set the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the first step of the FlatKeypoint detection.
-      * \param[in] flat_keypoint_R1_search the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the first step of the FlatKeypoint detection.
-      */
+        *
+        * \param[in] flat_keypoint_R1_search the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the first step of the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointR1search (double flat_keypoint_R1_search){flat_keypoint_R1_search_ = flat_keypoint_R1_search;};
+      setFlatKeypointR1search (double flat_keypoint_R1_search)
+      {
+        flat_keypoint_R1_search_ = flat_keypoint_R1_search;
+      }
+
+      /** \brief Get the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the first step of the FlatKeypoint detection.
+        *
+        * \return the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the first step of the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointR1search () const
+      {
+        return flat_keypoint_R1_search_;
+      }
 
       /** \brief Set the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the second step of the FlatKeypoint detection.
-      * \param[in] flat_keypoint_R2_search the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the second step of the FlatKeypoint detection.
-      */
+        *
+        * \param[in] flat_keypoint_R2_search the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the second step of the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointR2search (double flat_keypoint_R2_search){flat_keypoint_R2_search_ = flat_keypoint_R2_search;};
+      setFlatKeypointR2search (double flat_keypoint_R2_search)
+      {
+        flat_keypoint_R2_search_ = flat_keypoint_R2_search;
+      }
+
+      /** \brief Get the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the second step of the FlatKeypoint detection.
+        *
+        * \return the radius of the support used to find the flat point (yellow support in Fig.6 of paper) during the second step of the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointR2search () const
+      {
+        return flat_keypoint_R2_search_;
+      }
 
       /** \brief Set the percentage of cloud points requested to be discarded during the first step of the FlatKeypoint detection.
-      * \param[in] flat_keypoint_T1_search percentage of cloud points requested to be discarded during the first step of the FlatKeypoint detection.
-      */
+        *
+        * \param[in] flat_keypoint_T1_search percentage of cloud points requested to be discarded during the first step of the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointT1search (double flat_keypoint_T1_search){flat_keypoint_T1_search_ = flat_keypoint_T1_search;};
+      setFlatKeypointT1search (double flat_keypoint_T1_search)
+      {
+        flat_keypoint_T1_search_ = flat_keypoint_T1_search;
+      }
+
+      /** \brief Get the percentage of cloud points requested to be discarded during the first step of the FlatKeypoint detection.
+        *
+        * \return the percentage of cloud points requested to be discarded during the first step of the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointT1search () const
+      {
+        return flat_keypoint_T1_search_;
+      }
 
       /** \brief Set the percentage of cloud points requested to be discarded during the second step of the FlatKeypoint detection.
-      * \param[in] flat_keypoint_T2_search percentage of cloud points requested to be discarded during the second step of the FlatKeypoint detection.
-      */
+        *
+        * \param[in] flat_keypoint_T2_search percentage of cloud points requested to be discarded during the second step of the FlatKeypoint detection.
+        */
       inline void
-        setFlatKeypointT2search (double flat_keypoint_T2_search){flat_keypoint_T2_search_ = flat_keypoint_T2_search;};
+      setFlatKeypointT2search (double flat_keypoint_T2_search)
+      {
+        flat_keypoint_T2_search_ = flat_keypoint_T2_search;
+      }
 
+      /** \brief Get the percentage of cloud points requested to be discarded during the second step of the FlatKeypoint detection.
+        *
+        * \return the percentage of cloud points requested to be discarded during the second step of the FlatKeypoint detection.
+        */
+      inline double
+      getFlatKeypointT2search () const
+      {
+        return flat_keypoint_T2_search_;
+      }
 
       /** \brief Set the number of keypoints extracted by the random detector.
-      * \param[in] n_random_keypoints number of keypoints extracted by the random detector.
-      */
+        *
+        * \param[in] n_random_keypoints number of keypoints extracted by the random detector.
+        */
       inline void
-        setNrandomKeypoints (double n_random_keypoints){n_random_keypoints_ = n_random_keypoints;};
+      setNrandomKeypoints (int n_random_keypoints)
+      {
+        n_random_keypoints_ = n_random_keypoints;
+      }
+
+      /** \brief Get the number of keypoints extracted by the random detector.
+        *
+        * \return the number of keypoints extracted by the random detector.
+        */
+      inline int
+      getNrandomKeypoints () const
+      {
+        return n_random_keypoints_;
+      }
 
       /** \brief Set the maximum distance of the points used to estimate the z_axis of the FLARE Reference Frame for a given point.
-      *
-      * \param[in] radius The search radius for z axis in the FLARE computation.
-      */
+        *
+        * \param[in] radius the search radius for z axis in the FLARE computation.
+        */
       inline void
-        setFlareNormalRadius (float radius)
+      setFlareNormalRadius (float radius)
       {
         flare_normal_radius_ = radius;
       }
 
       /** \brief Get the maximum distance of the points used to estimate the z_axis of the FLARE Reference Frame for a given point.
-      *
-      * \return The search radius for z axis in the FLARE computation.
-      */
+        *
+        * \return The search radius for z axis in the FLARE computation.
+        */
       inline float
-        getFlareNormalRadius () const
+      getFlareNormalRadius () const
       {
-        return (flare_normal_radius_);
+        return flare_normal_radius_;
       }
 
-
       /** \brief Set the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
-      *
-      * \param[in] radius The search radius for x axis in the FLARE computation.
-      */
+        *
+        * \param[in] radius The search radius for x axis in the FLARE computation.
+        */
       inline void
-        setFlareTangentRadius (float radius)
+      setFlareTangentRadius (float radius)
       {
         flare_tangent_radius_ = radius;
       }
 
       /** \brief Get the maximum distance of the points used to estimate the x_axis of the FLARE Reference Frame for a given point.
-      *
-      * \return The search radius for x axis  in the FLARE computation.
-      */
+        *
+        * \return The search radius for x axis  in the FLARE computation.
+        */
       inline float
-        getFlareTangentRadius () const
+      getFlareTangentRadius () const
       {
-        return (flare_tangent_radius_);
+        return flare_tangent_radius_;
       }
 
       /** \brief Set the percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
-      *
-      * \param[in] margin_thresh the percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
-      */
+        *
+        * \param[in] margin_thresh the percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
+        */
       inline void
-        setFlareMarginThresh (float flare_margin_thresh)
+      setFlareMarginThresh (float flare_margin_thresh)
       {
         flare_margin_thresh_ = flare_margin_thresh;
       }
 
       /** \brief Get the percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
-      *
-      * \return The percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
-      */
+        *
+        * \return The percentage of the search tangent radius after which a point is considered part of the support in the FLARE computation.
+        */
       inline float
-        getFlareMarginThresh () const
+      getFlareMarginThresh () const
       {
-        return (flare_margin_thresh_);
+        return flare_margin_thresh_;
       }
 
-
       /** \brief Set min number of neighbours required for the computation of Z axis in the FLARE computation.
-      *
-      * \param[in] min number of neighbours required for the computation of Z axis in the FLARE computation.
-      */
+        *
+        * \param[in] min number of neighbours required for the computation of Z axis in the FLARE computation.
+        */
       inline void
-        setFlareMinNeighboursForNormalAxis (int flare_min_neighbors_for_normal_axis)
+      setFlareMinNeighboursForNormalAxis (int flare_min_neighbors_for_normal_axis)
       {
         flare_min_neighbors_for_normal_axis_ = flare_min_neighbors_for_normal_axis;
       }
 
       /** \brief Get min number of neighbours required for the computation of Z axis in the FLARE computation.
-      *
-      * \return min number of neighbours required for the computation of Z axis in the FLARE computation.
-      */
+        *
+        * \return min number of neighbours required for the computation of Z axis in the FLARE computation.
+        */
       inline int
-        getFlareMinNeighboursForNormalAxis () const
+      getFlareMinNeighboursForNormalAxis () const
       {
-        return (flare_min_neighbors_for_normal_axis_);
+        return flare_min_neighbors_for_normal_axis_;
       }
 
-
       /** \brief Set min number of neighbours required for the computation of X axis in the FLARE computation.
-      *
-      * \param[in] min number of neighbours required for the computation of X axis in the FLARE computation.
-      */
+        *
+        * \param[in] min number of neighbours required for the computation of X axis in the FLARE computation.
+        */
       inline void
-        setFlareMinNeighboursForTangentAxis (int flare_min_neighbors_for_tangent_axis)
+      setFlareMinNeighboursForTangentAxis (int flare_min_neighbors_for_tangent_axis)
       {
         flare_min_neighbors_for_tangent_axis_ = flare_min_neighbors_for_tangent_axis;
       }
 
       /** \brief Get min number of neighbours required for the computation of X axis in the FLARE computation.
-      *
-      * \return min number of neighbours required for the computation of X axis in the FLARE computation.
-      */
+        *
+        * \return min number of neighbours required for the computation of X axis in the FLARE computation.
+        */
       inline int
-        getFlareMinNeighboursForTangentAxis () const
+      getFlareMinNeighboursForTangentAxis () const
       {
-        return (flare_min_neighbors_for_tangent_axis_);
+        return flare_min_neighbors_for_tangent_axis_;
       }
 
-      /** \brief Set the percentage of used points in the support used for the computation of the x axis in FLARE computation.
-      *
-      * \param[in] flare_x_support_sampling_perc percentage of used points in the support used for the computation of the x axis in FLARE computation.
-      */
+      /** \brief Set the percentage of points in the support used for the computation of the x axis in FLARE computation.
+        *
+        * \param[in] flare_x_support_sampling_perc percentage of points in the support used for the computation of the x axis in FLARE computation.
+        */
       inline void
-        setFlareXsupportSamplingPerc (float flare_x_support_sampling_perc)
+      setFlareXsupportSamplingPerc (float flare_x_support_sampling_perc)
       {
         flare_x_support_sampling_perc_ = flare_x_support_sampling_perc;
       }
 
-      /** \brief Set the threshold used by the matcher for establishing if two feature points are a candidate correspondence. 
-      *
-      * \param[in] matcher_T_D threshold used by the matcher for establishing if two feature points are a candidate correspondence. 
-      */
+      /** \brief Get the percentage of points in the support used for the computation of the x axis in FLARE computation.
+        *
+        * \return the percentage of points in the support used for the computation of the x axis in FLARE computation.
+        */
+      inline float
+      getFlareXsupportSamplingPerc () const
+      {
+        return flare_x_support_sampling_perc_;
+      }
+
+      /** \brief Set the threshold used by the matcher for establishing if two feature points are a candidate correspondence.
+        *
+        * \param[in] matcher_T_D threshold used by the matcher for establishing if two feature points are a candidate correspondence.
+        */
       inline void
-        setMatcherTD (float matcher_TD)
+      setMatcherTD (float matcher_TD)
       {
         matcher_TD_ = matcher_TD;
       }
 
+      /** \brief Get the threshold used by the matcher for establishing if two feature points are a candidate correspondence.
+        *
+        * \return the threshold used by the matcher for establishing if two feature points are a candidate correspondence.
+        */
+      inline float
+      getMatcherTD () const
+      {
+        return matcher_TD_;
+      }
+
       /** \brief Set the extension factor of the hough space estimated w.r.t. the target cloud.
-      *
-      * \param[in] hough_f extension factor of the hough space estimated w.r.t. the target cloud.
-      */
+        *
+        * \param[in] hough_f extension factor of the hough space estimated w.r.t. the target cloud.
+        */
       inline void
-        setHoughF (double hough_f)
+      setHoughF (double hough_f)
       {
         hough_f_ = hough_f;
       }
 
+      /** \brief Get the extension factor of the hough space estimated w.r.t. the target cloud.
+        *
+        * \return the extension factor of the hough space estimated w.r.t. the target cloud.
+        */
+      inline float
+      getHoughF () const
+      {
+        return hough_f_;
+      }
+
       /** \brief Set the side of a bin of the hough space.
-      *
-      * \param[in] hough_Sbin side of a bin of the hough space.
-      */
+        *
+        * \param[in] hough_Sbin side of a bin of the hough space.
+        */
       inline void
-        setHoughSbin (float hough_Sbin)
+      setHoughSbin (float hough_Sbin)
       {
         hough_Sbin_ = hough_Sbin;
       }
 
+      /** \brief Get the side of a bin of the hough space.
+        *
+        * \return the side of a bin of the hough space.
+        */
+      inline float
+      getHoughSbin () const
+      {
+        return hough_Sbin_;
+      }
+
       /** \brief Set the ransac threshold to establish inlier and outlier.
-      *
-      * \param[in] ransac_T Ransac threshold to establish inlier and outlier.
-      */
+        *
+        * \param[in] ransac_T Ransac threshold to establish inlier and outlier.
+        */
       inline void
-        setRansacT (float ransac_T)
+      setRansacT (float ransac_T)
       {
         ransac_T_ = ransac_T;
       }
 
+      /** \brief Get the ransac threshold to establish inlier and outlier.
+        *
+        * \return the ransac threshold to establish inlier and outlier.
+        */
+      inline float
+      getRansacT () const
+      {
+        return ransac_T_;
+      }
+
       /** \brief Set the ransac max number of iterations.
-      *
-      * \param[in] ransac_N Ransac max number of iterations.
-      */
+        *
+        * \param[in] ransac_N Ransac max number of iterations.
+        */
       inline void
-        setRansacN (int ransac_N)
+      setRansacN (int ransac_N)
       {
         ransac_N_ = ransac_N;
       }
 
-
-
+      /** \brief Get the ransac max number of iterations.
+        *
+        * \return the ransac max number of iterations.
+        */
+      inline int
+      getRansacN () const
+      {
+        return ransac_N_;
+      }
 
     protected:
-
-      using PCLBase <PointSource>::input_;
-      using PCLBase <PointSource>::indices_;
-
-      using Registration <PointSource, PointTarget, Scalar>::reg_name_;
-      using Registration <PointSource, PointTarget, Scalar>::target_;
-      using Registration <PointSource, PointTarget, Scalar>::final_transformation_;
-      using Registration <PointSource, PointTarget, Scalar>::target_cloud_updated_;
-      using Registration <PointSource, PointTarget, Scalar>::source_cloud_updated_;
-      using Registration <PointSource, PointTarget, Scalar>::getClassName;
-
       /** \brief Rigid transformation computation method.
-      * \param output the transformed input point cloud dataset using the rigid transformation found
-      * \param guess The computed transformation
-      */
+        * \param output the transformed input point cloud dataset using the rigid transformation found
+        * \param guess the computed transformation
+        */
       virtual void
-        computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
-
+      computeTransformation (PointCloudSource &output, const Eigen::Matrix4f& guess);
 
       /** \brief Internal computation initialization. */
       virtual bool
-        initCompute ();
+      initCompute ();
 
       /** \brief Internal computation deinitalization. */
       virtual bool
-        deinitCompute ();
+      deinitCompute ();
 
       /** \brief Perform keypoint detection. Either at random or based on FlatKeypoint detector
-      *
-      * \param[in] cloud input cloud
-      * \param[in] normals normals of input cloud
-      * \param[out] keypoints extracted keypoints
-      */
+        *
+        * \param[in] cloud input cloud
+        * \param[in] normals normals of input cloud
+        * \param[out] keypoints extracted keypoints
+        */
       template <typename PointT> void
-        detectKeypoints (typename pcl::PointCloud<PointT>::ConstPtr cloud, NormalsConstPtr normals, typename pcl::PointCloud<PointT>::Ptr &keypoints);
+      detectKeypoints (typename pcl::PointCloud<PointT>::ConstPtr cloud, NormalsConstPtr normals, typename pcl::PointCloud<PointT>::Ptr &keypoints);
 
       /** \brief Compute FLARE local reference frames for each keypoint in keypoints.
-      *
-      * \param[in] cloud input cloud.
-      * \param[in] normals normals of input cloud.
-      * \param[in] keypoints keypoints for which FLARE is computed.
-      * \param[out] flares computed local reference frames.
-      * \param[out] flare_signed_distances scores D of the computed local reference frames.
-      */
+        *
+        * \param[in] cloud input cloud.
+        * \param[in] normals normals of input cloud.
+        * \param[in] keypoints keypoints for which FLARE is computed.
+        * \param[out] flares computed local reference frames.
+        * \param[out] flare_signed_distances scores D of the computed local reference frames.
+        */
       template <typename PointT> void
-        computeFlares (typename pcl::PointCloud<PointT>::ConstPtr cloud, NormalsConstPtr normals, typename pcl::PointCloud<PointT>::ConstPtr keypoints, ReferenceFramesPtr &flares, std::vector<float> &flare_signed_distances);
+      computeFlares (typename pcl::PointCloud<PointT>::ConstPtr cloud, NormalsConstPtr normals, typename pcl::PointCloud<PointT>::ConstPtr keypoints, ReferenceFramesPtr &flares, std::vector<float> &flare_signed_distances);
 
       /** \brief Match feature points based on scores D of the computed local reference frames.
-      *
-      * \param[in] target_flare_signed_distances scores D of the local reference frames of target cloud.
-      * \param[in] source_flare_signed_distances scores D of the local reference frames of source cloud.
-      * \param[out] correspondences matches.
-      */
-      void 
-        match (const std::vector<float> &target_flare_signed_distances, const std::vector<float> &source_flare_signed_distances, pcl::CorrespondencesPtr &correspondences);
-
-      /** \brief Match Perform hough voting.
-      *
-      * \param[in] matcher_correspondences correspondences produced by the matcher based on scores D.
-      * \param[out] hough_correspondences correspondences survived after hough voting.
-      */
-      void 
-        houghVoting (pcl::CorrespondencesConstPtr matcher_correspondences, pcl::CorrespondencesPtr &hough_correspondences);
-
-      /** \brief Match Perform hough voting.
-      *
-      * \param[in] matcher_correspondences correspondences produced by the matcher based on scores D.
-      * \param[out] hough_correspondences correspondences survived after hough voting.
-      */
+        *
+        * \param[in] target_flare_signed_distances scores D of the local reference frames of target cloud.
+        * \param[in] source_flare_signed_distances scores D of the local reference frames of source cloud.
+        * \param[out] correspondences matches.
+        */
       void
-        estimateRigidMotion ( pcl::CorrespondencesConstPtr hough_correspondences, Eigen::Matrix4f &final_transformation, pcl::CorrespondencesPtr &ransac_correspondences);
+      match (const std::vector<float> &target_flare_signed_distances, const std::vector<float> &source_flare_signed_distances, pcl::CorrespondencesPtr &correspondences);
+
+      /** \brief Match Perform hough voting.
+        *
+        * \param[in] matcher_correspondences correspondences produced by the matcher based on scores D.
+        * \param[out] hough_correspondences correspondences survived after hough voting.
+        */
+      void
+      houghVoting (pcl::CorrespondencesConstPtr matcher_correspondences, pcl::CorrespondencesPtr &hough_correspondences);
+
+      /** \brief Match Perform hough voting.
+        *
+        * \param[in] matcher_correspondences correspondences produced by the matcher based on scores D.
+        * \param[out] hough_correspondences correspondences survived after hough voting.
+        */
+      void
+      estimateRigidMotion (pcl::CorrespondencesConstPtr hough_correspondences, Eigen::Matrix4f &final_transformation, pcl::CorrespondencesPtr &ransac_correspondences);
 
       /** \brief Keypoints extracted from the source cloud.*/
       PointCloudSourcePtr source_keypoints_;
@@ -531,7 +681,7 @@ namespace pcl
       float flare_tangent_radius_;
 
       /** \brief Threshold that define if a support point is near the margins in FLARE computation. */
-      float flare_margin_thresh_; 
+      float flare_margin_thresh_;
 
       /** \brief Min number of neighbours required for the computation of Z axis in FLARE computation. Otherwise, feature point normal is used. */
       int flare_min_neighbors_for_normal_axis_;
@@ -558,8 +708,10 @@ namespace pcl
       int ransac_N_;
 
     };
-  }; // namespace registration  
-}; // namespace pcl 
+
+  } // namespace registration
+
+} // namespace pcl
 
 //#ifdef PCL_NO_PRECOMPILE
 #include <pcl/registration/impl/ia_ReLOC.hpp>

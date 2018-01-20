@@ -949,6 +949,50 @@ namespace pcl
     return (computeNDCentroid<PointT, double> (cloud, indices, centroid));
   }
 
+  /** \brief Compute the bounding box of the cloud centered in the centroid of the cloud and extended 2 x sigma_factor x standard deviations of the 3 coordinates.
+    *
+    * \param[in] cloud input cloud
+    * \param[in] sigma_factor extension factor of the bounding box
+    * return bounding box of cloud as (p1_x, p1_y, p1_z, p2_x, p2_y, p2_z)
+    * \ingroup common
+    */
+  template <typename PointInT> inline std::vector<double>
+  computeBBoxFromPointDistribution (const pcl::PointCloud<PointInT> &cloud, const float sigma_factor = 2.0)
+  {
+    size_t n_points = cloud.size ();
+
+    std::vector<float> Xs (n_points);
+    std::vector<float> Ys (n_points);
+    std::vector<float> Zs (n_points);
+    for (int po = 0; po < n_points; po++)
+    {
+      Xs[po] = cloud[po].x;
+      Ys[po] = cloud[po].y;
+      Zs[po] = cloud[po].z;
+    }
+
+    //find sigma for each dimension
+    double sigma_X;
+    double sigma_Y;
+    double sigma_Z;
+    double mean_X;
+    double mean_Y;
+    double mean_Z;
+    pcl::getMeanStd (Xs, mean_X, sigma_X);
+    pcl::getMeanStd (Ys, mean_Y, sigma_Y);
+    pcl::getMeanStd (Zs, mean_Z, sigma_Z);
+
+    std::vector<double> bbox (6);
+    bbox[0] = mean_X - sigma_X * sigma_factor;
+    bbox[1] = mean_X + sigma_X * sigma_factor;
+    bbox[2] = mean_Y - sigma_Y * sigma_factor;
+    bbox[3] = mean_Y + sigma_Y * sigma_factor;
+    bbox[4] = mean_Z - sigma_Z * sigma_factor;
+    bbox[5] = mean_Z + sigma_Z * sigma_factor;
+
+    return bbox;
+  }
+
 }
 
 #include <pcl/common/impl/accumulators.hpp>

@@ -2,7 +2,7 @@
 * Software License Agreement (BSD License)
 *
 *  Point Cloud Library (PCL) - www.pointclouds.org
-*  Copyright (c) 2014-, Open Perception, Inc.
+*  Copyright (c) 2016-, Open Perception, Inc.
 *
 *  All rights reserved.
 *
@@ -33,151 +33,110 @@
 *  ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 *  POSSIBILITY OF SUCH DAMAGE.
 *
+* $Id$
+*
 */
 
 #include <gtest/gtest.h>
-
 #include <pcl/point_types.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/ia_ReLOC.h>
-
 #include <pcl/common/geometry.h>
 
 #include <vector>
 
-using namespace pcl;
-using namespace pcl::io;
-using namespace pcl::registration;
-using namespace std;
-
-
-
-PointCloud<PointXYZ> cloud_source, cloud_target;
+pcl::PointCloud<pcl::PointXYZ> cloud_source, cloud_target;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, ReLOCInitialAlignment)
 {
+  Eigen::Matrix4f transform_to_estimate = Eigen::Matrix4f::Identity ();
+  float theta = M_PI / 4;
+  transform_to_estimate (0, 0) = cos (theta);
+  transform_to_estimate (0, 1) = -sin (theta);
+  transform_to_estimate (1, 0) = sin (theta);
+  transform_to_estimate (1, 1) = cos (theta);
+  transform_to_estimate (0, 3) = 0.4;
+  transform_to_estimate (1, 3) = 0.5;
 
-  Eigen::Matrix4f transform_to_estimate = Eigen::Matrix4f::Identity();
-  float theta = M_PI/4;
-  transform_to_estimate (0,0) = cos (theta);
-  transform_to_estimate (0,1) = -sin(theta);
-  transform_to_estimate (1,0) = sin (theta);
-  transform_to_estimate (1,1) = cos (theta);
-  transform_to_estimate (0,3) = 0.4;
-  transform_to_estimate (1,3) = 0.5;
+  //rototranslate the source cloud by the inverse of the transform to estimate
+  pcl::PointCloud<pcl::PointXYZ> cloud_source_transformed;
+  pcl::transformPointCloud (cloud_source, cloud_source_transformed, transform_to_estimate.inverse ());
 
-  // transform the source cloud by a large amount
-  Eigen::Vector3f initial_offset (1.f, 0.f, 0.f);
-  float angle = static_cast<float> (M_PI) / 2.f;
-  Eigen::Quaternionf initial_rotation (cos (angle / 2.f), 0, 0, sin (angle / 2.f));
-  PointCloud<PointXYZ> cloud_source_transformed;
-  //transformPointCloud (cloud_source, cloud_source_transformed, initial_offset, initial_rotation);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_source_ptr = cloud_source_transformed.makeShared ();
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_target_ptr = cloud_target.makeShared ();
 
-  Eigen::Matrix4f inverse_transform = transform_to_estimate.inverse();
-  transformPointCloud (cloud_source, cloud_source_transformed, inverse_transform);
-
-  // create shared pointers
-  PointCloud<PointXYZ>::Ptr cloud_source_ptr, cloud_target_ptr;
-  cloud_source_ptr = cloud_source_transformed.makeShared ();
-  cloud_target_ptr = cloud_target.makeShared ();
-
-  float meshRes = 0.004f;
-
-
-
+  const float mesh_res = 0.004f;
 
   // Compute source normals
-	vector<int> source_indices (cloud_source_ptr->points.size ());
-	for (size_t i = 0; i < source_indices.size (); ++i)
-		source_indices[i] = static_cast<int> (i);
-	boost::shared_ptr<vector<int> > source_indices_ptr (new vector<int> (source_indices));
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> source_ne;
+  source_ne.setRadiusSearch (2.0f*mesh_res);
 
-	NormalEstimation<PointXYZ, Normal> source_ne;
-	source_ne.setRadiusSearch (2.0f*meshRes);
-	source_ne.setIndices (source_indices_ptr);
+  //get centroid of source cloud to disambiguate normals
+  Eigen::Vector4f source_centroid;
+  pcl::compute3DCentroid (*cloud_source_ptr, source_centroid);
+  source_ne.setViewPoint (source_centroid[0], source_centroid[1], source_centroid[2]);
 
-	//get centroid of source cloud to disambiguate normals
-	Eigen::Vector4f source_centroid; 
-	pcl::compute3DCentroid(*cloud_source_ptr, source_centroid); 
+  source_ne.setInputCloud (cloud_source_ptr);
 
-	source_ne.setViewPoint (source_centroid[0], source_centroid[1], source_centroid[2]);
-	source_ne.setInputCloud (cloud_source_ptr);
-
-	PointCloud<Normal>::Ptr source_normals (new PointCloud<Normal> ());
-	source_ne.compute (*source_normals);
-	//disambiguate normals
-	for(int no=0; no<source_normals->size(); no++)
-	{
-		(*source_normals)[no].getNormalVector3fMap() *= -1;
-	}
-
+  pcl::PointCloud<pcl::Normal>::Ptr source_normals (new pcl::PointCloud<pcl::Normal> ());
+  source_ne.compute (*source_normals);
+  //flip normals
+  for (int no = 0; no < source_normals->size (); no++)
+  {
+    (*source_normals)[no].getNormalVector3fMap () *= -1;
+  }
 
   // Compute target normals
-	vector<int> target_indices (cloud_target_ptr->points.size ());
-	for (size_t i = 0; i < target_indices.size (); ++i)
-		target_indices[i] = static_cast<int> (i);
-	boost::shared_ptr<vector<int> > target_indices_ptr (new vector<int> (target_indices));
+  pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> target_ne;
+  target_ne.setRadiusSearch (2.0f*mesh_res);
 
-	NormalEstimation<PointXYZ, Normal> target_ne;
-	target_ne.setRadiusSearch (2.0f*meshRes);
-	target_ne.setIndices (target_indices_ptr);
+  //get centroid of target cloud to disambiguate normals
+  Eigen::Vector4f target_centroid;
+  pcl::compute3DCentroid (*cloud_target_ptr, target_centroid);
+  target_ne.setViewPoint (target_centroid[0], target_centroid[1], target_centroid[2]);
 
-	//get centroid of target cloud to disambiguate normals
-	Eigen::Vector4f target_centroid; 
-	pcl::compute3DCentroid(*cloud_target_ptr, target_centroid); 
+  target_ne.setInputCloud (cloud_target_ptr);
 
-	target_ne.setViewPoint (target_centroid[0], target_centroid[1], target_centroid[2]);
-	target_ne.setInputCloud (cloud_target_ptr);
+  pcl::PointCloud<pcl::Normal>::Ptr target_normals (new pcl::PointCloud<pcl::Normal> ());
+  target_ne.compute (*target_normals);
+  //flip normals
+  for (int no = 0; no < target_normals->size (); no++)
+  {
+    (*target_normals)[no].getNormalVector3fMap () *= -1;
+  }
 
-	PointCloud<Normal>::Ptr target_normals (new PointCloud<Normal> ());
-	target_ne.compute (*target_normals);
-	//disambiguate normals
-	for(int no=0; no<target_normals->size(); no++)
-	{
-		(*target_normals)[no].getNormalVector3fMap() *= -1;
-	}
-
-
-
-  
-  
   // initialize ReLOC
-  PointCloud <PointXYZ> source_aligned;
-  ReLOCInitialAlignment <PointXYZ, PointXYZ> ReLOC_ia;
-  ReLOC_ia.setSeed(0);
+  pcl::PointCloud <pcl::PointXYZ> source_aligned;
+  pcl::registration::ReLOCInitialAlignment <pcl::PointXYZ, pcl::PointXYZ> ReLOC_ia;
+  ReLOC_ia.setSeed (0);
   ReLOC_ia.setInputSource (cloud_source_ptr);
   ReLOC_ia.setInputTarget (cloud_target_ptr);
-	ReLOC_ia.setSourceNormals (source_normals); 
-	ReLOC_ia.setTargetNormals (target_normals); 
-  ReLOC_ia.setFlatKeypointRf (3.0*meshRes); //5 in the paper
-  ReLOC_ia.setFlatKeypointRdiscard (2.0*meshRes);
-  ReLOC_ia.setFlatKeypointR1search (2.0*meshRes);
-  ReLOC_ia.setFlatKeypointR2search (20.0*meshRes);
+  ReLOC_ia.setSourceNormals (source_normals);
+  ReLOC_ia.setTargetNormals (target_normals);
+  ReLOC_ia.setFlatKeypointRf (3.0*mesh_res); //5 in the paper
+  ReLOC_ia.setFlatKeypointRdiscard (2.0*mesh_res);
+  ReLOC_ia.setFlatKeypointR1search (2.0*mesh_res);
+  ReLOC_ia.setFlatKeypointR2search (20.0*mesh_res);
 
-  ReLOC_ia.useRandomDetector(true); // as the clouds have a limited number of points, a random extraction is sufficient
-  ReLOC_ia.setNrandomKeypoints(300);
+  ReLOC_ia.setUseRandomDetector (true); // as the clouds have a limited number of points, a random extraction is sufficient
+  ReLOC_ia.setNrandomKeypoints (300);
 
-  ReLOC_ia.setFlareNormalRadius (5.0*meshRes);
-  ReLOC_ia.setFlareTangentRadius (20.0*meshRes);
-  ReLOC_ia.setHoughSbin (2.0*meshRes);
-  ReLOC_ia.setRansacT (8.0*meshRes);
+  ReLOC_ia.setFlareNormalRadius (5.0*mesh_res);
+  ReLOC_ia.setFlareTangentRadius (20.0*mesh_res);
+  ReLOC_ia.setHoughSbin (2.0*mesh_res);
+  ReLOC_ia.setRansacT (8.0*mesh_res);
 
-
-  // align
+  // perform alignment
   ReLOC_ia.align (source_aligned);
 
-
-
-
   //Compare source and transformed source
-  for(int po=0; po<cloud_source_ptr->size(); po++)
+  for (int po = 0; po < cloud_source_ptr->size (); po++)
   {
-    float dist = pcl::geometry::distance(cloud_source.at(0), source_aligned.at(0));
+    float dist = pcl::geometry::distance (cloud_source.at (0), source_aligned.at (0));
     EXPECT_LT (dist, 0.05f);
   }
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int
@@ -190,12 +149,12 @@ main (int argc, char** argv)
   }
 
   // Input
-  if (loadPCDFile (argv[1], cloud_source) < 0)
+  if (pcl::io::loadPCDFile (argv[1], cloud_source) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
     return (-1);
   }
-  if (loadPCDFile (argv[2], cloud_target) < 0)
+  if (pcl::io::loadPCDFile (argv[2], cloud_target) < 0)
   {
     std::cerr << "Failed to read test file. Please download `bun4.pcd` and pass its path to the test." << std::endl;
     return (-1);
@@ -204,5 +163,4 @@ main (int argc, char** argv)
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

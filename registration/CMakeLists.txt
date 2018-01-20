@@ -75,7 +75,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ia_kfpcs.h"
         "include/pcl/${SUBSYS_NAME}/matching_candidate.h"
         "include/pcl/${SUBSYS_NAME}/transformation_estimation_3point.h"
-		"include/pcl/${SUBSYS_NAME}/ia_ReLOC.h"
+        "include/pcl/${SUBSYS_NAME}/ia_ReLOC.h"
         )
 
     set(impl_incs 
@@ -123,7 +123,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/ia_fpcs.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ia_kfpcs.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/transformation_estimation_3point.hpp"
-		"include/pcl/${SUBSYS_NAME}/impl/ia_ReLOC.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/ia_ReLOC.hpp"
         )
 
     set(srcs
