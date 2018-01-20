@@ -82,7 +82,6 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
   return (PCLBase<PointSource>::initCompute ());
 }
 
-
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> bool
 pcl::Registration<PointSource, PointTarget, Scalar>::deinitCompute ()

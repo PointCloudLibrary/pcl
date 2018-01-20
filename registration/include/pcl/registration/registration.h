@@ -64,8 +64,6 @@ namespace pcl
     public:
       typedef Eigen::Matrix<Scalar, 4, 4> Matrix4;
 
-      // using PCLBase<PointSource>::initCompute;
-      // using PCLBase<PointSource>::deinitCompute;
       using PCLBase<PointSource>::input_;
       using PCLBase<PointSource>::indices_;
 
