@@ -297,7 +297,6 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, Eigen::Vector4f &min_pt,
   max_pt = max_p;
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT> inline void
 pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices,
@@ -375,17 +374,17 @@ pcl::getMinMax3D (const pcl::PointCloud<PointT> &cloud, const std::vector<int> &
 template <typename PointT> inline double 
 pcl::getCircumcircleRadius (const PointT &pa, const PointT &pb, const PointT &pc)
 {
-  Eigen::Vector4f p1 (pa.x, pa.y, pa.z, 0);
-  Eigen::Vector4f p2 (pb.x, pb.y, pb.z, 0);
-  Eigen::Vector4f p3 (pc.x, pc.y, pc.z, 0);
+  Eigen::Vector4f p1 (pa.x, pa.y, pa.z, 0.0f);
+  Eigen::Vector4f p2 (pb.x, pb.y, pb.z, 0.0f);
+  Eigen::Vector4f p3 (pc.x, pc.y, pc.z, 0.0f);
 
-  double p2p1 = (p2 - p1).norm (), p3p2 = (p3 - p2).norm (), p1p3 = (p1 - p3).norm ();
+  float p2p1 = (p2 - p1).norm (), p3p2 = (p3 - p2).norm (), p1p3 = (p1 - p3).norm ();
   // Calculate the area of the triangle using Heron's formula 
   // (http://en.wikipedia.org/wiki/Heron's_formula)
-  double semiperimeter = (p2p1 + p3p2 + p1p3) / 2.0;
-  double area = sqrt (semiperimeter * (semiperimeter - p2p1) * (semiperimeter - p3p2) * (semiperimeter - p1p3));
+  float semiperimeter = (p2p1 + p3p2 + p1p3) / 2.0f;
+  float area = sqrt (semiperimeter * (semiperimeter - p2p1) * (semiperimeter - p3p2) * (semiperimeter - p1p3));
   // Compute the radius of the circumscribed circle
-  return ((p2p1 * p3p2 * p1p3) / (4.0 * area));
+  return ((p2p1 * p3p2 * p1p3) / (4.0f * area));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////

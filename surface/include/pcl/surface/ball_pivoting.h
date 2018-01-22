@@ -96,18 +96,6 @@ namespace pcl
     double threshold_distance_near_;
 
     /**
-     * @brief getPlaneBetweenPoints returns the plane between two points,
-     *        it is perpendicular to point0-point1 and crosses their mid-point
-     * @param point0
-     * @param point1
-     * @return
-     */
-    static
-    Eigen::Vector4f
-    getPlaneBetweenPoints (const Eigen::Vector3f &point0, 
-                           const Eigen::Vector3f &point1);
-
-    /**
      * @brief getIdPointsInSphere returns the index of points which are in sphere
      *        with center and radius as given
      * @param center
@@ -138,19 +126,6 @@ namespace pcl
                         const std::vector<uint32_t> &indexes) const;
 
     /**
-     * get the center of circle where three point are on
-     * @param point0
-     * @param point1
-     * @param point2
-     * @return
-     */
-    static
-    Eigen::Vector3f
-    getCircleCenter (const Eigen::Vector3f &point0, 
-                     const Eigen::Vector3f &point1, 
-                     const Eigen::Vector3f &point2);
-
-    /**
      * get the normal vector of a triangle, (p1-p0)x(p2-p0)
      * @tparam PointNT
      * @param cloud
@@ -159,23 +134,7 @@ namespace pcl
      */
     Eigen::Vector3f
     getNormalTriangle (const std::vector<uint32_t> &indexes) const;
-  
-    /**
-     * get the signed rotation angle from (point0-center) to (point1-center) on plane
-     * @param point0
-     * @param point1
-     * @param center
-     * @param plane the rotation is along the normal vector of plane
-     * @return
-     */
-    static
-    float
-    getRotationAngle (const Eigen::Vector3f &point0, 
-                      const Eigen::Vector3f &point1, 
-                      const Eigen::Vector3f &center, 
-                      const Eigen::Vector4f &plane);
 
-  
     /**
      * find one starting triangle for ball pivoting
      * @param seed the index of triangle vertices

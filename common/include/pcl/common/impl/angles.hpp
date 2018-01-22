@@ -47,14 +47,11 @@ namespace pcl
   inline float
   normAngle (float alpha)
   {
-    return (alpha >= 0  ? 
-        fmodf (alpha + static_cast<float>(M_PI), 
-               2.0f * static_cast<float>(M_PI)) 
-        - static_cast<float>(M_PI) 
+    const float m_pi_float (static_cast<float> (M_PI));
+    return (alpha >= 0.0f  ?
+        fmodf (alpha + m_pi_float, 2.0f * m_pi_float) - m_pi_float
         : 
-        -(fmodf (static_cast<float>(M_PI) - alpha, 
-                 2.0f * static_cast<float>(M_PI)) 
-        - static_cast<float>(M_PI)));
+        -(fmodf (m_pi_float - alpha, 2.0f * m_pi_float) - m_pi_float));
   }
 
   inline float 
@@ -80,6 +77,30 @@ namespace pcl
   {
     return (alpha * 0.017453293);
   }
+
+
+  inline float
+  getRotationAngle (const Eigen::Vector3f &point0,
+                    const Eigen::Vector3f &point1,
+                    const Eigen::Vector3f &center,
+                    const Eigen::Vector4f &plane)
+  {
+    const Eigen::Vector3f vec0 = (point0 - center).normalized ();
+    const Eigen::Vector3f vec1 = (point1 - center).normalized ();
+
+    // Use vec0 as "X-axis" and the cross product of vec0 and -plane.normal as "Y-axis",
+    // and use atan2 to get the unique angle (the range of atan2 is 2*pi).
+    // Reverse the normal vector of plane should make the angle alpha to be 2*pi-alpha
+    const float sin_val = vec0.cross (-Eigen::Vector3f (plane.segment (0, 3))).dot (vec1);
+    const float cos_val = vec0.dot (vec1);
+    float angle = std::atan2 (sin_val, cos_val);
+    if (angle < 0.0f) // -pi~pi -> 0~2pi
+    {
+      angle += (float) (2.0 * M_PI);
+    }
+    return angle;
+  }
+
 }
 
 #endif  // PCL_COMMON_ANGLES_IMPL_HPP_

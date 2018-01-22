@@ -152,6 +152,19 @@ namespace pcl
   getMinMax3D (const pcl::PointCloud<PointT> &cloud, const pcl::PointIndices &indices, 
                Eigen::Vector4f &min_pt, Eigen::Vector4f &max_pt);
 
+  /**
+   * \brief Get the centre of circumscribed circle of three points.
+   * \param point0 the first point
+   * \param point1 the second point
+   * \param point2 the third point
+   * \return the centre of the circumscribed circle
+   * \ingroup common
+   */
+  Eigen::Vector3f
+  getCircumscribedCircleCentre (const Eigen::Vector3f &point0,
+                                const Eigen::Vector3f &point1,
+                                const Eigen::Vector3f &point2);
+
   /** \brief Compute the radius of a circumscribed circle for a triangle formed of three points pa, pb, and pc
     * \param pa the first point
     * \param pb the second point
@@ -200,6 +213,18 @@ namespace pcl
     */
   PCL_EXPORTS void
   getMeanStdDev (const std::vector<float> &values, double &mean, double &stddev);
+
+  /**
+   * @brief getPlaneBetweenPoints returns the plane between two points,
+   *        it is perpendicular to point0-point1 and crosses their mid-point.
+   * @param point0 the first point
+   * @param point1 the second point
+   * @return the parameter of plane which is between the given points.
+   * \ingroup common
+   */
+  PCL_EXPORTS Eigen::Vector4f
+  getPlaneBetweenPoints (const Eigen::Vector3f &point0,
+                         const Eigen::Vector3f &point1);
 
 }
 /*@}*/

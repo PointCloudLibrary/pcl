@@ -44,22 +44,13 @@
 #include <boost/make_shared.hpp>
 #include <boost/range/algorithm/random_shuffle.hpp>
 
+#include <pcl/common/common.h>
+#include <pcl/common/angles.h>
 #include <pcl/surface/ball_pivoting.h>
   
 namespace pcl
 {
-  template<typename PointNT>
-  Eigen::Vector4f
-  BallPivoting<PointNT>::getPlaneBetweenPoints (const Eigen::Vector3f &point0, 
-                                                const Eigen::Vector3f &point1)
-  {
-    const Eigen::Vector3f normal = (point1 - point0).normalized ();
-    Eigen::Vector4f plane;
-    // (point1+point0)/2 is on plane
-    plane << normal, -(point1 + point0).dot (normal) * 0.5f;
-    return plane;
-  }
-  
+
   template<typename PointNT>
   std::vector<int>
   BallPivoting<PointNT>::getIdPointsInSphere (const Eigen::Vector3f &center, const double radius) const
@@ -99,26 +90,6 @@ namespace pcl
     }
     return count_consistent >= 2;
   }
-   
-  template<typename PointNT>
-  Eigen::Vector3f
-  BallPivoting<PointNT>::getCircleCenter (const Eigen::Vector3f &point0, 
-                                          const Eigen::Vector3f &point1, 
-                                          const Eigen::Vector3f &point2) 
-  {
-    // https://en.wikipedia.org/wiki/Circumscribed_circle#Cartesian_coordinates_from_cross-_and_dot-products
-    const Eigen::Vector3f vec2 = point0 - point1;
-    const Eigen::Vector3f vec0 = point1 - point2;
-    const Eigen::Vector3f vec1 = point2 - point0;
-    const float area = vec0.cross (vec1).norm ();
-    const float determinator = 2.0f * area * area;
-  
-    const float alpha = vec0.dot (vec0) * vec2.dot (-vec1) / determinator;
-    const float beta = vec1.dot (vec1) * -vec2.dot (vec0) / determinator;
-    const float gamma = vec2.dot (vec2) * vec1.dot (-vec0) / determinator;
-  
-    return alpha * point0 + beta * point1 + gamma * point2;
-  }
 
   template<typename PointNT>
   Eigen::Vector3f
@@ -134,30 +105,7 @@ namespace pcl
       .cross (input_->at (indexes.at (2)).getVector3fMap () - p0)
       .normalized ();
   }
-  
-  template<typename PointNT>
-  float
-  BallPivoting<PointNT>::getRotationAngle (const Eigen::Vector3f &point0, 
-                                           const Eigen::Vector3f &point1, 
-                                           const Eigen::Vector3f &center, 
-                                           const Eigen::Vector4f &plane)
-  {
-    const Eigen::Vector3f vec0 = (point0 - center).normalized ();
-    const Eigen::Vector3f vec1 = (point1 - center).normalized ();
-  
-    // Use vec0 as "X-axis" and the cross product of vec0 and -plane.normal as "Y-axis",
-    // and use atan2 to get the unique angle (the range of atan2 is 2*pi).
-    // Reverse the normal vector of plane should make the angle alpha to be 2*pi-alpha
-    const float sin_val = vec0.cross (-Eigen::Vector3f (plane.segment (0, 3))).dot (vec1);
-    const float cos_val = vec0.dot (vec1);
-    float angle = std::atan2 (sin_val, cos_val);
-    if (angle < 0.0f) // -pi~pi -> 0~2pi
-    {
-      angle += (float) (2.0 * M_PI);
-    }
-    return angle;
-  }
-   
+
   template<typename PointNT>
   boost::shared_ptr<Eigen::Vector3f>
   BallPivoting<PointNT>::getBallCenter (const bool is_back_first, 
@@ -179,7 +127,7 @@ namespace pcl
         (pos2 - pos0).norm () > threshold_distance_near_ && 
         fabs (vec0.dot (vec1)) < threshold_collinear_cos_)
     {
-      Eigen::Vector3f center_circle = getCircleCenter (pos0, pos1, pos2);
+      Eigen::Vector3f center_circle = getCircumscribedCircleCentre (pos0, pos1, pos2);
   
       // move to distance radius_ along normal direction
       float radius_planar = (center_circle - pos0).norm ();
