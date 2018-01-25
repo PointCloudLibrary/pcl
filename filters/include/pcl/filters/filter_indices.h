@@ -133,7 +133,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -153,7 +153,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
@@ -249,7 +249,7 @@ namespace pcl
         * \return The value of the internal \a negative_ parameter; false = normal filter behavior (default), true = inverted behavior.
         */
       inline bool
-      getNegative ()
+      getNegative () const
       {
         return (negative_);
       }
@@ -269,7 +269,7 @@ namespace pcl
         * \return The value of the internal \a keep_organized_ parameter; false = remove points (default), true = redefine points, keep structure.
         */
       inline bool
-      getKeepOrganized ()
+      getKeepOrganized () const
       {
         return (keep_organized_);
       }
