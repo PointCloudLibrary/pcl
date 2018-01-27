@@ -690,46 +690,6 @@ struct OctreePointCloudAdjacencyBeginEndIteratorsTest
   OctreeT oct_a_, oct_b_;
 };
 
-TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, DepthBegin)
-{
-  // Useful types
-  typedef typename OctreeT::Iterator IteratorT;
-
-  // Default initialization
-  IteratorT it_a_1 = oct_a_.depth_begin ();
-  IteratorT it_a_2 = oct_a_.depth_begin ();
-  IteratorT it_b = oct_b_.depth_begin ();
-
-  EXPECT_EQ (it_a_1, it_a_2);
-  EXPECT_NE (it_a_1, it_b);
-  EXPECT_NE (it_a_2, it_b);
-
-  // Different max depths are not the same iterators
-  IteratorT it_m = oct_a_.depth_begin ();
-  IteratorT it_m_1 = oct_a_.depth_begin (1);
-  IteratorT it_m_md = oct_a_.depth_begin (oct_a_.getTreeDepth ());
-  IteratorT it_m_b_1 = oct_b_.depth_begin (1);
-
-  EXPECT_NE (it_m_1, it_m_md);
-  EXPECT_EQ (it_m_md, it_m); // should default to tree depth
-  EXPECT_NE (it_m_1, it_m_b_1);
-}
-
-TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, DepthEnd)
-{
-  // Useful types
-  typedef typename OctreeT::Iterator IteratorT;
-
-  // Default initialization
-  IteratorT it_a_1 = oct_a_.depth_end ();
-  IteratorT it_a_2 = oct_a_.depth_end ();
-  IteratorT it_b = oct_b_.depth_end ();
-
-  EXPECT_EQ (it_a_1, it_a_2);
-  EXPECT_NE (it_a_1, it_b);
-  EXPECT_NE (it_a_2, it_b);
-}
-
 TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, LeafBegin)
 {
   // Useful types
@@ -764,6 +724,86 @@ TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, LeafEnd)
   IteratorT it_a_1 = oct_a_.leaf_end ();
   IteratorT it_a_2 = oct_a_.leaf_end ();
   IteratorT it_b = oct_b_.leaf_end ();
+
+  EXPECT_EQ (it_a_1, it_a_2);
+  EXPECT_NE (it_a_1, it_b);
+  EXPECT_NE (it_a_2, it_b);
+}
+
+TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, DepthBegin)
+{
+  // Useful types
+  typedef typename OctreeT::DepthFirstIterator IteratorT;
+
+  // Default initialization
+  IteratorT it_a_1 = oct_a_.depth_begin ();
+  IteratorT it_a_2 = oct_a_.depth_begin ();
+  IteratorT it_b = oct_b_.depth_begin ();
+
+  EXPECT_EQ (it_a_1, it_a_2);
+  EXPECT_NE (it_a_1, it_b);
+  EXPECT_NE (it_a_2, it_b);
+
+  // Different max depths are not the same iterators
+  IteratorT it_m = oct_a_.depth_begin ();
+  IteratorT it_m_1 = oct_a_.depth_begin (1);
+  IteratorT it_m_md = oct_a_.depth_begin (oct_a_.getTreeDepth ());
+  IteratorT it_m_b_1 = oct_b_.depth_begin (1);
+
+  EXPECT_NE (it_m_1, it_m_md);
+  EXPECT_EQ (it_m_md, it_m); // should default to tree depth
+  EXPECT_NE (it_m_1, it_m_b_1);
+}
+
+TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, DepthEnd)
+{
+  // Useful types
+  typedef typename OctreeT::DepthFirstIterator IteratorT;
+
+  // Default initialization
+  IteratorT it_a_1 = oct_a_.depth_end ();
+  IteratorT it_a_2 = oct_a_.depth_end ();
+  IteratorT it_b = oct_b_.depth_end ();
+
+  EXPECT_EQ (it_a_1, it_a_2);
+  EXPECT_NE (it_a_1, it_b);
+  EXPECT_NE (it_a_2, it_b);
+}
+
+TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, BreadthBegin)
+{
+  // Useful types
+  typedef typename OctreeT::BreadthFirstIterator IteratorT;
+
+  // Default initialization
+  IteratorT it_a_1 = oct_a_.breadth_begin ();
+  IteratorT it_a_2 = oct_a_.breadth_begin ();
+  IteratorT it_b = oct_b_.breadth_begin ();
+
+  EXPECT_EQ (it_a_1, it_a_2);
+  EXPECT_NE (it_a_1, it_b);
+  EXPECT_NE (it_a_2, it_b);
+
+  // Different max depths are not the same iterators
+  IteratorT it_m = oct_a_.breadth_begin ();
+  IteratorT it_m_1 = oct_a_.breadth_begin (1);
+  IteratorT it_m_md = oct_a_.breadth_begin (oct_a_.getTreeDepth ());
+  IteratorT it_m_b_1 = oct_b_.breadth_begin (1);
+
+  EXPECT_NE (it_m_1, it_m_md);
+  EXPECT_EQ (it_m_md, it_m); // should default to tree depth
+  EXPECT_NE (it_m_1, it_m_b_1);
+}
+
+TEST_F (OctreePointCloudAdjacencyBeginEndIteratorsTest, BreadthEnd)
+{
+  // Useful types
+  typedef typename OctreeT::BreadthFirstIterator IteratorT;
+
+  // Default initialization
+  IteratorT it_a_1 = oct_a_.breadth_end ();
+  IteratorT it_a_2 = oct_a_.breadth_end ();
+  IteratorT it_b = oct_b_.breadth_end ();
 
   EXPECT_EQ (it_a_1, it_a_2);
   EXPECT_NE (it_a_1, it_b);

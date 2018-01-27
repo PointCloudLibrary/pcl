@@ -95,40 +95,6 @@ namespace pcl
         typedef boost::shared_ptr<PointCloud> PointCloudPtr;
         typedef boost::shared_ptr<const PointCloud> PointCloudConstPtr;
 
-        // Iterators are friends
-        friend class OctreeIteratorBase<OctreeAdjacencyT>;
-        friend class OctreeDepthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeBreadthFirstIterator<OctreeAdjacencyT>;
-        friend class OctreeLeafNodeIterator<OctreeAdjacencyT>;
-
-        // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeAdjacencyT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeAdjacencyT> ConstIterator;
-
-        Iterator depth_begin (unsigned int max_depth_arg = 0)
-        {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
-        }
-
-        const Iterator depth_end (unsigned int max_depth_arg = 0)
-        {
-          return Iterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
-        }
-
-        // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeAdjacencyT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeAdjacencyT> ConstLeafNodeIterator;
-
-        LeafNodeIterator leaf_begin (unsigned int max_depth_arg = 0)
-        {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
-        }
-
-        const LeafNodeIterator leaf_end (unsigned int max_depth_arg = 0)
-        {
-          return LeafNodeIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_, NULL);
-        }
-
         // BGL graph
         typedef boost::adjacency_list<boost::setS, boost::setS, boost::undirectedS, PointT, float> VoxelAdjacencyList;
         typedef typename VoxelAdjacencyList::vertex_descriptor VoxelID;
