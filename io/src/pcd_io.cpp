@@ -287,6 +287,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       if (line_type.substr (0, 5) == "WIDTH")
       {
         sstream >> cloud.width;
+        if (sstream.fail ())
+          throw "Invalid WIDTH value specified.";
         if (cloud.point_step != 0)
           cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
         continue;
