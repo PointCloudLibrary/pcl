@@ -11,7 +11,7 @@ main (int argc, char** argv)
 
   pcl::io::loadPCDFile<pcl::PointXYZI> ("spherical_voxel_grid_example.pcd", *input);
 
-  std::cerr << "Size before downsample: " << input->points.size() << std::endl;
+  std::cout << "Size before downsample: " << input->points.size() << std::endl;
 
   // Create the filtering object
   pcl::SphericalVoxelGrid<pcl::PointXYZI> voxel;
@@ -19,7 +19,7 @@ main (int argc, char** argv)
   voxel.setLeafSize (0.1, 90, 300);
   voxel.filter (*output);
 
-  std::cerr << "Size after downsample: " << output->points.size() << std::endl;
+  std::cout << "Size after downsample: " << output->points.size() << std::endl;
 
   pcl::io::savePCDFileASCII ("spherical_voxel_grid_example_downsampled.pcd", *output);
 

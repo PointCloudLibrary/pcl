@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project(voxel_grid)
+project(spherical_voxel_grid)
 
-find_package(PCL 1.8.1 REQUIRED)
+find_package(PCL 1.8.1.99 REQUIRED)
 
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})

@@ -8,7 +8,7 @@ a point cloud using spherical coordinates. This method allows the
 user to selectively modify the resolution of point clouds produced
 by modern 3D LiDAR scanners. The use of spherical coordinates permits
 the radial and angular resolutions of the cloud to be downsampled
-independently, which is not possible in a cartesian system.
+independently. This is not possible in a cartesian system.
 
 The code
 --------
@@ -31,7 +31,7 @@ Now, let's break down the code piece by piece.
 
 The following line of code will read the point cloud data from disk.
 
-.. literalinclude:: sources/voxel_grid/voxel_grid.cpp
+.. literalinclude:: sources/spherical_voxel_grid/spherical_voxel_grid.cpp
    :language: cpp
    :lines: 12-12
    
@@ -39,13 +39,13 @@ Then, a *pcl::SphericalVoxelGrid* filter is created with a radial leaf size of 1
 divisions, and 300 horizontal angular divisions. The input data is passed, and the output is computed
 and stored in *output*.
 
-.. literalinclude:: sources/voxel_grid/voxel_grid.cpp
+.. literalinclude:: sources/spherical_voxel_grid/spherical_voxel_grid.cpp
    :language: cpp
    :lines: 16-20
    
 Finally, the data is written to disk for later inspection.
 
-.. literalinclude:: sources/voxel_grid/voxel_grid.cpp
+.. literalinclude:: sources/spherical_voxel_grid/spherical_voxel_grid.cpp
    :language: cpp
    :lines: 24-24
 
@@ -55,7 +55,7 @@ Compiling and running the program
 
 Add the following lines to your CMakeLists.txt file:
 
-.. literalinclude:: sources/voxel_grid/CMakeLists.txt
+.. literalinclude:: sources/spherical_voxel_grid/CMakeLists.txt
    :language: cmake
    :linenos:
    

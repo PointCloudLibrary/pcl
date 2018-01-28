@@ -93,7 +93,7 @@ pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)
     std::vector<int> indices_filtered;
     indices_filtered.reserve (indices_->size ());
 
-    // Get the distance field index
+    // Get the filter field index
     std::vector<pcl::PCLPointField> fields;
     int filter_idx = pcl::getFieldIndex (*input_, filter_field_name_, fields);
     if (filter_idx == -1)
