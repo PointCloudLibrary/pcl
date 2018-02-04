@@ -61,6 +61,22 @@ namespace pcl
   }
 }
 
+template <typename PointT> void
+pcl::SphericalVoxelGrid<PointT>::setLeafSize (float r, unsigned int vertical_divisions, unsigned int horizontal_divisions)
+{
+  if (r <= 0 || vertical_divisions < 1 || horizontal_divisions < 1)
+  {
+    PCL_WARN ("[pcl::%s::setLeafSize] Invalid leaf size\n", getClassName().c_str());
+    return;
+  }
+
+  leaf_size_r_ = r;
+  leaf_size_theta_ = static_cast<float> (M_PI) /  vertical_divisions;
+  leaf_size_phi_ = (2.0f * static_cast<float> (M_PI)) / horizontal_divisions;
+
+  leaf_theta_divisions_ = vertical_divisions;
+  leaf_phi_divisions_ = horizontal_divisions;
+}
 
 template <typename PointT> void
 pcl::SphericalVoxelGrid<PointT>::applyFilter (PointCloud &output)

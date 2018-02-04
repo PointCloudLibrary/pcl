@@ -64,14 +64,13 @@ namespace pcl
       using Filter<PointT>::input_;
       using Filter<PointT>::indices_;
 
-      typedef typename Filter<PointT>::PointCloud PointCloud;
-      typedef typename PointCloud::Ptr PointCloudPtr;
-      typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      using typename Filter<PointT>::PointCloud;
+
+    public:
       typedef boost::shared_ptr< SphericalVoxelGrid<PointT> > Ptr;
       typedef boost::shared_ptr< const SphericalVoxelGrid<PointT> > ConstPtr;
 
-    public:
-      /** \brief Empty constructor. */
+      /** \brief Default constructor. */
       SphericalVoxelGrid () :
                 leaf_size_r_ (0),
                 leaf_r_divisions_(0),
@@ -92,30 +91,14 @@ namespace pcl
           filter_name_ = "SphericalVoxelGrid";
       }
 
-      virtual ~SphericalVoxelGrid () {}
-
       /** \brief Set the size of the spherically shaped voxels
         * \param[in] r the radial length of each voxel
         * \param[in] vertical_divisions the total number of vertical divisions of a single hemisphere
         * (on one side of z axis) in the spherical coordinate system
         * \param[in] horizontal_divisions the total number of horizonal divisions of the spherical coordiante system
         */
-      inline void
-      setLeafSize (float r, int vertical_divisions, int horizontal_divisions)
-      {
-        if (r <= 0 || vertical_divisions < 1 || horizontal_divisions < 1)
-        {
-          PCL_WARN ("[pcl::%s::setLeafSize] Invalid leaf size\n", getClassName().c_str());
-          return;
-        }
-
-        leaf_size_r_ = r;
-        leaf_size_theta_ = static_cast<float> (M_PI) /  vertical_divisions;
-        leaf_size_phi_ = (2.0f * static_cast<float> (M_PI)) / horizontal_divisions;
-
-        leaf_theta_divisions_ = vertical_divisions;
-        leaf_phi_divisions_ = horizontal_divisions;
-      }
+      void
+      setLeafSize (float r, unsigned int vertical_divisions, unsigned int horizontal_divisions);
 
       /** \brief Get the radial size of the leaves
         */
@@ -195,7 +178,7 @@ namespace pcl
       setFilterFieldName (const std::string &field_name) { filter_field_name_ = field_name; }
 
       /** \brief Get the name of the field used for filtering. */
-      inline std::string const
+      inline const std::string&
       getFilterFieldName () const { return (filter_field_name_); }
 
       /** \brief Set the field filter limits. All points having field values outside this interval will be discarded.
@@ -203,7 +186,7 @@ namespace pcl
         * \param[in] limit_max the maximum allowed field value
         */
       inline void
-      setFilterLimits (const double &limit_min, const double &limit_max)
+      setFilterLimits (const float &limit_min, const float &limit_max)
       {
         filter_limit_min_ = limit_min;
         filter_limit_max_ = limit_max;
@@ -214,7 +197,7 @@ namespace pcl
         * \param[out] limit_max the maximum allowed field value
         */
       inline void
-      getFilterLimits (double &limit_min, double &limit_max) const
+      getFilterLimits (float &limit_min, float &limit_max) const
       {
         limit_min = filter_limit_min_;
         limit_max = filter_limit_max_;
@@ -228,12 +211,6 @@ namespace pcl
       setFilterLimitsNegative (const bool limit_negative) { filter_limit_negative_ = limit_negative; }
 
       /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
-        * \param[out] limit_negative true if data \b outside the interval [min; max] is to be returned, false otherwise
-        */
-      inline void
-      getFilterLimitsNegative (bool &limit_negative) const { limit_negative = filter_limit_negative_; }
-
-      /** \brief Get whether the data outside the interval (min/max) is to be returned (true) or inside (false).
         * \return true if data \b outside the interval [min; max] is to be returned, false otherwise
         */
       inline bool
@@ -244,13 +221,13 @@ namespace pcl
       float leaf_size_r_;
 
       /** \brief The number of radial divisions. */
-      int leaf_r_divisions_;
+      unsigned int leaf_r_divisions_;
 
       /** \brief The number of vertical divisions. */
-      int leaf_theta_divisions_;
+      unsigned int leaf_theta_divisions_;
 
       /** \brief The number of horizontal divisions. */
-      int leaf_phi_divisions_;
+      unsigned int leaf_phi_divisions_;
 
       /** \brief The size of the vertical divisions (radians). */
       float leaf_size_theta_;
@@ -268,10 +245,10 @@ namespace pcl
       std::string filter_field_name_;
 
       /** \brief The minimum allowed filter value a point will be considered from. */
-      double filter_limit_min_;
+      float filter_limit_min_;
 
       /** \brief The maximum allowed filter value a point will be considered from. */
-      double filter_limit_max_;
+      float filter_limit_max_;
 
       /** \brief Set to true if we want to return the data outside (\a filter_limit_min_;\a filter_limit_max_). Default: false. */
       bool filter_limit_negative_;
