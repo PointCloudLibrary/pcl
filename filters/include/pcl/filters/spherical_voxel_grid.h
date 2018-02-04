@@ -117,17 +117,17 @@ namespace pcl
 
       /** \brief Get the number of radial divisions
         */
-      inline int
+      inline unsigned int
       getDivisionsR () const { return (leaf_r_divisions_); }
 
       /** \brief Get the number of vertical angular divisions
         */
-      inline int
+      inline unsigned int
       getDivisionsVertical () const { return (leaf_theta_divisions_); }
 
       /** \brief Get the number of horizontal angular divisions
         */
-      inline int
+      inline unsigned int
       getDivisionsHorizontal () const { return (leaf_phi_divisions_); }
 
       /** \brief Set to true if all fields need to be downsampled, or false if just XYZ.
