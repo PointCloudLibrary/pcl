@@ -323,6 +323,65 @@ namespace pcl
       while (this->current_state_ && (this->getCurrentOctreeDepth () != fixed_depth_))
         OctreeBreadthFirstIterator<OctreeT>::operator++ ();
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (unsigned int max_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (max_depth_arg)
+    {
+      reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (OctreeT* octree_arg, unsigned int max_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (octree_arg, max_depth_arg)
+    {
+      reset ();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>::OctreeLeafNodeBreadthIterator (OctreeT* octree_arg,
+                                                                           unsigned int max_depth_arg,
+                                                                           IteratorState* current_state,
+                                                                           const std::deque<IteratorState>& fifo)
+        : OctreeBreadthFirstIterator<OctreeT> (octree_arg,
+                                               max_depth_arg,
+                                               current_state,
+                                               fifo)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    void OctreeLeafNodeBreadthIterator<OctreeT>::reset ()
+    {
+      OctreeBreadthFirstIterator<OctreeT>::reset ();
+      ++*this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>&
+    OctreeLeafNodeBreadthIterator<OctreeT>::operator++ ()
+    {          
+      do
+      {
+        OctreeBreadthFirstIterator<OctreeT>::operator++ ();
+      } while ((this->current_state_) && (this->current_state_->node_->getNodeType () != LEAF_NODE));
+
+      return (*this);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>
+    OctreeLeafNodeBreadthIterator<OctreeT>::operator++ (int)
+    {
+      OctreeLeafNodeBreadthIterator _Tmp = *this;
+      ++*this;
+      return (_Tmp);
+    }
   }
 }
 

@@ -106,6 +106,7 @@ namespace pcl
         friend class OctreeBreadthFirstIterator<OctreeT> ;
         friend class OctreeFixedDepthIterator<OctreeT> ;
         friend class OctreeLeafNodeIterator<OctreeT> ;
+        friend class OctreeLeafNodeBreadthIterator<OctreeT> ;
 
         // Octree default iterators
         typedef OctreeDepthFirstIterator<OctreeT> Iterator;
@@ -175,6 +176,20 @@ namespace pcl
         const FixedDepthIterator fixed_depth_end ()
         {
           return FixedDepthIterator (this, 0, NULL);
+        };
+
+        // Octree leaf node iterators
+        typedef OctreeLeafNodeBreadthIterator<OctreeT> LeafNodeBreadthIterator;
+        typedef const OctreeLeafNodeBreadthIterator<OctreeT> ConstLeafNodeBreadthIterator;
+
+        LeafNodeBreadthIterator leaf_breadth_begin (unsigned int max_depth_arg = 0u)
+        {
+          return LeafNodeBreadthIterator (this, max_depth_arg? max_depth_arg : this->octree_depth_);
+        };
+
+        const LeafNodeBreadthIterator leaf_breadth_end ()
+        {
+          return LeafNodeBreadthIterator (this, 0, NULL);
         };
 
         /** \brief Empty constructor. */
