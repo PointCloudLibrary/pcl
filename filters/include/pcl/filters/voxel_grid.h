@@ -186,11 +186,12 @@ namespace pcl
       typedef typename Filter<PointT>::PointCloud PointCloud;
       typedef typename PointCloud::Ptr PointCloudPtr;
       typedef typename PointCloud::ConstPtr PointCloudConstPtr;
+      
+    public:
+    
       typedef boost::shared_ptr< VoxelGrid<PointT> > Ptr;
       typedef boost::shared_ptr< const VoxelGrid<PointT> > ConstPtr;
- 
-
-    public:
+    
       /** \brief Empty constructor. */
       VoxelGrid () : 
         leaf_size_ (Eigen::Vector4f::Zero ()),
