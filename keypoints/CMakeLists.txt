@@ -19,6 +19,7 @@ if(build)
         src/susan.cpp
         src/iss_3d.cpp
         src/brisk_2d.cpp
+        src/flat_keypoint.cpp
         src/trajkovic_2d.cpp
         src/trajkovic_3d.cpp        
         )
@@ -35,6 +36,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/susan.h"
         "include/pcl/${SUBSYS_NAME}/iss_3d.h"
         "include/pcl/${SUBSYS_NAME}/brisk_2d.h"
+        "include/pcl/${SUBSYS_NAME}/flat_keypoint.h"
         "include/pcl/${SUBSYS_NAME}/trajkovic_2d.h"
         "include/pcl/${SUBSYS_NAME}/trajkovic_3d.h"        
         )
@@ -49,6 +51,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/impl/susan.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/iss_3d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/brisk_2d.hpp"
+        "include/pcl/${SUBSYS_NAME}/impl/flat_keypoint.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/trajkovic_2d.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/trajkovic_3d.hpp"        
         )

@@ -49,6 +49,8 @@
 #include <pcl/features/board.h>
 
 
+
+
 template<typename PointModelT, typename PointSceneT, typename PointModelRfT, typename PointSceneRfT>
 template<typename PointType, typename PointRfType> void
 pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::computeRf (const boost::shared_ptr<const pcl::PointCloud<PointType> > &input, pcl::PointCloud<PointRfType> &rf)
@@ -229,7 +231,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::ho
   }
 
   // Hough Voting
-  hough_space_.reset (new pcl::recognition::HoughSpace3D (d_min, bin_size, d_max));
+  hough_space_.reset (new pcl::HoughSpace3D<double> (d_min, bin_size, d_max));
 
   for (int i = 0; i < n_matches; ++i)
   {
@@ -367,6 +369,7 @@ pcl::Hough3DGrouping<PointModelT, PointSceneT, PointModelRfT, PointSceneRfT>::re
   this->deinitCompute ();
   return (true);
 }
+
 
 
 #define PCL_INSTANTIATE_Hough3DGrouping(T,ST,RFT,SRFT) template class PCL_EXPORTS pcl::Hough3DGrouping<T,ST,RFT,SRFT>;

@@ -84,6 +84,13 @@ pcl::Registration<PointSource, PointTarget, Scalar>::initCompute ()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointSource, typename PointTarget, typename Scalar> bool
+pcl::Registration<PointSource, PointTarget, Scalar>::deinitCompute ()
+{
+  return (PCLBase<PointSource>::deinitCompute ());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+template <typename PointSource, typename PointTarget, typename Scalar> bool
 pcl::Registration<PointSource, PointTarget, Scalar>::initComputeReciprocal ()
 {
   if (!input_)

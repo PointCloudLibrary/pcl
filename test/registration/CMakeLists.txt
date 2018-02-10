@@ -42,5 +42,10 @@ if (build)
                  FILES test_kfpcs_ia.cpp test_kfpcs_ia_data.h
                  LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/office1_keypoints.pcd" "${PCL_SOURCE_DIR}/test/office2_keypoints.pcd")
+		 
+    PCL_ADD_TEST(ReLOC_ia test_ReLOC_ia
+                 FILES test_ReLOC_ia.cpp
+                 LINK_WITH pcl_gtest pcl_io pcl_registration pcl_features pcl_search pcl_kdtree pcl_keypoints
+                 ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd" "${PCL_SOURCE_DIR}/test/bun4.pcd")		 
   endif (BUILD_io)
-endif (build)
+endif (build)		 

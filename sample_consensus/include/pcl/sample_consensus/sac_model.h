@@ -155,11 +155,11 @@ namespace pcl
         else
           rng_alg_.seed (12345u);
 
-        if (indices_->size () > input_->points.size ())
-        {
-          PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", indices_->size (), input_->points.size ());
-          indices_->clear ();
-        }
+        //if (indices_->size () > input_->points.size ())
+        //{
+        //  PCL_ERROR ("[pcl::SampleConsensusModel] Invalid index vector given with size %lu while the input PointCloud has size %lu!\n", indices_->size (), input_->points.size ());
+        //  indices_->clear ();
+        //}
         shuffled_indices_ = *indices_;
 
         // Create a random number generator object

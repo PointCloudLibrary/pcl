@@ -1,6 +1,6 @@
 set(SUBSYS_NAME recognition)
 set(SUBSYS_DESC "Point cloud recognition library")
-set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml)
+set(SUBSYS_DEPS common io search kdtree octree features filters registration sample_consensus ml geometry)
 
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
@@ -63,7 +63,7 @@ if(build)
         "include/pcl/${SUBSYS_NAME}/ransac_based/simple_octree.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/voxel_structure.h"
         "include/pcl/${SUBSYS_NAME}/ransac_based/bvh.h"
-	)
+        )
 
     set(hv_incs
         "include/pcl/${SUBSYS_NAME}/hv/occlusion_reasoning.h"
@@ -96,7 +96,7 @@ if(build)
     set(ransac_based_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/simple_octree.hpp"
         "include/pcl/${SUBSYS_NAME}/impl/ransac_based/voxel_structure.hpp"
-	)
+        )
 
     set(hv_impl_incs
         "include/pcl/${SUBSYS_NAME}/impl/hv/occlusion_reasoning.hpp"
