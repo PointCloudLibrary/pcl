@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk pcap png vtk)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk librealsense pcap png vtk)
 else(WIN32)
-    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk pcap png vtk libusb-1.0)
+    PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk librealsense pcap png vtk libusb-1.0)
 endif(WIN32)
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -33,6 +33,7 @@ if(build)
         set(OPENNI2_GRABBER_INCLUDES
             include/pcl/io/openni2_grabber.h
             )
+
         set(OPENNI2_INCLUDES
             include/pcl/io/openni2/openni.h
             include/pcl/io/openni2/openni2_metadata_wrapper.h
@@ -160,6 +161,16 @@ if(build)
         )
     endif()
 
+    if(WITH_LIBREALSENSE)
+        set(REALSENSE2_GRABBER_INCLUDES
+            include/pcl/io/real_sense_2_grabber.h
+        )
+        
+        set(REALSENSE2_GRABBER_SOURCES
+            src/real_sense_2_grabber.cpp
+        )
+    endif()
+
     if(LIBUSB_1_FOUND)
         set(DINAST_GRABBER_INCLUDES
             include/pcl/io/dinast_grabber.h
@@ -229,6 +240,7 @@ if(build)
         ${DAVIDSDK_GRABBER_SOURCES}
         ${DSSDK_GRABBER_SOURCES}
         ${RSSDK_GRABBER_SOURCES}
+        ${REALSENSE2_GRABBER_SOURCES}
         )
     if(PNG_FOUND)
       list(APPEND srcs
@@ -277,6 +289,7 @@ if(build)
         ${DAVIDSDK_GRABBER_INCLUDES}
         ${DSSDK_GRABBER_INCLUDES}
         ${RSSDK_GRABBER_INCLUDES}
+        ${REALSENSE2_GRABBER_INCLUDES}
         "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
         )
 
@@ -320,7 +333,7 @@ if(build)
 
     add_definitions(${VTK_DEFINES})
     PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
-    target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES})
+    target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" ${VTK_INCLUDE_DIRECTORIES} ${LIBREALSENSE_INCLUDE_DIRS})
     link_directories(${VTK_LINK_DIRECTORIES})
     target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES} )
     if(PNG_FOUND)
@@ -338,7 +351,7 @@ if(build)
     if(WITH_OPENNI)
       target_link_libraries("${LIB_NAME}" ${OPENNI_LIBRARIES})
     endif()
-
+ 
     if(WITH_FZAPI)
       target_link_libraries("${LIB_NAME}" ${FZAPI_LIBS})
       if(WIN32)
@@ -360,6 +373,10 @@ if(build)
 
     if(WITH_RSSDK)
       target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
+    endif()
+
+    if(WITH_LIBREALSENSE)
+      target_link_libraries(${LIB_NAME} ${LIBREALSENSE_LIBRARIES})
     endif()
 
     if (PCAP_FOUND)
