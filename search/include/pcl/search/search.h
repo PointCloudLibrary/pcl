@@ -148,20 +148,38 @@ namespace pcl
 
         /** \brief Search for k-nearest neighbors for the given query point.
           * This method accepts a different template parameter for the point type.
+          * Invoked if PointT and PointTDiff are different
           * \param[in] point the given query point
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
           * a priori!)
-          * \return number of neighbors found
+          * \return number of neighbors found (int)
           */
-        template <typename PointTDiff> inline int
+        template <typename PointTDiff> inline typename boost::disable_if<boost::is_same<PointT, PointTDiff>, int>::type
         nearestKSearchT (const PointTDiff &point, int k,
                          std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
         {
           PointT p;
           copyPoint (point, p);
           return (nearestKSearch (p, k, k_indices, k_sqr_distances));
+        }
+
+        /** \brief Search for k-nearest neighbors for the given query point.
+          * This method accepts a different template parameter for the point type.
+          * Invoked if PointT and PointTDiff are the same. No copy is performed.
+          * \param[in] point the given query point
+          * \param[in] k the number of neighbors to search for
+          * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+          * a priori!)
+          * \return number of neighbors found (int)
+          */
+        template <typename PointTDiff> inline typename boost::enable_if<boost::is_same<PointT, PointTDiff>, int>::type
+        nearestKSearchT (const PointTDiff &point, int k,
+                         std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+        {
+          return (nearestKSearch (point, k, k_indices, k_sqr_distances));
         }
 
         /** \brief Search for k-nearest neighbors for the given query point.
@@ -219,15 +237,17 @@ namespace pcl
                         int k, std::vector< std::vector<int> >& k_indices,
                         std::vector< std::vector<float> >& k_sqr_distances) const;
 
-        /** \brief Search for the k-nearest neighbors for the given query point. Use this method if the query points are of a different type than the points in the data set (e.g. PointXYZRGBA instead of PointXYZ).
+        /** \brief Search for the k-nearest neighbors for the given query point.
+          * This method is used if the query points are of a different type than the points in the data set (e.g. PointXYZRGBA instead of PointXYZ).
           * \param[in] cloud the point cloud data
           * \param[in] indices a vector of point cloud indices to query for nearest neighbors
           * \param[in] k the number of neighbors to search for
           * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
           * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
-          * \note This method copies the input point cloud of type PointTDiff to a temporary cloud of type PointT and performs the batch search on the new cloud. You should prefer the single-point search if you don't use a search algorithm that accelerates batch NN search.
+          * \note This method copies the input point cloud of type PointTDiff to a temporary cloud of type PointT and performs the batch
+          * search on the new cloud. You should prefer the single-point search if you don't use a search algorithm that accelerates batch NN search.
           */
-        template <typename PointTDiff> void
+        template <typename PointTDiff> typename boost::disable_if<boost::is_same<PointT, PointTDiff>, void>::type
         nearestKSearchT (const pcl::PointCloud<PointTDiff> &cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> > &k_indices,
                          std::vector< std::vector<float> > &k_sqr_distances) const
         {
@@ -239,24 +259,32 @@ namespace pcl
           pcl::PointCloud<PointT> pc;
           if (indices.empty ())
           {
-            pc.resize (cloud.size());
-            for (size_t i = 0; i < cloud.size(); i++)
-            {
-              pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-                                              cloud[i], pc[i]));
-            }
-            nearestKSearch (pc,std::vector<int>(),k,k_indices,k_sqr_distances);
+            pc.resize (cloud.size ());
+            for (size_t i = 0; i < cloud.size (); ++i)
+              pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[i], pc[i]));
           }
           else
           {
-            pc.resize (indices.size());
-            for (size_t i = 0; i < indices.size(); i++)
-            {
-              pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (
-                                              cloud[indices[i]], pc[i]));
-            }
-            nearestKSearch (pc,std::vector<int>(),k,k_indices,k_sqr_distances);
+            pc.resize (indices.size ());
+            for (size_t i = 0; i < indices.size (); ++i)
+              pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[indices[i]], pc[i]));
           }
+          nearestKSearch (pc, std::vector<int> (), k, k_indices, k_sqr_distances);
+        }
+
+        /** \brief Search for the k-nearest neighbors for the given query point.
+          * This method is used if the query points are of a similar type than the points in the data set (e.g. PointXYZRGBA instead of PointXYZ).
+          * \param[in] cloud the point cloud data
+          * \param[in] indices a vector of point cloud indices to query for nearest neighbors
+          * \param[in] k the number of neighbors to search for
+          * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
+          */
+        template <typename PointTDiff> typename boost::enable_if<boost::is_same<PointT, PointTDiff>, void>::type
+        nearestKSearchT (const pcl::PointCloud<PointTDiff> &cloud, const std::vector<int>& indices, int k, std::vector< std::vector<int> > &k_indices,
+                         std::vector< std::vector<float> > &k_sqr_distances) const
+        {
+          nearestKSearch (cloud, indices, k, k_indices, k_sqr_distances);
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -274,6 +302,7 @@ namespace pcl
                       std::vector<float>& k_sqr_distances, unsigned int max_nn = 0) const = 0;
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
+          * This method is invoked it PointT is not the same as PointTDiff
           * \param[in] point the given query point
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
           * \param[out] k_indices the resultant indices of the neighboring points
@@ -281,15 +310,33 @@ namespace pcl
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
           * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
           * returned.
-          * \return number of neighbors found in radius
+          * \return number of neighbors found in radius (int)
           */
-        template <typename PointTDiff> inline int
+        template <typename PointTDiff> inline typename boost::disable_if<boost::is_same<PointT, PointTDiff>, int>::type
         radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
                        std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
         {
           PointT p;
           copyPoint (point, p);
           return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
+        }
+
+        /** \brief Search for all the nearest neighbors of the query point in a given radius.
+          * This method is invoked it PointT is the same as PointTDiff
+          * \param[in] point the given query point
+          * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
+          * \param[out] k_indices the resultant indices of the neighboring points
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
+          * \return number of neighbors found in radius (int)
+          */
+        template <typename PointTDiff> inline typename boost::enable_if<boost::is_same<PointT, PointTDiff>, int>::type
+        radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
+                       std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+        {
+          return (radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn));
         }
 
         /** \brief Search for all the nearest neighbors of the query point in a given radius.
@@ -356,6 +403,7 @@ namespace pcl
                       unsigned int max_nn = 0) const;
 
         /** \brief Search for all the nearest neighbors of the query points in a given radius.
+          * This method is invoked if PointT is not the same as PointTDiff
           * \param[in] cloud the point cloud data
           * \param[in] indices a vector of point cloud indices to query for nearest neighbors
           * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
@@ -364,9 +412,10 @@ namespace pcl
           * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
           * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
           * returned.
-          * \note This method copies the input point cloud of type PointTDiff to a temporary cloud of type PointT and performs the batch search on the new cloud. You should prefer the single-point search if you don't use a search algorithm that accelerates batch NN search.
+          * \note This method copies the input point cloud of type PointTDiff to a temporary cloud of type PointT and performs the batch
+          * search on the new cloud. You should prefer the single-point search if you don't use a search algorithm that accelerates batch NN search.
           */
-        template <typename PointTDiff> void
+        template <typename PointTDiff> typename boost::disable_if<boost::is_same<PointT, PointTDiff>, void>::type
         radiusSearchT (const pcl::PointCloud<PointTDiff> &cloud,
                        const std::vector<int>& indices,
                        double radius,
@@ -385,15 +434,36 @@ namespace pcl
             pc.resize (cloud.size ());
             for (size_t i = 0; i < cloud.size (); ++i)
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[i], pc[i]));
-            radiusSearch (pc, std::vector<int> (), radius, k_indices, k_sqr_distances, max_nn);
           }
           else
           {
             pc.resize (indices.size ());
             for (size_t i = 0; i < indices.size (); ++i)
               pcl::for_each_type <FieldList> (pcl::NdConcatenateFunctor <PointTDiff, PointT> (cloud[indices[i]], pc[i]));
-            radiusSearch (pc, std::vector<int>(), radius, k_indices, k_sqr_distances, max_nn);
           }
+          radiusSearch (pc, std::vector<int> (), radius, k_indices, k_sqr_distances, max_nn);
+        }
+
+        /** \brief Search for all the nearest neighbors of the query points in a given radius.
+          * This method is invoked if PointT is the same as PointTDiff
+          * \param[in] cloud the point cloud data
+          * \param[in] indices a vector of point cloud indices to query for nearest neighbors
+          * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
+          * \param[out] k_indices the resultant indices of the neighboring points, k_indices[i] corresponds to the neighbors of the query point i
+          * \param[out] k_sqr_distances the resultant squared distances to the neighboring points, k_sqr_distances[i] corresponds to the neighbors of the query point i
+          * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+          * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+          * returned.
+          */
+        template <typename PointTDiff> typename boost::enable_if<boost::is_same<PointT, PointTDiff>, void>::type
+        radiusSearchT (const pcl::PointCloud<PointTDiff> &cloud,
+                       const std::vector<int>& indices,
+                       double radius,
+                       std::vector< std::vector<int> > &k_indices,
+                       std::vector< std::vector<float> > &k_sqr_distances,
+                       unsigned int max_nn = 0) const
+        {
+          radiusSearch (cloud, indices, radius, k_indices, k_sqr_distances, max_nn);
         }
 
       protected:
@@ -421,7 +491,7 @@ namespace pcl
 
           const std::vector<float>& distances_;
         };
-    }; // class Search    
+    }; // class Search
   } // namespace search
 } // namespace pcl
 

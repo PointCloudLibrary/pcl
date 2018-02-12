@@ -119,6 +119,59 @@ TEST (CorrespondenceEstimation, CorrespondenceEstimationSetSearchMethod)
   
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template <typename T> class CorrespondenceEstimationTest : public ::testing::Test { };
+typedef ::testing::Types<BOOST_PP_SEQ_ENUM (PCL_XYZ_POINT_TYPES)> XYZPointTypes;
+TYPED_TEST_CASE (CorrespondenceEstimationTest, XYZPointTypes);
+TYPED_TEST (CorrespondenceEstimationTest, DifferentPointTypes)
+{
+  pcl::PointCloud<pcl::PointXYZ>::Ptr cloud1 (new pcl::PointCloud<pcl::PointXYZ> ());
+  typename pcl::PointCloud<TypeParam>::Ptr cloud2 (new pcl::PointCloud<TypeParam> ());
+  pcl::Correspondences corr, rec_corr;
+
+  // Populate cloud1
+  cloud1->resize (4);
+  (*cloud1)[0].getVector3fMap () = Eigen::Vector3f (1.f, 0.f, 0.f);
+  (*cloud1)[1].getVector3fMap () = Eigen::Vector3f (2.f, 0.f, 0.f);
+  (*cloud1)[2].getVector3fMap () = Eigen::Vector3f (0.f, 0.f, 12.f);
+  (*cloud1)[3].getVector3fMap () = Eigen::Vector3f (9.f, 0.f, 0.f);
+  cloud1->is_dense = true;
+
+  // Populate cloud2
+  cloud2->resize (3);
+  (*cloud2)[0].getVector3fMap () = Eigen::Vector3f (0.f, 0.f, 0.f);
+  (*cloud2)[1].getVector3fMap () = Eigen::Vector3f (10.f, 0.f, 0.f);
+  (*cloud2)[2].getVector3fMap () = Eigen::Vector3f (0.f, 0.f, 10.f);
+  cloud2->is_dense = true;
+
+  // Compute correspondences
+  pcl::registration::CorrespondenceEstimation<pcl::PointXYZ, TypeParam, double> ce;
+  ce.setInputSource (cloud1);
+  ce.setInputTarget (cloud2);
+  ce.determineCorrespondences (corr);
+  ce.determineReciprocalCorrespondences (rec_corr);
+
+  // Correspondences
+  ASSERT_EQ (corr.size (), 4);
+  ASSERT_EQ (corr[0].index_query, 0);
+  ASSERT_EQ (corr[0].index_match, 0);
+  ASSERT_EQ (corr[1].index_query, 1);
+  ASSERT_EQ (corr[1].index_match, 0);
+  ASSERT_EQ (corr[2].index_query, 2);
+  ASSERT_EQ (corr[2].index_match, 2);
+  ASSERT_EQ (corr[3].index_query, 3);
+  ASSERT_EQ (corr[3].index_match, 1);
+
+  // Reciprocal Correspondences
+  ASSERT_EQ (rec_corr.size (), 3);
+  ASSERT_EQ (rec_corr[0].index_query, 0);
+  ASSERT_EQ (rec_corr[0].index_match, 0);
+  ASSERT_EQ (rec_corr[1].index_query, 2);
+  ASSERT_EQ (rec_corr[1].index_match, 2);
+  ASSERT_EQ (rec_corr[2].index_query, 3);
+  ASSERT_EQ (rec_corr[2].index_match, 1);
+}
+
 /* ---[ */
 int
   main (int argc, char** argv)

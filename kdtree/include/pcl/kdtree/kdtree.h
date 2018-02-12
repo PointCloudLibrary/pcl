@@ -163,21 +163,40 @@ namespace pcl
       }
 
       /** \brief Search for k-nearest neighbors for the given query point. 
-        * This method accepts a different template parameter for the point type.
+        * This method accepts a different template parameter for the point type
+        * and it is invoked if PointT is of a different type than PointTDiff.
         * \param[in] point the given query point
         * \param[in] k the number of neighbors to search for
         * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
         * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k 
         * a priori!)
-        * \return number of neighbors found
+        * \return number of neighbors found (int)
         */
-      template <typename PointTDiff> inline int 
-      nearestKSearchT (const PointTDiff &point, int k, 
+      template <typename PointTDiff> inline typename boost::disable_if<boost::is_same<PointT, PointTDiff>, int>::type
+      nearestKSearchT (const PointTDiff &point, int k,
                        std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
       {
         PointT p;
         copyPoint (point, p);
         return (nearestKSearch (p, k, k_indices, k_sqr_distances));
+      }
+
+      /** \brief Search for k-nearest neighbors for the given query point.
+        * This method accepts a different template parameter for the point type,
+        * it is invoked if PointT is equal to PointTDiff and it is an alias
+        * to \a nearestKSearch.
+        * \param[in] point the given query point
+        * \param[in] k the number of neighbors to search for
+        * \param[out] k_indices the resultant indices of the neighboring points (must be resized to \a k a priori!)
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points (must be resized to \a k
+        * a priori!)
+        * \return number of neighbors found (int)
+        */
+      template <typename PointTDiff> inline typename boost::enable_if<boost::is_same<PointT, PointTDiff>, int>::type
+      nearestKSearchT (const PointTDiff &point, int k, 
+                       std::vector<int> &k_indices, std::vector<float> &k_sqr_distances) const
+      {
+        return (nearestKSearch (point, k, k_indices, k_sqr_distances));
       }
 
       /** \brief Search for k-nearest neighbors for the given query point (zero-copy).
@@ -254,6 +273,7 @@ namespace pcl
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius.
+        * This method is invoked if PointT is not equal to PointTDiff.
         * \param[in] point the given query point
         * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
         * \param[out] k_indices the resultant indices of the neighboring points
@@ -261,15 +281,34 @@ namespace pcl
         * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
         * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
         * returned.
-        * \return number of neighbors found in radius
+        * \return number of neighbors found in radius (int)
         */
-      template <typename PointTDiff> inline int 
+      template <typename PointTDiff> inline typename boost::disable_if<boost::is_same<PointT, PointTDiff>, int>::type
       radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
                      std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
       {
         PointT p;
         copyPoint (point, p);
         return (radiusSearch (p, radius, k_indices, k_sqr_distances, max_nn));
+      }
+
+      /** \brief Search for all the nearest neighbors of the query point in a given radius.
+        * This method is invoked if PointT is equal to PointTDiff and it is an alias
+        * to \a radiusSearch
+        * \param[in] point the given query point
+        * \param[in] radius the radius of the sphere bounding all of p_q's neighbors
+        * \param[out] k_indices the resultant indices of the neighboring points
+        * \param[out] k_sqr_distances the resultant squared distances to the neighboring points
+        * \param[in] max_nn if given, bounds the maximum returned neighbors to this value. If \a max_nn is set to
+        * 0 or to a number higher than the number of points in the input cloud, all neighbors in \a radius will be
+        * returned.
+        * \return number of neighbors found in radius (int)
+        */
+      template <typename PointTDiff> inline typename boost::enable_if<boost::is_same<PointT, PointTDiff>, int>::type
+      radiusSearchT (const PointTDiff &point, double radius, std::vector<int> &k_indices,
+                     std::vector<float> &k_sqr_distances, unsigned int max_nn = 0) const
+      {
+        return (radiusSearch (point, radius, k_indices, k_sqr_distances, max_nn));
       }
 
       /** \brief Search for all the nearest neighbors of the query point in a given radius (zero-copy).
