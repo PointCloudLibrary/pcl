@@ -216,6 +216,18 @@ macro(find_rssdk)
   find_package(RSSDK)
 endmacro()
 
+#remove this as soon as librealsense is shipped with FindLibRealSense.cmake
+macro(find_librealsense)
+  if(PCL_FIND_QUIETLY)
+	set(LIBREALSENSE_FIND_QUIETLY TRUE)
+  endif()
+  if(NOT LIBREALSENSE_FOUND AND ("@HAVE_LIBREALSENSE@" STREQUAL "TRUE"))
+    get_filename_component(LIBREALSENSE_DIR_HINT "@LIBREALSENSE_INCLUDE_DIRS@" PATH)
+  endif()
+
+  find_package(LIBREALSENSE)
+endmacro(find_librealsense)
+
 #remove this as soon as flann is shipped with FindFlann.cmake
 macro(find_flann)
   if(PCL_ALL_IN_ONE_INSTALLER)
@@ -295,6 +307,8 @@ macro(find_external_library _component _lib _is_optional)
     find_dssdk()
   elseif("${_lib}" STREQUAL "rssdk")
     find_rssdk()
+  elseif("${_lib}" STREQUAL "librealsense")
+    find_librealsense()
   elseif("${_lib}" STREQUAL "vtk")
     find_VTK()
   elseif("${_lib}" STREQUAL "libusb-1.0")
@@ -645,7 +659,7 @@ endif()
 pcl_remove_duplicate_libraries(PCL_COMPONENTS PCL_LIBRARIES)
 
 # Add 3rd party libraries, as user code might include our .HPP implementations
-list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${VTK_LIBRARIES})
+list(APPEND PCL_LIBRARIES ${BOOST_LIBRARIES} ${QHULL_LIBRARIES} ${OPENNI_LIBRARIES} ${OPENNI2_LIBRARIES} ${ENSENSO_LIBRARIES} ${davidSDK_LIBRARIES} ${DSSDK_LIBRARIES} ${RSSDK_LIBRARIES} ${LIBREALSENSE_LIBRARIES} ${VTK_LIBRARIES})
 if (TARGET FLANN::FLANN)
   list(APPEND PCL_LIBRARIES FLANN::FLANN)
 endif()
