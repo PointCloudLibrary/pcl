@@ -48,7 +48,7 @@ void RealSense2Grabber::start()
 
 	rs2::config cfg;
 
-	cfg.enable_stream(RS2_STREAM_COLOR, 424, 240, RS2_FORMAT_ANY, 30);
+	cfg.enable_stream(RS2_STREAM_COLOR, 424, 240, RS2_FORMAT_RGB8, 30);
 	cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240, RS2_FORMAT_ANY, 30);
 	cfg.enable_stream(RS2_STREAM_INFRARED, 424, 240, RS2_FORMAT_ANY, 30);
 
