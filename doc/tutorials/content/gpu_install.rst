@@ -91,7 +91,7 @@ Go to your PCL root folder and do::
  $ ccmake ..
 
 Press c to configure ccmake, press t to toggle to the advanced mode as a number of options
-only appear in advanced mode. The latest CUDA algorithms are beeing kept in the GPU project, for
+only appear in advanced mode. The latest CUDA algorithms are being kept in the GPU project, for
 this the BUILD_GPU option needs to be on and the BUILD_gpu_<X> indicate the different
 GPU subprojects.
 

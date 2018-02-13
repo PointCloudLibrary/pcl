@@ -109,7 +109,7 @@ In the main loop, new frames are acquired and processed until the application is
 The ``people_detector`` object receives as input the current cloud and the estimated ground coefficients and 
 computes people clusters properties, which are stored in :pcl:`PersonCluster <pcl::people::PersonCluster>` objects.
 The ground plane coefficients are re-estimated at every frame by using the previous frame estimate as initial condition.
-This procedure allows to adapt to small changes which can occurr to the ground plane equation if the camera is slowly moving.
+This procedure allows to adapt to small changes which can occur to the ground plane equation if the camera is slowly moving.
    
 .. literalinclude:: sources/ground_based_rgbd_people_detection/src/main_ground_based_people_detection.cpp
    :language: cpp
