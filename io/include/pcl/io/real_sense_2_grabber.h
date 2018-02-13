@@ -50,7 +50,7 @@ namespace pcl
 	struct PointXYZI;
 	template <typename T> class PointCloud;
 
-	class RealSense2Grabber : public pcl::Grabber
+	class PCL_EXPORTS RealSense2Grabber : public pcl::Grabber
 	{
 	public:
 		RealSense2Grabber();
