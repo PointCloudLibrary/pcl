@@ -171,7 +171,7 @@ Add the following lines to your CMakeLists.txt file:
 Troubleshooting
 ---------------
 
-Q: I get an error that there's now device connected:
+Q: I get an error that there's no device connected:
 
 .. note::
 
