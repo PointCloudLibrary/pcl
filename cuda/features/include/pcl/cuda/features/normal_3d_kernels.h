@@ -164,10 +164,10 @@ namespace pcl
         , sqr_radius_(sqr_radius)
         , sqrt_desired_nr_neighbors_ (sqrt_desired_nr_neighbors)
       {}
-  
+
       template <typename Tuple>
       inline __host__ __device__
-      float4 operator () (Tuple &t)
+      float4 operator () (const Tuple &t)
       {
         float3 query_pt = thrust::get<0>(t);
         float4 normal = thrust::get<1>(t);
@@ -190,7 +190,7 @@ namespace pcl
            (centroid.z - query_pt.z) / sqrt(sqr_radius_) ,
            0);
       }
-  
+
       const PointXYZRGB *points_;
       float focallength_;
       OrganizedRadiusSearch<CloudConstPtr> search_;
