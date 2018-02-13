@@ -467,9 +467,14 @@ namespace pcl
 		{
 			int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-			if (__all(idx >= facet_count))
+#if CUDA_VERSION >= 9000
+      if (__all_sync (__activemask (), idx >= facet_count))
+        return;
+#else
+			if (__all (idx >= facet_count))
 				return;
-						
+#endif
+
 			int empty = 0;
 
 			if(idx < facet_count)
@@ -492,10 +497,18 @@ namespace pcl
 				  empty = 1;                
 			}
 
-			int total = __popc(__ballot(empty));
+#if CUDA_VERSION >= 9000
+      int total = __popc (__ballot_sync (__activemask (), empty));
+#else
+			int total = __popc (__ballot (empty));
+#endif
 			if (total > 0)
 			{
-				int offset = Warp::binaryExclScan(__ballot(empty));
+#if CUDA_VERSION >= 9000
+        int offset = Warp::binaryExclScan (__ballot_sync (__activemask (), empty));
+#else
+				int offset = Warp::binaryExclScan (__ballot (empty));
+#endif
 
 				volatile __shared__ int wapr_buffer[WARPS];
 

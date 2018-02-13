@@ -143,7 +143,11 @@ namespace pcl
 #endif
 
 
-#if __CUDA_ARCH__ >= 120
+#if CUDA_VERSION >= 9000
+        if (__all_sync (__activemask (), x >= VOLUME_X)
+            || __all_sync (__activemask (), y >= VOLUME_Y))
+          return;
+#elif __CUDA_ARCH__ >= 200
         if (__all (x >= VOLUME_X) || __all (y >= VOLUME_Y))
           return;
 #else        
@@ -169,7 +173,9 @@ namespace pcl
             // read number of vertices from texture
             numVerts = (cubeindex == 0 || cubeindex == 255) ? 0 : tex1Dfetch (numVertsTex, cubeindex);
           }
-#if __CUDA_ARCH__ >= 200
+#if CUDA_VERSION >= 9000
+          int total = __popc (__ballot_sync (__activemask (), numVerts > 0));
+#elif __CUDA_ARCH__ >= 200
           int total = __popc (__ballot (numVerts > 0));
 #else
           int total = __popc (Emulation::Ballot(numVerts > 0, cta_buffer));
@@ -184,7 +190,9 @@ namespace pcl
           }
           int old_global_voxels_count = warps_buffer[warp_id];
 
-#if __CUDA_ARCH__ >= 200
+#if CUDA_VERSION >= 9000
+          int offs = Warp::binaryExclScan (__ballot_sync (__activemask (), numVerts > 0));
+#elif __CUDA_ARCH__ >= 200
           int offs = Warp::binaryExclScan (__ballot (numVerts > 0));
 #else          
           int offs = Warp::binaryExclScan(Emulation::Ballot(numVerts > 0, cta_buffer));
