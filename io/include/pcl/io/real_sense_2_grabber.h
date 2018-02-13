@@ -39,53 +39,61 @@
 
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
-#include <pcl/point_cloud.h>
-#include <pcl/point_types.h>
 
 #include <librealsense2/rs.hpp>
 
-class RealSense2Grabber : public pcl::Grabber
+namespace pcl
 {
-public:
-	RealSense2Grabber();
+	struct PointXYZ;
+	struct PointXYZRGB;
+	struct PointXYZRGBA;
+	struct PointXYZI;
+	template <typename T> class PointCloud;
 
-	virtual ~RealSense2Grabber() throw ();
-	virtual void start();
-	virtual void stop();
-	virtual bool isRunning() const;
-	virtual float getFramesPerSecond() const;
-    virtual std::string getName() const { return std::string("RealSense2Grabber"); }
+	class RealSense2Grabber : public pcl::Grabber
+	{
+	public:
+		RealSense2Grabber();
+
+		virtual ~RealSense2Grabber() throw ();
+		virtual void start();
+		virtual void stop();
+		virtual bool isRunning() const;
+		virtual float getFramesPerSecond() const;
+		virtual std::string getName() const { return std::string("RealSense2Grabber"); }
 
 
-	typedef void (signal_librealsense_PointXYZ)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>&);
-	typedef void (signal_librealsense_PointXYZI)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>&);
-	typedef void (signal_librealsense_PointXYZRGB)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>&);
-	typedef void (signal_librealsense_PointXYZRGBA)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
+		typedef void (signal_librealsense_PointXYZ)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>&);
+		typedef void (signal_librealsense_PointXYZI)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>&);
+		typedef void (signal_librealsense_PointXYZRGB)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>&);
+		typedef void (signal_librealsense_PointXYZRGBA)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
 
-protected:
-	boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
-	boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
-	boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
-	boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
+	protected:
+		boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
+		boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
+		boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
+		boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
 
-	pcl::PointCloud<pcl::PointXYZ>::Ptr convertDepthToPointXYZ(const rs2::points& points);
-	pcl::PointCloud<pcl::PointXYZI>::Ptr convertInfraredDepthToPointXYZI(const rs2::points& points);
-	pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertRGBDepthToPointXYZRGB(const rs2::points& points, rs2::video_frame &rgb);
-	pcl::PointCloud<pcl::PointXYZRGBA>::Ptr convertRGBADepthToPointXYZRGBA(const rs2::points& points, rs2::video_frame &rgb);
+		pcl::PointCloud<pcl::PointXYZ>::Ptr convertDepthToPointXYZ(const rs2::points& points);
+		pcl::PointCloud<pcl::PointXYZI>::Ptr convertInfraredDepthToPointXYZI(const rs2::points& points);
+		pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertRGBDepthToPointXYZRGB(const rs2::points& points, rs2::video_frame &rgb);
+		pcl::PointCloud<pcl::PointXYZRGBA>::Ptr convertRGBADepthToPointXYZRGBA(const rs2::points& points, rs2::video_frame &rgb);
 
-	std::tuple<uint8_t, uint8_t, uint8_t> get_texcolor(rs2::video_frame & texture, float u, float v);
+		std::tuple<uint8_t, uint8_t, uint8_t> get_texcolor(rs2::video_frame & texture, float u, float v);
 
-	boost::thread thread;
-	mutable boost::mutex mutex;
+		boost::thread thread;
+		mutable boost::mutex mutex;
 
-	void threadFunction();
+		void threadFunction();
 
-	bool quit;
-	bool running;
+		bool quit;
+		bool running;
 
-	// Declare pointcloud object, for calculating pointclouds and texture mappings
-	rs2::pointcloud pc;
-	// Declare RealSense pipeline, encapsulating the actual device and sensors
-	rs2::pipeline pipe;
-};
+		// Declare pointcloud object, for calculating pointclouds and texture mappings
+		rs2::pointcloud pc;
+		// Declare RealSense pipeline, encapsulating the actual device and sensors
+		rs2::pipeline pipe;
+	};
+
+}
 

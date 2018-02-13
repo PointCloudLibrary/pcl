@@ -8,6 +8,9 @@
 #include <librealsense2/rs.hpp>
 #include <pcl/io/real_sense_2_grabber.h>
 
+namespace pcl
+{
+
 RealSense2Grabber::RealSense2Grabber()
 : running(false)
 , quit(false)
@@ -205,4 +208,6 @@ void RealSense2Grabber::threadFunction()
         }
 
     }
+}
+
 }
