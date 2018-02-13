@@ -5,7 +5,7 @@ Filter Benchmarking
 
 This document introduces benchmarking concepts for filtering algorithms. By
 *benchmarking* here we refer to the possibility of testing different
-parameters for each filter algorithm on a specific point cloud in an **easy manner**. The goal is to find the best paramaters of a certain filter that best describe the original point cloud without removing useful data.
+parameters for each filter algorithm on a specific point cloud in an **easy manner**. The goal is to find the best parameters of a certain filter that best describe the original point cloud without removing useful data.
 
 Benchmarking Filter Algorithms
 -------------------------------

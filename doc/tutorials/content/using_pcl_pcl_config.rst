@@ -109,7 +109,7 @@ that remains is to trigger the link operation which we do calling
 PCLConfig.cmake uses a CMake special feature named `EXPORT` which
 allows for using others' projects targets as if you built them
 yourself. When you are using such targets they are called `imported
-targets` and acts just like anyother target.
+targets` and acts just like any other target.
 
 Compiling and running the project
 ---------------------------------

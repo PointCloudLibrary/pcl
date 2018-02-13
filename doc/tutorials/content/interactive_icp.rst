@@ -195,7 +195,7 @@ the start to the current iteration. This is basically how it works ::
 
   matrix[ICP 0->1]*matrix[ICP 1->2]*matrix[ICP 2->3] = matrix[ICP 0->3]
 
-While this is mathematically true, you will easilly notice that this is not true in this program due to roundings.
+While this is mathematically true, you will easily notice that this is not true in this program due to roundings.
 This is why I introduced the initial ICP iteration parameters. Try to launch the program with 20 initial iterations
 and save the matrix in a text file. Launch the same program with 1 initial iteration and press space till you go to 20
 iterations. You will a notice a slight difference. The matrix with 20 initial iterations is much more accurate than the

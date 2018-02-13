@@ -28,7 +28,7 @@ main (int argc, char ** argv)
   PointCloudPtr tgt_points = loadPoints (argv[2]);
   Eigen::Matrix4f tform = Eigen::Matrix4f::Identity ();
 
-  // Compute the intial alignment
+  // Compute the initial alignment
   double min_sample_dist, max_correspondence_dist, nr_iters;
   bool compute_intial_alignment = 
     pcl::console::parse_3x_arguments (argc, argv, "-i", min_sample_dist, max_correspondence_dist, nr_iters) > 0;

@@ -18,7 +18,7 @@ Details
 The pcl_tracking library contains data structures and mechanism for 3D tracking which uses Particle Filter Algorithm. This tracking will enable you to implement 6D-pose (position and rotation) tracking which is optimized to run in real time.  
 
 
-At each loop, tracking program proceeds along with following algorythm.(see fig2)
+At each loop, tracking program proceeds along with following algorithm.(see fig2)
 	1. (At  t = t - 1) At first, using previous Pariticle's information about position and rotation, it will predict each position and rotation of them at the next frame.
 
 
@@ -97,7 +97,7 @@ In drawParticles function, you can get particles's positions by calling getParti
 
 
 
-In drawResult function, you can get model infomation about position and rotation.
+In drawResult function, you can get model information about position and rotation.
 
 Compiling and running the program
 ---------------------------------
@@ -116,7 +116,7 @@ If you finish saving CMakeLists.txt, let's prepare for running.
 	3. Don't move the target and the device until you launch tracking program.
 	4. Output only target point cloud with your other code (See :ref:`planar_segmentation` tutorial) and save as tracking_target.pcd
 
-After you created model point cloud and the executable, you can then launch tracking_sample. Set device_id as second arguement and pcd file's name you made in above 4 as third.
+After you created model point cloud and the executable, you can then launch tracking_sample. Set device_id as second argument and pcd file's name you made in above 4 as third.
 
 	$ ./tracking_sample “#1” tracking_target.pcd
 

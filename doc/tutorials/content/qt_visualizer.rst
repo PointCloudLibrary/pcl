@@ -35,7 +35,7 @@ If you want to change this layout you will have to do minor modifications in the
 Create the folder tree and download the sources files from `github <https://github.com/PointCloudLibrary/pcl/tree/master/doc/tutorials/content/sources/qt_visualizer>`_.
 
 .. note::
-   File paths should not contain any special caracter or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
+   File paths should not contain any special character or the compilation might fail with a ``moc: Cannot open options file specified with @`` error message.
 
 Qt configuration
 ================
@@ -92,8 +92,8 @@ main.cpp
    :language: cpp
 
 | Here we include the headers for the class PCLViewer and the headers for QApplication and QMainWindow.
-| Then the main functions consists of instanciating a QApplication `a` which manages the GUI application's control flow and main settings.
-| A ``PCLViewer`` object called `w` is instanciated and it's method ``show()`` is called.
+| Then the main functions consists of instantiating a QApplication `a` which manages the GUI application's control flow and main settings.
+| A ``PCLViewer`` object called `w` is instantiated and it's method ``show()`` is called.
 | Finally we return the state of our program exit through the QApplication `a`.
 
 pclviewer.h
@@ -194,7 +194,7 @@ Here we connect slots and signals, this links UI actions to functions. Here is a
 
 | This is the last part of our constructor; we add the point cloud to the visualizer, call the method ``pSliderValueChanged`` to change the point size to 2.
 
-We finaly reset the camera within the PCL Visualizer not avoid the user having to zoom out and update the qvtkwidget to be 
+We finally reset the camera within the PCL Visualizer not avoid the user having to zoom out and update the qvtkwidget to be 
 sure the modifications will be displayed.
 
 .. literalinclude:: sources/qt_visualizer/pclviewer.cpp

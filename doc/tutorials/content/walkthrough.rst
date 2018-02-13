@@ -767,7 +767,7 @@ This section provides a quick reference for some of the common tools in PCL.
 	
 	 	**Syntax is: mesh2pcd input.{ply,obj} output.pcd <options>**, where options are:
 	 	
-		                     -level X      = tesselated sphere level (default: 2)
+		                     -level X      = tessellated sphere level (default: 2)
 		
 		                     -resolution X = the sphere resolution in angle increments (default: 100 deg)
 		
