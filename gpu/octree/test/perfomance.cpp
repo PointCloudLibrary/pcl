@@ -69,8 +69,8 @@ using pcl::ScopeTime;
     #include "opencv2/contrib/contrib.hpp"
 #endif
 
-//TEST(PCL_OctreeGPU, DISABLED_perfomance)
-TEST(PCL_OctreeGPU, perfomance)
+//TEST(PCL_OctreeGPU, DISABLED_performance)
+TEST(PCL_OctreeGPU, performance)
 {
     DataGenerator data;
     data.data_size = 871000;

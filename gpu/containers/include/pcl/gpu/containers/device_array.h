@@ -73,18 +73,18 @@ namespace pcl
             
             /** \brief Initializes with user allocated buffer. Reference counting is disabled in this case.
               * \param ptr pointer to buffer
-              * \param size elemens number
+              * \param size elements number
               * */
             DeviceArray(T *ptr, size_t size);
 
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceArray(const DeviceArray& other);
 
-            /** \brief Assigment operator. Just increments reference counter. */
+            /** \brief Assignment operator. Just increments reference counter. */
             DeviceArray& operator = (const DeviceArray& other);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.               
-              * \param size elemens number
+              * \param size elements number
               * */
             void create(size_t size);
 
@@ -98,7 +98,7 @@ namespace pcl
 
             /** \brief Uploads data to internal buffer in GPU memory. It calls create() inside to ensure that intenal buffer size is enough.
               * \param host_ptr pointer to buffer to upload               
-              * \param size elemens number
+              * \param size elements number
               * */
             void upload(const T *host_ptr, size_t size);
 
@@ -180,7 +180,7 @@ namespace pcl
             /** \brief Copy constructor. Just increments reference counter. */
             DeviceArray2D(const DeviceArray2D& other);
 
-            /** \brief Assigment operator. Just increments reference counter. */
+            /** \brief Assignment operator. Just increments reference counter. */
             DeviceArray2D& operator = (const DeviceArray2D& other);
 
             /** \brief Allocates internal buffer in GPU memory. If internal buffer was created before the function recreates it with new size. If new and old sizes are equal it does nothing.
@@ -205,7 +205,7 @@ namespace pcl
               * */
             void upload(const void *host_ptr, size_t host_step, int rows, int cols);
 
-            /** \brief Downloads data from internal buffer to CPU memory. User is resposible for correct host buffer size.
+            /** \brief Downloads data from internal buffer to CPU memory. User is responsible for correct host buffer size.
               * \param host_ptr pointer to host buffer to download               
               * \param host_step stride between two consecutive rows in bytes for host buffer             
               * */
