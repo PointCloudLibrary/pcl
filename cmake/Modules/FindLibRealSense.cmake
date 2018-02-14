@@ -12,13 +12,43 @@
 find_package(PkgConfig QUIET)
 
 # Include directories
-find_path(LIBREALSENSE_INCLUDE_DIR librealsense2/rs.h)
+find_path(LIBREALSENSE_INCLUDE_DIR librealsense2/rs.h
+          PATHS "$ENV{realsense2_DIR}"
+                "$ENV{PROGRAMW6432}/librealsense2" # for self built library 
+                "$ENV{PROGRAMFILES}/librealsense2" # for self built library
+                "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0" # for pre built library
+                # "Please specify search paths for Linux and MacOS"
+          PATH_SUFFIXES include)
+
 set(LIBREALSENSE_INCLUDE_DIRS ${LIBREALSENSE_INCLUDE_DIR})
 mark_as_advanced(LIBREALSENSE_INCLUDE_DIRS)
 
 # Libraries
-find_library(LIBREALSENSE_LIBRARY NAMES librealsense.lib)
-find_library(LIBREALSENSE_LIBRARY_DEBUG NAMES librealsense.lib)
+set(LIBREALSENSE_RELEASE_NAME realsense2)
+set(LIBREALSENSE_DEBUG_NAME realsense2_d)
+
+set(LIBREALSENSE_SUFFIX x86)
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(LIBREALSENSE_SUFFIX x64)
+endif()
+
+find_library(LIBREALSENSE_LIBRARY
+             NAMES ${LIBREALSENSE_RELEASE_NAME}
+             PATHS "$ENV{realsense2_DIR}"
+                   "$ENV{PROGRAMW6432}/librealsense2"
+                   "$ENV{PROGRAMFILES}/librealsense2"
+                   "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0"
+                   # "Please specify search paths for Linux and MacOS"
+             PATH_SUFFIXES lib lib/${LIBREALSENSE_SUFFIX})
+
+find_library(LIBREALSENSE_LIBRARY_DEBUG
+             NAMES ${LIBREALSENSE_DEBUG_NAME}
+             PATHS "$ENV{realsense2_DIR}"
+                   "$ENV{PROGRAMW6432}/librealsense2"
+                   "$ENV{PROGRAMFILES}/librealsense2"
+                   "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0"
+                   # "Please specify search paths for Linux and MacOS"
+             PATH_SUFFIXES lib lib/${LIBREALSENSE_SUFFIX})
 
 if(NOT LIBREALSENSE_LIBRARY_DEBUG)
   set(LIBREALSENSE_LIBRARY_DEBUG ${LIBREALSENSE_LIBRARY})
