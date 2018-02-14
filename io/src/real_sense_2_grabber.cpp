@@ -7,6 +7,7 @@
 
 #include <librealsense2/rs.hpp>
 #include <pcl/io/real_sense_2_grabber.h>
+#include <pcl/common/time.h>
 
 #ifdef _OPENMP
 #define PARALLEL_FOR #pragma omp parallel for 
@@ -17,13 +18,18 @@
 namespace pcl
 {
 
-RealSense2Grabber::RealSense2Grabber()
+RealSense2Grabber::RealSense2Grabber(const std::string& serial_number)
 : running(false)
 , quit(false)
+, serial_number(serial_number)
 , signal_PointXYZ(nullptr)
 , signal_PointXYZI(nullptr)
 , signal_PointXYZRGB(nullptr)
 , signal_PointXYZRGBA(nullptr)
+, fps(0)
+, deviceWidth(424)
+, deviceHeight(240)
+, targetFps(30)
 {
     
     // for now we only create the xyzrgb signal
@@ -48,53 +54,114 @@ RealSense2Grabber::~RealSense2Grabber()
     pipe.stop();    
 }
 
+void RealSense2Grabber::setDeviceOptions(int width, int height, int fps)
+{
+	deviceWidth = width;
+	deviceHeight = height;
+	targetFps = fps;
+}
+
 void RealSense2Grabber::start()
 {
     running = true;
 
 	rs2::config cfg;
 
-	cfg.enable_stream(RS2_STREAM_COLOR, 424, 240, RS2_FORMAT_RGB8, 30);
-	cfg.enable_stream(RS2_STREAM_DEPTH, 424, 240, RS2_FORMAT_ANY, 30);
-	cfg.enable_stream(RS2_STREAM_INFRARED, 424, 240, RS2_FORMAT_ANY, 30);
+	if (!serial_number.empty())
+		cfg.enable_device(serial_number);
+
+	cfg.enable_stream(RS2_STREAM_COLOR, deviceWidth, deviceHeight, RS2_FORMAT_RGB8, targetFps);
+	cfg.enable_stream(RS2_STREAM_DEPTH, deviceWidth, deviceHeight, RS2_FORMAT_ANY, targetFps);
+	cfg.enable_stream(RS2_STREAM_INFRARED, deviceWidth, deviceHeight, RS2_FORMAT_ANY, targetFps);
 
 	pipe.start(cfg);
 
-    thread = boost::thread(&RealSense2Grabber::threadFunction, this);
+    thread = std::thread(&RealSense2Grabber::threadFunction, this);
 }
 
 void RealSense2Grabber::stop()
 {
-    boost::unique_lock<boost::mutex> lock(mutex);
+	std::lock_guard<std::mutex> guard(mutex);
 
     quit = true;
     running = false;
-
-    lock.unlock();
 }
 
 bool RealSense2Grabber::isRunning() const
 {
-    boost::unique_lock<boost::mutex> lock(mutex);
+	std::lock_guard<std::mutex> guard(mutex);
 
     return running;
-
-    lock.unlock();
 }
 
 float RealSense2Grabber::getFramesPerSecond() const
 {
-    return 30.0f;
+    return fps;
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr RealSense2Grabber::convertDepthToPointXYZ(const rs2::points & points)
 {
-    return pcl::PointCloud<pcl::PointXYZ>::Ptr();
+	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
+
+	auto sp = points.get_profile().as<rs2::video_stream_profile>();
+	cloud->width = sp.width();
+	cloud->height = sp.height();
+	cloud->is_dense = false;
+	cloud->points.resize(points.size());
+
+	auto vertices_ptr = points.get_vertices();
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+	for (int index = 0; index < cloud->points.size(); ++index)
+	{
+		auto ptr = vertices_ptr + index;
+		auto p = cloud->points[index];
+
+		p.x = ptr->x;
+		p.y = ptr->y;
+		p.z = ptr->z;
+	}
+
+	return cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZI>::Ptr RealSense2Grabber::convertInfraredDepthToPointXYZI(const rs2::points & points)
+pcl::PointCloud<pcl::PointXYZI>::Ptr RealSense2Grabber::convertInfraredDepthToPointXYZI(const rs2::points & points, rs2::video_frame & ir)
 {
-    return pcl::PointCloud<pcl::PointXYZI>::Ptr();
+	pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>());
+
+	auto sp = points.get_profile().as<rs2::video_stream_profile>();
+	cloud->width = sp.width();
+	cloud->height = sp.height();
+	cloud->is_dense = false;
+	cloud->points.resize(points.size());
+
+	auto vertices_ptr = points.get_vertices();
+	auto texture_ptr = points.get_texture_coordinates();
+
+	uint8_t r, g, b;
+
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+	for (int index = 0; index < cloud->points.size(); ++index)
+	{
+		auto ptr = vertices_ptr + index;
+		auto uvptr = texture_ptr + index;
+		auto p = cloud->points[index];
+
+		p.x = ptr->x;
+		p.y = ptr->y;
+		p.z = ptr->z;
+
+		std::tie(r, g, b) = get_texcolor(ir, uvptr->u, uvptr->v);
+
+		p.intensity = 0.299f * static_cast <float> (r) + 0.587f * static_cast <float> (g) + 0.114f * static_cast <float> (b);
+		
+	}
+
+	return cloud;
 }
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr RealSense2Grabber::convertRGBDepthToPointXYZRGB(const rs2::points & points, rs2::video_frame & rgb)
@@ -179,25 +246,36 @@ std::tuple<uint8_t, uint8_t, uint8_t> RealSense2Grabber::get_texcolor(rs2::video
 
 void RealSense2Grabber::threadFunction()
 {
+	pcl::StopWatch sw;
+
+	rs2::frameset frames;
+	rs2::depth_frame depth = NULL;	
+	rs2::video_frame rgb = NULL;
+	rs2::video_frame ir = NULL;
+	rs2::points points;
+
     while (!quit)
     {
-        boost::unique_lock<boost::mutex> lock(mutex);
+		sw.reset();
 
-        // Wait for the next set of frames from the camera
-        auto frames = pipe.wait_for_frames();
+		{
+			std::lock_guard<std::mutex> guard(mutex);
 
-        auto depth = frames.get_depth_frame();
+			// Wait for the next set of frames from the camera
+			frames = pipe.wait_for_frames();
 
-        // Generate the pointcloud and texture mappings
-        auto points = pc.calculate(depth);
+			depth = frames.get_depth_frame();
 
-        // Tell pointcloud object to map to this color frame
-        auto rgb = frames.get_color_frame();
+			// Generate the pointcloud and texture mappings
+			points = pc.calculate(depth);
 
-        // Tell pointcloud object to map to this color frame
-        pc.map_to(rgb);
+			rgb = frames.get_color_frame();
 
-        lock.unlock();
+			// Tell pointcloud object to map to this color frame
+			pc.map_to(rgb);
+
+			ir = frames.get_infrared_frame();
+		}
 
         if (signal_PointXYZ->num_slots() > 0) 
         {
@@ -206,7 +284,7 @@ void RealSense2Grabber::threadFunction()
 
         if (signal_PointXYZI->num_slots() > 0) 
         {
-            signal_PointXYZI->operator()(convertInfraredDepthToPointXYZI(points));
+            signal_PointXYZI->operator()(convertInfraredDepthToPointXYZI(points, ir));
         }
 
         if (signal_PointXYZRGB->num_slots() > 0) 
@@ -218,6 +296,8 @@ void RealSense2Grabber::threadFunction()
         {
             signal_PointXYZRGBA->operator()(convertRGBADepthToPointXYZRGBA(points, rgb));
         }
+
+		fps = 1.0f / static_cast <float> (sw.getTimeSeconds());
 
     }
 }

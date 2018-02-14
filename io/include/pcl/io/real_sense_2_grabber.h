@@ -53,9 +53,10 @@ namespace pcl
 	class PCL_EXPORTS RealSense2Grabber : public pcl::Grabber
 	{
 	public:
-		RealSense2Grabber();
+		RealSense2Grabber(const std::string& serial_number = "");
 
 		virtual ~RealSense2Grabber() throw ();
+		void setDeviceOptions(int width, int height, int fps = 30);
 		virtual void start();
 		virtual void stop();
 		virtual bool isRunning() const;
@@ -75,19 +76,25 @@ namespace pcl
 		boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
 
 		pcl::PointCloud<pcl::PointXYZ>::Ptr convertDepthToPointXYZ(const rs2::points& points);
-		pcl::PointCloud<pcl::PointXYZI>::Ptr convertInfraredDepthToPointXYZI(const rs2::points& points);
+		pcl::PointCloud<pcl::PointXYZI>::Ptr convertInfraredDepthToPointXYZI(const rs2::points & points, rs2::video_frame & ir);
 		pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertRGBDepthToPointXYZRGB(const rs2::points& points, rs2::video_frame &rgb);
 		pcl::PointCloud<pcl::PointXYZRGBA>::Ptr convertRGBADepthToPointXYZRGBA(const rs2::points& points, rs2::video_frame &rgb);
 
 		std::tuple<uint8_t, uint8_t, uint8_t> get_texcolor(rs2::video_frame & texture, float u, float v);
 
-		boost::thread thread;
-		mutable boost::mutex mutex;
+		std::thread thread;
+		mutable std::mutex mutex;
 
 		void threadFunction();
 
+		std::string serial_number;
 		bool quit;
 		bool running;
+		float fps;
+		int deviceWidth;
+		int deviceHeight;
+		int targetFps;
+
 
 		// Declare pointcloud object, for calculating pointclouds and texture mappings
 		rs2::pointcloud pc;
