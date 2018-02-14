@@ -237,7 +237,7 @@ outofcorePrint (boost::filesystem::path tree_root, size_t print_depth, bool boun
 void
 printHelp (int, char **argv)
 {
-  print_info ("This program is used to process pcd fiels into an outofcore data structure viewable by the");
+  print_info ("This program is used to process pcd files into an outofcore data structure viewable by the");
   print_info ("pcl_outofcore_viewer\n\n");
   print_info ("%s <options> <input_tree_dir> \n", argv[0]);
   print_info ("\n");

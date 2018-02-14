@@ -313,11 +313,11 @@ namespace pcl
         inline const std::string& 
         getClassName () const { return (corr_name_); }
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
         
-        /** \brief Internal computation initalization for reciprocal correspondences. */
+        /** \brief Internal computation initialization for reciprocal correspondences. */
         bool
         initComputeReciprocal ();
 

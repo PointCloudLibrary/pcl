@@ -221,7 +221,7 @@ pcl::IterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransformat
     // Estimate the transform
     transformation_estimation_->estimateRigidTransformation (*input_transformed, *target_, *correspondences_, transformation_);
 
-    // Tranform the data
+    // Transform the data
     transformCloud (*input_transformed, *input_transformed, transformation_);
 
     // Obtain the final transformation    

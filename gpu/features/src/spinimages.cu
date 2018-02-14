@@ -244,7 +244,7 @@ namespace pcl
 					const float *amgles_end = amgles_beg + FSize;
 					const float *images_beg = simage_angles;
 
-					Block::transfrom(amgles_beg, amgles_end, images_beg, output.ptr(i_input), Div12eps());
+					Block::transform(amgles_beg, amgles_end, images_beg, output.ptr(i_input), Div12eps());
 					////Block::copy(amgles_beg, amgles_end, output.ptr(i_input));
 					//Block::copy(images_beg, images_beg + FSize, output.ptr(i_input));
 				}
@@ -259,7 +259,7 @@ namespace pcl
 					__syncthreads();
 
 					float sum = simage_angles[FSize];
-					Block::transfrom(simage_angles, simage_angles + FSize, output.ptr(i_input), DivValIfNonZero(sum));
+					Block::transform(simage_angles, simage_angles + FSize, output.ptr(i_input), DivValIfNonZero(sum));
 				}		
 			}
 

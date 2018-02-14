@@ -108,7 +108,7 @@ TEST(PCL_OctreeGPU, perfomance)
     
     cout << "[!] Host octree resolution: " << host_octree_resolution << endl << endl;    
 
-    cout << "======  Build perfomance =====" << endl;
+    cout << "======  Build performance =====" << endl;
     // build device octree
     pcl::gpu::Octree octree_device;                
     octree_device.setCloud(cloud_device);	    
@@ -142,7 +142,7 @@ TEST(PCL_OctreeGPU, perfomance)
     }
 #endif
     
-    //// Radius search perfomance ///
+    //// Radius search performance ///
 
     const int max_answers = 500;
     float dist;

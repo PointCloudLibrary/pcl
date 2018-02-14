@@ -344,7 +344,7 @@ namespace pcl
           return result;
         }
 
-        /** \brief Check for existance of a leaf node in the octree
+        /** \brief Check for existence of a leaf node in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */

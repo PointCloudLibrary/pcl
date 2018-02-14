@@ -105,7 +105,7 @@ namespace pcl
           void
           setDepthIntrinsics (float fx, float fy, float cx = -1, float cy = -1);
 
-          /** \brief Sets initial camera pose relative to volume coordiante space
+          /** \brief Sets initial camera pose relative to volume coordinate space
             * \param[in] pose Initial camera pose
             */
           void

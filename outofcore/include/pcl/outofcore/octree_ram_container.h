@@ -65,7 +65,7 @@ namespace pcl
       public:
         typedef typename OutofcoreAbstractNodeContainer<PointT>::AlignedPointTVector AlignedPointTVector;
 
-        /** \brief empty contructor (with a path parameter?)
+        /** \brief empty constructor (with a path parameter?)
           */
         OutofcoreOctreeRamContainer (const boost::filesystem::path&) : container_ () { }
         

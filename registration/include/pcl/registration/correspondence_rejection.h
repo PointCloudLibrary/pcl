@@ -346,7 +346,7 @@ namespace pcl
         }
         
         /** \brief Get the correspondence score for a given pair of correspondent points based on 
-          * the angle betweeen the normals. The normmals for the in put and target clouds must be 
+          * the angle between the normals. The normmals for the in put and target clouds must be 
           * set before using this function
           * \param[in] corr Correspondent points
           */

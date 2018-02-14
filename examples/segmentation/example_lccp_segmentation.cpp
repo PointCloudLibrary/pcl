@@ -226,7 +226,7 @@ LCCPSegmentation Parameters: \n\
   {
     pcl::console::parse (argc, argv, "-o", outputname);
 
-    // If no filename is given, get output filename from inputname (strip seperators and file extension)
+    // If no filename is given, get output filename from inputname (strip separators and file extension)
     if (outputname.empty () || (outputname.at (0) == '-'))
     {
       outputname = pcd_filename;

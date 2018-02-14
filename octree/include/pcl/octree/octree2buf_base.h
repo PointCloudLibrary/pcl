@@ -489,7 +489,7 @@ namespace pcl
           return ret;
         }
 
-        /** \brief Check for leaf not existance in the octree
+        /** \brief Check if leaf doesn't exist in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */

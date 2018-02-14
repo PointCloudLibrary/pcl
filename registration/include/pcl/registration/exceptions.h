@@ -59,7 +59,7 @@ namespace pcl
   } ;
 
  /** \class NotEnoughPointsException
-    * \brief An exception that is thrown when the number of correspondants is not equal
+    * \brief An exception that is thrown when the number of correspondents is not equal
     * to the minimum required
     */
   class PCL_EXPORTS NotEnoughPointsException : public PCLException
