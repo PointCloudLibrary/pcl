@@ -9,12 +9,6 @@
 #include <pcl/io/real_sense_2_grabber.h>
 #include <pcl/common/time.h>
 
-#ifdef _OPENMP
-#define PARALLEL_FOR #pragma omp parallel for 
-#else
-#define PARALLEL_FOR 
-#endif
-
 namespace pcl
 {
 
@@ -77,6 +71,7 @@ void RealSense2Grabber::start()
 	pipe.start(cfg);
 
     thread = std::thread(&RealSense2Grabber::threadFunction, this);
+
 }
 
 void RealSense2Grabber::stop()
@@ -117,7 +112,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr RealSense2Grabber::convertDepthToPointXYZ(co
 	for (int index = 0; index < cloud->points.size(); ++index)
 	{
 		auto ptr = vertices_ptr + index;
-		auto p = cloud->points[index];
+		auto& p = cloud->points[index];
 
 		p.x = ptr->x;
 		p.y = ptr->y;
@@ -149,7 +144,7 @@ pcl::PointCloud<pcl::PointXYZI>::Ptr RealSense2Grabber::convertInfraredDepthToPo
 	{
 		auto ptr = vertices_ptr + index;
 		auto uvptr = texture_ptr + index;
-		auto p = cloud->points[index];
+		auto& p = cloud->points[index];
 
 		p.x = ptr->x;
 		p.y = ptr->y;
@@ -184,7 +179,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr RealSense2Grabber::convertRGBDepthToPoint
 	{
 		auto ptr = vertices_ptr + index;
 		auto uvptr = texture_ptr + index;
-		auto p = cloud->points[index];
+		auto& p = cloud->points[index];
 
 		p.x = ptr->x;
 		p.y = ptr->y;
@@ -218,7 +213,7 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr RealSense2Grabber::convertRGBADepthToPoi
 	{
 		auto ptr = vertices_ptr + index;
 		auto uvptr = texture_ptr + index;
-		auto p = cloud->points[index];
+		auto& p = cloud->points[index];
 
 		p.x = ptr->x;
 		p.y = ptr->y;
@@ -266,6 +261,8 @@ void RealSense2Grabber::threadFunction()
 
 			depth = frames.get_depth_frame();
 
+			ir = frames.get_infrared_frame();
+
 			// Generate the pointcloud and texture mappings
 			points = pc.calculate(depth);
 
@@ -273,8 +270,7 @@ void RealSense2Grabber::threadFunction()
 
 			// Tell pointcloud object to map to this color frame
 			pc.map_to(rgb);
-
-			ir = frames.get_infrared_frame();
+			
 		}
 
         if (signal_PointXYZ->num_slots() > 0) 
