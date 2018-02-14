@@ -8,6 +8,12 @@
 #include <librealsense2/rs.hpp>
 #include <pcl/io/real_sense_2_grabber.h>
 
+#ifdef _OPENMP
+#define PARALLEL_FOR #pragma omp parallel for 
+#else
+#define PARALLEL_FOR 
+#endif
+
 namespace pcl
 {
 
@@ -101,26 +107,26 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr RealSense2Grabber::convertRGBDepthToPoint
     cloud->is_dense = false;
     cloud->points.resize(points.size());
 
-    auto ptr = points.get_vertices();
-    auto uvptr = points.get_texture_coordinates();
+    auto vertices_ptr = points.get_vertices();
+    auto texture_ptr = points.get_texture_coordinates();
 
-    uint8_t r, g, b;
-    for (auto& p : cloud->points)
-    {
-        p.x = ptr->x;
-        p.y = -1 * ptr->y;
-        p.z = ptr->z;
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+	for (int index = 0; index < cloud->points.size(); ++index)
+	{
+		auto ptr = vertices_ptr + index;
+		auto uvptr = texture_ptr + index;
+		auto p = cloud->points[index];
 
-        std::tie(r, g, b) = get_texcolor(rgb, uvptr->u, uvptr->v);
+		p.x = ptr->x;
+		p.y = ptr->y;
+		p.z = ptr->z;
 
-        p.r = r;
-        p.g = g;
-        p.b = b;
-        p.a = 255;
+		std::tie(p.r, p.g, p.b) = get_texcolor(rgb, uvptr->u, uvptr->v);
 
-        ptr++;
-        uvptr++;
-    }
+		p.a = 255;
+	}
 
     return cloud;
 }
@@ -135,26 +141,26 @@ pcl::PointCloud<pcl::PointXYZRGBA>::Ptr RealSense2Grabber::convertRGBADepthToPoi
     cloud->is_dense = false;
     cloud->points.resize(points.size());
 
-    auto ptr = points.get_vertices();
-    auto uvptr = points.get_texture_coordinates();
+	auto vertices_ptr = points.get_vertices();
+	auto texture_ptr = points.get_texture_coordinates();
 
-    uint8_t r, g, b;
-    for (auto& p : cloud->points)
-    {
-        p.x = ptr->x;
-        p.y = -1 * ptr->y;
-        p.z = ptr->z;
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+	for (int index = 0; index < cloud->points.size(); ++index)
+	{
+		auto ptr = vertices_ptr + index;
+		auto uvptr = texture_ptr + index;
+		auto p = cloud->points[index];
 
-        std::tie(r, g, b) = get_texcolor(rgb, uvptr->u, uvptr->v);
+		p.x = ptr->x;
+		p.y = ptr->y;
+		p.z = ptr->z;
 
-        p.r = r;
-        p.g = g;
-        p.b = b;
-        p.a = 255;
+		std::tie(p.r, p.g, p.b) = get_texcolor(rgb, uvptr->u, uvptr->v);
 
-        ptr++;
-        uvptr++;
-    }
+		p.a = 255;
+	}
 
     return cloud;
 }
