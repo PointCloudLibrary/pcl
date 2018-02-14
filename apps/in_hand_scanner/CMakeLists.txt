@@ -31,23 +31,13 @@ elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
   set(REASON)
 endif()
 
-
-#librealsense
-if(NOT WITH_LIBREALSENSE)
-    set(DEFAULT AUTO_OFF)
-    set(REASON "librealsense was not found or was disabled by the user.")
-elseif(NOT ${DEFAULT} STREQUAL "AUTO_OFF")
-    set(DEFAULT TRUE)
-    set(REASON)
-endif()
-
 # Default to not building for now
 if(${DEFAULT} STREQUAL "TRUE")
   set(DEFAULT FALSE)
 endif()
 
 pcl_subsubsys_option(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" "${SUBSYS_DESC}" ${DEFAULT} "${REASON}")
-pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS Qt5 OpenGL OpenGL_GLU openni librealsense)
+pcl_subsubsys_depend(build "${SUBSYS_NAME}" "${SUBSUBSYS_NAME}" DEPS ${SUBSYS_DEPS} EXT_DEPS Qt4 OpenGL OpenGL_GLU openni)
 
 pcl_add_doc("${SUBSUBSYS_NAME}")
 
@@ -129,7 +119,7 @@ list(APPEND SRCS "${MOC_IN_HAND_SCANNER_SRC}" "${MOC_OPENGL_VIEWER_SRC}" "${MOC_
 
 set(EXE_NAME "pcl_${SUBSUBSYS_NAME}")
 pcl_add_executable_opt_bundle("${EXE_NAME}" "${SUBSUBSYS_NAME}" ${SRCS} ${INCS} ${IMPL_INCS})
-target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL  ${LIBREALSENSE_INCLUDE_DIRS})
+target_link_libraries("${EXE_NAME}" ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
 
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}" ${INCS})
 pcl_add_includes("${SUBSUBSYS_NAME}" "${SUBSUBSYS_NAME}/impl" ${IMPL_INCS})
@@ -141,7 +131,7 @@ list(APPEND OI_INCS "${MOC_OPENGL_VIEWER_INC}" "${MOC_OFFLINE_INTEGRATION_INC}")
 list(APPEND OI_SRCS "${MOC_OPENGL_VIEWER_SRC}" "${MOC_OFFLINE_INTEGRATION_SRC}")
 
 pcl_add_executable_opt_bundle(pcl_offline_integration "${SUBSUBSYS_NAME}" ${OI_SRCS} ${OI_INCS})
-target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL ${LIBREALSENSE_LIBRARIES})
+target_link_libraries(pcl_offline_integration ${SUBSUBSYS_LIBS} ${OPENGL_LIBRARIES} Qt5::Concurrent Qt5::Widgets Qt5::OpenGL)
 
 # Add to the compound apps target
 list(APPEND PCL_APPS_ALL_TARGETS ${PCL_IN_HAND_SCANNER_ALL_TARGETS})

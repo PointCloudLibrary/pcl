@@ -49,8 +49,6 @@
 #include <pcl/apps/in_hand_scanner/common_types.h>
 #include <pcl/apps/in_hand_scanner/opengl_viewer.h>
 
-#include <pcl/io/real_sense_2_grabber.h>
-
 ////////////////////////////////////////////////////////////////////////////////
 // Forward declarations
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,8 +208,7 @@ namespace pcl
         typedef pcl::ihs::MeshPtr      MeshPtr;
         typedef pcl::ihs::MeshConstPtr MeshConstPtr;
 
-        //typedef pcl::OpenNIGrabber                Grabber;
-        typedef RealSense2Grabber                 Grabber;
+        typedef pcl::OpenNIGrabber                Grabber;
         typedef boost::shared_ptr <Grabber>       GrabberPtr;
         typedef boost::shared_ptr <const Grabber> GrabberConstPtr;
 
