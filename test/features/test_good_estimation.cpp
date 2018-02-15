@@ -79,7 +79,7 @@ TEST (PCL, GOODEstimation)
     0.000218914, 0.00138646, 0.00342966, 0.00722417, 0.00934034, 0.00788091, 0, 0, 0, 0, 0, 0
   };
 
-  EXPECT_EQ (object_description.points.size (), 1);
+  EXPECT_EQ (object_description.points[0].descriptorSize (), 675);
   for (size_t i = 0; i < size_t (object_description.points[0].descriptorSize ()); ++i)
   {
     EXPECT_NEAR (object_description.points[0].histogram[i], expected_values[i], 1e-5);
