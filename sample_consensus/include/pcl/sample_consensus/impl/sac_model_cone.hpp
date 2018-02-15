@@ -172,7 +172,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::getDistancesToModel (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -228,7 +228,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::selectWithinDistance (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -290,7 +290,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::countWithinDistance (
     // Calculate the cones perfect normals
     Eigen::Vector4f cone_normal = sinf (opening_angle) * height + cosf (opening_angle) * pp_pt_dir;
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     double d_euclid = fabs (pointToAxisDistance (pt, model_coefficients) - actual_cone_radius);
 
@@ -473,7 +473,7 @@ pcl::SampleConsensusModelCone<PointT, PointNT>::doSamplesVerifyModel (
     Eigen::Vector4f height = apex - pt_proj;
     double actual_cone_radius = tan (openning_angle) * height.norm ();
 
-    // Aproximate the distance from the point to the cone as the difference between
+    // Approximate the distance from the point to the cone as the difference between
     // dist(point,cone_axis) and actual cone radius
     if (fabs (static_cast<double>(pointToAxisDistance (pt, model_coefficients) - actual_cone_radius)) > threshold)
       return (false);

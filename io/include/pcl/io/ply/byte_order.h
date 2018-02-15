@@ -49,7 +49,7 @@ namespace pcl
     namespace ply
     {
       /** \file byte_order.h
-        * defines byte shift operations and endianess.
+        * defines byte shift operations and endianness.
         * \author Ares Lagae as part of libply, Nizar Sallem
         * \ingroup io
         */

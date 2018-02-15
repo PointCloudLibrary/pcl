@@ -125,7 +125,7 @@ namespace pcl
         *  points within the padding area,and do a weighted average. Say if the padding
         *  size is 1, when we process cell (x,y,z), we will find union of input data points
         *  from (x-1) to (x+1), (y-1) to (y+1), (z-1) to (z+1)(in total, 27 cells). In this
-        *  way, even the cells itself doesnt contain any data points, we will stil process it
+        *  way, even the cells itself doesn't contain any data points, we will still process it
         *  because there are data points in the padding area. This can help us fix holes which 
         *  is smaller than the padding size.
         * \param padding_size The num of padding cells we want to create 

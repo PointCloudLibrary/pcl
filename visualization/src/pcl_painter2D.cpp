@@ -364,7 +364,7 @@ pcl::visualization::PCLPainter2D::Paint (vtkContext2D *painter)
   //draw every figures
   for (size_t i = 0; i < figures_.size (); i++)
   {
-    figures_[i]->draw (painter); 	//thats it ;-)
+    figures_[i]->draw (painter); 	//that's it ;-)
   }
   
   return true;

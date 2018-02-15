@@ -149,7 +149,7 @@ namespace pcl
         return (filtered_quantized_color_gradients_);
       }
   
-      /** \brief Returns a reference to the internally computed spreaded quantized map. */
+      /** \brief Returns a reference to the internally computed spread quantized map. */
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
@@ -243,7 +243,7 @@ namespace pcl
       /** \brief Determines whether variable numbers of features are extracted or not. */
       bool variable_feature_nr_;
 
-      /** \brief Stores a smoothed verion of the input cloud. */
+      /** \brief Stores a smoothed version of the input cloud. */
 	    pcl::PointCloud<pcl::RGB>::Ptr smoothed_input_;
 
       /** \brief Defines which feature selection method is used. */
@@ -264,7 +264,7 @@ namespace pcl
       pcl::QuantizedMap quantized_color_gradients_;
       /** \brief The map which holds the filtered quantized data. */
       pcl::QuantizedMap filtered_quantized_color_gradients_;
-      /** \brief The map which holds the spreaded quantized data. */
+      /** \brief The map which holds the spread quantized data. */
       pcl::QuantizedMap spreaded_filtered_quantized_color_gradients_;
   
   };

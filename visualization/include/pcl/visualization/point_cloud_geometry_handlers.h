@@ -179,7 +179,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Surface normal handler class for PointCloud geometry. Given an input
       * dataset, all data present in fields "normal_x", "normal_y", and "normal_z" is
-      * extracted and dislayed on screen as XYZ data.
+      * extracted and displayed on screen as XYZ data.
       * \author Radu B. Rusu 
       * \ingroup visualization
       */
@@ -428,7 +428,7 @@ namespace pcl
     //////////////////////////////////////////////////////////////////////////////////////
     /** \brief Surface normal handler class for PointCloud geometry. Given an input
       * dataset, all data present in fields "normal_x", "normal_y", and "normal_z" is
-      * extracted and dislayed on screen as XYZ data.
+      * extracted and displayed on screen as XYZ data.
       * \author Radu B. Rusu 
       * \ingroup visualization
       */

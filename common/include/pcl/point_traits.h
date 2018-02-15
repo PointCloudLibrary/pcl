@@ -344,7 +344,7 @@ namespace pcl
   /** \brief Get the value at a specified field in a point
     * \param[in] pt the point to get the value from
     * \param[in] field_offset the offset of the field
-    * \param[out] value the value to retreive
+    * \param[out] value the value to retrieve
     */
   template <typename PointT, typename ValT> inline void
   getFieldValue (const PointT &pt, size_t field_offset, ValT &value)

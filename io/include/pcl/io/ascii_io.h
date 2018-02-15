@@ -125,7 +125,7 @@ namespace pcl
       }
 
 
-      /** \brief Set the Separting characters for the ascii point fields 2.
+      /** \brief Set the Separating characters for the ascii point fields 2.
         * \param[in] chars string of separating characters
         *  Sets the separating characters for the point fields.  The
         *  default separating characters are " \n\t,"

@@ -61,7 +61,7 @@
 #include <pcl/registration/ppf_registration.h>
 #include <pcl/registration/ndt.h>
 #include <pcl/registration/sample_consensus_prerejective.h>
-// We need Histogram<2> to function, so we'll explicitely add kdtree_flann.hpp here
+// We need Histogram<2> to function, so we'll explicitly add kdtree_flann.hpp here
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 //(pcl::Histogram<2>)
 

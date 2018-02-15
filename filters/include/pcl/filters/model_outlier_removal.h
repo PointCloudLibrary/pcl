@@ -228,7 +228,7 @@ namespace pcl
       /** \brief The model used to calculate distances */
       SampleConsensusModelPtr model_;
 
-      /** \brief The threshold used to seperate outliers (removed_indices) from inliers (indices) */
+      /** \brief The threshold used to separate outliers (removed_indices) from inliers (indices) */
       float thresh_;
 
       /** \brief The model coefficients */

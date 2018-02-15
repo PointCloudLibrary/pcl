@@ -65,8 +65,8 @@ namespace pcl
       * policies:
       * - Ignoring: elements at special locations are filled with zero
       * (default behaviour)
-      * - Mirroring: the missing rows or columns are obtained throug mirroring
-      * - Duplicating: the missing rows or columns are obtained throug
+      * - Mirroring: the missing rows or columns are obtained through mirroring
+      * - Duplicating: the missing rows or columns are obtained through
       * duplicating
       *
       * \author Nizar Sallem

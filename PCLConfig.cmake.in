@@ -265,7 +265,7 @@ endmacro(find_glew)
 #                   |--> _lib is optional ==> disable it (thanks to the guardians) 
 #                   |                         and warn
 #                   `--> _lib is required
-#                                       |--> component is required explicitely ==> error
+#                                       |--> component is required explicitly ==> error
 #                                       `--> component is induced ==> warn and remove it
 #                                                                     from the list
 

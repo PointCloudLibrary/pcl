@@ -147,7 +147,7 @@ pcl::io::LZFDepth16ImageReader::readOMP (const std::string &filename,
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (num_threads)
 #else
-  (void) num_threads; // supress warning if OMP is not present
+  (void) num_threads; // suppress warning if OMP is not present
 #endif
   for (int i = 0; i < static_cast< int> (cloud.size ()); ++i)
   {
@@ -278,7 +278,7 @@ pcl::io::LZFRGB24ImageReader::readOMP (
 #ifdef _OPENMP
 #pragma omp parallel for num_threads (num_threads)
 #else
-  (void) num_threads; // supress warning if OMP is not present
+  (void) num_threads; // suppress warning if OMP is not present
 #endif//_OPENMP
   for (long int i = 0; i < cloud.size (); ++i)
   {

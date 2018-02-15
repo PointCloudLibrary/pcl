@@ -94,7 +94,7 @@ namespace pcl
           {
             solution_[index] = val;
             //update optimizer solution
-            cost_ = opt_->evaluateSolution (solution_, index); //this will udpate the cost function in opt_
+            cost_ = opt_->evaluateSolution (solution_, index); //this will update the cost function in opt_
           }
           void setSolution(std::vector<bool> & sol)
           {

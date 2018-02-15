@@ -77,7 +77,7 @@ pcl::Morphology<PointT>::erosionBinary (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity != 1)
           {
@@ -192,7 +192,7 @@ pcl::Morphology<PointT>::erosionGray (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity < min || min == -1)
           {
@@ -236,7 +236,7 @@ pcl::Morphology<PointT>::dilationGray (pcl::PointCloud<PointT> &output)
           {
             continue;
           }
-          // If one of the elements of the kernel and image dont match, 
+          // If one of the elements of the kernel and image don't match, 
           // the output image is 0. So, move to the next point.
           if ((*input_)(j + l - kernel_width / 2, i + k - kernel_height / 2).intensity > max || max == -1)
           {

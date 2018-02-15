@@ -97,7 +97,7 @@ pcl::simulation::SimExample::initializeGL (int argc, char** argv)
 void
 pcl::simulation::SimExample::doSim (Eigen::Isometry3d pose_in)
 {
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[rl_->getRowHeight() * rl_->getColWidth()];
   const float* depth_buffer = rl_->getDepthBuffer();
   // Copy one image from our last as a reference.

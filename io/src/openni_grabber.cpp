@@ -366,7 +366,7 @@ pcl::OpenNIGrabber::setupDevice (const std::string& device_id, const Mode& depth
   }
   catch (...)
   {
-    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occured");
+    PCL_THROW_EXCEPTION (pcl::IOException, "unknown error occurred");
   }
 
   XnMapOutputMode depth_md;

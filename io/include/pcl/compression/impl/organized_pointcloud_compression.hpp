@@ -88,7 +88,7 @@ namespace pcl
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&cloud_height), sizeof (cloud_height));
       // encode frame max depth
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
-      // encode frame focal lenght
+      // encode frame focal length
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength), sizeof (focalLength));
       // encode frame disparity scale
       compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale), sizeof (disparityScale));
@@ -186,7 +186,7 @@ namespace pcl
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&height_arg), sizeof (height_arg));
        // encode frame max depth
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&maxDepth), sizeof (maxDepth));
-       // encode frame focal lenght
+       // encode frame focal length
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&focalLength_arg), sizeof (focalLength_arg));
        // encode frame disparity scale
        compressedDataOut_arg.write (reinterpret_cast<const char*> (&disparityScale_arg), sizeof (disparityScale_arg));

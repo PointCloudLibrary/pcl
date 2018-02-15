@@ -384,7 +384,7 @@
 * Removed unnecessary mutex locking in `TimeTrigger::registerCallback`
   [[#1087]](https://github.com/PointCloudLibrary/pcl/pull/1087)
 * Updated PCL exception types to have nothrow copy constructor and copy
-  assigment operator
+  assignment operator
   [[#1119]](https://github.com/PointCloudLibrary/pcl/pull/1119)
 * Fixed a bug with `PCA` not triggering recomputation when input indices are
   changed
@@ -625,7 +625,7 @@
 * Added a new `MetaRegistration` class that allows to register a stream of
   clouds where each cloud is aligned to the conglomerate of all previous clouds
   [[#1426]](https://github.com/PointCloudLibrary/pcl/pull/1426)
-* Fixed segmentation fault occuring in `CorrespondenceRejectorSurfaceNormal`
+* Fixed segmentation fault occurring in `CorrespondenceRejectorSurfaceNormal`
   [[#1536]](https://github.com/PointCloudLibrary/pcl/pull/1536)
 * Use aligned allocator in vectors of MatchingCandidate
   [[#1552]](https://github.com/PointCloudLibrary/pcl/pull/1552)
@@ -1381,13 +1381,13 @@ The most notable overall changes are:
 * Added a setDimension function to concave hull, so users can specify desired dimensionality of the resulting hull. If no dimension is specified, one will be automatically determined.
 * Fixed bug #692 - MovingLeastSquares indices issues
 * Added curve fitting and trimming of surfaces to examples/surface/example_nurbs_fitting_surface.cpp
-* Added iterative fitting routines for curve fitting surface::on_nurbs::Triangulation - added convertion functions for nurbs curve to line-polygon - added convertion functions for nurbs surface and curve to PolyMesh 
+* Added iterative fitting routines for curve fitting surface::on_nurbs::Triangulation - added conversion functions for nurbs curve to line-polygon - added conversion functions for nurbs surface and curve to PolyMesh 
 * Added flag to enable/disable usage of UmfPack for fast solving of sparse systems of equations - added triangulation functions to convert ON_NurbsSurface to pcl::PolygonMesh 
 * Added bug fix in ConcaveHull, thanks to summer.icecream
 * Added marching cubes using RBF and Hoppe SDF
 * Pushed new functions that perform texture-mapping on meshes.
 * Fix: issue #646 (vtk_smoothing not copied)
-* Added new functionalities to TextureMapping: Find occlusions based on raytracing in octrees, UV mapping based on Texture resolution and camera focal lenght.
+* Added new functionalities to TextureMapping: Find occlusions based on raytracing in octrees, UV mapping based on Texture resolution and camera focal length.
 * Relaxing dimensionality check threshold on concave_hull, so that 3D hulls should no longer be calculated on 2D input. 
 * Added poisson filter
 
@@ -1629,7 +1629,7 @@ The most notable overall changes are:
 * added a normal space sampling filter
 * fixed bug #433: `pcl::CropBox` doesn't update `width` and `height` member of output point cloud
 * fixed bug #423 `CropBox` + `VoxelGrid` filters, order changes behaviour (using openni grabber)
-* add `CropHull` filter for filtering points based on a 2D or 3D convex or concave hull. The ray-polygon intersection test is used, which relys on closed polygons/surfaces
+* add `CropHull` filter for filtering points based on a 2D or 3D convex or concave hull. The ray-polygon intersection test is used, which relies on closed polygons/surfaces
 * added clipper3D interface and a draft plane_clipper3D implementation
 * removed spurious old `ColorFilter` class (obsolete, and it was never implemented - the skeleton was just lurking around)
 * better Doxygen documentation to `PassThrough`, `VoxelGrid` and `Filter`
@@ -1683,7 +1683,7 @@ The most notable overall changes are:
 ### `lipcl_keypoints`
 
 * added refine method for `Harris3D` corner detector
-* rewrote big parts of the NARF keypoint extraction. Hopfully fixing some stability issues. Unfortunately still pretty slow for high resolution point clouds.
+* rewrote big parts of the NARF keypoint extraction. Hopefully fixing some stability issues. Unfortunately still pretty slow for high resolution point clouds.
 * fixed bug #461 (SIFT Keypoint result cloud fields not complete); cleaned up the line-wrapping in the error/warning messages
 
 ### `libpcl_surface`
@@ -1827,7 +1827,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
 * fixed a bug in `getRejectedQueryIndices`, wrong output when order of correspondences have been changed
 * moved `getRejectedQueryIndices` to pcl/common/correspondence.h
 * added more doxygen documentation to the registration components
-* marked all `getRemainingCorrespondences`-functions as DEPRECATED, we sould replace them with purely stateless version outside the class body
+* marked all `getRemainingCorrespondences`-functions as DEPRECATED, we should replace them with purely stateless version outside the class body
 * fixed a const missing in `PolynomialCalculationsT` (#388 - thanks Julian!)
 * add `PCL_DEPRECATED` macro, closes #354.
 * added `PointXYZHSV` type and the conversions for it
@@ -1913,7 +1913,7 @@ pcl::OrganizedDataIndex -> pcl::search::OrganizedNeighbor
   * fixed bug in getRejectedQueryIndices, wrong output when order of correspondences have been changed
   * moved getRejectedQueryIndices to pcl/common/correspondence.h
   * added more doxygen documentation to the registration components
-  * marked all "getRemainingCorrespondences"-functions as DEPRECATED, we sould replace them with purely stateless version outside the class body
+  * marked all "getRemainingCorrespondences"-functions as DEPRECATED, we should replace them with purely stateless version outside the class body
 * Update: remove ciminpack dependency and rely on eigen for LM
 * Fixed a bug in ICP-NL by modifying `WarpPointRigid` to preserve the value of the 4th coordinate when warping; Re-enabled missing unit tests for ICP and ICP-NL
 * Added point-to-plane ICP
@@ -2306,7 +2306,7 @@ The version numbers below belong to the *perception_pcl* stack in ROS, which coo
  * added a new generalized field value filter (_pcl::ConditionalRemoval_)
  * cleaned up normal estimation through integral images
  * PCL rift.hpp and point_types.hpp fixed for Windows/VS2010
- * fixed all _is_dense_ occurances
+ * fixed all _is_dense_ occurrences
  * *unmanged all _Eigen3::_ calls to _Eigen::_*
  * changed all _!isnan_ checks to _isfinite_ in order to catch INF/-INF values
  * added vtk_io tools for saving VTK data from _PolygonMesh_ structures
@@ -2341,7 +2341,7 @@ The version numbers below belong to the *perception_pcl* stack in ROS, which coo
  * Added Correspondence as a structure representing correspondences/matches (similar to OpenCV's DMatch) containing query and match indices as well as the distance between them respective points.
  * Added _CorrespondenceEstimation_ for determining closest point correspondence, feature correspondences and reciprocal point correspondences.
  * Added _CorrespondenceRejection_ and derivations for rejecting correspondences, e.g., based on distance, removing 1-to-n correspondences, RANSAC-based outlier removal (+transformation estimation).
- * Further splitted up registration.h and added transformation estimation classes, e.g., for estimating rigid transformation using SVD.
+ * Further split up registration.h and added transformation estimation classes, e.g., for estimating rigid transformation using SVD.
  * Added ```sensor_msgs::Image image;  pcl::toROSMsg (cloud, image);```See tools/convert_pcd_image.cpp for a sample.
  * Added a new point type, _PointWithScale_, to store the output of _SIFTKeypoint_ detection.
  * Fixed a minor bug in the error-checking in _SIFTKeypoint::setScales(...)_
@@ -2395,7 +2395,7 @@ The version numbers below belong to the *perception_pcl* stack in ROS, which coo
  * Added RSD (Radius Signature Descriptor) feature.
  * Updated the entire PCL tree to use FLANN as a default _KdTree_
  * Optimized the _KdTreeFLANN::radiusSearch_ so it doesn't do any memory allocation if the indices and distances vectors passed in are pre-allocated to the point cloud size.
- * Changed _KdTree::radiusSearch_ method signature to return int (number of neighbors found) intead of bool
+ * Changed _KdTree::radiusSearch_ method signature to return int (number of neighbors found) instead of bool
  * added new _pcl::View<T>_ class that holds a _PointCloud_, an _Image_, and a _CameraInfo_ message (r34575)
  * Moving the _Surface_ reconstruction framework to the new structure (r34547)
  * Moving the _Segmentation_ framework to the new structure (r34546)

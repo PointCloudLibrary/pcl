@@ -372,7 +372,7 @@ namespace pcl
         return (filtered_quantized_surface_normals_); 
       }
 
-      /** \brief Returns a reference to the internal spreaded quantized map. */
+      /** \brief Returns a reference to the internal spread quantized map. */
       inline QuantizedMap &
       getSpreadedQuantizedMap () 
       { 
@@ -476,7 +476,7 @@ namespace pcl
       pcl::QuantizedMap quantized_surface_normals_;
       /** \brief Filtered quantized surface normals. */
       pcl::QuantizedMap filtered_quantized_surface_normals_;
-      /** \brief Spreaded quantized surface normals. */
+      /** \brief Spread quantized surface normals. */
       pcl::QuantizedMap spreaded_quantized_surface_normals_;
 
       /** \brief Map containing surface normal orientations. */

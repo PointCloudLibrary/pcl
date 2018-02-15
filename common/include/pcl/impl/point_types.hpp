@@ -1519,7 +1519,7 @@ namespace pcl
 
     union
     {
-      /** \brief Diameter of the meaningfull keypoint neighborhood. */
+      /** \brief Diameter of the meaningful keypoint neighborhood. */
       float scale;
       float size;
     };
