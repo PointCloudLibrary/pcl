@@ -40,15 +40,15 @@
 #include <pcl/io/pcd_io.h>
 
 
-pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
+pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GOODEstimation)
 {
   const int NUMBER_OF_BINS = 15;     
-  typedef pcl::GOODEstimation<PointXYZRGBA, NUMBER_OF_BINS>::Descriptor Descriptor;
+  typedef pcl::GOODEstimation<pcl::PointXYZRGBA, NUMBER_OF_BINS>::Descriptor Descriptor;
   pcl::PointCloud<Descriptor> object_description;   
-  pcl::GOODEstimation<PointXYZRGBA, NUMBER_OF_BINS> test_GOOD_descriptor;   
+  pcl::GOODEstimation<pcl::PointXYZRGBA, NUMBER_OF_BINS> test_GOOD_descriptor;   
   test_GOOD_descriptor.setThreshold (0.0015);  
   test_GOOD_descriptor.setInputCloud (cloud); // pass original point cloud
   test_GOOD_descriptor.compute (object_description); // Actually compute the GOOD discriptor for the given object
@@ -126,7 +126,7 @@ main (int argc, char** argv)
     return (-1);
   }     
        
-  if (pcl::io::loadPCDFile<PointXYZRGBA> (argv[1], *cloud) == -1)
+  if (pcl::io::loadPCDFile<pcl::PointXYZRGBA> (argv[1], *cloud) == -1)
   {
     std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
     return (-1);
