@@ -53,7 +53,7 @@ TEST (PCL, GOODEstimation)
   test_GOOD_descriptor.setInputCloud (cloud); // pass original point cloud
   test_GOOD_descriptor.compute (object_description); // Actually compute the GOOD discriptor for the given object
   
-  const float expected_values [225] =
+  const float expected_values [675] =
   { 0, 0, 0, 0, 0, 0, 0, 0.000875657, 0, 0.000218914, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.00627554, 0.00861062, 0.0105079, 0.0110187, 0.00634851, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.000364857, 
     0.0140835, 0.0164915, 0.015324, 0.0158348, 0.0134267, 0.00218914, 0, 0, 0, 0, 0, 0, 0, 0.00131349, 0.00890251, 0.0104349, 0.0172942, 0.0170753, 0.0165645, 0.0156888, 0.010289, 
     0.000218914, 0, 0, 0, 0, 0, 0, 0.00496206, 0.0106538, 0.0137186, 0.0138646, 0.0140105, 0.0137186, 0.0116754, 0.0124051, 0.00211617, 0, 0, 0, 0, 0, 0, 0.00488908, 0.00992411, 
