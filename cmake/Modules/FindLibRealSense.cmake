@@ -17,6 +17,7 @@ find_path(LIBREALSENSE_INCLUDE_DIR librealsense2/rs.h
                 "$ENV{PROGRAMW6432}/librealsense2" # for self built library 
                 "$ENV{PROGRAMFILES}/librealsense2" # for self built library
                 "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0" # for pre built library
+                "$ENV{LIBREALSENSE_ROOT}"
                 # "Please specify search paths for Linux and MacOS"
           PATH_SUFFIXES include)
 
@@ -38,6 +39,7 @@ find_library(LIBREALSENSE_LIBRARY
                    "$ENV{PROGRAMW6432}/librealsense2"
                    "$ENV{PROGRAMFILES}/librealsense2"
                    "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0"
+                   "$ENV{LIBREALSENSE_ROOT}"
                    # "Please specify search paths for Linux and MacOS"
              PATH_SUFFIXES lib lib/${LIBREALSENSE_SUFFIX})
 
@@ -47,6 +49,7 @@ find_library(LIBREALSENSE_LIBRARY_DEBUG
                    "$ENV{PROGRAMW6432}/librealsense2"
                    "$ENV{PROGRAMFILES}/librealsense2"
                    "$ENV{PROGRAMFILES}/Intel RealSense SDK 2.0"
+                   "$ENV{LIBREALSENSE_ROOT}"
                    # "Please specify search paths for Linux and MacOS"
              PATH_SUFFIXES lib lib/${LIBREALSENSE_SUFFIX})
 
