@@ -44,63 +44,128 @@
 
 namespace pcl
 {
-	struct PointXYZ;
-	struct PointXYZRGB;
-	struct PointXYZRGBA;
-	struct PointXYZI;
-	template <typename T> class PointCloud;
+  struct PointXYZ;
+  struct PointXYZRGB;
+  struct PointXYZRGBA;
+  struct PointXYZI;
+  template <typename T> class PointCloud;
 
-	class PCL_EXPORTS RealSense2Grabber : public pcl::Grabber
-	{
-	public:
-		RealSense2Grabber(const std::string& serial_number = "");
+  /** \brief Grabber for Intel Realsense 2 SDK devices (D400 series)
+  * \author Patrick Abadi <patrickabadi@gmail.com>, Daniel Packard <pack3754@gmail.com>
+  * \ingroup io
+  */
+  class PCL_EXPORTS RealSense2Grabber : public pcl::Grabber
+  {
+  public:
+    /** \brief Constructor
+    * \param[in] serial_number optional to start up a specific device
+    */
+    RealSense2Grabber (const std::string& serial_number = "", const std::string& file_name = "");
 
-		virtual ~RealSense2Grabber() throw ();
-		void setDeviceOptions(int width, int height, int fps = 30);
-		virtual void start();
-		virtual void stop();
-		virtual bool isRunning() const;
-		virtual float getFramesPerSecond() const;
-		virtual std::string getName() const { return std::string("RealSense2Grabber"); }
+    /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
+    virtual ~RealSense2Grabber () throw ();
 
+    /** \brief Set the device options
+    * \param[in] width resolution
+    * \param[in] height resolution
+    * \param[in] fps target frames per second for the device
+    */
+    inline void 
+    setDeviceOptions (uint32_t width, uint32_t height, uint32_t fps = 30)
+    {
+      device_width_ = width;
+      device_height_ = height;
+      target_fps_ = fps;
+    }
 
-		typedef void (signal_librealsense_PointXYZ)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>&);
-		typedef void (signal_librealsense_PointXYZI)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>&);
-		typedef void (signal_librealsense_PointXYZRGB)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>&);
-		typedef void (signal_librealsense_PointXYZRGBA)(const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
+    /** \brief Start the data acquisition. */
+    virtual void 
+    start ();
 
-	protected:
-		boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
-		boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
-		boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
-		boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
+    /** \brief Stop the data acquisition. */
+    virtual void
+    stop ();
 
-		pcl::PointCloud<pcl::PointXYZ>::Ptr convertDepthToPointXYZ(const rs2::points& points);
-		pcl::PointCloud<pcl::PointXYZI>::Ptr convertInfraredDepthToPointXYZI(const rs2::points & points, rs2::video_frame & ir);
-		pcl::PointCloud<pcl::PointXYZRGB>::Ptr convertRGBDepthToPointXYZRGB(const rs2::points& points, rs2::video_frame &rgb);
-		pcl::PointCloud<pcl::PointXYZRGBA>::Ptr convertRGBADepthToPointXYZRGBA(const rs2::points& points, rs2::video_frame &rgb);
+    /** \brief Check if the data acquisition is still running. */
+    virtual bool 
+    isRunning () const;
 
-		std::tuple<uint8_t, uint8_t, uint8_t> get_texcolor(rs2::video_frame & texture, float u, float v);
+    /** \brief Obtain the number of frames per second (FPS). */
+    virtual float 
+    getFramesPerSecond () const;
 
-		std::thread thread;
-		mutable std::mutex mutex;
+    /** \brief defined grabber name*/
+    virtual std::string 
+    getName () const { return std::string ("RealSense2Grabber"); }
 
-		void threadFunction();
+    //define callback signature typedefs
+    typedef void (signal_librealsense_PointXYZ) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZ>>&);
+    typedef void (signal_librealsense_PointXYZI) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZI>>&);
+    typedef void (signal_librealsense_PointXYZRGB) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGB>>&);
+    typedef void (signal_librealsense_PointXYZRGBA) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
 
-		std::string serial_number;
-		bool quit;
-		bool running;
-		float fps;
-		int deviceWidth;
-		int deviceHeight;
-		int targetFps;
+  protected:
+    boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
+    boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
+    boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
+    boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
 
+    /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
+    * \param[in] points the depth points
+    */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr 
+    convertDepthToPointXYZ (const rs2::points& points);
 
-		// Declare pointcloud object, for calculating pointclouds and texture mappings
-		rs2::pointcloud pc;
-		// Declare RealSense pipeline, encapsulating the actual device and sensors
-		rs2::pipeline pipe;
-	};
+    /** \brief Convert an Infrared Depth image to a pcl::PointCloud<pcl::PointXYZI>
+    * \param[in] points the depth points
+    * \param[in] ir Infrared video frame
+    */
+    pcl::PointCloud<pcl::PointXYZI>::Ptr 
+    convertInfraredDepthToPointXYZI (const rs2::points & points, rs2::video_frame & ir);
+
+    /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGB>
+    * \param[in] points the depth points
+    * \param[in] rgb rgb video frame
+    */
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr 
+    convertRGBDepthToPointXYZRGB (const rs2::points& points, rs2::video_frame &rgb);
+
+    /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGBA>
+    * \param[in] points the depth points
+    * \param[in] rgb rgb video frame
+    */
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr 
+    convertRGBADepthToPointXYZRGBA (const rs2::points& points, rs2::video_frame &rgb);
+
+    /** \brief Retrieve RGB color from texture video frame
+    * \param[in] texture the texture
+    * \param[in] u 2D coordinate
+    * \param[in] v 2D coordinate
+    */
+    std::tuple<uint8_t, uint8_t, uint8_t> 
+    getTextureColor (rs2::video_frame & texture, float u, float v);
+
+    /** \brief the thread function
+    */
+    void 
+    threadFunction ();
+
+    std::thread thread_;
+    mutable std::mutex mutex_;
+    std::string serial_number_;
+    std::string file_name_;
+    bool quit_;
+    bool running_;
+    float fps_;
+    uint32_t device_width_;
+    uint32_t device_height_;
+    uint32_t target_fps_;
+
+    // Declare pointcloud object, for calculating pointclouds and texture mappings
+    rs2::pointcloud pc_;
+    // Declare RealSense pipeline, encapsulating the actual device and sensors
+    rs2::pipeline pipe_;
+  };
 
 }
 
