@@ -277,7 +277,7 @@ pcl::Morphology<PointT>::subtractionBinary (
     const pcl::PointCloud<PointT> &input1, 
     const pcl::PointCloud<PointT> &input2)
 {
-  const int height = (input1.height < input2.hieght) ? input1.height : input2.height;
+  const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
   output.width = width;
   output.height = height;
@@ -299,7 +299,7 @@ pcl::Morphology<PointT>::unionBinary (
     const pcl::PointCloud<PointT> &input1, 
     const pcl::PointCloud<PointT> &input2)
 {
-  const int height = (input1.height < input2.hieght) ? input1.height : input2.height;
+  const int height = (input1.height < input2.height) ? input1.height : input2.height;
   const int width = (input1.width < input2.width) ? input1.width : input2.width;
   output.width = width;
   output.height = height;
