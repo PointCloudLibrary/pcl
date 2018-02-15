@@ -40,7 +40,7 @@
 #include <pcl/io/pcd_io.h>
 
 
-PointCloud<PointXYZRGBA>::Ptr cloud (new PointCloud<PointXYZRGBA> ());
+pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, GOODEstimation)
@@ -124,9 +124,9 @@ main (int argc, char** argv)
   {
     std::cerr << "No test file given. Please download `milk.pcd` and pass its path to the test." << std::endl;
     return (-1);
-  }
-
-  if (pcl::io::loadPCDFile<PointXYZRGBA> (argv[1], *cloud) < 0)
+  }     
+       
+  if (pcl::io::loadPCDFile<PointXYZRGBA> (argv[1], *cloud) == -1)
   {
     std::cerr << "Failed to read test file. Please download `milk.pcd` and pass its path to the test." << std::endl;
     return (-1);
