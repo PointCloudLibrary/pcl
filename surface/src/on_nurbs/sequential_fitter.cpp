@@ -235,10 +235,10 @@ SequentialFitter::setCorners (pcl::PointIndices::Ptr &corners, bool flip_on_dema
     throw std::runtime_error ("[SequentialFitter::setCorners] Error: Empty or invalid pcl-point-cloud.\n");
 
   if (corners->indices.size () < 4)
-    throw std::runtime_error ("[SequentialFitter::setCorners] Error: to few corners (<4)\n");
+    throw std::runtime_error ("[SequentialFitter::setCorners] Error: too few corners (<4)\n");
 
   if (corners->indices.size () > 4)
-    printf ("[SequentialFitter::setCorners] Warning: to many corners (>4)\n");
+    printf ("[SequentialFitter::setCorners] Warning: too many corners (>4)\n");
 
   bool flip = false;
   pcl::PointXYZRGB &pt0 = m_cloud->at (corners->indices[0]);

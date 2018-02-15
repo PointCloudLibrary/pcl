@@ -209,7 +209,7 @@ namespace pcl
       void 
       detect (std::vector<typename pcl::LineRGBD<PointXYZT, PointRGBT>::Detection> & detections);
 
-      /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by acutally
+      /** \brief Applies the detection process in a semi-scale-invariant manner. This is done by actually
         *        scaling the template to different sizes.
         */
       void
@@ -304,7 +304,7 @@ namespace pcl
 
       /** \brief Point clouds corresponding to the templates. */
       pcl::PointCloud<pcl::PointXYZRGBA>::CloudVectorType template_point_clouds_;
-      /** \brief Bounding boxes corresonding to the templates. */
+      /** \brief Bounding boxes corresponding to the templates. */
       std::vector<pcl::BoundingBoxXYZ> bounding_boxes_;
       /** \brief Object IDs corresponding to the templates. */
       std::vector<size_t> object_ids_;

@@ -81,7 +81,7 @@ namespace pcl
         virtual void next ();
 
       Q_SIGNALS:
-        /** \brief Ommitted when a filter is created. */
+        /** \brief Omitted when a filter is created. */
         void filterCreated ();
 
       protected:

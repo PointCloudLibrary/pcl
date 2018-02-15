@@ -458,8 +458,8 @@ namespace pcl
         radius_ = radius;
       };
 
-      /** \brief setter for the spatial bandwith used for cost aggregation based on adaptive weights
-        * \param[in] gamma_s spatial bandwith used for cost aggregation based on adaptive weights
+      /** \brief setter for the spatial bandwidth used for cost aggregation based on adaptive weights
+        * \param[in] gamma_s spatial bandwidth used for cost aggregation based on adaptive weights
         */
       void 
       setGammaS (int gamma_s)
@@ -467,8 +467,8 @@ namespace pcl
         gamma_s_ = gamma_s;
       };
 
-      /** \brief setter for the color bandwith used for cost aggregation based on adaptive weights
-        * \param[in] gamma_c color bandwith used for cost aggregation based on adaptive weights
+      /** \brief setter for the color bandwidth used for cost aggregation based on adaptive weights
+        * \param[in] gamma_c color bandwidth used for cost aggregation based on adaptive weights
         */
       void 
       setGammaC (int gamma_c)

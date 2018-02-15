@@ -274,7 +274,7 @@ namespace pcl
     PCL_EXPORTS int
     parse_x_arguments (int argc, char** argv, const char* str, std::vector<int>& v);
 
-    /** \brief Parse for specific given command line arguments (multiple occurences
+    /** \brief Parse for specific given command line arguments (multiple occurrences
       * of the same command line parameter).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
@@ -285,7 +285,7 @@ namespace pcl
     PCL_EXPORTS bool
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<int> &values);
 
-    /** \brief Parse for specific given command line arguments (multiple occurences
+    /** \brief Parse for specific given command line arguments (multiple occurrences
       * of the same command line parameter).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
@@ -296,7 +296,7 @@ namespace pcl
     PCL_EXPORTS bool
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<float> &values);
 
-    /** \brief Parse for specific given command line arguments (multiple occurences
+    /** \brief Parse for specific given command line arguments (multiple occurrences
       * of the same command line parameter).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
@@ -307,7 +307,7 @@ namespace pcl
     PCL_EXPORTS bool
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<double> &values);
 
-    /** \brief Parse for a specific given command line argument (multiple occurences
+    /** \brief Parse for a specific given command line argument (multiple occurrences
       * of the same command line parameter).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
@@ -318,7 +318,7 @@ namespace pcl
     PCL_EXPORTS bool
     parse_multiple_arguments (int argc, char** argv, const char* str, std::vector<std::string> &values);
 
-    /** \brief Parse command line arguments for file names with given extension (multiple occurences
+    /** \brief Parse command line arguments for file names with given extension (multiple occurrences
       * of 2x argument groups, separated by commas).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments
@@ -332,7 +332,7 @@ namespace pcl
                                  std::vector<double> &values_f, 
                                  std::vector<double> &values_s);
 
-    /** \brief Parse command line arguments for file names with given extension (multiple occurences
+    /** \brief Parse command line arguments for file names with given extension (multiple occurrences
       * of 3x argument groups, separated by commas).
       * \param[in] argc the number of command line arguments
       * \param[in] argv the command line arguments

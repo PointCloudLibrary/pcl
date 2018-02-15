@@ -76,7 +76,7 @@ namespace pcl
       /** \brief This function suppresses the edges which don't form a local maximum 
         * in the edge direction.
         * \param[in] edges point cloud containing all the edges
-        * \param[out] maxima point cloud containing the non-max supressed edges
+        * \param[out] maxima point cloud containing the non-max suppressed edges
         * \param[in] tLow
         */
       void

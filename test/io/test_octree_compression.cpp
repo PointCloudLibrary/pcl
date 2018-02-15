@@ -167,7 +167,7 @@ TEST(PCL, OctreeDeCompressionFile)
 
     EXPECT_EQ(rv, 0) << " loadPCDFile " << pcd_file;
     EXPECT_GT((int) input_cloud_ptr->width , 0) << "invalid point cloud width from " << pcd_file;
-    EXPECT_GT((int) input_cloud_ptr->height, 0) << "invalid point cloud heigth from " << pcd_file;
+    EXPECT_GT((int) input_cloud_ptr->height, 0) << "invalid point cloud height from " << pcd_file;
 
     // iterate over compression profiles
     for (int compression_profile = pcl::io::LOW_RES_ONLINE_COMPRESSION_WITHOUT_COLOR;

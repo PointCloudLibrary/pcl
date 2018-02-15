@@ -162,8 +162,8 @@ namespace pcl
         /** \brief Decode differential point information
           * \param outputCloud_arg output point cloud
           * \param referencePoint_arg coordinates of reference point
-          * \param beginIdx_arg index indicating first point to be assiged with color information
-          * \param endIdx_arg index indicating last point to be assiged with color information
+          * \param beginIdx_arg index indicating first point to be assigned with color information
+          * \param endIdx_arg index indicating last point to be assigned with color information
           */
         void
         decodePoints (PointCloudPtr outputCloud_arg, const double* referencePoint_arg, std::size_t beginIdx_arg,

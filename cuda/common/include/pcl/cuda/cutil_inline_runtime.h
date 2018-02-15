@@ -85,7 +85,7 @@ inline int _ConvertSMVer2Cores(int major, int minor)
 {
 	// Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
 	typedef struct {
-		int SM; // 0xMm (hexidecimal notation), M = SM Major version, and m = SM minor version
+		int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
 		int Cores;
 	} sSMtoCores;
 
@@ -226,7 +226,7 @@ inline int cutGetMaxGflopsGraphicsDeviceId()
 	return max_perf_device;
 }
 
-// Give a little more for Windows : the console window often disapears before we can read the message
+// Give a little more for Windows : the console window often disappears before we can read the message
 #ifdef _WIN32
 # if 1//ndef UNICODE
 #  ifdef _DEBUG // Do this only in debug mode...

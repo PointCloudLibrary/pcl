@@ -357,7 +357,7 @@ namespace pcl
         void
         setTrainingClasses (const std::vector<unsigned int>& training_classes);
 
-        /** \brief This method returns the coresponding cloud of normals for every training point cloud. */
+        /** \brief This method returns the corresponding cloud of normals for every training point cloud. */
         std::vector<typename pcl::PointCloud<NormalT>::Ptr>
         getTrainingNormals ();
 
@@ -405,7 +405,7 @@ namespace pcl
         /** \brief This method allows to set the value of sigma used for calculating the learned weights for every single class.
           * \param[in] training_sigmas new sigmas for every class. If you want these values to be computed automatically,
           * just pass the empty array. The automatic regime calculates the maximum distance between the objects points and takes 10% of
-          * this value as recomended in the article. If there are several objects of the same class,
+          * this value as recommended in the article. If there are several objects of the same class,
           * then it computes the average maximum distance and takes 10%. Note that each class has its own sigma value.
           */
         void
@@ -435,7 +435,7 @@ namespace pcl
           * and returns the list of votes.
           * \param[in] model trained model which will be used for searching the objects
           * \param[in] in_cloud input cloud that need to be investigated
-          * \param[in] in_normals cloud of normals coresponding to the input cloud
+          * \param[in] in_normals cloud of normals corresponding to the input cloud
           * \param[in] in_class_of_interest class which we are looking for
           */
         boost::shared_ptr<pcl::features::ISMVoteList<PointT> >
@@ -567,7 +567,7 @@ namespace pcl
         void
         generateRandomCenter (const std::vector<Eigen::Vector2f, Eigen::aligned_allocator<Eigen::Vector2f> >& boxes, Eigen::VectorXf& center);
 
-        /** \brief Computes the square distance beetween two vectors.
+        /** \brief Computes the square distance between two vectors.
           * \param[in] vec_1 first vector
           * \param[in] vec_2 second vector
           */

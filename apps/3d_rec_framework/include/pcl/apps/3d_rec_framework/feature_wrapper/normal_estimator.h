@@ -140,7 +140,7 @@ namespace pcl
 
           if (out->points.size () == 0)
           {
-            PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, wont be able to compute normals!\n");
+            PCL_WARN("NORMAL estimator: Cloud has no points after voxel grid, won't be able to compute normals!\n");
             return;
           }
 

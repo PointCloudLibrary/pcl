@@ -145,7 +145,7 @@ namespace pcl
   } ;
 
   /** \class IsNotDenseException
-    * \brief An exception that is thrown when a PointCloud is not dense but is attemped to be used as dense
+    * \brief An exception that is thrown when a PointCloud is not dense but is attempted to be used as dense
     */
   class IsNotDenseException : public PCLException
   {
@@ -251,7 +251,7 @@ namespace pcl
   };
 
   /** \class BadArgumentException
-    * \brief An exception that is thrown when the argments number or type is wrong/unhandled.
+    * \brief An exception that is thrown when the arguments number or type is wrong/unhandled.
     */
   class BadArgumentException : public PCLException
   {

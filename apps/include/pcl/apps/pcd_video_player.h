@@ -128,7 +128,7 @@ class PCDVideoPlayer : public QMainWindow
     /** \brief Indicate that the timeoutSlot needs to reload the pointcloud */
     bool cloud_modified_;
 
-    /** \brief Indicate that files should play continiously */
+    /** \brief Indicate that files should play continuously */
     bool play_mode_;
     /** \brief In play mode only update if speed_counter_ == speed_value */
     unsigned int speed_counter_;

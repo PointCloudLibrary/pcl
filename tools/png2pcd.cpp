@@ -216,7 +216,7 @@ main (int argc, char** argv)
       }
       else
       {
-        print_error ("Unknow depth unit defined.\n");
+        print_error ("Unknown depth unit defined.\n");
         exit (-1);
       }
     }

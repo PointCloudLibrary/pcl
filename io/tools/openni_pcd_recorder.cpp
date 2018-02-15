@@ -298,7 +298,7 @@ class Consumer
 
       {
         boost::mutex::scoped_lock io_lock (io_mutex);
-        print_info ("Writing remaing %ld clouds in the buffer to disk...\n", buf_.getSize ());
+        print_info ("Writing remaining %ld clouds in the buffer to disk...\n", buf_.getSize ());
       }
       while (!buf_.isEmpty ())
         writeToDisk (buf_.getFront ());

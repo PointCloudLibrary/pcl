@@ -175,7 +175,7 @@ namespace pcl
      * \brief Project a point using the specified method.
      * \param[in] pt The point to be project.
      * \param[in] method The projection method to be used.
-     * \param[in] required_neighbors The minimun number of neighbors required.
+     * \param[in] required_neighbors The minimum number of neighbors required.
      * \note If required_neighbors then any number of neighbors is allowed.
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
@@ -186,7 +186,7 @@ namespace pcl
     /**
      * \brief Project the query point used to generate the mls surface about using the specified method.
      * \param[in] method The projection method to be used.
-     * \param[in] required_neighbors The minimun number of neighbors required.
+     * \param[in] required_neighbors The minimum number of neighbors required.
      * \note If required_neighbors then any number of neighbors is allowed.
      * \note If required_neighbors is not satisfied it projects to the mls plane.
      * \return The MLSProjectionResults for the input data.
@@ -479,7 +479,7 @@ namespace pcl
       inline int
       getDilationIterations () const { return (dilation_iteration_num_); }
 
-      /** \brief Set wether the mls results should be stored for each point in the input cloud
+      /** \brief Set whether the mls results should be stored for each point in the input cloud
         * \param[in] True if the mls results should be stored, otherwise false.
         * \note The cache_mls_results_ is forced to true when using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
         * \note If memory consumption is a concern set to false when not using upsampling method VOXEL_GRID_DILATION or DISTINCT_CLOUD.
@@ -505,7 +505,7 @@ namespace pcl
 
       /** \brief Get the MLSResults for input cloud
         * \note The results are only stored if setCacheMLSResults(true) was called or when using the upsampling method DISTINCT_CLOUD or VOXEL_GRID_DILATION.
-        * \note This vector is align with the input cloud indicies, so use getCorrespondingIndices to get the correct results when using output cloud indicies.
+        * \note This vector is align with the input cloud indices, so use getCorrespondingIndices to get the correct results when using output cloud indices.
         */
       inline const std::vector<MLSResult>&
       getMLSResults () const { return (mls_results_); }

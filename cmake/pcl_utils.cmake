@@ -405,7 +405,7 @@ macro(sort_relative _list _sorted_list _to_sort_relative)
   if(NOT (list_length EQUAL to_sort_list_length))
     message(FATAL_ERROR "size mismatch between ${_to_sort_relative} ${to_sort_list_length} and ${_list} ${list_length}")
   endif(NOT (list_length EQUAL to_sort_list_length))
-  # unset the temporary list to avoid suprises (I had some them and were hard to find)
+  # unset the temporary list to avoid surprises (I had some them and were hard to find)
   unset(tmp_list)
   # fill it with a dummy value
   fill_list(tmp_list list_length "#")

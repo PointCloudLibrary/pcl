@@ -416,14 +416,14 @@ void display ()
     boost::this_thread::sleep (boost::posix_time::microseconds (100000));
   }    
   
-  // doesnt work:
+  // doesn't work:
 //    viewer->~PCLVisualizer();
 //    viewer.reset();
     
     
     cout << "done\n";
-    // Problem: vtk and opengl dont seem to play very well together
-    // vtk seems to misbehave after a little while and wont keep the window on the screen
+    // Problem: vtk and opengl don't seem to play very well together
+    // vtk seems to misbehave after a little while and won't keep the window on the screen
 
     // method1: kill with [x] - but eventually it crashes:
     //while (!viewer.wasStopped ()){

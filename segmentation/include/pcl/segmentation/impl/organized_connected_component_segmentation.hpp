@@ -68,7 +68,7 @@ pcl::OrganizedConnectedComponentSegmentation<PointT, PointLT>::findLabeledRegion
                              Neighbor( 0,  1,  labels->width    ),
                              Neighbor(-1,  1,  labels->width - 1)};
   
-  // find one pixel with other label in the neighborhood -> assume thats the one we came from
+  // find one pixel with other label in the neighborhood -> assume that's the one we came from
   int direction = -1;
   int x;
   int y;

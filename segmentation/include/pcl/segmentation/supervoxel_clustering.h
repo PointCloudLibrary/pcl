@@ -272,7 +272,7 @@ namespace pcl
         * Points that belong to the same supervoxel have the same color.
         * But this function doesn't guarantee that different segments will have different
         * color(it's random). Points that are unlabeled will be black
-        * \note This will expand the label_colors_ vector so that it can accomodate all labels
+        * \note This will expand the label_colors_ vector so that it can accommodate all labels
         */
       PCL_DEPRECATED ("SupervoxelClustering::getColoredCloud is deprecated. Use the getLabeledCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
       typename pcl::PointCloud<PointXYZRGBA>::Ptr
@@ -297,7 +297,7 @@ namespace pcl
        * Points that belong to the same supervoxel have the same color.
        * But this function doesn't guarantee that different segments will have different
        * color(it's random). Points that are unlabeled will be black
-       * \note This will expand the label_colors_ vector so that it can accomodate all labels
+       * \note This will expand the label_colors_ vector so that it can accommodate all labels
        */
       PCL_DEPRECATED ("SupervoxelClustering::getColoredVoxelCloud is deprecated. Use the getLabeledVoxelCloud function instead. examples/segmentation/example_supervoxels.cpp shows how to use this to display and save with colorized labels.")
       pcl::PointCloud<pcl::PointXYZRGBA>::Ptr

@@ -2311,7 +2311,7 @@ namespace pcl
                                 vtkTexture* vtk_tex) const;
 
         /** \brief Get camera file for camera parameter saving/restoring from command line.
-          * Camera filename is calculated using sha1 value of all pathes of input .pcd files
+          * Camera filename is calculated using sha1 value of all paths of input .pcd files
           * \return empty string if failed.
           */
         std::string

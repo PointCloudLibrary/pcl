@@ -582,7 +582,7 @@ pcl::cloud_composer::MergeCloudCommand::redo ()
 {
   qDebug () << "Redo in MergeCloudCommand ";
   last_was_undo_ = false;
-  //There is only one output_pair, but thats ok
+  //There is only one output_pair, but that's ok
   foreach (OutputPair output_pair, output_data_)
   {
     //Replace the input with the output for this pair

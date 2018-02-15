@@ -86,7 +86,7 @@ pcl::PassThrough<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
   {
     // Copy the header (and thus the frame_id) + allocate enough space for points
     output.height = 1; // filtering breaks the organized structure
-    // Because we're doing explit checks for isfinite, is_dense = true
+    // Because we're doing explicit checks for isfinite, is_dense = true
     output.is_dense = true;
   }
   output.row_step = input_->row_step;

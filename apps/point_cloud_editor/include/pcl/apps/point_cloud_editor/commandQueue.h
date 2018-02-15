@@ -53,7 +53,7 @@
 class CommandQueue
 {
   public:
-    /// @brief Defaut Constructor
+    /// @brief Default Constructor
     /// @details Creates a command queue object and makes its depth limit
     /// be the default value.
     CommandQueue ();
@@ -81,7 +81,7 @@ class CommandQueue
     void
     undo ();
 
-    /// @breif Changes the command history limit.
+    /// @brief Changes the command history limit.
     /// @details If the passed size is smaller than the current size then the
     /// oldest commands are removed (their undo functions are not called).
     /// @param size The new maximum number of commands that may exist in this
