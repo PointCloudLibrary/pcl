@@ -60,7 +60,7 @@ namespace pcl
       ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // Maps
     
-      /** \brief Perfoms bilateral filtering of disparity map
+      /** \brief Performs bilateral filtering of disparity map
         * \param[in] src soruce map
         * \param[out] dst output map
         */
@@ -96,7 +96,7 @@ namespace pcl
       void 
       computeNormalsEigen (const MapArr& vmap, MapArr& nmap);
 
-      /** \brief Performs affine tranform of vertex and normal maps
+      /** \brief Performs affine transform of vertex and normal maps
         * \param[in] vmap_src source vertex map
         * \param[in] nmap_src source vertex map
         * \param[in] Rmat Rotation mat
@@ -337,7 +337,7 @@ namespace pcl
       /** \brief Perform point cloud extraction from tsdf volume
         * \param[in] volume tsdf volume 
         * \param[in] volume_size size of the volume
-        * \param[out] output buffer large enought to store point cloud
+        * \param[out] output buffer large enough to store point cloud
         * \return number of point stored to passed buffer
         */ 
       PCL_EXPORTS size_t 
@@ -350,8 +350,8 @@ namespace pcl
         * \param[in] shiftX Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginX and stops in OriginX + shiftX
         * \param[in] shiftY Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginY and stops in OriginY + shiftY
         * \param[in] shiftZ Offset in indices that will be cleared from the TSDF volume. The clearing start from buffer.OriginZ and stops in OriginZ + shiftZ
-        * \param[out] output_xyz buffer large enought to store point cloud xyz values
-        * \param[out] output_intensities buffer large enought to store point cloud intensity values
+        * \param[out] output_xyz buffer large enough to store point cloud xyz values
+        * \param[out] output_intensities buffer large enough to store point cloud intensity values
         * \return number of point stored to passed buffer
         */ 
       PCL_EXPORTS size_t

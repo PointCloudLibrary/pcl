@@ -99,7 +99,7 @@ namespace pcl
           * \param[in] cloud_src the source point cloud dataset
           * \param[in] indices_src the vector of indices describing the points of interest in \a cloud_src
           * \param[in] cloud_tgt the target point cloud dataset
-          * \param[in] indices_tgt the vector of indices describing the correspondences of the interst points from \a indices_src
+          * \param[in] indices_tgt the vector of indices describing the correspondences of the interest points from \a indices_src
           * \param[out] transformation_matrix the resultant transformation matrix
           */
         inline void
@@ -145,7 +145,7 @@ namespace pcl
                                      typename std::vector<Scalar>::const_iterator& weights_it,
                                      Matrix4 &transformation_matrix) const;
 
-        /** \brief Construct a 4 by 4 tranformation matrix from the provided rotation and translation.
+        /** \brief Construct a 4 by 4 transformation matrix from the provided rotation and translation.
           * \param[in] alpha the rotation about the x-axis
           * \param[in] beta the rotation about the y-axis
           * \param[in] gamma the rotation about the z-axis

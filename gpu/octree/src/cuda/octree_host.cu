@@ -89,14 +89,14 @@ void pcl::device::OctreeImpl::internalDownload()
 
 namespace 
 {
-    int getBitsNum(int interger)
+    int getBitsNum(int integer)
     {
         int count = 0;
-        while(interger > 0)
+        while(integer > 0)
         {
-            if (interger & 1)
+            if (integer & 1)
                 ++count;
-            interger>>=1;
+            integer>>=1;
         }
         return count;
     } 

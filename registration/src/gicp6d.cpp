@@ -311,7 +311,7 @@ namespace pcl
         PCL_DEBUG("[pcl::%s::computeTransformation] Convergence failed\n",
             getClassName ().c_str ());
     }
-    //for some reason the static equivalent methode raises an error
+    //for some reason the static equivalent method raises an error
     // final_transformation_.block<3,3> (0,0) = (transformation_.block<3,3> (0,0)) * (guess.block<3,3> (0,0));
     // final_transformation_.block <3, 1> (0, 3) = transformation_.block <3, 1> (0, 3) + guess.rightCols<1>.block <3, 1> (0, 3);
     final_transformation_.topLeftCorner (3, 3) =

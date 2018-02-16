@@ -88,7 +88,7 @@ namespace pcl
         void
         setIntrinsics(float fx = 525.f, float fy = 525.f, float cx = -1, float cy = -1);
         
-        /** \brief Runs raycasting algorithm from given camera pose. It writes results to internal fiels.
+        /** \brief Runs raycasting algorithm from given camera pose. It writes results to internal files.
           * \param[in] volume tsdf volume container
           * \param[in] camera_pose camera pose
           * \param buffer

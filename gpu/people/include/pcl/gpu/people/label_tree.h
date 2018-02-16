@@ -70,7 +70,7 @@ namespace pcl
     namespace people    
     {           
      /**
-       * @brief This structure containts all parameters to describe the segmented tree
+       * @brief This structure contains all parameters to describe the segmented tree
        */
       struct Tree2 
       {
@@ -222,7 +222,7 @@ namespace pcl
        * @param[in] parent_label this is the part label that indicates the row
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int
@@ -281,7 +281,7 @@ namespace pcl
        * @param[in] child_label  this is the part label that indicates the childs needed to be investigated
        * @param[in] child_number the number of this child in the parent, some parents have multiple childs
        * @param person_attribs
-       * @return zero if successfull
+       * @return zero if successful
        * @todo once we have good evaluation function reconsider best_value
        **/
       inline int

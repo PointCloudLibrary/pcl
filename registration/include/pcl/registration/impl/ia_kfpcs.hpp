@@ -164,7 +164,7 @@ pcl::registration::KFPCSInitialAlignment <PointSource, PointTarget, NormalT, Sca
     scale += lambda_;
   }
 
-  // calculate the fitness and return unsuccessfull if smaller than previous ones
+  // calculate the fitness and return unsuccessful if smaller than previous ones
   float fitness_score_temp = (score_a + lambda_ * score_b) / scale;
   if (fitness_score_temp > fitness_score)
     return (-1);

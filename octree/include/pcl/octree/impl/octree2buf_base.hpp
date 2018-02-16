@@ -364,7 +364,7 @@ namespace pcl
               child_branch = static_cast<BranchNode*> (child_node);
               branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
             } else {
-              // depth has changed.. child in preceeding buffer is a leaf node.
+              // depth has changed.. child in preceding buffer is a leaf node.
               deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
               child_branch = createBranchChild (*branch_arg, child_idx);
             }
@@ -406,7 +406,7 @@ namespace pcl
               child_leaf = static_cast<LeafNode*> (child_node);
               branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
             } else {
-              // depth has changed.. child in preceeding buffer is a leaf node.
+              // depth has changed.. child in preceding buffer is a leaf node.
               deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
               child_leaf = createLeafChild (*branch_arg, child_idx);
             }
@@ -697,7 +697,7 @@ namespace pcl
                     child_branch = static_cast<BranchNode*> (child_node);
                     branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
                   } else {
-                    // depth has changed.. child in preceeding buffer is a leaf node.
+                    // depth has changed.. child in preceding buffer is a leaf node.
                     deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
                     child_branch = createBranchChild (*branch_arg, child_idx);
                   }
@@ -741,7 +741,7 @@ namespace pcl
                   child_leaf = static_cast<LeafNode*> (child_node);
                   branch_arg->setChildPtr(buffer_selector_, child_idx, child_node);
                 } else {
-                  // depth has changed.. child in preceeding buffer is a leaf node.
+                  // depth has changed.. child in preceding buffer is a leaf node.
                   deleteBranchChild (*branch_arg, !buffer_selector_, child_idx);
                   child_leaf = createLeafChild (*branch_arg, child_idx);
                 }

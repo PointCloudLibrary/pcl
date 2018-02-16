@@ -77,7 +77,7 @@ namespace pcl
          * \param[in] dmap the cvMat with the depths, must be CV_16U in mm
          * \param[out] lmap_out the smoothed output labelmap as cvMat
          * \param[in] patch_size make the patch size for smoothing
-         * \param[in] depthThres the z-distance thresshold
+         * \param[in] depthThres the z-distance threshold
          * \todo add a Gaussian contribution function to depth and vote
          **/
         //inline void smoothLabelImage ( cv::Mat&      lmap_in,

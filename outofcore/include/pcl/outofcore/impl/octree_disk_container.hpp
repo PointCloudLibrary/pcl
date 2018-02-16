@@ -245,7 +245,7 @@ namespace pcl
 
       if ((start + count) > size ())
       {
-        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indicies out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
+        PCL_ERROR ("[pcl::outofcore::OutofcoreOctreeDiskContainer::%s] Indices out of range; start + count exceeds the size of the stored points\n", __FUNCTION__);
         PCL_THROW_EXCEPTION (PCLException, "[pcl::outofcore::OutofcoreOctreeDiskContainer] Outofcore Octree Exception: Read indices exceed range");
       }
 

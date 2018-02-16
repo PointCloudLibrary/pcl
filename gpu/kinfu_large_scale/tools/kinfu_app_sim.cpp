@@ -394,7 +394,7 @@ display_tic_toc (vector<double> &tic_toc,const string &fun_name)
 void
 capture (Eigen::Isometry3d pose_in,unsigned short* depth_buffer_mm,const uint8_t* color_buffer)//, string point_cloud_fname)
 {
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   //const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -1076,7 +1076,7 @@ struct KinFuApp
       PtrStepSz<const KinfuTracker::PixelRGB> rgb24_sim = PtrStepSz<const KinfuTracker::PixelRGB>(height, width, color_buf_, width);
       tic_toc.push_back (getTime ());
       
-      if (1==0){ // live capture - probably doesnt work anymore, left in here for comparison:
+      if (1==0){ // live capture - probably doesn't work anymore, left in here for comparison:
 	bool has_frame = evaluation_ptr_ ? evaluation_ptr_->grab(i, depth) : capture_.grab (depth, rgb24);      
 	if (!has_frame)
 	{
@@ -1386,7 +1386,7 @@ print_cli_help ()
   cout << "    --registration, -r              : enable registration mode" << endl; 
   cout << "    --integrate-colors, -ic         : enable color integration mode ( allows to get cloud with colors )" << endl;   
   cout << "    -volume_suze <size_in_meters>   : define integration volume size" << endl;   
-  cout << "    -dev <deivce>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
+  cout << "    -dev <device>, -oni <oni_file>  : select depth source. Default will be selected if not specified" << endl;
   cout << "";
   cout << " For RGBD benchmark (Requires OpenCV):" << endl; 
   cout << "    -eval <eval_folder> [-match_file <associations_file_in_the_folder>]" << endl;
