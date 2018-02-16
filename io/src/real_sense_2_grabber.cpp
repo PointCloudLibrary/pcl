@@ -286,7 +286,7 @@ namespace pcl
     const int w = ptr->get_width (), h = ptr->get_height ();
     int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
     int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
-    int idx = x * ptr->get_bits_per_pixel () / 8 + y * ptr->get_stride_in_bytes ();
+    int idx = x * ptr->get_bytes_per_pixel() + y * ptr->get_stride_in_bytes ();
     const auto texture_data = reinterpret_cast<const uint8_t*>(ptr->get_data ());
     return std::make_tuple (texture_data[idx], texture_data[idx + 1], texture_data[idx + 2]);
   }
