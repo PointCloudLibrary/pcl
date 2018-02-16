@@ -5,9 +5,9 @@ set(SUBSYS_DEPS common octree)
 set(build TRUE)
 PCL_SUBSYS_OPTION(build "${SUBSYS_NAME}" "${SUBSYS_DESC}" ON)
 if(WIN32)
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk librealsense pcap png vtk)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk rssdk realsense2 pcap png vtk)
 else()
-  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk librealsense pcap png vtk libusb-1.0)
+  PCL_SUBSYS_DEPEND(build "${SUBSYS_NAME}" DEPS ${SUBSYS_DEPS} OPT_DEPS openni openni2 ensenso davidSDK dssdk realsense2 pcap png vtk libusb-1.0)
 endif()
 
 PCL_ADD_DOC("${SUBSYS_NAME}")
@@ -160,7 +160,7 @@ if(WITH_RSSDK)
   )
 endif()
 
-if(WITH_LIBREALSENSE)
+if(WITH_REALSENSE2)
   set(REALSENSE2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
@@ -334,7 +334,7 @@ set(LIB_NAME "pcl_${SUBSYS_NAME}")
 
 add_definitions(${VTK_DEFINES})
 PCL_ADD_LIBRARY("${LIB_NAME}" "${SUBSYS_NAME}" ${srcs} ${incs} ${compression_incs} ${impl_incs} ${OPENNI_INCLUDES} ${OPENNI2_INCLUDES})
-target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" ${LIBREALSENSE_INCLUDE_DIRS})
+target_include_directories(${LIB_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include" ${REALSENSE2_INCLUDE_DIRS})
 link_directories(${VTK_LINK_DIRECTORIES})
 target_link_libraries("${LIB_NAME}" pcl_common pcl_io_ply ${VTK_LIBRARIES})
 if(PNG_FOUND)
@@ -377,7 +377,7 @@ if(WITH_RSSDK)
 endif()
 
 if(WITH_LIBREALSENSE)
-  target_link_libraries(${LIB_NAME} ${LIBREALSENSE_LIBRARIES})
+  target_link_libraries(${LIB_NAME} ${REALSENSE2_LIBRARIES})
 endif()
 
 if(PCAP_FOUND)
