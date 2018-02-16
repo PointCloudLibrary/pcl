@@ -102,15 +102,15 @@ TEST (PCL, GOODEstimation)
   }
     
   pcl::PointXYZ center_of_bounding_box = test_GOOD_descriptor.getCenterOfObjectBoundingBox (); 
-  EXPECT_NEAR (-0.0624728, center_of_bounding_box.x, 1e-5);
-  EXPECT_NEAR (-0.140744, center_of_bounding_box.y, 1e-5);
-  EXPECT_NEAR (0.790559, center_of_bounding_box.z, 1e-5);
+  EXPECT_NEAR (center_of_bounding_box.x, -0.0624728, 0.01);
+  EXPECT_NEAR (center_of_bounding_box.y, -0.140744, 0.01);
+  EXPECT_NEAR (center_of_bounding_box.z, 0.790559, 0.01);
 
   Eigen::Vector4f bounding_box_dimensions = test_GOOD_descriptor.getObjectBoundingBoxDimensions ();
-  EXPECT_NEAR (0.257679, bounding_box_dimensions (0), 1e-5);
-  EXPECT_NEAR (0.151612, bounding_box_dimensions (1), 1e-5);
-  EXPECT_NEAR (0.111211, bounding_box_dimensions (2), 1e-5);
-  EXPECT_NEAR (0, bounding_box_dimensions (3), 1e-5);
+  EXPECT_NEAR (bounding_box_dimensions (0), 0.257679, 0.01);
+  EXPECT_NEAR (bounding_box_dimensions (1), 0.151612, 0.01);
+  EXPECT_NEAR (bounding_box_dimensions (2), 0.111211, 0.01);
+  EXPECT_NEAR (bounding_box_dimensions (3), 0, 0.01);
   
 }
 
