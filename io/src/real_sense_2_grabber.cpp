@@ -50,11 +50,10 @@
 namespace pcl
 {
 
-  RealSense2Grabber::RealSense2Grabber (const std::string& serial_number, const std::string& file_name)
+  RealSense2Grabber::RealSense2Grabber (const uint32_t serial_number)
     : running_ (false)
     , quit_ (false)
     , serial_number_ (serial_number)
-    , file_name_(file_name)
     , signal_PointXYZ (nullptr)
     , signal_PointXYZI (nullptr)
     , signal_PointXYZRGB (nullptr)
@@ -68,6 +67,12 @@ namespace pcl
     signal_PointXYZI = createSignal<signal_librealsense_PointXYZI> ();
     signal_PointXYZRGB = createSignal<signal_librealsense_PointXYZRGB> ();
     signal_PointXYZRGBA = createSignal<signal_librealsense_PointXYZRGBA> ();
+  }
+
+  RealSense2Grabber::RealSense2Grabber (const std::string& file_name)
+    : file_name_(file_name)
+  {
+    RealSense2Grabber ();
   }
 
 
@@ -99,8 +104,8 @@ namespace pcl
     }
     else
     {
-      if (!serial_number_.empty ())
-        cfg.enable_device (serial_number_);
+      if (serial_number_)
+        cfg.enable_device (std::to_string (serial_number_));
 
       cfg.enable_stream (RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_);
       cfg.enable_stream (RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_ANY, target_fps_);

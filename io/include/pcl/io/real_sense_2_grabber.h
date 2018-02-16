@@ -60,7 +60,12 @@ namespace pcl
     /** \brief Constructor
     * \param[in] serial_number optional to start up a specific device
     */
-    RealSense2Grabber (const std::string& serial_number = "", const std::string& file_name = "");
+    RealSense2Grabber (const uint32_t serial_number = 0);
+
+    /** \brief Constructor
+    * \param[in] file_name used for loading sample data bag file
+    */
+    RealSense2Grabber (const std::string& file_name);
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     virtual ~RealSense2Grabber () throw ();
@@ -152,7 +157,7 @@ namespace pcl
 
     std::thread thread_;
     mutable std::mutex mutex_;
-    std::string serial_number_;
+    uint32_t serial_number_;
     std::string file_name_;
     bool quit_;
     bool running_;
