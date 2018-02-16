@@ -52,12 +52,10 @@ pcl::PCA<PointT>::initCompute ()
   if(!Base::initCompute ())
   {
     PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::initCompute] failed");
-    return (false);
   }
   if(indices_->size () < 3)
   {
     PCL_THROW_EXCEPTION (InitFailedException, "[pcl::PCA::initCompute] number of points < 3");
-    return (false);
   }
   
   // Compute mean
@@ -79,7 +77,6 @@ pcl::PCA<PointT>::initCompute ()
     eigenvectors_.col (i) = evd.eigenvectors ().col (2-i);
   }
   // If not basis only then compute the coefficients
-
   if (!basis_only_)
     coefficients_ = eigenvectors_.transpose() * cloud_demean.topRows<3> ();
   compute_done_ = true;
