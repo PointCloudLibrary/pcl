@@ -312,9 +312,9 @@ option(WITH_REALSENSE2 "Build with realsense 2.0 (librealsense) support " TRUE)
 if(WITH_REALSENSE2)
   find_package(realsense2)
 
-  if(realsense2_LIBRARY)
+  if(realsense2_FOUND)
     # remap realsense2 cmake vars so they are compatible with the PCL_ADD_GRABBER_DEPENDENCY macro
-    set(REALSENSE2_FOUND TRUE)
+    set(REALSENSE2_FOUND ${realsense2_FOUND})
     set(REALSENSE2_INCLUDE_DIRS ${realsense_INCLUDE_DIR})
     set(REALSENSE2_LIBRARIES ${realsense2_LIBRARY})
   endif()

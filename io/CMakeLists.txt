@@ -376,7 +376,7 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-if(WITH_LIBREALSENSE)
+if(WITH_REALSENSE2)
   target_link_libraries(${LIB_NAME} ${REALSENSE2_LIBRARIES})
 endif()
 
