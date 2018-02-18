@@ -37,7 +37,6 @@
 */
 
 #include <pcl/io/eigen.h>
-#include <pcl/io/eigen.h>
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
 #include <pcl/point_cloud.h>
