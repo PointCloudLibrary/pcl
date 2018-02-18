@@ -35,7 +35,8 @@
  *
  */
 
-#pragma once
+#ifndef PCL_IO_REAL_SENSE_2_GRABBER_H
+#define PCL_IO_REAL_SENSE_2_GRABBER_H
 
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
@@ -174,3 +175,4 @@ namespace pcl
 
 }
 
+#endif /* PCL_IO_REAL_SENSE_2_GRABBER_H */
