@@ -64,7 +64,7 @@ namespace pcl
     RealSense2Grabber (const uint32_t serial_number = 0);
 
     /** \brief Constructor
-    * \param[in] file_name used for loading sample data bag file
+    * \param[in] file_name used for loading bag file
     */
     RealSense2Grabber (const std::string& file_name);
 
