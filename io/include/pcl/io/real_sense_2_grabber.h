@@ -40,16 +40,14 @@
 
 #include <pcl/io/boost.h>
 #include <pcl/io/grabber.h>
+#include <pcl/point_cloud.h>
+#include <pcl/point_types.h>
+
 
 #include <librealsense2/rs.hpp>
 
 namespace pcl
 {
-  struct PointXYZ;
-  struct PointXYZRGB;
-  struct PointXYZRGBA;
-  struct PointXYZI;
-  template <typename T> class PointCloud;
 
   /** \brief Grabber for Intel Realsense 2 SDK devices (D400 series)
   * \author Patrick Abadi <patrickabadi@gmail.com>, Daniel Packard <pack3754@gmail.com>
