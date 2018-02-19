@@ -82,6 +82,12 @@ namespace pcl
       device_width_ = width;
       device_height_ = height;
       target_fps_ = fps;
+
+      if (isRunning ())
+      {
+        stop ();
+        start ();
+      }
     }
 
     /** \brief Start the data acquisition. */

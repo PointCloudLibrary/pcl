@@ -92,6 +92,9 @@ namespace pcl
   void 
   RealSense2Grabber::start ()
   {
+    if (isRunning ())
+      return;
+
     running_ = true;
 
     rs2::config cfg;
