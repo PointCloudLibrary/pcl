@@ -134,7 +134,7 @@ Tweaking advanced settings
 Now we are done with all the basic stuff. To turn on advanced cache
 options hit `t` while in ccmake.
 Advanced options become especially useful when you have dependencies
-installed in unusal locations and thus cmake hangs with
+installed in unusual locations and thus cmake hangs with
 `XXX_NOT_FOUND` this can even prevent you from building PCL although
 you have all the dependencies installed. In this section we will
 discuss each dependency entry so that you can configure/build or
@@ -183,7 +183,7 @@ message you get from CMake, you can check or edit each dependency specific
 variables and give it the value that best fits your needs. 
 
 UNIX users generally don't have to bother with debug vs release versions
-they are fully complient. You would just loose debug symbols if you use
+they are fully compliant. You would just loose debug symbols if you use
 release libraries version instead of debug while you will end up with much
 more verbose output and slower execution. This said, Windows MSVC users
 and Apple iCode ones can build debug/release from the same project, thus

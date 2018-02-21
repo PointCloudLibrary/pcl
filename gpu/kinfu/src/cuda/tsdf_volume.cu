@@ -130,7 +130,7 @@ namespace pcl
         {
           float3 v_g = getVoxelGCoo (x, y, z);            //3 // p
 
-          //tranform to curr cam coo space
+          //transform to curr cam coo space
           float3 v = Rcurr_inv * (v_g - tcurr);           //4
 
           int2 coo;           //project to current cam

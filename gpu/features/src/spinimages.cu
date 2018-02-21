@@ -240,12 +240,12 @@ namespace pcl
 				if (angular)
 				{					
 					//transform sum to average dividing angle/spinimage element-wize.
-					const float *amgles_beg = simage_angles + FSize;
-					const float *amgles_end = amgles_beg + FSize;
+					const float *angles_beg = simage_angles + FSize;
+					const float *angles_end = angles_beg + FSize;
 					const float *images_beg = simage_angles;
 
-					Block::transfrom(amgles_beg, amgles_end, images_beg, output.ptr(i_input), Div12eps());
-					////Block::copy(amgles_beg, amgles_end, output.ptr(i_input));
+					Block::transform(angles_beg, angles_end, images_beg, output.ptr(i_input), Div12eps());
+					////Block::copy(angles_beg, angles_end, output.ptr(i_input));
 					//Block::copy(images_beg, images_beg + FSize, output.ptr(i_input));
 				}
 				else
@@ -259,7 +259,7 @@ namespace pcl
 					__syncthreads();
 
 					float sum = simage_angles[FSize];
-					Block::transfrom(simage_angles, simage_angles + FSize, output.ptr(i_input), DivValIfNonZero(sum));
+					Block::transform(simage_angles, simage_angles + FSize, output.ptr(i_input), DivValIfNonZero(sum));
 				}		
 			}
 

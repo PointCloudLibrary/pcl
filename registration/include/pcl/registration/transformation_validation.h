@@ -101,7 +101,7 @@ namespace pcl
         /** \brief Comparator function for deciding which score is better after running the 
           * validation on multiple transforms. Pure virtual.
           *
-          * \note For example, for Euclidean distances smaller is better, for inliers the oposite.
+          * \note For example, for Euclidean distances smaller is better, for inliers the opposite.
           *
           * \param[in] score1 the first value
           * \param[in] score2 the second value

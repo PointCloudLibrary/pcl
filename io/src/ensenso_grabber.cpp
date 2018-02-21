@@ -461,7 +461,7 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
     std::vector<Eigen::Affine3d, Eigen::aligned_allocator<Eigen::Affine3d> > robot_poses_mm (robot_poses);
     std::vector<std::string> robot_poses_json;
     robot_poses_json.resize (robot_poses.size ());
-    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    for (size_t i = 0; i < robot_poses_json.size (); ++i)
     {
       robot_poses_mm[i].translation () *= 1000.0; // Convert meters in millimeters
       if (!matrixTransformationToJson (robot_poses_mm[i], robot_poses_json[i]))
@@ -506,7 +506,7 @@ pcl::EnsensoGrabber::computeCalibrationMatrix (const std::vector<Eigen::Affine3d
     }
 
     // Feed all robot poses into the calibration command
-    for (uint i = 0; i < robot_poses_json.size (); ++i)
+    for (size_t i = 0; i < robot_poses_json.size (); ++i)
     {
       // Very weird behavior here:
       // If you modify this loop, check that all the transformations are still here in the [itmExecute][itmParameters] node

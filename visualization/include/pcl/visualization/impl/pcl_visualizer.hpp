@@ -1642,16 +1642,23 @@ pcl::visualization::PCLVisualizer::updatePointCloud (const typename pcl::PointCl
   vertices->SetCells (nr_points, cells);
 
   // Get the colors from the handler
-  vtkSmartPointer<vtkDataArray> scalars;
-  color_handler.getColor (scalars);
+  bool has_colors = false;
   double minmax[2];
-  scalars->GetRange (minmax);
-  // Update the data
-  polydata->GetPointData ()->SetScalars (scalars);
+  vtkSmartPointer<vtkDataArray> scalars;
+  if (color_handler.getColor (scalars))
+  {
+    // Update the data
+    polydata->GetPointData ()->SetScalars (scalars);
+    scalars->GetRange (minmax);
+    has_colors = true;
+  }
+
 #if VTK_RENDERING_BACKEND_OPENGL_VERSION < 2
   am_it->second.actor->GetMapper ()->ImmediateModeRenderingOff ();
 #endif
-  am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
+
+  if (has_colors)
+    am_it->second.actor->GetMapper ()->SetScalarRange (minmax);
 
   // Update the mapper
 #if VTK_MAJOR_VERSION < 6

@@ -125,7 +125,7 @@ namespace pcl
 
       /** \brief This method simply builds the list of triangles for every point.
         * The list of triangles for each point consists of indices of triangles it belongs to.
-        * The only purpose of this method is to improve perfomance of the algorithm.
+        * The only purpose of this method is to improve performance of the algorithm.
         */
       void
       buildListOfPointsTriangles ();
@@ -215,10 +215,10 @@ namespace pcl
       /** \brief Stores the angle step. Step is calculated with respect to number of rotations. */
       float step_;
 
-      /** \brief Stores the set of triangles reprsenting the mesh. */
+      /** \brief Stores the set of triangles representing the mesh. */
       std::vector <pcl::Vertices> triangles_;
 
-      /** \brief Stores the set of triangles for each point. Its purpose is to improve perfomance. */
+      /** \brief Stores the set of triangles for each point. Its purpose is to improve performance. */
       std::vector <std::vector <unsigned int> > triangles_of_the_point_;
 
     public:

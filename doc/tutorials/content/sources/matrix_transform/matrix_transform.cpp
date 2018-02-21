@@ -97,7 +97,7 @@ main (int argc, char** argv)
   // Define a translation of 2.5 meters on the x axis.
   transform_2.translation() << 2.5, 0.0, 0.0;
 
-  // The same rotation matrix as before; theta radians arround Z axis
+  // The same rotation matrix as before; theta radians around Z axis
   transform_2.rotate (Eigen::AngleAxisf (theta, Eigen::Vector3f::UnitZ()));
 
   // Print the transformation

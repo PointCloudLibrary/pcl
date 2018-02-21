@@ -57,9 +57,9 @@ For segmentation we simply perform the following:
 
 The Data Set
 ============
-For this tutorial we suggest the use of publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
+For this tutorial we suggest the use of publicly available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. Examples and an example data set will be posted here in future as part of the tutorial. 
 
-.. For this tutorial we will use publically available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<https://raw.github.com/PointCloudLibrary/data/master/tutorials/don_segmentation_tutorial.pcd>`_.
+.. For this tutorial we will use publicly available (creative commons licensed) urban LiDAR data from the [KITTI]_ project. This data is collected from a Velodyne LiDAR scanner mounted on a car, for the purpose of evaluating self-driving cars. To convert the data set to PCL compatible point clouds please see [KITTIPCL]_. An example scan is presented here from the KITTI data set in PCL form, is available for use with this example, `<https://raw.github.com/PointCloudLibrary/data/master/tutorials/don_segmentation_tutorial.pcd>`_.
 
 The Code
 ========
@@ -116,7 +116,7 @@ This is perhaps the most important section of code, estimating the normals. This
    :language: cpp
    :lines: 90-102
 
-Next we calculate the normals using our normal estimation class for both the large and small radius. It is important to use the ``NormalEstimation.setRadiusSearch()`` method v.s. the ``NormalEstimation.setMaximumNeighbours()`` method or equivilant. If the normal estimate is restricted to a set number of neighbours, it may not be based on the complete surface of the given radius, and thus is not suitable for the Difference of Normals features.
+Next we calculate the normals using our normal estimation class for both the large and small radius. It is important to use the ``NormalEstimation.setRadiusSearch()`` method v.s. the ``NormalEstimation.setMaximumNeighbours()`` method or equivalent. If the normal estimate is restricted to a set number of neighbours, it may not be based on the complete surface of the given radius, and thus is not suitable for the Difference of Normals features.
 
 .. note::
    For large supporting radii in dense point clouds, calculating the normal would be a very computationally intensive task potentially utilizing thousands of points in the calculation, when hundreds are more than enough for an accurate estimate. A simple method to speed up the calculation is to uniformly subsample the pointcloud when doing a large radius search, see the full example code in the PCL distribution at ``examples/features/example_difference_of_normals.cpp`` for more details.

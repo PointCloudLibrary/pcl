@@ -224,7 +224,10 @@ namespace pcl
             float dist_z = point.z - query.z;
             float squared_distance = dist_x * dist_x + dist_y * dist_y + dist_z * dist_z;
             if (queue.size () < k)
+            {
               queue.push (Entry (index, squared_distance));
+              return queue.size () == k;
+            }
             else if (queue.top ().distance > squared_distance)
             {
               queue.pop ();

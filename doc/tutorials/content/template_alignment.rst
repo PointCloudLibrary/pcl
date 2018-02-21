@@ -137,7 +137,7 @@ We then perform a little pre-processing on the data to get it ready for alignmen
    :language: cpp
    :lines: 253-260
 
-We also downsample the point cloud with a spacing of 5mm, which reduces the ammount of computation that's required.
+We also downsample the point cloud with a spacing of 5mm, which reduces the amount of computation that's required.
 
 .. literalinclude:: sources/template_alignment/template_alignment.cpp
    :language: cpp

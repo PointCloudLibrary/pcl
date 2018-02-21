@@ -114,7 +114,7 @@ main (int argc, char *argv[])
 
   if (!don.initCompute ())
   {
-    std::cerr << "Error: Could not intialize DoN feature operator" << std::endl;
+    std::cerr << "Error: Could not initialize DoN feature operator" << std::endl;
     exit (EXIT_FAILURE);
   }
 

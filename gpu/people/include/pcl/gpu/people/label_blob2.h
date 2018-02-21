@@ -52,7 +52,7 @@ namespace pcl
     namespace people
     {      
       /**
-       * @brief This structure containts all parameters to describe blobs and their parent/child relations
+       * @brief This structure contains all parameters to describe blobs and their parent/child relations
        * @todo: clean this out in the end, perhaps place the children in a separate struct
        */
       struct Blob2 

@@ -239,7 +239,7 @@ Let's write *bilateral.cpp* too:
     #include <pcl/filters/impl/bilateral.hpp>
     
 Because we are writing templated code in PCL (1.x) where the template parameter
-is a point type (see :ref:`adding_custom_ptype`), we want to explicitely
+is a point type (see :ref:`adding_custom_ptype`), we want to explicitly
 instantiate the most common use cases in *bilateral.cpp*, so that users don't
 have to spend extra cycles when compiling code that uses our
 `BilateralFilter`. To do this, we need to access both the header
@@ -288,7 +288,7 @@ begin filling in the actual code in each file. Let's start with the
 bilateral.cpp
 =============
 
-As previously mentioned, we're going to explicitely instantiate and
+As previously mentioned, we're going to explicitly instantiate and
 *precompile* a number of templated specializations for the `BilateralFilter`
 class. While this might lead to an increased compilation time for the PCL
 Filtering library, it will save users the pain of processing and compiling the

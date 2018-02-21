@@ -151,7 +151,7 @@ namespace pcl
       };
 
       /**
-       *  @brief This LUT contains the ideal lenght between this part and his children
+       *  @brief This LUT contains the ideal length between this part and his children
        **/
       static const float LUT_ideal_length[][4] = 
       {
@@ -183,7 +183,7 @@ namespace pcl
       };
 
       /**
-       * @brief This LUT contains the max lenght between this part and his children
+       * @brief This LUT contains the max length between this part and his children
        **/
       static const float LUT_max_length_offset[][4] = 
       {

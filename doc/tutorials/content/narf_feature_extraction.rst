@@ -66,8 +66,8 @@ descriptors in the same place, but for different dominant rotations.
 The resulting PointCloud contains the type Narf36 (see
 common/include/pcl/point_types.h) and store the descriptor as a 36 elements
 float and x,y,z,roll,pitch,yaw to describe the local coordinate frame at which
-the feature was extracted. The descriptors can now be compared, e.g., whith the
-Manhatten distance (sum of absolute differences).
+the feature was extracted. The descriptors can now be compared, e.g., with the
+Manhattan distance (sum of absolute differences).
 
 The remaining code just visualizes the keypoint positions in a range image
 widget and also in a 3D viewer.

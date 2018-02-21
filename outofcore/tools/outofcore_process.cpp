@@ -229,7 +229,7 @@ outofcoreProcess (std::vector<boost::filesystem::path> pcd_paths, boost::filesys
 void
 printHelp (int, char **argv)
 {
-  print_info ("This program is used to process pcd fiels into an outofcore data structure viewable by the");
+  print_info ("This program is used to process pcd files into an outofcore data structure viewable by the");
   print_info ("pcl_outofcore_viewer\n\n");
   print_info ("%s <options> <input>.pcd <output_tree_dir>\n", argv[0]);
   print_info ("\n");
