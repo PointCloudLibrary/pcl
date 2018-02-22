@@ -48,7 +48,7 @@
 
 namespace pcl
 {
-  RealSense2Grabber::RealSense2Grabber ()
+  RealSense2Grabber::RealSense2Grabber (const std::string& file_name_or_serial_number)
     : running_ (false)
     , quit_ (false)
     , signal_PointXYZ (nullptr)
@@ -59,20 +59,13 @@ namespace pcl
     , device_width_ (424)
     , device_height_ (240)
     , target_fps_ (30)
+    , file_name_or_serial_number_(file_name_or_serial_number)
   {
     signal_PointXYZ = createSignal<signal_librealsense_PointXYZ> ();
     signal_PointXYZI = createSignal<signal_librealsense_PointXYZI> ();
     signal_PointXYZRGB = createSignal<signal_librealsense_PointXYZRGB> ();
     signal_PointXYZRGBA = createSignal<signal_librealsense_PointXYZRGBA> ();
   }
-
-  RealSense2Grabber::RealSense2Grabber (const std::string& file_name, const std::string& serial_number)
-    : serial_number_ (serial_number)
-    , file_name_(file_name)
-  {
-    RealSense2Grabber ();    
-  } 
-
 
   RealSense2Grabber::~RealSense2Grabber ()
   {
@@ -99,14 +92,14 @@ namespace pcl
     rs2::config cfg;
 
     // capture from file
-    if (!file_name_.empty ())
+    if (file_name_or_serial_number_.rfind (".bag") == file_name_or_serial_number_.length() - 4)
     {
-      cfg.enable_device_from_file (file_name_);
+      cfg.enable_device_from_file (file_name_or_serial_number_);
     }
     else
     {
-      if (!serial_number_.empty ())
-        cfg.enable_device (serial_number_);
+      if (!file_name_or_serial_number_.empty ())
+        cfg.enable_device (file_name_or_serial_number_);
 
       cfg.enable_stream (RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_);
       cfg.enable_stream (RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_Z16, target_fps_);

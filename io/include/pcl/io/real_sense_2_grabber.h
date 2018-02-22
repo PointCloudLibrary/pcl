@@ -57,19 +57,9 @@ namespace pcl
   {
   public:
     /** \brief Constructor
+    * \param[in] file_name_or_serial_number used for either loading bag file or specific device by serial number
     */
-    RealSense2Grabber ();
-
-    /** \brief Create with Bag file
-    * \param[in] file_name path to bag file
-    */
-    static RealSense2Grabber& createFromBagFile (const std::string& file_name) { return RealSense2Grabber (file_name, ""); } 
-
-    /** \brief Create with specific device serial number
-    * \param[in] serial_number
-    */
-    static RealSense2Grabber& createFromSerialNumber (const std::string& serial_number) { return RealSense2Grabber ("", serial_number); } 
-   
+    RealSense2Grabber (const std::string& file_name_or_serial_number = "");   
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     virtual ~RealSense2Grabber () throw ();
@@ -120,12 +110,7 @@ namespace pcl
     typedef void (signal_librealsense_PointXYZRGBA) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
 
   protected:
-    /** \brief Constructor
-    * \param[in] file_name used for loading bag file
-    * \param[in] serial_number to load a specific device
-    */
-    RealSense2Grabber (const std::string& file_name, const std::string& serial_number);
-
+    
     boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
     boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
     boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
@@ -181,8 +166,7 @@ namespace pcl
 
     std::thread thread_;
     mutable std::mutex mutex_;
-    std::string serial_number_;
-    std::string file_name_;
+    std::string file_name_or_serial_number_;
     bool quit_;
     bool running_;
     float fps_;
