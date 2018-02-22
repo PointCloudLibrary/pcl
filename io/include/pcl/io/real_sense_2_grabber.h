@@ -57,14 +57,19 @@ namespace pcl
   {
   public:
     /** \brief Constructor
-    * \param[in] serial_number optional to start up a specific device
     */
-    RealSense2Grabber (const uint32_t serial_number = 0);
+    RealSense2Grabber ();
 
-    /** \brief Constructor
-    * \param[in] file_name used for loading bag file
+    /** \brief Create with Bag file
+    * \param[in] file_name path to bag file
     */
-    RealSense2Grabber (const std::string& file_name);
+    static RealSense2Grabber& createFromBagFile (const std::string& file_name) { return RealSense2Grabber (file_name, ""); } 
+
+    /** \brief Create with specific device serial number
+    * \param[in] serial_number
+    */
+    static RealSense2Grabber& createFromSerialNumber (const std::string& serial_number) { return RealSense2Grabber ("", serial_number); } 
+   
 
     /** \brief virtual Destructor inherited from the Grabber interface. It never throws. */
     virtual ~RealSense2Grabber () throw ();
@@ -115,6 +120,12 @@ namespace pcl
     typedef void (signal_librealsense_PointXYZRGBA) (const boost::shared_ptr<const pcl::PointCloud<pcl::PointXYZRGBA>>&);
 
   protected:
+    /** \brief Constructor
+    * \param[in] file_name used for loading bag file
+    * \param[in] serial_number to load a specific device
+    */
+    RealSense2Grabber (const std::string& file_name, const std::string& serial_number);
+
     boost::signals2::signal<signal_librealsense_PointXYZ>* signal_PointXYZ;
     boost::signals2::signal<signal_librealsense_PointXYZI>* signal_PointXYZI;
     boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
@@ -155,6 +166,14 @@ namespace pcl
     std::tuple<uint8_t, uint8_t, uint8_t> 
     getTextureColor (rs2::video_frame & texture, float u, float v);
 
+    /** \brief Retrieve color intensity from texture video frame
+    * \param[in] texture the texture
+    * \param[in] u 2D coordinate
+    * \param[in] v 2D coordinate
+    */
+    uint8_t
+    getTextureIntensity (rs2::video_frame &texture, float u, float v);
+
     /** \brief the thread function
     */
     void 
@@ -162,7 +181,7 @@ namespace pcl
 
     std::thread thread_;
     mutable std::mutex mutex_;
-    uint32_t serial_number_;
+    std::string serial_number_;
     std::string file_name_;
     bool quit_;
     bool running_;
@@ -170,6 +189,7 @@ namespace pcl
     uint32_t device_width_;
     uint32_t device_height_;
     uint32_t target_fps_;
+    rs2_format ir_format_;
 
     // Declare pointcloud object, for calculating pointclouds and texture mappings
     rs2::pointcloud pc_;

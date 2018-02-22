@@ -48,11 +48,9 @@
 
 namespace pcl
 {
-
-  RealSense2Grabber::RealSense2Grabber (const uint32_t serial_number)
+  RealSense2Grabber::RealSense2Grabber ()
     : running_ (false)
     , quit_ (false)
-    , serial_number_ (serial_number)
     , signal_PointXYZ (nullptr)
     , signal_PointXYZI (nullptr)
     , signal_PointXYZRGB (nullptr)
@@ -68,11 +66,12 @@ namespace pcl
     signal_PointXYZRGBA = createSignal<signal_librealsense_PointXYZRGBA> ();
   }
 
-  RealSense2Grabber::RealSense2Grabber (const std::string& file_name)
-    : file_name_(file_name)
+  RealSense2Grabber::RealSense2Grabber (const std::string& file_name, const std::string& serial_number)
+    : serial_number_ (serial_number)
+    , file_name_(file_name)
   {
-    RealSense2Grabber ();
-  }
+    RealSense2Grabber ();    
+  } 
 
 
   RealSense2Grabber::~RealSense2Grabber ()
@@ -106,15 +105,20 @@ namespace pcl
     }
     else
     {
-      if (serial_number_)
-        cfg.enable_device (std::to_string (serial_number_));
+      if (!serial_number_.empty ())
+        cfg.enable_device (serial_number_);
 
       cfg.enable_stream (RS2_STREAM_COLOR, device_width_, device_height_, RS2_FORMAT_RGB8, target_fps_);
-      cfg.enable_stream (RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_ANY, target_fps_);
-      cfg.enable_stream (RS2_STREAM_INFRARED, device_width_, device_height_, RS2_FORMAT_ANY, target_fps_);
+      cfg.enable_stream (RS2_STREAM_DEPTH, device_width_, device_height_, RS2_FORMAT_Z16, target_fps_);
+      cfg.enable_stream (RS2_STREAM_INFRARED, device_width_, device_height_, RS2_FORMAT_Y8, target_fps_);
     }    
 
-    pipe_.start (cfg);
+    rs2::pipeline_profile prof = pipe_.start (cfg);
+
+    assert (prof.get_stream (RS2_STREAM_COLOR).format () == RS2_FORMAT_RGB8);
+    assert (prof.get_stream (RS2_STREAM_DEPTH).format () == RS2_FORMAT_Z16);
+
+    ir_format_ = prof.get_stream (RS2_STREAM_INFRARED).format (); 
 
     thread_ = std::thread (&RealSense2Grabber::threadFunction, this);
 
@@ -188,24 +192,48 @@ namespace pcl
 
     uint8_t r, g, b;
 
+    if (ir_format_ == RS2_FORMAT_UYVY)
+    {
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (int index = 0; index < cloud->points.size (); ++index)
-    {
-      auto ptr = vertices_ptr + index;
-      auto uvptr = texture_ptr + index;
-      auto& p = cloud->points[index];
+      for (int index = 0; index < cloud->points.size (); ++index)
+      {
+        auto ptr = vertices_ptr + index;
+        auto uvptr = texture_ptr + index;
+        auto& p = cloud->points[index];
 
-      p.x = ptr->x;
-      p.y = ptr->y;
-      p.z = ptr->z;
+        p.x = ptr->x;
+        p.y = ptr->y;
+        p.z = ptr->z;
 
-      std::tie (r, g, b) = getTextureColor (ir, uvptr->u, uvptr->v);
+        std::tie (r, g, b) = getTextureColor (ir, uvptr->u, uvptr->v);
 
-      p.intensity = 0.299f * static_cast <float> (r) + 0.587f * static_cast <float> (g) + 0.114f * static_cast <float> (b);
+        p.intensity = 0.299f * static_cast <float> (r) + 0.587f * static_cast <float> (g) + 0.114f * static_cast <float> (b);
 
+      }
     }
+    else
+    {
+#ifdef _OPENMP
+#pragma omp parallel for 
+#endif
+      for (int index = 0; index < cloud->points.size (); ++index)
+      {
+        auto ptr = vertices_ptr + index;
+        auto uvptr = texture_ptr + index;
+        auto& p = cloud->points[index];
+
+        p.x = ptr->x;
+        p.y = ptr->y;
+        p.z = ptr->z;
+
+        p.intensity = getTextureIntensity(ir, uvptr->u, uvptr->v);
+
+      }
+    }
+
+
 
     return cloud;
   }
@@ -293,6 +321,19 @@ namespace pcl
     return std::make_tuple (texture_data[idx], texture_data[idx + 1], texture_data[idx + 2]);
   }
 
+  uint8_t
+  RealSense2Grabber::getTextureIntensity(rs2::video_frame &texture, float u, float v)
+  {
+    auto ptr = dynamic_cast<rs2::video_frame*>(&texture);
+
+    const int w = ptr->get_width (), h = ptr->get_height ();
+    int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
+    int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
+    int idx = x * ptr->get_bytes_per_pixel () + y * ptr->get_stride_in_bytes ();
+    const auto texture_data = reinterpret_cast<const uint8_t*>(ptr->get_data ());
+    return texture_data[idx];
+  }
+
   void 
   RealSense2Grabber::threadFunction ()
   {
@@ -316,15 +357,19 @@ namespace pcl
 
         depth = frames.get_depth_frame ();
 
-        ir = frames.get_infrared_frame ();
+        if(signal_PointXYZI->num_slots () > 0)
+          ir = frames.get_infrared_frame ();
 
         // Generate the pointcloud and texture mappings
         points = pc_.calculate (depth);
 
-        rgb = frames.get_color_frame ();
+        if (signal_PointXYZRGB->num_slots () > 0 || signal_PointXYZRGBA->num_slots () > 0)
+        {
+          rgb = frames.get_color_frame ();
 
-        // Tell pointcloud object to map to this color frame
-        pc_.map_to (rgb);
+          // Tell pointcloud object to map to this color frame
+          pc_.map_to (rgb);
+        }
 
       }
 
