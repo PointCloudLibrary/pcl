@@ -488,6 +488,7 @@ namespace pcl
         virtual std::string
         getName () const { return ("PointCloudColorHandlerRGBAField"); }
 
+      private:
         // Members derived from the base class
         using PointCloudColorHandler<PointT>::cloud_;
         using PointCloudColorHandler<PointT>::capable_;
