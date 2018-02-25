@@ -39,6 +39,7 @@
 #ifndef PCL_GPU_KINFU_CUDA_UTILS_HPP_
 #define PCL_GPU_KINFU_CUDA_UTILS_HPP_
 
+#include <cuda.h>
 
 namespace pcl
 {
@@ -602,9 +603,12 @@ namespace pcl
 	  static __forceinline__ __device__ int 
       Ballot(int predicate, volatile int* cta_buffer)
 	  {
-#if __CUDA_ARCH__ >= 200
+#if CUDA_VERSION >= 9000
+      (void)cta_buffer;
+      return __ballot_sync (__activemask (), predicate);
+#elif __CUDA_ARCH__ >= 200
 	    (void)cta_buffer;
-		return __ballot(predicate);
+		  return __ballot(predicate);
 #else
         int tid = Block::flattenedThreadId();				
 		cta_buffer[tid] = predicate ? (1 << (tid & 31)) : 0;
@@ -615,7 +619,10 @@ namespace pcl
       static __forceinline__ __device__ bool
       All(int predicate, volatile int* cta_buffer)
       {
-#if __CUDA_ARCH__ >= 200
+#if CUDA_VERSION >= 9000
+      (void)cta_buffer;
+      return __all_sync (__activemask (), predicate);
+#elif __CUDA_ARCH__ >= 200
 	    (void)cta_buffer;
 		return __all(predicate);
 #else
