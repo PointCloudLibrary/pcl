@@ -224,7 +224,7 @@ namespace pcl
         float camera_cy_;
 
         // min and max range of the rgbd sensor
-        // everything outside this doesnt appear in depth images
+        // everything outside this doesn't appear in depth images
         float z_near_;
         float z_far_;
 

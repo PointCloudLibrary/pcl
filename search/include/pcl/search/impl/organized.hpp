@@ -153,7 +153,7 @@ pcl::search::OrganizedNeighbor<PointT>::nearestKSearch (const PointT &query,
     testPoint (query, k, results, yBegin * input_->width + xBegin);
   else // point lys
   {
-    // find the box that touches the image border -> dont waste time evaluating boxes that are completely outside the image!
+    // find the box that touches the image border -> don't waste time evaluating boxes that are completely outside the image!
     int dist = std::numeric_limits<int>::max ();
 
     if (xBegin < 0)

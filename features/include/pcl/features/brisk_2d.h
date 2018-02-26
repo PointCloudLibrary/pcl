@@ -140,7 +140,7 @@ namespace pcl
         *
         * \note This should never be called by a regular user. We use a fixed type in PCL 
         * (BRISKSignature512) and tampering with the parameters might lead to a different
-        * size descriptor which the user needs to accomodate in a new point type.
+        * size descriptor which the user needs to accommodate in a new point type.
         */
       void
       generateKernel (std::vector<float> &radius_list,

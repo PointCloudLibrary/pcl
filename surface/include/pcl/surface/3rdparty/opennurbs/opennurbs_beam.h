@@ -7,7 +7,7 @@ Description:
   2d xy profile to 3d world space.
 Parameters:
   P - [in] start or end of path
-  T - [in] unit tanget to path
+  T - [in] unit tangent to path
   U - [in] unit up vector perpendicular to T
   Normal - [in] optional unit vector with Normal->z > 0 that
      defines the unit normal to the miter plane.

@@ -108,7 +108,7 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     spfh_hist_lookup[p_idx] = i;
   }
 
-  // Intialize the array that will store the FPFH signature
+  // Initialize the array that will store the FPFH signature
   int nr_bins = nr_bins_f1_ + nr_bins_f2_ + nr_bins_f3_;
 
   nn_indices.clear();

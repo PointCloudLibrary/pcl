@@ -235,7 +235,7 @@ pcl::UniqueShapeContext<PointInT, PointOutT, PointRFT>::computePointDescriptor (
       PCL_ERROR ("Shape Context Error INF!\n");
     if (w != w)
       PCL_ERROR ("Shape Context Error IND!\n");
-    /// Accumulate w into correspondant Bin(j,k,l)
+    /// Accumulate w into correspondent Bin(j,k,l)
     desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] += w;
 
     assert (desc[(l*elevation_bins_*radius_bins_) + (k*radius_bins_) + j] >= 0);

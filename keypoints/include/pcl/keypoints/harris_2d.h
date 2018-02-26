@@ -160,7 +160,7 @@ namespace pcl
       bool refine_;
       /// non maximas suppression
       bool nonmax_;
-      /// cornerness computation methode
+      /// cornerness computation method
       ResponseMethod method_;
       /// number of threads to be used
       unsigned int threads_;      
