@@ -74,7 +74,7 @@ namespace pcl
                 {                
                     if (length > 1)
                     {
-                        lenght--;
+                        length--;
                         node_idx++;                      
                         break;
                     }

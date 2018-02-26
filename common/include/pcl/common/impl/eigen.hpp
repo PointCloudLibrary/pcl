@@ -116,7 +116,7 @@ pcl::computeRoots (const Matrix& m, Roots& roots)
         std::swap (roots (0), roots (1));
     }
 
-    if (roots (0) <= 0)  // eigenval for symetric positive semi-definite matrix can not be negative! Set it to 0
+    if (roots (0) <= 0)  // eigenval for symmetric positive semi-definite matrix can not be negative! Set it to 0
       computeRoots2 (c2, c1, roots);
   }
 }

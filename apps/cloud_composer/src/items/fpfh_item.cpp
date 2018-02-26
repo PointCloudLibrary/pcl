@@ -39,7 +39,7 @@ pcl::cloud_composer::FPFHItem::getInspectorTabs ()
 {
  
   
-  //Create the plotter and QVTKWidget if it doesnt exist
+  //Create the plotter and QVTKWidget if it doesn't exist
   if (!plot_)
   {
     plot_ = boost::shared_ptr<pcl::visualization::PCLPlotter> (new pcl::visualization::PCLPlotter);

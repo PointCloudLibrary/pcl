@@ -163,7 +163,7 @@ namespace pcl
         stop_watch_.reset ();
       }
 
-      /** \brief Notifies the class that the event occured. */
+      /** \brief Notifies the class that the event occurred. */
       void event ()
       {
         event_time_queue_.push (stop_watch_.getTimeSeconds ());

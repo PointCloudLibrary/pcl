@@ -162,7 +162,7 @@ void meanShiftSegmentation(const GpuMat& src, Mat& dst, int sp, int sr, int mins
     vector<SegmLink> edges;
     edges.reserve(g.numv);
 
-    // Prepare edges connecting differnet components
+    // Prepare edges connecting different components
     for (int v = 0; v < g.numv; ++v)
     {
         int c1 = comps.find(v);
@@ -174,7 +174,7 @@ void meanShiftSegmentation(const GpuMat& src, Mat& dst, int sp, int sr, int mins
         }
     }
 
-    // Sort all graph's edges connecting differnet components (in asceding order)
+    // Sort all graph's edges connecting different components (in ascending order)
     sort(edges.begin(), edges.end());
 
     // Exclude small components (starting from the nearest couple)

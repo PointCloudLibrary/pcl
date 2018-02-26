@@ -317,12 +317,12 @@ pcl::RegionGrowingRGB<PointT, NormalT>::findRegionsKNN (int index, int nghbr_num
   distances.resize (clusters_.size (), max_dist);
 
   int number_of_points = num_pts_in_segment_[index];
-  //loop throug every point in this segment and check neighbours
+  //loop through every point in this segment and check neighbours
   for (int i_point = 0; i_point < number_of_points; i_point++)
   {
     int point_index = clusters_[index].indices[i_point];
     int number_of_neighbours = static_cast<int> (point_neighbours_[point_index].size ());
-    //loop throug every neighbour of the current point, find out to which segment it belongs
+    //loop through every neighbour of the current point, find out to which segment it belongs
     //and if it belongs to neighbouring segment and is close enough then remember segment and its distance
     for (int i_nghbr = 0; i_nghbr < number_of_neighbours; i_nghbr++)
     {

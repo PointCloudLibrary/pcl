@@ -41,7 +41,7 @@ public:
 
   // Description:
   //   Create a regular polygon circumscribe about a circle.
-  //   The midpoints of the polygon's edges will be tanget to the
+  //   The midpoints of the polygon's edges will be tangent to the
   //   circle.
   // Parameters:
   //   circle - [in]

@@ -236,7 +236,7 @@ pcl::visualization::PCLVisualizerInteractorStyle::setCameraParameters (const Eig
   window_size[0] = 2 * static_cast<int> (intrinsics (0, 2));
   window_size[1] = 2 * static_cast<int> (intrinsics (1, 2));
 
-  // Compute the vertical field of view based on the focal length and image heigh
+  // Compute the vertical field of view based on the focal length and image height
   double fovy = 2 * atan (window_size[1] / (2. * intrinsics (1, 1))) * 180.0 / M_PI;
 
 

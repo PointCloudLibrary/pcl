@@ -199,7 +199,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readAhead ()
       // Try to read in the file as a PCD first
       valid_ = (reader.read (*pcd_iterator_, next_cloud_, origin_, orientation_, pcd_version) == 0);
 
-      // Has an error occured? Check if we can interpret the file as a TAR file first before going onto the next
+      // Has an error occurred? Check if we can interpret the file as a TAR file first before going onto the next
       if (!valid_ && openTARFile (*pcd_iterator_) >= 0 && readTARHeader ())
       {
         tar_file_ = *pcd_iterator_;
@@ -241,7 +241,7 @@ pcl::PCDGrabberBase::PCDGrabberImpl::readTARHeader ()
   }
 
   // We only support regular files for now. 
-  // Addional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
+  // Additional file types in TAR include: hard links, symbolic links, device/special files, block devices, 
   // directories, and named pipes.
   if (tar_header_.file_type[0] != '0' && tar_header_.file_type[0] != '\0')
   {

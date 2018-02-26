@@ -607,7 +607,7 @@ inline void generateSymPosMatrix3x3 (Matrix& matrix)
     val2 = val1;
     val3 = val1;
   }
-  // 1%: 2 values are equal but none is set explicitely to 0
+  // 1%: 2 values are equal but none is set explicitly to 0
   else if (test_case == 1)
   {
     val2 = val3;

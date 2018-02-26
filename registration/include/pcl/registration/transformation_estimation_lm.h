@@ -219,7 +219,7 @@ namespace pcl
         
         /** Base functor all the models that need non linear optimization must
           * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
-          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the chosen _Scalar
+          * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) depending on the chosen _Scalar
           */
         template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
         struct Functor

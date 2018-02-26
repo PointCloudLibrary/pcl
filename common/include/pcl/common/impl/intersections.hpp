@@ -145,7 +145,7 @@ pcl::threePlanesIntersection (const Eigen::Matrix<Scalar, 4, 1> &plane_a,
   if (fabs (determinant) < determinant_tolerance)
   {
     // det ~= 0
-    PCL_DEBUG ("At least two planes are parralel.\n");
+    PCL_DEBUG ("At least two planes are parallel.\n");
     return (false);
   }
 

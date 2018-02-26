@@ -63,7 +63,7 @@ namespace pcl
           // load values into cloud
           updateValuesToDisplay();
                 
-          // check if we need to automatically handle the backgroud color
+          // check if we need to automatically handle the background color
           if(control_background_color_)
           {
             if(values_.back() < lowest_threshold_)
@@ -155,7 +155,7 @@ namespace pcl
         }
     
       private:
-        /** \brief initialize ther buffer that stores the values to zero. 
+        /** \brief initialize the buffer that stores the values to zero. 
           * \note The size is set by private member nb_values_ which is in the range [2-308].
           */
         void
@@ -210,13 +210,13 @@ namespace pcl
           */
         int nb_values_;
     
-        /** \brief boolean used to know if we need to change the backgroud color in case of low values. */
+        /** \brief boolean used to know if we need to change the background color in case of low values. */
         bool control_background_color_;
     
         /** \brief threshold to turn the background orange if latest value is lower. */
         float lowest_threshold_;
 
-        /** \brief boolean used to know if we need to change the backgroud color in case of low values. True means we do it ourselves. */
+        /** \brief boolean used to know if we need to change the background color in case of low values. True means we do it ourselves. */
         bool handle_y_scale_;
     
         /** \brief float tracking the minimal and maximal values ever observed. */

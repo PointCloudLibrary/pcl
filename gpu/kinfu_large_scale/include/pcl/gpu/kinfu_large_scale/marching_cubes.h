@@ -81,7 +81,7 @@ namespace pcl
         /** \brief Runs marching cubes triangulation.
             * \param[in] tsdf
             * \param[in] triangles_buffer Buffer for triangles. Its size determines max extracted triangles. If empty, it will be allocated with default size will be used.          
-            * \return Array with triangles. Each 3 consequent poits belond to a single triangle. The returned array points to 'triangles_buffer' data.
+            * \return Array with triangles. Each 3 consequent points belong to a single triangle. The returned array points to 'triangles_buffer' data.
             */
         DeviceArray<PointType> 
         run(const TsdfVolume& tsdf, DeviceArray<PointType>& triangles_buffer);
@@ -90,13 +90,13 @@ namespace pcl
         /** \brief Edge table for marching cubes  */
         DeviceArray<int> edgeTable_;
         
-        /** \brief Number of vertextes table for marching cubes  */
+        /** \brief Number of vertices table for marching cubes  */
         DeviceArray<int> numVertsTable_;
         
         /** \brief Triangles table for marching cubes  */
         DeviceArray<int> triTable_;     
         
-        /** \brief Temporary buffer used by marching cubes (first row stores occuped voxes id, second number of vetexes, third poits offsets */
+        /** \brief Temporary buffer used by marching cubes (first row stores occupied voxel id, second number of vertices, third points offsets */
         DeviceArray2D<int> occupied_voxels_buffer_;
       };
     }

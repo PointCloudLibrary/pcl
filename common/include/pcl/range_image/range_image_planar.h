@@ -64,11 +64,11 @@ namespace pcl
       PCL_EXPORTS virtual ~RangeImagePlanar ();
 
       /** Return a newly created RangeImagePlanar.
-       *  Reimplmentation to return an image of the same type. */
+       *  Reimplementation to return an image of the same type. */
       virtual RangeImage* 
       getNew () const { return new RangeImagePlanar; }
 
-      /** Copy *this to other. Derived version - also copying additonal RangeImagePlanar members */
+      /** Copy *this to other. Derived version - also copying additional RangeImagePlanar members */
       PCL_EXPORTS virtual void
       copyTo (RangeImage& other) const;
       

@@ -17,7 +17,7 @@ namespace pcl
 {
   namespace apps
   {
-    /** \brief @b Class to render synthetic views of a 3D mesh using a tesselated sphere
+    /** \brief @b Class to render synthetic views of a 3D mesh using a tessellated sphere
      * NOTE: This class should replace renderViewTesselatedSphere from pcl::visualization.
      * Some extensions are planned in the near future to this class like removal of duplicated views for
      * symmetrical objects, generation of RGB synthetic clouds when RGB available on mesh, etc.
@@ -70,7 +70,7 @@ namespace pcl
         campos_constraints_func_ = bb;
       }
 
-      /* \brief Indicates wether to generate organized or unorganized data
+      /* \brief Indicates whether to generate organized or unorganized data
        * \param b organized/unorganized
        */
       void
@@ -88,7 +88,7 @@ namespace pcl
         resolution_ = res;
       }
 
-      /* \brief Wether to use the vertices or triangle centers of the tesselated sphere
+      /* \brief Whether to use the vertices or triangle centers of the tessellated sphere
        * \param use true indicates to use vertices, false triangle centers
        */
 
@@ -107,7 +107,7 @@ namespace pcl
         radius_sphere_ = radius;
       }
 
-      /* \brief Wether to compute the entropies (level of occlusions for each view)
+      /* \brief Whether to compute the entropies (level of occlusions for each view)
        * \param compute true to compute entropies, false otherwise
        */
       void
@@ -116,8 +116,8 @@ namespace pcl
         compute_entropy_ = compute;
       }
 
-      /* \brief How many times the icosahedron should be tesselated. Results in more or less camera positions and generated views.
-       * \param level amount of tesselation
+      /* \brief How many times the icosahedron should be tessellated. Results in more or less camera positions and generated views.
+       * \param level amount of tessellation
        */
       void
       setTesselationLevel (int level)

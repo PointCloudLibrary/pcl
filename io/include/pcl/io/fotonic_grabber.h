@@ -135,7 +135,7 @@ namespace pcl
       void
       setupDevice (const FZ_DEVICE_INFO& device_info, const Mode& depth_mode, const Mode& image_mode);
 
-      /** \brief Continously asks for data from the device and publishes it if available. */
+      /** \brief Continuously asks for data from the device and publishes it if available. */
       void
       processGrabbing ();
 

@@ -58,7 +58,7 @@ printHelp (int, char **argv)
 {
   print_error ("Syntax is: %s input.{ply,obj} output.pcd <options>\n", argv[0]);
   print_info ("  where options are:\n");
-  print_info ("                     -level X      = tesselated sphere level (default: ");
+  print_info ("                     -level X      = tessellated sphere level (default: ");
   print_value ("%d", default_tesselated_sphere_level);
   print_info (")\n");
   print_info ("                     -resolution X = the sphere resolution in angle increments (default: ");

@@ -64,13 +64,13 @@ namespace pcl
       /// Default constructor
       CloudGenerator ();
 
-      /** Consttructor with single generator to ensure all X, Y and Z values are within same range
+      /** Constructor with single generator to ensure all X, Y and Z values are within same range
         * \param params paramteres for X, Y and Z values generation. Uniqueness is ensured through
         * seed incrementation
         */
       CloudGenerator (const GeneratorParameters& params);
 
-      /** Constructor with independant generators per axis
+      /** Constructor with independent generators per axis
         * \param x_params parameters for x values generation
         * \param y_params parameters for y values generation
         * \param z_params parameters for z values generation
@@ -86,19 +86,19 @@ namespace pcl
       setParameters (const GeneratorParameters& params);
       
       /** Set parameters for x values generation
-        * \param x_params paramters for x values generation
+        * \param x_params parameters for x values generation
         */
       void
       setParametersForX (const GeneratorParameters& x_params);
 
       /** Set parameters for y values generation
-        * \param y_params paramters for y values generation
+        * \param y_params parameters for y values generation
         */
       void
       setParametersForY (const GeneratorParameters& y_params);
       
       /** Set parameters for z values generation
-        * \param z_params paramters for z values generation
+        * \param z_params parameters for z values generation
         */
       void
       setParametersForZ (const GeneratorParameters& z_params);

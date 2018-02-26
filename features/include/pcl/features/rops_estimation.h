@@ -132,7 +132,7 @@ namespace pcl
 
       /** \brief This method crops all the triangles within the given radius of the given point.
         * \param[in] point point for which the local surface is computed
-        * \param[out] local_triangles strores the indices of the triangles that belong to the local surface
+        * \param[out] local_triangles stores the indices of the triangles that belong to the local surface
         * \param[out] local_points stores the indices of the points that belong to the local surface
         */
       void
@@ -141,7 +141,7 @@ namespace pcl
       /** \brief This method computes LRF (Local Reference Frame) matrix for the given point.
         * \param[in] point point for which the LRF is computed
         * \param[in] local_triangles list of triangles that represents the local surface of the point
-        * \paran[out] lrf_matrix strores computed LRF matrix for the given point
+        * \paran[out] lrf_matrix stores computed LRF matrix for the given point
         */
       void
       computeLRF (const PointInT& point, const std::set <unsigned int>& local_triangles, Eigen::Matrix3f& lrf_matrix) const;

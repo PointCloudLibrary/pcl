@@ -65,7 +65,7 @@ pcl::MEstimatorSampleConsensus<PointT>::computeModel (int debug_verbosity_level)
 
   int n_inliers_count = 0;
   unsigned skipped_count = 0;
-  // supress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
+  // suppress infinite loops by just allowing 10 x maximum allowed iterations for invalid model parameters!
   const unsigned max_skip = max_iterations_ * 10;
   
   // Iterate

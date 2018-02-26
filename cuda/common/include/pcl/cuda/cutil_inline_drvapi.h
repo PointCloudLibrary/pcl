@@ -57,7 +57,7 @@ inline int _ConvertSMVer2CoresDrvApi(int major, int minor)
 {
 	// Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
 	typedef struct {
-		int SM; // 0xMm (hexidecimal notation), M = SM Major version, and m = SM minor version
+		int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
 		int Cores;
 	} sSMtoCores;
 
@@ -195,7 +195,7 @@ inline int cutilDrvGetMaxGflopsGraphicsDeviceId()
 		    sm_per_multiproc = _ConvertSMVer2CoresDrvApi(major, minor);
 		}
 
-		// If this is a Tesla based GPU and SM 2.0, and TCC is disabled, this is a contendor
+		// If this is a Tesla based GPU and SM 2.0, and TCC is disabled, this is a contender
 		if (!bTCC) // Is this GPU running the TCC driver?  If so we pass on this
 		{
 			int compute_perf  = multiProcessorCount * sm_per_multiproc * clockRate;

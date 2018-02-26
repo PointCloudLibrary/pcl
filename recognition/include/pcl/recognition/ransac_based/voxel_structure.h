@@ -160,7 +160,7 @@ namespace pcl
       T *voxels_;
       int num_of_voxels_[3], num_of_voxels_xy_plane_, total_num_of_voxels_;
       REAL bounds_[6];
-      REAL spacing_[3]; // spacing betwen the voxel in x, y and z direction = voxel size in x, y and z direction
+      REAL spacing_[3]; // spacing between the voxel in x, y and z direction = voxel size in x, y and z direction
       REAL min_center_[3]; // the center of the voxel with integer coordinates (0, 0, 0)
     };
   } // namespace recognition

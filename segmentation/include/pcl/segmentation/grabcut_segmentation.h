@@ -195,7 +195,7 @@ namespace pcl
       colorDistance (const Color& c1, const Color& c2);
       /// User supplied Trimap values
       enum TrimapValue { TrimapUnknown = -1, TrimapForeground, TrimapBackground };
-      /// Grabcut derived hard segementation values
+      /// Grabcut derived hard segmentation values
       enum SegmentationValue { SegmentationForeground = 0, SegmentationBackground };
       /// Gaussian structure
       struct Gaussian
@@ -211,9 +211,9 @@ namespace pcl
         Eigen::Matrix3f inverse;
         /// weighting of this gaussian in the GMM.
         float pi;
-        /// heighest eigenvalue of covariance matrix
+        /// highest eigenvalue of covariance matrix
         float eigenvalue;
-        /// eigenvector corresponding to the heighest eigenvector
+        /// eigenvector corresponding to the highest eigenvector
         Eigen::Vector3f eigenvector;
       };
 
@@ -332,7 +332,7 @@ namespace pcl
         , nb_neighbours_ (9)
         , initialized_ (false)
       {}
-      /// Desctructor
+      /// Destructor
       virtual ~GrabCut () {};
       // /// Set input cloud
       void

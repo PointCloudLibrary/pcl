@@ -1981,7 +1981,7 @@ static decision_function svm_train_one (
   return f;
 }
 
-// Platt's binary SVM Probablistic Output: an improvement from Lin et al.
+// Platt's binary SVM Probabilistic Output: an improvement from Lin et al.
 static void sigmoid_train (
   int l, const double *dec_values, const double *labels,
   double& A, double& B)

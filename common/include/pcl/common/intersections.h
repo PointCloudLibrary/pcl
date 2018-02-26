@@ -112,7 +112,7 @@ namespace pcl
   }
 
   /** \brief Determine the point of intersection of three non-parallel planes by solving the equations.
-    * \note If using nearly parralel planes you can lower the determinant_tolerance value. This can
+    * \note If using nearly parallel planes you can lower the determinant_tolerance value. This can
     * lead to inconsistent results.
     * If the three planes intersects in a line the point will be anywhere on the line.
     * \param[in] plane_a are the coefficients of the first plane in the form ax + by + cz + d = 0

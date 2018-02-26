@@ -51,7 +51,7 @@ namespace pcl
      * custom values.
      * \param[in] input the input point cloud
      * \param[out] output the output point cloud
-     * \param[in] val the point value to be insterted
+     * \param[in] val the point value to be inserted
      * \param[in] amount the amount of rows to be added
      */
     template <typename PointT> void
@@ -63,7 +63,7 @@ namespace pcl
       * custom values.
       * \param[in] input the input point cloud
       * \param[out] output the output point cloud
-      * \param[in] val the point value to be insterted
+      * \param[in] val the point value to be inserted
       * \param[in] amount the amount of columns to be added
       */
     template <typename PointT> void

@@ -157,7 +157,7 @@ namespace pcl
       /** \brief Use clean cutting */
       bool use_clean_cutting_;
       
-      /** \brief Interations for RANSAC */
+      /** \brief Iterations for RANSAC */
       uint32_t ransac_itrs_;
      
       

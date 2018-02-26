@@ -52,7 +52,7 @@ namespace pcl
     *   - F. Tombari, S. Salti, L. Di Stefano,
     *     "Unique Shape Context for 3D data description",
     *     International Workshop on 3D Object Retrieval (3DOR 10) -
-    *     in conjuction with ACM Multimedia 2010
+    *     in conjunction with ACM Multimedia 2010
     *
     * The suggested PointOutT is pcl::UniqueShapeContext1960
     *
