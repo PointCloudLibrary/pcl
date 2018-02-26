@@ -539,7 +539,7 @@ costFunction4(float ref_val,float depth_val)
   float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);
 
-  // safety fix that seems to be required due to opengl asyschronizate
+  // safety fix that seems to be required due to opengl asynchronization
   // ask hordur about this
   if (bottom == 0)
   {
