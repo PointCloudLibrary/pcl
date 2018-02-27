@@ -3,6 +3,7 @@
  *
  *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010-2012, Willow Garage, Inc.
+ *  Copyright (c) 2017-, Open Perception, Inc.
  *
  *  All rights reserved.
  *
@@ -62,7 +63,7 @@ namespace pcl
     struct IteratorState{
         OctreeNode* node_;
         OctreeKey key_;
-        unsigned char depth_;
+        unsigned int depth_;
     };
 
 
@@ -474,12 +475,11 @@ namespace pcl
     template<typename OctreeT>
       class OctreeBreadthFirstIterator : public OctreeIteratorBase<OctreeT>
       {
+      public:
         // public typedefs
         typedef typename OctreeIteratorBase<OctreeT>::BranchNode BranchNode;
         typedef typename OctreeIteratorBase<OctreeT>::LeafNode LeafNode;
 
-
-      public:
         /** \brief Empty constructor.
          * \param[in] max_depth_arg Depth limitation during traversal
          */
@@ -567,6 +567,92 @@ namespace pcl
         /** FIFO list */
         std::deque<IteratorState> FIFO_;
       };
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /** \brief @b Octree iterator class
+     * \note Iterator  over all existing nodes at a given depth. It walks across an octree
+     *       in a breadth-first manner.
+     * \ingroup octree
+     * \author Fabien Rozar (fabien.rozar@gmail.com)
+     */
+    template<typename OctreeT>
+    class OctreeFixedDepthIterator : public OctreeBreadthFirstIterator<OctreeT>
+    {
+    public:
+
+      // public typedefs
+      using typename OctreeBreadthFirstIterator<OctreeT>::BranchNode;
+      using typename OctreeBreadthFirstIterator<OctreeT>::LeafNode;
+
+      /** \brief Empty constructor.
+       */
+      OctreeFixedDepthIterator ();
+
+      /** \brief Constructor.
+       * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+       * \param[in] fixed_depth_arg Depth level during traversal
+       */
+      explicit
+      OctreeFixedDepthIterator (OctreeT* octree_arg, unsigned int fixed_depth_arg = 0);
+
+      /** \brief Constructor.
+       * \param[in] octree_arg Octree to be iterated. Initially the iterator is set to its root node.
+       * \param[in] fixed_depth_arg Depth level during traversal
+       * \param[in] current_state A pointer to the current iterator state
+       * \param[in] fifo Internal container of octree node to go through
+       *
+       *  \warning For advanced users only.
+       */
+      OctreeFixedDepthIterator (OctreeT* octree_arg,
+                                unsigned int fixed_depth_arg,
+                                IteratorState* current_state,
+                                const std::deque<IteratorState>& fifo = std::deque<IteratorState> ())
+        : OctreeBreadthFirstIterator<OctreeT> (octree_arg, fixed_depth_arg, current_state, fifo)
+        , fixed_depth_ (fixed_depth_arg)
+      {}
+
+      /** \brief Copy Constructor.
+       * \param[in] other Another OctreeFixedDepthIterator to copy from
+       */
+      OctreeFixedDepthIterator (const OctreeFixedDepthIterator& other)
+        : OctreeBreadthFirstIterator<OctreeT> (other)
+      {
+        this->fixed_depth_ = other.fixed_depth_;
+      }
+
+      /** \brief Copy assignment.
+       * \param[in] src the iterator to copy into this
+       * \return pointer to the current octree node
+       */
+      inline OctreeFixedDepthIterator&
+      operator = (const OctreeFixedDepthIterator& src)
+      {
+        OctreeBreadthFirstIterator<OctreeT>::operator= (src);
+        this->fixed_depth_ = src.fixed_depth_;
+
+        return (*this);
+      }
+
+      /** \brief Reset the iterator to the first node at the depth given as parameter
+       * \param[in] fixed_depth_arg Depth level during traversal
+       */
+      void
+      reset (unsigned int fixed_depth_arg);
+
+      /** \brief Reset the iterator to the first node at the current depth
+       */
+      void
+      reset ()
+      {
+        this->reset (fixed_depth_);
+      }
+
+    protected:
+      using OctreeBreadthFirstIterator<OctreeT>::FIFO_;
+
+      /** \brief Given level of the node to be iterated */
+      unsigned int fixed_depth_;
+    };
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /** \brief Octree leaf node iterator class

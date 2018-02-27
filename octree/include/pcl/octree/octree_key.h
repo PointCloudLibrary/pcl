@@ -79,6 +79,15 @@ namespace pcl
         return ((b.x == this->x) && (b.y == this->y) && (b.z == this->z));
       }
 
+      /** \brief Inequal comparison operator
+       * \param[in] other OctreeIteratorBase to compare with
+       * \return "true" if the current and other iterators are different ; "false" otherwise.
+       */
+      bool operator!= (const OctreeKey& other) const
+      {
+        return !operator== (other);
+      }
+
       /** \brief Operator<= for comparing octree keys with each other.
        *  \return "true" if key indices are not greater than the key indices of b  ; "false" otherwise.
        * */

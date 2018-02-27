@@ -371,20 +371,15 @@ private:
     displayCloud->points.clear();
     cloudVoxel->points.clear();
 
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it;
-    pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::Iterator tree_it_end = octree.end();
-
     pcl::PointXYZ pt_voxel_center;
     pcl::PointXYZ pt_centroid;
     std::cout << "===== Extracting data at depth " << depth << "... " << std::flush;
     double start = pcl::getTime ();
 
-    for (tree_it = octree.begin(depth); tree_it!=tree_it_end; ++tree_it)
+    for (pcl::octree::OctreePointCloudVoxelCentroid<pcl::PointXYZ>::FixedDepthIterator tree_it = octree.fixed_depth_begin (depth);
+         tree_it != octree.fixed_depth_end ();
+         ++tree_it)
     {
-      // If the iterator is not at the right depth, continue
-      if (tree_it.getCurrentOctreeDepth () != (unsigned int) depth)
-        continue;
-
       // Compute the point at the center of the voxel which represents the current OctreeNode
       Eigen::Vector3f voxel_min, voxel_max;
       octree.getVoxelBounds (tree_it, voxel_min, voxel_max);

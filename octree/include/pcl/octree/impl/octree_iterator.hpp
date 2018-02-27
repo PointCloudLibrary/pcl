@@ -39,6 +39,8 @@
 #ifndef PCL_OCTREE_ITERATOR_HPP_
 #define PCL_OCTREE_ITERATOR_HPP_
 
+#include <pcl/console/print.h>
+
 namespace pcl
 {
   namespace octree
@@ -268,6 +270,58 @@ namespace pcl
       }
 
       return (*this);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator () :
+        OctreeBreadthFirstIterator<OctreeT> (0u), fixed_depth_ (0u)
+    {}
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    OctreeFixedDepthIterator<OctreeT>::OctreeFixedDepthIterator (OctreeT* octree_arg, unsigned int fixed_depth_arg) :
+        OctreeBreadthFirstIterator<OctreeT> (octree_arg, fixed_depth_arg), fixed_depth_ (fixed_depth_arg)
+    {
+      this->reset (fixed_depth_arg);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    template<typename OctreeT>
+    void OctreeFixedDepthIterator<OctreeT>::reset (unsigned int fixed_depth_arg)
+    {
+      // Set the desired depth to walk through
+      fixed_depth_ = fixed_depth_arg;
+
+      if (!this->octree_)
+      {
+        return;
+      }
+
+      // If I'm nowhere, reset
+      // If I'm somewhere and I can't guarantee I'm before the first node, reset
+      if ((!this->current_state_) || (fixed_depth_ <= this->getCurrentOctreeDepth ()))
+        OctreeBreadthFirstIterator<OctreeT>::reset ();
+
+      if (this->octree_->getTreeDepth () < fixed_depth_)
+      {
+        PCL_WARN ("[pcl::octree::FixedDepthIterator] The requested fixed depth was bigger than the octree's depth.\n");
+        PCL_WARN ("[pcl::octree::FixedDepthIterator] fixed_depth = %d (instead of %d)\n", this->octree_->getTreeDepth (), fixed_depth_);
+      }
+
+      // By default for the parent class OctreeBreadthFirstIterator, if the
+      // depth argument is equal to 0, the iterator would run over every node.
+      // For the OctreeFixedDepthIterator, whatever the depth ask, set the
+      // max_octree_depth_ accordingly
+      this->max_octree_depth_ = std::min (fixed_depth_, this->octree_->getTreeDepth ());
+
+      // Restore previous state in case breath first iterator had child nodes already set up
+      if (FIFO_.size ())
+        this->current_state_ = &FIFO_.front ();
+
+      // Iterate all the way to the desired level
+      while (this->current_state_ && (this->getCurrentOctreeDepth () != fixed_depth_))
+        OctreeBreadthFirstIterator<OctreeT>::operator++ ();
     }
   }
 }
