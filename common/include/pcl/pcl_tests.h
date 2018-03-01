@@ -215,7 +215,7 @@ namespace pcl
 /// Assert that differences between x, y, and z fields in
 /// two points are each within abs_error.
 #define ASSERT_XYZ_NEAR(expected, actual, abs_error)     \
-  EXPECT_PRED_FORMAT3(::pcl::test::internal::XYZNear,    \
+  ASSERT_PRED_FORMAT3(::pcl::test::internal::XYZNear,    \
                       (expected), (actual), abs_error)
 
 /// Expect that each of normal_x, normal_y, and normal_z
@@ -241,7 +241,7 @@ namespace pcl
 /// and normal_z fields in two points are each within
 /// abs_error.
 #define ASSERT_NORMAL_NEAR(expected, actual, abs_error)  \
-  EXPECT_PRED_FORMAT3(::pcl::test::internal::NormalNear, \
+  ASSERT_PRED_FORMAT3(::pcl::test::internal::NormalNear, \
                       (expected), (actual), abs_error)
 
 /// Expect that each of r, g, and b fields are equal in
