@@ -307,20 +307,6 @@ if(WITH_LIBUSB)
   endif()
 endif()
 
-# realsense2
-option(WITH_REALSENSE2 "Build with realsense 2.0 (librealsense) support " TRUE)
-if(WITH_REALSENSE2)
-  find_package(realsense2)
-
-  if(realsense2_FOUND)
-    # remap realsense2 cmake vars so they are compatible with the PCL_ADD_GRABBER_DEPENDENCY macro
-    set(REALSENSE2_FOUND ${realsense2_FOUND})
-    set(REALSENSE2_INCLUDE_DIRS ${realsense_INCLUDE_DIR})
-    set(REALSENSE2_LIBRARIES ${realsense2_LIBRARY})
-  endif()
-
-endif(WITH_REALSENSE2)
-
 # Dependencies for different grabbers
 PCL_ADD_GRABBER_DEPENDENCY("OpenNI" "OpenNI grabber support")
 PCL_ADD_GRABBER_DEPENDENCY("OpenNI2" "OpenNI2 grabber support")
@@ -328,7 +314,7 @@ PCL_ADD_GRABBER_DEPENDENCY("Ensenso" "IDS-Imaging Ensenso camera support")
 PCL_ADD_GRABBER_DEPENDENCY("davidSDK" "David Vision Systems SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("DSSDK" "DepthSense SDK support")
 PCL_ADD_GRABBER_DEPENDENCY("RSSDK" "RealSense SDK support")
-PCL_ADD_GRABBER_DEPENDENCY("realsense2" "RealSense SDK 2.0 (librealsense) support")
+PCL_ADD_GRABBER_DEPENDENCY("RSSDK2" "RealSense SDK 2.0 (librealsense) support")
 
 # metslib
 if(PKG_CONFIG_FOUND)

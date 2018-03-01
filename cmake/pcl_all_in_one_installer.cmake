@@ -28,16 +28,16 @@ foreach(dep Eigen Boost Qhull FLANN VTK)
   list(APPEND PCL_3RDPARTY_COMPONENTS ${dep})
 endforeach()
 
-if(WITH_REALSENSE2)
-  get_filename_component(REALSENSE2_ROOT "@REALSENSE2_INCLUDE_DIRS@" PATH)
+if(WITH_RSSDK2)
+  get_filename_component(RSSDK2_ROOT "@RSSDK2_INCLUDE_DIRS@" PATH)
   install(
-          DIRECTORY "${REALSENSE2_ROOT}/"
-          DESTINATION 3rdParty/librealsense2
-          COMPONENT librealsense2
+          DIRECTORY "${RSSDK2_ROOT}/"
+          DESTINATION 3rdParty/librealsense
+          COMPONENT rssdk2
           PATTERN "*/Uninstall.exe" EXCLUDE
       )
-  list(APPEND PCL_3RDPARTY_COMPONENTS librealsense2)
-endif(WITH_REALSENSE2)
+  list(APPEND PCL_3RDPARTY_COMPONENTS rssdk2)
+endif(WITH_RSSDK2)
 
 if(WITH_OPENNI)
   if(CMAKE_CL_64)

@@ -160,11 +160,11 @@ if(WITH_RSSDK)
   )
 endif()
 
-if(WITH_REALSENSE2)
-  set(REALSENSE2_GRABBER_INCLUDES
+if(WITH_RSSDK2)
+  set(RSSDK2_GRABBER_INCLUDES
       include/pcl/io/real_sense_2_grabber.h
   )
-  set(REALSENSE2_GRABBER_SOURCES
+  set(RSSDK2_GRABBER_SOURCES
       src/real_sense_2_grabber.cpp
   )
 endif()
@@ -237,7 +237,7 @@ set(srcs
   ${DAVIDSDK_GRABBER_SOURCES}
   ${DSSDK_GRABBER_SOURCES}
   ${RSSDK_GRABBER_SOURCES}
-  ${REALSENSE2_GRABBER_SOURCES}
+  ${RSSDK2_GRABBER_SOURCES}
 )
 
 if(PNG_FOUND)
@@ -288,7 +288,7 @@ set(incs
   ${DAVIDSDK_GRABBER_INCLUDES}
   ${DSSDK_GRABBER_INCLUDES}
   ${RSSDK_GRABBER_INCLUDES}
-  ${REALSENSE2_GRABBER_INCLUDES}
+  ${RSSDK2_GRABBER_INCLUDES}
   "include/pcl/${SUBSYS_NAME}/pxc_grabber.h"  # contains only depreciation note
 )
 
@@ -376,8 +376,8 @@ if(WITH_RSSDK)
   target_link_libraries(${LIB_NAME} ${RSSDK_LIBRARIES})
 endif()
 
-if(WITH_REALSENSE2)
-  target_link_libraries(${LIB_NAME} ${REALSENSE2_LIBRARIES})
+if(WITH_RSSDK2)
+  target_link_libraries(${LIB_NAME} ${RSSDK2_LIBRARIES})
 endif()
 
 if(PCAP_FOUND)
