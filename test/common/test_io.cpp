@@ -87,7 +87,8 @@ TEST (PCL, copyPointCloud)
 
   CloudXYZRGBNormal cloud_xyz_rgb_normal;
   pcl::copyPointCloud (cloud_xyz_rgba, cloud_xyz_rgb_normal);
-  EXPECT_EQ (int (cloud_xyz_rgb_normal.size ()), 5);
+  ASSERT_METADATA_EQ (cloud_xyz_rgba, cloud_xyz_rgb_normal);
+  ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 5);
   for (int i = 0; i < 5; ++i)
   {
     EXPECT_XYZ_EQ (cloud_xyz_rgba[i], cloud_xyz_rgb_normal[i]);
@@ -98,7 +99,7 @@ TEST (PCL, copyPointCloud)
   vector<int> indices;
   indices.push_back (0); indices.push_back (1); 
   pcl::copyPointCloud (cloud_xyz_rgba, indices, cloud_xyz_rgb_normal);
-  EXPECT_EQ (int (cloud_xyz_rgb_normal.size ()), 2);
+  ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 2);
   for (int i = 0; i < 2; ++i)
   {
     EXPECT_XYZ_EQ (cloud_xyz_rgba[i], cloud_xyz_rgb_normal[i]);
@@ -109,7 +110,7 @@ TEST (PCL, copyPointCloud)
   vector<int, Eigen::aligned_allocator<int> > indices_aligned;
   indices_aligned.push_back (1); indices_aligned.push_back (2); indices_aligned.push_back (3); 
   pcl::copyPointCloud (cloud_xyz_rgba, indices_aligned, cloud_xyz_rgb_normal);
-  EXPECT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);
+  ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);
   for (int i = 0; i < 3; ++i)
   {
     EXPECT_XYZ_EQ (cloud_xyz_rgba[i], cloud_xyz_rgb_normal[i]);
@@ -119,7 +120,7 @@ TEST (PCL, copyPointCloud)
 
   PointIndices pindices;
   pindices.indices.push_back (0); pindices.indices.push_back (2); pindices.indices.push_back (4);
-  EXPECT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);
+  ASSERT_EQ (int (cloud_xyz_rgb_normal.size ()), 3);
   for (int i = 0; i < 3; ++i)
   {
     EXPECT_XYZ_EQ (cloud_xyz_rgba[i], cloud_xyz_rgb_normal[i]);

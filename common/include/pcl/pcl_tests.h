@@ -188,6 +188,39 @@ namespace pcl
                << "Which is: " << p1.getRGBAVector4i ().transpose ();
       }
 
+      template <typename PointCloud1T, typename PointCloud2T>
+      ::testing::AssertionResult MetaDataEQ (const char* expr1,
+                                             const char* expr2,
+                                             const PointCloud1T& p1,
+                                             const PointCloud2T& p2)
+      {
+        if (!(p1.header == p2.header))
+          return ::testing::AssertionFailure () << "Headers are different";
+        if (p1.width != p2.width)
+          return ::testing::AssertionFailure ()
+                 << "Value of: " << expr2 << ".width" << std::endl
+                 << "  Actual: " << p2.width << std::endl
+                 << "Expected: " << expr1 << ".width" << std::endl
+                 << "Which is: " << p1.width << std::endl;
+        if (p1.height != p2.height)
+          return ::testing::AssertionFailure ()
+                 << "Value of: " << expr2 << ".height" << std::endl
+                 << "  Actual: " << p2.height << std::endl
+                 << "Expected: " << expr1 << ".height" << std::endl
+                 << "Which is: " << p1.height << std::endl;
+        if (p1.is_dense != p2.is_dense)
+          return ::testing::AssertionFailure ()
+                 << "Value of: " << expr2 << ".is_dense" << std::endl
+                 << "  Actual: " << p2.is_dense << std::endl
+                 << "Expected: " << expr1 << ".is_dense" << std::endl
+                 << "Which is: " << p1.is_dense << std::endl;
+        if (p1.sensor_origin_ != p2.sensor_origin_)
+          return ::testing::AssertionFailure () << "Sensor origins are different";
+        if (p1.sensor_orientation_.coeffs () != p2.sensor_orientation_.coeffs ())
+          return ::testing::AssertionFailure () << "Sensor orientations are different";
+        return ::testing::AssertionSuccess ();
+      }
+
     }
 
   }
@@ -267,5 +300,19 @@ namespace pcl
 #define ASSERT_RGBA_EQ(expected, actual)                 \
   ASSERT_PRED_FORMAT2(::pcl::test::internal::RGBAEQ,     \
                       (expected), (actual))
+
+/// Assert that the metadata (header, width, height,
+/// is_dense, sensor origin and orientation) are equal
+/// in two point clouds.
+#define ASSERT_METADATA_EQ(expected, actual)             \
+  ASSERT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
+                      expected, actual)
+
+/// Expect that the metadata (header, width, height,
+/// is_dense, sensor origin and orientation) are equal
+/// in two point clouds.
+#define EXPECT_METADATA_EQ(expected, actual)             \
+  EXPECT_PRED_FORMAT2(::pcl::test::internal::MetaDataEQ, \
+                      expected, actual)
 
 #endif
