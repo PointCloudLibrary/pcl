@@ -215,7 +215,7 @@ pp_callback (const pcl::visualization::PointPickingEvent& event, void* cookie)
 }
 
 int
-handlePointCloud (int & argc, char** argv
+handlePointCloud (int argc, char** argv
     , const std::vector<int> & file_indices
     , const std::vector<double> & pose_x
     , const std::vector<double> & pose_y
