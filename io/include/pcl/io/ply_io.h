@@ -209,7 +209,7 @@ namespace pcl
 
         // Exit in case of error
         std::cout << "Before fromPCLPointCloud2" << std::endl;
-        std::cout << "Size - " << blob.data.size() / 3 << endl;
+        std::cout << "Size - " << blob.data.size() / 3 << std::endl;
         for (int i = 0; i < blob.data.size(); i += 3) {
           std::cout<<"data: x-"<<blob.data[i]<<"y-"<<blob.data[i + 1]<<"z-"<<blob.data[i+2] << std::endl;
         }
