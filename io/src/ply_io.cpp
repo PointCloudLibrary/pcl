@@ -94,8 +94,11 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
 
 bool
 pcl::PLYReader::endHeaderCallback ()
-{
-  cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
+{ 
+  std::cout << "cloud_->point_step * cloud_->width * cloud_->height" << cloud_->point_step * cloud_->width * cloud_->height << std::endl;
+  std::cout << "static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height" << static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height << std::endl;
+
+  cloud_->data.resize (cloud_->point_step * cloud_->width * cloud_->height);
   return (cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height);
 }
 
