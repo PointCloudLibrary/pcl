@@ -209,9 +209,9 @@ namespace pcl
 
         // Exit in case of error
         std::cout << "Before fromPCLPointCloud2" << std::endl;
-        std::cout << "blob->cloud_->data[0]" <<  blob->cloud_->data[0].x << " "
-                  <<  blob->cloud_->data[0].y << " "
-                  <<  blob->cloud_->data[0].z << std::endl;
+        std::cout << "blob->cloud_->data[0]" <<  blob.cloud_->data[0].x << " "
+                  <<  blob.cloud_->data[0].y << " "
+                  <<  blob.cloud_->data[0].z << std::endl;
        
         if (res < 0)
           return (res);
