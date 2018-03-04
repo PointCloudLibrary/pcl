@@ -220,6 +220,7 @@ namespace pcl
         }
       }
     }
+    std::cout << cloud.points[0] << std::endl;
   }
 
   /** \brief Convert a PCLPointCloud2 binary data blob into a pcl::PointCloud<T> object.
