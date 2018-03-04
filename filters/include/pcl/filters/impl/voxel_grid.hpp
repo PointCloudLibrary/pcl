@@ -363,7 +363,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     }
     index = i;
   }
-
+  std::cout << total << std::endl;
   // Fourth pass: compute centroids, insert them into their final position
   output.points.resize (total);
   if (save_leaf_layout_)
@@ -427,6 +427,9 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
      
     ++index;
   }
+  std::cout << "output.points.size ()" << output.points.size () << std::endl;
+  std::cout << "static_cast<uint32_t> (output.points.size ())" << static_cast<uint32_t> (output.points.size ()) << std::endl;
+
   output.width = static_cast<uint32_t> (output.points.size ());
 }
 
