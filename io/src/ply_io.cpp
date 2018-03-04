@@ -271,6 +271,7 @@ namespace pcl
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
     std::cout << "vertexScalarPropertyCallback" << value << std::endl;
+    std::cout<< vertex_count_ * cloud_->point_step + vertex_offset_before_ << std::endl;
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (Scalar));
