@@ -98,7 +98,7 @@ pcl::PLYReader::endHeaderCallback ()
   std::cout << "cloud_->point_step * cloud_->width * cloud_->height" << cloud_->point_step * cloud_->width * cloud_->height << std::endl;
   std::cout << "static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height" << static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height << std::endl;
 
-  cloud_->data.resize (cloud_->point_step * cloud_->width * cloud_->height);
+  cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
   return (cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height);
 }
 
@@ -270,8 +270,6 @@ namespace pcl
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
-    std::cout << "vertexScalarPropertyCallback" << value << std::endl;
-    std::cout<< vertex_count_ * cloud_->point_step + vertex_offset_before_ << std::endl;
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (Scalar));
