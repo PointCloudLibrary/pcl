@@ -11,6 +11,11 @@ if(POLICY CMP0020 AND (WIN32 AND NOT MINGW))
   cmake_policy(SET CMP0020 NEW) # Automatically link Qt executables to qtmain target on Windows
 endif()
 
+if(POLICY CMP0042)
+  # Uses Mac OS X @rpath in the target's install name
+  cmake_policy(SET CMP0042 NEW)
+endif()
+
 if(POLICY CMP0048)
   cmake_policy(SET CMP0048 OLD) # do not use VERSION option in project() command
 endif()
