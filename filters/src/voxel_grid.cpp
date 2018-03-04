@@ -391,7 +391,7 @@ pcl::VoxelGrid<pcl::PCLPointCloud2>::applyFilter (PCLPointCloud2 &output)
     ++total;
     index = i;
   }
-
+  cout << total << endl;
   // Fourth pass: compute centroids, insert them into their final position
   output.width = uint32_t (total);
   output.row_step = output.point_step * output.width;
