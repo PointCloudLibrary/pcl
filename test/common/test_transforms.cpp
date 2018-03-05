@@ -39,7 +39,6 @@
 
 #include <gtest/gtest.h>
 
-#include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
@@ -266,23 +265,6 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.x, ct[0].x, 1e-4);
   EXPECT_NEAR (pt.y, ct[0].y, 1e-4);
   EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, commonTransform)
-{
-  Eigen::Vector3f xaxis (1,0,0), yaxis (0,1,0), zaxis (0,0,1);
-  Eigen::Affine3f trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
-  Eigen::Vector3f xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
-  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
-  
-  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
-  xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
-  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
 }
 
 /* ---[ */

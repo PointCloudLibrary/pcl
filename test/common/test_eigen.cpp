@@ -1108,6 +1108,24 @@ TEST (PCL, transformBetween2CoordinateSystems)
   EXPECT_LE ((transformationd.matrix())(i,j) - test(i,j), tolerance);
 }
 
+TEST (PCL, getTransFromUnitVectors)
+{
+  Eigen::Vector3f xaxis (1, 0, 0), yaxis (0, 1, 0), zaxis (0, 0, 1);
+  Eigen::Affine3f trans;
+
+  trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
+  Eigen::Vector3f xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
+  EXPECT_NEAR ((xaxistrans - xaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans - yaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans - zaxis).norm (), 0.0f,  1e-6);
+
+  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
+  xaxistrans = trans * xaxis, yaxistrans = trans * yaxis, zaxistrans = trans * zaxis;
+  EXPECT_NEAR ((xaxistrans-xaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((yaxistrans-yaxis).norm (), 0.0f,  1e-6);
+  EXPECT_NEAR ((zaxistrans-zaxis).norm (), 0.0f,  1e-6);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)
