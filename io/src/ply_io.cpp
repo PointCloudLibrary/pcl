@@ -98,8 +98,8 @@ pcl::PLYReader::endHeaderCallback ()
   std::cout << "cloud_->point_step * cloud_->width * cloud_->height" << cloud_->point_step * cloud_->width * cloud_->height << std::endl;
   std::cout << "static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height" << static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height << std::endl;
   cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
-  std::cout << "Before " << cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height << endl;
-  std::cout << "After " << cloud_->data.size () == static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height << endl;
+  std::cout << "Before " << cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height << std::endl;
+  std::cout << "After " << cloud_->data.size () == static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height << std::endl;
 
   return (cloud_->data.size () == static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
 }
