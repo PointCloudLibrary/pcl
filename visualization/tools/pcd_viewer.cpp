@@ -268,12 +268,14 @@ handlePointCloud (int argc, char** argv
     cloud.reset (new pcl::PCLPointCloud2);
     Eigen::Vector4f origin;
     Eigen::Quaternionf orientation;
-    // int version;
 
     print_highlight (stderr, "Loading "); print_value (stderr, "%s ", argv[file_indices.at (i)]);
 
     if (pcl::io::load (argv[file_indices.at (i)], *cloud))
-      return (-1);
+    {
+      PCL_ERROR ("Cannot read file %s\n", argv[file_indices.at (i)]);
+      continue;
+    }
 
     // Calculate transform if available.
     if (pose_x.size () > i && pose_y.size () > i && pose_z.size () > i &&
@@ -380,7 +382,6 @@ handlePointCloud (int argc, char** argv
     // Add the dataset with a XYZ and a random handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerXYZ<pcl::PCLPointCloud2> (cloud));
     // Add the cloud to the renderer
-    //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, color_handler, cloud_name.str (), viewport);
     p->addPointCloud (cloud, geometry_handler, color_handler, origin, orientation, cloud_name.str (), viewport);
 
 
@@ -395,10 +396,8 @@ handlePointCloud (int argc, char** argv
       if (normal_idx == -1)
       {
         print_error ("Normal information requested but not available.\n");
-        continue;
-        //return (-1);
       }
-      //
+
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
       pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
@@ -422,17 +421,13 @@ handlePointCloud (int argc, char** argv
       if (normal_idx == -1)
       {
         print_error ("Normal information requested but not available.\n");
-        continue;
-        //return (-1);
       }
       int pc_idx = pcl::getFieldIndex (*cloud, "principal_curvature_x");
       if (pc_idx == -1)
       {
         print_error ("Principal Curvature information requested but not available.\n");
-        continue;
-        //return (-1);
       }
-      //
+
       // Convert from blob to pcl::PointCloud
       pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
       pcl::fromPCLPointCloud2 (*cloud, *cloud_xyz);
@@ -481,7 +476,6 @@ handlePointCloud (int argc, char** argv
           color_handler.reset (new pcl::visualization::PointCloudColorHandlerGenericField<pcl::PCLPointCloud2> (cloud, cloud->fields[f].name));
         }
         // Add the cloud to the renderer
-        //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, color_handler, cloud_name.str (), viewport);
         p->addPointCloud (cloud, color_handler, origin, orientation, cloud_name.str (), viewport);
       }
       // Set RGB color handler or label handler as default
@@ -491,7 +485,6 @@ handlePointCloud (int argc, char** argv
     // Additionally, add normals as a handler
     geometry_handler.reset (new pcl::visualization::PointCloudGeometryHandlerSurfaceNormal<pcl::PCLPointCloud2> (cloud));
     if (geometry_handler->isCapable ())
-      //p->addPointCloud<pcl::PointXYZ> (cloud_xyz, geometry_handler, cloud_name.str (), viewport);
       p->addPointCloud (cloud, geometry_handler, origin, orientation, cloud_name.str (), viewport);
 
     if (use_immediate_rendering)
@@ -506,7 +499,8 @@ handlePointCloud (int argc, char** argv
     if (opaque.size () > 0)
       p->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY, opaque.at (i), cloud_name.str ());
 
-    // Reset camera viewpoint to center of cloud if camera parameters were not passed manually and this is the first loaded cloud
+    // Reset camera viewpoint to center of cloud if camera parameters
+    // were not passed manually and this is the first loaded cloud
     if (i == 0 && !p->cameraParamsSet () && !p->cameraFileLoaded ())
     {
       p->resetCameraViewpoint (cloud_name.str ());
@@ -656,8 +650,6 @@ main (int argc, char** argv)
 #if VTK_MAJOR_VERSION>=6 || (VTK_MAJOR_VERSION==5 && VTK_MINOR_VERSION>6)
   boost::shared_ptr<pcl::visualization::PCLPlotter> ph;
 #endif
-  // Using min_p, max_p to set the global Y min/max range for the histogram
-  // float min_p = FLT_MAX; float max_p = -FLT_MAX;
 
   int k = 0, l = 0, viewport = 0;
   // Load the data files
