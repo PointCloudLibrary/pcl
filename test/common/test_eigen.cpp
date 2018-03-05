@@ -1126,6 +1126,42 @@ TEST (PCL, getTransFromUnitVectors)
   EXPECT_NEAR ((zaxistrans-zaxis).norm (), 0.0f,  1e-6);
 }
 
+TEST (PCL, getTransformation)
+{
+  const float rot_x = 2.8827f;
+  const float rot_y = -0.31190f;
+  const float rot_z = -0.93058f;
+
+  Eigen::Affine3f affine;
+  pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
+
+  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
+  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
+  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
+}
+
+TEST (PCL, getTranslationAndEulerAngles)
+{
+  const float trans_x = 0.1f;
+  const float trans_y = 0.2f;
+  const float trans_z = 0.3f;
+  const float rot_x = 2.8827f;
+  const float rot_y = -0.31190f;
+  const float rot_z = -0.93058f;
+
+  Eigen::Affine3f affine;
+  pcl::getTransformation (trans_x, trans_y, trans_z, rot_x, rot_y, rot_z, affine);
+
+  float tx, ty, tz, rx, ry, rz;
+  pcl::getTranslationAndEulerAngles (affine, tx, ty, tz, rx, ry, rz);
+  EXPECT_NEAR (tx, trans_x, 1e-4);
+  EXPECT_NEAR (ty, trans_y, 1e-4);
+  EXPECT_NEAR (tz, trans_z, 1e-4);
+  EXPECT_NEAR (rx, rot_x, 1e-4);
+  EXPECT_NEAR (ry, rot_y, 1e-4);
+  EXPECT_NEAR (rz, rot_z, 1e-4);
+}
+
 /* ---[ */
 int
 main (int argc, char** argv)

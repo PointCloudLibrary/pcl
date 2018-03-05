@@ -182,32 +182,8 @@ TEST (PCL, Matrix4Affine3Transform)
   float rot_y = -0.31190f;
   float rot_z = -0.93058f;
   Eigen::Affine3f affine;
-  pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
-
-  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
-  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
-  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
-
-  // Approximative!!! Uses SVD internally! See http://eigen.tuxfamily.org/dox/Transform_8h_source.html
-  Eigen::Matrix3f rotation = affine.rotation ();
-
-  EXPECT_NEAR (rotation (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (rotation (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (rotation (0, 2), -0.028107658f, 1e-4);
-  EXPECT_NEAR (rotation (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (rotation (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (rotation (1, 2), -0.39082864f, 1e-4);
-  EXPECT_NEAR (rotation (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (rotation (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (rotation (2, 2), -0.920034f, 1e-4);
-
-  float trans_x, trans_y, trans_z;
   pcl::getTransformation (0.1f, 0.2f, 0.3f, rot_x, rot_y, rot_z, affine);
-  pcl::getTranslationAndEulerAngles (affine, trans_x, trans_y, trans_z, rot_x, rot_y, rot_z);
-  EXPECT_FLOAT_EQ (trans_x, 0.1f);
-  EXPECT_FLOAT_EQ (trans_y, 0.2f);
-  EXPECT_FLOAT_EQ (trans_z, 0.3f);
-  EXPECT_FLOAT_EQ (rot_x, 2.8827f);
-  EXPECT_FLOAT_EQ (rot_y, -0.31190f);
-  EXPECT_FLOAT_EQ (rot_z, -0.93058f);
-
-  Eigen::Matrix4f transformation (Eigen::Matrix4f::Identity ());
-  transformation.block<3, 3> (0, 0) = affine.rotation ();
-  transformation.block<3, 1> (0, 3) = affine.translation ();
+  Eigen::Matrix4f transformation = affine.matrix ();
 
   PointXYZ p (1.f, 2.f, 3.f);
   Eigen::Vector3f v3 = p.getVector3fMap ();
