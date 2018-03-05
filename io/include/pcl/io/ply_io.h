@@ -206,14 +206,7 @@ namespace pcl
         int ply_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
                         ply_version, offset);
-
         // Exit in case of error
-        std::cout << "Before fromPCLPointCloud2" << std::endl;
-        std::cout << "Size - " << blob.data.size() / 3 << std::endl;
-        for (int i = 0; i < 20; i += 3) {
-          std::cout<<"data: x-"<<blob.data[i]<<"y-"<<blob.data[i + 1]<<"z-"<<blob.data[i+2] << std::endl;
-        }
-       
         if (res < 0)
           return (res);
         pcl::fromPCLPointCloud2 (blob, cloud);
