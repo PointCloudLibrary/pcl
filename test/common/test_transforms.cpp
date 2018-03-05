@@ -39,8 +39,6 @@
 
 #include <gtest/gtest.h>
 
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/io/pcd_io.h>
 #include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -49,83 +47,6 @@
 #include <pcl/pcl_tests.h>
 
 using namespace pcl;
-using namespace pcl::io;
-
-pcl::PCLPointCloud2 cloud_blob;
-
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, DeMean)
-{
-  PointCloud<PointXYZ> cloud, cloud_demean;
-  fromPCLPointCloud2 (cloud_blob, cloud);
-
-  Eigen::Vector4f centroid;
-  compute3DCentroid (cloud, centroid);
-  EXPECT_NEAR (centroid[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroid[1],  0.102653,  1e-4);
-  EXPECT_NEAR (centroid[2],  0.027302,  1e-4);
-  EXPECT_NEAR (centroid[3],  1,         1e-4);
-
-  // Check standard demean
-  demeanPointCloud (cloud, centroid, cloud_demean);
-  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.size (), cloud.size ());
-
-  EXPECT_NEAR (cloud_demean[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].z, -0.071702, 1e-4);
-
-  std::vector<int> indices (cloud.size ());
-  for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
-
-  // Check standard demean w/ indices
-  demeanPointCloud (cloud, indices, centroid, cloud_demean);
-  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.size (), cloud.size ());
-
-  EXPECT_NEAR (cloud_demean[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].z, -0.071702, 1e-4);
-
-  // Check eigen demean
-  Eigen::MatrixXf mat_demean;
-  demeanPointCloud (cloud, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
-  EXPECT_EQ (mat_demean.rows (), 4);
-
-  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
-  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
-  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
-
-  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
-
-  // Check eigen demean + indices
-  demeanPointCloud (cloud, indices, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.size ()));
-  EXPECT_EQ (mat_demean.rows (), 4);
-
-  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
-  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
-  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
-
-  EXPECT_NEAR (mat_demean (0, cloud_demean.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.size () - 1), -0.071702, 1e-4);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 TEST (PCL, Transform)
@@ -368,17 +289,6 @@ TEST (PCL, commonTransform)
 int
 main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-  if (loadPCDFile (argv[1], cloud_blob) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-
   testing::InitGoogleTest (&argc, argv);
   return (RUN_ALL_TESTS ());
 }
