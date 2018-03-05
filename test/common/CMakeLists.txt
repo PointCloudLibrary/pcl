@@ -1,7 +1,7 @@
 set(SUBSYS_NAME tests_common)
 set(SUBSYS_DESC "Point cloud library common module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS common)
-set(OPT_DEPS io features search kdtree octree)
+set(OPT_DEPS io search kdtree octree)
 
 set(DEFAULT ON)
 set(build TRUE)
@@ -32,10 +32,10 @@ if (build)
 
 	PCL_ADD_TEST(common_point_type_conversion test_common_point_type_conversion FILES test_point_type_conversion.cpp LINK_WITH pcl_gtest pcl_common)
 
-	if (BUILD_io AND BUILD_features)
+	if (BUILD_io)
 	    PCL_ADD_TEST(a_transforms_test test_transforms
                  FILES test_transforms.cpp
                  LINK_WITH pcl_gtest pcl_io
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
-	endif (BUILD_io AND BUILD_features)
+	endif (BUILD_io)
 endif (build)
