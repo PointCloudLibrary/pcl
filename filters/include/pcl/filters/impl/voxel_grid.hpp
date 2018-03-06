@@ -363,7 +363,7 @@ pcl::VoxelGrid<PointT>::applyFilter (PointCloud &output)
     }
     index = i;
   }
-
+  
   // Fourth pass: compute centroids, insert them into their final position
   output.points.resize (total);
   if (save_leaf_layout_)

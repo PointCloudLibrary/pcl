@@ -206,7 +206,7 @@ namespace pcl
         int ply_version;
         int res = read (file_name, blob, cloud.sensor_origin_, cloud.sensor_orientation_,
                         ply_version, offset);
-
+                        
         // Exit in case of error
         if (res < 0)
           return (res);
