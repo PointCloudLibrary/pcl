@@ -414,7 +414,7 @@ namespace pcl
       /** \brief The point cloud height (if organized as an image-structure). */
       uint32_t height;
 
-      /** \brief True if no points are invalid (e.g., have NaN or Inf values). */
+      /** \brief True if no points are invalid (e.g., have NaN or Inf values in any of their floating point fields). */
       bool is_dense;
 
       /** \brief Sensor acquisition pose (origin/translation). */

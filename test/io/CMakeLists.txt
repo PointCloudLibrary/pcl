@@ -25,6 +25,11 @@ if (build)
                 FILES test_grabbers.cpp
                 LINK_WITH pcl_gtest pcl_io
                 ARGUMENTS "${PCL_SOURCE_DIR}/test/grabber_sequences")
+
+  PCL_ADD_TEST(io_ply_io test_ply_io
+                FILES test_ply_io.cpp
+                LINK_WITH pcl_gtest pcl_io)
+
   # Uses VTK readers to verify
   if (VTK_FOUND AND NOT ANDROID)
     include_directories(${VTK_INCLUDE_DIRS})
