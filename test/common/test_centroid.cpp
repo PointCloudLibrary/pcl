@@ -1026,18 +1026,10 @@ TEST (PCL, demeanPointCloud)
 
   // Check standard demean
   demeanPointCloud (cloud, centroid, cloud_demean);
-  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.size (), cloud.size ());
+  EXPECT_METADATA_EQ (cloud_demean, cloud);
 
-  EXPECT_NEAR (cloud_demean[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].z, -0.071702, 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[0], PointXYZ (0.034503, 0.010837, 0.013447), 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[cloud_demean.size () - 1], PointXYZ (-0.048849, 0.072507, -0.071702), 1e-4);
 
   std::vector<int> indices (cloud.size ());
   for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
@@ -1045,17 +1037,12 @@ TEST (PCL, demeanPointCloud)
   // Check standard demean w/ indices
   demeanPointCloud (cloud, indices, centroid, cloud_demean);
   EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
+  EXPECT_EQ (cloud_demean.width, indices.size ());
+  EXPECT_EQ (cloud_demean.height, 1);
   EXPECT_EQ (cloud_demean.size (), cloud.size ());
 
-  EXPECT_NEAR (cloud_demean[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean[cloud_demean.size () - 1].z, -0.071702, 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[0], PointXYZ (0.034503, 0.010837, 0.013447), 1e-4);
+  EXPECT_XYZ_NEAR (cloud_demean[cloud_demean.size () - 1], PointXYZ (-0.048849, 0.072507, -0.071702), 1e-4);
 
   // Check eigen demean
   Eigen::MatrixXf mat_demean;
