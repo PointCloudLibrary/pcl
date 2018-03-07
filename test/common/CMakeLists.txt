@@ -1,7 +1,7 @@
 set(SUBSYS_NAME tests_common)
 set(SUBSYS_DESC "Point cloud library common module unit tests")
 PCL_SET_TEST_DEPENDENCIES(SUBSYS_DEPS common)
-set(OPT_DEPS io features search kdtree octree)
+set(OPT_DEPS io search kdtree octree)
 
 set(DEFAULT ON)
 set(build TRUE)
@@ -16,7 +16,7 @@ if (build)
 	PCL_ADD_TEST(common_common test_common FILES test_common.cpp LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(common_geometry test_geometry FILES test_geometry.cpp LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(common_copy_point test_copy_point FILES test_copy_point.cpp LINK_WITH pcl_gtest pcl_common)
-	PCL_ADD_TEST(common_centroid test_centroid FILES test_centroid.cpp LINK_WITH pcl_gtest pcl_common)
+	PCL_ADD_TEST(common_transforms test_transforms FILES test_transforms.cpp LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(common_int test_plane_intersection FILES test_plane_intersection.cpp LINK_WITH pcl_gtest pcl_common)
 	PCL_ADD_TEST(common_pca test_pca FILES test_pca.cpp LINK_WITH pcl_gtest pcl_common)
 	#PCL_ADD_TEST(common_spring test_spring FILES test_spring.cpp LINK_WITH pcl_gtest pcl_common)
@@ -32,10 +32,10 @@ if (build)
 
 	PCL_ADD_TEST(common_point_type_conversion test_common_point_type_conversion FILES test_point_type_conversion.cpp LINK_WITH pcl_gtest pcl_common)
 
-	if (BUILD_io AND BUILD_features)
-	    PCL_ADD_TEST(a_transforms_test test_transforms
-                 FILES test_transforms.cpp
+  if(BUILD_io)
+    PCL_ADD_TEST(common_centroid test_centroid
+                 FILES test_centroid.cpp
                  LINK_WITH pcl_gtest pcl_io
                  ARGUMENTS "${PCL_SOURCE_DIR}/test/bun0.pcd")
-	endif (BUILD_io AND BUILD_features)
+  endif()
 endif (build)
