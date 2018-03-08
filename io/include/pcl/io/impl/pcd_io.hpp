@@ -1067,10 +1067,12 @@ pcl::PCDWriter::appendBinary(const std::string &file_name,
   data_size = cloud.points.size () * fsize;
 
   data_idx += (tmp_cloud.width - cloud.width) * fsize;
-  if(data_idx != file_size)
+  if (data_idx != file_size)
   {
-    // warn , deleteme: do more than just warn : is the file going to end up corrupted?
-    PCL_WARN("pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!");
+    const char *msg = "[pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!";
+    PCL_WARN(msg);
+    throw pcl::IOException (msg);
+    return -1;
   }
 
   // Prepare the map
@@ -1252,8 +1254,10 @@ pcl::PCDWriter::appendBinary(const std::string &file_name,
   data_idx += (tmp_cloud.width - cloud.width) * fsize;
   if(data_idx != file_size)
   {
-    // warn , deleteme: do more than just warn : is the file going to end up corrupted?
-    PCL_WARN("pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!");
+    const char *msg = "[pcl::PCDWriter::appendBinary] The expected data size and the current data size are different!";
+    PCL_WARN(msg);
+    throw pcl::IOException (msg);
+    return -1;
   }
 
   // Prepare the map

@@ -300,15 +300,15 @@ namespace pcl
 
     };
 
-/** \class OutofcoreOctreeDiskContainer without compression
-   *  \note Code was adapted from the original OutofcoreOctreeDiskContainer with compression
-   *
-   *  \brief Class responsible for serialization and deserialization of out of core point data; this specialization
-   *  is at the same time a derived class of the OutofcoreOctreeDiskContainer with compression, but uses an
-   *  append method to avoid loading data already in disk. It is faster, but uses more disk space.
-   *  \ingroup outofcore
-   *  \author Juan A. Garcia Pardo (Juan-Angel.Garcia-Pardo@leica-geosystems.com)
-   */
+    /** \class OutofcoreOctreeDiskContainer without compression
+     * \note Code was adapted from the original OutofcoreOctreeDiskContainer with compression
+     *
+     * \brief Class responsible for serialization and deserialization of out of core point data; this specialization
+     *  is at the same time a derived class of the OutofcoreOctreeDiskContainer with compression, but uses an
+     *  append method to avoid loading data already in disk. It is faster, but uses more disk space.
+     * \ingroup outofcore
+     * \author Juan A. Garcia Pardo (Juan-Angel.Garcia-Pardo@leica-geosystems.com)
+     */
     template<typename PointT>
     class OutofcoreOctreeDiskContainer<PointT, false> : public OutofcoreOctreeDiskContainer<PointT, true>
     {
