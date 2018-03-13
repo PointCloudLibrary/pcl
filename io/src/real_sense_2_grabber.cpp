@@ -151,7 +151,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (uint32_t index = 0; index < cloud->points.size (); ++index)
+    for (int index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto& p = cloud->points[index];
@@ -183,7 +183,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (uint32_t index = 0; index < cloud->points.size (); ++index)
+    for (int index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto uvptr = texture_ptr + index;
@@ -226,7 +226,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (uint32_t index = 0; index < cloud->points.size (); ++index)
+    for (int index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto uvptr = texture_ptr + index;
@@ -264,7 +264,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (uint32_t index = 0; index < cloud->points.size (); ++index)
+    for (int index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto uvptr = texture_ptr + index;
