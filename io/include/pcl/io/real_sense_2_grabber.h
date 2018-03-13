@@ -127,29 +127,29 @@ namespace pcl
     * \param[in] ir Infrared video frame
     */
     pcl::PointCloud<pcl::PointXYZI>::Ptr 
-    convertInfraredDepthToPointXYZI (const rs2::points & points, rs2::video_frame & ir);
+    convertInfraredDepthToPointXYZI (const rs2::points& points, const rs2::video_frame& ir);
 
     /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGB>
     * \param[in] points the depth points
     * \param[in] rgb rgb video frame
     */
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr 
-    convertRGBDepthToPointXYZRGB (const rs2::points& points, rs2::video_frame &rgb);
+    convertRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& rgb);
 
     /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGBA>
     * \param[in] points the depth points
     * \param[in] rgb rgb video frame
     */
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr 
-    convertRGBADepthToPointXYZRGBA (const rs2::points& points, rs2::video_frame &rgb);
+    convertRGBADepthToPointXYZRGBA (const rs2::points& points, const rs2::video_frame& rgb);
 
     /** \brief Retrieve RGB color from texture video frame
     * \param[in] texture the texture
     * \param[in] u 2D coordinate
     * \param[in] v 2D coordinate
     */
-    std::tuple<uint8_t, uint8_t, uint8_t> 
-    getTextureColor (rs2::video_frame & texture, float u, float v);
+    pcl::RGB
+    getTextureColor (const rs2::video_frame& texture, float u, float v);
 
     /** \brief Retrieve color intensity from texture video frame
     * \param[in] texture the texture
@@ -157,27 +157,36 @@ namespace pcl
     * \param[in] v 2D coordinate
     */
     uint8_t
-    getTextureIntensity (rs2::video_frame &texture, float u, float v);
+    getTextureIntensity (const rs2::video_frame& texture, float u, float v);
 
     /** \brief the thread function
     */
     void 
     threadFunction ();
 
+    /** \brief handle to the thread */
     std::thread thread_;
+    /** \brief mutex to lock data between thread and UI */
     mutable std::mutex mutex_;
+    /** \brief Defines either a file path to a bag file or a realsense device serial number. */
     std::string file_name_or_serial_number_;
+    /** \brief controlling the state of the thread. */
     bool quit_;
+    /** \brief Is the grabber running. */
     bool running_;
+    /** \brief Calculated FPS for the grabber. */
     float fps_;
+    /** \brief Width for the depth and color sensor. Default 424*/
     uint32_t device_width_;
+    /** \brief Height for the depth and color sensor. Default 240 */
     uint32_t device_height_;
+    /** \brief Target FPS for the device. Default 30. */
     uint32_t target_fps_;
+    /** \brief format for the IR sensor. */
     rs2_format ir_format_;
-
-    // Declare pointcloud object, for calculating pointclouds and texture mappings
+    /** \brief Declare pointcloud object, for calculating pointclouds and texture mappings */
     rs2::pointcloud pc_;
-    // Declare RealSense pipeline, encapsulating the actual device and sensors
+    /** \brief Declare RealSense pipeline, encapsulating the actual device and sensors */
     rs2::pipeline pipe_;
   };
 

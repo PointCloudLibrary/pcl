@@ -46,25 +46,22 @@
 #include <pcl/io/real_sense_2_grabber.h>
 #include <pcl/common/time.h>
 
+
 namespace pcl
 {
   RealSense2Grabber::RealSense2Grabber (const std::string& file_name_or_serial_number)
-    : running_ (false)
+    : signal_PointXYZ (createSignal<signal_librealsense_PointXYZ> ())
+    , signal_PointXYZI (createSignal<signal_librealsense_PointXYZI> ())
+    , signal_PointXYZRGB (createSignal<signal_librealsense_PointXYZRGB> ())
+    , signal_PointXYZRGBA (createSignal<signal_librealsense_PointXYZRGBA> ())
+    , file_name_or_serial_number_ (file_name_or_serial_number)
     , quit_ (false)
-    , signal_PointXYZ (nullptr)
-    , signal_PointXYZI (nullptr)
-    , signal_PointXYZRGB (nullptr)
-    , signal_PointXYZRGBA (nullptr)
+    , running_ (false)
     , fps_ (0)
     , device_width_ (424)
     , device_height_ (240)
-    , target_fps_ (30)
-    , file_name_or_serial_number_(file_name_or_serial_number)
+    , target_fps_ (30)    
   {
-    signal_PointXYZ = createSignal<signal_librealsense_PointXYZ> ();
-    signal_PointXYZI = createSignal<signal_librealsense_PointXYZI> ();
-    signal_PointXYZRGB = createSignal<signal_librealsense_PointXYZRGB> ();
-    signal_PointXYZRGBA = createSignal<signal_librealsense_PointXYZRGBA> ();
   }
 
   RealSense2Grabber::~RealSense2Grabber ()
@@ -122,15 +119,13 @@ namespace pcl
   {
     std::lock_guard<std::mutex> guard (mutex_);
 
-    quit_ = true;
     running_ = false;
+    quit_ = true;    
   }
 
   bool 
   RealSense2Grabber::isRunning () const
   {
-    std::lock_guard<std::mutex> guard (mutex_);
-
     return running_;
   }
 
@@ -141,7 +136,7 @@ namespace pcl
   }
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr 
-  RealSense2Grabber::convertDepthToPointXYZ (const rs2::points & points)
+  RealSense2Grabber::convertDepthToPointXYZ (const rs2::points& points)
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ> ());
 
@@ -156,7 +151,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (int index = 0; index < cloud->points.size (); ++index)
+    for (uint32_t index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto& p = cloud->points[index];
@@ -170,7 +165,7 @@ namespace pcl
   }
 
   pcl::PointCloud<pcl::PointXYZI>::Ptr 
-  RealSense2Grabber::convertInfraredDepthToPointXYZI (const rs2::points & points, rs2::video_frame & ir)
+  RealSense2Grabber::convertInfraredDepthToPointXYZI (const rs2::points& points, const rs2::video_frame& ir)
   {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZI> ());
 
@@ -183,56 +178,39 @@ namespace pcl
     auto vertices_ptr = points.get_vertices ();
     auto texture_ptr = points.get_texture_coordinates ();
 
-    uint8_t r, g, b;
-
-    if (ir_format_ == RS2_FORMAT_UYVY)
-    {
+    const bool is_uyvy = ir_format_ == RS2_FORMAT_UYVY;
+    
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-      for (int index = 0; index < cloud->points.size (); ++index)
-      {
-        auto ptr = vertices_ptr + index;
-        auto uvptr = texture_ptr + index;
-        auto& p = cloud->points[index];
-
-        p.x = ptr->x;
-        p.y = ptr->y;
-        p.z = ptr->z;
-
-        std::tie (r, g, b) = getTextureColor (ir, uvptr->u, uvptr->v);
-
-        p.intensity = 0.299f * static_cast <float> (r) + 0.587f * static_cast <float> (g) + 0.114f * static_cast <float> (b);
-
-      }
-    }
-    else
+    for (uint32_t index = 0; index < cloud->points.size (); ++index)
     {
-#ifdef _OPENMP
-#pragma omp parallel for 
-#endif
-      for (int index = 0; index < cloud->points.size (); ++index)
+      auto ptr = vertices_ptr + index;
+      auto uvptr = texture_ptr + index;
+      auto& p = cloud->points[index];
+
+      p.x = ptr->x;
+      p.y = ptr->y;
+      p.z = ptr->z;      
+
+      // compiler should optimize this if call 
+      // https://en.wikipedia.org/wiki/Loop_unswitching
+      if (is_uyvy)
       {
-        auto ptr = vertices_ptr + index;
-        auto uvptr = texture_ptr + index;
-        auto& p = cloud->points[index];
-
-        p.x = ptr->x;
-        p.y = ptr->y;
-        p.z = ptr->z;
-
-        p.intensity = getTextureIntensity(ir, uvptr->u, uvptr->v);
-
+        auto clr = getTextureColor (ir, uvptr->u, uvptr->v);
+        p.intensity = 0.299f * static_cast <float> (clr.r) + 0.587f * static_cast <float> (clr.g) + 0.114f * static_cast <float> (clr.b);
       }
+      else
+      {
+        p.intensity = getTextureIntensity (ir, uvptr->u, uvptr->v);
+      }
+
     }
-
-
-
     return cloud;
   }
 
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr 
-  RealSense2Grabber::convertRGBDepthToPointXYZRGB (const rs2::points & points, rs2::video_frame & rgb)
+  RealSense2Grabber::convertRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& rgb)
   {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGB> ());
 
@@ -248,7 +226,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (int index = 0; index < cloud->points.size (); ++index)
+    for (uint32_t index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto uvptr = texture_ptr + index;
@@ -258,8 +236,11 @@ namespace pcl
       p.y = ptr->y;
       p.z = ptr->z;
 
-      std::tie (p.r, p.g, p.b) = getTextureColor (rgb, uvptr->u, uvptr->v);
+      auto clr = getTextureColor (rgb, uvptr->u, uvptr->v);
 
+      p.r = clr.r;
+      p.g = clr.g;
+      p.b = clr.b;
       p.a = 255;
     }
 
@@ -267,7 +248,7 @@ namespace pcl
   }
 
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr 
-  RealSense2Grabber::convertRGBADepthToPointXYZRGBA (const rs2::points & points, rs2::video_frame & rgb)
+  RealSense2Grabber::convertRGBADepthToPointXYZRGBA (const rs2::points& points, const rs2::video_frame& rgb)
   {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA> ());
 
@@ -283,7 +264,7 @@ namespace pcl
 #ifdef _OPENMP
 #pragma omp parallel for 
 #endif
-    for (int index = 0; index < cloud->points.size (); ++index)
+    for (uint32_t index = 0; index < cloud->points.size (); ++index)
     {
       auto ptr = vertices_ptr + index;
       auto uvptr = texture_ptr + index;
@@ -293,37 +274,41 @@ namespace pcl
       p.y = ptr->y;
       p.z = ptr->z;
 
-      std::tie (p.r, p.g, p.b) = getTextureColor (rgb, uvptr->u, uvptr->v);
+      auto clr = getTextureColor (rgb, uvptr->u, uvptr->v);
 
+      p.r = clr.r;
+      p.g = clr.g;
+      p.b = clr.b;
       p.a = 255;
     }
 
     return cloud;
   }
 
-  std::tuple<uint8_t, uint8_t, uint8_t> 
-  RealSense2Grabber::getTextureColor (rs2::video_frame &texture, float u, float v)
+  pcl::RGB
+  RealSense2Grabber::getTextureColor (const rs2::video_frame& texture, float u, float v)
   {
-    auto ptr = dynamic_cast<rs2::video_frame*>(&texture);
-
-    const int w = ptr->get_width (), h = ptr->get_height ();
+    const int w = texture.get_width (), h = texture.get_height ();
     int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
     int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
-    int idx = x * ptr->get_bytes_per_pixel() + y * ptr->get_stride_in_bytes ();
-    const auto texture_data = reinterpret_cast<const uint8_t*>(ptr->get_data ());
-    return std::make_tuple (texture_data[idx], texture_data[idx + 1], texture_data[idx + 2]);
+    int idx = x * texture.get_bytes_per_pixel() + y * texture.get_stride_in_bytes ();
+    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
+
+    pcl::RGB rgb;
+    rgb.r = texture_data[idx];
+    rgb.g = texture_data[idx + 1];
+    rgb.b = texture_data[idx + 2];
+    return rgb;
   }
 
   uint8_t
-  RealSense2Grabber::getTextureIntensity(rs2::video_frame &texture, float u, float v)
+  RealSense2Grabber::getTextureIntensity(const rs2::video_frame& texture, float u, float v)
   {
-    auto ptr = dynamic_cast<rs2::video_frame*>(&texture);
-
-    const int w = ptr->get_width (), h = ptr->get_height ();
+    const int w = texture.get_width (), h = texture.get_height ();
     int x = std::min (std::max (int (u*w + .5f), 0), w - 1);
     int y = std::min (std::max (int (v*h + .5f), 0), h - 1);
-    int idx = x * ptr->get_bytes_per_pixel () + y * ptr->get_stride_in_bytes ();
-    const auto texture_data = reinterpret_cast<const uint8_t*>(ptr->get_data ());
+    int idx = x * texture.get_bytes_per_pixel () + y * texture.get_stride_in_bytes ();
+    const auto texture_data = reinterpret_cast<const uint8_t*>(texture.get_data ());
     return texture_data[idx];
   }
 
@@ -332,10 +317,9 @@ namespace pcl
   {
     pcl::StopWatch sw;
 
-    rs2::frameset frames;
-    rs2::depth_frame depth = NULL;
-    rs2::video_frame rgb = NULL;
-    rs2::video_frame ir = NULL;
+    rs2::depth_frame depth = nullptr;
+    rs2::video_frame rgb = nullptr;
+    rs2::video_frame ir = nullptr;
     rs2::points points;
 
     while (!quit_)
@@ -346,7 +330,7 @@ namespace pcl
         std::lock_guard<std::mutex> guard (mutex_);
 
         // Wait for the next set of frames from the camera
-        frames = pipe_.wait_for_frames ();
+        auto frames = pipe_.wait_for_frames ();
 
         depth = frames.get_depth_frame ();
 
