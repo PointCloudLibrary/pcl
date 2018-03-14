@@ -241,7 +241,6 @@ namespace pcl
       p.r = clr.r;
       p.g = clr.g;
       p.b = clr.b;
-      p.a = 255;
     }
 
     return cloud;
@@ -279,7 +278,6 @@ namespace pcl
       p.r = clr.r;
       p.g = clr.g;
       p.b = clr.b;
-      p.a = 255;
     }
 
     return cloud;
@@ -315,16 +313,16 @@ namespace pcl
   void 
   RealSense2Grabber::threadFunction ()
   {
-    pcl::StopWatch sw;
-
-    rs2::depth_frame depth = nullptr;
-    rs2::video_frame rgb = nullptr;
-    rs2::video_frame ir = nullptr;
-    rs2::points points;
+    pcl::StopWatch sw;    
 
     while (!quit_)
     {
       sw.reset ();
+
+      rs2::depth_frame depth = nullptr;
+      rs2::video_frame rgb = nullptr;
+      rs2::video_frame ir = nullptr;
+      rs2::points points;
 
       {
         std::lock_guard<std::mutex> guard (mutex_);
