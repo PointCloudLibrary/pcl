@@ -62,11 +62,11 @@ getTextureColor (const rs2::video_frame& texture, float u, float v)
   return rgb;
 }
 
-template <typename PointT>
+template <typename PointT, typename Functor>
 typename pcl::PointCloud<PointT>::Ptr
 convertRealsensePointsToPointCloud (
   const rs2::points& points,
-  const rs2::video_frame& texture = nullptr)
+  Functor pFunc)
 {
   typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
 
@@ -92,15 +92,67 @@ convertRealsensePointsToPointCloud (
     p.y = ptr->y;
     p.z = ptr->z;
 
-    auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
+    int i = 0;
+    pFunc (i);
+
+    /*auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
 
     p.r = clr.r;
     p.g = clr.g;
-    p.b = clr.b;
+    p.b = clr.b;*/
   }
 
   return cloud;
 }
+
+pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+convertRealsenseRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& texture)
+{
+  auto pFunc = [](int i)
+  {
+    /*auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
+
+    p.r = clr.r;
+    p.g = clr.g;
+    p.b = clr.b;*/
+  };
+  
+  return convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, &pFunc);
+}
+
+//convertWithColor (const rs2::points& points,
+//                  const rs2::video_frame& texture = nullptr)
+//{
+//  auto func ()[] (variable) {}
+//  {
+//    auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
+//
+//    p.r = clr.r;
+//    p.g = clr.g;
+//    p.b = clr.b;
+//  }
+//
+//  convertRealsensePointsToPointCloud < PointXYZRGB)(points, texture, func);
+//}
+//
+//convertWithIR (const rs2::points& points,
+//                  const rs2::video_frame& texture = nullptr)
+//{
+//  if (UYVY)
+//  {
+//    auto func ()[] (variable)
+//    {
+//      auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
+//
+//      p.r = clr.r;
+//      p.g = clr.g;
+//      p.b = clr.b;
+//    }
+//
+//    convertRealsensePointsToPointCloud < PointXYZRGB)(points, texture, func);
+//  }
+//  
+//}
 
 
 namespace pcl
@@ -418,7 +470,7 @@ namespace pcl
 
       if (signal_PointXYZRGB->num_slots () > 0)
       {
-        (*signal_PointXYZRGB)(convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, rgb));
+        (*signal_PointXYZRGB)(convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, [] {}));
       }
 
       if (signal_PointXYZRGBA->num_slots () > 0)
