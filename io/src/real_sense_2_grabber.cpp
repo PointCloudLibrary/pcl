@@ -287,41 +287,33 @@ convertRealsensePointsToPointCloud (const rs2::points& points, Functor mapColorF
 pcl::PointCloud<pcl::PointXYZ>::Ptr
 convertDepthToPointXYZ (const rs2::points& points)
 {
-  auto pFunc = [](pcl::PointXYZ& p, const rs2::texture_coordinate* uvptr)
-  {
-  };
-
-  return convertRealsensePointsToPointCloud<pcl::PointXYZ> (points, pFunc);
+  return convertRealsensePointsToPointCloud<pcl::PointXYZ> (points, [](pcl::PointXYZ& p, const rs2::texture_coordinate* uvptr){});
 }
 
 pcl::PointCloud<pcl::PointXYZRGB>::Ptr
 convertRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& texture)
 {
-  auto pFunc = [texture](pcl::PointXYZRGB& p, const rs2::texture_coordinate* uvptr)
+  return convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, [&texture](pcl::PointXYZRGB& p, const rs2::texture_coordinate* uvptr)
   {
     auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
 
     p.r = clr.r;
     p.g = clr.g;
     p.b = clr.b;
-  };
-
-  return convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, pFunc);
+  });
 }
 
 pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
 convertRGBADepthToPointXYZRGBA (const rs2::points& points, const rs2::video_frame& texture)
 {
-  auto pFunc = [texture](pcl::PointXYZRGBA& p, const rs2::texture_coordinate* uvptr)
+  return convertRealsensePointsToPointCloud<pcl::PointXYZRGBA> (points, [&texture](pcl::PointXYZRGBA& p, const rs2::texture_coordinate* uvptr)
   {
     auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
 
     p.r = clr.r;
     p.g = clr.g;
     p.b = clr.b;
-  };
-
-  return convertRealsensePointsToPointCloud<pcl::PointXYZRGBA> (points, pFunc);
+  });
 }
 
 pcl::PointCloud<pcl::PointXYZI>::Ptr
@@ -329,23 +321,17 @@ convertIntensityDepthToPointXYZRGBI (const rs2::points& points, const rs2::video
 {
   if (texture.get_profile ().format () == RS2_FORMAT_UYVY)
   {
-    auto pFunc = [texture](pcl::PointXYZI& p, const rs2::texture_coordinate* uvptr)
+    return convertRealsensePointsToPointCloud<pcl::PointXYZI> (points, [&texture](pcl::PointXYZI& p, const rs2::texture_coordinate* uvptr)
     {
       auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
       p.intensity = 0.299f * static_cast <float> (clr.r) + 0.587f * static_cast <float> (clr.g) + 0.114f * static_cast <float> (clr.b);
-    };
-
-    return convertRealsensePointsToPointCloud<pcl::PointXYZI> (points, pFunc);
-
+    });
   }
   else
   {
-    auto pFunc = [texture](pcl::PointXYZI& p, const rs2::texture_coordinate* uvptr)
+    return convertRealsensePointsToPointCloud<pcl::PointXYZI> (points, [texture](pcl::PointXYZI& p, const rs2::texture_coordinate* uvptr)
     {
       p.intensity = getTextureIntensity (texture, uvptr->u, uvptr->v);
-    };
-
-    return convertRealsensePointsToPointCloud<pcl::PointXYZI> (points, pFunc);
-
+    });
   }
 }
