@@ -119,45 +119,7 @@ namespace pcl
     boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
     boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;
 
-    template <typename PointT>
-    typename pcl::PointCloud<PointT>::Ptr
-    RealSense2Grabber::convertRealsensePointsToPointCloud (
-      const rs2::points& points, 
-      const rs2::video_frame& texture=nullptr)
-    {
-      typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT> ());
-
-      auto sp = points.get_profile ().as<rs2::video_stream_profile> ();
-      cloud->width = sp.width ();
-      cloud->height = sp.height ();
-      cloud->is_dense = false;
-      cloud->points.resize (points.size ());
-
-      const auto cloud_vertices_ptr = points.get_vertices ();
-      const auto cloud_texture_ptr = points.get_texture_coordinates ();
-
-#ifdef _OPENMP
-#pragma omp parallel for 
-#endif
-      for (int index = 0; index < cloud->points.size (); ++index)
-      {
-        const auto ptr = cloud_vertices_ptr + index;
-        const auto uvptr = cloud_texture_ptr + index;
-        auto& p = cloud->points[index];
-
-        p.x = ptr->x;
-        p.y = ptr->y;
-        p.z = ptr->z;
-
-        auto clr = getTextureColor (texture, uvptr->u, uvptr->v);
-
-        p.r = clr.r;
-        p.g = clr.g;
-        p.b = clr.b;
-      }
-
-      return cloud;
-    }
+    
 
     /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
     * \param[in] points the depth points
