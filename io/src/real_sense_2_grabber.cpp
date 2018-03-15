@@ -348,6 +348,8 @@ namespace pcl
 
       }
 
+
+
       if (signal_PointXYZ->num_slots () > 0)
       {
         signal_PointXYZ->operator()(convertDepthToPointXYZ (points));
@@ -360,7 +362,8 @@ namespace pcl
 
       if (signal_PointXYZRGB->num_slots () > 0)
       {
-        signal_PointXYZRGB->operator()(convertRGBDepthToPointXYZRGB (points, rgb));
+        pcl::PointCloud<pcl::PointXYZRGB>::Ptr x = template RealSense2Grabber::convertRealsensePointsToPointCloud<pcl::PointXYZRGB>(points, rgb);
+        //signal_PointXYZRGB->operator()(convertRealsensePointsToPointCloud<pcl::PointXYZRGB> (points, rgb));
       }
 
       if (signal_PointXYZRGBA->num_slots () > 0)
