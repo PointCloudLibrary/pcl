@@ -843,6 +843,13 @@ pcl::visualization::PCLVisualizer::addPointCloudNormals (
     PCL_ERROR ("[addPointCloudNormals] The number of points differs from the number of normals!\n");
     return (false);
   }
+
+  if (normals->empty ())
+  {
+    PCL_WARN ("[addPointCloudNormals] An empty normal cloud is given! Nothing to display.\n");
+    return (false);
+  }
+
   if (contains (id))
   {
     PCL_WARN ("[addPointCloudNormals] The id <%s> already exists! Please choose a different id and retry.\n", id.c_str ());
