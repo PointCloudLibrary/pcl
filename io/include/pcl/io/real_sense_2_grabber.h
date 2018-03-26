@@ -79,11 +79,7 @@ namespace pcl
       device_height_ = height;
       target_fps_ = fps;
 
-      if (isRunning ())
-      {
-        stop ();
-        start ();
-      }
+      ReInitialize ();
     }
 
     /** \brief Start the data acquisition. */
@@ -119,10 +115,72 @@ namespace pcl
     boost::signals2::signal<signal_librealsense_PointXYZRGB>* signal_PointXYZRGB;
     boost::signals2::signal<signal_librealsense_PointXYZRGBA>* signal_PointXYZRGBA;    
 
+    /** \brief Handle when a signal callback has been changed
+    */
+    virtual void
+    signalsChanged ();
+
     /** \brief the thread function
     */
     void 
     threadFunction ();
+
+    /** \brief Dynamic reinitialization.
+    */
+    void 
+    ReInitialize ();
+
+    /** \brief Convert a Depth image to a pcl::PointCloud<pcl::PointXYZ>
+    * \param[in] points the depth points
+    */
+    pcl::PointCloud<pcl::PointXYZ>::Ptr
+    convertDepthToPointXYZ (const rs2::points& points);
+
+    /** \brief Convert an Infrared Depth image to a pcl::PointCloud<pcl::PointXYZI>
+    * \param[in] points the depth points
+    * \param[in] ir Infrared video frame
+    */
+    pcl::PointCloud<pcl::PointXYZI>::Ptr
+    convertIntensityDepthToPointXYZRGBI (const rs2::points& points, const rs2::video_frame& ir);
+
+    /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGB>
+    * \param[in] points the depth points
+    * \param[in] rgb rgb video frame
+    */
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr
+    convertRGBDepthToPointXYZRGB (const rs2::points& points, const rs2::video_frame& rgb);
+
+    /** \brief Convert an rgb Depth image to a pcl::PointCloud<pcl::PointXYZRGBA>
+    * \param[in] points the depth points
+    * \param[in] rgb rgb video frame
+    */
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr
+    convertRGBADepthToPointXYZRGBA (const rs2::points& points, const rs2::video_frame& rgb);
+
+    /** \brief template function to convert realsense point cloud to PCL point cloud
+    * \param[in] points - realsense point cloud array
+    * \param[in] dynamic function to convert individual point color or intensity values
+    */
+    template <typename PointT, typename Functor>
+    typename pcl::PointCloud<PointT>::Ptr
+    convertRealsensePointsToPointCloud (const rs2::points& points, Functor mapColorFunc);
+
+    /** \brief Retrieve RGB color from texture video frame
+    * \param[in] texture the texture
+    * \param[in] u 2D coordinate
+    * \param[in] v 2D coordinate
+    */
+    pcl::RGB
+    getTextureColor (const rs2::video_frame& texture, float u, float v);
+
+    /** \brief Retrieve color intensity from texture video frame
+    * \param[in] texture the texture
+    * \param[in] u 2D coordinate
+    * \param[in] v 2D coordinate
+    */
+    uint8_t
+    getTextureIntensity (const rs2::video_frame& texture, float u, float v);
+
 
     /** \brief handle to the thread */
     std::thread thread_;
@@ -142,8 +200,6 @@ namespace pcl
     uint32_t device_height_;
     /** \brief Target FPS for the device. Default 30. */
     uint32_t target_fps_;
-    /** \brief format for the IR sensor. */
-    rs2_format ir_format_;
     /** \brief Declare pointcloud object, for calculating pointclouds and texture mappings */
     rs2::pointcloud pc_;
     /** \brief Declare RealSense pipeline, encapsulating the actual device and sensors */
