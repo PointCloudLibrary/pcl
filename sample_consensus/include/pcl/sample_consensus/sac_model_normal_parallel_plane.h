@@ -196,7 +196,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
    private:
       /** \brief The axis along which we need to search for a plane perpendicular to. */

@@ -132,7 +132,7 @@ namespace pcl
         */
       bool
       computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients);
+                                Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Compute all distances from the cloud data to a given 3D circle model.
         * \param[in] model_coefficients the coefficients of a 2D circle model that we need to compute distances to
@@ -140,7 +140,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances);
+                           std::vector<double> &distances) const;
 
       /** \brief Compute all distances from the cloud data to a given 3D circle model.
         * \param[in] model_coefficients the coefficients of a 3D circle model that we need to compute distances to
@@ -160,7 +160,7 @@ namespace pcl
         */
       virtual int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold);
+                           const double threshold) const;
 
        /** \brief Recompute the 3d circle coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the 3d circle model after refinement (e.g. after SVD)
@@ -171,7 +171,7 @@ namespace pcl
       void
       optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients);
+                                 Eigen::VectorXf &optimized_coefficients) const;
 
       /** \brief Create a new point cloud with inliers projected onto the 3d circle model.
         * \param[in] inliers the data inliers that we want to project on the 3d circle model
@@ -183,7 +183,7 @@ namespace pcl
       projectPoints (const std::vector<int> &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true);
+                     bool copy_data_fields = true) const;
 
       /** \brief Verify whether a subset of indices verifies the given 3d circle model coefficients.
         * \param[in] indices the data indices that need to be tested against the 3d circle model
@@ -193,7 +193,7 @@ namespace pcl
       bool
       doSamplesVerifyModel (const std::set<int> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold);
+                            const double threshold) const;
 
       /** \brief Return an unique id for this model (SACMODEL_CIRCLE3D). */
       inline pcl::SacModel
@@ -207,7 +207,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Check if a sample of indices results in a good sample of points indices.
         * \param[in] samples the resultant index samples

@@ -159,7 +159,7 @@ namespace pcl
         */
       bool
       computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients);
+                                Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Compute all distances from the transformed points to their correspondences
         * \param[in] model_coefficients the 4x4 transformation matrix
@@ -167,7 +167,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances);
+                           std::vector<double> &distances) const;
 
       /** \brief Select all the points which respect the given model coefficients as inliers.
         * \param[in] model_coefficients the 4x4 transformation matrix
@@ -187,7 +187,7 @@ namespace pcl
         */
       virtual int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold);
+                           const double threshold) const;
 
       /** \brief Recompute the 4x4 transformation using the given inlier set
         * \param[in] inliers the data inliers found as supporting the model
@@ -197,19 +197,19 @@ namespace pcl
       void
       optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients);
+                                 Eigen::VectorXf &optimized_coefficients) const;
 
       void
       projectPoints (const std::vector<int> &,
                      const Eigen::VectorXf &,
-                     PointCloud &, bool = true)
+                     PointCloud &, bool = true) const
       {
       };
 
       bool
       doSamplesVerifyModel (const std::set<int> &,
                             const Eigen::VectorXf &,
-                            const double)
+                            const double) const
       {
         return (false);
       }
@@ -302,7 +302,7 @@ namespace pcl
                                       const std::vector<int> &indices_src,
                                       const pcl::PointCloud<PointT> &cloud_tgt,
                                       const std::vector<int> &indices_tgt,
-                                      Eigen::VectorXf &transform);
+                                      Eigen::VectorXf &transform) const;
 
       /** \brief Compute mappings between original indices of the input_/target_ clouds. */
       void
