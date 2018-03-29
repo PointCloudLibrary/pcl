@@ -91,7 +91,6 @@ namespace pcl
         , eps_angle_ (0)
         , min_angle_ (-std::numeric_limits<double>::max ())
         , max_angle_ (std::numeric_limits<double>::max ())
-        , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
         sample_size_ = 3;
@@ -112,7 +111,6 @@ namespace pcl
         , eps_angle_ (0)
         , min_angle_ (-std::numeric_limits<double>::max ())
         , max_angle_ (std::numeric_limits<double>::max ())
-        , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCone";
         sample_size_ = 3;
@@ -125,7 +123,7 @@ namespace pcl
       SampleConsensusModelCone (const SampleConsensusModelCone &source) :
         SampleConsensusModel<PointT> (), 
         SampleConsensusModelFromNormals<PointT, PointNT> (),
-        axis_ (), eps_angle_ (), min_angle_ (), max_angle_ (), tmp_inliers_ ()
+        axis_ (), eps_angle_ (), min_angle_ (), max_angle_ ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelCone";
@@ -146,7 +144,6 @@ namespace pcl
         eps_angle_ = source.eps_angle_;
         min_angle_ = source.min_angle_;
         max_angle_ = source.max_angle_;
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -305,9 +302,6 @@ namespace pcl
       double min_angle_;
       double max_angle_;
 
-      /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
-
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
@@ -315,12 +309,11 @@ namespace pcl
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
-          * \param[in] m_data_points the number of data points to evaluate
+          * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
-          * \param[in] distance distance computation function pointer
           */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCone<PointT, PointNT> *model) : 
-          pcl::Functor<float> (m_data_points), model_ (model) {}
+        OptimizationFunctor (const pcl::SampleConsensusModelCone<PointT, PointNT> *model, const std::vector<int>& indices) :
+          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
           * \param[in] x variables array
@@ -340,9 +333,9 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[(*model_->tmp_inliers_)[i]].x,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].y,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
+            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
+                                model_->input_->points[indices_[i]].y,
+                                model_->input_->points[indices_[i]].z, 0);
 
             // Calculate the point's projection on the cone axis
             float k = (pt.dot (axis_dir) - apexdotdir) * dirdotdir;
@@ -357,7 +350,8 @@ namespace pcl
           return (0);
         }
 
-        pcl::SampleConsensusModelCone<PointT, PointNT> *model_;
+        const pcl::SampleConsensusModelCone<PointT, PointNT> *model_;
+        const std::vector<int> &indices_;
       };
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic warning "-Weffc++"

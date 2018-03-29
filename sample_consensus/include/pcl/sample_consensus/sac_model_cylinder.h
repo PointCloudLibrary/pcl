@@ -89,7 +89,6 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0)
-        , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCylinder";
         sample_size_ = 2;
@@ -108,7 +107,6 @@ namespace pcl
         , SampleConsensusModelFromNormals<PointT, PointNT> ()
         , axis_ (Eigen::Vector3f::Zero ())
         , eps_angle_ (0)
-        , tmp_inliers_ ()
       {
         model_name_ = "SampleConsensusModelCylinder";
         sample_size_ = 2;
@@ -122,8 +120,7 @@ namespace pcl
         SampleConsensusModel<PointT> (),
         SampleConsensusModelFromNormals<PointT, PointNT> (), 
         axis_ (Eigen::Vector3f::Zero ()),
-        eps_angle_ (0),
-        tmp_inliers_ ()
+        eps_angle_ (0)
       {
         *this = source;
         model_name_ = "SampleConsensusModelCylinder";
@@ -142,7 +139,6 @@ namespace pcl
         SampleConsensusModelFromNormals<PointT, PointNT>::operator=(source);
         axis_ = source.axis_;
         eps_angle_ = source.eps_angle_;
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -301,9 +297,6 @@ namespace pcl
       /** \brief The maximum allowed difference between the plane normal and the given axis. */
       double eps_angle_;
 
-      /** \brief temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
-
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic ignored "-Weffc++"
 #endif
@@ -311,12 +304,11 @@ namespace pcl
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
-          * \param[in] m_data_points the number of data points to evaluate
+          * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
-          * \param[in] distance distance computation function pointer
           */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCylinder<PointT, PointNT> *model) : 
-          pcl::Functor<float> (m_data_points), model_ (model) {}
+        OptimizationFunctor (const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model, const std::vector<int>& indices) :
+          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
           * \param[in] x variables array
@@ -332,16 +324,17 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // dist = f - r
-            Eigen::Vector4f pt (model_->input_->points[(*model_->tmp_inliers_)[i]].x,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].y,
-                                model_->input_->points[(*model_->tmp_inliers_)[i]].z, 0);
+            Eigen::Vector4f pt (model_->input_->points[indices_[i]].x,
+                                model_->input_->points[indices_[i]].y,
+                                model_->input_->points[indices_[i]].z, 0);
 
             fvec[i] = static_cast<float> (pcl::sqrPointToLineDistance (pt, line_pt, line_dir) - x[6]*x[6]);
           }
           return (0);
         }
 
-        pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
+        const pcl::SampleConsensusModelCylinder<PointT, PointNT> *model_;
+        const std::vector<int> &indices_;
       };
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic warning "-Weffc++"

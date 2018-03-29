@@ -281,9 +281,7 @@ pcl::SampleConsensusModelCylinder<PointT, PointNT>::optimizeModelCoefficients (
     return;
   }
 
-  tmp_inliers_ = &inliers;
-
-  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
+  OptimizationFunctor functor (this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor > num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, float> lm (num_diff);
   int info = lm.minimize (optimized_coefficients);

@@ -273,9 +273,7 @@ pcl::SampleConsensusModelCircle3D<PointT>::optimizeModelCoefficients (
     return;
   }
 
-  tmp_inliers_ = &inliers;
-
-  OptimizationFunctor functor (static_cast<int> (inliers.size ()), this);
+  OptimizationFunctor functor (this, inliers);
   Eigen::NumericalDiff<OptimizationFunctor> num_diff (functor);
   Eigen::LevenbergMarquardt<Eigen::NumericalDiff<OptimizationFunctor>, double> lm (num_diff);
   Eigen::VectorXd coeff;

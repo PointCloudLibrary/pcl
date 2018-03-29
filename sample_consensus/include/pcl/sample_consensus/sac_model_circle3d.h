@@ -109,7 +109,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelCircle3D (const SampleConsensusModelCircle3D &source) :
-        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+        SampleConsensusModel<PointT> ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelCircle3D";
@@ -122,7 +122,6 @@ namespace pcl
       operator = (const SampleConsensusModelCircle3D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -217,19 +216,15 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
-
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<double>
       {
         /** Functor constructor
-         * \param[in] m_data_points the number of functions
-         * \param[in] estimator pointer to the estimator object
-         * \param[in] distance distance computation function pointer
-         */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCircle3D<PointT> *model) :
-          pcl::Functor<double> (m_data_points), model_ (model) {}
+          * \param[in] indices the indices of data points to evaluate
+          * \param[in] estimator pointer to the estimator object
+          */
+        OptimizationFunctor (const pcl::SampleConsensusModelCircle3D<PointT> *model, const std::vector<int>& indices) :
+          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
 
        /** Cost function to be minimized
          * \param[in] x the variables array
@@ -242,7 +237,7 @@ namespace pcl
           {
             // what i have:
             // P : Sample Point
-            Eigen::Vector3d P (model_->input_->points[(*model_->tmp_inliers_)[i]].x, model_->input_->points[(*model_->tmp_inliers_)[i]].y, model_->input_->points[(*model_->tmp_inliers_)[i]].z);
+            Eigen::Vector3d P (model_->input_->points[indices_[i]].x, model_->input_->points[indices_[i]].y, model_->input_->points[indices_[i]].z);
             // C : Circle Center
             Eigen::Vector3d C (x[0], x[1], x[2]);
             // N : Circle (Plane) Normal
@@ -267,7 +262,8 @@ namespace pcl
           return (0);
         }
 
-        pcl::SampleConsensusModelCircle3D<PointT> *model_;
+        const pcl::SampleConsensusModelCircle3D<PointT> *model_;
+        const std::vector<int> &indices_;
       };
   };
 }

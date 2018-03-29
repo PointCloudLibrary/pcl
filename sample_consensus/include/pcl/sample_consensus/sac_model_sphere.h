@@ -78,8 +78,8 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
-                                  bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ ()
+                                  bool random = false)
+        : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelSphere";
         sample_size_ = 4;
@@ -91,10 +91,10 @@ namespace pcl
         * \param[in] indices a vector of point indices to be used from \a cloud
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
-      SampleConsensusModelSphere (const PointCloudConstPtr &cloud, 
+      SampleConsensusModelSphere (const PointCloudConstPtr &cloud,
                                   const std::vector<int> &indices,
-                                  bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
+                                  bool random = false)
+        : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelSphere";
         sample_size_ = 4;
@@ -108,7 +108,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelSphere (const SampleConsensusModelSphere &source) :
-        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+        SampleConsensusModel<PointT> ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelSphere";
@@ -121,7 +121,6 @@ namespace pcl
       operator = (const SampleConsensusModelSphere &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -229,8 +228,6 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
 
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -238,12 +235,11 @@ namespace pcl
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** Functor constructor
-          * \param[in] m_data_points the number of data points to evaluate
+          * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
-          * \param[in] distance distance computation function pointer
           */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelSphere<PointT> *model) : 
-          pcl::Functor<float>(m_data_points), model_ (model) {}
+        OptimizationFunctor (const pcl::SampleConsensusModelSphere<PointT> *model, const std::vector<int>& indices) :
+          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
           * \param[in] x the variables array
@@ -258,17 +254,18 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the sphere and the datapoint X_i
-            cen_t[0] = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
-            cen_t[1] = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
-            cen_t[2] = model_->input_->points[(*model_->tmp_inliers_)[i]].z - x[2];
-            
+            cen_t[0] = model_->input_->points[indices_[i]].x - x[0];
+            cen_t[1] = model_->input_->points[indices_[i]].y - x[1];
+            cen_t[2] = model_->input_->points[indices_[i]].z - x[2];
+
             // g = sqrt ((x-a)^2 + (y-b)^2 + (z-c)^2) - R
             fvec[i] = std::sqrt (cen_t.dot (cen_t)) - x[3];
           }
           return (0);
         }
-        
-        pcl::SampleConsensusModelSphere<PointT> *model_;
+
+        const pcl::SampleConsensusModelSphere<PointT> *model_;
+        const std::vector<int> &indices_;
       };
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic warning "-Weffc++"
