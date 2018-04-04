@@ -447,6 +447,11 @@ namespace pcl
 
       void
       verify();
+      
+      void setResolutionOccupancyGrid(float r)
+      {
+        res_occupancy_grid_ = r;
+      }
 
       void setRadiusNormals(float r)
       {
