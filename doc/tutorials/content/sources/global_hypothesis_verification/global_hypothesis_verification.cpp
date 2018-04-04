@@ -438,8 +438,8 @@ main (int argc,
 
   GoHv.setSceneCloud (scene);  // Scene Cloud
   GoHv.addModels (registered_instances, true);  //Models to verify
-  GoHv.setResolution(hv_resolution_);
-  GoHv.setResolutionOccupancyGrid(hv_occupancy_grid_resolution_);
+  GoHv.setResolution (hv_resolution_);
+  GoHv.setResolutionOccupancyGrid (hv_occupancy_grid_resolution_);
   GoHv.setInlierThreshold (hv_inlier_th_);
   GoHv.setOcclusionThreshold (hv_occlusion_th_);
   GoHv.setRegularizer (hv_regularizer_);
