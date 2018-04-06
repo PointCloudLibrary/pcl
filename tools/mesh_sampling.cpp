@@ -58,7 +58,7 @@ uniform_deviate (int seed)
 
 inline void
 randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
-                     float r1, float r2, Eigen::Vector4f& p)
+                     float r1, float r2, Eigen::Vector3f& p)
 {
   float r1sqr = std::sqrt (r1);
   float OneMinR1Sqr = (1 - r1sqr);
@@ -75,22 +75,10 @@ randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3,
   p[0] = c1;
   p[1] = c2;
   p[2] = c3;
-  p[3] = 0;
 }
 
 inline void
-randomPointTriangle (float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3,
-                     float r1, float r2, Eigen::Vector3i& c)
-{
-  Eigen::Vector4f tmp;
-  randomPointTriangle (a1, a2, a3, b1, b2, b3, c1, c2, c3, r1, r2, tmp);
-  c[0] = static_cast<int> (tmp[0]);
-  c[1] = static_cast<int> (tmp[1]);
-  c[2] = static_cast<int> (tmp[2]);
-}
-
-inline void
-randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector4f& p, bool calcNormal, Eigen::Vector3f& n, bool calcColor, Eigen::Vector3i& c)
+randPSurface (vtkPolyData * polydata, std::vector<double> * cumulativeAreas, double totalArea, Eigen::Vector3f& p, bool calcNormal, Eigen::Vector3f& n, bool calcColor, Eigen::Vector3f& c)
 {
   float r = static_cast<float> (uniform_deviate (rand ()) * totalArea);
 
@@ -167,9 +155,9 @@ uniform_sampling (vtkSmartPointer<vtkPolyData> polydata, size_t n_samples, bool 
 
   for (i = 0; i < n_samples; i++)
   {
-    Eigen::Vector4f p;
+    Eigen::Vector3f p;
     Eigen::Vector3f n;
-    Eigen::Vector3i c;
+    Eigen::Vector3f c;
     randPSurface (polydata, &cumulativeAreas, totalArea, p, calc_normal, n, calc_color, c);
     cloud_out.points[i].x = p[0];
     cloud_out.points[i].y = p[1];
