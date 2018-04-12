@@ -224,6 +224,94 @@ TEST (SampleConsensusModelPlane, RMSAC)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef PCL_ONLY_CORE_POINT_TYPES
+TEST (SampleConsensusModelPlane, inlierDetermination)
+{
+    /* Points:
+     * 1. Perfect inlier
+     * 2. distance outlier
+     * 3. normal outlier
+     * 4. complete outlier
+     * 5. near-threshold inlier
+     */
+    Eigen::VectorXf planeCoeff (4);
+    planeCoeff<< 0.74766f, -0.232124f, 0.622192f, 1.25f;
+
+    const double distanceThreshold = 0.01;
+    const double normalThreshold = 5.0 / 180.0 * M_PI;
+
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    cloud->resize (5);
+    // -1.25*n lies on plane
+    cloud->at (0).getVector4fMap () << -0.93457f, 0.29015f, -0.77774f, 1.0f;
+    // plane is 1.25 units away from origin. With appropriate distance threshold -> outlier
+    cloud->at (1).getVector4fMap () << 0.0f, 0.0f, 0.0f, 1.0f;
+    // -1.25*n lies on plane
+    cloud->at (2).getVector4fMap () << -0.93457f, 0.29015f, -0.77774f, 1.0f;
+    // plane is 1.25 units away from origin. With appropriate distance threshold -> outlier
+    cloud->at (3).getVector4fMap () << 0.0f, 0.0f, 0.0f, 1.0f;
+    // -1.259*n
+    cloud->at (4).getVector4fMap () << -0.94130f, 0.29224f, -0.78334f, 1.0f;
+
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    normals->resize (5);
+    // plane normal
+    normals->at (0).getNormalVector4fMap () << 0.74766f, -0.232124f, 0.622192f, 0.0f;
+    // plane normal
+    normals->at (1).getNormalVector4fMap () << 0.74766f, -0.232124f, 0.622192f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (2).getNormalVector4fMap () << 0.0f, 1.0f, 0.0f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (3).getNormalVector4fMap () << 0.0f, 1.0f, 0.0f, 0.0f;
+    // Plane normal rotated by 4.9 degrees
+    normals->at (4).getNormalVector4fMap () << 0.72969f, -0.31436f, 0.60724f, 0.0f;
+
+    SampleConsensusModelNormalPlane<PointXYZ, Normal> sacPlane (cloud);
+    sacPlane.setInputNormals (normals);
+
+    // Actually non of them should make a difference
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, normalThreshold));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, normalThreshold, planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN ()));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN (), planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, -1.0));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, -1.0, planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
+}
+#endif
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelNormalPlane, RANSAC)
 {
   srand (0);
@@ -237,6 +325,90 @@ TEST (SampleConsensusModelNormalPlane, RANSAC)
   RandomSampleConsensus<PointXYZ> sac (model, 0.03);
 
   verifyPlaneSac (model, sac);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SampleConsensusModelNormalPlane, inlierDetermination)
+{
+    /* Points:
+     * 1. Perfect inlier
+     * 2. distance outlier
+     * 3. normal outlier
+     * 4. complete outlier
+     * 5. near-threshold inlier
+     */
+    Eigen::VectorXf planeCoeff (4);
+    planeCoeff<< 0.74766f, -0.232124f, 0.622192f, 1.25f;
+
+    const double distanceThreshold = 0.01;
+    const double normalThreshold = 5.0 / 180.0 * M_PI;
+
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    cloud->resize (5);
+    // -1.25*n lies on plane
+    cloud->at (0).getVector4fMap () << -0.93457f, 0.29015f, -0.77774f, 1.0f;
+    // plane is 1.25 units away from origin. With appropriate distance threshold -> outlier
+    cloud->at (1).getVector4fMap () << 0.0f, 0.0f, 0.0f, 1.0f;
+    // -1.25*n lies on plane
+    cloud->at (2).getVector4fMap () << -0.93457f, 0.29015f, -0.77774f, 1.0f;
+    // plane is 1.25 units away from origin. With appropriate distance threshold -> outlier
+    cloud->at (3).getVector4fMap () << 0.0f, 0.0f, 0.0f, 1.0f;
+    // -1.259*n
+    cloud->at (4).getVector4fMap () << -0.94130f, 0.29224f, -0.78334f, 1.0f;
+
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    normals->resize (5);
+    // plane normal
+    normals->at (0).getNormalVector4fMap () << 0.74766f, -0.232124f, 0.622192f, 0.0f;
+    // plane normal
+    normals->at (1).getNormalVector4fMap () << 0.74766f, -0.232124f, 0.622192f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (2).getNormalVector4fMap () << 0.0f, 1.0f, 0.0f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (3).getNormalVector4fMap () << 0.0f, 1.0f, 0.0f, 0.0f;
+    // Plane normal rotated by 4.9 degrees
+    normals->at (4).getNormalVector4fMap () << 0.72969f, -0.31436f, 0.60724f, 0.0f;
+
+    SampleConsensusModelNormalPlane<PointXYZ, Normal> sacPlane (cloud);
+    sacPlane.setInputNormals (normals);
+
+    {
+      std::vector<int> expectedInliers (2);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 4;
+
+      EXPECT_EQ (2, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, normalThreshold));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, normalThreshold, planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN ()));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN (), planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacPlane.countWithinDistance (planeCoeff, distanceThreshold, -1.0));
+
+      std::vector<int> planeInliers;
+      sacPlane.selectWithinDistance (planeCoeff, distanceThreshold, -1.0, planeInliers);
+      EXPECT_EQ (expectedInliers, planeInliers);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -117,7 +117,10 @@ pcl::SACSegmentation<PointT>::segment (PointIndices &inliers, ModelCoefficients 
     model_coefficients.values.resize (coeff_refined.size ());
     memcpy (&model_coefficients.values[0], &coeff_refined[0], coeff_refined.size () * sizeof (float));
     // Refine inliers
-    model_->selectWithinDistance (coeff_refined, threshold_, inliers.indices);
+    model_->selectWithinDistance (coeff_refined,
+                                  threshold_,
+                                  normal_threshold_,
+                                  inliers.indices);
   }
   else
   {

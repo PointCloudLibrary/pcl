@@ -207,6 +207,91 @@ TEST (SampleConsensusModelNormalSphere, RANSAC)
   EXPECT_NEAR (1.000, coeff_refined[2], 1e-2);
   EXPECT_NEAR (0.050, coeff_refined[3], 1e-2);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SampleConsensusModelNormalSphere, inlierDetermination)
+{
+    /* Points:
+     * 1. Perfect inlier
+     * 2. distance outlier
+     * 3. normal outlier
+     * 4. complete outlier
+     * 5. near-threshold inlier
+     */
+    Eigen::VectorXf sphereCoeff (4);
+    sphereCoeff << 0.25f, -0.5f, -0.75f, 0.25f;
+
+    const double distanceThreshold = 0.01;
+    const double normalThreshold = 5.0 / 180.0 * M_PI;
+
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    cloud->resize (5);
+    // lies on sphere
+    cloud->at (0).getVector4fMap () << 0.0f, -0.5f, -0.75f, 1.0f;
+    // sufficiently far away from sphere
+    cloud->at (1).getVector4fMap () << 0.0f, 0.0f, 0.0f, 1.0f;
+    // lies on sphere and on line from origin to sphere center
+    cloud->at (2).getVector4fMap () << 0.18318f, -0.36637f, -0.54955f, 1.0f;
+    // close to the sphere center
+    cloud->at (3).getVector4fMap () << 0.292f, -0.49f, -0.8f, 1.0f;
+    // some point 0.009 units away from the sphere
+    cloud->at (4).getVector4fMap () << 0.31655f, -0.63310f, -0.94964f, 1.0f;
+
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    normals->resize (5);
+    // sphere normal at that point
+    normals->at (0).getNormalVector4fMap () << -1.0f, 0.0f, 0.0f, 0.0f;
+    // sphere normal at the projected point (center to origin)
+    normals->at (1).getNormalVector4fMap () << -0.26726f, 0.53452f, 0.80178f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (2).getNormalVector4fMap () << 0.0f, 1.0f, 0.0f, 0.0f;
+    // Normal outlier: y-axis should suffice
+    normals->at (3).getNormalVector4fMap () << 0.0f, 0.0f, 1.0f, 0.0f;
+    // sphere normal rotated by 4.9 degrees about y-axis
+    normals->at (4).getNormalVector4fMap () << 0.33477f, -0.53452f, -0.77602f, 0.0f;
+
+    SampleConsensusModelNormalSphere<PointXYZ, Normal> sacSphere (cloud);
+    sacSphere.setInputNormals (normals);
+
+    {
+      std::vector<int> expectedInliers (2);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 4;
+
+      EXPECT_EQ (2, sacSphere.countWithinDistance (sphereCoeff, distanceThreshold, normalThreshold));
+
+      std::vector<int> sphereInliers;
+      sacSphere.selectWithinDistance (sphereCoeff, distanceThreshold, normalThreshold, sphereInliers);
+      EXPECT_EQ (expectedInliers, sphereInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacSphere.countWithinDistance (sphereCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN ()));
+
+      std::vector<int> sphereInliers;
+      sacSphere.selectWithinDistance (sphereCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN (), sphereInliers);
+      EXPECT_EQ (expectedInliers, sphereInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacSphere.countWithinDistance (sphereCoeff, distanceThreshold, -1.0));
+
+      std::vector<int> sphereInliers;
+      sacSphere.selectWithinDistance (sphereCoeff, distanceThreshold, -1.0, sphereInliers);
+      EXPECT_EQ (expectedInliers, sphereInliers);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelCone, RANSAC)
 {
@@ -314,6 +399,90 @@ TEST (SampleConsensusModelCone, RANSAC)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SampleConsensusModelCone, inlierDetermination)
+{
+    /* Points:
+     * 1. Perfect inlier
+     * 2. distance outlier
+     * 3. normal outlier
+     * 4. complete outlier
+     * 5. near-threshold inlier
+     */
+    Eigen::VectorXf coneCoeff (7);
+    coneCoeff << 0.680375f, -0.211234f, 0.566198f, 0.50446f, 0.69582f, -0.51123f, 0.329554f;
+
+    const double distanceThreshold = 0.01;
+    const double normalThreshold = 5.0 / 180.0 * M_PI;
+
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    cloud->resize (5);
+    // some point on the cone
+    cloud->at (0).getVector4fMap () << 0.927221f, 0.258729f, 0.439215f, 1.0f;
+    // distance outlier
+    cloud->at (1).getVector4fMap () << 0.848432f, 0.381067f, 0.738829f, 1.0f;
+    // some point on the cone
+    cloud->at (2).getVector4fMap () << 0.927221f, 0.258729f, 0.439215f, 1.0f;
+    // another distance outlier
+    cloud->at (3).getVector4fMap () << 0.848432f, 0.381067f, 0.738829f, 1.0f;
+    // some point close to the cone
+    cloud->at (4).getVector4fMap () << 0.925095f, 0.262031f, 0.447301f, 1.0f;
+
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    normals->resize (5);
+    // cone normal
+    normals->at (0).getNormalVector4fMap () << -0.223817f, 0.347527f, 0.851118f, 0.0f;
+    // cone normal
+    normals->at (1).getNormalVector4fMap () << -0.223817f, 0.347527f, 0.851118f, 0.0f;
+    // Normal outlier
+    normals->at (2).getNormalVector4fMap () << -0.149819f, 0.316223f, 0.879106f, 0.0f;
+    // Normal outlier
+    normals->at (3).getNormalVector4fMap () << -0.149819f, 0.316223f, 0.879106f, 0.0f;
+    // cone normal rotated by 4.9 degrees
+    normals->at (4).getNormalVector4fMap () << -0.155669f, 0.318771f, 0.877167f, 0.0f;
+
+    SampleConsensusModelCone<PointXYZ, Normal> sacCone (cloud);
+    sacCone.setInputNormals (normals);
+
+    {
+      std::vector<int> expectedInliers (2);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 4;
+
+      EXPECT_EQ (2, sacCone.countWithinDistance (coneCoeff, distanceThreshold, normalThreshold));
+
+      std::vector<int> coneInliers;
+      sacCone.selectWithinDistance (coneCoeff, distanceThreshold, normalThreshold, coneInliers);
+      EXPECT_EQ (expectedInliers, coneInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacCone.countWithinDistance (coneCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN ()));
+
+      std::vector<int> coneInliers;
+      sacCone.selectWithinDistance (coneCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN (), coneInliers);
+      EXPECT_EQ (expectedInliers, coneInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacCone.countWithinDistance (coneCoeff, distanceThreshold, -1.0));
+
+      std::vector<int> coneInliers;
+      sacCone.selectWithinDistance (coneCoeff, distanceThreshold, -1.0, coneInliers);
+      EXPECT_EQ (expectedInliers, coneInliers);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TEST (SampleConsensusModelCylinder, RANSAC)
 {
   srand (0);
@@ -395,6 +564,90 @@ TEST (SampleConsensusModelCylinder, RANSAC)
   model->optimizeModelCoefficients (inliers, coeff, coeff_refined);
   EXPECT_EQ (7, coeff_refined.size ());
   EXPECT_NEAR (0.5, coeff_refined[6], 1e-3);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+TEST (SampleConsensusModelCylinder, inlierDetermination)
+{
+    /* Points:
+     * 1. Perfect inlier
+     * 2. distance outlier
+     * 3. normal outlier
+     * 4. complete outlier
+     * 5. near-threshold inlier
+     */
+    Eigen::VectorXf cylinderCoeff (7);
+    cylinderCoeff << 0.680375f, -0.211234f, 0.566198f, 0.50446f, 0.69582f, -0.51123f, 0.329554f;
+
+    const double distanceThreshold = 0.01;
+    const double normalThreshold = 5.0 / 180.0 * M_PI;
+
+    PointCloud<PointXYZ>::Ptr cloud (new PointCloud<PointXYZ>);
+    cloud->resize (5);
+    // some point on the cylinder
+    cloud->at (0).getVector4fMap () << 0.700752f, 0.022799f, 0.803104f, 1.0f;
+    // distance outlier
+    cloud->at (1).getVector4fMap () << 0.687191f, 0.480635f, 1.412870f, 1.0f;
+    // some point on the cylinder
+    cloud->at (2).getVector4fMap () << 0.700752f, 0.022799f, 0.803104f, 1.0f;
+    // another distance outlier
+    cloud->at (3).getVector4fMap () << 0.687191f, 0.480635f, 1.412870f, 1.0f;
+    // some point close to the cylinder
+    cloud->at (4).getVector4fMap () << 0.700584f, 0.028502f, 0.810699f, 1.0f;
+
+    PointCloud<Normal>::Ptr normals (new PointCloud<Normal>);
+    normals->resize (5);
+    // cylinder normal
+    normals->at (0).getNormalVector4fMap () << -0.017782f, 0.600334f, 0.799551f, 0.0f;
+    // cylinder normal
+    normals->at (1).getNormalVector4fMap () << -0.017782f, 0.600334f, 0.799551f, 0.0f;
+    // Normal outlier
+    normals->at (2).getNormalVector4fMap () << -0.094639f, 0.633079f, 0.768280f, 0.0f;
+    // Normal outlier
+    normals->at (3).getNormalVector4fMap () << -0.094639f, 0.633079f, 0.768280f, 0.0f;
+    // cylinder normal rotated by 4.9 degrees
+    normals->at (4).getNormalVector4fMap () << -0.089205f, 0.630920f, 0.770703f, 0.0f;
+
+    SampleConsensusModelCylinder<PointXYZ, Normal> sacCylinder(cloud);
+    sacCylinder.setInputNormals (normals);
+
+    {
+      std::vector<int> expectedInliers (2);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 4;
+
+      EXPECT_EQ (2, sacCylinder.countWithinDistance (cylinderCoeff, distanceThreshold, normalThreshold));
+
+      std::vector<int> cylinderInliers;
+      sacCylinder.selectWithinDistance (cylinderCoeff, distanceThreshold, normalThreshold, cylinderInliers);
+      EXPECT_EQ (expectedInliers, cylinderInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacCylinder.countWithinDistance (cylinderCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN ()));
+
+      std::vector<int> cylinderInliers;
+      sacCylinder.selectWithinDistance (cylinderCoeff, distanceThreshold, std::numeric_limits<double>::quiet_NaN (), cylinderInliers);
+      EXPECT_EQ (expectedInliers, cylinderInliers);
+    }
+
+    {
+      std::vector<int> expectedInliers (3);
+      expectedInliers[0] = 0;
+      expectedInliers[1] = 2;
+      expectedInliers[2] = 4;
+
+      EXPECT_EQ (3, sacCylinder.countWithinDistance (cylinderCoeff, distanceThreshold, -1.0));
+
+      std::vector<int> cylinderInliers;
+      sacCylinder.selectWithinDistance (cylinderCoeff, distanceThreshold, -1.0, cylinderInliers);
+      EXPECT_EQ (expectedInliers, cylinderInliers);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

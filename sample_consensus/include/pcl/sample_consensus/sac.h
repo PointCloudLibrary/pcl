@@ -80,6 +80,7 @@ namespace pcl
         , max_iterations_ (1000)
         , rng_alg_ ()
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , normal_threshold_ (std::numeric_limits<double>::quiet_NaN ())
       {
          // Create a random number generator object
          if (random)
@@ -106,6 +107,7 @@ namespace pcl
         , max_iterations_ (1000)
         , rng_alg_ ()
         , rng_ (new boost::uniform_01<boost::mt19937> (rng_alg_))
+        , normal_threshold_ (std::numeric_limits<double>::quiet_NaN ())
       {
          // Create a random number generator object
          if (random)
@@ -134,7 +136,7 @@ namespace pcl
       virtual ~SampleConsensus () {};
 
       /** \brief Set the distance to model threshold.
-        * \param[in] threshold distance to model threshold
+        * \param[in] threshold Euclidean distance to model threshold.
         */
       inline void 
       setDistanceThreshold (double threshold)  { threshold_ = threshold; }
@@ -142,6 +144,26 @@ namespace pcl
       /** \brief Get the distance to model threshold, as set by the user. */
       inline double 
       getDistanceThreshold () { return (threshold_); }
+
+      /** \brief Set the normal deviation threshold.
+        *
+        * Setting a non-finite value or a value below zero disables inlier
+        * rejection based no their angular deviation.
+        *
+        * \param[in] threshold Angular distance threshold in radians.
+        */
+      inline void
+      setNormalThreshold (double threshold)
+      {
+          if (pcl_isfinite (threshold) && threshold >= 0.0)
+            normal_threshold_ = threshold;
+          else
+            normal_threshold_ = std::numeric_limits<double>::quiet_NaN ();
+      }
+
+      /** \brief Get the normal deviation threshold, as set by the user. */
+      inline double
+      getNormalThreshold () const { return (normal_threshold_); }
 
       /** \brief Set the maximum number of iterations.
         * \param[in] max_iterations maximum number of iterations
@@ -335,6 +357,9 @@ namespace pcl
 
       /** \brief Boost-based random number generator distribution. */
       boost::shared_ptr<boost::uniform_01<boost::mt19937> > rng_;
+
+      /** \brief Normal distance threshold in radians. */
+      double normal_threshold_;
 
       /** \brief Boost-based random number generator. */
       inline double

@@ -94,7 +94,9 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
     //if (inliers.empty () && k > 1.0)
     //  continue;
 
-    n_inliers_count = sac_model_->countWithinDistance (model_coefficients, threshold_);
+    n_inliers_count = sac_model_->countWithinDistance (model_coefficients,
+                                                       threshold_,
+                                                       normal_threshold_);
 
     // Better match ?
     if (n_inliers_count > n_best_inliers_count)
@@ -131,7 +133,10 @@ pcl::RandomSampleConsensus<PointT>::computeModel (int)
   }
 
   // Get the set of inliers that correspond to the best model found so far
-  sac_model_->selectWithinDistance (model_coefficients_, threshold_, inliers_);
+  sac_model_->selectWithinDistance (model_coefficients_,
+                                    threshold_,
+                                    normal_threshold_,
+                                    inliers_);
   return (true);
 }
 

@@ -98,6 +98,7 @@ namespace pcl
         , max_iterations_ (50)
         , probability_ (0.99)
         , random_ (random)
+        , normal_threshold_(std::numeric_limits<double>::quiet_NaN ())
       {
       }
 
@@ -141,6 +142,17 @@ namespace pcl
       /** \brief Get the distance to the model threshold. */
       inline double 
       getDistanceThreshold () const { return (threshold_); }
+
+      /** \brief Angular deviation threshold (user given parametr).
+        * \param[in] threshold Maximum angular deviation in radians to
+        * distinguish the inliers from the outliers.
+        */
+      inline void
+      setNormalThreshold (double threshold) { normal_threshold_ = threshold; }
+
+      /** \brief Get the normal deviation threshold in radians. */
+      inline double
+      getNormalThreshold () const { return (normal_threshold_); }
 
       /** \brief Set the maximum number of iterations before giving up.
         * \param[in] max_iterations the maximum number of iterations the sample consensus method will run
@@ -297,6 +309,9 @@ namespace pcl
 
       /** \brief Set to true if we need a random seed. */
       bool random_;
+
+      /** \brief Normal distance threshold in radians. */
+      double normal_threshold_;
 
       /** \brief Class get name method. */
       virtual std::string 

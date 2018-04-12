@@ -440,4 +440,11 @@ aligned_free (void* ptr)
 #endif
 }
 
+// UNUSED macro for function arguments.
+#ifdef __GNUC__
+#   define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#   define UNUSED(x) UNUSED_ ## x
+#endif
+
 #endif  //#ifndef PCL_MACROS_H_

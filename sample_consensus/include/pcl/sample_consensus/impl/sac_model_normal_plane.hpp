@@ -46,7 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold, std::vector<int> &inliers)
+      const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold, std::vector<int> &inliers)
 {
   if (!normals_)
   {
@@ -69,6 +69,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
   int nr_p = 0;
   inliers.resize (indices_->size ());
   error_sqr_dists_.resize (indices_->size ());
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
 
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -89,7 +90,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
     double weight = normal_distance_weight_ * (1.0 - nt.curvature);
 
     double distance = fabs (weight * d_normal + (1.0 - weight) * d_euclid); 
-    if (distance < threshold)
+    if (distance < threshold && (!use_normal_threshold || (d_normal < normal_threshold)))
     {
       // Returns the indices of the points whose distances are smaller than the threshold
       inliers[nr_p] = (*indices_)[i];
@@ -104,7 +105,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold, const double normal_threshold)
 {
   if (!normals_)
   {
@@ -121,6 +122,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
   coeff[3] = 0;
 
   int nr_p = 0;
+  const bool use_normal_threshold = pcl_isfinite (normal_threshold) && (normal_threshold >= 0.0);
 
   // Iterate through the 3d points and calculate the distances from them to the plane
   for (size_t i = 0; i < indices_->size (); ++i)
@@ -140,7 +142,8 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
     // Weight with the point curvature. On flat surfaces, curvature -> 0, which means the normal will have a higher influence
     double weight = normal_distance_weight_ * (1.0 - nt.curvature);
 
-    if (fabs (weight * d_normal + (1.0 - weight) * d_euclid) < threshold)
+    double distance = fabs (weight * d_normal + (1.0 - weight) * d_euclid);
+    if (distance < threshold && (!use_normal_threshold || (d_normal < normal_threshold)))
       nr_p++;
   }
   return (nr_p);
