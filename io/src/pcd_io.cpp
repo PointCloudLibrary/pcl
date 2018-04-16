@@ -781,6 +781,8 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         return (-1);
       }
       mmap_size += compressed_size;
+      // Add the 8 bytes used to store the compressed and uncompressed size
+      mmap_size += 8;
 
       // Reset position
       pcl_lseek (fd, 0, SEEK_SET);
