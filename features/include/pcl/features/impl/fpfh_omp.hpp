@@ -62,7 +62,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     for (size_t idx = 0; idx < indices_->size (); ++idx)
     {
       int p_idx = (*indices_)[idx];
-      if (this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+      if (!isFinite ((*input_)[p_idx]) ||
+          this->searchForNeighbors (p_idx, search_parameter_, nn_indices, nn_dists) == 0)
         continue;
       
       spfh_indices_set.insert (nn_indices.begin (), nn_indices.end ());
@@ -98,7 +99,8 @@ pcl::FPFHEstimationOMP<PointInT, PointNT, PointOutT>::computeFeature (PointCloud
     int p_idx = spfh_indices_vec[i];
 
     // Find the neighborhood around p_idx
-    if (this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
+    if (!isFinite ((*input_)[p_idx]) ||
+        this->searchForNeighbors (*surface_, p_idx, search_parameter_, nn_indices, nn_dists) == 0)
       continue;
 
     // Estimate the SPFH signature around p_idx
