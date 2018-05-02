@@ -119,7 +119,7 @@ namespace pcl
       isComputed () { return is_computed_; }
 
       /** \brief Static method for comparing two pyramid histograms that returns a floating point value between 0 and 1,
-       * representing the similiarity between the feature sets on which the two pyramid histograms are based.
+       * representing the similarity between the feature sets on which the two pyramid histograms are based.
        * \param pyramid_a Pointer to the first pyramid to be compared (needs to be computed already).
        * \param pyramid_b Pointer to the second pyramid to be compared (needs to be computed already).
        */

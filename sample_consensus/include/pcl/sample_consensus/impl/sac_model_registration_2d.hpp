@@ -61,7 +61,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::isSampleGood (const std::vector
 
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> void
-pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) 
+pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel (const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   PCL_INFO ("[pcl::SampleConsensusModelRegistration2D<PointT>::getDistancesToModel]\n");
   if (indices_->size () != indices_tgt_->size ())
@@ -176,7 +176,7 @@ pcl::SampleConsensusModelRegistration2D<PointT>::selectWithinDistance (const Eig
 //////////////////////////////////////////////////////////////////////////
 template <typename PointT> int
 pcl::SampleConsensusModelRegistration2D<PointT>::countWithinDistance (
-    const Eigen::VectorXf &model_coefficients, const double threshold)
+    const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   if (indices_->size () != indices_tgt_->size ())
   {

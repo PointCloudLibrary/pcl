@@ -111,7 +111,7 @@ namespace pcl
       segment (pcl::PointCloud<PointLT>& labels, std::vector<pcl::PointIndices>& label_indices) const;
       
       /** \brief Find the boundary points / contour of a connected component
-        * \param[in] start_idx the first (lowest) index of the connected component for which a boundary shoudl be returned
+        * \param[in] start_idx the first (lowest) index of the connected component for which a boundary should be returned
         * \param[in] labels the Label cloud produced by segmentation
         * \param[out] boundary_indices the indices of the boundary points for the label corresponding to start_idx
         */

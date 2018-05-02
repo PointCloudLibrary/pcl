@@ -95,7 +95,7 @@ pcl::PosesFromMatches::estimatePosesUsing2Correspondences (const pcl::PointCorre
   pcl::TransformationFromCorrespondences transformation_from_correspondeces;
   
   // The following loop structure goes through the pairs in the order 12, 13, 23, 14, 24, 34, ...,
-  // testing the best correspondences pairs first, without beeing stuck too long with one specific
+  // testing the best correspondences pairs first, without being stuck too long with one specific
   // (possibly wrong) correspondence.
   bool done = false;
   for (int correspondence2_idx = 0; correspondence2_idx < max_correspondence_idx && !done; ++correspondence2_idx)
@@ -209,7 +209,7 @@ pcl::PosesFromMatches::estimatePosesUsing3Correspondences (const PointCorrespond
   pcl::TransformationFromCorrespondences transformation_from_correspondeces;
   
   // The following loop structure goes through the triples in the order 123, 124, 134, 234, 125, 135, 235, ...,
-  // testing the best correspondences triples first, without beeing stuck too long with one specific
+  // testing the best correspondences triples first, without being stuck too long with one specific
   // (possibly wrong) correspondence.
   bool done = false;
   for (int correspondence3_idx = 0; correspondence3_idx < max_correspondence_idx && !done; ++correspondence3_idx)

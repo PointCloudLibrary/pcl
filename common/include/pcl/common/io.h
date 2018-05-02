@@ -416,7 +416,7 @@ namespace pcl
     *  BORDER_REFLECT_101:   gfedcb|abcdefgh|gfedcba
     *  BORDER_WRAP:          cdefgh|abcdefgh|abcdefg
     *  BORDER_CONSTANT:      iiiiii|abcdefgh|iiiiiii  with some specified 'i'
-    *  BORDER_TRANSPARENT:   mnopqr|abcdefgh|tuvwxyz  where m-r and t-z are orignal values of cloud_out
+    *  BORDER_TRANSPARENT:   mnopqr|abcdefgh|tuvwxyz  where m-r and t-z are original values of cloud_out
     * \param value
     * \throw pcl::BadArgumentException if any of top, bottom, left or right is negative.
     * \ingroup common

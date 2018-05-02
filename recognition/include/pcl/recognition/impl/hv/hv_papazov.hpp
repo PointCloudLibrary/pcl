@@ -59,7 +59,7 @@ template<typename ModelT, typename SceneT>
     explained_by_RM_.resize (scene_cloud_downsampled_->points.size ());
     points_explained_by_rm_.resize (scene_cloud_downsampled_->points.size ());
 
-    // initalize model
+    // initialize model
     for (size_t m = 0; m < complete_models_.size (); m++)
     {
       boost::shared_ptr < RecognitionModel > recog_model (new RecognitionModel);
@@ -120,7 +120,7 @@ template<typename ModelT, typename SceneT>
       }
       else
       {
-        mask_[m] = false; // the model didnt survive the sequential check...
+        mask_[m] = false; // the model didn't survive the sequential check...
       }
     }
   }

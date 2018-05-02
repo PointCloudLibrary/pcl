@@ -392,7 +392,7 @@ boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (pcl::PointCloud<
 
 void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
 {
-  // No reference image - but this is kept for compatability with range_test_v2:
+  // No reference image - but this is kept for compatibility with range_test_v2:
   float* reference = new float[range_likelihood_->getRowHeight() * range_likelihood_->getColWidth()];
   const float* depth_buffer = range_likelihood_->getDepthBuffer();
   // Copy one image from our last as a reference.
@@ -471,7 +471,7 @@ void capture (Eigen::Isometry3d pose_in, string point_cloud_fname)
     writer.writeBinary (point_cloud_fname, *pc_out);
     //cout << "finished writing file\n";
   }
-  // Disabled all OpenCV stuff for now: dont want the dependency
+  // Disabled all OpenCV stuff for now: don't want the dependency
   /*
   bool demo_other_stuff = false;
   if (demo_other_stuff && write_cloud)

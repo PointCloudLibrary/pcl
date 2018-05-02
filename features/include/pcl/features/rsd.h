@@ -47,7 +47,7 @@ namespace pcl
 {
   /** \brief Transform a list of 2D matrices into a point cloud containing the values in a vector (Histogram<N>).
     * Can be used to transform the 2D histograms obtained in \ref RSDEstimation into a point cloud.
-    * @note The template paramter N should be (greater or) equal to the product of the number of rows and columns.
+    * @note The template parameter N should be (greater or) equal to the product of the number of rows and columns.
     * \param[in] histograms2D the list of neighborhood 2D histograms
     * \param[out] histogramsPC the dataset containing the linearized matrices
     * \ingroup features

@@ -34,7 +34,7 @@
 ///
 
 /// @file   transformCommand.h
-/// @details a TransfromCommand object provides transformation and undo
+/// @details a TransformCommand object provides transformation and undo
 /// functionalities.  // XXX - transformation of what?
 /// @author  Yue Li and Matthew Hielsberg
 

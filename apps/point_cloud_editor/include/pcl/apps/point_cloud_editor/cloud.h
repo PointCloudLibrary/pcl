@@ -49,6 +49,10 @@
 # include <OpenGL/gl.h>
 # include <OpenGL/glu.h>
 #else
+#if _WIN32
+// Need this to pull in APIENTRY, etc.
+#include "windows.h"
+#endif
 # include <GL/gl.h>
 # include <GL/glu.h>
 #endif
@@ -409,7 +413,7 @@ class Cloud : public Statistics
     /// The internal representation of the cloud
     Cloud3D cloud_;
 
-    /// @breif A weak pointer pointing to the selection object.
+    /// @brief A weak pointer pointing to the selection object.
     /// @details This implementation uses the weak pointer to allow for a lazy
     /// update of the cloud if the selection object is destroyed.
     boost::weak_ptr<Selection> selection_wk_ptr_;

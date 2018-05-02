@@ -355,7 +355,7 @@ namespace pcl
         /** \brief Get camera parameters from a string vector.
           * \param[in] camera A string vector:
           * Clipping Range, Focal Point, Position, ViewUp, Distance, Field of View Y, Window Size, Window Pos.
-          * Values in each string are seperated by a ','
+          * Values in each string are separated by a ','
           */
         bool
         getCameraParameters (const std::vector<std::string> &camera);

@@ -90,7 +90,7 @@ pcl::cloud_composer::CloudItem::removeFromView (boost::shared_ptr<pcl::visualiza
 QVariant
 pcl::cloud_composer::CloudItem::data (int role) const
 {
-  // Check if we're trying to get something which is template dependant, if so, create the template if it hasn't been set
+  // Check if we're trying to get something which is template dependent, if so, create the template if it hasn't been set
   if ( (role == ItemDataRole::CLOUD_TEMPLATED || role == ItemDataRole::KD_TREE_SEARCH) && !template_cloud_set_)
   {
     qCritical () << "Attempted to access templated types which are not set!!";

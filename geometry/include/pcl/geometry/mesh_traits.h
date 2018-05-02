@@ -77,7 +77,7 @@ namespace pcl
       typedef EdgeDataT     EdgeData;
       typedef FaceDataT     FaceData;
 
-      /** \brief Specifies wether the mesh is manifold or not (only non-manifold vertices can be represented). */
+      /** \brief Specifies whether the mesh is manifold or not (only non-manifold vertices can be represented). */
       typedef boost::false_type IsManifold;
     };
   } // End namespace geometry

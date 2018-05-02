@@ -112,7 +112,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
           */
         TsdfVolume (const Eigen::Vector3i& resolution);           
               
-        /** \brief Sets Tsdf volume size for each dimention
+        /** \brief Sets Tsdf volume size for each dimension
           * \param[in] size size of tsdf volume in meters
           */
         void
@@ -124,7 +124,7 @@ EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         void
         setTsdfTruncDist (float distance);
 
-        /** \brief Returns tsdf volume container that point to data in GPU memroy */
+        /** \brief Returns tsdf volume container that point to data in GPU memory */
         DeviceArray2D<int> 
         data () const;
 

@@ -116,7 +116,7 @@ main (int argc,
 
   // Visualization
   pcl::visualization::PCLVisualizer viewer ("ICP demo");
-  // Create two verticaly separated viewports
+  // Create two vertically separated viewports
   int v1 (0);
   int v2 (1);
   viewer.createViewPort (0.0, 0.0, 0.5, 1.0, v1);

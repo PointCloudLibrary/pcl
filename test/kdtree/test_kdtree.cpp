@@ -64,7 +64,7 @@ struct MyPoint : public PointXYZ
 
 PointCloud<MyPoint> cloud, cloud_big;
 
-// Includ the implementation so that KdTree<MyPoint> works
+// Include the implementation so that KdTree<MyPoint> works
 #include <pcl/kdtree/impl/kdtree_flann.hpp>
 
 void 

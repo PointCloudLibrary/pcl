@@ -306,6 +306,11 @@ CloudEditorWidget::denoise ()
     return;
   DenoiseParameterForm form;
   form.exec();
+  // check for cancel.
+  if (!form.ok())
+  {
+	  return;
+  }
   boost::shared_ptr<DenoiseCommand> c(new DenoiseCommand(selection_ptr_,
     cloud_ptr_, form.getMeanK(), form.getStdDevThresh()));
   command_queue_ptr_->execute(c);

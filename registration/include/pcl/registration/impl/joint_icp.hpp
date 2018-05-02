@@ -236,7 +236,7 @@ pcl::JointIterativeClosestPoint<PointSource, PointTarget, Scalar>::computeTransf
     // Estimate the transform jointly, on a combined correspondence set
     transformation_estimation_->estimateRigidTransformation (*inputs_transformed_combined, *targets_combined, *correspondences_, transformation_);
 
-    // Tranform the combined data
+    // Transform the combined data
     this->transformCloud (*inputs_transformed_combined, *inputs_transformed_combined, transformation_);
     // And all its components
     for (size_t i = 0; i < sources_.size (); i++)

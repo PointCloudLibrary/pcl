@@ -160,7 +160,7 @@ class Recorder
             tide::TrackEntry::Ptr track(new tide::TrackEntry(1, 1, "pointcloud2"));
             track->name("3D video");
             track->codec_name("pcl::PCLPointCloud2");
-            // Adding each level 1 element (only the first occurance, in the case of
+            // Adding each level 1 element (only the first occurrence, in the case of
             // clusters) to the index makes opening the file later much faster.
             segment.index.insert(std::make_pair(tracks.id(),
                         segment.to_segment_offset(stream_.tellp())));
@@ -287,7 +287,7 @@ class Player
             tide::Segment segment;
             segment.read(stream);
             // The segment's date is stored as the number of nanoseconds since the
-            // start of the millenium. Boost::Date_Time is invaluable here.
+            // start of the millennium. Boost::Date_Time is invaluable here.
             bpt::ptime basis(boost::gregorian::date(2001, 1, 1));
             bpt::time_duration sd(bpt::microseconds(segment.info.date() / 1000));
             bpt::ptime seg_start(basis + sd);

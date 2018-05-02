@@ -3789,7 +3789,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   ico->SetSolidTypeToIcosahedron ();
   ico->Update ();
 
-  //tesselate cells from icosahedron
+  //tessellate cells from icosahedron
   vtkSmartPointer<vtkLoopSubdivisionFilter> subdivide = vtkSmartPointer<vtkLoopSubdivisionFilter>::New ();
   subdivide->SetNumberOfSubdivisions (tesselation_level);
   subdivide->SetInputConnection (ico->GetOutputPort ());
@@ -3858,7 +3858,7 @@ pcl::visualization::PCLVisualizer::renderViewTesselatedSphere (
   cam->SetViewAngle (view_angle);
   cam->Modified ();
 
-  //For each camera position, traposesnsform the object and render view
+  //For each camera position, transform the object and render view
   for (size_t i = 0; i < cam_positions.size (); i++)
   {
     cam_pos[0] = cam_positions[i][0];

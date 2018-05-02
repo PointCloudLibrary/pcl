@@ -109,7 +109,7 @@ Now hit the "Configure" button. You will be asked for a `generator`. A generator
 	"**Visual Studio 10**" generator. If you want to build 64bit PCL, then pick the "**Visual Studio 10 Win64**".
 
 	Make sure you have installed the right third party dependencies. You cannot mix 32bit and 64bit code, and it is 
-	highly recommanded to not mix codes compiled with different compilers.
+	highly recommended to not mix codes compiled with different compilers.
 	
 .. image:: images/windows/cmake_generator.png
     :alt: Choosing a generator
@@ -146,7 +146,7 @@ Let's check whether CMake did actually find the needed third party dependencies 
 		:alt: Boost
 		:align: center	
 	
-	Let's tell CMake where boost headers are by specifiying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
+	Let's tell CMake where boost headers are by specifying the headers path in **Boost_INCLUDE_DIR** variable. For example, my boost 
 	headers are in C:\\Program Files\\PCL-Boost\\include (C:\\Program Files\\Boost\\include for newer installers). 
 	Then, let's hit `configure` again ! Hopefully, CMake is now able to find all the other items (the libraries).
 
@@ -245,7 +245,7 @@ Once CMake has found all the needed dependencies, let's see the PCL specific CMa
 	:alt: PCL
 	:align: center
 	
-- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommanded).
+- **PCL_SHARED_LIBS** is checked by default. Uncheck it if you want static PCL libs (not recommended).
 
 - **CMAKE_INSTALL_PREFIX** is where PCL will be installed after building it (more information on this later).
 	
@@ -291,7 +291,7 @@ CMake variable.
 
 .. note::
 
-	It is highly recommanded to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
+	It is highly recommended to add the bin folder in PCL installation tree (e.g. C:\\Program Files\\PCL\\bin)
 	to your **PATH** environment variable.
 
 Advanced topics

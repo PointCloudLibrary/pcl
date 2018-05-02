@@ -222,7 +222,7 @@ pcl::gpu::KinfuTracker::allocateBufffers (int rows, int cols)
     coresps_[i].create (pyr_rows, pyr_cols);
   }  
   depthRawScaled_.create (rows, cols);
-  // see estimate tranform for the magic numbers
+  // see estimate transform for the magic numbers
   gbuf_.create (27, 20*60);
   sumbuf_.create (27);
 }
@@ -297,7 +297,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
       }
       else
       {
-        Rcurr = Rprev; // tranform to global coo for ith camera pose
+        Rcurr = Rprev; // transform to global coo for ith camera pose
         tcurr = tprev;
       }
       {
@@ -365,7 +365,7 @@ pcl::gpu::KinfuTracker::operator() (const DepthMap& depth_raw,
           }
         }
       }
-      //save tranform
+      //save transform
       rmats_.push_back (Rcurr);
       tvecs_.push_back (tcurr);
   } 

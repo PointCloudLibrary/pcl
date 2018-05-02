@@ -187,7 +187,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
         // select four coplanar point base
         if (selectBase (base_indices, ratio) == 0)
         {
-          // calculate candidate pair correspondences using diagonal lenghts of base
+          // calculate candidate pair correspondences using diagonal lengths of base
           pcl::Correspondences pairs_a, pairs_b;
           if (bruteForceCorrespondences (base_indices[0], base_indices[1], pairs_a) == 0 &&
             bruteForceCorrespondences (base_indices[2], base_indices[3], pairs_b) == 0)
@@ -217,7 +217,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   }
   
 
-  // determine best match over all trys
+  // determine best match over all tries
   finalCompute (all_candidates);
 
   // apply the final transformation
@@ -343,7 +343,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
   Eigen::Vector4f centre_pt;
   float nearest_to_plane = FLT_MAX;
 
-  // repeat base search until valid quadruple was found or ransac_iterations_ number of trys were unsuccessfull
+  // repeat base search until valid quadruple was found or ransac_iterations_ number of tries were unsuccessful
   for (int i = 0; i < ransac_iterations_; i++)
   {
     // random select an appropriate point triple
@@ -382,7 +382,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
       }
     }
 
-    // check if at least one point fullfilled the conditions
+    // check if at least one point fulfilled the conditions
     if (nearest_to_plane != FLT_MAX)
     {
       // order points to build largest quadrangle and calcuate intersection ratios of diagonals
@@ -391,7 +391,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     }
   }
 
-  // return unsuccessfull if no quadruple was selected
+  // return unsuccessful if no quadruple was selected
   return (-1);
 }
 
@@ -697,7 +697,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
     }
   }
 
-  // return unsuccessfull if no match was found
+  // return unsuccessful if no match was found
   return (matches.size () > 0 ? 0 : -1);
 }
 
@@ -868,7 +868,7 @@ pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scal
       break;
   }
 
-  // check current costs and return unsuccessfull if larger than previous ones
+  // check current costs and return unsuccessful if larger than previous ones
   inlier_score_temp /= static_cast <float> (nr_points);
   float fitness_score_temp = 1.f - inlier_score_temp;
 
@@ -885,7 +885,7 @@ template <typename PointSource, typename PointTarget, typename NormalT, typename
 pcl::registration::FPCSInitialAlignment <PointSource, PointTarget, NormalT, Scalar>::finalCompute (
   const std::vector <MatchingCandidates > &candidates)
 {
-  // get best fitness_score over all trys
+  // get best fitness_score over all tries
   int nr_candidates = static_cast <int> (candidates.size ());
   int best_index = -1;
   float best_score = FLT_MAX;

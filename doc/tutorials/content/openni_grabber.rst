@@ -89,7 +89,7 @@ As you can see, the *run ()* function of *SimpleOpenNIViewer* first creates a
 new *OpenNIGrabber* interface. The next line might seem a bit intimidating at
 first, but it's not that bad. We create a *boost::bind* object with the address
 of the callback *cloud_cb_*, we pass a reference to our *SimpleOpenNIViewer*
-and the argument palce holder *_1*.
+and the argument place holder *_1*.
 
 The *bind* then gets casted to a *boost::function* object which is templated on
 the callback function type, in this case *void (const
@@ -171,7 +171,7 @@ Add the following lines to your CMakeLists.txt file:
 Troubleshooting
 ---------------
 
-Q: I get an error that theres now device connected:
+Q: I get an error that there's no device connected:
 
 .. note::
 

@@ -48,7 +48,7 @@ namespace pcl
   /** \brief @b PointRepresentation provides a set of methods for converting a point structs/object into an
     * n-dimensional vector.
     * \note This is an abstract class.  Subclasses must set nr_dimensions_ to the appropriate value in the constructor
-    * and provide an implemention of the pure virtual copyToFloatArray method.
+    * and provide an implementation of the pure virtual copyToFloatArray method.
     * \author Michael Dixon
     */
   template <typename PointT>
@@ -80,7 +80,7 @@ namespace pcl
       /** \brief Empty destructor */
       virtual ~PointRepresentation () {}
 
-      /** \brief Copy point data from input point to a float array. This method must be overriden in all subclasses.
+      /** \brief Copy point data from input point to a float array. This method must be overridden in all subclasses.
        *  \param[in] p The input point
        *  \param[out] out A pointer to a float array.
        */
@@ -414,6 +414,22 @@ namespace pcl
   template <>
   class DefaultPointRepresentation <VFHSignature308> : public DefaultFeatureRepresentation <VFHSignature308>
   {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature512> : public DefaultFeatureRepresentation <GASDSignature512>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature984> : public DefaultFeatureRepresentation <GASDSignature984>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature7992> : public DefaultFeatureRepresentation <GASDSignature7992>
+  {};
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
   class DefaultPointRepresentation <Narf36> : public PointRepresentation <Narf36>

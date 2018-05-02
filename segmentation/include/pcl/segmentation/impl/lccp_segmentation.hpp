@@ -248,7 +248,7 @@ pcl::LCCPSegmentation<PointT>::mergeSmallSegments ()
 
     // After filtered Segments are deleted, compute completely new adjacency map
     // NOTE Recomputing the adjacency of every segment in every iteration is an easy but inefficient solution.
-    // Because the number of segments in an average scene is usually well below 1000, the time spend for noise filtering is still neglible in most cases
+    // Because the number of segments in an average scene is usually well below 1000, the time spend for noise filtering is still negligible in most cases
     computeSegmentAdjacency ();
   }  // End while (Filtering)
 }
@@ -349,7 +349,7 @@ pcl::LCCPSegmentation<PointT>::recursiveSegmentGrowing (const VertexID &query_po
   sv_label_to_seg_label_map_[sv_label] = segment_label;
   seg_label_to_sv_list_map_[segment_label].insert (sv_label);
 
-  // Iterate through all neighbors of this supervoxel and check wether they should be merged with the current supervoxel
+  // Iterate through all neighbors of this supervoxel and check whether they should be merged with the current supervoxel
   std::pair<OutEdgeIterator, OutEdgeIterator> out_edge_iterator_range;
   out_edge_iterator_range = boost::out_edges (query_point_id, sv_adjacency_list_);  // adjacent vertices to node (*itr) in graph sv_adjacency_list_
   for (OutEdgeIterator out_Edge_itr = out_edge_iterator_range.first; out_Edge_itr != out_edge_iterator_range.second; ++out_Edge_itr)
@@ -385,7 +385,7 @@ pcl::LCCPSegmentation<PointT>::applyKconvexity (const unsigned int k_arg)
   // Check all edges in the graph for k-convexity
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge)
   {
-    next_edge++;  // next_edge iterator is neccessary, because removing an edge invalidates the iterator to the current edge
+    next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
 
     is_convex = sv_adjacency_list_[*edge_itr].is_convex;
 
@@ -443,7 +443,7 @@ pcl::LCCPSegmentation<PointT>::calculateConvexConnections (SupervoxelAdjacencyLi
 
   for (next_edge = edge_itr; edge_itr != edge_itr_end; edge_itr = next_edge)
   {
-    next_edge++;  // next_edge iterator is neccessary, because removing an edge invalidates the iterator to the current edge
+    next_edge++;  // next_edge iterator is necessary, because removing an edge invalidates the iterator to the current edge
 
     uint32_t source_sv_label = adjacency_list_arg[boost::source (*edge_itr, adjacency_list_arg)];
     uint32_t target_sv_label = adjacency_list_arg[boost::target (*edge_itr, adjacency_list_arg)];

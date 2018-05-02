@@ -58,7 +58,7 @@ namespace pcl
     };
 
     typedef std::vector<Vertex> Vertices;
-    typedef std::vector<size_t> Indices;
+    typedef std::vector<GLuint> Indices;
 
     class Model
     {

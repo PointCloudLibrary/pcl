@@ -1416,7 +1416,7 @@ public:
     order1 - [in]
     order2 - [in]
   Returns:
-    True if input was valid and creation succeded.
+    True if input was valid and creation succeeded.
   */
   bool Create(
     int dim,

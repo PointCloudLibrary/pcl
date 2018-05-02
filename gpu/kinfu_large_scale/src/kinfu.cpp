@@ -295,7 +295,7 @@ pcl::gpu::kinfuLS::KinfuTracker::allocateBufffers (int rows, int cols)
     coresps_[i].create (pyr_rows, pyr_cols);
   }  
   depthRawScaled_.create (rows, cols);
-  // see estimate tranform for the magic numbers
+  // see estimate transform for the magic numbers
   int r = (int)ceil ( ((float)rows) / ESTIMATE_COMBINED_CUDA_GRID_Y );
   int c = (int)ceil ( ((float)cols) / ESTIMATE_COMBINED_CUDA_GRID_X );
   gbuf_.create (27, r * c);
@@ -545,7 +545,7 @@ pcl::gpu::kinfuLS::KinfuTracker::performPairWiseICP(const Intr cam_intrinsics, M
   }
   
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // since raw depthmaps are quite noisy, we make sure the estimated transform is big enought to be taken into account
+  // since raw depthmaps are quite noisy, we make sure the estimated transform is big enough to be taken into account
   float rnorm = rodrigues2(current_rotation).norm();
   float tnorm = (current_translation).norm();    
   const float alpha = 1.f;
@@ -582,7 +582,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
   
   ///////////////////////////////////////////////////////////////////////////////////////////
   // Initialization at first frame
-  if (global_time_ == 0) // this is the frist frame, the tsdf volume needs to be initialized
+  if (global_time_ == 0) // this is the first frame, the tsdf volume needs to be initialized
   {  
     // Initial rotation
     Matrix3frm initial_cam_rot = rmats_[0]; //  [Ri|ti] - pos of camera
@@ -667,7 +667,7 @@ pcl::gpu::kinfuLS::KinfuTracker::operator() (const DepthMap& depth_raw)
   device_current_translation_local -= getCyclicalBufferStructure()->origin_metric;   // translation (local translation = global translation - origin of cube)
   
   ///////////////////////////////////////////////////////////////////////////////////////////
-  // Integration check - We do not integrate volume if camera does not move far enought.  
+  // Integration check - We do not integrate volume if camera does not move far enough.  
   {
     float rnorm = rodrigues2(current_global_rotation.inverse() * last_known_global_rotation).norm();
     float tnorm = (current_global_translation - last_known_global_translation).norm();    

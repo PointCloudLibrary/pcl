@@ -62,7 +62,7 @@ namespace pcl
       /** \brief Constructor. */
       Grabber () : signals_ (), connections_ (), shared_connections_ () {}
 
-      /** \brief virtual desctructor. */
+      /** \brief virtual destructor. */
       virtual inline ~Grabber () throw ();
 
       /** \brief registers a callback function/method to a signal with the corresponding signature

@@ -329,7 +329,7 @@ pcl::IFSWriter::write (const std::string &file_name, const pcl::PCLPointCloud2 &
 
   if (!cloud.is_dense)
   {
-    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not alowed by IFS format!\n");
+    PCL_ERROR ("[pcl::IFSWriter::write] Non dense cloud are not allowed by IFS format!\n");
     return (-1);
   }
 

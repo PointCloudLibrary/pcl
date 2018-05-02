@@ -150,7 +150,7 @@ namespace pcl
       /**
        * \brief Set sensor orientation (vertical = true means portrait mode, vertical = false means landscape mode).
        *
-       * \param[in] vertical Set landscape/portait camera orientation (default = false).
+       * \param[in] vertical Set landscape/portrait camera orientation (default = false).
        */
       void
       setSensorPortraitOrientation (bool vertical);

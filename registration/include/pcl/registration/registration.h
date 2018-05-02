@@ -422,7 +422,7 @@ namespace pcl
       inline const std::string&
       getClassName () const { return (reg_name_); }
         
-      /** \brief Internal computation initalization. */
+      /** \brief Internal computation initialization. */
       bool
       initCompute ();
 
@@ -528,7 +528,7 @@ namespace pcl
       double euclidean_fitness_epsilon_;
 
       /** \brief The maximum distance threshold between two correspondent points in source <-> target. If the 
-        * distance is larger than this threshold, the points will be ignored in the alignement process.
+        * distance is larger than this threshold, the points will be ignored in the alignment process.
         */
       double corr_dist_threshold_;
 

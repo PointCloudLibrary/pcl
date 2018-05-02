@@ -505,7 +505,7 @@ costFunction3 (float ref_val,float depth_val)
   { // working range
     float min_dist = abs (ref_val - 0.7253f/(1.0360f - (depth_val)));
 
-    int lup = static_cast<int> (ceil (min_dist*100)); // has resulution of 0.01m
+    int lup = static_cast<int> (ceil (min_dist*100)); // has resolution of 0.01m
     if (lup > 300)
     { // implicitly this caps the cost if there is a hole in the model
       lup = 300;
@@ -520,7 +520,7 @@ costFunction4(float ref_val,float depth_val)
 {
   float disparity_diff = abs( ( -0.7253f/ref_val +1.0360f ) -  depth_val );
 
-  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resulution of 0.001m
+  int top_lup = static_cast<int> (ceil (disparity_diff*300)); // has resolution of 0.001m
   if (top_lup > 300)
   {
     top_lup =300;
@@ -529,7 +529,7 @@ costFunction4(float ref_val,float depth_val)
 
   // bottom:
   //bottom = bottom_lookup(   round(mu*1000+1));
-  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resulution of 0.001m
+  int bottom_lup = static_cast<int> (ceil( (depth_val) * 300)); // has resolution of 0.001m
   if (bottom_lup > 300)
   {
     bottom_lup =300;
@@ -539,7 +539,7 @@ costFunction4(float ref_val,float depth_val)
   float proportion = 0.999f;
   float lhood = proportion + (1-proportion)*(top/bottom);
 
-  // safety fix thats seems to be required due to opengl ayschronizate
+  // safety fix that seems to be required due to opengl asynchronization
   // ask hordur about this
   if (bottom == 0)
   {

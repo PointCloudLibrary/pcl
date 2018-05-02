@@ -265,13 +265,13 @@ namespace pcl
         /** \brief Vector for storing binary tree structure */
         std::vector<char> binary_tree_data_vector_;
 
-        /** \brief Interator on binary tree structure vector */
+        /** \brief Iterator on binary tree structure vector */
         std::vector<char> binary_color_tree_vector_;
 
         /** \brief Vector for storing points per voxel information  */
         std::vector<unsigned int> point_count_data_vector_;
 
-        /** \brief Interator on points per voxel vector */
+        /** \brief Iterator on points per voxel vector */
         std::vector<unsigned int>::const_iterator point_count_data_vector_iterator_;
 
         /** \brief Color coding instance */

@@ -68,7 +68,7 @@ namespace pcl
     * different than feature estimation methods that extend \ref
     * FeatureFromNormals, which match the normals with the search surface.
     *
-    * With the default paramters, pcl::Histogram<153> is a good choice for PointOutT.
+    * With the default parameters, pcl::Histogram<153> is a good choice for PointOutT.
     * Of course the dimension of this descriptor must change to match the number
     * of bins set by the parameters.
     *

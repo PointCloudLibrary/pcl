@@ -8,11 +8,12 @@ if(MSVC)
 endif()
 
 set(CUDA_FIND_QUIETLY TRUE)
-find_package(CUDA 4)
+find_package(CUDA)
 
 if(CUDA_FOUND)
 	message(STATUS "Found CUDA Toolkit v${CUDA_VERSION_STRING}")
-	
+  set(HAVE_CUDA TRUE)
+
 	if(${CUDA_VERSION_STRING} VERSION_LESS "7.5")
 	  # Recent versions of cmake set CUDA_HOST_COMPILER to CMAKE_C_COMPILER which
 	  # on OSX defaults to clang (/usr/bin/cc), but this is not a supported cuda

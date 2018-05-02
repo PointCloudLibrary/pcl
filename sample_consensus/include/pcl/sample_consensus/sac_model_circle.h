@@ -78,7 +78,7 @@ namespace pcl
         * \param[in] random if true set the random seed to the current time, else set to 12345 (default: false)
         */
       SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud, bool random = false) 
-        : SampleConsensusModel<PointT> (cloud, random), tmp_inliers_ () 
+        : SampleConsensusModel<PointT> (cloud, random)
       {
         model_name_ = "SampleConsensusModelCircle2D";
         sample_size_ = 3;
@@ -93,7 +93,7 @@ namespace pcl
       SampleConsensusModelCircle2D (const PointCloudConstPtr &cloud, 
                                     const std::vector<int> &indices,
                                     bool random = false)
-        : SampleConsensusModel<PointT> (cloud, indices, random), tmp_inliers_ ()
+        : SampleConsensusModel<PointT> (cloud, indices, random)
       {
         model_name_ = "SampleConsensusModelCircle2D";
         sample_size_ = 3;
@@ -104,7 +104,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelCircle2D (const SampleConsensusModelCircle2D &source) :
-        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+        SampleConsensusModel<PointT> ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelCircle2D";
@@ -120,7 +120,6 @@ namespace pcl
       operator = (const SampleConsensusModelCircle2D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -129,17 +128,17 @@ namespace pcl
         * \param[in] samples the point indices found as possible good candidates for creating a valid model
         * \param[out] model_coefficients the resultant model coefficients
         */
-      bool 
-      computeModelCoefficients (const std::vector<int> &samples, 
-                                Eigen::VectorXf &model_coefficients);
+      bool
+      computeModelCoefficients (const std::vector<int> &samples,
+                                Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Compute all distances from the cloud data to a given 2D circle model.
         * \param[in] model_coefficients the coefficients of a 2D circle model that we need to compute distances to
         * \param[out] distances the resultant estimated distances
         */
-      void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances);
+      void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const;
 
       /** \brief Compute all distances from the cloud data to a given 2D circle model.
         * \param[in] model_coefficients the coefficients of a 2D circle model that we need to compute distances to
@@ -158,8 +157,8 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold);
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const;
 
        /** \brief Recompute the 2d circle coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the 2d circle model after refinement (e.g. after SVD)
@@ -167,10 +166,10 @@ namespace pcl
         * \param[in] model_coefficients the initial guess for the optimization
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
-      void 
-      optimizeModelCoefficients (const std::vector<int> &inliers, 
-                                 const Eigen::VectorXf &model_coefficients, 
-                                 Eigen::VectorXf &optimized_coefficients);
+      void
+      optimizeModelCoefficients (const std::vector<int> &inliers,
+                                 const Eigen::VectorXf &model_coefficients,
+                                 Eigen::VectorXf &optimized_coefficients) const;
 
       /** \brief Create a new point cloud with inliers projected onto the 2d circle model.
         * \param[in] inliers the data inliers that we want to project on the 2d circle model
@@ -178,21 +177,21 @@ namespace pcl
         * \param[out] projected_points the resultant projected points
         * \param[in] copy_data_fields set to true if we need to copy the other data fields
         */
-      void 
-      projectPoints (const std::vector<int> &inliers, 
-                     const Eigen::VectorXf &model_coefficients, 
-                     PointCloud &projected_points, 
-                     bool copy_data_fields = true);
+      void
+      projectPoints (const std::vector<int> &inliers,
+                     const Eigen::VectorXf &model_coefficients,
+                     PointCloud &projected_points,
+                     bool copy_data_fields = true) const;
 
       /** \brief Verify whether a subset of indices verifies the given 2d circle model coefficients.
         * \param[in] indices the data indices that need to be tested against the 2d circle model
         * \param[in] model_coefficients the 2d circle model coefficients
         * \param[in] threshold a maximum admissible distance threshold for determining the inliers from the outliers
         */
-      bool 
-      doSamplesVerifyModel (const std::set<int> &indices, 
-                            const Eigen::VectorXf &model_coefficients, 
-                            const double threshold);
+      bool
+      doSamplesVerifyModel (const std::set<int> &indices,
+                            const Eigen::VectorXf &model_coefficients,
+                            const double threshold) const;
 
       /** \brief Return an unique id for this model (SACMODEL_CIRCLE2D). */
       inline pcl::SacModel 
@@ -206,7 +205,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Check if a sample of indices results in a good sample of points indices.
         * \param[in] samples the resultant index samples
@@ -215,8 +214,6 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
 
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic ignored "-Weffc++"
@@ -225,12 +222,11 @@ namespace pcl
       struct OptimizationFunctor : pcl::Functor<float>
       {
         /** \brief Functor constructor
-          * \param[in] m_data_points the number of data points to evaluate
+          * \param[in] indices the indices of data points to evaluate
           * \param[in] estimator pointer to the estimator object
-          * \param[in] distance distance computation function pointer
           */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCircle2D<PointT> *model) : 
-          pcl::Functor<float>(m_data_points), model_ (model) {}
+        OptimizationFunctor (const pcl::SampleConsensusModelCircle2D<PointT> *model, const std::vector<int>& indices) :
+          pcl::Functor<float> (indices.size ()), model_ (model), indices_ (indices) {}
 
         /** Cost function to be minimized
           * \param[in] x the variables array
@@ -243,16 +239,17 @@ namespace pcl
           for (int i = 0; i < values (); ++i)
           {
             // Compute the difference between the center of the circle and the datapoint X_i
-            float xt = model_->input_->points[(*model_->tmp_inliers_)[i]].x - x[0];
-            float yt = model_->input_->points[(*model_->tmp_inliers_)[i]].y - x[1];
-            
+            float xt = model_->input_->points[indices_[i]].x - x[0];
+            float yt = model_->input_->points[indices_[i]].y - x[1];
+
             // g = sqrt ((x-a)^2 + (y-b)^2) - R
             fvec[i] = std::sqrt (xt * xt + yt * yt) - x[2];
           }
           return (0);
         }
 
-        pcl::SampleConsensusModelCircle2D<PointT> *model_;
+        const pcl::SampleConsensusModelCircle2D<PointT> *model_;
+        const std::vector<int> &indices_;
       };
 #if defined BUILD_Maintainer && defined __GNUC__ && __GNUC__ == 4 && __GNUC_MINOR__ > 3
 #pragma GCC diagnostic warning "-Weffc++"

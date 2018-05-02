@@ -245,7 +245,7 @@ namespace pcl
         min_points_ = min;
       }
 
-      /** \brief Sets wether if the signatures should be normalized or not
+      /** \brief Sets whether the signatures should be normalized or not
        * \param[in] normalize true if normalization is required, false otherwise
        */
       inline void
@@ -335,7 +335,7 @@ namespace pcl
        */
       float leaf_size_;
 
-      /** \brief Wether to normalize the signatures or not. Default: false. */
+      /** \brief Whether to normalize the signatures or not. Default: false. */
       bool normalize_bins_;
 
       /** \brief Curvature threshold for removing normals. */

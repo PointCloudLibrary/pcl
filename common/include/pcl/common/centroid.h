@@ -204,7 +204,7 @@ namespace pcl
   /** \brief Compute normalized the 3x3 covariance matrix of a given set of points.
     * The result is returned as a Eigen::Matrix3f.
     * Normalized means that every entry has been divided by the number of points in the point cloud.
-    * For small number of points, or if you want explicitely the sample-variance, use computeCovarianceMatrix
+    * For small number of points, or if you want explicitly the sample-variance, use computeCovarianceMatrix
     * and scale the covariance matrix with 1 / (n-1), where n is the number of points used to calculate
     * the covariance matrix and is returned by the computeCovarianceMatrix function.
     * \param[in] cloud the input point cloud
@@ -313,7 +313,7 @@ namespace pcl
     * their indices.
     * The result is returned as a Eigen::Matrix3f.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, use computeCovarianceMatrix
+    * For small number of points, or if you want explicitly the sample-variance, use computeCovarianceMatrix
     * and scale the covariance matrix with 1 / (n-1), where n is the number of points used to calculate
     * the covariance matrix and is returned by the computeCovarianceMatrix function.
     * \param[in] cloud the input point cloud
@@ -351,7 +351,7 @@ namespace pcl
   /** \brief Compute the normalized 3x3 covariance matrix of a given set of points using
     * their indices. The result is returned as a Eigen::Matrix3f.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, use computeCovarianceMatrix
+    * For small number of points, or if you want explicitly the sample-variance, use computeCovarianceMatrix
     * and scale the covariance matrix with 1 / (n-1), where n is the number of points used to calculate
     * the covariance matrix and is returned by the computeCovarianceMatrix function.
     * \param[in] cloud the input point cloud
@@ -388,7 +388,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix and the centroid of a given set of points in a single loop.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
@@ -421,7 +421,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix and the centroid of a given set of points in a single loop.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
@@ -458,7 +458,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix and the centroid of a given set of points in a single loop.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
@@ -495,7 +495,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point cloud.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
@@ -524,7 +524,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point cloud.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud
@@ -557,7 +557,7 @@ namespace pcl
 
   /** \brief Compute the normalized 3x3 covariance matrix for a already demeaned point cloud.
     * Normalized means that every entry has been divided by the number of entries in indices.
-    * For small number of points, or if you want explicitely the sample-variance, scale the covariance matrix
+    * For small number of points, or if you want explicitly the sample-variance, scale the covariance matrix
     * with n / (n-1), where n is the number of points used to calculate the covariance matrix and is returned by this function.
     * \note This method is theoretically exact. However using float for internal calculations reduces the accuracy but increases the efficiency.
     * \param[in] cloud the input point cloud

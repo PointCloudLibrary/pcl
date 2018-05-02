@@ -109,7 +109,7 @@ namespace pcl
         * \param[in] source the model to copy into this
         */
       SampleConsensusModelCircle3D (const SampleConsensusModelCircle3D &source) :
-        SampleConsensusModel<PointT> (), tmp_inliers_ () 
+        SampleConsensusModel<PointT> ()
       {
         *this = source;
         model_name_ = "SampleConsensusModelCircle3D";
@@ -122,7 +122,6 @@ namespace pcl
       operator = (const SampleConsensusModelCircle3D &source)
       {
         SampleConsensusModel<PointT>::operator=(source);
-        tmp_inliers_ = source.tmp_inliers_;
         return (*this);
       }
 
@@ -133,7 +132,7 @@ namespace pcl
         */
       bool
       computeModelCoefficients (const std::vector<int> &samples,
-                                Eigen::VectorXf &model_coefficients);
+                                Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Compute all distances from the cloud data to a given 3D circle model.
         * \param[in] model_coefficients the coefficients of a 2D circle model that we need to compute distances to
@@ -141,7 +140,7 @@ namespace pcl
         */
       void
       getDistancesToModel (const Eigen::VectorXf &model_coefficients,
-                           std::vector<double> &distances);
+                           std::vector<double> &distances) const;
 
       /** \brief Compute all distances from the cloud data to a given 3D circle model.
         * \param[in] model_coefficients the coefficients of a 3D circle model that we need to compute distances to
@@ -161,7 +160,7 @@ namespace pcl
         */
       virtual int
       countWithinDistance (const Eigen::VectorXf &model_coefficients,
-                           const double threshold);
+                           const double threshold) const;
 
        /** \brief Recompute the 3d circle coefficients using the given inlier set and return them to the user.
         * @note: these are the coefficients of the 3d circle model after refinement (e.g. after SVD)
@@ -172,7 +171,7 @@ namespace pcl
       void
       optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients);
+                                 Eigen::VectorXf &optimized_coefficients) const;
 
       /** \brief Create a new point cloud with inliers projected onto the 3d circle model.
         * \param[in] inliers the data inliers that we want to project on the 3d circle model
@@ -184,7 +183,7 @@ namespace pcl
       projectPoints (const std::vector<int> &inliers,
                      const Eigen::VectorXf &model_coefficients,
                      PointCloud &projected_points,
-                     bool copy_data_fields = true);
+                     bool copy_data_fields = true) const;
 
       /** \brief Verify whether a subset of indices verifies the given 3d circle model coefficients.
         * \param[in] indices the data indices that need to be tested against the 3d circle model
@@ -194,7 +193,7 @@ namespace pcl
       bool
       doSamplesVerifyModel (const std::set<int> &indices,
                             const Eigen::VectorXf &model_coefficients,
-                            const double threshold);
+                            const double threshold) const;
 
       /** \brief Return an unique id for this model (SACMODEL_CIRCLE3D). */
       inline pcl::SacModel
@@ -208,7 +207,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients);
+      isModelValid (const Eigen::VectorXf &model_coefficients) const;
 
       /** \brief Check if a sample of indices results in a good sample of points indices.
         * \param[in] samples the resultant index samples
@@ -217,19 +216,15 @@ namespace pcl
       isSampleGood(const std::vector<int> &samples) const;
 
     private:
-      /** \brief Temporary pointer to a list of given indices for optimizeModelCoefficients () */
-      const std::vector<int> *tmp_inliers_;
-
       /** \brief Functor for the optimization function */
       struct OptimizationFunctor : pcl::Functor<double>
       {
         /** Functor constructor
-         * \param[in] m_data_points the number of functions
-         * \param[in] estimator pointer to the estimator object
-         * \param[in] distance distance computation function pointer
-         */
-        OptimizationFunctor (int m_data_points, pcl::SampleConsensusModelCircle3D<PointT> *model) :
-          pcl::Functor<double> (m_data_points), model_ (model) {}
+          * \param[in] indices the indices of data points to evaluate
+          * \param[in] estimator pointer to the estimator object
+          */
+        OptimizationFunctor (const pcl::SampleConsensusModelCircle3D<PointT> *model, const std::vector<int>& indices) :
+          pcl::Functor<double> (indices.size ()), model_ (model), indices_ (indices) {}
 
        /** Cost function to be minimized
          * \param[in] x the variables array
@@ -242,7 +237,7 @@ namespace pcl
           {
             // what i have:
             // P : Sample Point
-            Eigen::Vector3d P (model_->input_->points[(*model_->tmp_inliers_)[i]].x, model_->input_->points[(*model_->tmp_inliers_)[i]].y, model_->input_->points[(*model_->tmp_inliers_)[i]].z);
+            Eigen::Vector3d P (model_->input_->points[indices_[i]].x, model_->input_->points[indices_[i]].y, model_->input_->points[indices_[i]].z);
             // C : Circle Center
             Eigen::Vector3d C (x[0], x[1], x[2]);
             // N : Circle (Plane) Normal
@@ -267,7 +262,8 @@ namespace pcl
           return (0);
         }
 
-        pcl::SampleConsensusModelCircle3D<PointT> *model_;
+        const pcl::SampleConsensusModelCircle3D<PointT> *model_;
+        const std::vector<int> &indices_;
       };
   };
 }

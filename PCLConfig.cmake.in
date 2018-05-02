@@ -265,7 +265,7 @@ endmacro(find_glew)
 #                   |--> _lib is optional ==> disable it (thanks to the guardians) 
 #                   |                         and warn
 #                   `--> _lib is required
-#                                       |--> component is required explicitely ==> error
+#                                       |--> component is required explicitly ==> error
 #                                       `--> component is induced ==> warn and remove it
 #                                                                     from the list
 
@@ -482,6 +482,7 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
           gpu/${gpu_component}/include
     DOC "path to ${component} headers"
     NO_DEFAULT_PATH)
+  mark_as_advanced(PCL_${COMPONENT}_INCLUDE_DIR)
 
   if(PCL_${COMPONENT}_INCLUDE_DIR)
     list(APPEND PCL_${COMPONENT}_INCLUDE_DIRS "${PCL_${COMPONENT}_INCLUDE_DIR}")
@@ -499,11 +500,14 @@ foreach(component ${PCL_TO_FIND_COMPONENTS})
     get_filename_component(${component}_library_path 
       ${PCL_${COMPONENT}_LIBRARY}
       PATH)
+    mark_as_advanced(PCL_${COMPONENT}_LIBRARY)
 
     find_library(PCL_${COMPONENT}_LIBRARY_DEBUG ${pcl_component}${PCL_DEBUG_SUFFIX}
       HINTS ${PCL_LIBRARY_DIRS} 
       DOC "path to ${pcl_component} library debug"
       NO_DEFAULT_PATH)
+    mark_as_advanced(PCL_${COMPONENT}_LIBRARY_DEBUG)
+
     if(PCL_${COMPONENT}_LIBRARY_DEBUG)
       get_filename_component(${component}_library_path_debug 
         ${PCL_${COMPONENT}_LIBRARY_DEBUG}

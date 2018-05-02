@@ -72,33 +72,11 @@ namespace pcl
 
     class OctreePointCloud : public OctreeT
     {
-        // iterators are friends
-        friend class OctreeIteratorBase<OctreeT> ;
-        friend class OctreeDepthFirstIterator<OctreeT> ;
-        friend class OctreeBreadthFirstIterator<OctreeT> ;
-        friend class OctreeLeafNodeIterator<OctreeT> ;
-
       public:
         typedef OctreeT Base;
 
         typedef typename OctreeT::LeafNode LeafNode;
         typedef typename OctreeT::BranchNode BranchNode;
-
-        // Octree default iterators
-        typedef OctreeDepthFirstIterator<OctreeT> Iterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstIterator;
-
-        // Octree leaf node iterators
-        typedef OctreeLeafNodeIterator<OctreeT> LeafNodeIterator;
-        typedef const OctreeLeafNodeIterator<OctreeT> ConstLeafNodeIterator;
-
-        // Octree depth-first iterators
-        typedef OctreeDepthFirstIterator<OctreeT> DepthFirstIterator;
-        typedef const OctreeDepthFirstIterator<OctreeT> ConstDepthFirstIterator;
-
-        // Octree breadth-first iterators
-        typedef OctreeBreadthFirstIterator<OctreeT> BreadthFirstIterator;
-        typedef const OctreeBreadthFirstIterator<OctreeT> ConstBreadthFirstIterator;
 
         /** \brief Octree pointcloud constructor.
          * \param[in] resolution_arg octree resolution at lowest octree level

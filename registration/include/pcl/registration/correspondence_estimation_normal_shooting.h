@@ -198,7 +198,7 @@ namespace pcl
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::tree_reciprocal_;
         using CorrespondenceEstimationBase<PointSource, PointTarget, Scalar>::target_;
 
-        /** \brief Internal computation initalization. */
+        /** \brief Internal computation initialization. */
         bool
         initCompute ();
 

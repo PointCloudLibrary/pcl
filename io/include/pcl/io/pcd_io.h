@@ -70,7 +70,7 @@ namespace pcl
         *   - POINTS ...
         *   - DATA ascii/binary
         * 
-        * Everything that follows \b DATA is intepreted as data points and
+        * Everything that follows \b DATA is interpreted as data points and
         * will be read accordingly.
         *
         * PCD_V7 represents PCD files with version 0.7 and has an important

@@ -50,7 +50,7 @@ void throw_nogpu() { throw "PCL 2.0 exception"; }
 int  pcl::gpu::getCudaEnabledDeviceCount() { return 0; }
 void pcl::gpu::setDevice(int /*device*/) { throw_nogpu(); }
 std::string pcl::gpu::getDeviceName(int /*device*/) { throw_nogpu(); }
-void pcl::gpu::printCudaDeviceInfo(int /*deivce*/){ throw_nogpu(); }
+void pcl::gpu::printCudaDeviceInfo(int /*device*/){ throw_nogpu(); }
 void pcl::gpu::printShortCudaDeviceInfo(int /*device*/) { throw_nogpu(); }
 
 #else
@@ -111,7 +111,7 @@ namespace
     {
         // Defines for GPU Architecture types (using the SM version to determine the # of cores per SM
         typedef struct {
-            int SM; // 0xMm (hexidecimal notation), M = SM Major version, and m = SM minor version
+            int SM; // 0xMm (hexadecimal notation), M = SM Major version, and m = SM minor version
             int Cores;
         } SMtoCores;
 

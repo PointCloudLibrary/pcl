@@ -101,7 +101,7 @@ namespace pcl
         getDepthIntrinsics (float& fx, float& fy, float& cx, float& cy);
         
 
-        /** \brief Sets initial camera pose relative to volume coordiante space
+        /** \brief Sets initial camera pose relative to volume coordinate space
           * \param[in] pose Initial camera pose
           */
         void
@@ -281,7 +281,7 @@ namespace pcl
         /** \brief Camera movement threshold. TSDF is integrated iff a camera movement metric exceedes some value. */
         float integration_metric_threshold_;
 
-        /** \brief ICP step is completelly disabled. Inly integratio now */
+        /** \brief ICP step is completely disabled. Only integration now. */
         bool disable_icp_;
         
         /** \brief Allocates all GPU internal buffers.

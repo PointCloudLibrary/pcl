@@ -216,9 +216,9 @@ namespace pcl
         * for creating a valid model 
         * \param[out] model_coefficients the computed model coefficients
         */
-      virtual bool 
-      computeModelCoefficients (const std::vector<int> &samples, 
-                                Eigen::VectorXf &model_coefficients) = 0;
+      virtual bool
+      computeModelCoefficients (const std::vector<int> &samples,
+                                Eigen::VectorXf &model_coefficients) const = 0;
 
       /** \brief Recompute the model coefficients using the given inlier set
         * and return them to the user. Pure virtual.
@@ -230,19 +230,19 @@ namespace pcl
         * \param[in] model_coefficients the initial guess for the model coefficients
         * \param[out] optimized_coefficients the resultant recomputed coefficients after non-linear optimization
         */
-      virtual void 
-      optimizeModelCoefficients (const std::vector<int> &inliers, 
+      virtual void
+      optimizeModelCoefficients (const std::vector<int> &inliers,
                                  const Eigen::VectorXf &model_coefficients,
-                                 Eigen::VectorXf &optimized_coefficients) = 0;
+                                 Eigen::VectorXf &optimized_coefficients) const = 0;
 
       /** \brief Compute all distances from the cloud data to a given model. Pure virtual.
         * 
         * \param[in] model_coefficients the coefficients of a model that we need to compute distances to 
         * \param[out] distances the resultant estimated distances
         */
-      virtual void 
-      getDistancesToModel (const Eigen::VectorXf &model_coefficients, 
-                           std::vector<double> &distances) = 0;
+      virtual void
+      getDistancesToModel (const Eigen::VectorXf &model_coefficients,
+                           std::vector<double> &distances) const = 0;
 
       /** \brief Select all the points which respect the given model
         * coefficients as inliers. Pure virtual.
@@ -267,8 +267,8 @@ namespace pcl
         * \return the resultant number of inliers
         */
       virtual int
-      countWithinDistance (const Eigen::VectorXf &model_coefficients, 
-                           const double threshold) = 0;
+      countWithinDistance (const Eigen::VectorXf &model_coefficients,
+                           const double threshold) const = 0;
 
       /** \brief Create a new point cloud with inliers projected onto the model. Pure virtual.
         * \param[in] inliers the data inliers that we want to project on the model
@@ -278,11 +278,11 @@ namespace pcl
         * projected_points cloud to be an exact copy of the input dataset minus
         * the point projections on the plane model
         */
-      virtual void 
-      projectPoints (const std::vector<int> &inliers, 
+      virtual void
+      projectPoints (const std::vector<int> &inliers,
                      const Eigen::VectorXf &model_coefficients,
-                     PointCloud &projected_points, 
-                     bool copy_data_fields = true) = 0;
+                     PointCloud &projected_points,
+                     bool copy_data_fields = true) const = 0;
 
       /** \brief Verify whether a subset of indices verifies a given set of
         * model coefficients. Pure virtual.
@@ -293,9 +293,9 @@ namespace pcl
         * determining the inliers from the outliers
         */
       virtual bool 
-      doSamplesVerifyModel (const std::set<int> &indices, 
-                            const Eigen::VectorXf &model_coefficients, 
-                            const double threshold) = 0;
+      doSamplesVerifyModel (const std::set<int> &indices,
+                            const Eigen::VectorXf &model_coefficients,
+                            const double threshold) const = 0;
 
       /** \brief Provide a pointer to the input dataset
         * \param[in] cloud the const boost shared pointer to a PointCloud message
@@ -389,12 +389,12 @@ namespace pcl
         * \param[out] max_radius the resultant maximum radius model
         */
       inline void
-      getRadiusLimits (double &min_radius, double &max_radius)
+      getRadiusLimits (double &min_radius, double &max_radius) const
       {
         min_radius = radius_min_;
         max_radius = radius_max_;
       }
-      
+
       /** \brief Set the maximum distance allowed when drawing random samples
         * \param[in] radius the maximum distance (L2 norm)
         * \param search
@@ -411,7 +411,7 @@ namespace pcl
         * \param[out] radius the maximum distance (L2 norm)
         */
       inline void
-      getSamplesMaxDist (double &radius)
+      getSamplesMaxDist (double &radius) const
       {
         radius = samples_radius_;
       }
@@ -419,10 +419,10 @@ namespace pcl
       friend class ProgressiveSampleConsensus<PointT>;
 
       /** \brief Compute the variance of the errors to the model.
-        * \param[in] error_sqr_dists a vector holding the distances 
-        */ 
+        * \param[in] error_sqr_dists a vector holding the distances
+        */
       inline double
-      computeVariance (const std::vector<double> &error_sqr_dists)
+      computeVariance (const std::vector<double> &error_sqr_dists) const
       {
         std::vector<double> dists (error_sqr_dists);
         const size_t medIdx = dists.size () >> 1;
@@ -436,7 +436,7 @@ namespace pcl
         * selectWithinDistance must be called).
         */
       inline double
-      computeVariance ()
+      computeVariance () const
       {
         if (error_sqr_dists_.empty ())
         {
@@ -513,7 +513,7 @@ namespace pcl
         * \param[in] model_coefficients the set of model coefficients
         */
       virtual bool
-      isModelValid (const Eigen::VectorXf &model_coefficients)
+      isModelValid (const Eigen::VectorXf &model_coefficients) const
       {
         if (model_coefficients.size () != model_size_)
         {
@@ -647,7 +647,7 @@ namespace pcl
 
   /** Base functor all the models that need non linear optimization must
     * define their own one and implement operator() (const Eigen::VectorXd& x, Eigen::VectorXd& fvec)
-    * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) dependening on the choosen _Scalar
+    * or operator() (const Eigen::VectorXf& x, Eigen::VectorXf& fvec) depending on the chosen _Scalar
     */
   template<typename _Scalar, int NX=Eigen::Dynamic, int NY=Eigen::Dynamic>
   struct Functor

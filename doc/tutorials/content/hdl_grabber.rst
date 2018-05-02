@@ -6,7 +6,7 @@ The Velodyne High Definition LiDAR (HDL) Grabber
 The Velodyne HDL is a network-based 3D LiDAR system that produces
 360 degree point clouds containing over 700,000 points every second.
 
-The HDL Grabber provided in PCL mimicks other Grabbers, making it *almost*
+The HDL Grabber provided in PCL mimics other Grabbers, making it *almost*
 plug-and-play.  Because the HDL devices are network based, however, there
 are a few gotchas on some platforms.
 
@@ -47,7 +47,7 @@ PCAP Files
 `Wireshark <http://www.wireshark.org/>`_ is a popular Network Packet Analyzer Program which
 is available for most platforms, including Linux, MacOS and Windows.  This tool uses a defacto
 standard network packet capture file format called `PCAP <http://en.wikipedia.org/wiki/Pcap>`_.
-Many publically available Velodyne HDL packet captures use this PCAP file format as a means of
+Many publicly available Velodyne HDL packet captures use this PCAP file format as a means of
 recording and playback.  These PCAP files can be used with the HDL Grabber if PCL is compiled with
 PCAP support.
 

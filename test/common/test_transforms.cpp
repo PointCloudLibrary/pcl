@@ -1,7 +1,10 @@
 /*
  * Software License Agreement (BSD License)
  *
+ *  Point Cloud Library (PCL) - www.pointclouds.org
  *  Copyright (c) 2010, Willow Garage, Inc.
+ *  Copyright (c) 2018-, Open Perception, Inc.
+ *
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,236 +36,175 @@
  *
  *
  */
+
 #include <gtest/gtest.h>
 
-#include <iostream>  // For debug
-
-#include <pcl/PCLPointCloud2.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/features/feature.h>
-#include <pcl/common/eigen.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/common/transforms.h>
+#include <pcl/common/io.h>
 
 #include <pcl/pcl_tests.h>
 
 using namespace pcl;
-using namespace pcl::io;
-using namespace std;
 
-const float PI = 3.14159265f;
-const float rho = std::sqrt (2.0f) / 2.0f;  // cos(PI/4) == sin(PI/4)
+typedef ::testing::Types<Eigen::Transform<float, 3, Eigen::Affine>,
+                         Eigen::Transform<double, 3, Eigen::Affine>,
+                         Eigen::Matrix<float, 4, 4>,
+                         Eigen::Matrix<double, 4,4> > TransformTypes;
 
-PointCloud<PointXYZ> cloud;
-pcl::PCLPointCloud2 cloud_blob;
-
-void 
-init ()
+template <typename Transform>
+class Transforms : public ::testing::Test
 {
-  PointXYZ p0 (0, 0, 0);
-  PointXYZ p1 (1, 0, 0);
-  PointXYZ p2 (0, 1, 0);
-  PointXYZ p3 (0, 0, 1);
-  cloud.points.push_back (p0);
-  cloud.points.push_back (p1);
-  cloud.points.push_back (p2);
-  cloud.points.push_back (p3);
+ public:
+  typedef typename Transform::Scalar Scalar;
+
+  Transforms ()
+  : ABS_ERROR (std::numeric_limits<Scalar>::epsilon () * 10)
+  , CLOUD_SIZE (100)
+  {
+    Eigen::Matrix<Scalar, 6, 1> r = Eigen::Matrix<Scalar, 6, 1>::Random ();
+    Eigen::Transform<Scalar, 3, Eigen::Affine> transform;
+    pcl::getTransformation (r[0], r[1], r[2], r[3], r[4], r[5], transform);
+    tf = transform.matrix ();
+
+    p_xyz_normal.resize (CLOUD_SIZE);
+    p_xyz_normal_trans.resize (CLOUD_SIZE);
+    for (size_t i = 0; i < CLOUD_SIZE; ++i)
+    {
+      Eigen::Vector3f xyz = Eigen::Vector3f::Random ();
+      Eigen::Vector3f normal = Eigen::Vector3f::Random ().normalized ();
+      p_xyz_normal[i].getVector3fMap () = xyz;
+      p_xyz_normal_trans[i].getVector3fMap () = (transform * xyz.template cast<typename Transform::Scalar> ()).template cast<float> ();
+      p_xyz_normal[i].getNormalVector3fMap () = normal;
+      p_xyz_normal_trans[i].getNormalVector3fMap () = (transform.rotation () * normal.template cast<typename Transform::Scalar> ()).template cast<float> ();
+      p_xyz_normal[i].rgb = Eigen::Matrix<float, 1, 1>::Random ()[0];
+      p_xyz_normal_trans[i].rgb = p_xyz_normal[i].rgb;
+    }
+
+    pcl::copyPointCloud(p_xyz_normal, p_xyz);
+    pcl::copyPointCloud(p_xyz_normal_trans, p_xyz_trans);
+
+    indices.resize (CLOUD_SIZE / 2);
+    for (size_t i = 0; i < indices.size(); ++i)
+      indices[i] = i * 2;
+  }
+
+  const Scalar ABS_ERROR;
+  const size_t CLOUD_SIZE;
+
+  Transform tf;
+
+  // Random point clouds and their expected transformed versions
+  pcl::PointCloud<pcl::PointXYZ> p_xyz, p_xyz_trans;
+  pcl::PointCloud<pcl::PointXYZRGBNormal> p_xyz_normal, p_xyz_normal_trans;
+
+  // Indices, every second point
+  std::vector<int> indices;
+
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+};
+
+TYPED_TEST_CASE (Transforms, TransformTypes);
+
+TYPED_TEST (Transforms, PointCloudXYZDense)
+{
+  pcl::PointCloud<pcl::PointXYZ> p;
+  pcl::transformPointCloud (this->p_xyz, p, this->tf);
+  ASSERT_METADATA_EQ (p, this->p_xyz);
+  ASSERT_EQ (p.size (), this->p_xyz.size ());
+  for (size_t i = 0; i < p.size (); ++i)
+    ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i], this->ABS_ERROR);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, DeMean)
+TYPED_TEST (Transforms, PointCloudXYZDenseIndexed)
 {
-  PointCloud<PointXYZ> cloud, cloud_demean;
-  fromPCLPointCloud2 (cloud_blob, cloud);
-
-  Eigen::Vector4f centroid;
-  compute3DCentroid (cloud, centroid);
-  EXPECT_NEAR (centroid[0], -0.0290809, 1e-4);
-  EXPECT_NEAR (centroid[1],  0.102653,  1e-4);
-  EXPECT_NEAR (centroid[2],  0.027302,  1e-4);
-  EXPECT_NEAR (centroid[3],  1,         1e-4);
-
-  // Check standard demean
-  demeanPointCloud (cloud, centroid, cloud_demean);
-  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.points.size (), cloud.points.size ());
-
-  EXPECT_NEAR (cloud_demean.points[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].z, -0.071702, 1e-4);
-
-  vector<int> indices (cloud.points.size ());
-  for (int i = 0; i < static_cast<int> (indices.size ()); ++i) { indices[i] = i; }
-
-  // Check standard demean w/ indices
-  demeanPointCloud (cloud, indices, centroid, cloud_demean);
-  EXPECT_EQ (cloud_demean.is_dense, cloud.is_dense);
-  EXPECT_EQ (cloud_demean.width, cloud.width);
-  EXPECT_EQ (cloud_demean.height, cloud.height);
-  EXPECT_EQ (cloud_demean.points.size (), cloud.points.size ());
-
-  EXPECT_NEAR (cloud_demean.points[0].x, 0.034503, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[0].y, 0.010837, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[0].z, 0.013447, 1e-4);
-
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].x, -0.048849, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].y,  0.072507, 1e-4);
-  EXPECT_NEAR (cloud_demean.points[cloud_demean.points.size () - 1].z, -0.071702, 1e-4);
-
-  // Check eigen demean
-  Eigen::MatrixXf mat_demean;
-  demeanPointCloud (cloud, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
-  EXPECT_EQ (mat_demean.rows (), 4);
-
-  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
-  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
-  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
-
-  EXPECT_NEAR (mat_demean (0, cloud_demean.points.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.points.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.points.size () - 1), -0.071702, 1e-4);
-
-  // Check eigen demean + indices
-  demeanPointCloud (cloud, indices, centroid, mat_demean);
-  EXPECT_EQ (mat_demean.cols (), int (cloud.points.size ()));
-  EXPECT_EQ (mat_demean.rows (), 4);
-
-  EXPECT_NEAR (mat_demean (0, 0), 0.034503, 1e-4);
-  EXPECT_NEAR (mat_demean (1, 0), 0.010837, 1e-4);
-  EXPECT_NEAR (mat_demean (2, 0), 0.013447, 1e-4);
-
-  EXPECT_NEAR (mat_demean (0, cloud_demean.points.size () - 1), -0.048849, 1e-4);
-  EXPECT_NEAR (mat_demean (1, cloud_demean.points.size () - 1),  0.072507, 1e-4);
-  EXPECT_NEAR (mat_demean (2, cloud_demean.points.size () - 1), -0.071702, 1e-4);
+  pcl::PointCloud<pcl::PointXYZ> p;
+  pcl::transformPointCloud (this->p_xyz, this->indices, p, this->tf);
+  ASSERT_EQ (p.size (), this->indices.size ());
+  ASSERT_EQ (p.width, this->indices.size ());
+  ASSERT_EQ (p.height, 1);
+  for (size_t i = 0; i < p.size (); ++i)
+    ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i * 2], this->ABS_ERROR);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, Transform)
+TYPED_TEST (Transforms, PointCloudXYZSparse)
 {
-  Eigen::Vector3f offset (100, 0, 0);
-  float angle = PI/4;
-  Eigen::Quaternionf rotation (cos (angle / 2), 0, 0, sin (angle / 2));
+  // Make first point infinite and point cloud not dense
+  this->p_xyz.is_dense = false;
+  this->p_xyz[0].x = std::numeric_limits<float>::quiet_NaN();
 
-  PointCloud<PointXYZ> cloud_out;
-  const vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > &points (cloud_out.points);
-  transformPointCloud (cloud, cloud_out, offset, rotation);
-
-  EXPECT_EQ (cloud.points.size (), cloud_out.points.size ());
-  EXPECT_EQ (100, points[0].x);
-  EXPECT_EQ (0, points[0].y);
-  EXPECT_EQ (0, points[0].z);
-  EXPECT_NEAR (100+rho, points[1].x,  1e-4);
-  EXPECT_NEAR (rho, points[1].y,  1e-4);
-  EXPECT_EQ (0, points[1].z);
-  EXPECT_NEAR (100-rho, points[2].x,  1e-4);
-  EXPECT_NEAR (rho, points[2].y,  1e-4);
-  EXPECT_EQ (0, points[2].z);
-  EXPECT_EQ (100, points[3].x);
-  EXPECT_EQ (0, points[3].y);
-  EXPECT_EQ (1, points[3].z);
-
-  PointCloud<PointXYZ> cloud_out2;
-  const vector<PointXYZ, Eigen::aligned_allocator<PointXYZ> > &points2 (cloud_out2.points);
-  Eigen::Translation3f translation (offset);
-  Eigen::Affine3f transform;
-  transform = translation * rotation;
-  transformPointCloud (cloud, cloud_out2, transform);
-
-  EXPECT_EQ (cloud.points.size (), cloud_out2.points.size ());
-  EXPECT_EQ (100, points2[0].x);
-  EXPECT_EQ (0, points2[0].y);
-  EXPECT_EQ (0, points2[0].z);
-  EXPECT_NEAR (100+rho, points2[1].x,  1e-4);
-  EXPECT_NEAR (rho, points2[1].y,  1e-4);
-  EXPECT_EQ (0, points2[1].z);
-  EXPECT_NEAR (100-rho, points2[2].x,  1e-4);
-  EXPECT_NEAR (rho, points2[2].y,  1e-4);
-  EXPECT_EQ (0, points2[2].z);
-  EXPECT_EQ (100, points2[3].x);
-  EXPECT_EQ (0, points2[3].y);
-  EXPECT_EQ (1, points2[3].z);
+  pcl::PointCloud<pcl::PointXYZ> p;
+  pcl::transformPointCloud (this->p_xyz, p, this->tf);
+  ASSERT_METADATA_EQ (p, this->p_xyz);
+  ASSERT_EQ (p.size (), this->p_xyz.size ());
+  ASSERT_FALSE (pcl::isFinite (p[0]));
+  for (size_t i = 1; i < p.size (); ++i)
+  {
+    ASSERT_TRUE (pcl::isFinite (p[i]));
+    ASSERT_XYZ_NEAR (p[i], this->p_xyz_trans[i], this->ABS_ERROR);
+  }
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, TransformCopyFields)
+TYPED_TEST (Transforms, PointCloudXYZRGBNormalDense)
 {
-  Eigen::Affine3f transform;
-  transform = Eigen::Translation3f (100, 0, 0);
+  // Copy all fields
+  {
+    pcl::PointCloud<pcl::PointXYZRGBNormal> p;
+    pcl::transformPointCloudWithNormals (this->p_xyz_normal, p, this->tf, true);
+    ASSERT_METADATA_EQ (p, this->p_xyz_normal);
+    ASSERT_EQ (p.size (), this->p_xyz_normal.size ());
+    for (size_t i = 0; i < p.size (); ++i)
+    {
+      ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
+      ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
+      ASSERT_RGBA_EQ (p[i], this->p_xyz_normal_trans[i]);
+    }
+  }
+  // Do not copy all fields
+  {
+    pcl::PointCloud<pcl::PointXYZRGBNormal> p;
+    pcl::transformPointCloudWithNormals (this->p_xyz_normal, p, this->tf, false);
+    ASSERT_METADATA_EQ (p, this->p_xyz_normal);
+    ASSERT_EQ (p.size (), this->p_xyz_normal.size ());
+    for (size_t i = 0; i < p.size (); ++i)
+    {
+      ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
+      ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i], this->ABS_ERROR);
+      ASSERT_NE (p[i].rgba, this->p_xyz_normal_trans[i].rgba);
+    }
+  }
+}
 
-  PointXYZRGBNormal empty_point;
-  std::vector<int> indices (1);
-
-  PointCloud<PointXYZRGBNormal> cloud (2, 1);
-  cloud.points[0].rgba = 0xFF0000;
-  cloud.points[1].rgba = 0x00FF00;
-
-  // Preserve data in all fields
+TYPED_TEST (Transforms, PointCloudXYZRGBNormalDenseIndexed)
+{
+  // Copy all fields
   {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloud (cloud, cloud_out, transform, true);
-    ASSERT_EQ (cloud.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
-    EXPECT_RGBA_EQ (cloud.points[1], cloud_out.points[1]);
+    pcl::PointCloud<pcl::PointXYZRGBNormal> p;
+    pcl::transformPointCloudWithNormals (this->p_xyz_normal, this->indices, p, this->tf, true);
+    ASSERT_EQ (p.size (), this->indices.size ());
+    ASSERT_EQ (p.width, this->indices.size ());
+    ASSERT_EQ (p.height, 1);
+    for (size_t i = 0; i < p.size (); ++i)
+    {
+      ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
+      ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
+      ASSERT_RGBA_EQ (p[i], this->p_xyz_normal_trans[i * 2]);
+    }
   }
-  // Preserve data in all fields (with indices)
+  // Do not copy all fields
   {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloud (cloud, indices, cloud_out, transform, true);
-    ASSERT_EQ (indices.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
-  }
-  // Do not preserve data in all fields
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloud (cloud, cloud_out, transform, false);
-    ASSERT_EQ (cloud.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[1]);
-  }
-  // Do not preserve data in all fields (with indices)
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloud (cloud, indices, cloud_out, transform, false);
-    ASSERT_EQ (indices.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
-  }
-  // Preserve data in all fields (with normals version)
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloudWithNormals (cloud, cloud_out, transform, true);
-    ASSERT_EQ (cloud.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
-    EXPECT_RGBA_EQ (cloud.points[1], cloud_out.points[1]);
-  }
-  // Preserve data in all fields (with normals and indices version)
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloudWithNormals (cloud, indices, cloud_out, transform, true);
-    ASSERT_EQ (indices.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (cloud.points[0], cloud_out.points[0]);
-  }
-  // Do not preserve data in all fields (with normals version)
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloudWithNormals (cloud, cloud_out, transform, false);
-    ASSERT_EQ (cloud.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[1]);
-  }
-  // Do not preserve data in all fields (with normals and indices version)
-  {
-    PointCloud<PointXYZRGBNormal> cloud_out;
-    transformPointCloudWithNormals (cloud, indices, cloud_out, transform, false);
-    ASSERT_EQ (indices.size (), cloud_out.size ());
-    EXPECT_RGBA_EQ (empty_point, cloud_out.points[0]);
+    pcl::PointCloud<pcl::PointXYZRGBNormal> p;
+    pcl::transformPointCloudWithNormals (this->p_xyz_normal, this->indices, p, this->tf, false);
+    ASSERT_EQ (p.size (), this->indices.size ());
+    ASSERT_EQ (p.width, this->indices.size ());
+    ASSERT_EQ (p.height, 1);
+    for (size_t i = 0; i < p.size (); ++i)
+    {
+      ASSERT_XYZ_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
+      ASSERT_NORMAL_NEAR (p[i], this->p_xyz_normal_trans[i * 2], this->ABS_ERROR);
+      ASSERT_NE (p[i].rgba, this->p_xyz_normal_trans[i * 2].rgba);
+    }
   }
 }
 
@@ -273,32 +215,8 @@ TEST (PCL, Matrix4Affine3Transform)
   float rot_y = -0.31190f;
   float rot_z = -0.93058f;
   Eigen::Affine3f affine;
-  pcl::getTransformation (0, 0, 0, rot_x, rot_y, rot_z, affine);
-
-  EXPECT_NEAR (affine (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (affine (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (affine (0, 2), -0.028107658f, 1e-4);
-  EXPECT_NEAR (affine (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (affine (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (affine (1, 2), -0.39082864f, 1e-4);
-  EXPECT_NEAR (affine (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (affine (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (affine (2, 2), -0.920034f, 1e-4);
-
-  // Approximative!!! Uses SVD internally! See http://eigen.tuxfamily.org/dox/Transform_8h_source.html
-  Eigen::Matrix3f rotation = affine.rotation ();
-
-  EXPECT_NEAR (rotation (0, 0),  0.56854731f, 1e-4); EXPECT_NEAR (rotation (0, 1), -0.82217032f, 1e-4); EXPECT_NEAR (rotation (0, 2), -0.028107658f, 1e-4);
-  EXPECT_NEAR (rotation (1, 0), -0.76327348f, 1e-4); EXPECT_NEAR (rotation (1, 1), -0.51445758f, 1e-4); EXPECT_NEAR (rotation (1, 2), -0.39082864f, 1e-4);
-  EXPECT_NEAR (rotation (2, 0),  0.30686751f, 1e-4); EXPECT_NEAR (rotation (2, 1),  0.24365838f, 1e-4); EXPECT_NEAR (rotation (2, 2), -0.920034f, 1e-4);
-
-  float trans_x, trans_y, trans_z;
   pcl::getTransformation (0.1f, 0.2f, 0.3f, rot_x, rot_y, rot_z, affine);
-  pcl::getTranslationAndEulerAngles (affine, trans_x, trans_y, trans_z, rot_x, rot_y, rot_z);
-  EXPECT_FLOAT_EQ (trans_x, 0.1f);
-  EXPECT_FLOAT_EQ (trans_y, 0.2f);
-  EXPECT_FLOAT_EQ (trans_z, 0.3f);
-  EXPECT_FLOAT_EQ (rot_x, 2.8827f);
-  EXPECT_FLOAT_EQ (rot_y, -0.31190f);
-  EXPECT_FLOAT_EQ (rot_z, -0.93058f);
-
-  Eigen::Matrix4f transformation (Eigen::Matrix4f::Identity ());
-  transformation.block<3, 3> (0, 0) = affine.rotation ();
-  transformation.block<3, 1> (0, 3) = affine.translation ();
+  Eigen::Matrix4f transformation = affine.matrix ();
 
   PointXYZ p (1.f, 2.f, 3.f);
   Eigen::Vector3f v3 = p.getVector3fMap ();
@@ -358,42 +276,11 @@ TEST (PCL, Matrix4Affine3Transform)
   EXPECT_NEAR (pt.z, ct[0].z, 1e-4);
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-TEST (PCL, commonTransform)
-{
-  Eigen::Vector3f xaxis (1,0,0), yaxis (0,1,0), zaxis (0,0,1);
-  Eigen::Affine3f trans = pcl::getTransFromUnitVectorsZY (zaxis, yaxis);
-  Eigen::Vector3f xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
-  //std::cout << xaxistrans<<"\n"<<yaxistrans<<"\n"<<zaxistrans<<"\n";
-  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
-  
-  trans = pcl::getTransFromUnitVectorsXY (xaxis, yaxis);
-  xaxistrans=trans*xaxis, yaxistrans=trans*yaxis, zaxistrans=trans*zaxis;
-  //std::cout << xaxistrans<<"\n"<<yaxistrans<<"\n"<<zaxistrans<<"\n";
-  EXPECT_NEAR ((xaxistrans-xaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((yaxistrans-yaxis).norm(), 0.0f,  1e-6);
-  EXPECT_NEAR ((zaxistrans-zaxis).norm(), 0.0f,  1e-6);
-}
-
 /* ---[ */
 int
-  main (int argc, char** argv)
+main (int argc, char** argv)
 {
-  if (argc < 2)
-  {
-    std::cerr << "No test file given. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-  if (loadPCDFile (argv[1], cloud_blob) < 0)
-  {
-    std::cerr << "Failed to read test file. Please download `bun0.pcd` and pass its path to the test." << std::endl;
-    return (-1);
-  }
-
   testing::InitGoogleTest (&argc, argv);
-  init();
   return (RUN_ALL_TESTS ());
 }
 /* ]--- */

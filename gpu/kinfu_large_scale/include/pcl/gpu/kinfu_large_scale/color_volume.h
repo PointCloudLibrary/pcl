@@ -68,7 +68,7 @@ namespace pcl
           */
         ColorVolume(const TsdfVolume& tsdf, int max_weight = -1);
 
-        /** \brief Desctructor */
+        /** \brief Destructor */
         ~ColorVolume();
 
         /** \brief Resets color volume to uninitialized state */

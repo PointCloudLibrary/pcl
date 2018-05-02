@@ -50,7 +50,7 @@ namespace pcl
       * \param[in] correspondences list of correspondences
       * \param[out] mean the mean descriptor distance of correspondences
       * \param[out] stddev the standard deviation of descriptor distances.
-      * \note The sample varaiance is used to determine the standard deviation
+      * \note The sample variance is used to determine the standard deviation
       */
     inline void 
     getCorDistMeanStd (const pcl::Correspondences& correspondences, double &mean, double &stddev);

@@ -294,8 +294,8 @@ namespace pcl
 
         /** \brief Decode color information
           * \param outputCloud_arg output point cloud
-          * \param beginIdx_arg index indicating first point to be assiged with color information
-          * \param endIdx_arg index indicating last point to be assiged with color information
+          * \param beginIdx_arg index indicating first point to be assigned with color information
+          * \param endIdx_arg index indicating last point to be assigned with color information
           * \param rgba_offset_arg offset to color information
           */
         void
@@ -355,8 +355,8 @@ namespace pcl
 
         /** \brief Set default color to points
          * \param outputCloud_arg output point cloud
-         * \param beginIdx_arg index indicating first point to be assiged with color information
-         * \param endIdx_arg index indicating last point to be assiged with color information
+         * \param beginIdx_arg index indicating first point to be assigned with color information
+         * \param endIdx_arg index indicating last point to be assigned with color information
          * \param rgba_offset_arg offset to color information
          * */
         void

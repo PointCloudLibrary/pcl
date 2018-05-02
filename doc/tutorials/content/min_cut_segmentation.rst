@@ -39,7 +39,7 @@ The idea of this algorithm is as follows:
        Radius that occurs in the formula is the input parameter for this algorithm and can be roughly considered as the range from objects center
        outside of which there are no points that belong to foreground (objects horizontal radius).
 
- #. After all the preparations the search of the minimum cut is made. Based on an analysis of this cut, cloud is divided on forground and
+ #. After all the preparations the search of the minimum cut is made. Based on an analysis of this cut, cloud is divided on foreground and
     background points.
 
 For more comprehensive information please refer to the article

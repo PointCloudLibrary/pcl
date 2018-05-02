@@ -1294,7 +1294,7 @@ TEST (VoxelGridCovariance, Filters)
   EXPECT_LE (fabs (output.points[neighbors.at (0)].y - output.points[centroidIdx].y), 0.02);
   EXPECT_LE (output.points[neighbors.at (0)].z - output.points[centroidIdx].z, 0.02 * 2);
 
-  // testing seach functions
+  // testing search functions
   grid.setSaveLeafLayout (false);
   grid.filter (output, true);
 

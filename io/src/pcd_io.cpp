@@ -287,6 +287,8 @@ pcl::PCDReader::readHeader (std::istream &fs, pcl::PCLPointCloud2 &cloud,
       if (line_type.substr (0, 5) == "WIDTH")
       {
         sstream >> cloud.width;
+        if (sstream.fail ())
+          throw "Invalid WIDTH value specified.";
         if (cloud.point_step != 0)
           cloud.row_step = cloud.point_step * cloud.width;      // row_step only makes sense for organized datasets
         continue;
@@ -779,6 +781,8 @@ pcl::PCDReader::read (const std::string &file_name, pcl::PCLPointCloud2 &cloud,
         return (-1);
       }
       mmap_size += compressed_size;
+      // Add the 8 bytes used to store the compressed and uncompressed size
+      mmap_size += 8;
 
       // Reset position
       pcl_lseek (fd, 0, SEEK_SET);

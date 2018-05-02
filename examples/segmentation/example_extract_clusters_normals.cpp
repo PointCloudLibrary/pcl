@@ -90,7 +90,7 @@ main (int, char **argv)
 
   std::cout << "No of clusters formed are " << cluster_indices.size () << std::endl;
 
-  // Saving the clusters in seperate pcd files
+  // Saving the clusters in separate pcd files
   int j = 0;
   for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin (); it != cluster_indices.end (); ++it)
   {

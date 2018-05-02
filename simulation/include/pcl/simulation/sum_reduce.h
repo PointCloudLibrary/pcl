@@ -26,7 +26,7 @@ namespace pcl
   {
     /** \brief Implements a parallel summation of float arrays using GLSL.
      * The input array is provided as a float texture and the summation
-     * is performed over set number of levels, where each level halfs each
+     * is performed over set number of levels, where each level halves each
      * dimension.
      *
      * \author Hordur Johannsson

@@ -35,7 +35,7 @@ int
     std::cout << "    " << cloud_out->points[i].x << " " <<
       cloud_out->points[i].y << " " << cloud_out->points[i].z << std::endl;
   pcl::IterativeClosestPoint<pcl::PointXYZ, pcl::PointXYZ> icp;
-  icp.setInputCloud(cloud_in);
+  icp.setInputSource(cloud_in);
   icp.setInputTarget(cloud_out);
   pcl::PointCloud<pcl::PointXYZ> Final;
   icp.align(Final);

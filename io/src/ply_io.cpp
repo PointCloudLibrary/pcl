@@ -59,7 +59,7 @@ pcl::PLYReader::elementDefinitionCallback (const std::string& element_name, std:
       cloud_->width = static_cast<uint32_t> (count);
       cloud_->height = 1;
     }
-    cloud_->is_dense = false;
+    cloud_->is_dense = true;
     cloud_->point_step = 0;
     cloud_->row_step = 0;
     vertex_count_ = 0;
@@ -96,7 +96,7 @@ bool
 pcl::PLYReader::endHeaderCallback ()
 {
   cloud_->data.resize (static_cast<size_t>(cloud_->point_step) * cloud_->width * cloud_->height);
-  return (cloud_->data.size () == cloud_->point_step * cloud_->width * cloud_->height);
+  return (true);
 }
 
 template<typename Scalar> void
@@ -267,6 +267,9 @@ namespace pcl
   template<typename Scalar> void
   PLYReader::vertexScalarPropertyCallback (Scalar value)
   {
+    if (!pcl_isfinite (value))
+      cloud_->is_dense = false;
+
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (Scalar));
@@ -291,6 +294,9 @@ namespace pcl
   template<typename ContentType> void
   PLYReader::vertexListPropertyContentCallback (ContentType value)
   {
+    if (!pcl_isfinite (value))
+      cloud_->is_dense = false;
+
     memcpy (&cloud_->data[vertex_count_ * cloud_->point_step + vertex_offset_before_],
             &value,
             sizeof (ContentType));

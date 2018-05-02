@@ -95,7 +95,7 @@ like::
         Where to build binaries: C:/PCL_dependencies/boost-cmake/build
 
     Before clicking on "Configure", click on "Add Entry" button in the top right of CMake gui, in 
-    the popup window, fill the fiels as follows::
+    the popup window, fill the fields as follows::
 
         Name  : LIBPREFIX
         Type  : STRING       
@@ -151,7 +151,7 @@ like::
       +-- optional python bindings disabled since PYTHON_FOUND is false. 
       + tr1
 
-    Now, click "Generate". A Visual Studio solution file will be genrated inside the build folder 
+    Now, click "Generate". A Visual Studio solution file will be generated inside the build folder 
     (e.g. C:/PCL_dependencies/boost-cmake/build). Open the `Boost.sln` file, then right click on 
     `INSTALL` project and choose `Build`. The `INSTALL`project will trigger the build of all the projects 
     in the solution file, and then will install the build libraries along with the header files to the default
@@ -210,7 +210,7 @@ like::
       Where to build binaries: C:/PCL_dependencies/qhull-2011.1/build
       
     Before clicking on "Configure", click on "Add Entry" button in the top right of CMake gui, in 
-    the popup window, fill the fiels as follows::
+    the popup window, fill the fields as follows::
 
       Name  : CMAKE_DEBUG_POSTFIX
       Type  : STRING       
@@ -282,7 +282,7 @@ like::
 
 - **GTest** : 
       
-    In case you want PCL tests (not recommanded for users), you need to compile the `googletest` library (GTest). 
+    In case you want PCL tests (not recommended for users), you need to compile the `googletest` library (GTest). 
     Setup the CMake fields as usual::
 
       Where is my source code: C:/PCL_dependencies/gtest-1.6.0

@@ -104,6 +104,7 @@ namespace pcl
         friend class OctreeIteratorBase<OctreeT> ;
         friend class OctreeDepthFirstIterator<OctreeT> ;
         friend class OctreeBreadthFirstIterator<OctreeT> ;
+        friend class OctreeFixedDepthIterator<OctreeT> ;
         friend class OctreeLeafNodeIterator<OctreeT> ;
 
         // Octree default iterators
@@ -162,6 +163,19 @@ namespace pcl
           return BreadthFirstIterator (this, 0, NULL);
         };
 
+        // Octree breadth iterators at a given depth
+        typedef OctreeFixedDepthIterator<OctreeT> FixedDepthIterator;
+        typedef const OctreeFixedDepthIterator<OctreeT> ConstFixedDepthIterator;
+
+        FixedDepthIterator fixed_depth_begin (unsigned int fixed_depth_arg = 0u)
+        {
+          return FixedDepthIterator (this, fixed_depth_arg);
+        };
+
+        const FixedDepthIterator fixed_depth_end ()
+        {
+          return FixedDepthIterator (this, 0, NULL);
+        };
 
         /** \brief Empty constructor. */
         OctreeBase ();
@@ -344,7 +358,7 @@ namespace pcl
           return result;
         }
 
-        /** \brief Check for existance of a leaf node in the octree
+        /** \brief Check for existence of a leaf node in the octree
          *  \param key_arg: octree key addressing a leaf node.
          *  \return "true" if leaf node is found; "false" otherwise
          * */

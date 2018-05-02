@@ -104,7 +104,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::selectWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> int
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
-      const Eigen::VectorXf &model_coefficients, const double threshold)
+      const Eigen::VectorXf &model_coefficients, const double threshold) const
 {
   if (!normals_)
   {
@@ -149,7 +149,7 @@ pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::countWithinDistance (
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template <typename PointT, typename PointNT> void
 pcl::SampleConsensusModelNormalPlane<PointT, PointNT>::getDistancesToModel (
-      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances)
+      const Eigen::VectorXf &model_coefficients, std::vector<double> &distances) const
 {
   if (!normals_)
   {
