@@ -414,6 +414,22 @@ namespace pcl
   template <>
   class DefaultPointRepresentation <VFHSignature308> : public DefaultFeatureRepresentation <VFHSignature308>
   {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature512> : public DefaultFeatureRepresentation <GASDSignature512>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature984> : public DefaultFeatureRepresentation <GASDSignature984>
+  {};
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  template <>
+  class DefaultPointRepresentation <GASDSignature7992> : public DefaultFeatureRepresentation <GASDSignature7992>
+  {};
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   template <>
   class DefaultPointRepresentation <Narf36> : public PointRepresentation <Narf36>
