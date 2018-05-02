@@ -59,7 +59,7 @@ namespace pcl
       /** Get a color from the lookup table with a given id.
         *
         * The id should be less than the size of the LUT (see size()). */
-      static RGB at (unsigned int color_id);
+      static RGB at (size_t color_id);
 
       /** Get the number of colors in the lookup table.
         *
