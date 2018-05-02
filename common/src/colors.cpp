@@ -300,10 +300,10 @@ static const unsigned char GLASBEY_LUT[] =
 };
 
 /// Number of colors in Glasbey lookup table
-static const unsigned int GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
+static const size_t GLASBEY_LUT_SIZE = sizeof (GLASBEY_LUT) / (sizeof (GLASBEY_LUT[0]) * 3);
 
 pcl::RGB
-pcl::GlasbeyLUT::at (unsigned int color_id)
+pcl::GlasbeyLUT::at (size_t color_id)
 {
   assert (color_id < GLASBEY_LUT_SIZE);
   pcl::RGB color;
