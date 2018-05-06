@@ -147,7 +147,7 @@ namespace pcl
       const std::vector<float>&
       getPlaneCoeffD () const
       {
-        return (plane_coeff_d_);
+        return (*plane_coeff_d_);
       }
 
       /** \brief Set the tolerance in radians for difference in normal direction between neighboring points, to be considered part of the same plane.
