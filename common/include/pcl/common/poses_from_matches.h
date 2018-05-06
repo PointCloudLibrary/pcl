@@ -44,7 +44,7 @@
 namespace pcl
 {
   /**
-    * \brief calculate 3D transformation based on point correspondencdes
+    * \brief calculate 3D transformation based on point correspondences
     * \author Bastian Steder
     * \ingroup common
     */

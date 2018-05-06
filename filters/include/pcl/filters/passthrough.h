@@ -252,7 +252,7 @@ namespace pcl
         * structure. By default, points are removed.
         *
         * \param[in] val set to true whether the filtered points should be kept and
-        * set to a given user value (default: NaN)
+        * set to a user given value (default: NaN)
         */
       inline void
       setKeepOrganized (bool val)
@@ -351,7 +351,7 @@ namespace pcl
 
     private:
       /** \brief Keep the structure of the data organized, by setting the
-        * filtered points to the a user given value (NaN by default). 
+        * filtered points to a user given value (NaN by default). 
         */
       bool keep_organized_;
 
