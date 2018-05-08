@@ -24,7 +24,7 @@ main (int argc, char** argv)
   pcl::PassThrough<pcl::PointXYZRGB> pass;
   pass.setInputCloud (cloud);
   pass.setFilterFieldName ("z");
-  pass.setFilterLimits (0.0, 1.0);
+  pass.setFilterLimits (0.0, 5.00);// The point cloud includes points higher than 1.00 at z value
   pass.filter (*indices);
 
   pcl::RegionGrowingRGB<pcl::PointXYZRGB> reg;
